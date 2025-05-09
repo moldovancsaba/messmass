@@ -7,3 +7,6 @@ Supports auto-executed bash commands and fully offline AI integration via Ollama
 - Human/AI toggle for control
 - Auto AI mode for autonomous command execution
 - Local-only, private by default
+
+## 📘 Documentation
+For full project protocols and logs, see [docs/index.md](docs/index.md)
