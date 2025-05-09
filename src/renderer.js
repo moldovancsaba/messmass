@@ -1,41 +1,39 @@
-const { ipcRenderer } = require('electron');
+const { execCommand } = require("./execCommand");
+const { generatePlan } = require("./AutoAIPlanner");
 
-function detectShellCommand(text) {
-  const match = text.match(/```(?:bash|sh)?\n([^`]+)```/i);
-  return match ? match[1].trim() : null;
-}
+window.onload = () => {
+  const terminal = document.getElementById("terminal");
+  const input = document.getElementById("cmdInput");
 
-document.getElementById('send').addEventListener('click', async () => {
-  const prompt = document.getElementById('prompt').value;
-  const responseBox = document.getElementById('response');
-  const humanAI = document.getElementById('humanAI').checked;
-  const autoAI = document.getElementById('autoAI').checked;
+  const appendLine = (text = "") => {
+    terminal.innerHTML += text + "\n";
+    terminal.scrollTop = terminal.scrollHeight;
+  };
 
-  responseBox.innerText = "⏳ Thinking...";
+  input.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter") {
+      const cmd = input.value.trim();
+      appendLine("moldovan@MacBookPro messmass % " + cmd);
+      input.value = "";
+      if (cmd === "") return;
 
-  const data = await ipcRenderer.invoke('ask-ollama', {
-    prompt,
-    humanAI,
-    autoAI
+      // Parancs prefixelve: ai:
+      if (cmd.startsWith("ai:")) {
+        const aiResponse = cmd.slice(3).trim();
+        appendLine("# AI: " + aiResponse);
+        generatePlan(aiResponse);
+        appendLine("✅ Plan generated from AI input.");
+        return;
+      }
+
+      try {
+        const output = await execCommand(cmd);
+        appendLine(output.trim());
+      } catch (err) {
+        appendLine("❌ " + err.message);
+      }
+    }
   });
 
-  const command = detectShellCommand(data);
-
-  if (humanAI && autoAI && command) {
-    const result = await ipcRenderer.invoke('run-command', command);
-    responseBox.innerText = data + "\n\n🤖 Auto-executed:\n" + result;
-  } else if (humanAI && !autoAI && command) {
-    const runBtn = document.createElement('button');
-    runBtn.innerText = "RUN";
-    runBtn.onclick = async () => {
-      const result = await ipcRenderer.invoke('run-command', command);
-      responseBox.innerText = data + "\n\n💻 Command output:\n" + result;
-      runBtn.remove();
-    };
-    responseBox.innerText = data;
-    responseBox.appendChild(document.createElement('br'));
-    responseBox.appendChild(runBtn);
-  } else {
-    responseBox.innerText = data;
-  }
-});
+  appendLine("Welcome to messmass — Local AI Shell\n");
+};

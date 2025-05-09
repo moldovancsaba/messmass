@@ -1,19 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>messmass</title>
+  <title>messmass — Local AI Shell</title>
+  <style>
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+      font-size: 14px;
+    }
+    #terminal {
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+    #input-line {
+      display: flex;
+      gap: 6px;
+    }
+    input {
+      background: #000;
+      color: #0f0;
+      border: none;
+      outline: none;
+      font-family: monospace;
+      font-size: 14px;
+      width: 100%;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
-  <h1>messmass – Local AI Shell</h1>
+<body>
+  <div id="terminal"></div>
+  <div id="input-line">
+    <span>moldovan@MacBookPro messmass %</span>
+    <input id="cmdInput" autofocus />
+  </div>
 
-  <label><input type="checkbox" id="humanAI" /> Human/AI</label><br>
-  <label><input type="checkbox" id="autoAI" /> Auto AI</label><br><br>
-
-  <input id="prompt" type="text" placeholder="Type your request here..." style="width: 80%;" />
-  <button id="send">Send</button>
-  <pre id="response" style="margin-top: 20px; white-space: pre-wrap;"></pre>
-
-  <script src="renderer.js"></script>
+  <script src="./renderer.js"></script>
 </body>
 </html>
