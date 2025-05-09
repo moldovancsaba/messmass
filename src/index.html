@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>messmass</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+  <h1>messmass – Local AI Shell</h1>
+
+  <label><input type="checkbox" id="humanAI" /> Human/AI</label><br>
+  <label><input type="checkbox" id="autoAI" /> Auto AI</label><br><br>
+
+  <input id="prompt" type="text" placeholder="Type your request here..." style="width: 80%;" />
+  <button id="send">Send</button>
+  <pre id="response" style="margin-top: 20px; white-space: pre-wrap;"></pre>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
