@@ -10,3 +10,6 @@ Supports auto-executed bash commands and fully offline AI integration via Ollama
 
 ## 📘 Documentation
 For full project protocols and logs, see [docs/index.md](docs/index.md)
+
+## 📘 Documentation
+For full project protocols and logs, see [docs/index.md](docs/index.md)
