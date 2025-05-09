@@ -13,3 +13,9 @@ For full project protocols and logs, see [docs/index.md](docs/index.md)
 
 ## 📘 Documentation
 For full project protocols and logs, see [docs/index.md](docs/index.md)
+
+## 📘 Documentation
+
+- Browse all internal project documents in the [📚 structured index](docs/index.md)
+- View public GitHub Pages version: [🌐 messmass documentation](https://moldovancsaba.github.io/messmass/)
+
