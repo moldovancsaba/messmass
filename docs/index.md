@@ -23,4 +23,3 @@ This folder contains development rules, protocols, logs, and release information
 ## 🚀 Releases
 
 - [10_Release_Notes.md](10_Release_Notes.md)
-
