@@ -4,7 +4,7 @@ const path = require("path");
 function generatePlan(input) {
   let commands = [];
 
-  // Elsőként: ha bash blokk van, azt használjuk
+  // 1. Először: bash blokkot keresünk
   const bashBlockMatch = input.match(/```bash\s+([\s\S]*?)```/);
   if (bashBlockMatch) {
     commands = bashBlockMatch[1]
@@ -13,16 +13,16 @@ function generatePlan(input) {
       .filter(line => line && !line.startsWith("#"))
       .map(cmd => ({ command: cmd, critical: true }));
   } else {
-    // Egyszerű szabályalapú természetes nyelvi értelmezés
-    const folderCreate = input.match(/create (a )?(folder|directory)( called)? ['"]?([\w\-\/]+)['"]?/i);
-    const folderRemove = input.match(/(remove|delete) (the )?(folder|directory)( called)? ['"]?([\w\-\/]+)['"]?/i);
+    // 2. Egyszerű természetes nyelvi értelmezés szóközökkel is
+    const createMatch = input.match(/create (a )?(folder|directory)( called)? ['"]?(.+?)['"]?$/i);
+    const removeMatch = input.match(/(remove|delete) (the )?(folder|directory)( called)? ['"]?(.+?)['"]?$/i);
 
-    if (folderCreate) {
-      const name = folderCreate[4];
-      commands.push({ command: `mkdir ${name}`, critical: true });
-    } else if (folderRemove) {
-      const name = folderRemove[5];
-      commands.push({ command: `rm -rf ${name}`, critical: true });
+    if (createMatch) {
+      const folderName = createMatch[4].trim().replace(/['"]$/, "");
+      commands.push({ command: `mkdir "${folderName}"`, critical: true });
+    } else if (removeMatch) {
+      const folderName = removeMatch[5].trim().replace(/['"]$/, "");
+      commands.push({ command: `rm -rf "${folderName}"`, critical: true });
     }
   }
 
