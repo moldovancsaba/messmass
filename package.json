@@ -1,20 +1,19 @@
 {
   "name": "messmass",
   "version": "1.0.0",
-  "description": "Local AI development assistant",
-  "main": "main.js",
+  "description": "Terminal-integrated AI shell.",
+  "main": "src/main.js",
   "scripts": {
-    "start": "electron src/main.js"
-  },
-  "author": "moldovan",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^29.4.6"
+    "start": "electron .",
+    "test": "mocha"
   },
   "dependencies": {
-    "axios": "^1.9.0",
-    "node-fetch": "^3.3.2"
+    "electron": "^28.1.0",
+    "node-pty": "1.1.0-beta9"
   },
-  "keywords": [],
-  "type": "commonjs"
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "esm": "^3.2.25",
+    "mocha": "^10.2.0"
+  }
 }

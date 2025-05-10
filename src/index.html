@@ -1,43 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>messmass — Local AI Shell</title>
+  <meta charset="UTF-8" />
+  <title>messmass – Terminal AI</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       background: #000;
       color: #0f0;
       font-family: monospace;
-      padding: 20px;
-      font-size: 14px;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
     }
-    #terminal {
+
+    #sidebar {
+      width: 240px;
+      background: #111;
+      padding: 10px;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #sidebar button, #sidebar select {
+      background: #222;
+      color: #0f0;
+      border: 1px solid #333;
+      padding: 6px 10px;
+      font-family: monospace;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #output {
+      flex: 1;
+      padding: 10px;
       white-space: pre-wrap;
       overflow-y: auto;
-      max-height: 90vh;
     }
+
     #input-line {
       display: flex;
-      gap: 6px;
+      padding: 10px;
     }
-    input {
-      background: #000;
-      color: #0f0;
+
+    #prompt {
+      flex-shrink: 0;
+    }
+
+    #cmd {
+      flex: 1;
+      background: black;
       border: none;
+      color: #0f0;
+      font: inherit;
       outline: none;
-      font-family: monospace;
-      font-size: 14px;
-      width: 100%;
+      caret-color: #0f0;
+    }
+
+    #cmd::selection {
+      background: #0f0;
+      color: #000;
+    }
+
+    #runButton {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      padding: 4px 8px;
+      border: none;
+      margin-left: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div id="terminal"></div>
-  <div id="input-line">
-    <span>moldovan@MacBookPro messmass %</span>
-    <input id="cmdInput" autofocus />
+  <div id="sidebar">
+    <button id="modeToggle">HUMAN</button>
+    <button id="autoToggle">AUTO AI: OFF</button>
+    <button id="newSession">+ New Session</button>
+    <button id="runButton" style="display: none;">Run</button>
   </div>
-
+  <div id="main">
+    <div id="output"></div>
+    <div id="input-line">
+      <span id="prompt">moldovan@MacBookPro messmass % </span>
+      <input id="cmd" autofocus autocomplete="off" />
+    </div>
+  </div>
   <script src="./renderer.js"></script>
 </body>
 </html>
