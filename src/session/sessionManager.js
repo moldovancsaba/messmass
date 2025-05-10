@@ -1,24 +1,26 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const SESSIONS_DIR = path.join(__dirname, "../../../sessions");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function saveSession(sessionId, data) {
-  if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR, { recursive: true });
-  const filePath = path.join(SESSIONS_DIR, `session_${sessionId}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+const sessionsDir = path.join(__dirname, "../../sessions");
+
+export function saveSession(sessionId, data) {
+  if (!fs.existsSync(sessionsDir)) fs.mkdirSync(sessionsDir, { recursive: true });
+  const filePath = path.join(sessionsDir, `${sessionId}.json`);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-function loadSession(sessionId) {
-  const filePath = path.join(SESSIONS_DIR, `session_${sessionId}.json`);
+export function loadSession(sessionId) {
+  const filePath = path.join(sessionsDir, `${sessionId}.json`);
   if (!fs.existsSync(filePath)) return null;
   const content = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(content);
 }
 
-function listSessions() {
-  if (!fs.existsSync(SESSIONS_DIR)) return [];
-  return fs.readdirSync(SESSIONS_DIR).filter(f => f.endsWith(".json"));
+export function listSessions() {
+  if (!fs.existsSync(sessionsDir)) return [];
+  return fs.readdirSync(sessionsDir).filter(file => file.endsWith(".json")).map(file => file.replace(".json", ""));
 }
-
-module.exports = { saveSession, loadSession, listSessions };

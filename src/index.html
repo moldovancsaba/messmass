@@ -28,7 +28,7 @@
       gap: 8px;
     }
 
-    #sidebar button, #sidebar select {
+    #sidebar button {
       background: #222;
       color: #0f0;
       border: 1px solid #333;
@@ -60,7 +60,7 @@
       flex-shrink: 0;
     }
 
-    #cmd {
+    #input {
       flex: 1;
       background: black;
       border: none;
@@ -70,12 +70,12 @@
       caret-color: #0f0;
     }
 
-    #cmd::selection {
+    #input::selection {
       background: #0f0;
       color: #000;
     }
 
-    #runButton {
+    #runBtn {
       background: #0f0;
       color: #000;
       font-weight: bold;
@@ -88,16 +88,16 @@
 </head>
 <body>
   <div id="sidebar">
-    <button id="modeToggle">HUMAN</button>
-    <button id="autoToggle">AUTO AI: OFF</button>
-    <button id="newSession">+ New Session</button>
-    <button id="runButton" style="display: none;">Run</button>
+    <button id="toggleMode">HUMAN</button>
+    <button id="toggleAuto">AUTO AI: OFF</button>
+    <button id="newSessionBtn">+ New Session</button>
+    <button id="runBtn" style="display: none;">Run</button>
   </div>
   <div id="main">
     <div id="output"></div>
     <div id="input-line">
       <span id="prompt">moldovan@MacBookPro messmass % </span>
-      <input id="cmd" autofocus autocomplete="off" />
+      <input id="input" autofocus autocomplete="off" />
     </div>
   </div>
   <script src="./renderer.js"></script>

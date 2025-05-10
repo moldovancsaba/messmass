@@ -1,44 +1,50 @@
-const { expect } = require("chai");
-const fs = require("fs");
-const path = require("path");
+import { strict as assert } from 'assert';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { describe, it } from 'mocha';
+import { JSDOM } from 'jsdom';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const indexPath = path.resolve(__dirname, '../src/index.html');
+const html = fs.readFileSync(indexPath, 'utf8');
+const dom = new JSDOM(html);
+const document = dom.window.document;
 
 describe("UI Renderer (Smoke Test)", () => {
-  const htmlPath = path.join(__dirname, "../src/index.html");
-  let html;
-
-  before(() => {
-    html = fs.readFileSync(htmlPath, "utf-8");
-  });
-
   it("should contain an output container", () => {
-    expect(html).to.include('id="output"');
+    assert.ok(document.querySelector("#output"));
   });
 
   it("should contain an input field", () => {
-    expect(html).to.include('id="cmd"');
+    assert.ok(document.querySelector("#input"));
   });
 
   it("should contain a prompt", () => {
-    expect(html).to.include('id="prompt"');
+    assert.ok(document.querySelector("#prompt"));
   });
 
   it("should contain mode toggle", () => {
-    expect(html).to.include('id="modeToggle"');
+    assert.ok(document.querySelector("#toggleMode"));
   });
 
   it("should contain auto toggle", () => {
-    expect(html).to.include('id="autoToggle"');
+    assert.ok(document.querySelector("#toggleAuto"));
   });
 
   it("should contain new session button", () => {
-    expect(html).to.include('id="newSession"');
+    assert.ok(document.querySelector("#newSessionBtn"));
   });
 
   it("should contain run button", () => {
-    expect(html).to.include('id="runButton"');
+    assert.ok(document.querySelector("#runBtn"));
   });
 
   it("should load the renderer.js script", () => {
-    expect(html).to.include('<script src="./renderer.js"></script>');
+    const scripts = Array.from(document.querySelectorAll("script"));
+    const found = scripts.some(script => script.src.includes("renderer.js"));
+    assert.ok(found);
   });
 });

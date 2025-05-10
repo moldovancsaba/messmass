@@ -1,41 +1,40 @@
-const path = require("path");
-const fs = require("fs");
-const os = require("os");
-const pty = require("node-pty");
-const { expect } = require("chai");
+import { strict as assert } from 'assert';
+import { spawn } from 'node-pty';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { describe, it, before, after } from 'mocha';
 
-describe("PTY Shell Integration", function () {
-  let ptyProcess;
-  let testDir;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  before(function () {
-    testDir = path.join(os.tmpdir(), "messmass-testdir");
-    if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
-    process.chdir(testDir);
+describe("PTY Shell Integration", () => {
+  let shell;
+  let output = "";
 
-    ptyProcess = pty.spawn("zsh", [], {
-      name: "xterm-color",
+  before((done) => {
+    shell = spawn('/bin/zsh', [], {
+      name: 'xterm-color',
       cols: 80,
       rows: 30,
-      cwd: testDir,
+      cwd: __dirname,
       env: process.env,
     });
-  });
 
-  after(function () {
-    if (ptyProcess) ptyProcess.kill();
-    if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
-  });
-
-  it("should echo 'hello' correctly", function (done) {
-    let buffer = "";
-    ptyProcess.on("data", function (data) {
-      buffer += data;
-      if (buffer.includes("hello")) {
-        expect(buffer).to.include("hello");
+    shell.onData((data) => {
+      output += data;
+      if (output.includes('hello')) {
         done();
       }
     });
-    ptyProcess.write("echo hello\n");
+
+    shell.write("echo hello\n");
+  });
+
+  it("should echo 'hello' correctly", () => {
+    assert.ok(output.includes("hello"));
+  });
+
+  after(() => {
+    shell.kill();
   });
 });
