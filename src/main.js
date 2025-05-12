@@ -1,64 +1,67 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const axios = require('axios');
-const { ensureOllamaRunningAndModelReady } = require('./ollama-init');
-const { extractAndRunShellCommand } = require('./execCommand');
-const { exec } = require('child_process');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { exec } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { generatePlan } from './ai/generatePlan.js';
+import { runPlan } from './ai/runPlan.js';
 
-let win;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-app.whenReady().then(async () => {
-  await ensureOllamaRunningAndModelReady();
+let mainWindow;
 
-  win = new BrowserWindow({
+function createWindow() {
+  mainWindow = new BrowserWindow({
     width: 1000,
-    height: 700,
+    height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
     },
   });
 
-  win.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+}
+
+app.whenReady().then(() => {
+  createWindow();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
 
-ipcMain.handle('ask-ollama', async (event, data) => {
-  const { prompt, humanAI, autoAI } = data;
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
 
-  try {
-    const response = await axios.post('http://localhost:11434/api/generate', {
-      model: "deepseek-coder:latest",
-      prompt,
-      stream: false,
+ipcMain.handle('run-command', async (_, command) => {
+  return new Promise((resolve) => {
+    exec(command, { shell: '/bin/zsh' }, (error, stdout, stderr) => {
+      if (error) {
+        resolve(`❌ ${stderr || error.message}`);
+      } else {
+        resolve(stdout.trim());
+      }
     });
+  });
+});
 
-    const aiText = response.data.response;
-
-    if (!humanAI) return aiText;
-
-    if (autoAI) {
-      return new Promise((resolve) => {
-        extractAndRunShellCommand(aiText, (err, output) => {
-          if (err) return resolve(aiText + "\n\n⚠️ Command error:\n" + err);
-          if (output) return resolve(aiText + "\n\n💻 Command output:\n" + output);
-          return resolve(aiText);
-        });
-      });
-    } else {
-      return aiText; // csak akkor fut, ha manuálisan elindítod
-    }
-
+ipcMain.handle('generate-plan', async (_, prompt) => {
+  try {
+    const plan = await generatePlan(prompt);
+    return plan;
   } catch (err) {
-    return '❌ Error: ' + err.message;
+    return `❌ ${err.message}`;
   }
 });
 
-ipcMain.handle('run-command', async (event, command) => {
-  return new Promise((resolve) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) return resolve("⚠️ Error: " + error.message);
-      if (stderr) return resolve("⚠️ Stderr: " + stderr);
-      return resolve(stdout.trim());
-    });
-  });
+ipcMain.handle('run-plan', async () => {
+  try {
+    const result = await runPlan();
+    return result;
+  } catch (err) {
+    return `❌ ${err.message}`;
+  }
 });

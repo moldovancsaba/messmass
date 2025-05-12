@@ -1,0 +1,11 @@
+[
+  {
+    "command": "mkdir -p ai_test_dir"
+  },
+  {
+    "command": "touch ai_test_dir/test.txt"
+  },
+  {
+    "command": "echo \"hello world\" > ai_test_dir/test.txt"
+  }
+]

@@ -1,41 +1,80 @@
-const { ipcRenderer } = require('electron');
+const output = document.getElementById('output');
+const input = document.getElementById('input');
+const prompt = document.getElementById('prompt');
+const toggleModeBtn = document.getElementById('toggleMode');
+const toggleAutoBtn = document.getElementById('toggleAuto');
+const newSessionBtn = document.getElementById('newSessionBtn');
+const runBtn = document.getElementById('runBtn');
 
-function detectShellCommand(text) {
-  const match = text.match(/```(?:bash|sh)?\n([^`]+)```/i);
-  return match ? match[1].trim() : null;
+let mode = 'HUMAN';
+let auto = false;
+
+function appendOutput(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
 }
 
-document.getElementById('send').addEventListener('click', async () => {
-  const prompt = document.getElementById('prompt').value;
-  const responseBox = document.getElementById('response');
-  const humanAI = document.getElementById('humanAI').checked;
-  const autoAI = document.getElementById('autoAI').checked;
+toggleModeBtn.addEventListener('click', () => {
+  mode = mode === 'HUMAN' ? 'AI' : 'HUMAN';
+  toggleModeBtn.textContent = mode;
+  console.log('Mode toggled:', mode);
+});
 
-  responseBox.innerText = "⏳ Thinking...";
+toggleAutoBtn.addEventListener('click', () => {
+  auto = !auto;
+  toggleAutoBtn.textContent = `AUTO AI: ${auto ? 'ON' : 'OFF'}`;
+  console.log('Auto mode toggled:', auto);
+});
 
-  const data = await ipcRenderer.invoke('ask-ollama', {
-    prompt,
-    humanAI,
-    autoAI
-  });
+newSessionBtn.addEventListener('click', () => {
+  output.innerHTML = '';
+  console.log('New session started');
+});
 
-  const command = detectShellCommand(data);
+runBtn.addEventListener('click', () => {
+  executeCommand(input.value);
+});
 
-  if (humanAI && autoAI && command) {
-    const result = await ipcRenderer.invoke('run-command', command);
-    responseBox.innerText = data + "\n\n🤖 Auto-executed:\n" + result;
-  } else if (humanAI && !autoAI && command) {
-    const runBtn = document.createElement('button');
-    runBtn.innerText = "RUN";
-    runBtn.onclick = async () => {
-      const result = await ipcRenderer.invoke('run-command', command);
-      responseBox.innerText = data + "\n\n💻 Command output:\n" + result;
-      runBtn.remove();
-    };
-    responseBox.innerText = data;
-    responseBox.appendChild(document.createElement('br'));
-    responseBox.appendChild(runBtn);
-  } else {
-    responseBox.innerText = data;
+input.addEventListener('keydown', async (e) => {
+  if (e.key === 'Enter') {
+    executeCommand(input.value);
   }
 });
+
+async function executeCommand(command) {
+  if (!command.trim()) return;
+
+  appendOutput(`${prompt.textContent}${command}`);
+  input.value = '';
+
+  if (mode === 'HUMAN') {
+    const result = await window.api.runCommand(command);
+    appendOutput(result);
+  } else {
+    if (!auto) {
+      appendOutput('🤖 AI generated:\n❌ Auto mode is OFF');
+      return;
+    }
+
+    appendOutput('🤖 AI generating...');
+    try {
+      const plan = await window.api.generatePlan(command);
+      console.log('Received plan from AI:', plan);
+
+      if (!Array.isArray(plan) || plan.length === 0) {
+        appendOutput('🤖 AI generated:\n❌ Invalid or empty plan');
+        return;
+      }
+
+      appendOutput('🤖 AI generated:\n' + plan.map(p => `> ${p.command}`).join('\n'));
+
+      const result = await window.api.runPlan();
+      appendOutput(result);
+    } catch (err) {
+      console.error('AI error:', err);
+      appendOutput(`🤖 AI error:\n❌ ${err.message}`);
+    }
+  }
+}

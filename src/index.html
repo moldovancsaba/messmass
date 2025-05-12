@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>messmass</title>
+  <meta charset="UTF-8" />
+  <title>messmass – Terminal AI</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+  <link rel="stylesheet" href="./styles.css" />
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
-  <h1>messmass – Local AI Shell</h1>
-
-  <label><input type="checkbox" id="humanAI" /> Human/AI</label><br>
-  <label><input type="checkbox" id="autoAI" /> Auto AI</label><br><br>
-
-  <input id="prompt" type="text" placeholder="Type your request here..." style="width: 80%;" />
-  <button id="send">Send</button>
-  <pre id="response" style="margin-top: 20px; white-space: pre-wrap;"></pre>
-
-  <script src="renderer.js"></script>
+<body>
+  <div id="sidebar">
+    <button id="toggleMode">HUMAN</button>
+    <button id="toggleAuto">AUTO AI: OFF</button>
+    <button id="newSessionBtn">+ New Session</button>
+    <button id="runBtn" style="display: none;">Run</button>
+  </div>
+  <div id="main">
+    <div id="output"></div>
+    <div id="input-line">
+      <span id="prompt">moldovan@MacBookPro messmass % </span>
+      <input id="input" autofocus autocomplete="off" />
+    </div>
+  </div>
+  <script src="./renderer.js"></script>
 </body>
 </html>
