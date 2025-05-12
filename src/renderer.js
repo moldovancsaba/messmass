@@ -1,79 +1,87 @@
-const output = document.getElementById('output');
-const input = document.getElementById('input');
-const prompt = document.getElementById('prompt');
-const toggleModeBtn = document.getElementById('toggleMode');
-const toggleAutoBtn = document.getElementById('toggleAuto');
-const newSessionBtn = document.getElementById('newSessionBtn');
+const inputField = document.getElementById('input');
+const outputDiv = document.getElementById('output');
 const runBtn = document.getElementById('runBtn');
+const modeToggle = document.getElementById('toggleMode');
+const autoToggle = document.getElementById('toggleAuto');
+const newSessionBtn = document.getElementById('newSessionBtn');
 
 let mode = 'HUMAN';
-let auto = false;
+let autoAI = false;
 
-function appendOutput(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  output.appendChild(div);
-  output.scrollTop = output.scrollHeight;
+function appendOutput(line) {
+  const pre = document.createElement('div');
+  pre.textContent = line;
+  outputDiv.appendChild(pre);
+  outputDiv.scrollTop = outputDiv.scrollHeight;
 }
 
-toggleModeBtn.addEventListener('click', () => {
+function updateButtonStates() {
+  modeToggle.textContent = mode;
+  autoToggle.textContent = `AUTO AI: ${autoAI ? 'ON' : 'OFF'}`;
+}
+
+modeToggle.addEventListener('click', () => {
   mode = mode === 'HUMAN' ? 'AI' : 'HUMAN';
-  toggleModeBtn.textContent = mode;
-  console.log('Mode toggled:', mode);
+  appendOutput(`Mode changed to ${mode}`);
+  updateButtonStates();
 });
 
-toggleAutoBtn.addEventListener('click', () => {
-  auto = !auto;
-  toggleAutoBtn.textContent = `AUTO AI: ${auto ? 'ON' : 'OFF'}`;
-  console.log('Auto mode toggled:', auto);
+autoToggle.addEventListener('click', () => {
+  autoAI = !autoAI;
+  appendOutput(`Auto AI is now ${autoAI ? 'ON' : 'OFF'}`);
+  updateButtonStates();
 });
 
 newSessionBtn.addEventListener('click', () => {
-  output.innerHTML = '';
-  console.log('New session started');
+  appendOutput('🆕 New session started');
 });
 
 runBtn.addEventListener('click', () => {
-  executeCommand(input.value);
+  const command = inputField.value.trim();
+  if (command) handleCommand(command);
 });
 
-input.addEventListener('keydown', async (e) => {
+inputField.addEventListener('keydown', async (e) => {
   if (e.key === 'Enter') {
-    executeCommand(input.value);
+    const command = inputField.value.trim();
+    if (command) {
+      handleCommand(command);
+      inputField.value = '';
+    }
   }
 });
 
-async function executeCommand(command) {
-  if (!command.trim()) return;
-
-  appendOutput(`${prompt.textContent}${command}`);
-  input.value = '';
+async function handleCommand(command) {
+  appendOutput(`moldovan@MacBookPro messmass % ${command}`);
 
   if (mode === 'HUMAN') {
-    const result = await window.api.runCommand(command);
+    const result = await window.electron.invoke('run-command', command);
     appendOutput(result);
   } else {
-    if (!auto) {
-      appendOutput('🤖 AI generated:\n❌ Auto mode is OFF');
+    if (!autoAI) {
+      appendOutput('🤖 AI mode is on, but AUTO is off.');
       return;
     }
 
     appendOutput('🤖 AI generating...');
     try {
-      const plan = await window.api.generatePlan(command);
-      console.log('Received plan from AI:', plan);
-
-      if (!Array.isArray(plan) || plan.length === 0) {
-        appendOutput('🤖 AI generated:\n❌ Invalid or empty plan');
+      const plan = await window.electron.invoke('generate-plan', command);
+      if (!Array.isArray(plan)) {
+        appendOutput(`🤖 AI error:\n${plan}`);
         return;
       }
 
-      appendOutput('🤖 AI generated:\n' + plan.map(p => `> ${p.command}`).join('\n'));
+      appendOutput('🤖 AI generated:');
+      for (const step of plan) {
+        appendOutput(`> ${step.command}`);
+      }
 
-      const result = await window.api.runPlan();
-      appendOutput(result);
+      for (const step of plan) {
+        const result = await window.electron.invoke('run-command', step.command);
+        appendOutput(`💬 ${step.command}`);
+        appendOutput(result);
+      }
     } catch (err) {
-      console.error('AI error:', err);
       appendOutput(`🤖 AI error:\n❌ ${err.message}`);
     }
   }

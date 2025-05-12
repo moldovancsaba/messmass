@@ -15,14 +15,14 @@ function createWindow() {
     width: 1000,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'), // 👈 helyesen 'src/preload.js'-re mutat, ha main.js is itt van
       contextIsolation: true,
       enableRemoteModule: false,
       nodeIntegration: false,
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'index.html')); // 👈 szintén 'src/index.html'
 }
 
 app.whenReady().then(() => {

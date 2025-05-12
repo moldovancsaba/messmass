@@ -1,14 +1,8 @@
 [
   {
-    "command": "cd apple"
+    "command": "ls"
   },
   {
-    "command": "cd pie"
-  },
-  {
-    "command": "cd with"
-  },
-  {
-    "command": "cd straberry"
+    "command": "clear"
   }
 ]

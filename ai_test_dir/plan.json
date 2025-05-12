@@ -1,8 +1,0 @@
-[
-  {
-    "command": "mkdir my_folder"
-  },
-  {
-    "command": "echo 'hello world' > my_folder/my_file.txt"
-  }
-]
