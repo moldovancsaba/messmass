@@ -1,22 +1,11 @@
 [
   {
-    "command": "mkdir",
-    "args": [
-      "-p",
-      "ai_test_dir"
-    ]
+    "command": "mkdir -p ai_test_dir"
   },
   {
-    "command": "touch",
-    "args": [
-      "ai_test_dir/test.txt"
-    ]
+    "command": "touch ai_test_dir/test.txt"
   },
   {
-    "command": "echo",
-    "args": [
-      "hello world",
-      "> ai_test_dir/test.txt"
-    ]
+    "command": "echo \"hello world\" > ai_test_dir/test.txt"
   }
 ]

@@ -1,35 +1,31 @@
 import fs from 'fs';
 import { exec } from 'child_process';
+import path from 'path';
 
-export async function runPlan(planFile = './.ai-plan.json') {
-  return new Promise((resolve, reject) => {
-    let plan;
-    try {
-      const raw = fs.readFileSync(planFile, 'utf8');
-      plan = JSON.parse(raw);
-    } catch (err) {
-      return reject(new Error(`❌ Failed to load plan file: ${err.message}`));
+export async function runPlan(dir = '.') {
+  const planPath = path.join(dir, 'plan.json');
+  if (!fs.existsSync(planPath)) throw new Error('plan.json not found');
+
+  const plan = JSON.parse(fs.readFileSync(planPath, 'utf-8'));
+  if (!Array.isArray(plan)) throw new Error('plan.json must contain an array');
+
+  const results = [];
+
+  for (const step of plan) {
+    if (!step.command || typeof step.command !== 'string') {
+      results.push(`❌ Invalid step: ${JSON.stringify(step)}`);
+      continue;
     }
 
-    const commands = plan?.filter(c => typeof c.command === 'string');
-    if (!commands || commands.length === 0) {
-      return reject(new Error('No valid commands in plan'));
-    }
-
-    const log = [];
-    const executeNext = (index) => {
-      if (index >= commands.length) {
-        fs.writeFileSync('executionLog.json', JSON.stringify(log, null, 2));
-        return resolve(true);
-      }
-
-      const cmd = commands[index].command;
-      exec(cmd, (err, stdout, stderr) => {
-        log.push({ cmd, stdout, stderr, error: err?.message || null });
-        executeNext(index + 1);
+    const output = await new Promise((resolve) => {
+      exec(step.command, { shell: '/bin/zsh' }, (err, stdout, stderr) => {
+        if (err) resolve(`❌ ${stderr || err.message}`);
+        else resolve(stdout.trim());
       });
-    };
+    });
 
-    executeNext(0);
-  });
+    results.push(`💬 ${step.command}\n${output}`);
+  }
+
+  return results;
 }

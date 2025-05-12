@@ -1,24 +1,43 @@
 import { queryOpenAI } from './openaiClient.js';
-import fs from 'fs';
+import fs from 'fs/promises';
 
-export async function generatePlan(prompt = '') {
-  if (!prompt || typeof prompt !== 'string') {
-    throw new Error('❌ Invalid prompt provided to generatePlan');
-  }
+export async function generatePlan(promptText) {
+  const systemMessage = {
+    role: 'system',
+    content: 'You are a terminal assistant that returns a valid JSON array of shell commands only. Each item must be an object with a "command" field.'
+  };
 
-  const response = await queryOpenAI(prompt);
+  const userMessage = {
+    role: 'user',
+    content: promptText
+  };
 
+  const messages = [systemMessage, userMessage];
+
+  const rawResponse = await queryOpenAI(messages);
+
+  let plan;
   try {
-    const jsonStart = response.indexOf('[');
-    const jsonEnd = response.lastIndexOf(']') + 1;
-    const jsonString = response.slice(jsonStart, jsonEnd);
-    const plan = JSON.parse(jsonString);
+    // Remove Markdown-style code blocks if present
+    const jsonStart = rawResponse.indexOf('```json');
+    const jsonEnd = rawResponse.lastIndexOf('```');
+    const cleaned = jsonStart !== -1 ? rawResponse.slice(jsonStart + 7, jsonEnd).trim() : rawResponse.trim();
 
-    fs.mkdirSync('ai_test_dir', { recursive: true });
-    fs.writeFileSync('ai_test_dir/plan.json', JSON.stringify(plan, null, 2));
+    plan = JSON.parse(cleaned);
 
+    if (!Array.isArray(plan)) throw new Error('Parsed plan is not an array');
+
+    const allValid = plan.every(
+      (item) => typeof item === 'object' && typeof item.command === 'string'
+    );
+
+    if (!allValid) {
+      throw new Error('Parsed plan items are not valid command objects');
+    }
+
+    await fs.writeFile('plan.json', JSON.stringify(plan, null, 2), 'utf8');
     return plan;
-  } catch (e) {
-    throw new Error(`❌ Failed to parse AI response:\n${response}\n\n${e.message}`);
+  } catch (err) {
+    throw new Error(`❌ Invalid JSON from AI:\n${rawResponse}`);
   }
 }

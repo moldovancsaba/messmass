@@ -1,0 +1,14 @@
+[
+  {
+    "command": "cd apple"
+  },
+  {
+    "command": "cd pie"
+  },
+  {
+    "command": "cd with"
+  },
+  {
+    "command": "cd straberry"
+  }
+]

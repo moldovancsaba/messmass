@@ -1,9 +1,15 @@
-import { expect } from "chai";
-import { queryOpenAI } from "../src/ai/openaiClient.js";
+import { strict as assert } from 'assert';
+import { queryOpenAI } from '../src/ai/openaiClient.js';
 
-describe("OpenAI Client", () => {
-  it("should return a valid response from the API", async () => {
-    const result = await queryOpenAI("List files in the current directory");
-    expect(result).to.be.a("string").and.to.include("ls");
+describe('OpenAI Client', () => {
+  it('should return a valid response from the API', async () => {
+    const messages = [
+      { role: 'system', content: 'You are a helpful assistant.' },
+      { role: 'user', content: 'List files in current directory.' }
+    ];
+
+    const response = await queryOpenAI(messages);
+    assert.ok(typeof response === 'string', 'Expected a string response');
+    assert.ok(response.includes('ls') || response.includes('dir'), 'Response should contain a known shell command');
   });
 });

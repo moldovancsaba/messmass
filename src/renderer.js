@@ -1,111 +1,80 @@
-const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
-const { generatePlan } = require("./ai/generatePlan");
-const { runPlan } = require("./ai/runPlan");
-const { saveSession, loadSession } = require("./session/sessionManager");
+const output = document.getElementById('output');
+const input = document.getElementById('input');
+const prompt = document.getElementById('prompt');
+const toggleModeBtn = document.getElementById('toggleMode');
+const toggleAutoBtn = document.getElementById('toggleAuto');
+const newSessionBtn = document.getElementById('newSessionBtn');
+const runBtn = document.getElementById('runBtn');
 
-let currentDirectory = process.cwd();
-let aiMode = false;
-let autoAI = false;
-let sessionIndex = 0;
-let sessionLog = [];
+let mode = 'HUMAN';
+let auto = false;
 
-const outputEl = document.getElementById("output");
-const inputEl = document.getElementById("cmd");
-const promptEl = document.getElementById("prompt");
-const runButton = document.getElementById("runButton");
-const modeToggle = document.getElementById("modeToggle");
-const autoToggle = document.getElementById("autoToggle");
-const newSession = document.getElementById("newSession");
-
-function appendLine(line) {
-  const div = document.createElement("div");
-  div.textContent = line;
-  outputEl.appendChild(div);
-  outputEl.scrollTop = outputEl.scrollHeight;
-  sessionLog.push(line);
+function appendOutput(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
 }
 
-function refreshPrompt() {
-  promptEl.textContent = `${aiMode ? "# AI > " : ""}${process.env.USER}@${require("os").hostname()} ${path.basename(currentDirectory)} % `;
-}
+toggleModeBtn.addEventListener('click', () => {
+  mode = mode === 'HUMAN' ? 'AI' : 'HUMAN';
+  toggleModeBtn.textContent = mode;
+  console.log('Mode toggled:', mode);
+});
 
-inputEl.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter") {
-    const cmd = inputEl.value.trim();
-    if (!cmd) return;
-    appendLine(promptEl.textContent + cmd);
-    inputEl.value = "";
+toggleAutoBtn.addEventListener('click', () => {
+  auto = !auto;
+  toggleAutoBtn.textContent = `AUTO AI: ${auto ? 'ON' : 'OFF'}`;
+  console.log('Auto mode toggled:', auto);
+});
 
-    if (aiMode) {
-      appendLine(`# AI detected: "${cmd}"`);
-      const plan = generatePlan(cmd);
-      if (plan.length === 0) {
-        appendLine("❌ Could not generate plan.");
-        return;
-      }
+newSessionBtn.addEventListener('click', () => {
+  output.innerHTML = '';
+  console.log('New session started');
+});
 
-      fs.writeFileSync(".ai-plan.json", JSON.stringify(plan, null, 2));
-      if (autoAI) {
-        appendLine("# ✅ Auto-executing plan...");
-        await runPlan(".ai-plan.json", currentDirectory);
-      } else {
-        appendLine("# ✅ Plan generated. Use 'Run' to execute.");
-      }
-    } else {
-      if (cmd.startsWith("cd ")) {
-        const target = cmd.slice(3).trim();
-        const newPath = path.resolve(currentDirectory, target);
-        if (fs.existsSync(newPath) && fs.statSync(newPath).isDirectory()) {
-          currentDirectory = newPath;
-          appendLine(`Changed directory to ${currentDirectory}`);
-        } else {
-          appendLine(`❌ No such directory: ${newPath}`);
-        }
-      } else {
-        exec(cmd, { cwd: currentDirectory, shell: "/bin/zsh" }, (err, stdout, stderr) => {
-          if (err) appendLine(`❌ ${err.message}`);
-          if (stdout) appendLine(stdout.trim());
-          if (stderr) appendLine(stderr.trim());
-        });
-      }
-    }
+runBtn.addEventListener('click', () => {
+  executeCommand(input.value);
+});
 
-    refreshPrompt();
+input.addEventListener('keydown', async (e) => {
+  if (e.key === 'Enter') {
+    executeCommand(input.value);
   }
 });
 
-runButton.addEventListener("click", async () => {
-  appendLine("# ▶ Running queued plan...");
-  await runPlan(".ai-plan.json", currentDirectory);
-});
+async function executeCommand(command) {
+  if (!command.trim()) return;
 
-modeToggle.addEventListener("click", () => {
-  aiMode = !aiMode;
-  modeToggle.textContent = aiMode ? "AI" : "HUMAN";
-  appendLine(`# Switched to ${aiMode ? "AI" : "HUMAN"} mode`);
-  runButton.style.display = aiMode && !autoAI ? "inline-block" : "none";
-  refreshPrompt();
-});
+  appendOutput(`${prompt.textContent}${command}`);
+  input.value = '';
 
-autoToggle.addEventListener("click", () => {
-  autoAI = !autoAI;
-  autoToggle.textContent = `AUTO AI: ${autoAI ? "ON" : "OFF"}`;
-  appendLine(`# Auto AI turned ${autoAI ? "ON" : "OFF"}`);
-  runButton.style.display = aiMode && !autoAI ? "inline-block" : "none";
-});
+  if (mode === 'HUMAN') {
+    const result = await window.api.runCommand(command);
+    appendOutput(result);
+  } else {
+    if (!auto) {
+      appendOutput('🤖 AI generated:\n❌ Auto mode is OFF');
+      return;
+    }
 
-newSession.addEventListener("click", () => {
-  const name = `session-${++sessionIndex}`;
-  saveSession(name, sessionLog);
-  sessionLog = [];
-  outputEl.innerHTML = "";
-  appendLine(`# ✅ New session "${name}" started`);
-  refreshPrompt();
-});
+    appendOutput('🤖 AI generating...');
+    try {
+      const plan = await window.api.generatePlan(command);
+      console.log('Received plan from AI:', plan);
 
-window.onload = () => {
-  refreshPrompt();
-  inputEl.focus();
-};
+      if (!Array.isArray(plan) || plan.length === 0) {
+        appendOutput('🤖 AI generated:\n❌ Invalid or empty plan');
+        return;
+      }
+
+      appendOutput('🤖 AI generated:\n' + plan.map(p => `> ${p.command}`).join('\n'));
+
+      const result = await window.api.runPlan();
+      appendOutput(result);
+    } catch (err) {
+      console.error('AI error:', err);
+      appendOutput(`🤖 AI error:\n❌ ${err.message}`);
+    }
+  }
+}
