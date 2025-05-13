@@ -1,8 +1,5 @@
 [
   {
     "command": "ls"
-  },
-  {
-    "command": "clear"
   }
 ]

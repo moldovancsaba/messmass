@@ -1,5 +1,10 @@
-{
-  "last_created_folder": "",
-  "last_executed_command": "",
-  "history": []
-}
+[
+  {
+    "description": "All AI-generated commands must be valid Bash syntax.",
+    "tags": [
+      "default",
+      "syntax"
+    ],
+    "createdAt": "2025-05-13T10:26:00.946619Z"
+  }
+]
