@@ -1,0 +1,17 @@
+{
+  "counters": [
+    {"id": "remote-images", "title": "Remote Images"},
+    {"id": "remote-fans", "title": "Remote Fans"},
+    {"id": "on-location-fan", "title": "On Location Fan"},
+    {"id": "hostess-images", "title": "Hostess Images"},
+    {"id": "female", "title": "Female"},
+    {"id": "male", "title": "Male"},
+    {"id": "under-16", "title": "Under 16"},
+    {"id": "16-to-40", "title": "16 to 40"},
+    {"id": "over-40", "title": "Over 40"},
+    {"id": "merched", "title": "Merched"},
+    {"id": "jersey", "title": "Jersey"},
+    {"id": "scarf-flags", "title": "Scarf + Flags"},
+    {"id": "baseball-cap", "title": "Baseball Cap"}
+  ]
+}

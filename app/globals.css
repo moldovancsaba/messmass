@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply bg-secondary-50 min-h-screen;
+  }
+
+  h1 {
+    @apply text-4xl font-bold mb-6;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold mb-4;
+  }
+
+  h3 {
+    @apply text-xl font-medium mb-3;
+  }
+}

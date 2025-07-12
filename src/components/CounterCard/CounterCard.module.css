@@ -1,0 +1,35 @@
+.card {
+  @apply bg-white rounded-xl shadow-md p-4 border border-secondary-200 transition-transform hover:scale-[1.02];
+  @apply w-full max-w-[400px] min-w-[250px]; /* Responsive width */
+  @apply mx-auto flex flex-col; /* Center cards and arrange content */
+  @apply min-h-[200px]; /* Minimum height for content */
+}
+
+.title {
+  @apply text-xl font-semibold text-secondary-900;
+  @apply text-center min-h-[48px] flex items-center justify-center;
+  @apply px-2 leading-tight;
+  @apply overflow-hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.counter {
+  @apply text-4xl font-bold text-center text-primary-600;
+  @apply min-h-[48px] py-2 flex items-center justify-center;
+}
+
+.controls {
+  @apply flex gap-4 justify-center mt-4;
+  @apply min-h-[60px];
+}
+
+.button {
+  @apply rounded-lg font-medium transition-colors;
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-700;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  @apply aspect-square min-w-[60px] text-2xl;
+  @apply flex items-center justify-center;
+}

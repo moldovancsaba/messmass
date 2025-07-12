@@ -1,129 +1,49 @@
-# Messmass – Terminal AI Assistant
+# Sports Counter
 
-**Version**: 1.0.0  
-**Status**: ✅ Stable  
-**License**: MIT
+A modern web application for tracking sports scores and statistics in real-time.
 
----
+## Version
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 
-## 🧠 Overview
+## Project Documentation
+- [Architecture Documentation](./ARCHITECTURE.md)
+- [Development Roadmap](./ROADMAP.md)
+- [Task List](./TASKLIST.md)
+- [Release Notes](./RELEASE_NOTES.md)
 
-**Messmass** is a developer-focused local terminal assistant powered by AI, combining interactive shell input, context-aware command interpretation, and automated execution. Built using **Electron**, it provides an intuitive terminal-like UI enhanced by AI interaction modes.
+## Quick Start
 
----
+### Prerequisites
+- Node.js 18.0.0 or later
+- npm 9.0.0 or later
 
-## 💡 Key Features
-
-- Real-time terminal interface
-- Human/AI command modes with toggle
-- Optional Auto AI execution
-- Session management (save/load/resume)
-- Full test coverage with Mocha
-- TDD + documentation enforced
-- Git-integrated development workflow
-
----
-
-## 🔧 Tech Stack
-
-- **Frontend**: Electron + HTML/CSS + Vanilla JS
-- **Backend**: Node.js
-- **AI Layer**: Local planner `generatePlan()` + `runPlan()` executors
-- **Testing**: Mocha + Chai
-- **Persistence**: Filesystem-based session JSONs
-
----
-
-## 🧪 Run Tests
-
+### Installation
+1. Clone the repository:
 ```bash
-npm test
+git clone [repository-url]
+cd sports-counter
 ```
 
-All test files are in `test/` and cover AI behaviour, shell command integration, UI renderer, and session management.
-
----
-
-## 🚀 Run the App
-
+2. Install dependencies:
 ```bash
-npm start
+npm install
 ```
 
-Electron will launch a terminal-style UI.  
-Use the sidebar to toggle between `HUMAN` and `AI` mode, enable/disable `AUTO AI`, create new sessions, or manually `Run` generated plans.
-
----
-
-## 🗂️ Project Structure
-
-```text
-messmass/
-├── src/
-│   ├── ai/
-│   │   ├── generatePlan.js
-│   │   └── runPlan.js
-│   └── session/
-│       └── sessionManager.js
-├── test/
-│   ├── ai-behaviour.test.js
-│   ├── basic.test.js
-│   ├── session.test.js
-│   ├── terminal-commands.test.js
-│   ├── terminal-pty.test.js
-│   └── ui-renderer.test.js
-├── testplan/
-│   └── *.testplan.md
-├── sessions/
-│   └── *.json
-├── index.html
-├── renderer.js
-├── main.js
-├── package.json
-└── README.md
+3. Start the development server:
+```bash
+npm run dev
 ```
 
----
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## 🧠 AI Modes
+## Technology Stack
+- Next.js with App Router
+- TypeScript
+- Tailwind CSS
+- ESLint
 
-| Mode        | Description                                                  |
-|-------------|--------------------------------------------------------------|
-| HUMAN       | Raw terminal shell. Direct shell command entry.              |
-| AI          | Interprets natural language and generates a bash plan.       |
-| AUTO AI ON  | AI plans are executed immediately without manual confirmation. |
-| AUTO AI OFF | AI shows suggested plan; user must confirm via 'Run'.        |
-
----
-
-## 💾 Sessions
-
-Session states are saved in `/sessions/` as `.json` files.  
-They can be restored automatically on app startup.
-
----
-
-## 🏁 Development Rules
-
-- ✅ TDD enforced
-- ✅ All tests must pass before merge
-- ✅ Git commits must include version or context
-- ✅ No hardcoded paths
-- ✅ All interactive UI features must be testable
-
----
-
-## 🏷️ Versioning
-
-Use semantic versioning.  
-Current: `v1.0.0` – "Stable AI and Terminal core features with test coverage"
-
----
-
-## 🧩 Contributing
-
-This project is maintained privately.  
-All contributors must follow internal coding and documentation standards.  
-Open to future expansion with GPT/Ollama plugin support.
-
----
+## Development Commands
+- `npm run dev` - Start development server
+- `npm run build` - Build production application
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
