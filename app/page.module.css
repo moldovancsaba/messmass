@@ -52,6 +52,72 @@
   margin: 0;
 }
 
+.eventInfo {
+  background: rgba(102, 126, 234, 0.08);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input {
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.totalCounter {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  min-width: 120px;
+}
+
+.totalLabel {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.totalValue {
+  display: block;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .statsGrid {
   display: flex;
   flex-direction: column;
@@ -120,11 +186,14 @@
 
 .actions {
   margin-top: 2rem;
-  text-align: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .resetButton {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -132,16 +201,54 @@
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
   font-weight: 600;
 }
 
 .resetButton:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
 }
 
-.resetButton:active {
+.exportButton {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
+  font-weight: 600;
+}
+
+.exportButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4);
+}
+
+.googleButton {
+  background: linear-gradient(135deg, #4285f4, #357ae8);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(66, 133, 244, 0.3);
+  font-weight: 600;
+}
+
+.googleButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(66, 133, 244, 0.4);
+}
+
+.resetButton:active,
+.exportButton:active,
+.googleButton:active {
   transform: translateY(-1px);
 }
 
@@ -155,6 +262,12 @@
     font-size: 2rem;
   }
   
+  .eventInfo {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+  
   .statsRow {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
@@ -165,6 +278,18 @@
   
   .statValue {
     font-size: 1.5rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .resetButton,
+  .exportButton,
+  .googleButton {
+    width: 100%;
+    max-width: 300px;
   }
 }
 
