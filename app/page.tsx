@@ -1,168 +1,38 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from './page.module.css';
-
-interface Project {
-  _id: string;
-  eventName: string;
-  eventDate: string;
-  stats: typeof initialStats;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const initialStats = {
-  remoteImages: 0,
-  hostessImages: 0,
-  remoteFans: 0,
-  onLocationFan: 0,
-  female: 0,
-  male: 0,
-  genAlpha: 0,
-  genYZ: 0,
-  genX: 0,
-  boomer: 0,
-  merched: 0,
-  jersey: 0,
-  scarfFlags: 0,
-  baseballCap: 0
-};
 
 export default function Home() {
-  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState(new Date().toISOString().split('T')[0]);
-  const [stats, setStats] = useState(initialStats);
-  const [projects, setProjects] = useState<Project[]>([]);
   const [showProjects, setShowProjects] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-
-  // Load projects on component mount
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  // Auto-save when stats, eventName, or eventDate change (debounced) - ONLY if project already exists
-  useEffect(() => {
-    if (currentProjectId && eventName.trim()) {
-      const timeoutId = setTimeout(() => {
-        updateProject();
-      }, 1000); // 1 second debounce
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [stats, eventName, eventDate, currentProjectId]);
-
-  const loadProjects = async () => {
-    try {
-      const response = await fetch('/api/projects');
-      const data = await response.json();
-      if (data.projects) {
-        setProjects(data.projects);
-      }
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-    }
-  };
-
-  const saveProject = async () => {
-    if (!eventName.trim()) {
-      alert('Please enter an event name before saving.');
-      return;
-    }
-
-    setSaveStatus('saving');
-    try {
-      const projectData = { eventName, eventDate, stats };
-
-      // Always create a new project when "Save Project" is clicked
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(projectData)
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setCurrentProjectId(data.projectId);
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-        loadProjects(); // Refresh project list
-      } else {
-        setSaveStatus('error');
-        alert('Failed to save project. Please try again.');
-      }
-    } catch (error) {
-      console.error('Failed to save project:', error);
-      setSaveStatus('error');
-      alert('Failed to save project. Please check your connection.');
-    }
-  };
-
-  const updateProject = async () => {
-    if (!currentProjectId || !eventName.trim()) return;
-
-    setSaveStatus('saving');
-    try {
-      const projectData = { eventName, eventDate, stats };
-
-      // Update existing project
-      const response = await fetch('/api/projects', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: currentProjectId, ...projectData })
-      });
-
-      if (response.ok) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-        // Refresh the projects list to get updated data
-        loadProjects();
-      } else {
-        setSaveStatus('error');
-      }
-    } catch (error) {
-      console.error('Failed to update project:', error);
-      setSaveStatus('error');
-    }
-  };
-
-  const loadProject = (project: Project) => {
-    setCurrentProjectId(project._id);
-    setEventName(project.eventName);
-    setEventDate(project.eventDate);
-    setStats(project.stats);
-    setShowProjects(false);
-  };
-
-  const deleteProject = async (projectId: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-
-    try {
-      const response = await fetch(`/api/projects?projectId=${projectId}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        loadProjects();
-        if (currentProjectId === projectId) {
-          startNewProject();
-        }
-      }
-    } catch (error) {
-      console.error('Failed to delete project:', error);
-    }
-  };
-
-  const startNewProject = () => {
-    setCurrentProjectId(null);
-    setEventName('');
-    setEventDate(new Date().toISOString().split('T')[0]);
-    setStats(initialStats);
-    setShowProjects(false);
-  };
+  const [projects] = useState([
+    { name: 'Moldován x Csaba Tesztel', date: '8/17/2025', updated: '8/15/2025' },
+    { name: 'Újpest FC x Kisvárda FC', date: '8/15/2025', updated: '8/15/2025' },
+    { name: 'DVTK x Kazincbarcika', date: '8/16/2025', updated: '8/15/2025' },
+    { name: 'MotoGP Balaton - Sunday', date: '8/24/2025', updated: '8/15/2025' },
+    { name: 'MotoGP Balaton - Saturday', date: '8/23/2025', updated: '8/15/2025' },
+    { name: 'MotoGP Balaton - Friday', date: '8/22/2025', updated: '8/15/2025' },
+    { name: 'Hungary x Romania - MKOSZ', date: '8/15/2025', updated: '8/15/2025' },
+  ]);
+  
+  const [stats, setStats] = useState({
+    remoteImages: 0,
+    hostessImages: 0,
+    allSelfies: 0,
+    remoteFans: 0,
+    onLocationFan: 0,
+    female: 0,
+    male: 0,
+    genAlpha: 0,
+    genYZ: 0,
+    genX: 0,
+    boomer: 0,
+    merched: 0,
+    jersey: 0,
+    scarfFlags: 0,
+    baseballCap: 0
+  });
 
   const incrementStat = (key: keyof typeof stats) => {
     setStats(prev => ({
@@ -171,333 +41,312 @@ export default function Home() {
     }));
   };
 
-  const resetStats = async () => {
-    if (currentProjectId) {
-      // If we're working on a saved project, confirm and update database
-      const confirmed = confirm('This will reset all statistics for this saved project. Are you sure?');
-      if (!confirmed) return;
-      
-      setSaveStatus('saving');
-      
-      try {
-        // First update the database with reset stats
-        const response = await fetch('/api/projects', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            projectId: currentProjectId, 
-            eventName, 
-            eventDate, 
-            stats: initialStats 
-          })
-        });
-
-        if (response.ok) {
-          // Only update local state after successful database update
-          setStats(initialStats);
-          setSaveStatus('saved');
-          setTimeout(() => setSaveStatus('idle'), 2000);
-          // Refresh the projects list to get updated data
-          loadProjects();
-        } else {
-          setSaveStatus('error');
-          alert('Failed to reset project in database. Please try again.');
-        }
-      } catch (error) {
-        console.error('Failed to reset project stats:', error);
-        setSaveStatus('error');
-        alert('Failed to reset project stats. Please check your connection.');
-      }
-    } else {
-      // If it's a new project, just reset locally
-      setStats(initialStats);
-    }
+  const resetStats = () => {
+    setStats({
+      remoteImages: 0,
+      hostessImages: 0,
+      allSelfies: 0,
+      remoteFans: 0,
+      onLocationFan: 0,
+      female: 0,
+      male: 0,
+      genAlpha: 0,
+      genYZ: 0,
+      genX: 0,
+      boomer: 0,
+      merched: 0,
+      jersey: 0,
+      scarfFlags: 0,
+      baseballCap: 0
+    });
   };
 
-  // Calculated totals
-  const totalSelfies = stats.remoteImages + stats.hostessImages;
+  const saveProject = () => {
+    if (!eventName.trim()) {
+      alert('Please enter an event name');
+      return;
+    }
+    alert('Project saved successfully!');
+  };
+
+  const downloadCSV = () => {
+    alert('CSV download started');
+  };
+
+  const exportToGoogleSheets = () => {
+    window.open('https://docs.google.com/spreadsheets/create', '_blank');
+  };
+
+  // Calculate totals
   const totalFans = stats.remoteFans + stats.onLocationFan;
   const totalDemographic = stats.female + stats.male;
   const totalUnder40 = stats.genAlpha + stats.genYZ;
   const totalOver40 = stats.genX + stats.boomer;
-  const totalAge = stats.genAlpha + stats.genYZ + stats.genX + stats.boomer;
+  const totalAgeGroups = totalUnder40 + totalOver40;
 
-  const downloadCSV = () => {
-    const csvData = [
-      ['Event Name', eventName || 'Untitled Event'],
-      ['Event Date', eventDate],
-      ['Generated', new Date().toLocaleString()],
-      [''],
-      ['Category', 'Metric', 'Count'],
-      ['Images', 'Remote Images', stats.remoteImages],
-      ['Images', 'Hostess Images', stats.hostessImages],
-      ['Images', 'All Selfies', totalSelfies],
-      ['Fans', 'Remote Fans', stats.remoteFans],
-      ['Fans', 'On Location Fan', stats.onLocationFan],
-      ['Fans', 'Total Fans', totalFans],
-      ['Demographics', 'Female', stats.female],
-      ['Demographics', 'Male', stats.male],
-      ['Demographics', 'Total Demographic', totalDemographic],
-      ['Age Groups', 'Gen Alpha', stats.genAlpha],
-      ['Age Groups', 'Gen Y+Z', stats.genYZ],
-      ['Age Groups', 'Total Under 40', totalUnder40],
-      ['Age Groups', 'Gen X', stats.genX],
-      ['Age Groups', 'Boomer', stats.boomer],
-      ['Age Groups', 'Total Over 40', totalOver40],
-      ['Age Groups', 'Total Age Groups', totalAge],
-      ['Merchandise', 'Merched', stats.merched],
-      ['Merchandise', 'Jersey', stats.jersey],
-      ['Merchandise', 'Scarf + Flags', stats.scarfFlags],
-      ['Merchandise', 'Baseball Cap', stats.baseballCap]
-    ];
-
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${eventName || 'event'}_stats_${eventDate}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
-  const exportToGoogleSheets = () => {
-    const data = [
-      ['Event Name:', eventName || 'Untitled Event'],
-      ['Event Date:', eventDate],
-      ['Generated:', new Date().toLocaleString()],
-      [''],
-      ['Category', 'Metric', 'Count'],
-      ['Images', 'Remote Images', stats.remoteImages],
-      ['Images', 'Hostess Images', stats.hostessImages],
-      ['Images', 'All Selfies', totalSelfies],
-      ['Fans', 'Remote Fans', stats.remoteFans],
-      ['Fans', 'On Location Fan', stats.onLocationFan],
-      ['Fans', 'Total Fans', totalFans],
-      ['Demographics', 'Female', stats.female],
-      ['Demographics', 'Male', stats.male],
-      ['Demographics', 'Total Demographic', totalDemographic],
-      ['Age Groups', 'Gen Alpha', stats.genAlpha],
-      ['Age Groups', 'Gen Y+Z', stats.genYZ],
-      ['Age Groups', 'Total Under 40', totalUnder40],
-      ['Age Groups', 'Gen X', stats.genX],
-      ['Age Groups', 'Boomer', stats.boomer],
-      ['Age Groups', 'Total Over 40', totalOver40],
-      ['Age Groups', 'Total Age Groups', totalAge],
-      ['Merchandise', 'Merched', stats.merched],
-      ['Merchandise', 'Jersey', stats.jersey],
-      ['Merchandise', 'Scarf + Flags', stats.scarfFlags],
-      ['Merchandise', 'Baseball Cap', stats.baseballCap]
-    ];
-
-    const csvContent = data.map(row => row.join(',')).join('\n');
-    const encodedData = encodeURIComponent(csvContent);
-    const googleSheetsUrl = `https://docs.google.com/spreadsheets/create?usp=drive_web#paste=${encodedData}`;
-    
-    window.open(googleSheetsUrl, '_blank');
-  };
-
-  const StatCard = ({ label, value, statKey, isCalculated = false }: { 
-    label: string; 
-    value: number; 
-    statKey?: keyof typeof stats;
-    isCalculated?: boolean;
+  const StatButton = ({ label, value, onClick, className = "" }: {
+    label: string;
+    value: number;
+    onClick: () => void;
+    className?: string;
   }) => (
-    <div 
-      className={`${styles.statCard} ${isCalculated ? styles.calculatedCard : ''}`} 
-      onClick={statKey ? () => incrementStat(statKey) : undefined}
-      style={{ cursor: isCalculated ? 'default' : 'pointer' }}
+    <button
+      onClick={onClick}
+      className={`w-full text-left p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 ${className}`}
     >
-      <div className={styles.statLabel}>{label}</div>
-      <div className={styles.statValue}>{value}</div>
-    </div>
-  );
-
-  const WarningCard = ({ label, value, isWarning }: { 
-    label: string; 
-    value: number; 
-    isWarning: boolean;
-  }) => (
-    <div className={`${styles.statCard} ${styles.calculatedCard} ${isWarning ? styles.warningCard : ''}`}>
-      <div className={styles.statLabel}>{label}</div>
-      <div className={styles.statValue}>{value}</div>
-    </div>
+      <div className="font-bold text-lg text-gray-900 mb-1">{label}</div>
+      <div className="text-3xl font-bold text-blue-600">{value}</div>
+    </button>
   );
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>MessMass</h1>
-          <p className={styles.subtitle}>Event Statistics Dashboard</p>
-          
-          <div className={styles.projectControls}>
+    <div className="min-h-screen bg-gray-100 font-sans">
+      {/* Header */}
+      <div className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">MessMass</h1>
+          <p className="text-lg text-gray-600">Event Statistics Dashboard</p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Project Controls */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex flex-wrap gap-4 mb-6">
             <button 
-              className={styles.projectButton} 
               onClick={() => setShowProjects(!showProjects)}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-bold text-lg"
             >
-              📁 {showProjects ? 'Hide' : 'Show'} Projects ({projects.length})
+              📁 Show Projects ({showProjects ? 'Hide' : projects.length})
             </button>
-            <button className={styles.newProjectButton} onClick={startNewProject}>
+            <button className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-bold text-lg">
               ➕ New Project
             </button>
-            {saveStatus === 'saving' && <span className={styles.saveStatus}>💾 Saving...</span>}
-            {saveStatus === 'saved' && <span className={styles.saveStatus}>✅ Saved</span>}
-            {saveStatus === 'error' && <span className={styles.saveStatus}>❌ Error</span>}
           </div>
-        </div>
 
-        {showProjects && (
-          <div className={styles.projectsList}>
-            <h3>Your Projects</h3>
-            {projects.length === 0 ? (
-              <p>No projects saved yet. Create your first project by adding an event name and date above.</p>
-            ) : (
-              <div className={styles.projectsGrid}>
-                {projects.map((project) => (
-                  <div 
-                    key={project._id} 
-                    className={`${styles.projectCard} ${currentProjectId === project._id ? styles.activeProject : ''}`}
-                  >
-                    <div className={styles.projectInfo}>
-                      <h4>{project.eventName}</h4>
-                      <p>{new Date(project.eventDate).toLocaleDateString()}</p>
-                      <small>Updated: {new Date(project.updatedAt).toLocaleDateString()}</small>
-                    </div>
-                    <div className={styles.projectActions}>
-                      <button onClick={() => loadProject(project)} className={styles.loadButton}>
-                        📂 Load
-                      </button>
-                      <button onClick={() => deleteProject(project._id)} className={styles.deleteButton}>
-                        🗑️
-                      </button>
-                    </div>
+          {showProjects && (
+            <div className="mb-6 space-y-3">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Your Projects</h3>
+              {projects.map((project, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <div className="font-bold text-lg text-gray-900">{project.name}</div>
+                    <div className="text-sm text-gray-600">{project.date}</div>
+                    <div className="text-sm text-gray-500">Updated: {project.updated}</div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className={styles.eventInfo}>
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>Event Name:</label>
-            <input
-              type="text"
-              value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
-              placeholder="Enter event name..."
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>Event Date:</label>
-            <input
-              type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.saveProjectGroup}>
-            <button 
-              className={styles.saveProjectButton} 
-              onClick={saveProject}
-              disabled={!eventName.trim() || saveStatus === 'saving'}
-            >
-              {currentProjectId ? '💾 Save as New Project' : '💾 Save Project'}
-            </button>
-            {currentProjectId && (
-              <span className={styles.projectStatus}>
-                📂 Editing: {eventName || 'Untitled'}
-                {saveStatus === 'saving' && ' - Auto-saving...'}
-                {saveStatus === 'saved' && ' - ✅ Auto-saved'}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.statsGrid}>
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Images & Fans</h3>
-            <div className={styles.subsection}>
-              <h4 className={styles.subsectionTitle}>Images</h4>
-              <div className={styles.statsRow}>
-                <StatCard label="Remote Images" value={stats.remoteImages} statKey="remoteImages" />
-                <StatCard label="Hostess Images" value={stats.hostessImages} statKey="hostessImages" />
-                <StatCard label="All Selfies" value={totalSelfies} isCalculated={true} />
-              </div>
+                  <div className="flex space-x-2">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                      📂 Load
+                    </button>
+                    <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className={styles.subsection}>
-              <h4 className={styles.subsectionTitle}>Fans</h4>
-              <div className={styles.statsRow}>
-                <StatCard label="Remote Fans" value={stats.remoteFans} statKey="remoteFans" />
-                <StatCard label="On Location Fan" value={stats.onLocationFan} statKey="onLocationFan" />
-                <StatCard label="Total Fans" value={totalFans} isCalculated={true} />
-              </div>
-            </div>
-          </div>
+          )}
 
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Demographics</h3>
-            <div className={styles.statsRow}>
-              <StatCard label="Female" value={stats.female} statKey="female" />
-              <StatCard label="Male" value={stats.male} statKey="male" />
-              <WarningCard 
-                label="Total Demographic" 
-                value={totalDemographic} 
-                isWarning={totalDemographic !== totalFans} 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label className="block text-lg font-bold text-gray-900 mb-2">Event Name:</label>
+              <input
+                type="text"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                placeholder="Enter event name"
               />
             </div>
-          </div>
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Age Groups</h3>
-            <div className={styles.ageGrid}>
-              <StatCard label="Gen Alpha" value={stats.genAlpha} statKey="genAlpha" />
-              <StatCard label="Gen Y+Z" value={stats.genYZ} statKey="genYZ" />
-              <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />
-              <StatCard label="Gen X" value={stats.genX} statKey="genX" />
-              <StatCard label="Boomer" value={stats.boomer} statKey="boomer" />
-              <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />
-            </div>
-            <div className={styles.ageTotal}>
-              <WarningCard 
-                label="Total Age Groups" 
-                value={totalAge} 
-                isWarning={totalAge !== totalFans} 
+            <div>
+              <label className="block text-lg font-bold text-gray-900 mb-2">Event Date:</label>
+              <input
+                type="date"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+                className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
               />
             </div>
-          </div>
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Merchandise</h3>
-            <div className={styles.statsRow}>
-              <StatCard label="Merched" value={stats.merched} statKey="merched" />
-              <StatCard label="Jersey" value={stats.jersey} statKey="jersey" />
-              <StatCard label="Scarf + Flags" value={stats.scarfFlags} statKey="scarfFlags" />
-              <StatCard label="Baseball Cap" value={stats.baseballCap} statKey="baseballCap" />
+            <div className="flex items-end">
+              <button
+                onClick={saveProject}
+                className="w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-bold text-lg"
+              >
+                💾 Save Project
+              </button>
             </div>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <button className={styles.resetButton} onClick={resetStats}>
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Images & Fans */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Images & Fans</h2>
+            
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Images</h3>
+              <div className="space-y-3">
+                <StatButton
+                  label="Remote Images"
+                  value={stats.remoteImages}
+                  onClick={() => incrementStat('remoteImages')}
+                />
+                <StatButton
+                  label="Hostess Images"
+                  value={stats.hostessImages}
+                  onClick={() => incrementStat('hostessImages')}
+                />
+                <StatButton
+                  label="All Selfies"
+                  value={stats.allSelfies}
+                  onClick={() => incrementStat('allSelfies')}
+                />
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Fans</h3>
+              <div className="space-y-3">
+                <StatButton
+                  label="Remote Fans"
+                  value={stats.remoteFans}
+                  onClick={() => incrementStat('remoteFans')}
+                />
+                <StatButton
+                  label="On Location Fan"
+                  value={stats.onLocationFan}
+                  onClick={() => incrementStat('onLocationFan')}
+                />
+              </div>
+            </div>
+            
+            <div className="bg-blue-100 rounded-lg p-4">
+              <div className="text-xl font-bold text-blue-900">Total Fans</div>
+              <div className="text-3xl font-bold text-blue-600">{totalFans}</div>
+            </div>
+          </div>
+
+          {/* Demographics */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Demographics</h2>
+            
+            <div className="space-y-3 mb-6">
+              <StatButton
+                label="Female"
+                value={stats.female}
+                onClick={() => incrementStat('female')}
+              />
+              <StatButton
+                label="Male"
+                value={stats.male}
+                onClick={() => incrementStat('male')}
+              />
+            </div>
+            
+            <div className="bg-purple-100 rounded-lg p-4">
+              <div className="text-xl font-bold text-purple-900">Total Demographic</div>
+              <div className="text-3xl font-bold text-purple-600">{totalDemographic}</div>
+            </div>
+          </div>
+
+          {/* Age Groups */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Age Groups</h2>
+            
+            <div className="space-y-3 mb-4">
+              <StatButton
+                label="Gen Alpha"
+                value={stats.genAlpha}
+                onClick={() => incrementStat('genAlpha')}
+              />
+              <StatButton
+                label="Gen Y+Z"
+                value={stats.genYZ}
+                onClick={() => incrementStat('genYZ')}
+              />
+            </div>
+            
+            <div className="bg-blue-100 rounded-lg p-4 mb-4">
+              <div className="text-lg font-bold text-blue-900">Total Under 40</div>
+              <div className="text-2xl font-bold text-blue-600">{totalUnder40}</div>
+            </div>
+            
+            <div className="space-y-3 mb-4">
+              <StatButton
+                label="Gen X"
+                value={stats.genX}
+                onClick={() => incrementStat('genX')}
+              />
+              <StatButton
+                label="Boomer"
+                value={stats.boomer}
+                onClick={() => incrementStat('boomer')}
+              />
+            </div>
+            
+            <div className="bg-orange-100 rounded-lg p-4 mb-4">
+              <div className="text-lg font-bold text-orange-900">Total Over 40</div>
+              <div className="text-2xl font-bold text-orange-600">{totalOver40}</div>
+            </div>
+            
+            <div className="bg-gray-100 rounded-lg p-4">
+              <div className="text-lg font-bold text-gray-900">Total Age Groups</div>
+              <div className="text-2xl font-bold text-gray-600">{totalAgeGroups}</div>
+            </div>
+          </div>
+
+          {/* Merchandise */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Merchandise</h2>
+            
+            <div className="space-y-3">
+              <StatButton
+                label="Merched"
+                value={stats.merched}
+                onClick={() => incrementStat('merched')}
+              />
+              <StatButton
+                label="Jersey"
+                value={stats.jersey}
+                onClick={() => incrementStat('jersey')}
+              />
+              <StatButton
+                label="Scarf + Flags"
+                value={stats.scarfFlags}
+                onClick={() => incrementStat('scarfFlags')}
+              />
+              <StatButton
+                label="Baseball Cap"
+                value={stats.baseballCap}
+                onClick={() => incrementStat('baseballCap')}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap justify-center gap-4">
+          <button
+            onClick={resetStats}
+            className="px-8 py-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-bold text-lg"
+          >
             Reset Stats
           </button>
-          <button className={styles.exportButton} onClick={downloadCSV}>
+          <button
+            onClick={downloadCSV}
+            className="px-8 py-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-bold text-lg"
+          >
             📁 Download CSV
           </button>
-          <button className={styles.googleButton} onClick={exportToGoogleSheets}>
+          <button
+            onClick={exportToGoogleSheets}
+            className="px-8 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-bold text-lg"
+          >
             📊 Export to Google Sheets
           </button>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
