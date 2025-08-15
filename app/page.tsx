@@ -118,6 +118,8 @@ export default function Home() {
       if (response.ok) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
+        // Refresh the projects list to get updated data
+        loadProjects();
       } else {
         setSaveStatus('error');
       }
@@ -175,10 +177,10 @@ export default function Home() {
       const confirmed = confirm('This will reset all statistics for this saved project. Are you sure?');
       if (!confirmed) return;
       
-      setStats(initialStats);
       setSaveStatus('saving');
       
       try {
+        // First update the database with reset stats
         const response = await fetch('/api/projects', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -191,14 +193,20 @@ export default function Home() {
         });
 
         if (response.ok) {
+          // Only update local state after successful database update
+          setStats(initialStats);
           setSaveStatus('saved');
           setTimeout(() => setSaveStatus('idle'), 2000);
+          // Refresh the projects list to get updated data
+          loadProjects();
         } else {
           setSaveStatus('error');
+          alert('Failed to reset project in database. Please try again.');
         }
       } catch (error) {
         console.error('Failed to reset project stats:', error);
         setSaveStatus('error');
+        alert('Failed to reset project stats. Please check your connection.');
       }
     } else {
       // If it's a new project, just reset locally
