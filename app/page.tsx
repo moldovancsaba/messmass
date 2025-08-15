@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './page.module.css';
 
 interface Project {
@@ -10,6 +10,11 @@ interface Project {
   stats: typeof initialStats;
   createdAt: string;
   updatedAt: string;
+}
+
+interface WebSocketMessage {
+  type: string;
+  [key: string]: any;
 }
 
 const initialStats = {
@@ -38,6 +43,182 @@ export default function Home() {
   const [showProjects, setShowProjects] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  
+  // Real-time collaboration state
+  const [isConnected, setIsConnected] = useState(false);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
+  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const connectionIdRef = useRef<string | null>(null);
+
+  // WebSocket connection management
+  const connectWebSocket = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      return; // Already connected
+    }
+
+    setConnectionStatus('connecting');
+    
+    try {
+      // Connect to WebSocket server
+      const wsUrl = process.env.NODE_ENV === 'production' 
+        ? 'wss://your-websocket-server.com' 
+        : 'ws://localhost:8080';
+      
+      wsRef.current = new WebSocket(wsUrl);
+
+      wsRef.current.onopen = () => {
+        console.log('🔗 WebSocket connected');
+        setConnectionStatus('connected');
+        setIsConnected(true);
+        
+        // Clear any pending reconnect
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+          reconnectTimeoutRef.current = null;
+        }
+      };
+
+      wsRef.current.onmessage = (event) => {
+        try {
+          const message: WebSocketMessage = JSON.parse(event.data);
+          handleWebSocketMessage(message);
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      };
+
+      wsRef.current.onclose = () => {
+        console.log('🔌 WebSocket disconnected');
+        setConnectionStatus('disconnected');
+        setIsConnected(false);
+        setActiveUsers(0);
+        connectionIdRef.current = null;
+        
+        // Attempt to reconnect after 3 seconds
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectWebSocket();
+        }, 3000);
+      };
+
+      wsRef.current.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+        setConnectionStatus('error');
+      };
+
+    } catch (error) {
+      console.error('Failed to create WebSocket connection:', error);
+      setConnectionStatus('error');
+    }
+  }, []);
+
+  // Handle WebSocket messages
+  const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
+    console.log('📨 Received:', message.type);
+
+    switch (message.type) {
+      case 'connection_established':
+        connectionIdRef.current = message.connectionId;
+        console.log('✅ Connection ID:', message.connectionId);
+        break;
+
+      case 'project_joined':
+        setActiveUsers(message.activeUsers);
+        if (message.projectState) {
+          // Sync with server state
+          setEventName(message.projectState.eventName || '');
+          setEventDate(message.projectState.eventDate || new Date().toISOString().split('T')[0]);
+          setStats(message.projectState.stats || initialStats);
+        }
+        break;
+
+      case 'user_joined':
+      case 'user_left':
+        setActiveUsers(message.activeUsers);
+        setLastUpdate(`User ${message.type.split('_')[1]} at ${new Date(message.timestamp).toLocaleTimeString()}`);
+        break;
+
+      case 'stat_updated':
+        if (message.updatedBy !== connectionIdRef.current) {
+          // Update from another user
+          setStats(prev => ({
+            ...prev,
+            [message.statKey]: message.newValue
+          }));
+          setLastUpdate(`${message.statKey} updated by another user`);
+        }
+        break;
+
+      case 'project_updated':
+        if (message.updatedBy !== connectionIdRef.current) {
+          // Update from another user
+          setEventName(message.eventName);
+          setEventDate(message.eventDate);
+          setStats(message.stats);
+          setLastUpdate(`Project updated by another user at ${new Date(message.timestamp).toLocaleTimeString()}`);
+        }
+        break;
+
+      case 'stats_reset':
+        if (message.resetBy !== connectionIdRef.current) {
+          // Reset from another user
+          setStats(message.stats);
+          setLastUpdate(`Stats reset by another user at ${new Date(message.timestamp).toLocaleTimeString()}`);
+        }
+        break;
+
+      case 'error':
+        console.error('WebSocket error:', message.message);
+        break;
+
+      default:
+        console.log('Unknown message type:', message.type);
+    }
+  }, []);
+
+  // Send WebSocket message
+  const sendWebSocketMessage = useCallback((message: WebSocketMessage) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(message));
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Join project room for real-time collaboration
+  const joinProjectRoom = useCallback((projectId: string, projectData?: any) => {
+    if (!sendWebSocketMessage({
+      type: 'join_project',
+      projectId,
+      projectData
+    })) {
+      console.warn('Failed to join project room - WebSocket not connected');
+    }
+  }, [sendWebSocketMessage]);
+
+  // Leave project room
+  const leaveProjectRoom = useCallback(() => {
+    sendWebSocketMessage({
+      type: 'leave_project'
+    });
+  }, [sendWebSocketMessage]);
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    connectWebSocket();
+    
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [connectWebSocket]);
 
   // Load projects on component mount
   useEffect(() => {
@@ -54,6 +235,19 @@ export default function Home() {
       return () => clearTimeout(timeoutId);
     }
   }, [stats, eventName, eventDate, currentProjectId]);
+
+  // Join project room when currentProjectId changes
+  useEffect(() => {
+    if (currentProjectId && isConnected) {
+      joinProjectRoom(currentProjectId, {
+        eventName,
+        eventDate,
+        stats
+      });
+    } else if (!currentProjectId && isConnected) {
+      leaveProjectRoom();
+    }
+  }, [currentProjectId, isConnected, joinProjectRoom, leaveProjectRoom]);
 
   const loadProjects = async () => {
     try {
@@ -90,6 +284,11 @@ export default function Home() {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
         loadProjects(); // Refresh project list
+        
+        // Join the new project room
+        if (isConnected) {
+          joinProjectRoom(data.projectId, projectData);
+        }
       } else {
         setSaveStatus('error');
         alert('Failed to save project. Please try again.');
@@ -118,6 +317,14 @@ export default function Home() {
       if (response.ok) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
+        
+        // Broadcast update to other users
+        sendWebSocketMessage({
+          type: 'project_update',
+          eventName,
+          eventDate,
+          stats
+        });
       } else {
         setSaveStatus('error');
       }
@@ -128,11 +335,18 @@ export default function Home() {
   };
 
   const loadProject = (project: Project) => {
+    // Leave current project room
+    if (currentProjectId && isConnected) {
+      leaveProjectRoom();
+    }
+    
     setCurrentProjectId(project._id);
     setEventName(project.eventName);
     setEventDate(project.eventDate);
     setStats(project.stats);
     setShowProjects(false);
+    
+    // Join new project room will be handled by useEffect
   };
 
   const deleteProject = async (projectId: string) => {
@@ -155,27 +369,46 @@ export default function Home() {
   };
 
   const startNewProject = () => {
+    if (currentProjectId && isConnected) {
+      leaveProjectRoom();
+    }
+    
     setCurrentProjectId(null);
     setEventName('');
     setEventDate(new Date().toISOString().split('T')[0]);
     setStats(initialStats);
     setShowProjects(false);
+    setActiveUsers(0);
   };
 
   const incrementStat = (key: keyof typeof stats) => {
+    const newValue = stats[key] + 1;
+    
+    // Optimistic update
     setStats(prev => ({
       ...prev,
-      [key]: prev[key] + 1
+      [key]: newValue
     }));
+
+    // Broadcast to other users
+    if (currentProjectId && isConnected) {
+      sendWebSocketMessage({
+        type: 'stat_increment',
+        statKey: key,
+        newValue
+      });
+    }
   };
 
   const resetStats = async () => {
+    const resetStatsData = { ...initialStats };
+    
     if (currentProjectId) {
       // If we're working on a saved project, confirm and update database
       const confirmed = confirm('This will reset all statistics for this saved project. Are you sure?');
       if (!confirmed) return;
       
-      setStats(initialStats);
+      setStats(resetStatsData);
       setSaveStatus('saving');
       
       try {
@@ -186,13 +419,19 @@ export default function Home() {
             projectId: currentProjectId, 
             eventName, 
             eventDate, 
-            stats: initialStats 
+            stats: resetStatsData 
           })
         });
 
         if (response.ok) {
           setSaveStatus('saved');
           setTimeout(() => setSaveStatus('idle'), 2000);
+          
+          // Broadcast reset to other users
+          sendWebSocketMessage({
+            type: 'reset_stats',
+            resetStats: resetStatsData
+          });
         } else {
           setSaveStatus('error');
         }
@@ -202,7 +441,7 @@ export default function Home() {
       }
     } else {
       // If it's a new project, just reset locally
-      setStats(initialStats);
+      setStats(resetStatsData);
     }
   };
 
@@ -321,12 +560,38 @@ export default function Home() {
     </div>
   );
 
+  // Connection status indicator
+  const ConnectionStatus = () => (
+    <div className={styles.connectionStatus}>
+      <div className={`${styles.statusIndicator} ${styles[connectionStatus]}`}>
+        {connectionStatus === 'connected' && '🟢'}
+        {connectionStatus === 'connecting' && '🟡'}
+        {connectionStatus === 'disconnected' && '🔴'}
+        {connectionStatus === 'error' && '❌'}
+      </div>
+      <span className={styles.statusText}>
+        {connectionStatus === 'connected' && `Connected (${activeUsers} user${activeUsers !== 1 ? 's' : ''})`}
+        {connectionStatus === 'connecting' && 'Connecting...'}
+        {connectionStatus === 'disconnected' && 'Offline'}
+        {connectionStatus === 'error' && 'Connection Error'}
+      </span>
+    </div>
+  );
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className={styles.title}>MessMass</h1>
           <p className={styles.subtitle}>Event Statistics Dashboard</p>
+          
+          {/* Real-time collaboration status */}
+          <ConnectionStatus />
+          {lastUpdate && (
+            <div className={styles.lastUpdate}>
+              📡 {lastUpdate}
+            </div>
+          )}
           
           <div className={styles.projectControls}>
             <button 
@@ -483,7 +748,7 @@ export default function Home() {
             Reset Stats
           </button>
           <button className={styles.exportButton} onClick={downloadCSV}>
-            📁 Download CSV
+            📄 Download CSV
           </button>
           <button className={styles.googleButton} onClick={exportToGoogleSheets}>
             📊 Export to Google Sheets
