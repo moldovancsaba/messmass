@@ -169,8 +169,41 @@ export default function Home() {
     }));
   };
 
-  const resetStats = () => {
-    setStats(initialStats);
+  const resetStats = async () => {
+    if (currentProjectId) {
+      // If we're working on a saved project, confirm and update database
+      const confirmed = confirm('This will reset all statistics for this saved project. Are you sure?');
+      if (!confirmed) return;
+      
+      setStats(initialStats);
+      setSaveStatus('saving');
+      
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            projectId: currentProjectId, 
+            eventName, 
+            eventDate, 
+            stats: initialStats 
+          })
+        });
+
+        if (response.ok) {
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } else {
+          setSaveStatus('error');
+        }
+      } catch (error) {
+        console.error('Failed to reset project stats:', error);
+        setSaveStatus('error');
+      }
+    } else {
+      // If it's a new project, just reset locally
+      setStats(initialStats);
+    }
   };
 
   // Calculated totals
