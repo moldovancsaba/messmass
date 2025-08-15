@@ -1,27 +1,151 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
+interface Project {
+  _id: string;
+  eventName: string;
+  eventDate: string;
+  stats: typeof initialStats;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const initialStats = {
+  remoteImages: 0,
+  hostessImages: 0,
+  remoteFans: 0,
+  onLocationFan: 0,
+  female: 0,
+  male: 0,
+  genAlpha: 0,
+  genYZ: 0,
+  genX: 0,
+  boomer: 0,
+  merched: 0,
+  jersey: 0,
+  scarfFlags: 0,
+  baseballCap: 0
+};
+
 export default function Home() {
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState(new Date().toISOString().split('T')[0]);
-  const [stats, setStats] = useState({
-    remoteImages: 0,
-    hostessImages: 0,
-    remoteFans: 0,
-    onLocationFan: 0,
-    female: 0,
-    male: 0,
-    genAlpha: 0,
-    genYZ: 0,
-    genX: 0,
-    boomer: 0,
-    merched: 0,
-    jersey: 0,
-    scarfFlags: 0,
-    baseballCap: 0
-  });
+  const [stats, setStats] = useState(initialStats);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [showProjects, setShowProjects] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  // Load projects on component mount
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  // Auto-save when stats, eventName, or eventDate change (debounced)
+  useEffect(() => {
+    if (currentProjectId && (eventName || eventDate)) {
+      const timeoutId = setTimeout(() => {
+        saveProject();
+      }, 1000); // 1 second debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [stats, eventName, eventDate, currentProjectId]);
+
+  const loadProjects = async () => {
+    try {
+      const response = await fetch('/api/projects');
+      const data = await response.json();
+      if (data.projects) {
+        setProjects(data.projects);
+      }
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+    }
+  };
+
+  const saveProject = async () => {
+    if (!eventName.trim()) return;
+
+    setSaveStatus('saving');
+    try {
+      const projectData = { eventName, eventDate, stats };
+
+      if (currentProjectId) {
+        // Update existing project
+        const response = await fetch('/api/projects', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: currentProjectId, ...projectData })
+        });
+
+        if (response.ok) {
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } else {
+          setSaveStatus('error');
+        }
+      } else {
+        // Create new project
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          setCurrentProjectId(data.projectId);
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+          loadProjects(); // Refresh project list
+        } else {
+          setSaveStatus('error');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save project:', error);
+      setSaveStatus('error');
+    }
+  };
+
+  const loadProject = (project: Project) => {
+    setCurrentProjectId(project._id);
+    setEventName(project.eventName);
+    setEventDate(project.eventDate);
+    setStats(project.stats);
+    setShowProjects(false);
+  };
+
+  const deleteProject = async (projectId: string) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+
+    try {
+      const response = await fetch(`/api/projects?projectId=${projectId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        loadProjects();
+        if (currentProjectId === projectId) {
+          startNewProject();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+    }
+  };
+
+  const startNewProject = () => {
+    setCurrentProjectId(null);
+    setEventName('');
+    setEventDate(new Date().toISOString().split('T')[0]);
+    setStats(initialStats);
+    setShowProjects(false);
+  };
 
   const incrementStat = (key: keyof typeof stats) => {
     setStats(prev => ({
@@ -31,22 +155,7 @@ export default function Home() {
   };
 
   const resetStats = () => {
-    setStats({
-      remoteImages: 0,
-      hostessImages: 0,
-      remoteFans: 0,
-      onLocationFan: 0,
-      female: 0,
-      male: 0,
-      genAlpha: 0,
-      genYZ: 0,
-      genX: 0,
-      boomer: 0,
-      merched: 0,
-      jersey: 0,
-      scarfFlags: 0,
-      baseballCap: 0
-    });
+    setStats(initialStats);
   };
 
   // Calculated totals
@@ -170,7 +279,54 @@ export default function Home() {
         <div className={styles.header}>
           <h1 className={styles.title}>MessMass</h1>
           <p className={styles.subtitle}>Event Statistics Dashboard</p>
+          
+          <div className={styles.projectControls}>
+            <button 
+              className={styles.projectButton} 
+              onClick={() => setShowProjects(!showProjects)}
+            >
+              📁 {showProjects ? 'Hide' : 'Show'} Projects ({projects.length})
+            </button>
+            <button className={styles.newProjectButton} onClick={startNewProject}>
+              ➕ New Project
+            </button>
+            {saveStatus === 'saving' && <span className={styles.saveStatus}>💾 Saving...</span>}
+            {saveStatus === 'saved' && <span className={styles.saveStatus}>✅ Saved</span>}
+            {saveStatus === 'error' && <span className={styles.saveStatus}>❌ Error</span>}
+          </div>
         </div>
+
+        {showProjects && (
+          <div className={styles.projectsList}>
+            <h3>Your Projects</h3>
+            {projects.length === 0 ? (
+              <p>No projects saved yet. Create your first project by adding an event name and date above.</p>
+            ) : (
+              <div className={styles.projectsGrid}>
+                {projects.map((project) => (
+                  <div 
+                    key={project._id} 
+                    className={`${styles.projectCard} ${currentProjectId === project._id ? styles.activeProject : ''}`}
+                  >
+                    <div className={styles.projectInfo}>
+                      <h4>{project.eventName}</h4>
+                      <p>{new Date(project.eventDate).toLocaleDateString()}</p>
+                      <small>Updated: {new Date(project.updatedAt).toLocaleDateString()}</small>
+                    </div>
+                    <div className={styles.projectActions}>
+                      <button onClick={() => loadProject(project)} className={styles.loadButton}>
+                        📂 Load
+                      </button>
+                      <button onClick={() => deleteProject(project._id)} className={styles.deleteButton}>
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className={styles.eventInfo}>
           <div className={styles.inputGroup}>

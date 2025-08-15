@@ -280,71 +280,174 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-  
-  .title {
-    font-size: 2rem;
-  }
-  
-  .eventInfo {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .statsRow {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
-  
-  .ageGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  
-  .statCard {
-    padding: 1rem 0.5rem;
-  }
-  
-  .statValue {
-    font-size: 1.5rem;
-  }
-  
-  .actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .resetButton,
-  .exportButton,
-  .googleButton {
-    width: 100%;
-    max-width: 300px;
-  }
+.projectControls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
-@media (max-width: 480px) {
-  .statsRow {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .ageGrid {
-    grid-template-columns: 1fr;
+.projectButton,
+.newProjectButton {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  font-weight: 600;
+}
+
+.newProjectButton {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.projectButton:hover,
+.newProjectButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.newProjectButton:hover {
+  box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+}
+
+.saveStatus {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.projectsList {
+  background: rgba(102, 126, 234, 0.05);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.projectsList h3 {
+  color: #333;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.projectCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+.activeProject {
+  border-color: #667eea !important;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.projectInfo {
+  flex: 1;
+}
+
+.projectInfo h4 {
+  color: #333;
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.projectInfo p {
+  color: #666;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.projectInfo small {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.projectActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loadButton,
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.loadButton {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.deleteButton {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.loadButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.deleteButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 768px) {
+  .projectControls {
+    flex-direction: column;
     gap: 0.75rem;
   }
   
-  .statCard {
-    padding: 1rem;
+  .projectsGrid {
+    grid-template-columns: 1fr;
   }
   
-  .section {
-    padding: 1rem;
+  .projectCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
   
-  .subsection {
-    margin-bottom: 1rem;
+  .projectActions {
+    justify-content: center;
   }
 }.main {
   min-height: 100vh;
