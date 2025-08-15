@@ -44,11 +44,11 @@ export default function Home() {
     loadProjects();
   }, []);
 
-  // Auto-save when stats, eventName, or eventDate change (debounced)
+  // Auto-save when stats, eventName, or eventDate change (debounced) - ONLY if project already exists
   useEffect(() => {
-    if (currentProjectId && (eventName || eventDate)) {
+    if (currentProjectId && eventName.trim()) {
       const timeoutId = setTimeout(() => {
-        saveProject();
+        updateProject();
       }, 1000); // 1 second debounce
 
       return () => clearTimeout(timeoutId);
@@ -68,46 +68,61 @@ export default function Home() {
   };
 
   const saveProject = async () => {
-    if (!eventName.trim()) return;
+    if (!eventName.trim()) {
+      alert('Please enter an event name before saving.');
+      return;
+    }
 
     setSaveStatus('saving');
     try {
       const projectData = { eventName, eventDate, stats };
 
-      if (currentProjectId) {
-        // Update existing project
-        const response = await fetch('/api/projects', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ projectId: currentProjectId, ...projectData })
-        });
+      // Always create a new project when "Save Project" is clicked
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData)
+      });
 
-        if (response.ok) {
-          setSaveStatus('saved');
-          setTimeout(() => setSaveStatus('idle'), 2000);
-        } else {
-          setSaveStatus('error');
-        }
+      const data = await response.json();
+      if (data.success) {
+        setCurrentProjectId(data.projectId);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+        loadProjects(); // Refresh project list
       } else {
-        // Create new project
-        const response = await fetch('/api/projects', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(projectData)
-        });
-
-        const data = await response.json();
-        if (data.success) {
-          setCurrentProjectId(data.projectId);
-          setSaveStatus('saved');
-          setTimeout(() => setSaveStatus('idle'), 2000);
-          loadProjects(); // Refresh project list
-        } else {
-          setSaveStatus('error');
-        }
+        setSaveStatus('error');
+        alert('Failed to save project. Please try again.');
       }
     } catch (error) {
       console.error('Failed to save project:', error);
+      setSaveStatus('error');
+      alert('Failed to save project. Please check your connection.');
+    }
+  };
+
+  const updateProject = async () => {
+    if (!currentProjectId || !eventName.trim()) return;
+
+    setSaveStatus('saving');
+    try {
+      const projectData = { eventName, eventDate, stats };
+
+      // Update existing project
+      const response = await fetch('/api/projects', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: currentProjectId, ...projectData })
+      });
+
+      if (response.ok) {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } else {
+        setSaveStatus('error');
+      }
+    } catch (error) {
+      console.error('Failed to update project:', error);
       setSaveStatus('error');
     }
   };
@@ -347,6 +362,22 @@ export default function Home() {
               onChange={(e) => setEventDate(e.target.value)}
               className={styles.input}
             />
+          </div>
+          <div className={styles.saveProjectGroup}>
+            <button 
+              className={styles.saveProjectButton} 
+              onClick={saveProject}
+              disabled={!eventName.trim() || saveStatus === 'saving'}
+            >
+              {currentProjectId ? '💾 Save as New Project' : '💾 Save Project'}
+            </button>
+            {currentProjectId && (
+              <span className={styles.projectStatus}>
+                📂 Editing: {eventName || 'Untitled'}
+                {saveStatus === 'saving' && ' - Auto-saving...'}
+                {saveStatus === 'saved' && ' - ✅ Auto-saved'}
+              </span>
+            )}
           </div>
         </div>
 
