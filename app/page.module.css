@@ -228,6 +228,16 @@
   text-align: center;
 }
 
+.warningTitle {
+  color: #ff6b6b !important;
+  animation: warningPulse 2s infinite;
+}
+
+@keyframes warningPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .subsection {
   margin-bottom: 1.5rem;
 }
@@ -264,6 +274,13 @@
   justify-content: center;
 }
 
+.statCardContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .statCard {
   background: white;
   padding: 1.5rem 1rem;
@@ -275,6 +292,38 @@
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
+}
+
+.decrementButton {
+  height: 24px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+  min-width: 40px;
+  align-self: center;
+}
+
+.decrementButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  background: linear-gradient(135deg, #ff5252, #e53935);
+}
+
+.decrementButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.decrementButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.1);
 }
 
 .statCard:hover {
@@ -716,4 +765,3 @@
     transform: translateY(-3px);
   }
 }
-  

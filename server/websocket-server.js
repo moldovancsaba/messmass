@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
-const PORT = process.env.WS_PORT || 8080;
+const PORT = process.env.WS_PORT || 7654; // Changed to match your .env.local
 
 // WebSocket server for real-time collaboration
 const wss = new WebSocket.Server({ 
@@ -14,9 +14,6 @@ const connections = new Map();
 
 // Store room-based sessions (projectId -> Set of connectionIds)
 const projectRooms = new Map();
-
-// Store current project states for synchronization
-const projectStates = new Map();
 
 console.log(`🚀 WebSocket server started on port ${PORT}`);
 
@@ -77,7 +74,7 @@ function handleMessage(connectionId, message) {
 
   switch (message.type) {
     case 'join_project':
-      joinProject(connectionId, message.projectId, message.projectData);
+      joinProject(connectionId, message.projectId);
       break;
     
     case 'leave_project':
@@ -106,7 +103,7 @@ function handleMessage(connectionId, message) {
   }
 }
 
-function joinProject(connectionId, projectId, projectData = null) {
+function joinProject(connectionId, projectId) {
   const user = connections.get(connectionId);
   if (!user) return;
 
@@ -124,26 +121,12 @@ function joinProject(connectionId, projectId, projectData = null) {
   
   projectRooms.get(projectId).add(connectionId);
 
-  // Initialize or update project state
-  if (projectData && !projectStates.has(projectId)) {
-    projectStates.set(projectId, {
-      ...projectData,
-      lastUpdated: new Date().toISOString(),
-      activeUsers: 1
-    });
-  } else if (projectStates.has(projectId)) {
-    const state = projectStates.get(projectId);
-    state.activeUsers = projectRooms.get(projectId).size;
-  }
-
   console.log(`🏠 User ${connectionId} joined project ${projectId}`);
 
-  // Send current project state to the user
-  const currentState = projectStates.get(projectId);
+  // Send confirmation with active user count (NO project state override)
   user.ws.send(JSON.stringify({
     type: 'project_joined',
     projectId,
-    projectState: currentState,
     activeUsers: projectRooms.get(projectId).size
   }));
 
@@ -164,17 +147,10 @@ function leaveProject(connectionId, projectId) {
   
   if (projectRooms.has(projectId)) {
     projectRooms.get(projectId).delete(connectionId);
-    
-    // Update active users count
-    if (projectStates.has(projectId)) {
-      const state = projectStates.get(projectId);
-      state.activeUsers = projectRooms.get(projectId).size;
-    }
 
     // Clean up empty rooms
     if (projectRooms.get(projectId).size === 0) {
       projectRooms.delete(projectId);
-      projectStates.delete(projectId);
       console.log(`🗑️ Cleaned up empty project room: ${projectId}`);
     } else {
       // Notify remaining users
@@ -197,26 +173,17 @@ function handleStatIncrement(connectionId, message) {
   const { statKey, newValue } = message;
   const projectId = user.currentProject;
 
-  // Update project state
-  if (projectStates.has(projectId)) {
-    const state = projectStates.get(projectId);
-    if (state.stats && typeof state.stats[statKey] === 'number') {
-      state.stats[statKey] = newValue;
-      state.lastUpdated = new Date().toISOString();
+  // Simply broadcast to all users in the project
+  broadcastToProject(projectId, {
+    type: 'stat_updated',
+    projectId,
+    statKey,
+    newValue,
+    updatedBy: connectionId,
+    timestamp: new Date().toISOString()
+  });
 
-      // Broadcast to all users in the project
-      broadcastToProject(projectId, {
-        type: 'stat_updated',
-        projectId,
-        statKey,
-        newValue,
-        updatedBy: connectionId,
-        timestamp: state.lastUpdated
-      });
-
-      console.log(`📊 Stat updated: ${statKey} = ${newValue} in project ${projectId}`);
-    }
-  }
+  console.log(`📊 Stat broadcasted: ${statKey} = ${newValue} in project ${projectId}`);
 }
 
 function handleProjectUpdate(connectionId, message) {
@@ -226,27 +193,18 @@ function handleProjectUpdate(connectionId, message) {
   const { eventName, eventDate, stats } = message;
   const projectId = user.currentProject;
 
-  // Update project state
-  if (projectStates.has(projectId)) {
-    const state = projectStates.get(projectId);
-    state.eventName = eventName;
-    state.eventDate = eventDate;
-    state.stats = stats;
-    state.lastUpdated = new Date().toISOString();
+  // Broadcast to all users in the project except sender
+  broadcastToProject(projectId, {
+    type: 'project_updated',
+    projectId,
+    eventName,
+    eventDate,
+    stats,
+    updatedBy: connectionId,
+    timestamp: new Date().toISOString()
+  }, connectionId);
 
-    // Broadcast to all users in the project except sender
-    broadcastToProject(projectId, {
-      type: 'project_updated',
-      projectId,
-      eventName,
-      eventDate,
-      stats,
-      updatedBy: connectionId,
-      timestamp: state.lastUpdated
-    }, connectionId);
-
-    console.log(`📝 Project updated: ${eventName} in project ${projectId}`);
-  }
+  console.log(`📝 Project update broadcasted: ${eventName} in project ${projectId}`);
 }
 
 function handleStatsReset(connectionId, message) {
@@ -256,23 +214,16 @@ function handleStatsReset(connectionId, message) {
   const { resetStats } = message;
   const projectId = user.currentProject;
 
-  // Update project state
-  if (projectStates.has(projectId)) {
-    const state = projectStates.get(projectId);
-    state.stats = resetStats;
-    state.lastUpdated = new Date().toISOString();
+  // Broadcast to all users in the project
+  broadcastToProject(projectId, {
+    type: 'stats_reset',
+    projectId,
+    stats: resetStats,
+    resetBy: connectionId,
+    timestamp: new Date().toISOString()
+  });
 
-    // Broadcast to all users in the project
-    broadcastToProject(projectId, {
-      type: 'stats_reset',
-      projectId,
-      stats: resetStats,
-      resetBy: connectionId,
-      timestamp: state.lastUpdated
-    });
-
-    console.log(`🔄 Stats reset in project ${projectId}`);
-  }
+  console.log(`🔄 Stats reset broadcasted in project ${projectId}`);
 }
 
 function broadcastToProject(projectId, message, excludeConnectionId = null) {
