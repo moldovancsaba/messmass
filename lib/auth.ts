@@ -1,4 +1,4 @@
-// lib/auth.ts - Create this new file for authentication utilities
+// lib/auth.ts - Fixed for Next.js 15
 import { cookies } from 'next/headers'
 
 export interface AdminUser {
@@ -19,7 +19,7 @@ const DEV_ADMIN_USER: AdminUser = {
 }
 
 export async function getAdminUser(): Promise<AdminUser | null> {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin-session')
   
   if (!adminSession) {
@@ -67,15 +67,15 @@ export async function hasPermission(permission: string): Promise<boolean> {
   return user?.permissions.includes(permission) || user?.role === 'super-admin' || false
 }
 
-export function logoutAdmin() {
+export async function logoutAdmin() {
   // Clear admin session
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   cookieStore.delete('admin-session')
   
   // In production, also notify SSO
   if (process.env.NODE_ENV === 'production') {
     // This would be called client-side to redirect to SSO logout
-    return `https://sso.doneisbetter.com/logout?app=messmass&return_url=${encodeURIComponent(window.location.origin)}`
+    return `https://sso.doneisbetter.com/logout?app=messmass&return_url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`
   }
   
   return '/admin'
