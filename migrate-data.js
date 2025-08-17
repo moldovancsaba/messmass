@@ -1,10 +1,39 @@
-// migrate-data.js - Create this file to fix the database field mismatch
+// migrate-success-manager.js - Add Success Manager fields to database
 const { MongoClient } = require('mongodb');
 
-// Use the same MongoDB URI from your .env.local
 const MONGODB_URI = 'mongodb+srv://moldovancsaba:j8HxxytTjrtJXskz@messmass-cluster.r96vlxs.mongodb.net/messmass?retryWrites=true&w=majority&appName=messmass-cluster';
 
-async function migrateData() {
+const successManagerFields = {
+  // Image Management
+  approvedImages: 0,
+  rejectedImages: 0,
+  
+  // Visit Tracking  
+  visitQrCode: 0,
+  visitShortUrl: 0,
+  visitQrSearched: 0,
+  visitWeb: 0,
+  
+  // Social Media Visits
+  visitFacebook: 0,
+  visitInstagram: 0,
+  visitYoutube: 0,
+  visitTiktok: 0,
+  visitX: 0,
+  visitTrustpilot: 0,
+  
+  // Event Performance
+  eventAttendees: 0,
+  eventTicketPurchases: 0,
+  eventResultHome: 0,
+  eventResultVisitor: 0,
+  
+  // Value Proposition
+  eventValuePropositionVisited: 0,
+  eventValuePropositionPurchases: 0
+};
+
+async function migrateSuccessManagerFields() {
   const client = new MongoClient(MONGODB_URI);
   
   try {
@@ -14,7 +43,7 @@ async function migrateData() {
     const db = client.db('messmass');
     const collection = db.collection('projects');
     
-    // First, let's see what we have
+    // Check current projects
     console.log('\n📊 Current projects in database:');
     const allProjects = await collection.find({}).toArray();
     console.log(`Found ${allProjects.length} projects`);
@@ -24,102 +53,67 @@ async function migrateData() {
       return;
     }
     
-    // Show the structure of the first project
-    console.log('\n🔍 Sample project structure:');
-    console.log(JSON.stringify(allProjects[0], null, 2));
-    
     // Check if migration is needed
     const needsMigration = allProjects.some(project => 
-      project.remoteFans !== undefined || 
-      project.onLocationFan !== undefined || 
-      project.scarfFlags !== undefined
+      project.stats && project.stats.approvedImages === undefined
     );
     
     if (!needsMigration) {
-      console.log('✅ Database is already using new field structure');
+      console.log('✅ Success Manager fields already exist in database');
       return;
     }
     
-    console.log('\n🚀 Starting migration...');
+    console.log('\n🚀 Starting Success Manager fields migration...');
     
     // Migrate each project
     for (const project of allProjects) {
-      const updates = {};
-      let hasUpdates = false;
-      
-      // Map old field names to new ones
-      if (project.remoteFans !== undefined) {
-        updates.indoor = project.remoteFans;
-        hasUpdates = true;
-      }
-      
-      if (project.onLocationFan !== undefined) {
-        updates.outdoor = project.onLocationFan;
-        hasUpdates = true;
-      }
-      
-      if (project.scarfFlags !== undefined) {
-        updates.scarf = project.scarfFlags;
-        hasUpdates = true;
-      }
-      
-      // Add missing fields with default values
-      if (project.stadium === undefined) {
-        updates.stadium = 0;
-        hasUpdates = true;
-      }
-      
-      if (project.selfies === undefined) {
-        updates.selfies = 0;
-        hasUpdates = true;
-      }
-      
-      if (project.flags === undefined) {
-        updates.flags = 0;
-        hasUpdates = true;
-      }
-      
-      if (project.other === undefined) {
-        updates.other = 0;
-        hasUpdates = true;
-      }
-      
-      if (hasUpdates) {
+      if (project.stats) {
+        // Add Success Manager fields to existing stats
+        const updatedStats = {
+          ...project.stats,
+          ...successManagerFields
+        };
+        
         await collection.updateOne(
           { _id: project._id },
-          { 
-            $set: updates,
-            $unset: {
-              remoteFans: "",
-              onLocationFan: "",
-              scarfFlags: ""
-            }
-          }
+          { $set: { stats: updatedStats } }
         );
         
-        console.log(`✅ Migrated project: ${project.eventName}`);
+        console.log(`✅ Added Success Manager fields to: ${project.eventName}`);
+      } else {
+        // Create stats object with Success Manager fields
+        await collection.updateOne(
+          { _id: project._id },
+          { $set: { stats: successManagerFields } }
+        );
+        
+        console.log(`✅ Created stats with Success Manager fields for: ${project.eventName}`);
       }
     }
     
-    console.log('\n🎉 Migration completed!');
+    console.log('\n🎉 Success Manager migration completed!');
     
     // Verify migration
     console.log('\n🔍 Verifying migration...');
     const migratedProjects = await collection.find({}).toArray();
-    const sampleMigrated = migratedProjects[0];
+    const sampleProject = migratedProjects[0];
     
-    console.log('Sample migrated project:');
-    console.log(JSON.stringify(sampleMigrated, null, 2));
-    
-    // Calculate totals to verify
-    if (sampleMigrated) {
-      const totalImages = (sampleMigrated.indoor || 0) + (sampleMigrated.outdoor || 0) + (sampleMigrated.selfies || 0);
-      const totalFans = (sampleMigrated.indoor || 0) + (sampleMigrated.outdoor || 0) + (sampleMigrated.stadium || 0);
-      const totalMerch = (sampleMigrated.merched || 0) + (sampleMigrated.jersey || 0) + (sampleMigrated.scarf || 0) + 
-                        (sampleMigrated.flags || 0) + (sampleMigrated.baseballCap || 0) + (sampleMigrated.other || 0);
+    if (sampleProject && sampleProject.stats) {
+      console.log('\nSample project stats structure:');
+      console.log('Success Manager fields:');
+      Object.keys(successManagerFields).forEach(field => {
+        console.log(`  ${field}: ${sampleProject.stats[field] !== undefined ? '✅' : '❌'}`);
+      });
       
-      console.log(`\n📈 Sample totals after migration:`);
-      console.log(`Images: ${totalImages}, Fans: ${totalFans}, Merch: ${totalMerch}`);
+      // Show sample of new structure
+      console.log('\nSample Success Manager data:');
+      console.log({
+        approvedImages: sampleProject.stats.approvedImages || 0,
+        rejectedImages: sampleProject.stats.rejectedImages || 0,
+        visitQrCode: sampleProject.stats.visitQrCode || 0,
+        eventAttendees: sampleProject.stats.eventAttendees || 0,
+        eventTicketPurchases: sampleProject.stats.eventTicketPurchases || 0
+      });
     }
     
   } catch (error) {
@@ -131,4 +125,4 @@ async function migrateData() {
 }
 
 // Run migration
-migrateData().catch(console.error);
+migrateSuccessManagerFields().catch(console.error);

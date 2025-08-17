@@ -1,4 +1,4 @@
-// components/AdminDashboard.tsx - Simplified version using CSS classes
+// components/AdminDashboard.tsx - Enhanced with Success Manager and sorting
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -25,20 +25,64 @@ interface AdminDashboardProps {
   }
 }
 
+type SortField = 'date' | 'name'
+type SortOrder = 'asc' | 'desc'
+
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
   const [projects, setProjects] = useState<Project[]>([])
+  const [sortedProjects, setSortedProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [sortField, setSortField] = useState<SortField>('date')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalEvents: 0,
     totalUsers: 0,
-    activeProjects: 0
+    activeProjects: 0,
+    totalApprovedImages: 0,
+    totalEventAttendees: 0,
+    totalTicketPurchases: 0,
+    totalWebVisits: 0
   })
 
   useEffect(() => {
     fetchProjects()
   }, [])
+
+  useEffect(() => {
+    sortProjects()
+  }, [projects, sortField, sortOrder])
+
+  const sortProjects = () => {
+    const sorted = [...projects].sort((a, b) => {
+      let aValue: string | Date
+      let bValue: string | Date
+
+      if (sortField === 'date') {
+        aValue = new Date(a.eventDate)
+        bValue = new Date(b.eventDate)
+      } else {
+        aValue = a.eventName.toLowerCase()
+        bValue = b.eventName.toLowerCase()
+      }
+
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1
+      return 0
+    })
+
+    setSortedProjects(sorted)
+  }
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortOrder(field === 'date' ? 'desc' : 'asc') // Default: newest date first, A-Z for name
+    }
+  }
 
   const fetchProjects = async () => {
     try {
@@ -59,13 +103,34 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       
       setProjects(flattenedProjects)
       
+      // Calculate enhanced stats including Success Manager metrics
+      const totalUsers = flattenedProjects.reduce((sum: number, project: any) => 
+        sum + (project.indoor || 0) + (project.outdoor || 0) + (project.stadium || 0), 0)
+      
+      const totalApprovedImages = flattenedProjects.reduce((sum: number, project: any) =>
+        sum + (project.originalStats?.approvedImages || 0), 0)
+      
+      const totalEventAttendees = flattenedProjects.reduce((sum: number, project: any) =>
+        sum + (project.originalStats?.eventAttendees || 0), 0)
+      
+      const totalTicketPurchases = flattenedProjects.reduce((sum: number, project: any) =>
+        sum + (project.originalStats?.eventTicketPurchases || 0), 0)
+      
+      const totalWebVisits = flattenedProjects.reduce((sum: number, project: any) => {
+        const stats = project.originalStats || {}
+        return sum + (stats.visitWeb || 0) + (stats.visitQrCode || 0) + (stats.visitShortUrl || 0)
+      }, 0)
+      
       setStats({
         totalProjects: flattenedProjects.length,
         totalEvents: flattenedProjects.length,
-        totalUsers: flattenedProjects.reduce((sum: number, project: any) => 
-          sum + (project.indoor || 0) + (project.outdoor || 0) + (project.stadium || 0), 0),
+        totalUsers,
         activeProjects: flattenedProjects.filter((project: any) => 
-          new Date(project.updatedAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length
+          new Date(project.updatedAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length,
+        totalApprovedImages,
+        totalEventAttendees,
+        totalTicketPurchases,
+        totalWebVisits
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -136,7 +201,27 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       ['Scarf', stats.scarf || 0],
       ['Flags', stats.flags || 0],
       ['Baseball Cap', stats.baseballCap || 0],
-      ['Other', stats.other || 0]
+      ['Other', stats.other || 0],
+      ['', ''],
+      ['Success Manager', ''],
+      ['Approved Images', stats.approvedImages || 0],
+      ['Rejected Images', stats.rejectedImages || 0],
+      ['Visit QR Code', stats.visitQrCode || 0],
+      ['Visit Short URL', stats.visitShortUrl || 0],
+      ['Visit QR Searched', stats.visitQrSearched || 0],
+      ['Visit Web', stats.visitWeb || 0],
+      ['Visit Facebook', stats.visitFacebook || 0],
+      ['Visit Instagram', stats.visitInstagram || 0],
+      ['Visit YouTube', stats.visitYoutube || 0],
+      ['Visit TikTok', stats.visitTiktok || 0],
+      ['Visit X', stats.visitX || 0],
+      ['Visit Trustpilot', stats.visitTrustpilot || 0],
+      ['Event Attendees', stats.eventAttendees || 0],
+      ['Event Ticket Purchases', stats.eventTicketPurchases || 0],
+      ['Event Result Home', stats.eventResultHome || 0],
+      ['Event Result Visitor', stats.eventResultVisitor || 0],
+      ['Event Value Proposition Visited', stats.eventValuePropositionVisited || 0],
+      ['Event Value Proposition Purchases', stats.eventValuePropositionPurchases || 0]
     ]
 
     const csvContent = csvData.map(row => row.join(',')).join('\n')
@@ -144,7 +229,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${project.eventName.replace(/[^a-z0-9]/gi, '_')}_data.csv`
+    a.download = `${project.eventName.replace(/[^a-z0-9]/gi, '_')}_complete_data.csv`
     a.click()
     window.URL.revokeObjectURL(url)
   }
@@ -199,7 +284,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         </div>
       </div>
 
-      {/* Stats Overview */}
+      {/* Enhanced Stats Overview with Success Manager */}
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-icon">
@@ -224,23 +309,45 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         <div className="admin-stat-card">
           <div className="admin-stat-icon">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </div>
-          <div className="admin-stat-label">Active Projects</div>
-          <div className="admin-stat-value">{stats.activeProjects}</div>
-          <div className="admin-stat-subtitle">Last 24 hours</div>
+          <div className="admin-stat-label">Total Web Visits</div>
+          <div className="admin-stat-value">{stats.totalWebVisits.toLocaleString()}</div>
         </div>
 
         <div className="admin-stat-card">
           <div className="admin-stat-icon">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <div className="admin-stat-label">System Status</div>
-          <div className="admin-stat-value" style={{fontSize: '1.2rem'}}>Online</div>
-          <div className="admin-stat-subtitle">All systems operational</div>
+          <div className="admin-stat-label">Event Attendees</div>
+          <div className="admin-stat-value">{stats.totalEventAttendees.toLocaleString()}</div>
+        </div>
+      </div>
+
+      {/* Success Manager Summary */}
+      <div className="admin-success-section">
+        <h3 className="admin-success-title">Success Manager Overview</h3>
+        <div className="admin-success-stats">
+          <div className="admin-success-stat">
+            <div className="admin-success-stat-value">{stats.totalApprovedImages}</div>
+            <div className="admin-success-stat-label">Approved Images</div>
+          </div>
+          <div className="admin-success-stat">
+            <div className="admin-success-stat-value">{stats.totalEventAttendees}</div>
+            <div className="admin-success-stat-label">Event Attendees</div>
+          </div>
+          <div className="admin-success-stat">
+            <div className="admin-success-stat-value">{stats.totalTicketPurchases}</div>
+            <div className="admin-success-stat-label">Ticket Purchases</div>
+          </div>
+          <div className="admin-success-stat">
+            <div className="admin-success-stat-value">{stats.totalWebVisits}</div>
+            <div className="admin-success-stat-label">Web Visits</div>
+          </div>
         </div>
       </div>
 
@@ -251,27 +358,47 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             <h3 className="admin-projects-title">Event Projects</h3>
             <p className="admin-projects-subtitle">Manage all event statistics projects and their data</p>
           </div>
-          <button onClick={fetchProjects} className="admin-btn-refresh">
-            🔄 Refresh
-          </button>
+          <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+            <div style={{display: 'flex', gap: '0.5rem'}}>
+              <button 
+                onClick={() => handleSort('date')}
+                className={`admin-btn ${sortField === 'date' ? 'admin-btn-export' : 'admin-btn-refresh'}`}
+                style={{padding: '0.5rem 1rem', fontSize: '0.75rem'}}
+              >
+                📅 Date {sortField === 'date' && (sortOrder === 'desc' ? '↓' : '↑')}
+              </button>
+              <button 
+                onClick={() => handleSort('name')}
+                className={`admin-btn ${sortField === 'name' ? 'admin-btn-export' : 'admin-btn-refresh'}`}
+                style={{padding: '0.5rem 1rem', fontSize: '0.75rem'}}
+              >
+                📝 Name {sortField === 'name' && (sortOrder === 'desc' ? '↓' : '↑')}
+              </button>
+            </div>
+            <button onClick={fetchProjects} className="admin-btn-refresh">
+              🔄 Refresh
+            </button>
+          </div>
         </div>
 
         <table className="admin-table">
           <thead className="admin-table-header">
             <tr>
-              <th>Event Details</th>
+              <th>Event Name</th>
+              <th>Event Date</th>
               <th>Images</th>
               <th>Audience</th>
               <th>Demographics</th>
               <th>Merchandise</th>
+              <th>Success Metrics</th>
               <th>Updated</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {projects.length === 0 ? (
+            {sortedProjects.length === 0 ? (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={9}>
                   <div className="admin-empty-state">
                     <svg className="admin-empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -282,7 +409,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 </td>
               </tr>
             ) : (
-              projects.map((project) => {
+              sortedProjects.map((project) => {
                 const stats = project.originalStats || project.stats || project
                 const totalFans = (stats.indoor || 0) + (stats.outdoor || 0) + (stats.stadium || 0)
                 const totalImages = (stats.remoteImages || 0) + (stats.hostessImages || 0) + (stats.selfies || 0)
@@ -295,6 +422,8 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                   <tr key={project._id} className="admin-table-row">
                     <td className="admin-table-cell">
                       <div className="admin-event-name">{project.eventName}</div>
+                    </td>
+                    <td className="admin-table-cell">
                       <div className="admin-event-date">{project.eventDate}</div>
                     </td>
                     <td className="admin-table-cell">
@@ -398,6 +527,27 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                           <div className="admin-stat-item">
                             <span>Other:</span>
                             <span>{stats.other || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell success-data">
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total">Approved: {stats.approvedImages || 0}</div>
+                        <div className="admin-stat-total">Attendees: {stats.eventAttendees || 0}</div>
+                        <div className="admin-stat-total">Tickets: {stats.eventTicketPurchases || 0}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>QR Visits:</span>
+                            <span>{stats.visitQrCode || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Web Visits:</span>
+                            <span>{stats.visitWeb || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Social:</span>
+                            <span>{(stats.visitFacebook || 0) + (stats.visitInstagram || 0)}</span>
                           </div>
                         </div>
                       </div>
