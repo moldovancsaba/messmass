@@ -1,21 +1,27 @@
-// app/api/projects/[id]/route.ts - Updated to handle Success Manager fields
+// app/api/projects/[id]/route.ts - Fixed for Next.js 15
 import { NextRequest, NextResponse } from 'next/server'
 import { MongoClient, ObjectId } from 'mongodb'
 
 const MONGODB_URI = process.env.MONGODB_URI!
 
+interface RouteParams {
+  params: Promise<{ id: string }>
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteParams
 ) {
   const client = new MongoClient(MONGODB_URI)
   
   try {
+    const { id } = await context.params
+    
     await client.connect()
     const db = client.db('messmass')
     const collection = db.collection('projects')
     
-    const project = await collection.findOne({ _id: new ObjectId(params.id) })
+    const project = await collection.findOne({ _id: new ObjectId(id) })
     
     if (!project) {
       return NextResponse.json(
@@ -45,20 +51,21 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteParams
 ) {
   const client = new MongoClient(MONGODB_URI)
   
   try {
+    const { id } = await context.params
     const updateData = await request.json()
-    console.log('📝 Updating project:', params.id, 'with data:', updateData)
+    console.log('📝 Updating project:', id, 'with data:', updateData)
     
     await client.connect()
     const db = client.db('messmass')
     const collection = db.collection('projects')
     
     // Ensure stats object exists and merge with new data
-    const existingProject = await collection.findOne({ _id: new ObjectId(params.id) })
+    const existingProject = await collection.findOne({ _id: new ObjectId(id) })
     if (!existingProject) {
       return NextResponse.json(
         { success: false, error: 'Project not found' },
@@ -72,7 +79,7 @@ export async function PUT(
     }
     
     const result = await collection.updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       { 
         $set: { 
           ...updateData,
@@ -90,7 +97,7 @@ export async function PUT(
     }
     
     // Fetch updated project
-    const updatedProject = await collection.findOne({ _id: new ObjectId(params.id) })
+    const updatedProject = await collection.findOne({ _id: new ObjectId(id) })
     console.log('✅ Project updated successfully')
     
     return NextResponse.json({
@@ -114,18 +121,19 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteParams
 ) {
   const client = new MongoClient(MONGODB_URI)
   
   try {
-    console.log('🗑️ Deleting project:', params.id)
+    const { id } = await context.params
+    console.log('🗑️ Deleting project:', id)
     
     await client.connect()
     const db = client.db('messmass')
     const collection = db.collection('projects')
     
-    const result = await collection.deleteOne({ _id: new ObjectId(params.id) })
+    const result = await collection.deleteOne({ _id: new ObjectId(id) })
     
     if (result.deletedCount === 0) {
       return NextResponse.json(
