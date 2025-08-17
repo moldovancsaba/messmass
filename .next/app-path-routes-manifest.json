@@ -1,13 +1,13 @@
 {
   "/_not-found/page": "/_not-found",
-  "/api/admin/projects/[id]/route": "/api/admin/projects/[id]",
-  "/api/admin/login/route": "/api/admin/login",
   "/api/admin/permissions/route": "/api/admin/permissions",
+  "/api/admin/login/route": "/api/admin/login",
   "/api/admin/projects/route": "/api/admin/projects",
-  "/api/projects/route": "/api/projects",
-  "/api/projects/[id]/route": "/api/projects/[id]",
   "/api/admin/users/route": "/api/admin/users",
-  "/admin/page": "/admin",
+  "/api/admin/projects/[id]/route": "/api/admin/projects/[id]",
+  "/api/projects/[id]/route": "/api/projects/[id]",
+  "/api/projects/route": "/api/projects",
   "/admin/login/page": "/admin/login",
+  "/admin/page": "/admin",
   "/page": "/"
 }

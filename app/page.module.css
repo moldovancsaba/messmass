@@ -765,3 +765,41 @@
     transform: translateY(-3px);
   }
 }
+
+/* Success Manager Input Styling */
+.successManagerInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  background: white;
+  color: #333;
+  transition: all 0.3s ease;
+  outline: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.successManagerInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.successManagerInput:hover {
+  border-color: rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+/* Ensure input field doesn't conflict with stat card styling */
+.statCard input.successManagerInput {
+  margin-top: 0.5rem;
+  height: auto;
+  min-height: 3rem;
+}

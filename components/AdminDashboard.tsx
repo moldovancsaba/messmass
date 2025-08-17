@@ -168,39 +168,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const canvas = await html2canvas(elementRef.current, {
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: false,
-        scale: 3, // Higher quality for better text rendering
-        logging: false,
-        width: elementRef.current.scrollWidth,
-        height: elementRef.current.scrollHeight,
-        windowWidth: elementRef.current.scrollWidth,
-        windowHeight: elementRef.current.scrollHeight,
-        scrollX: 0,
-        scrollY: 0,
-        ignoreElements: (element) => {
-          // Skip button elements that might cause issues
-          return element.tagName === 'BUTTON';
-        },
-        onclone: (clonedDoc, element) => {
-          // Ensure all styles are properly applied in the cloned document
-          const clonedElement = clonedDoc.querySelector(`[data-testid="${elementRef.current?.getAttribute('data-testid') || ''}"]`) || element;
-          if (clonedElement && 'style' in clonedElement) {
-            (clonedElement as HTMLElement).style.transform = 'none';
-            (clonedElement as HTMLElement).style.boxShadow = 'none';
-          }
-          
-          // Force text rendering
-          const textElements = clonedDoc.querySelectorAll('text, span, div');
-          textElements.forEach((el) => {
-            if (el && 'style' in el) {
-              const htmlEl = el as HTMLElement;
-              htmlEl.style.fontSize = htmlEl.style.fontSize || 'inherit';
-              htmlEl.style.fontFamily = htmlEl.style.fontFamily || 'Arial, sans-serif';
-            }
-          });
-        }
+        logging: false
       });
       
       // Create download link

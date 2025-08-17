@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}";
+self.__REACT_LOADABLE_MANIFEST='{"components/AdminDashboard.tsx -> html2canvas":{"id":2699,"files":["static/chunks/ad2866b8.8aebfe6416a21473.js"]}}';

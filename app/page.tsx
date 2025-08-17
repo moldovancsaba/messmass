@@ -18,6 +18,7 @@ interface WebSocketMessage {
 }
 
 const initialStats = {
+  // Event Statistics
   remoteImages: 0,
   hostessImages: 0,
   selfies: 0, // Changed from remoteFans + onLocationFan calculation
@@ -35,7 +36,25 @@ const initialStats = {
   scarf: 0, // Changed from scarfFlags
   flags: 0, // New field
   baseballCap: 0,
-  other: 0 // New field
+  other: 0, // New field
+  // Success Manager Fields
+  approvedImages: 0,
+  rejectedImages: 0,
+  eventAttendees: 0,
+  eventTicketPurchases: 0,
+  visitQrCode: 0,
+  visitShortUrl: 0,
+  visitWeb: 0,
+  visitFacebook: 0,
+  visitInstagram: 0,
+  visitYoutube: 0,
+  visitTiktok: 0,
+  visitX: 0,
+  visitTrustpilot: 0,
+  eventResultHome: 0,
+  eventResultVisitor: 0,
+  eventValuePropositionVisited: 0,
+  eventValuePropositionPurchases: 0
 };
 
 export default function Home() {
@@ -610,6 +629,58 @@ export default function Home() {
     </div>
   );
 
+  // Success Manager Input Card Component (no decrement button, input field instead of click-to-increment)
+  const SuccessManagerCard = ({ label, value, statKey }: { 
+    label: string; 
+    value: number; 
+    statKey: keyof typeof stats;
+  }) => {
+    const [tempValue, setTempValue] = useState(value);
+
+    // Update temp value when prop value changes (from WebSocket or project load)
+    useEffect(() => {
+      setTempValue(value);
+    }, [value]);
+
+    const handleBlur = () => {
+      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
+      if (newValue !== value) {
+        // Update stats
+        setStats(prev => ({
+          ...prev,
+          [statKey]: newValue
+        }));
+        // Broadcast to other users
+        if (currentProjectId && isConnected) {
+          sendWebSocketMessage({
+            type: 'stat_increment',
+            statKey: statKey,
+            newValue
+          });
+        }
+      }
+    };
+
+    return (
+      <div className={styles.statCardContainer}>
+        <div className={styles.statCard}>
+          <div className={styles.statLabel}>{label}</div>
+          <input
+            type="number"
+            value={tempValue}
+            onChange={(e) => {
+              const newValue = Math.max(0, parseInt(e.target.value) || 0);
+              setTempValue(newValue);
+            }}
+            onBlur={handleBlur}
+            className={styles.successManagerInput}
+            min="0"
+          />
+        </div>
+      </div>
+    );
+  };
+
   // Connection status indicator
   const ConnectionStatus = () => (
     <div className={styles.connectionStatus}>
@@ -803,19 +874,67 @@ export default function Home() {
               <StatCard label="Other" value={stats.other} statKey="other" />
             </div>
           </div>
+
+          {/* Success Manager Section */}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Success Manager</h3>
+            
+            {/* Image Management */}
+            <div className={styles.subsection}>
+              <h4 className={styles.subsectionTitle}>Image Management</h4>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="Approved Images" value={stats.approvedImages} statKey="approvedImages" />
+                <SuccessManagerCard label="Rejected Images" value={stats.rejectedImages} statKey="rejectedImages" />
+              </div>
+            </div>
+
+            {/* Visit Tracking */}
+            <div className={styles.subsection}>
+              <h4 className={styles.subsectionTitle}>Visit Tracking</h4>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="QR Code Visits" value={stats.visitQrCode} statKey="visitQrCode" />
+                <SuccessManagerCard label="Short URL Visits" value={stats.visitShortUrl} statKey="visitShortUrl" />
+                <SuccessManagerCard label="Web Visits" value={stats.visitWeb} statKey="visitWeb" />
+              </div>
+            </div>
+
+            {/* Social Media Visits */}
+            <div className={styles.subsection}>
+              <h4 className={styles.subsectionTitle}>Social Media Visits</h4>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="Facebook Visits" value={stats.visitFacebook} statKey="visitFacebook" />
+                <SuccessManagerCard label="Instagram Visits" value={stats.visitInstagram} statKey="visitInstagram" />
+                <SuccessManagerCard label="YouTube Visits" value={stats.visitYoutube} statKey="visitYoutube" />
+              </div>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="TikTok Visits" value={stats.visitTiktok} statKey="visitTiktok" />
+                <SuccessManagerCard label="X Visits" value={stats.visitX} statKey="visitX" />
+                <SuccessManagerCard label="Trustpilot Visits" value={stats.visitTrustpilot} statKey="visitTrustpilot" />
+              </div>
+            </div>
+
+            {/* Event Performance */}
+            <div className={styles.subsection}>
+              <h4 className={styles.subsectionTitle}>Event Performance</h4>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="Event Attendees" value={stats.eventAttendees} statKey="eventAttendees" />
+                <SuccessManagerCard label="Ticket Purchases" value={stats.eventTicketPurchases} statKey="eventTicketPurchases" />
+                <SuccessManagerCard label="Event Result Home" value={stats.eventResultHome} statKey="eventResultHome" />
+                <SuccessManagerCard label="Event Result Visitor" value={stats.eventResultVisitor} statKey="eventResultVisitor" />
+              </div>
+            </div>
+
+            {/* Value Proposition */}
+            <div className={styles.subsection}>
+              <h4 className={styles.subsectionTitle}>Value Proposition</h4>
+              <div className={styles.statsRow}>
+                <SuccessManagerCard label="Value Prop Visited" value={stats.eventValuePropositionVisited} statKey="eventValuePropositionVisited" />
+                <SuccessManagerCard label="Value Prop Purchases" value={stats.eventValuePropositionPurchases} statKey="eventValuePropositionPurchases" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.actions}>
-          <button className={styles.resetButton} onClick={resetStats}>
-            Reset Stats
-          </button>
-          <button className={styles.exportButton} onClick={downloadCSV}>
-            📄 Download CSV
-          </button>
-          <button className={styles.googleButton} onClick={exportToGoogleSheets}>
-            📊 Export to Google Sheets
-          </button>
-        </div>
       </div>
     </main>
   );
