@@ -1,30 +1,73 @@
 {
-  "name": "messmass-hello-world",
-  "version": "0.1.0",
+  "name": "messmass",
+  "version": "1.0.0",
+  "description": "Real-time collaborative event statistics dashboard with admin panel for tracking audience demographics, images, and merchandise at live events",
+  "keywords": [
+    "event-statistics",
+    "real-time-collaboration",
+    "dashboard",
+    "admin-panel",
+    "websocket",
+    "next.js",
+    "mongodb",
+    "event-management",
+    "audience-tracking",
+    "demographics"
+  ],
+  "author": {
+    "name": "Csaba Moldovan",
+    "email": "moldovancsaba@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moldovancsaba/messmass.git"
+  },
+  "homepage": "https://messmass.doneisbetter.com",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "export": "next export",
+    "clean": "rm -rf .next out"
   },
   "dependencies": {
-    "@types/js-cookie": "^3.0.6",
-    "js-cookie": "^3.0.5",
-    "mongodb": "^6.18.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "next": "15.4.6",
-    "react": "^18",
-    "react-dom": "^18",
+    "typescript": "^5.6.3",
+    "mongodb": "^6.8.0",
+    "ws": "^8.18.3",
     "uuid": "^11.1.0",
-    "ws": "^8.18.3"
+    "js-cookie": "^3.0.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "concurrently": "^9.2.0",
-    "eslint": "^8",
-    "eslint-config-next": "15.4.6",
-    "typescript": "^5"
+    "@types/node": "^22.5.5",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "@types/ws": "^8.5.12",
+    "@types/uuid": "^10.0.0",
+    "@types/js-cookie": "^3.0.6",
+    "eslint": "^9.11.1",
+    "eslint-config-next": "15.4.6"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
