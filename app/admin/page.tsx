@@ -1,4 +1,4 @@
-// app/admin/page.tsx - Update to work with local development
+// app/admin/page.tsx - Update with logout functionality
 import { getAdminUser, hasPermission } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import AdminDashboard from '@/components/AdminDashboard'
@@ -7,13 +7,27 @@ export default async function AdminPage() {
   const user = await getAdminUser()
   
   if (!user) {
-    // This shouldn't happen due to middleware, but just in case
     redirect('/admin/login')
   }
   
   const canManageUsers = await hasPermission('manage-users')
   const canDelete = await hasPermission('delete')
   
+  const handleLogout = async () => {
+    'use server'
+    
+    try {
+      // Clear the admin session cookie
+      const { cookies } = await import('next/headers')
+      const cookieStore = await cookies()
+      cookieStore.delete('admin-session')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+    
+    redirect('/admin/login')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
@@ -27,23 +41,16 @@ export default async function AdminPage() {
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
                 <p className="text-xs text-gray-500 capitalize">{user.role}</p>
-                {process.env.NODE_ENV === 'development' && (
-                  <p className="text-xs text-blue-500">Development Mode</p>
-                )}
+                <p className="text-xs text-green-600">✓ Authenticated</p>
               </div>
-              <button
-                onClick={() => {
-                  if (process.env.NODE_ENV === 'development') {
-                    document.cookie = 'admin-session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-                    window.location.href = '/'
-                  } else {
-                    window.location.href = 'https://sso.doneisbetter.com/logout?app=messmass&return_url=' + encodeURIComponent(window.location.origin)
-                  }
-                }}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Logout
-              </button>
+              <form action={handleLogout}>
+                <button
+                  type="submit"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Logout
+                </button>
+              </form>
             </div>
           </div>
         </div>

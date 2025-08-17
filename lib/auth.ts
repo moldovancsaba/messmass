@@ -1,4 +1,4 @@
-// lib/auth.ts - Fixed for Next.js 15
+// lib/auth.ts - Replace with simple password authentication
 import { cookies } from 'next/headers'
 
 export interface AdminUser {
@@ -9,52 +9,36 @@ export interface AdminUser {
   permissions: string[]
 }
 
-// Mock admin user for development
-const DEV_ADMIN_USER: AdminUser = {
-  id: 'dev-admin-001',
-  name: 'Development Admin',
-  email: 'admin@localhost',
+// Static admin user for simple password auth
+const ADMIN_USER: AdminUser = {
+  id: 'admin',
+  name: 'MessMass Administrator',
+  email: 'admin@messmass.com',
   role: 'super-admin',
   permissions: ['read', 'write', 'delete', 'manage-users']
+}
+
+function isValidAdminSession(sessionToken: string): boolean {
+  try {
+    const tokenData = JSON.parse(Buffer.from(sessionToken, 'base64').toString())
+    const expiresAt = new Date(tokenData.expiresAt)
+    const now = new Date()
+    
+    return now <= expiresAt && tokenData.userId === 'admin' && tokenData.role === 'super-admin'
+  } catch (error) {
+    return false
+  }
 }
 
 export async function getAdminUser(): Promise<AdminUser | null> {
   const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin-session')
   
-  if (!adminSession) {
+  if (!adminSession || !isValidAdminSession(adminSession.value)) {
     return null
   }
   
-  // In development, return mock user
-  if (process.env.NODE_ENV === 'development' && adminSession.value === 'local-dev-admin') {
-    return DEV_ADMIN_USER
-  }
-  
-  // In production, validate session with SSO
-  try {
-    const response = await fetch(`https://sso.doneisbetter.com/api/validate`, {
-      headers: {
-        'Authorization': `Bearer ${adminSession.value}`,
-        'X-App': 'messmass'
-      }
-    })
-    
-    if (response.ok) {
-      const userData = await response.json()
-      return {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        role: userData.role || 'admin',
-        permissions: userData.permissions || ['read', 'write']
-      }
-    }
-  } catch (error) {
-    console.error('SSO validation error:', error)
-  }
-  
-  return null
+  return ADMIN_USER
 }
 
 export async function isAuthenticated(): Promise<boolean> {
@@ -67,16 +51,15 @@ export async function hasPermission(permission: string): Promise<boolean> {
   return user?.permissions.includes(permission) || user?.role === 'super-admin' || false
 }
 
-export async function logoutAdmin() {
-  // Clear admin session
-  const cookieStore = await cookies()
-  cookieStore.delete('admin-session')
-  
-  // In production, also notify SSO
-  if (process.env.NODE_ENV === 'production') {
-    // This would be called client-side to redirect to SSO logout
-    return `https://sso.doneisbetter.com/logout?app=messmass&return_url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`
+export async function logoutAdmin(): Promise<string> {
+  try {
+    // Call logout API to clear cookie
+    await fetch('/api/admin/login', {
+      method: 'DELETE'
+    })
+  } catch (error) {
+    console.error('Logout error:', error)
   }
   
-  return '/admin'
+  return '/admin/login'
 }

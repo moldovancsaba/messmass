@@ -1,102 +1,134 @@
-// Migration script to update existing projects from old to new structure
-// Run this once to migrate your existing data
-
+// migrate-data.js - Create this file to fix the database field mismatch
 const { MongoClient } = require('mongodb');
 
+// Use the same MongoDB URI from your .env.local
 const MONGODB_URI = 'mongodb+srv://moldovancsaba:j8HxxytTjrtJXskz@messmass-cluster.r96vlxs.mongodb.net/messmass?retryWrites=true&w=majority&appName=messmass-cluster';
-const MONGODB_DB = 'messmass';
 
-async function migrateProjects() {
-  let client;
+async function migrateData() {
+  const client = new MongoClient(MONGODB_URI);
   
   try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
-    client = new MongoClient(MONGODB_URI);
     await client.connect();
+    console.log('🔗 Connected to MongoDB Atlas');
     
-    const db = client.db(MONGODB_DB);
+    const db = client.db('messmass');
     const collection = db.collection('projects');
     
-    console.log('📊 Fetching projects to migrate...');
-    const projects = await collection.find({}).toArray();
-    console.log(`Found ${projects.length} projects to migrate`);
+    // First, let's see what we have
+    console.log('\n📊 Current projects in database:');
+    const allProjects = await collection.find({}).toArray();
+    console.log(`Found ${allProjects.length} projects`);
     
-    for (const project of projects) {
-      console.log(`\n🔄 Migrating project: ${project.eventName}`);
-      
-      // Create new stats structure based on old data
-      const newStats = {
-        // Images - keep existing + add selfies as 0
-        remoteImages: project.stats.remoteImages || 0,
-        hostessImages: project.stats.hostessImages || 0,
-        selfies: 0, // New field, default to 0
-        
-        // Fans - migrate old fields to new names + add stadium
-        indoor: project.stats.remoteFans || 0,      // remoteFans → indoor
-        outdoor: project.stats.onLocationFan || 0,  // onLocationFan → outdoor
-        stadium: 0, // New field, default to 0
-        
-        // Gender - keep existing
-        female: project.stats.female || 0,
-        male: project.stats.male || 0,
-        
-        // Age - keep existing
-        genAlpha: project.stats.genAlpha || 0,
-        genYZ: project.stats.genYZ || 0,
-        genX: project.stats.genX || 0,
-        boomer: project.stats.boomer || 0,
-        
-        // Merchandise - migrate scarfFlags + add new fields
-        merched: project.stats.merched || 0,
-        jersey: project.stats.jersey || 0,
-        scarf: project.stats.scarfFlags || 0,  // scarfFlags → scarf
-        flags: 0, // New field, default to 0
-        baseballCap: project.stats.baseballCap || 0,
-        other: 0  // New field, default to 0
-      };
-      
-      console.log('Old stats:', {
-        remoteFans: project.stats.remoteFans,
-        onLocationFan: project.stats.onLocationFan,
-        scarfFlags: project.stats.scarfFlags
-      });
-      
-      console.log('New stats:', {
-        indoor: newStats.indoor,
-        outdoor: newStats.outdoor,
-        stadium: newStats.stadium,
-        scarf: newStats.scarf,
-        flags: newStats.flags,
-        selfies: newStats.selfies,
-        other: newStats.other
-      });
-      
-      // Update the project with new structure
-      const result = await collection.updateOne(
-        { _id: project._id },
-        { 
-          $set: { 
-            stats: newStats,
-            updatedAt: new Date().toISOString()
-          }
-        }
-      );
-      
-      console.log(`✅ ${project.eventName} migrated (${result.modifiedCount} document modified)`);
+    if (allProjects.length === 0) {
+      console.log('❌ No projects found in database');
+      return;
     }
     
-    console.log('\n🎉 Migration completed successfully!');
-    console.log('All projects have been updated to the new structure.');
+    // Show the structure of the first project
+    console.log('\n🔍 Sample project structure:');
+    console.log(JSON.stringify(allProjects[0], null, 2));
+    
+    // Check if migration is needed
+    const needsMigration = allProjects.some(project => 
+      project.remoteFans !== undefined || 
+      project.onLocationFan !== undefined || 
+      project.scarfFlags !== undefined
+    );
+    
+    if (!needsMigration) {
+      console.log('✅ Database is already using new field structure');
+      return;
+    }
+    
+    console.log('\n🚀 Starting migration...');
+    
+    // Migrate each project
+    for (const project of allProjects) {
+      const updates = {};
+      let hasUpdates = false;
+      
+      // Map old field names to new ones
+      if (project.remoteFans !== undefined) {
+        updates.indoor = project.remoteFans;
+        hasUpdates = true;
+      }
+      
+      if (project.onLocationFan !== undefined) {
+        updates.outdoor = project.onLocationFan;
+        hasUpdates = true;
+      }
+      
+      if (project.scarfFlags !== undefined) {
+        updates.scarf = project.scarfFlags;
+        hasUpdates = true;
+      }
+      
+      // Add missing fields with default values
+      if (project.stadium === undefined) {
+        updates.stadium = 0;
+        hasUpdates = true;
+      }
+      
+      if (project.selfies === undefined) {
+        updates.selfies = 0;
+        hasUpdates = true;
+      }
+      
+      if (project.flags === undefined) {
+        updates.flags = 0;
+        hasUpdates = true;
+      }
+      
+      if (project.other === undefined) {
+        updates.other = 0;
+        hasUpdates = true;
+      }
+      
+      if (hasUpdates) {
+        await collection.updateOne(
+          { _id: project._id },
+          { 
+            $set: updates,
+            $unset: {
+              remoteFans: "",
+              onLocationFan: "",
+              scarfFlags: ""
+            }
+          }
+        );
+        
+        console.log(`✅ Migrated project: ${project.eventName}`);
+      }
+    }
+    
+    console.log('\n🎉 Migration completed!');
+    
+    // Verify migration
+    console.log('\n🔍 Verifying migration...');
+    const migratedProjects = await collection.find({}).toArray();
+    const sampleMigrated = migratedProjects[0];
+    
+    console.log('Sample migrated project:');
+    console.log(JSON.stringify(sampleMigrated, null, 2));
+    
+    // Calculate totals to verify
+    if (sampleMigrated) {
+      const totalImages = (sampleMigrated.indoor || 0) + (sampleMigrated.outdoor || 0) + (sampleMigrated.selfies || 0);
+      const totalFans = (sampleMigrated.indoor || 0) + (sampleMigrated.outdoor || 0) + (sampleMigrated.stadium || 0);
+      const totalMerch = (sampleMigrated.merched || 0) + (sampleMigrated.jersey || 0) + (sampleMigrated.scarf || 0) + 
+                        (sampleMigrated.flags || 0) + (sampleMigrated.baseballCap || 0) + (sampleMigrated.other || 0);
+      
+      console.log(`\n📈 Sample totals after migration:`);
+      console.log(`Images: ${totalImages}, Fans: ${totalFans}, Merch: ${totalMerch}`);
+    }
     
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    console.error('❌ Migration error:', error);
   } finally {
-    if (client) {
-      await client.close();
-      console.log('🔌 Database connection closed');
-    }
+    await client.close();
+    console.log('\n🔗 Database connection closed');
   }
 }
 
-// Run the migration
-migrateProjects();
+// Run migration
+migrateData().catch(console.error);

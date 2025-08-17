@@ -1,4 +1,4 @@
-// components/AdminDashboard.tsx - Create this new file
+// components/AdminDashboard.tsx - Simplified version using CSS classes
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -10,23 +10,9 @@ interface Project {
   eventDate: string
   createdAt: string
   updatedAt: string
-  // Statistics
-  indoor: number
-  outdoor: number
-  stadium: number
-  selfies: number
-  scarf: number
-  flags: number
-  other: number
-  female: number
-  male: number
-  genAlpha: number
-  genYZ: number
-  genX: number
-  boomer: number
-  merched: number
-  jersey: number
-  baseballCap: number
+  stats?: any
+  originalStats?: any
+  [key: string]: any
 }
 
 interface AdminDashboardProps {
@@ -62,19 +48,28 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         throw new Error('Failed to fetch projects')
       }
       const data = await response.json()
-      setProjects(data)
       
-      // Calculate stats
+      const projectsArray = data.projects || data || []
+      
+      const flattenedProjects = projectsArray.map((project: any) => ({
+        ...project,
+        ...(project.stats || {}),
+        originalStats: project.stats
+      }))
+      
+      setProjects(flattenedProjects)
+      
       setStats({
-        totalProjects: data.length,
-        totalEvents: data.length,
-        totalUsers: data.reduce((sum: number, project: Project) => 
+        totalProjects: flattenedProjects.length,
+        totalEvents: flattenedProjects.length,
+        totalUsers: flattenedProjects.reduce((sum: number, project: any) => 
           sum + (project.indoor || 0) + (project.outdoor || 0) + (project.stadium || 0), 0),
-        activeProjects: data.filter((project: Project) => 
+        activeProjects: flattenedProjects.filter((project: any) => 
           new Date(project.updatedAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Fetch projects error:', err)
     } finally {
       setLoading(false)
     }
@@ -99,7 +94,6 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         throw new Error('Failed to delete project')
       }
 
-      // Refresh projects list
       fetchProjects()
       alert('Project deleted successfully')
     } catch (err) {
@@ -108,6 +102,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   }
 
   const exportProjectData = (project: Project) => {
+    const stats = project.originalStats || project.stats || project
     const csvData = [
       ['Field', 'Value'],
       ['Event Name', project.eventName],
@@ -116,32 +111,32 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       ['Last Updated', new Date(project.updatedAt).toLocaleString()],
       ['', ''],
       ['Images', ''],
-      ['Remote Images', project.indoor || 0],
-      ['Hostess Images', project.outdoor || 0],
-      ['Selfies', project.selfies || 0],
+      ['Remote Images', stats.remoteImages || 0],
+      ['Hostess Images', stats.hostessImages || 0],
+      ['Selfies', stats.selfies || 0],
       ['', ''],
       ['Fans', ''],
-      ['Indoor', project.indoor || 0],
-      ['Outdoor', project.outdoor || 0],
-      ['Stadium', project.stadium || 0],
+      ['Indoor', stats.indoor || 0],
+      ['Outdoor', stats.outdoor || 0],
+      ['Stadium', stats.stadium || 0],
       ['', ''],
       ['Gender', ''],
-      ['Female', project.female || 0],
-      ['Male', project.male || 0],
+      ['Female', stats.female || 0],
+      ['Male', stats.male || 0],
       ['', ''],
       ['Age Groups', ''],
-      ['Gen Alpha', project.genAlpha || 0],
-      ['Gen Y+Z', project.genYZ || 0],
-      ['Gen X', project.genX || 0],
-      ['Boomer', project.boomer || 0],
+      ['Gen Alpha', stats.genAlpha || 0],
+      ['Gen Y+Z', stats.genYZ || 0],
+      ['Gen X', stats.genX || 0],
+      ['Boomer', stats.boomer || 0],
       ['', ''],
       ['Merchandise', ''],
-      ['Merched', project.merched || 0],
-      ['Jersey', project.jersey || 0],
-      ['Scarf', project.scarf || 0],
-      ['Flags', project.flags || 0],
-      ['Baseball Cap', project.baseballCap || 0],
-      ['Other', project.other || 0]
+      ['Merched', stats.merched || 0],
+      ['Jersey', stats.jersey || 0],
+      ['Scarf', stats.scarf || 0],
+      ['Flags', stats.flags || 0],
+      ['Baseball Cap', stats.baseballCap || 0],
+      ['Other', stats.other || 0]
     ]
 
     const csvContent = csvData.map(row => row.join(',')).join('\n')
@@ -156,256 +151,287 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="admin-dashboard">
+        <div className="admin-header">
+          <div className="admin-title">Loading...</div>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-6">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
-            <div className="mt-2 text-sm text-red-700">
-              <p>{error}</p>
-            </div>
-            <div className="mt-4">
-              <button
-                onClick={fetchProjects}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          </div>
+      <div className="admin-dashboard">
+        <div className="admin-header">
+          <div className="admin-title">Error</div>
+          <p>{error}</p>
+          <button onClick={fetchProjects} className="admin-btn-refresh">
+            Retry
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="admin-dashboard">
+      {/* Header Section */}
+      <div className="admin-header">
+        <h1 className="admin-title">MessMass Admin</h1>
+        <p className="admin-subtitle">Event Statistics Management Dashboard</p>
+        
+        <div className="admin-user-info">
+          <div className="admin-user-details">
+            <div className="admin-avatar">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="admin-user-text">
+              <h3>{user.name}</h3>
+              <p>{user.role} • {user.email}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => window.location.href = '/admin/login'}
+            className="admin-logout-btn"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Projects</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.totalProjects}</dd>
-                </dl>
-              </div>
-            </div>
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
           </div>
+          <div className="admin-stat-label">Total Projects</div>
+          <div className="admin-stat-value">{stats.totalProjects}</div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.totalUsers}</dd>
-                </dl>
-              </div>
-            </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
           </div>
+          <div className="admin-stat-label">Total Audience</div>
+          <div className="admin-stat-value">{stats.totalUsers.toLocaleString()}</div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Active Projects</dt>
-                  <dd className="text-lg font-medium text-gray-900">{stats.activeProjects}</dd>
-                </dl>
-              </div>
-            </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
           </div>
+          <div className="admin-stat-label">Active Projects</div>
+          <div className="admin-stat-value">{stats.activeProjects}</div>
+          <div className="admin-stat-subtitle">Last 24 hours</div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">System Status</dt>
-                  <dd className="text-lg font-medium text-green-600">✓ Online</dd>
-                </dl>
-              </div>
-            </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
+          <div className="admin-stat-label">System Status</div>
+          <div className="admin-stat-value" style={{fontSize: '1.2rem'}}>Online</div>
+          <div className="admin-stat-subtitle">All systems operational</div>
         </div>
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Event Projects</h3>
-              <p className="mt-1 text-sm text-gray-700">
-                Manage all event statistics projects and their data.
-              </p>
-            </div>
-            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-              <button
-                onClick={fetchProjects}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Refresh
-              </button>
-            </div>
+      <div className="admin-projects-container">
+        <div className="admin-projects-header">
+          <div>
+            <h3 className="admin-projects-title">Event Projects</h3>
+            <p className="admin-projects-subtitle">Manage all event statistics projects and their data</p>
           </div>
+          <button onClick={fetchProjects} className="admin-btn-refresh">
+            🔄 Refresh
+          </button>
+        </div>
 
-          <div className="mt-6 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Event
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statistics
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Updated
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {projects.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
-                      No projects found
+        <table className="admin-table">
+          <thead className="admin-table-header">
+            <tr>
+              <th>Event Details</th>
+              <th>Images</th>
+              <th>Audience</th>
+              <th>Demographics</th>
+              <th>Merchandise</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.length === 0 ? (
+              <tr>
+                <td colSpan={7}>
+                  <div className="admin-empty-state">
+                    <svg className="admin-empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <div className="admin-empty-title">No projects found</div>
+                    <div className="admin-empty-subtitle">Get started by creating your first event project</div>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              projects.map((project) => {
+                const stats = project.originalStats || project.stats || project
+                const totalFans = (stats.indoor || 0) + (stats.outdoor || 0) + (stats.stadium || 0)
+                const totalImages = (stats.remoteImages || 0) + (stats.hostessImages || 0) + (stats.selfies || 0)
+                const totalMerch = (stats.merched || 0) + (stats.jersey || 0) + (stats.scarf || 0) + 
+                                  (stats.flags || 0) + (stats.baseballCap || 0) + (stats.other || 0)
+                const totalGender = (stats.female || 0) + (stats.male || 0)
+                const totalAge = (stats.genAlpha || 0) + (stats.genYZ || 0) + (stats.genX || 0) + (stats.boomer || 0)
+
+                return (
+                  <tr key={project._id} className="admin-table-row">
+                    <td className="admin-table-cell">
+                      <div className="admin-event-name">{project.eventName}</div>
+                      <div className="admin-event-date">{project.eventDate}</div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total images">Total: {totalImages}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>Remote:</span>
+                            <span>{stats.remoteImages || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Hostess:</span>
+                            <span>{stats.hostessImages || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Selfies:</span>
+                            <span>{stats.selfies || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total fans">Total: {totalFans}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>Indoor:</span>
+                            <span>{stats.indoor || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Outdoor:</span>
+                            <span>{stats.outdoor || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Stadium:</span>
+                            <span>{stats.stadium || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total gender">Gender: {totalGender}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>♀ Female:</span>
+                            <span>{stats.female || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>♂ Male:</span>
+                            <span>{stats.male || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total age">Age: {totalAge}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>Alpha:</span>
+                            <span>{stats.genAlpha || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Y+Z:</span>
+                            <span>{stats.genYZ || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>X:</span>
+                            <span>{stats.genX || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Boomer:</span>
+                            <span>{stats.boomer || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div className="admin-stat-group">
+                        <div className="admin-stat-total merch">Total: {totalMerch}</div>
+                        <div className="admin-stat-breakdown">
+                          <div className="admin-stat-item">
+                            <span>Merched:</span>
+                            <span>{stats.merched || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Jersey:</span>
+                            <span>{stats.jersey || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Scarf:</span>
+                            <span>{stats.scarf || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Flags:</span>
+                            <span>{stats.flags || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Cap:</span>
+                            <span>{stats.baseballCap || 0}</span>
+                          </div>
+                          <div className="admin-stat-item">
+                            <span>Other:</span>
+                            <span>{stats.other || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div style={{fontSize: '0.75rem', color: 'var(--color-gray-600)'}}>
+                        <div>{new Date(project.updatedAt).toLocaleDateString()}</div>
+                        <div>{new Date(project.updatedAt).toLocaleTimeString()}</div>
+                      </div>
+                    </td>
+                    <td className="admin-table-cell">
+                      <div className="admin-actions">
+                        <button
+                          onClick={() => exportProjectData(project)}
+                          className="admin-btn admin-btn-export"
+                        >
+                          📊 Export
+                        </button>
+                        {permissions.canDelete && (
+                          <button
+                            onClick={() => deleteProject(project._id)}
+                            className="admin-btn admin-btn-delete"
+                          >
+                            🗑️ Delete
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
-                ) : (
-                  projects.map((project) => {
-                    const totalFans = (project.indoor || 0) + (project.outdoor || 0) + (project.stadium || 0)
-                    const totalImages = (project.indoor || 0) + (project.outdoor || 0) + (project.selfies || 0)
-                    const totalMerch = (project.merched || 0) + (project.jersey || 0) + (project.scarf || 0) + 
-                                      (project.flags || 0) + (project.baseballCap || 0) + (project.other || 0)
-
-                    return (
-                      <tr key={project._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{project.eventName}</div>
-                            <div className="text-sm text-gray-500">{project.eventDate}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            Images: {totalImages} | Fans: {totalFans} | Merch: {totalMerch}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Gender: {(project.female || 0) + (project.male || 0)} | 
-                            Age: {(project.genAlpha || 0) + (project.genYZ || 0) + (project.genX || 0) + (project.boomer || 0)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(project.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(project.updatedAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => exportProjectData(project)}
-                            className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded text-xs"
-                          >
-                            Export
-                          </button>
-                          {permissions.canDelete && (
-                            <button
-                              onClick={() => deleteProject(project._id)}
-                              className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded text-xs"
-                            >
-                              Delete
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* User Info */}
-      <div className="bg-white shadow sm:rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Admin Information</h3>
-          <div className="mt-5 border-t border-gray-200">
-            <dl className="divide-y divide-gray-200">
-              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Name</dt>
-                <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <span className="flex-grow">{user.name}</span>
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Email</dt>
-                <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <span className="flex-grow">{user.email}</span>
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Role</dt>
-                <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <span className="flex-grow capitalize">{user.role}</span>
-                </dd>
-              </div>
-              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Permissions</dt>
-                <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  <span className="flex-grow">
-                    {user.permissions.join(', ')}
-                  </span>
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </div>
+                )
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   )
