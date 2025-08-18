@@ -208,12 +208,23 @@ export default function StatsPage() {
         ) : chartResults.length > 0 ? (
           <div className="dynamic-charts-grid">
             {chartResults.map((result, index) => {
-              // Filter out charts with no data
-              const hasData = result.elements.some(element => 
-                typeof element.value === 'number' && element.value > 0
+              console.log(`Chart ${result.chartId}:`, result);
+              
+              // Check if chart has any valid data (not all NA and not all zero)
+              const validElements = result.elements.filter(element => 
+                typeof element.value === 'number'
+              );
+              const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
+              
+              console.log(`Chart ${result.chartId} - validElements: ${validElements.length}, totalValue: ${totalValue}`);
+              
+              // Only hide charts if ALL elements are NA or if it's a pie chart with zero total
+              const shouldShow = validElements.length > 0 && (
+                result.type === 'bar' || totalValue > 0
               );
               
-              if (!hasData) {
+              if (!shouldShow) {
+                console.log(`Hiding chart ${result.chartId} - no valid data`);
                 return null;
               }
               

@@ -1,21 +1,21 @@
 {
   "/_not-found/page": "/_not-found",
-  "/api/admin/login/route": "/api/admin/login",
-  "/api/admin/permissions/route": "/api/admin/permissions",
-  "/api/admin/projects/[id]/route": "/api/admin/projects/[id]",
   "/api/admin/projects/route": "/api/admin/projects",
+  "/api/admin/login/route": "/api/admin/login",
+  "/api/admin/projects/[id]/route": "/api/admin/projects/[id]",
   "/api/admin/users/route": "/api/admin/users",
+  "/api/admin/permissions/route": "/api/admin/permissions",
   "/api/auth/check/route": "/api/auth/check",
   "/api/chart-config/public/route": "/api/chart-config/public",
   "/api/chart-config/route": "/api/chart-config",
   "/api/projects/[id]/route": "/api/projects/[id]",
   "/api/projects/edit/[slug]/route": "/api/projects/edit/[slug]",
-  "/api/projects/route": "/api/projects",
   "/api/projects/stats/[slug]/route": "/api/projects/stats/[slug]",
+  "/api/projects/route": "/api/projects",
+  "/admin/page": "/admin",
   "/admin/charts/page": "/admin/charts",
   "/admin/login/page": "/admin/login",
-  "/admin/page": "/admin",
+  "/stats/[slug]/page": "/stats/[slug]",
   "/edit/[slug]/page": "/edit/[slug]",
-  "/page": "/",
-  "/stats/[slug]/page": "/stats/[slug]"
+  "/page": "/"
 }

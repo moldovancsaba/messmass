@@ -46,6 +46,12 @@ interface ProjectStats {
   eventResultVisitor?: number;
   eventValuePropositionVisited?: number;
   eventValuePropositionPurchases?: number;
+  // Merchandise pricing variables
+  jerseyPrice?: number;
+  scarfPrice?: number;
+  flagsPrice?: number;
+  capPrice?: number;
+  otherPrice?: number;
 }
 
 /**
