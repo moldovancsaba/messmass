@@ -341,8 +341,8 @@ export async function PUT(request: NextRequest) {
       success: true,
       modified: result.modifiedCount > 0,
       configuration: updatedConfig ? {
-        _id: updatedConfig._id.toString(),
-        ...updatedConfig
+        ...updatedConfig,
+        _id: updatedConfig._id.toString()
       } : null
     });
 
