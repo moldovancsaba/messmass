@@ -103,6 +103,7 @@ button {
   --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --color-white: #ffffff;
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
@@ -1028,6 +1029,13 @@ button {
   gap: 1rem;
 }
 
+.projects-header-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .projects-table-container {
   overflow-x: auto;
   border-radius: 0.75rem;
@@ -1280,14 +1288,14 @@ button {
   transform: scale(1.05);
 }
 
-/* Buttons */
+/* Buttons - Updated to match design system */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -1302,27 +1310,28 @@ button {
 
 .btn-logout:hover {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--gradient-primary);
   color: white;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #5a67d8, #6b46c1);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
 .btn-secondary {
-  background: #6b7280;
+  background: var(--gradient-secondary);
   color: white;
 }
 
 .btn-secondary:hover {
-  background: #4b5563;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
 }
 
 .btn-sm {
@@ -1331,12 +1340,13 @@ button {
 }
 
 .btn-info {
-  background: #3b82f6;
+  background: var(--gradient-info);
   color: white;
 }
 
 .btn-info:hover {
-  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
 }
 
 .btn-success {
@@ -1658,24 +1668,30 @@ button {
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem 0;
-  min-width: 380px;
-  width: max-content;
+  min-width: 400px;
+  width: 100%;
   max-width: 100%;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #4a5568;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 0.25rem 0;
+  width: 100%;
+  min-height: 44px;
+  max-width: 100%;
 }
 
 .legend-color {
