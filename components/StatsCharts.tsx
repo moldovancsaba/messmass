@@ -376,12 +376,12 @@ export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) =>
 
 /**
  * Merchandise Categories Horizontal Bar Chart
- * Shows merchandise distribution across different categories
+ * Shows merchandise distribution across different categories (types only)
  * Uses horizontal bars with MessMass color scheme and interactive effects
+ * Note: Merched is excluded as it represents people who have merch, not merchandise types
  */
 export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
   const merchData = [
-    { label: 'Merched', value: stats.merched, color: '#4a90e2' },
     { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
     { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
     { label: 'Flags', value: stats.flags, color: '#ffa726' },
@@ -522,11 +522,11 @@ export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName 
 };
 
 /**
- * Value Proposition Vertical Bar Chart
+ * Value Proposition Horizontal Bar Chart
  * Shows Value Prop Viewed (100%) and Value Prop Visited as percentage of Value Prop Viewed
- * Uses vertical bars with MessMass color scheme
+ * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
  */
-export const ValuePropositionVerticalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+export const ValuePropositionHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
   const valuePropViewed = stats.eventValuePropositionVisited || 0;
   const valuePropPurchases = stats.eventValuePropositionPurchases || 0;
   
@@ -536,14 +536,12 @@ export const ValuePropositionVerticalBars: React.FC<ChartProps> = ({ stats, even
   const valueData = [
     { 
       label: 'Value Prop Viewed', 
-      value: 100, // Always 100% as baseline
-      displayValue: valuePropViewed,
+      value: valuePropViewed,
       color: '#3b82f6' 
     },
     { 
-      label: 'Value Prop Visited', 
-      value: visitedPercentage,
-      displayValue: valuePropPurchases,
+      label: `Value Prop Visited (${visitedPercentage.toFixed(1)}%)`, 
+      value: valuePropPurchases,
       color: '#10b981' 
     }
   ];
@@ -552,24 +550,24 @@ export const ValuePropositionVerticalBars: React.FC<ChartProps> = ({ stats, even
     return <div className="no-data-message">No value proposition data available</div>;
   }
   
+  const maxValue = Math.max(...valueData.map(d => d.value), 1);
+  
   return (
-    <div className="vertical-bars-container">
+    <div className="horizontal-bars-container">
       {valueData.map((item, index) => (
-        <div key={item.label} className="vertical-bar-item" data-testid={`value-prop-bar-${index}`}>
-          <div className="vertical-bar-container">
+        <div key={item.label} className="horizontal-bar-item" data-testid={`value-prop-bar-${index}`}>
+          <div className="horizontal-bar-label">{item.label}</div>
+          <div className="horizontal-bar-container">
             <div 
-              className="vertical-bar-fill"
+              className="horizontal-bar-fill"
               style={{ 
-                height: `${item.value}%`,
-                backgroundColor: item.color,
-                minHeight: '20px'
+                width: `${(item.value / maxValue) * 100}%`,
+                backgroundColor: item.color
               }}
             >
-              <span className="vertical-bar-value">{item.displayValue}</span>
-              {index === 1 && <span className="vertical-bar-percentage">({visitedPercentage.toFixed(1)}%)</span>}
+              <span className="horizontal-bar-value">{item.value}</span>
             </div>
           </div>
-          <div className="vertical-bar-label">{item.label}</div>
         </div>
       ))}
     </div>
@@ -577,11 +575,11 @@ export const ValuePropositionVerticalBars: React.FC<ChartProps> = ({ stats, even
 };
 
 /**
- * Engagement Vertical Bar Chart
+ * Engagement Horizontal Bar Chart
  * Shows Fan Engagement % (Fans / Event Attendees) and Fan Interaction % (Social Media Visits + Value Prop / Images)
- * Uses vertical bars with MessMass color scheme
+ * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
  */
-export const EngagementVerticalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
   const totalFans = stats.indoor + stats.outdoor + stats.stadium;
   const eventAttendees = stats.eventAttendees || 0;
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
@@ -604,15 +602,13 @@ export const EngagementVerticalBars: React.FC<ChartProps> = ({ stats, eventName 
   
   const engagementData = [
     { 
-      label: 'Fan Engagement', 
-      value: Math.min(fanEngagement, 100), // Cap at 100%
-      displayValue: `${fanEngagement.toFixed(1)}%`,
+      label: `Fan Engagement (${fanEngagement.toFixed(1)}%)`, 
+      value: fanEngagement,
       color: '#8b5cf6' 
     },
     { 
-      label: 'Fan Interaction', 
-      value: Math.min(fanInteraction, 100), // Cap at 100%
-      displayValue: `${fanInteraction.toFixed(1)}%`,
+      label: `Fan Interaction (${fanInteraction.toFixed(1)}%)`, 
+      value: fanInteraction,
       color: '#f59e0b' 
     }
   ];
@@ -621,34 +617,137 @@ export const EngagementVerticalBars: React.FC<ChartProps> = ({ stats, eventName 
     return <div className="no-data-message">No engagement data available</div>;
   }
   
+  const maxValue = Math.max(...engagementData.map(d => d.value), 100); // Use 100% as minimum scale
+  
   return (
-    <div className="vertical-bars-container">
-      {engagementData.map((item, index) => (
-        <div key={item.label} className="vertical-bar-item" data-testid={`engagement-bar-${index}`}>
-          <div className="vertical-bar-container">
-            <div 
-              className="vertical-bar-fill"
-              style={{ 
-                height: `${item.value}%`,
-                backgroundColor: item.color,
-                minHeight: '20px'
-              }}
-            >
-              <span className="vertical-bar-value">{item.displayValue}</span>
+    <>
+      <div className="horizontal-bars-container">
+        {engagementData.map((item, index) => (
+          <div key={item.label} className="horizontal-bar-item" data-testid={`engagement-bar-${index}`}>
+            <div className="horizontal-bar-label">{item.label}</div>
+            <div className="horizontal-bar-container">
+              <div 
+                className="horizontal-bar-fill"
+                style={{ 
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color
+                }}
+              >
+                <span className="horizontal-bar-value">{item.value.toFixed(1)}%</span>
+              </div>
             </div>
           </div>
-          <div className="vertical-bar-label">{item.label}</div>
-        </div>
-      ))}
-      <div className="engagement-legend">
-        <div className="engagement-legend-item">
-          <small>Fan Engagement = Fans / Event Attendees</small>
-        </div>
-        <div className="engagement-legend-item">
-          <small>Fan Interaction = (Social Media + Value Prop) / Images</small>
-        </div>
+        ))}
       </div>
-    </div>
+      
+      {/* Engagement calculation explanation */}
+      <div style={{ 
+        marginTop: '1rem', 
+        padding: '0.75rem', 
+        background: 'rgba(0, 0, 0, 0.05)', 
+        borderRadius: '8px', 
+        fontSize: '0.75rem', 
+        color: '#6b7280', 
+        lineHeight: '1.4' 
+      }}>
+        <div><strong>Fan Engagement:</strong> Fans / Event Attendees</div>
+        <div><strong>Fan Interaction:</strong> (Social Media + Value Prop) / Images</div>
+      </div>
+    </>
+  );
+};
+
+/**
+ * Advertisement Value Horizontal Bar Chart
+ * Shows advertising value calculations with cost per type
+ * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
+ */
+export const AdvertisementValueHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
+  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const totalVisitors = (
+    (stats.visitQrCode || 0) + 
+    (stats.visitShortUrl || 0) + 
+    (stats.visitWeb || 0) + 
+    (stats.visitFacebook || 0) + 
+    (stats.visitInstagram || 0) + 
+    (stats.visitYoutube || 0) + 
+    (stats.visitTiktok || 0) + 
+    (stats.visitX || 0) + 
+    (stats.visitTrustpilot || 0)
+  );
+  
+  // Calculate values in EUR
+  const directValue = totalImages * 9; // Images x 9 EUR
+  const directAdsValue = totalFans * 7; // Fans x 7 EUR
+  const brandAwarenessValue = totalVisitors * 1; // Visitors x 1 EUR
+  
+  const adData = [
+    { 
+      label: `Direct Value (${totalImages} × €9)`, 
+      value: directValue,
+      color: '#3b82f6' 
+    },
+    { 
+      label: `Direct Ads Value (${totalFans} × €7)`, 
+      value: directAdsValue,
+      color: '#10b981' 
+    },
+    { 
+      label: `Brand Awareness (${totalVisitors} × €1)`, 
+      value: brandAwarenessValue,
+      color: '#f59e0b' 
+    }
+  ];
+  
+  const totalAdValue = directValue + directAdsValue + brandAwarenessValue;
+  
+  if (totalAdValue === 0) {
+    return <div className="no-data-message">No advertisement value data available</div>;
+  }
+  
+  const maxValue = Math.max(...adData.map(d => d.value), 1);
+  
+  return (
+    <>
+      <div className="horizontal-bars-container">
+        {adData.map((item, index) => (
+          <div key={item.label} className="horizontal-bar-item" data-testid={`ad-value-bar-${index}`}>
+            <div className="horizontal-bar-label">{item.label}</div>
+            <div className="horizontal-bar-container">
+              <div 
+                className="horizontal-bar-fill"
+                style={{ 
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color
+                }}
+              >
+                <span className="horizontal-bar-value">€{item.value.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Total value and explanation */}
+      <div style={{ 
+        marginTop: '1rem', 
+        padding: '0.75rem', 
+        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)', 
+        borderRadius: '8px', 
+        fontSize: '0.75rem', 
+        color: '#374151', 
+        lineHeight: '1.4',
+        border: '1px solid rgba(59, 130, 246, 0.2)'
+      }}>
+        <div style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>
+          💰 Total Advertisement Value: €{totalAdValue.toLocaleString()}
+        </div>
+        <div><strong>Direct Value:</strong> Images × €9 (avg eDM value proposition message cost)</div>
+        <div><strong>Direct Ads Value:</strong> Fans × €7 (avg advertisement cost for engagement environment)</div>
+        <div><strong>Brand Awareness:</strong> Visitors × €1 (avg cost of visibility per engaged viewer)</div>
+      </div>
+    </>
   );
 };
 
