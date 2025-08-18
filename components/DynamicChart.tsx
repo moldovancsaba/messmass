@@ -178,25 +178,32 @@ const BarChart: React.FC<{
     );
   }
 
-  const barsWithLegend = result.elements.map((element) => {
+  // Create separate legends and bars
+  const legends = result.elements.map((element) => {
+    const value = element.value;
+    const isValid = typeof value === 'number';
+    return (
+      <div key={element.id} className="legend-text-row">
+        <span>{element.label}: {isValid ? formatChartValue(value as number) : 'N/A'}</span>
+      </div>
+    );
+  });
+
+  const bars = result.elements.map((element) => {
     const value = element.value;
     const isValid = typeof value === 'number';
     const barWidth = isValid ? ((value as number) / maxValue) * 100 : 0;
     
     return (
-      <div key={element.id} className="bar-row">
+      <div key={element.id} className="bar-only-row">
         <div className="bar-container">
           <div 
             className="bar-fill" 
             style={{ 
               width: `${barWidth}%`, 
-              backgroundColor: element.color 
-            }}
+              '--bar-color': element.color
+            } as React.CSSProperties}
           />
-        </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: element.color }}></div>
-          <span>{element.label}: {isValid ? formatChartValue(value as number) : 'N/A'}</span>
         </div>
       </div>
     );
@@ -224,8 +231,13 @@ const BarChart: React.FC<{
           </div>
         </div>
       )}
-      <div className="bar-chart-large">
-        {barsWithLegend}
+      <div className="bar-chart-two-columns">
+        <div className="legends-column">
+          {legends}
+        </div>
+        <div className="bars-column">
+          {bars}
+        </div>
       </div>
     </div>
   );

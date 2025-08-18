@@ -1,5 +1,7 @@
 {
-  "/api/chart-config/public/route": "app/api/chart-config/public/route.js",
   "/api/projects/stats/[slug]/route": "app/api/projects/stats/[slug]/route.js",
-  "/stats/[slug]/page": "app/stats/[slug]/page.js"
+  "/api/chart-config/public/route": "app/api/chart-config/public/route.js",
+  "/admin/page": "app/admin/page.js",
+  "/stats/[slug]/page": "app/stats/[slug]/page.js",
+  "/admin/login/page": "app/admin/login/page.js"
 }
