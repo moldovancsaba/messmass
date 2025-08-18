@@ -267,8 +267,7 @@ export const ChartContainer: React.FC<{
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const canvas = await html2canvas(chartRef.current, {
-        logging: false,
-        backgroundColor: '#ffffff'
+        logging: false
       });
       
       // Create download link

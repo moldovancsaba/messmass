@@ -51,7 +51,7 @@ interface Project {
 
 export default function EditPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = params?.slug as string;
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

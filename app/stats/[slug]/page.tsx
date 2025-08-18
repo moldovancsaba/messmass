@@ -63,7 +63,7 @@ interface Project {
 
 export default function StatsPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = params?.slug as string;
   
   const [project, setProject] = useState<Project | null>(null);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);

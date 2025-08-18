@@ -78,7 +78,7 @@ interface ProjectListItem {
 
 export default function HashtagStatsPage() {
   const params = useParams();
-  const hashtagParam = params.hashtag as string;
+  const hashtagParam = params?.hashtag as string;
   
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);

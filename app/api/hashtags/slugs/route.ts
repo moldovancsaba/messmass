@@ -94,14 +94,15 @@ export async function GET(request: NextRequest) {
         const { v4: uuidv4 } = require('uuid');
         const newSlug = uuidv4();
         
-        slugDoc = {
+        const newSlugDoc = {
           hashtag,
           slug: newSlug,
           createdAt: new Date(),
           updatedAt: new Date()
         };
         
-        await hashtagSlugsCollection.insertOne(slugDoc);
+        const result = await hashtagSlugsCollection.insertOne(newSlugDoc);
+        slugDoc = { _id: result.insertedId, ...newSlugDoc };
         console.log(`🆕 Created new UUID for #${hashtag}: ${newSlug}`);
       } else {
         console.log(`✅ Found existing UUID for #${hashtag}: ${slugDoc.slug}`);

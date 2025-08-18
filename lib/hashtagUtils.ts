@@ -53,8 +53,8 @@ export async function getOrCreateHashtagSlug(hashtag: string): Promise<string> {
 
     // Generate new UUID for hashtag
     const slug = uuidv4();
-    const hashtagSlug: HashtagSlug = {
-      hashtag: hashtag.toLowerCase(),
+    const hashtagSlug = {
+      hashtag,
       slug,
       createdAt: new Date(),
       updatedAt: new Date()

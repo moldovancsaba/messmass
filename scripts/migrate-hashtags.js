@@ -50,12 +50,13 @@ async function migrateHashtags() {
       } else {
         // Create new UUID slug
         const newSlug = uuidv4();
-        await hashtagSlugsCollection.insertOne({
+        const newDoc = {
           hashtag,
           slug: newSlug,
           createdAt: new Date(),
           updatedAt: new Date()
-        });
+        };
+        await hashtagSlugsCollection.insertOne(newDoc);
         console.log(`  🆕 Created new slug for #${hashtag}: ${newSlug}`);
         created++;
       }
