@@ -205,45 +205,81 @@ export default function StatsPage() {
             <div className={styles.spinner}></div>
             <p>Loading charts...</p>
           </div>
-        ) : chartResults.length > 0 ? (
-          <div className="dynamic-charts-grid">
-            {chartResults.map((result, index) => {
-              console.log(`Chart ${result.chartId}:`, result);
-              
-              // Check if chart has any valid data (not all NA and not all zero)
-              const validElements = result.elements.filter(element => 
-                typeof element.value === 'number'
-              );
-              const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-              
-              console.log(`Chart ${result.chartId} - validElements: ${validElements.length}, totalValue: ${totalValue}`);
-              
-              // Only hide charts if ALL elements are NA or if it's a pie chart with zero total
-              const shouldShow = validElements.length > 0 && (
-                result.type === 'bar' || totalValue > 0
-              );
-              
-              if (!shouldShow) {
-                console.log(`Hiding chart ${result.chartId} - no valid data`);
-                return null;
-              }
-              
-              return (
-                <ChartContainer 
-                  key={result.chartId}
-                  title={result.title}
-                  subtitle={result.subtitle}
-                  emoji={result.emoji}
-                  className="chart-item"
-                >
-                  <DynamicChart result={result} />
-                </ChartContainer>
-              );
-            }).filter(Boolean)}
-          </div>
         ) : (
-          <div className={styles.error}>
-            <p>No chart configurations available</p>
+          <div>
+            <div style={{background: 'yellow', padding: '1rem', margin: '1rem 0', borderRadius: '8px'}}>
+              <h3>🐛 DEBUG INFO:</h3>
+              <p>Chart Configurations: {chartConfigurations.length}</p>
+              <p>Chart Results: {chartResults.length}</p>
+              <p>Project loaded: {project ? 'Yes' : 'No'}</p>
+              {chartResults.length > 0 && (
+                <div>
+                  <h4>Chart Results:</h4>
+                  {chartResults.map((result, index) => {
+                    const validElements = result.elements.filter(element => 
+                      typeof element.value === 'number'
+                    );
+                    const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
+                    const shouldShow = validElements.length > 0 && (
+                      result.type === 'bar' || totalValue > 0
+                    );
+                    
+                    return (
+                      <div key={result.chartId} style={{margin: '0.5rem 0', padding: '0.5rem', background: 'white'}}>
+                        <strong>{result.chartId}</strong> ({result.type}): 
+                        {validElements.length} valid elements, 
+                        total: {totalValue}, 
+                        should show: {shouldShow ? 'YES' : 'NO'}
+                        <br/>
+                        Elements: {result.elements.map(el => `${el.label}=${el.value}`).join(', ')}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            
+            {chartResults.length > 0 ? (
+              <div className="dynamic-charts-grid">
+                {chartResults.map((result, index) => {
+                  console.log(`Chart ${result.chartId}:`, result);
+                  
+                  // Check if chart has any valid data (not all NA and not all zero)
+                  const validElements = result.elements.filter(element => 
+                    typeof element.value === 'number'
+                  );
+                  const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
+                  
+                  console.log(`Chart ${result.chartId} - validElements: ${validElements.length}, totalValue: ${totalValue}`);
+                  
+                  // Only hide charts if ALL elements are NA or if it's a pie chart with zero total
+                  const shouldShow = validElements.length > 0 && (
+                    result.type === 'bar' || totalValue > 0
+                  );
+                  
+                  if (!shouldShow) {
+                    console.log(`Hiding chart ${result.chartId} - no valid data`);
+                    return null;
+                  }
+                  
+                  return (
+                    <ChartContainer 
+                      key={result.chartId}
+                      title={result.title}
+                      subtitle={result.subtitle}
+                      emoji={result.emoji}
+                      className="chart-item"
+                    >
+                      <DynamicChart result={result} />
+                    </ChartContainer>
+                  );
+                }).filter(Boolean)}
+              </div>
+            ) : (
+              <div className={styles.error}>
+                <p>No chart configurations available</p>
+              </div>
+            )}
           </div>
         )}
       </div>
