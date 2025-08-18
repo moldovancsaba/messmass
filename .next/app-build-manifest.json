@@ -35,6 +35,17 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/projects/route.js"
+    ],
+    "/stats/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/stats/[slug]/page.css",
+      "static/chunks/app/stats/[slug]/page.js"
+    ],
+    "/api/projects/stats/[slug]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/projects/stats/[slug]/route.js"
     ]
   }
 }
