@@ -1586,24 +1586,30 @@ button {
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem 0;
-  min-width: 380px;
-  width: max-content;
+  min-width: 400px;
+  width: 100%;
   max-width: 100%;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #4a5568;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 0.25rem 0;
+  width: 100%;
+  min-height: 44px;
+  max-width: 100%;
 }
 
 .legend-color {

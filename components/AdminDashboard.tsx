@@ -81,6 +81,8 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   const fansLocationChartRef = useRef<HTMLDivElement>(null);
   const ageGroupsChartRef = useRef<HTMLDivElement>(null);
   const merchandiseChartRef = useRef<HTMLDivElement>(null);
+  const engagementChartRef = useRef<HTMLDivElement>(null);
+  const valueChartRef = useRef<HTMLDivElement>(null);
   const visitorSourcesChartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -470,24 +472,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             />
             <text
               x="90"
-              y="86"
+              y="98"
               textAnchor="middle"
-              className="chart-total"
-              fontSize="20"
-              fontWeight="700"
+              className="chart-emoji"
+              fontSize="28"
               fill="#1a202c"
             >
-              {total}
-            </text>
-            <text
-              x="90"
-              y="102"
-              textAnchor="middle"
-              className="chart-label"
-              fontSize="12"
-              fill="#6b7280"
-            >
-              TOTAL
+              👥
             </text>
           </svg>
         </div>
@@ -688,24 +679,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             />
             <text
               x="90"
-              y="86"
+              y="98"
               textAnchor="middle"
-              className="chart-total"
-              fontSize="20"
-              fontWeight="700"
+              className="chart-emoji"
+              fontSize="28"
               fill="#1a202c"
             >
-              {total}
-            </text>
-            <text
-              x="90"
-              y="102"
-              textAnchor="middle"
-              className="chart-label"
-              fontSize="12"
-              fill="#6b7280"
-            >
-              FANS
+              📍
             </text>
           </svg>
         </div>
@@ -794,24 +774,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             />
             <text
               x="90"
-              y="86"
+              y="98"
               textAnchor="middle"
-              className="chart-total"
-              fontSize="20"
-              fontWeight="700"
+              className="chart-emoji"
+              fontSize="28"
               fill="#1a202c"
             >
-              {total}
-            </text>
-            <text
-              x="90"
-              y="102"
-              textAnchor="middle"
-              className="chart-label"
-              fontSize="12"
-              fill="#6b7280"
-            >
-              TOTAL
+              👥
             </text>
           </svg>
         </div>
@@ -905,29 +874,194 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             />
             <text
               x="90"
-              y="86"
+              y="98"
               textAnchor="middle"
-              className="chart-total"
-              fontSize="20"
-              fontWeight="700"
+              className="chart-emoji"
+              fontSize="28"
               fill="#1a202c"
             >
-              {total}
-            </text>
-            <text
-              x="90"
-              y="102"
-              textAnchor="middle"
-              className="chart-label"
-              fontSize="12"
-              fill="#6b7280"
-            >
-              VISITS
+              🌐
             </text>
           </svg>
         </div>
         <div className="chart-legend">
           {legend}
+        </div>
+      </>
+    );
+  };
+
+  const renderEngagementHorizontalBars = () => {
+    if (!selectedProject) return null;
+    
+    const totalFans = selectedProject.stats.indoor + selectedProject.stats.outdoor + selectedProject.stats.stadium;
+    const eventAttendees = selectedProject.stats.eventAttendees || 0;
+    const totalImages = selectedProject.stats.remoteImages + selectedProject.stats.hostessImages + selectedProject.stats.selfies;
+    
+    // Calculate social media visits total
+    const socialMediaVisits = (
+      (selectedProject.stats.visitFacebook || 0) + 
+      (selectedProject.stats.visitInstagram || 0) + 
+      (selectedProject.stats.visitYoutube || 0) + 
+      (selectedProject.stats.visitTiktok || 0) + 
+      (selectedProject.stats.visitX || 0) + 
+      (selectedProject.stats.visitTrustpilot || 0)
+    );
+    
+    const valueProp = (selectedProject.stats.eventValuePropositionVisited || 0) + (selectedProject.stats.eventValuePropositionPurchases || 0);
+    
+    // Calculate percentages
+    const fanEngagement = eventAttendees > 0 ? (totalFans / eventAttendees) * 100 : 0;
+    const fanInteraction = totalImages > 0 ? ((socialMediaVisits + valueProp) / totalImages) * 100 : 0;
+    
+    const engagementData = [
+      { 
+        label: `Fan Engagement (${fanEngagement.toFixed(1)}%)`, 
+        value: fanEngagement,
+        color: '#8b5cf6' 
+      },
+      { 
+        label: `Fan Interaction (${fanInteraction.toFixed(1)}%)`, 
+        value: fanInteraction,
+        color: '#f59e0b' 
+      }
+    ];
+    
+    if (eventAttendees === 0 && totalImages === 0) {
+      return <div className="no-data-message">No engagement data available</div>;
+    }
+    
+    const maxValue = Math.max(...engagementData.map(d => d.value), 100); // Use 100% as minimum scale
+    
+    return (
+      <div className="horizontal-bars-container">
+        {engagementData.map((item, index) => (
+          <div key={item.label} className="horizontal-bar-item" data-testid={`engagement-bar-${index}`}>
+            <div className="horizontal-bar-label">{item.label}</div>
+            <div className="horizontal-bar-container">
+              <div 
+                className="horizontal-bar-fill"
+                style={{ 
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color
+                }}
+              >
+                <span className="horizontal-bar-value">{item.value.toFixed(1)}%</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderValueHorizontalBars = () => {
+    if (!selectedProject) return null;
+    
+    const totalImages = selectedProject.stats.remoteImages + selectedProject.stats.hostessImages + selectedProject.stats.selfies;
+    const totalFans = selectedProject.stats.indoor + selectedProject.stats.outdoor + selectedProject.stats.stadium;
+    const under40Fans = selectedProject.stats.genAlpha + selectedProject.stats.genYZ;
+    const totalVisitors = (
+      (selectedProject.stats.visitQrCode || 0) + 
+      (selectedProject.stats.visitShortUrl || 0) + 
+      (selectedProject.stats.visitWeb || 0) + 
+      (selectedProject.stats.visitFacebook || 0) + 
+      (selectedProject.stats.visitInstagram || 0) + 
+      (selectedProject.stats.visitYoutube || 0) + 
+      (selectedProject.stats.visitTiktok || 0) + 
+      (selectedProject.stats.visitX || 0) + 
+      (selectedProject.stats.visitTrustpilot || 0)
+    );
+    const valuePropVisited = selectedProject.stats.eventValuePropositionVisited || 0;
+    
+    // Calculate values in EUR according to specified rates
+    const valuePropValue = valuePropVisited * 15; // CPM: Clicks × €15
+    const directValue = totalImages * 5; // eDM: Images × €5
+    const directAdsValue = totalFans * 3; // Ads: Fans × €3
+    const under40EngagedValue = under40Fans * 4; // U40 Engagement: under40fans × €4
+    const brandAwarenessValue = totalVisitors * 1; // Branding: Visitors × €1
+    
+    const valueData = [
+      { 
+        label: 'CPM', 
+        value: valuePropValue,
+        color: '#3b82f6' 
+      },
+      { 
+        label: 'eDM', 
+        value: directValue,
+        color: '#10b981' 
+      },
+      { 
+        label: 'Ads', 
+        value: directAdsValue,
+        color: '#f59e0b' 
+      },
+      { 
+        label: 'U40 Eng.', 
+        value: under40EngagedValue,
+        color: '#8b5cf6' 
+      },
+      { 
+        label: 'Branding', 
+        value: brandAwarenessValue,
+        color: '#ef4444' 
+      }
+    ];
+    
+    const totalValue = valuePropValue + directValue + directAdsValue + under40EngagedValue + brandAwarenessValue;
+    
+    if (totalValue === 0) {
+      return <div className="no-data-message">No value data available</div>;
+    }
+    
+    const maxValue = Math.max(...valueData.map(d => d.value), 1);
+    
+    return (
+      <>
+        {/* Large EUR Total and Description */}
+        <div style={{ 
+          textAlign: 'center',
+          marginBottom: '1.5rem',
+          padding: '1rem',
+          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
+          borderRadius: '12px',
+          border: '1px solid rgba(59, 130, 246, 0.2)'
+        }}>
+          <div style={{
+            fontSize: '2rem',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '0.25rem'
+          }}>
+            €{totalValue.toLocaleString()}
+          </div>
+          <div style={{
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            Advertisement Value
+          </div>
+        </div>
+        
+        <div className="horizontal-bars-container">
+          {valueData.map((item, index) => (
+            <div key={item.label} className="horizontal-bar-item" data-testid={`value-bar-${index}`}>
+              <div className="horizontal-bar-label">{item.label}</div>
+              <div className="horizontal-bar-container">
+                <div 
+                  className="horizontal-bar-fill"
+                  style={{ 
+                    width: `${(item.value / maxValue) * 100}%`,
+                    backgroundColor: item.color
+                  }}
+                >
+                  <span className="horizontal-bar-value">€{item.value.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </>
     );
@@ -1319,105 +1453,86 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             <div className="charts-right-column">
               <h3 className="column-title">Data Visualization</h3>
               
-              {/* Gender Ratio Circle Chart */}
-              <div className="chart-container" ref={genderChartRef}>
-                <div className="chart-header">
-                  <h4 className="chart-title">Gender Distribution</h4>
-                  <div className="chart-export-buttons">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => exportChartAsPNG(genderChartRef, `${selectedProject?.eventName || 'event'}_gender_distribution`)}
-                      title="Download as PNG"
-                    >
-                      📥 Download PNG
-                    </button>
+              {/* First Row: Merchandise, Engagement, Value */}
+              <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                {/* 1. Merchandise */}
+                <div className="chart-container" ref={merchandiseChartRef}>
+                  <div className="chart-header">
+                    <h4 className="chart-title">Merchandise</h4>
+                    <div className="chart-export-buttons">
+                      <button 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => exportChartAsPNG(merchandiseChartRef, `${selectedProject?.eventName || 'event'}_merchandise`)}
+                        title="Download as PNG"
+                      >
+                        📥 Download PNG
+                      </button>
+                    </div>
+                  </div>
+                  <div className="horizontal-bars-container">
+                    {renderMerchandiseHorizontalBars()}
                   </div>
                 </div>
-                <div className="pie-chart-container">
-                  <div className="pie-chart" data-testid="gender-circle-chart">
-                    {renderGenderCircleChart()}
+
+                {/* 2. Engagement */}
+                <div className="chart-container" ref={engagementChartRef}>
+                  <div className="chart-header">
+                    <h4 className="chart-title">Engagement</h4>
+                    <div className="chart-export-buttons">
+                      <button 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => exportChartAsPNG(engagementChartRef, `${selectedProject?.eventName || 'event'}_engagement`)}
+                        title="Download as PNG"
+                      >
+                        📥 Download PNG
+                      </button>
+                    </div>
+                  </div>
+                  <div className="horizontal-bars-container">
+                    {renderEngagementHorizontalBars()}
+                  </div>
+                </div>
+
+                {/* 3. Value */}
+                <div className="chart-container" ref={valueChartRef}>
+                  <div className="chart-header">
+                    <h4 className="chart-title">Value</h4>
+                    <div className="chart-export-buttons">
+                      <button 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => exportChartAsPNG(valueChartRef, `${selectedProject?.eventName || 'event'}_value`)}
+                        title="Download as PNG"
+                      >
+                        📥 Download PNG
+                      </button>
+                    </div>
+                  </div>
+                  <div className="horizontal-bars-container">
+                    {renderValueHorizontalBars()}
                   </div>
                 </div>
               </div>
 
-              {/* Fans Location Pie Chart */}
-              <div className="chart-container" ref={fansLocationChartRef}>
-                <div className="chart-header">
-                  <h4 className="chart-title">Fans Location</h4>
-                  <div className="chart-export-buttons">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => exportChartAsPNG(fansLocationChartRef, `${selectedProject?.eventName || 'event'}_fans_location`)}
-                      title="Download as PNG"
-                    >
-                      📥 Download PNG
-                    </button>
+              {/* Second Row: Visitor Sources */}
+              <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+                {/* 4. Visitor Sources */}
+                <div className="chart-container" ref={visitorSourcesChartRef}>
+                  <div className="chart-header">
+                    <h4 className="chart-title">Visitor Sources</h4>
+                    <div className="chart-export-buttons">
+                      <button 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => exportChartAsPNG(visitorSourcesChartRef, `${selectedProject?.eventName || 'event'}_visitor_sources`)}
+                        title="Download as PNG"
+                      >
+                        📥 Download PNG
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="pie-chart-container">
-                  <div className="pie-chart" data-testid="fans-location-pie-chart">
-                    {renderFansLocationPieChart()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Age Groups Pie Chart */}
-              <div className="chart-container" ref={ageGroupsChartRef}>
-                <div className="chart-header">
-                  <h4 className="chart-title">Age Groups</h4>
-                  <div className="chart-export-buttons">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => exportChartAsPNG(ageGroupsChartRef, `${selectedProject?.eventName || 'event'}_age_groups`)}
-                      title="Download as PNG"
-                    >
-                      📥 Download PNG
-                    </button>
-                  </div>
-                </div>
-                <div className="pie-chart-container">
-                  <div className="pie-chart" data-testid="age-groups-pie-chart">
-                    {renderAgeGroupsPieChart()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Horizontal Bar Chart for Merchandise */}
-              <div className="chart-container" ref={merchandiseChartRef}>
-                <div className="chart-header">
-                  <h4 className="chart-title">Merchandise Categories</h4>
-                  <div className="chart-export-buttons">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => exportChartAsPNG(merchandiseChartRef, `${selectedProject?.eventName || 'event'}_merchandise_categories`)}
-                      title="Download as PNG"
-                    >
-                      📥 Download PNG
-                    </button>
-                  </div>
-                </div>
-                <div className="horizontal-bars-container">
-                  {renderMerchandiseHorizontalBars()}
-                </div>
-              </div>
-
-              {/* Visitor Sources Pie Chart */}
-              <div className="chart-container" ref={visitorSourcesChartRef}>
-                <div className="chart-header">
-                  <h4 className="chart-title">Visitor Sources</h4>
-                  <div className="chart-export-buttons">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => exportChartAsPNG(visitorSourcesChartRef, `${selectedProject?.eventName || 'event'}_visitor_sources`)}
-                      title="Download as PNG"
-                    >
-                      📥 Download PNG
-                    </button>
-                  </div>
-                </div>
-                <div className="pie-chart-container">
-                  <div className="pie-chart" data-testid="visitor-sources-pie-chart">
-                    {renderVisitorSourcesPieChart()}
+                  <div className="pie-chart-container">
+                    <div className="pie-chart" data-testid="visitor-sources-pie-chart">
+                      {renderVisitorSourcesPieChart()}
+                    </div>
                   </div>
                 </div>
               </div>

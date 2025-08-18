@@ -9,9 +9,8 @@ import {
   AgeGroupsPieChart,
   MerchandiseHorizontalBars,
   VisitorSourcesPieChart,
-  ValuePropositionHorizontalBars,
+  ValueHorizontalBars,
   EngagementHorizontalBars,
-  AdvertisementValueHorizontalBars,
   ChartContainer
 } from '@/components/StatsCharts';
 
@@ -157,36 +156,12 @@ export default function StatsPage() {
       {/* Charts Grid Section */}
       <div className="glass-card charts-section">
         <h2 className="section-title">📊 Data Visualization</h2>
-        <div className="charts-grid">
-          <ChartContainer title="Gender Distribution" className="chart-item">
-            <GenderCircleChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          <ChartContainer title="Fans Location" className="chart-item">
-            <FansLocationPieChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          <ChartContainer title="Age Groups" className="chart-item">
-            <AgeGroupsPieChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          <ChartContainer title="Merchandise Categories" className="chart-item">
+        
+        {/* First Row: Merchandise, Engagement, Value */}
+        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+          <ChartContainer title="Merchandise" className="chart-item">
             <MerchandiseHorizontalBars stats={project.stats} eventName={project.eventName} />
           </ChartContainer>
-          
-          {/* Conditional rendering for Visitor Sources - only QR Code, Short URL, and Web */}
-          {((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0 && (
-            <ChartContainer title="Visitor Sources" className="chart-item">
-              <VisitorSourcesPieChart stats={project.stats} eventName={project.eventName} />
-            </ChartContainer>
-          )}
-          
-          {/* Conditional rendering for Value Proposition - only if data exists */}
-          {((project.stats.eventValuePropositionVisited || 0) > 0) && (
-            <ChartContainer title="Value Proposition" className="chart-item">
-              <ValuePropositionHorizontalBars stats={project.stats} eventName={project.eventName} />
-            </ChartContainer>
-          )}
           
           {/* Conditional rendering for Engagement - only if data exists */}
           {((project.stats.eventAttendees || 0) > 0 || (project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0) && (
@@ -195,10 +170,35 @@ export default function StatsPage() {
             </ChartContainer>
           )}
           
-          {/* Advertisement Value chart - only if we have relevant data */}
-          {((project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0 || (project.stats.indoor + project.stats.outdoor + project.stats.stadium) > 0 || ((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0) && (
-            <ChartContainer title="Advertisement Value" className="chart-item">
-              <AdvertisementValueHorizontalBars stats={project.stats} eventName={project.eventName} />
+          {/* Combined Value chart - only if we have relevant data */}
+          {((project.stats.eventValuePropositionVisited || 0) > 0 || (project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0 || (project.stats.indoor + project.stats.outdoor + project.stats.stadium) > 0 || ((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0) && (
+            <ChartContainer title="Value" className="chart-item">
+              <ValueHorizontalBars stats={project.stats} eventName={project.eventName} />
+            </ChartContainer>
+          )}
+        </div>
+        
+        {/* Second Row: Gender Distribution and Age Groups */}
+        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+          <ChartContainer title="Gender Distribution" className="chart-item">
+            <GenderCircleChart stats={project.stats} eventName={project.eventName} />
+          </ChartContainer>
+          
+          <ChartContainer title="Age Groups" className="chart-item">
+            <AgeGroupsPieChart stats={project.stats} eventName={project.eventName} />
+          </ChartContainer>
+        </div>
+        
+        {/* Third Row: Location and Sources */}
+        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+          <ChartContainer title="Location" className="chart-item">
+            <FansLocationPieChart stats={project.stats} eventName={project.eventName} />
+          </ChartContainer>
+          
+          {/* Conditional rendering for Sources - only QR Code, Short URL, and Web */}
+          {((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0 && (
+            <ChartContainer title="Sources" className="chart-item">
+              <VisitorSourcesPieChart stats={project.stats} eventName={project.eventName} />
             </ChartContainer>
           )}
         </div>

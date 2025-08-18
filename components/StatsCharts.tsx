@@ -129,24 +129,13 @@ export const GenderCircleChart: React.FC<ChartProps> = ({ stats, eventName }) =>
           />
           <text
             x="90"
-            y="86"
+            y="98"
             textAnchor="middle"
-            className="chart-total"
-            fontSize="20"
-            fontWeight="700"
+            className="chart-emoji"
+            fontSize="36"
             fill="#1a202c"
           >
-            {total}
-          </text>
-          <text
-            x="90"
-            y="102"
-            textAnchor="middle"
-            className="chart-label"
-            fontSize="12"
-            fill="#6b7280"
-          >
-            TOTAL
+            👥
           </text>
         </svg>
       </div>
@@ -158,15 +147,15 @@ export const GenderCircleChart: React.FC<ChartProps> = ({ stats, eventName }) =>
 };
 
 /**
- * Fans Location Distribution Pie Chart
- * Shows where fans are located: Indoor, Outdoor, Stadium
+ * Location Distribution Pie Chart
+ * Shows where fans are located: Remote (Indoor + Outdoor), Event (Stadium)
  * Uses MessMass location-based color scheme
  */
 export const FansLocationPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const remoteTotal = stats.indoor + stats.outdoor;
   const fansData = [
-    { label: 'Indoor', value: stats.indoor, color: '#3b82f6' },
-    { label: 'Outdoor', value: stats.outdoor, color: '#10b981' },
-    { label: 'Stadium', value: stats.stadium, color: '#f59e0b' }
+    { label: 'Remote', value: remoteTotal, color: '#3b82f6' },
+    { label: 'Event', value: stats.stadium, color: '#f59e0b' }
   ];
   
   const total = fansData.reduce((sum, item) => sum + item.value, 0);
@@ -237,24 +226,13 @@ export const FansLocationPieChart: React.FC<ChartProps> = ({ stats, eventName })
           />
           <text
             x="90"
-            y="86"
+            y="98"
             textAnchor="middle"
-            className="chart-total"
-            fontSize="20"
-            fontWeight="700"
+            className="chart-emoji"
+            fontSize="36"
             fill="#1a202c"
           >
-            {total}
-          </text>
-          <text
-            x="90"
-            y="102"
-            textAnchor="middle"
-            className="chart-label"
-            fontSize="12"
-            fill="#6b7280"
-          >
-            FANS
+            📍
           </text>
         </svg>
       </div>
@@ -267,15 +245,16 @@ export const FansLocationPieChart: React.FC<ChartProps> = ({ stats, eventName })
 
 /**
  * Age Groups Distribution Pie Chart
- * Displays generational breakdown: Alpha, Y+Z, X, Boomer
- * Uses color-coded generational scheme
+ * Displays age breakdown: Under 40 (Alpha + Y+Z), Over 40 (X + Boomer)
+ * Uses simplified age-based color scheme
  */
 export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const under40Total = stats.genAlpha + stats.genYZ;
+  const over40Total = stats.genX + stats.boomer;
+  
   const ageData = [
-    { label: 'Alpha', value: stats.genAlpha, color: '#8b5cf6' },
-    { label: 'Y+Z', value: stats.genYZ, color: '#06b6d4' },
-    { label: 'X', value: stats.genX, color: '#f97316' },
-    { label: 'Boomer', value: stats.boomer, color: '#ef4444' }
+    { label: 'Under 40', value: under40Total, color: '#06b6d4' },
+    { label: 'Over 40', value: over40Total, color: '#f97316' }
   ];
   
   const total = ageData.reduce((sum, item) => sum + item.value, 0);
@@ -346,24 +325,13 @@ export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) =>
           />
           <text
             x="90"
-            y="86"
+            y="98"
             textAnchor="middle"
-            className="chart-total"
-            fontSize="20"
-            fontWeight="700"
+            className="chart-emoji"
+            fontSize="36"
             fill="#1a202c"
           >
-            {total}
-          </text>
-          <text
-            x="90"
-            y="102"
-            textAnchor="middle"
-            className="chart-label"
-            fontSize="12"
-            fill="#6b7280"
-          >
-            TOTAL
+            👥
           </text>
         </svg>
       </div>
@@ -375,12 +343,19 @@ export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) =>
 };
 
 /**
- * Merchandise Categories Horizontal Bar Chart
+ * Merchandise Horizontal Bar Chart
  * Shows merchandise distribution across different categories (types only)
+ * Includes potential sales calculation and EUR total above bars
  * Uses horizontal bars with MessMass color scheme and interactive effects
  * Note: Merched is excluded as it represents people who have merch, not merchandise types
  */
 export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const merched = stats.merched;
+  
+  // Calculate potential merch sales: (Fans - Merched) × €10
+  const potentialSales = (totalFans - merched) * 10;
+  
   const merchData = [
     { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
     { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
@@ -392,24 +367,52 @@ export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventNa
   const maxValue = Math.max(...merchData.map(d => d.value), 1);
   
   return (
-    <div className="horizontal-bars-container">
-      {merchData.map((item, index) => (
-        <div key={item.label} className="horizontal-bar-item" data-testid={`merch-bar-${index}`}>
-          <div className="horizontal-bar-label">{item.label}</div>
-          <div className="horizontal-bar-container">
-            <div 
-              className="horizontal-bar-fill"
-              style={{ 
-                width: `${(item.value / maxValue) * 100}%`,
-                backgroundColor: item.color
-              }}
-            >
-              <span className="horizontal-bar-value">{item.value}</span>
+    <>
+      {/* Large EUR Total for Potential Sales and Description */}
+      <div style={{ 
+        textAlign: 'center',
+        marginBottom: '1.5rem',
+        padding: '1rem',
+        background: 'linear-gradient(135deg, rgba(123, 104, 238, 0.1) 0%, rgba(255, 107, 157, 0.1) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(123, 104, 238, 0.2)'
+      }}>
+        <div style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: '#1f2937',
+          marginBottom: '0.25rem'
+        }}>
+          €{potentialSales.toLocaleString()}
+        </div>
+        <div style={{
+          fontSize: '0.875rem',
+          color: '#6b7280',
+          fontWeight: '500'
+        }}>
+          possible merch sales
+        </div>
+      </div>
+      
+      <div className="horizontal-bars-container">
+        {merchData.map((item, index) => (
+          <div key={item.label} className="horizontal-bar-item" data-testid={`merch-bar-${index}`}>
+            <div className="horizontal-bar-label">{item.label}</div>
+            <div className="horizontal-bar-container">
+              <div 
+                className="horizontal-bar-fill"
+                style={{ 
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color
+                }}
+              >
+                <span className="horizontal-bar-value">{item.value}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 
@@ -419,10 +422,12 @@ export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventNa
  * Only renders if visitor data exists, otherwise shows no data message
  */
 export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const qrAndShortUrl = (stats.visitQrCode || 0) + (stats.visitShortUrl || 0);
+  const otherVisits = (stats.visitWeb || 0);
+  
   const visitorData = [
-    { label: 'QR Code', value: stats.visitQrCode || 0, color: '#3b82f6' },
-    { label: 'Short URL', value: stats.visitShortUrl || 0, color: '#10b981' },
-    { label: 'Web', value: stats.visitWeb || 0, color: '#f59e0b' }
+    { label: 'QR + Short URL', value: qrAndShortUrl, color: '#3b82f6' },
+    { label: 'Other', value: otherVisits, color: '#f59e0b' }
   ];
   
   const total = visitorData.reduce((sum, item) => sum + item.value, 0);
@@ -493,24 +498,13 @@ export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName 
           />
           <text
             x="90"
-            y="86"
+            y="98"
             textAnchor="middle"
-            className="chart-total"
-            fontSize="20"
-            fontWeight="700"
+            className="chart-emoji"
+            fontSize="36"
             fill="#1a202c"
           >
-            {total}
-          </text>
-          <text
-            x="90"
-            y="102"
-            textAnchor="middle"
-            className="chart-label"
-            fontSize="12"
-            fill="#6b7280"
-          >
-            VISITS
+            🌐
           </text>
         </svg>
       </div>
@@ -522,10 +516,121 @@ export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName 
 };
 
 /**
- * Value Proposition Horizontal Bar Chart
- * Shows Value Prop Viewed (100%) and Value Prop Visited as percentage of Value Prop Viewed
- * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
+ * Combined Value Horizontal Bar Chart
+ * Shows 5 different value calculations with total advertisement value
+ * Uses horizontal bars with MessMass color scheme and shows EUR total above
  */
+export const ValueHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
+  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const under40Fans = stats.genAlpha + stats.genYZ;
+  const totalVisitors = (
+    (stats.visitQrCode || 0) + 
+    (stats.visitShortUrl || 0) + 
+    (stats.visitWeb || 0) + 
+    (stats.visitFacebook || 0) + 
+    (stats.visitInstagram || 0) + 
+    (stats.visitYoutube || 0) + 
+    (stats.visitTiktok || 0) + 
+    (stats.visitX || 0) + 
+    (stats.visitTrustpilot || 0)
+  );
+  const valuePropVisited = stats.eventValuePropositionVisited || 0;
+  
+  // Calculate values in EUR according to specified rates
+  const valuePropValue = valuePropVisited * 15; // Value Prop Visited: Clicks × €15
+  const directValue = totalImages * 5; // Direct Value: Images × €5
+  const directAdsValue = totalFans * 3; // Direct Ads Value: Fans × €3
+  const under40EngagedValue = under40Fans * 4; // Under 40 Engaged: under40fans × €4
+  const brandAwarenessValue = totalVisitors * 1; // General Brand Awareness: Visitors × €1
+  
+  const valueData = [
+    { 
+      label: 'CPM', 
+      value: valuePropValue,
+      color: '#3b82f6' 
+    },
+    { 
+      label: 'eDM', 
+      value: directValue,
+      color: '#10b981' 
+    },
+    { 
+      label: 'Ads', 
+      value: directAdsValue,
+      color: '#f59e0b' 
+    },
+    { 
+      label: 'U40 Eng.', 
+      value: under40EngagedValue,
+      color: '#8b5cf6' 
+    },
+    { 
+      label: 'Branding', 
+      value: brandAwarenessValue,
+      color: '#ef4444' 
+    }
+  ];
+  
+  const totalValue = valuePropValue + directValue + directAdsValue + under40EngagedValue + brandAwarenessValue;
+  
+  if (totalValue === 0) {
+    return <div className="no-data-message">No value data available</div>;
+  }
+  
+  const maxValue = Math.max(...valueData.map(d => d.value), 1);
+  
+  return (
+    <>
+      {/* Large EUR Total and Description */}
+      <div style={{ 
+        textAlign: 'center',
+        marginBottom: '1.5rem',
+        padding: '1rem',
+        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(59, 130, 246, 0.2)'
+      }}>
+        <div style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: '#1f2937',
+          marginBottom: '0.25rem'
+        }}>
+          €{totalValue.toLocaleString()}
+        </div>
+        <div style={{
+          fontSize: '0.875rem',
+          color: '#6b7280',
+          fontWeight: '500'
+        }}>
+          Advertisement Value
+        </div>
+      </div>
+      
+      <div className="horizontal-bars-container">
+        {valueData.map((item, index) => (
+          <div key={item.label} className="horizontal-bar-item" data-testid={`value-bar-${index}`}>
+            <div className="horizontal-bar-label">{item.label}</div>
+            <div className="horizontal-bar-container">
+              <div 
+                className="horizontal-bar-fill"
+                style={{ 
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color
+                }}
+              >
+                <span className="horizontal-bar-value">€{item.value.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+// Keep the old ValuePropositionHorizontalBars for backward compatibility (deprecated)
 export const ValuePropositionHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
   const valuePropViewed = stats.eventValuePropositionVisited || 0;
   const valuePropPurchases = stats.eventValuePropositionPurchases || 0;
@@ -600,16 +705,42 @@ export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventNam
   const fanEngagement = eventAttendees > 0 ? (totalFans / eventAttendees) * 100 : 0;
   const fanInteraction = totalImages > 0 ? ((socialMediaVisits + valueProp) / totalImages) * 100 : 0;
   
+  // Calculate additional engagement metrics
+  const totalFansForCalculation = stats.indoor + stats.outdoor + stats.stadium;
+  const merchedFans = stats.merched;
+  const flagsAndScarfs = stats.flags + stats.scarf;
+  const nonMerchedFans = totalFansForCalculation - merchedFans;
+  
+  // Calculate percentages
+  const frontRunners = totalFansForCalculation > 0 ? (merchedFans / totalFansForCalculation) * 100 : 0;
+  const fanaticals = merchedFans > 0 ? (flagsAndScarfs / merchedFans) * 100 : 0;
+  const casuals = totalFansForCalculation > 0 ? (nonMerchedFans / totalFansForCalculation) * 100 : 0;
+  
   const engagementData = [
     { 
-      label: `Fan Engagement (${fanEngagement.toFixed(1)}%)`, 
+      label: 'Engaged', 
       value: fanEngagement,
       color: '#8b5cf6' 
     },
     { 
-      label: `Fan Interaction (${fanInteraction.toFixed(1)}%)`, 
+      label: 'Interactive', 
       value: fanInteraction,
       color: '#f59e0b' 
+    },
+    { 
+      label: 'Front-runners', 
+      value: frontRunners,
+      color: '#10b981' 
+    },
+    { 
+      label: 'Fanaticals', 
+      value: fanaticals,
+      color: '#ef4444' 
+    },
+    { 
+      label: 'Casuals', 
+      value: casuals,
+      color: '#06b6d4' 
     }
   ];
   
@@ -619,8 +750,37 @@ export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventNam
   
   const maxValue = Math.max(...engagementData.map(d => d.value), 100); // Use 100% as minimum scale
   
+  // Calculate core fan team metric: (merched / fans) * event attendees
+  const coreFanTeam = totalFansForCalculation > 0 && eventAttendees > 0 ? Math.round((merchedFans / totalFansForCalculation) * eventAttendees) : 0;
+  
   return (
     <>
+      {/* Large Core Fan Team Number and Description */}
+      <div style={{ 
+        textAlign: 'center',
+        marginBottom: '1.5rem',
+        padding: '1rem',
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%)',
+        borderRadius: '12px',
+        border: '1px solid rgba(139, 92, 246, 0.2)'
+      }}>
+        <div style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: '#1f2937',
+          marginBottom: '0.25rem'
+        }}>
+          {coreFanTeam.toLocaleString()}
+        </div>
+        <div style={{
+          fontSize: '0.875rem',
+          color: '#6b7280',
+          fontWeight: '500'
+        }}>
+          Core Fan Team
+        </div>
+      </div>
+      
       <div className="horizontal-bars-container">
         {engagementData.map((item, index) => (
           <div key={item.label} className="horizontal-bar-item" data-testid={`engagement-bar-${index}`}>
@@ -638,20 +798,6 @@ export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventNam
             </div>
           </div>
         ))}
-      </div>
-      
-      {/* Engagement calculation explanation */}
-      <div style={{ 
-        marginTop: '1rem', 
-        padding: '0.75rem', 
-        background: 'rgba(0, 0, 0, 0.05)', 
-        borderRadius: '8px', 
-        fontSize: '0.75rem', 
-        color: '#6b7280', 
-        lineHeight: '1.4' 
-      }}>
-        <div><strong>Fan Engagement:</strong> Fans / Event Attendees</div>
-        <div><strong>Fan Interaction:</strong> (Social Media + Value Prop) / Images</div>
       </div>
     </>
   );
