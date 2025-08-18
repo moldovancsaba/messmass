@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
+import { generateProjectSlugs } from '@/lib/slugUtils';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
@@ -57,6 +58,8 @@ export async function GET() {
       eventName: project.eventName,
       eventDate: project.eventDate,
       stats: project.stats,
+      viewSlug: project.viewSlug,
+      editSlug: project.editSlug,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     }));
@@ -101,6 +104,11 @@ export async function POST(request: NextRequest) {
 
     console.log('💾 Creating new project:', eventName);
 
+    // Generate unique slugs for the project
+    console.log('🔑 Generating unique slugs...');
+    const { viewSlug, editSlug } = await generateProjectSlugs();
+    console.log('✅ Generated slugs:', { viewSlug: viewSlug.substring(0, 8) + '...', editSlug: editSlug.substring(0, 8) + '...' });
+
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
@@ -110,6 +118,8 @@ export async function POST(request: NextRequest) {
       eventName,
       eventDate,
       stats,
+      viewSlug,
+      editSlug,
       createdAt: now,
       updatedAt: now
     };

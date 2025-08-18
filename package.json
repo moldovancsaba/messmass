@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Real-time collaborative event statistics dashboard with admin panel for tracking audience demographics, images, and merchandise at live events",
   "keywords": [
     "event-statistics",
@@ -32,7 +32,8 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "export": "next export",
-    "clean": "rm -rf .next out"
+    "clean": "rm -rf .next out",
+    "migrate-slugs": "node migrate-slugs.js"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",

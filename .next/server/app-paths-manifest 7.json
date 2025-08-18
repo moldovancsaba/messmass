@@ -1,0 +1,6 @@
+{
+  "/api/projects/stats/[slug]/route": "app/api/projects/stats/[slug]/route.js",
+  "/stats/[slug]/page": "app/stats/[slug]/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js"
+}

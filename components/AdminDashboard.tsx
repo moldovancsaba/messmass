@@ -19,6 +19,8 @@ interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
+  viewSlug?: string; // UUID for client read-only access
+  editSlug?: string; // UUID for editor access
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -67,6 +69,12 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProjectStats, setShowProjectStats] = useState(false);
+  const [showNewProjectForm, setShowNewProjectForm] = useState(false);
+  const [newProjectData, setNewProjectData] = useState({
+    eventName: '',
+    eventDate: ''
+  });
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
   
   // Chart export references
   const genderChartRef = useRef<HTMLDivElement>(null);
@@ -153,6 +161,87 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
+    }
+  };
+
+  const createNewProject = async () => {
+    if (!newProjectData.eventName.trim() || !newProjectData.eventDate) {
+      alert('Please fill in both Event Name and Event Date.');
+      return;
+    }
+
+    setIsCreatingProject(true);
+    
+    try {
+      // Create project with all default stats set to 0
+      const defaultStats = {
+        remoteImages: 0,
+        hostessImages: 0,
+        selfies: 0,
+        indoor: 0,
+        outdoor: 0,
+        stadium: 0,
+        female: 0,
+        male: 0,
+        genAlpha: 0,
+        genYZ: 0,
+        genX: 0,
+        boomer: 0,
+        merched: 0,
+        jersey: 0,
+        scarf: 0,
+        flags: 0,
+        baseballCap: 0,
+        other: 0,
+        // Success Manager fields
+        approvedImages: 0,
+        rejectedImages: 0,
+        visitQrCode: 0,
+        visitShortUrl: 0,
+        visitWeb: 0,
+        visitFacebook: 0,
+        visitInstagram: 0,
+        visitYoutube: 0,
+        visitTiktok: 0,
+        visitX: 0,
+        visitTrustpilot: 0,
+        eventAttendees: 0,
+        eventTicketPurchases: 0,
+        eventResultHome: 0,
+        eventResultVisitor: 0,
+        eventValuePropositionVisited: 0,
+        eventValuePropositionPurchases: 0
+      };
+
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventName: newProjectData.eventName.trim(),
+          eventDate: newProjectData.eventDate,
+          stats: defaultStats
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Add new project to the list
+        setProjects(prev => [result.project, ...prev]);
+        
+        // Reset form and close modal
+        setNewProjectData({ eventName: '', eventDate: '' });
+        setShowNewProjectForm(false);
+        
+        alert(`Project "${result.project.eventName}" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nStats Link: /stats/${result.project.viewSlug}`);
+      } else {
+        alert(`Failed to create project: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      alert('Failed to create project. Please try again.');
+    } finally {
+      setIsCreatingProject(false);
     }
   };
 
@@ -906,12 +995,20 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       <div className="glass-card admin-projects">
         <div className="projects-header">
           <h2 className="section-title">Project Management</h2>
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowProjectStats(!showProjectStats)}
-          >
-            {showProjectStats ? 'Hide' : 'Show'} Project Details
-          </button>
+          <div className="projects-header-buttons">
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setShowNewProjectForm(true)}
+            >
+              ➕ Add New Project
+            </button>
+            <button 
+              className="btn btn-primary"
+              onClick={() => setShowProjectStats(!showProjectStats)}
+            >
+              {showProjectStats ? 'Hide' : 'Show'} Project Details
+            </button>
+          </div>
         </div>
 
         <div className="projects-table-container">
@@ -948,7 +1045,39 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                   
                   return (
                     <tr key={project._id}>
-                      <td className="project-name">{project.eventName}</td>
+                      <td className="project-name">
+                        {/* Title links to read-only stats page using viewSlug */}
+                        {project.viewSlug ? (
+                          <a 
+                            href={`/stats/${project.viewSlug}`}
+                            className="project-title-link"
+                            title={`View detailed statistics for ${project.eventName}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {project.eventName}
+                          </a>
+                        ) : (
+                          <span className="project-name-text">{project.eventName}</span>
+                        )}
+                        <br />
+                        {/* Event name links to editing dashboard using editSlug */}
+                        {project.editSlug ? (
+                          <small>
+                            <a 
+                              href={`/edit/${project.editSlug}`}
+                              className="project-edit-link"
+                              title={`Edit ${project.eventName} statistics`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              📝 Edit Statistics
+                            </a>
+                          </small>
+                        ) : (
+                          <small className="no-edit-link">Legacy Project - No Edit Link</small>
+                        )}
+                      </td>
                       <td>{new Date(project.eventDate).toLocaleDateString()}</td>
                       <td className="stat-number">{fans}</td>
                       <td className="stat-number">{images}</td>
@@ -1292,6 +1421,122 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add New Project Modal */}
+      {showNewProjectForm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '1rem'
+        }}>
+          <div className="glass-card" style={{ 
+            width: '100%', 
+            maxWidth: '500px',
+            padding: '2rem'
+          }}>
+            <div style={{
+              marginBottom: '2rem',
+              textAlign: 'center'
+            }}>
+              <h3 className="title" style={{
+                fontSize: '2rem',
+                marginBottom: '0.5rem'
+              }}>Create New Project</h3>
+              <p className="subtitle" style={{ 
+                marginBottom: '0',
+                fontSize: '1rem'
+              }}>Add a new event to track statistics</p>
+            </div>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <div className="form-group">
+                <label className="form-label">Event Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newProjectData.eventName}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+                  placeholder="Enter event name"
+                  disabled={isCreatingProject}
+                  autoFocus
+                  style={{
+                    color: '#1a202c',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">Event Date</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={newProjectData.eventDate}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+                  disabled={isCreatingProject}
+                  style={{
+                    color: '#1a202c',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
+              
+              <div style={{
+                padding: '1rem',
+                background: 'rgba(102, 126, 234, 0.1)',
+                borderRadius: '12px',
+                border: '1px solid rgba(102, 126, 234, 0.2)',
+                marginBottom: '0'
+              }}>
+                <p style={{
+                  color: '#4a5568',
+                  fontSize: '0.9rem',
+                  margin: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  📝 All statistics will be initialized to 0. You can edit them after creation using the provided edit link.
+                </p>
+              </div>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center'
+            }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowNewProjectForm(false);
+                  setNewProjectData({ eventName: '', eventDate: '' });
+                }}
+                disabled={isCreatingProject}
+                style={{ flex: '1' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={createNewProject}
+                disabled={isCreatingProject || !newProjectData.eventName.trim() || !newProjectData.eventDate}
+                style={{ flex: '1' }}
+              >
+                {isCreatingProject ? 'Creating...' : 'Create Project'}
+              </button>
             </div>
           </div>
         </div>

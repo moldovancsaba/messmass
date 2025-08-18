@@ -1,13 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/admin/permissions/route": "app/api/admin/permissions/route.js",
-  "/api/admin/login/route": "app/api/admin/login/route.js",
-  "/api/admin/projects/route": "app/api/admin/projects/route.js",
-  "/api/admin/users/route": "app/api/admin/users/route.js",
-  "/api/admin/projects/[id]/route": "app/api/admin/projects/[id]/route.js",
-  "/api/projects/[id]/route": "app/api/projects/[id]/route.js",
+  "/api/projects/edit/[slug]/route": "app/api/projects/edit/[slug]/route.js",
   "/api/projects/route": "app/api/projects/route.js",
-  "/admin/login/page": "app/admin/login/page.js",
   "/admin/page": "app/admin/page.js",
-  "/page": "app/page.js"
+  "/stats/[slug]/page": "app/stats/[slug]/page.js",
+  "/edit/[slug]/page": "app/edit/[slug]/page.js",
+  "/admin/login/page": "app/admin/login/page.js"
 }

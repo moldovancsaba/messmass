@@ -994,6 +994,75 @@ button {
   color: #1a202c;
 }
 
+.project-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.project-link:hover {
+  color: #5a67d8;
+  text-decoration: underline;
+  transform: translateX(2px);
+}
+
+.project-link:active {
+  color: #4c51bf;
+}
+
+/* New slug-based links */
+.project-title-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.project-title-link:hover {
+  color: #5a67d8;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+
+.project-title-link:active {
+  color: #4c51bf;
+}
+
+.project-edit-link {
+  color: #f56565;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.project-edit-link:hover {
+  color: #e53e3e;
+  text-decoration: underline;
+  transform: translateX(2px);
+}
+
+.project-name-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1a202c;
+}
+
+.no-edit-link {
+  color: #a0aec0;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
 .stat-number {
   font-weight: 600;
   color: #667eea;
@@ -1750,6 +1819,41 @@ button {
   text-align: center;
 }
 
+/* Charts Section (Stats Page) */
+.charts-section {
+  margin-bottom: 2rem;
+  padding: 2rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.chart-item {
+  width: 100%;
+  max-width: 500px;
+  min-height: 380px;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+  color: #2d3748;
+  text-align: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Responsive Design for Charts */
 @media (max-width: 1024px) {
   .project-stats-layout {
@@ -1763,6 +1867,16 @@ button {
   
   .chart-container {
     padding: 1rem;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .chart-item {
+    min-width: 100%;
+    max-width: 600px;
   }
 }
 
