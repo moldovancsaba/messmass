@@ -55,6 +55,7 @@ interface ProjectStats {
 interface Project {
   eventName: string;
   eventDate: string;
+  hashtags?: string[]; // Array of hashtag strings
   stats: ProjectStats;
   createdAt: string;
   updatedAt: string;
@@ -201,6 +202,17 @@ export default function StatsPage() {
           <div className="admin-branding">
             <h1 className="admin-title">{project.eventName}</h1>
             <p className="admin-subtitle">Event Statistics - {new Date(project.eventDate).toLocaleDateString()}</p>
+            {/* Hashtags display in 3rd row */}
+            {project.hashtags && project.hashtags.length > 0 && (
+              <div style={{ 
+                marginTop: '0.5rem',
+                fontSize: '0.875rem',
+                color: '#6b7280',
+                fontWeight: '500'
+              }}>
+                {project.hashtags.join(', ')}
+              </div>
+            )}
           </div>
           <div className="admin-user-info">
             <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>

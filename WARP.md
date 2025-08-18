@@ -70,6 +70,7 @@ The application implements multi-user real-time statistics tracking:
 - Simple password-based authentication
 - Session stored in HTTP-only cookies
 - Role-based permissions system
+
 ### Admin Features
 - View all projects with detailed statistics
 - Export projects to CSV
@@ -78,7 +79,9 @@ The application implements multi-user real-time statistics tracking:
 - Real-time admin dashboard
 - Enhanced chart visualizations with PNG export
 - Core Fan Team metric calculation and analysis
-- Real-time admin dashboard
+- **Hashtag Overview Dashboard**: Visual grid of hashtags with project counts
+- **Aggregated Statistics**: Cross-project analytics via hashtag categorization
+- **Project Tagging**: Add up to 5 hashtags per project for organization
 
 **Authentication Flow:**
 - Login at `/admin/login`
@@ -118,6 +121,7 @@ Row 3: Location | Sources
   _id: ObjectId,
   eventName: string,
   eventDate: string, // ISO date string
+  hashtags?: string[], // Array of hashtag strings for categorization
   stats: {
     // Image tracking
     remoteImages: number,
@@ -165,27 +169,40 @@ Row 3: Location | Sources
 
 **`/api/projects`:**
 - `GET` - Fetch all projects (sorted by updatedAt desc)
-- `POST` - Create new project (requires eventName, eventDate, stats)
-- `PUT` - Update existing project (requires projectId + update fields)
+- `POST` - Create new project (requires eventName, eventDate, stats, optional hashtags)
+- `PUT` - Update existing project (requires projectId + update fields, supports hashtags)
 - `DELETE` - Delete project by projectId query parameter
+
+**`/api/hashtags`:**
+- `GET` - Fetch all hashtags with project counts
+
+**`/api/hashtags/[hashtag]`:**
+- `GET` - Fetch aggregated statistics for specific hashtag
 
 **Example API Usage:**
 ```javascript
-// Create project
+// Create project with hashtags
 POST /api/projects
 {
   "eventName": "Match vs Team X",
   "eventDate": "2024-03-15",
+  "hashtags": ["football", "home-game", "champions-league"],
   "stats": { /* initial stats object */ }
 }
 
-// Update project
+// Update project with hashtags
 PUT /api/projects  
 {
   "projectId": "507f1f77bcf86cd799439011",
   "eventName": "Updated Name",
+  "hashtags": ["football", "away-game"],
   "stats": { /* updated stats */ }
 }
+
+// Get aggregated hashtag statistics
+GET /api/hashtags/football
+// Returns combined statistics from all projects tagged with "football"
+```
 ```
 
 ## Environment Configuration

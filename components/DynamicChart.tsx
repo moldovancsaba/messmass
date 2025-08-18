@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
 
@@ -254,13 +254,59 @@ export const ChartContainer: React.FC<{
   children: React.ReactNode;
   className?: string;
 }> = ({ title, subtitle, emoji, children, className = '' }) => {
+  const chartRef = useRef<HTMLDivElement>(null);
+  
+  const exportChartAsPNG = async () => {
+    if (!chartRef.current) return;
+    
+    try {
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      // Wait a moment for any animations to settle
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const canvas = await html2canvas(chartRef.current, {
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      // Create download link
+      const link = document.createElement('a');
+      const sanitizedTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      link.download = `chart_${sanitizedTitle}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show success message
+      console.log('Chart downloaded successfully!');
+    } catch (error) {
+      console.error('Failed to export chart as PNG:', error);
+      alert('Failed to export chart. Please try again.');
+    }
+  };
+  
   return (
-    <div className={`chart-container ${className}`}>
+    <div className={`chart-container ${className}`} ref={chartRef}>
       <div className="chart-header">
         <h3 className="chart-title">
           {title}
         </h3>
         {subtitle && <p className="chart-subtitle">{subtitle}</p>}
+        <button 
+          className="btn btn-sm btn-primary chart-download-btn"
+          onClick={exportChartAsPNG}
+          title="Download chart as PNG"
+          style={{
+            fontSize: '0.75rem',
+            padding: '0.25rem 0.5rem',
+            marginLeft: 'auto'
+          }}
+        >
+          📥 Download PNG
+        </button>
       </div>
       <div className="chart-content">
         {children}

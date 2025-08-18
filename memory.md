@@ -2,14 +2,14 @@
 
 ## 🎯 **PROJECT IDENTITY**
 - **Name**: MessMass
-- **Version**: 1.0.3 (Latest Production Ready)
+- **Version**: 1.4.0 (Latest Production Ready)
 - **Type**: Real-time Collaborative Event Statistics Dashboard with Admin Panel
 - **Repository**: https://github.com/moldovancsaba/messmass
 - **Local Path**: `/Users/moldovan/Library/Mobile Documents/com~apple~CloudDocs/Projects/messmass`
 - **Current Branch**: `main` (deployed to production)
 - **Last Updated**: August 18, 2025
 
-## 🚀 **CURRENT STATUS** ✅ PRODUCTION DEPLOYED + COMPLETE ADMIN SYSTEM
+## 🚀 **CURRENT STATUS** ✅ PRODUCTION DEPLOYED + COMPLETE ADMIN SYSTEM + HASHTAG OVERVIEW
 **PRODUCTION**: https://messmass.doneisbetter.com - Working Event Statistics Dashboard
 **ADMIN PANEL**: https://messmass.doneisbetter.com/admin - Password-protected admin dashboard
 **DATABASE**: MongoDB Atlas connected and operational with 6 projects (migration completed)
@@ -17,22 +17,25 @@
 **UI**: Unified design system with glass-card effects and gradient backgrounds
 **DEPLOYMENT**: All features committed and pushed to main branch
 **✅ RESOLVED**: Database structure migration completed successfully
-**✅ RESOLVED**: Package.json updated to v1.0.0 with professional metadata
+**✅ RESOLVED**: Package.json updated to v1.4.0 with professional metadata
 **✅ RESOLVED**: AdminDashboard charts replaced with individual pie charts
 **✅ RESOLVED**: html2canvas integration fixed and build errors resolved
+**✅ RESOLVED**: Hashtag system implemented with overview dashboard and aggregated statistics
+**✅ RESOLVED**: Next.js 15 compatibility issues fixed with async params pattern
 
 ## 📊 **CURRENT REPOSITORY STATUS** ✅ FULLY UPDATED
 ```bash
-Branch: main (HEAD: f3f5c9b) - ENHANCED CHARTS WITH CORE FAN TEAM METRIC
-Last Commit: "feat: Enhanced stats charts with improved visuals and Core Fan Team metric"
+Branch: main (HEAD: Latest) - HASHTAG OVERVIEW SYSTEM + AGGREGATED STATISTICS
+Last Commit: "feat: Implemented hashtag overview dashboard with aggregated statistics"
 Status: All changes committed and pushed to production
 Build: ✅ Successful (Next.js 15.4.6) 
-Database: ✅ Connected to MongoDB Atlas (6 projects)
+Database: ✅ Connected to MongoDB Atlas (6+ projects)
 WebSocket: ✅ Running on Railway production server
-Admin System: ✅ Password-protected with full functionality
+Admin System: ✅ Password-protected with full functionality + hashtag overview
 Design System: ✅ Unified CSS in globals.css + enhanced chart visuals
-Package: ✅ Professional v1.0.3 metadata with html2canvas
-Deployment: ✅ Ready for production use with advanced chart analytics
+Package: ✅ Professional v1.4.0 metadata with hashtag system
+Deployment: ✅ Ready for production use with hashtag analytics and aggregated reporting
+Hashtag System: ✅ Complete overview dashboard with aggregated statistics and navigation
 ```
 
 ## 🛠️ **DEVELOPMENT GUIDELINES** ⚠️ CRITICAL
@@ -149,6 +152,17 @@ Deployment: ✅ Ready for production use with advanced chart analytics
    - **Simplified Legends**: Clean text-only labels without calculation details
    - **Enhanced Visual Design**: Larger emojis, clean legends, consistent styling
 
+5. **Hashtag System & Aggregated Analytics ✅ NEW FEATURES**
+   - **Hashtag Overview Dashboard**: Visual grid of hashtags with project counts
+   - **Aggregated Statistics**: Combined statistics from all projects sharing the same hashtag
+   - **Hashtag Navigation**: Direct links from overview to detailed hashtag statistics
+   - **Project Tagging**: Add up to 5 hashtags per project for categorization
+   - **Dynamic Hashtag Calculation**: Real-time updates when projects are created/modified/deleted
+   - **Responsive Hashtag Grid**: Auto-adjusting layout for different screen sizes
+   - **Hashtag Statistics Pages**: Dedicated pages showing aggregated data for each hashtag
+   - **Date Range Aggregation**: Shows span from oldest to newest project for each hashtag
+   - **Cross-Project Analytics**: Compare performance across related events via hashtags
+
 ### Admin URLs ✅
 - **Login**: `/admin/login` - Password authentication
 - **Dashboard**: `/admin` - Main admin interface
@@ -203,26 +217,34 @@ app/
 │   ├── admin/
 │   │   └── login/
 │   │       └── route.ts        [✅ Password authentication API]
+│   ├── hashtags/
+│   │   ├── route.ts            [✅ Hashtag management API]
+│   │   └── [hashtag]/
+│   │       └── route.ts        [✅ Aggregated hashtag statistics]
 │   └── projects/
-│       ├── route.ts            [✅ CRUD operations]
+│       ├── route.ts            [✅ CRUD operations with hashtag support]
 │       └── [id]/
 │           └── route.ts        [✅ Single project fetch]
 ├── admin/
-│   ├── page.tsx               [✅ Admin dashboard]
+│   ├── page.tsx               [✅ Admin dashboard with hashtag overview]
 │   └── login/
 │       └── page.tsx           [✅ Admin login form]
+├── hashtag/
+│   └── [hashtag]/
+│       └── page.tsx           [✅ Aggregated hashtag statistics page]
 ├── globals.css                [✅ Unified design system]
 ├── layout.tsx                 [✅ App layout]
 └── page.tsx                   [✅ Main event dashboard]
 components/
-└── AdminDashboard.tsx         [✅ Admin dashboard component]
+├── AdminDashboard.tsx         [✅ Admin dashboard with hashtag overview]
+└── HashtagInput.tsx           [✅ Hashtag input component]
 lib/
 └── auth.ts                    [✅ Authentication utilities]
 server/
 └── websocket-server.js        [✅ Railway WebSocket server]
 middleware.ts                  [✅ Admin route protection]
 .env.local                     [✅ Environment configuration]
-package.json                   [✅ v1.0.0 professional metadata]
+package.json                   [✅ v1.4.0 professional metadata]
 memory.md                      [✅ Project documentation]
 ```
 

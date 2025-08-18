@@ -1,13 +1,14 @@
 # MessMass - Real-time Event Statistics Dashboard
 
-A professional real-time collaborative event statistics platform with advanced analytics and admin panel. Built with Next.js 15, React 18, TypeScript, and MongoDB.
+A professional real-time collaborative event statistics platform with advanced analytics, hashtag system, and comprehensive admin panel. Built with Next.js 15, React 18, TypeScript, and MongoDB.
 
 ## 🎯 Features
 
 ### Core Functionality
 - 📊 **Real-time Event Statistics** - Live collaborative editing with WebSocket synchronization
-- 🔐 **Admin Dashboard** - Password-protected management interface
+- 🔐 **Admin Dashboard** - Password-protected management interface with hashtag overview
 - 📈 **Advanced Analytics** - Core Fan Team metric and 5-metric engagement analysis
+- 🏷️ **Hashtag System** - Project categorization with aggregated statistics and navigation
 - 📱 **Responsive Design** - Optimized for mobile, tablet, and desktop
 - 🎨 **Professional UI** - Glass-card effects with gradient backgrounds
 - 💾 **MongoDB Integration** - Cloud database with automatic persistence
@@ -19,9 +20,17 @@ A professional real-time collaborative event statistics platform with advanced a
 - 🌐 **Traffic Sources** - QR codes, short URLs, and web visits
 - 💰 **Value Metrics** - Advertisement value breakdown (CPM, eDM, Ads, U40 Eng., Branding)
 - 🎯 **Core Fan Team** - Advanced engagement metric: (merched/fans) × event attendees
-- 📥 **Chart Export** - High-quality PNG downloads
+- 📅 **Chart Export** - High-quality PNG downloads
 - ⚙️ **Chart Algorithm Manager** - Admin interface for customizing chart formulas and configurations
 - 🔄 **Dynamic Chart System** - Data-driven chart rendering with configurable calculations
+
+### Hashtag System
+- 🏷️ **Project Tagging** - Add up to 5 hashtags per project for easy categorization
+- 📈 **Hashtag Overview** - Visual dashboard showing all hashtags with project counts
+- 🔗 **Aggregated Statistics** - Combined analytics from all projects sharing the same hashtag
+- 📊 **Cross-Project Analysis** - Compare performance across related events
+- 📅 **Date Range Aggregation** - Shows time span from oldest to newest project per hashtag
+- 🔄 **Real-time Updates** - Hashtag counts update automatically when projects change
 
 ## 🚀 Getting Started
 
@@ -80,16 +89,23 @@ messmass/
 │   │   │       └── route.ts        # Admin authentication API
 │   │   ├── chart-config/
 │   │   │   └── route.ts            # Chart configuration CRUD API
+│   │   ├── hashtags/
+│   │   │   ├── route.ts            # Hashtag management API
+│   │   │   └── [hashtag]/
+│   │   │       └── route.ts        # Aggregated hashtag statistics
 │   │   └── projects/
-│   │       ├── route.ts            # CRUD operations
+│   │       ├── route.ts            # CRUD operations with hashtag support
 │   │       └── stats/[slug]/
 │   │           └── route.ts        # Public stats viewing
 │   ├── admin/
-│   │   ├── page.tsx               # Admin dashboard
+│   │   ├── page.tsx               # Admin dashboard with hashtag overview
 │   │   ├── charts/
 │   │   │   └── page.tsx           # Chart Algorithm Manager
 │   │   └── login/
 │   │       └── page.tsx           # Admin login form
+│   ├── hashtag/
+│   │   └── [hashtag]/
+│   │       └── page.tsx           # Aggregated hashtag statistics page
 │   ├── stats/[slug]/
 │   │   └── page.tsx               # Public stats viewing
 │   ├── globals.css                # Main CSS entry point
@@ -101,9 +117,10 @@ messmass/
 │   ├── layout.tsx                 # App layout
 │   └── page.tsx                   # Main event dashboard
 ├── components/
-│   ├── AdminDashboard.tsx         # Admin dashboard component
+│   ├── AdminDashboard.tsx         # Admin dashboard with hashtag overview
 │   ├── ChartAlgorithmManager.tsx  # Chart config management
 │   ├── DynamicChart.tsx           # Dynamic chart renderer
+│   ├── HashtagInput.tsx           # Hashtag input component
 │   └── StatsCharts.tsx            # Chart visualization components
 ├── lib/
 │   ├── auth.ts                    # Authentication utilities
@@ -114,7 +131,7 @@ messmass/
 │   └── websocket-server.js        # Railway WebSocket server
 ├── middleware.ts                  # Admin route protection
 ├── .env.local                     # Environment configuration
-├── package.json                   # v1.3.0 with chart system
+├── package.json                   # v1.4.0 with hashtag system
 ├── CSS_ARCHITECTURE.md            # Design system documentation
 └── memory.md                      # Project documentation
 ```
@@ -189,6 +206,8 @@ messmass/
 - Professional chart visualizations with PNG export
 - **Chart Algorithm Manager** - Configure chart formulas, labels, and calculations
 - **Dynamic Chart System** - Create and modify chart algorithms with live preview
+- **Hashtag Overview** - Visual dashboard of all hashtags with project counts and navigation
+- **Aggregated Reporting** - Cross-project analytics via hashtag categorization
 
 ## 🎯 Chart System
 
@@ -228,6 +247,7 @@ For detailed CSS architecture documentation, see [CSS_ARCHITECTURE.md](CSS_ARCHI
 
 ## 📈 Version History
 
+- **v1.4.0** - Hashtag system implementation with overview dashboard and aggregated statistics
 - **v1.3.0** - Major CSS architecture refactor with modular design system
 - **v1.2.0** - Chart Algorithm Manager and dynamic chart system
 - **v1.1.0** - MongoDB integration improvements and error handling

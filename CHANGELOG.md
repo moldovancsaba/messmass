@@ -4,6 +4,48 @@ All notable changes to the MessMass project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-08-18
+
+### 🏷️ Major Feature: Hashtag System Implementation
+- **Hashtag Overview Dashboard**: Visual grid displaying all hashtags with project counts and direct navigation
+- **Aggregated Statistics**: Combined analytics from all projects sharing the same hashtag
+- **Project Tagging**: Add up to 5 hashtags per project for easy categorization and organization
+- **Cross-Project Analytics**: Compare performance across related events using hashtag-based grouping
+- **Date Range Aggregation**: Shows time span from oldest to newest project for each hashtag
+- **Real-time Hashtag Updates**: Automatic recalculation when projects are created, modified, or deleted
+
+### ✨ Added
+- **`/api/hashtags` API**: Endpoint for hashtag management and statistics
+- **`/api/hashtags/[hashtag]` API**: Aggregated statistics endpoint for specific hashtags
+- **`/app/hashtag/[hashtag]/page.tsx`**: Dedicated hashtag statistics visualization page
+- **`components/HashtagInput.tsx`**: Reusable hashtag input component with tag management
+- **Hashtag Overview Section**: Integrated into admin dashboard between Success Manager and Project Management
+- **Responsive Hashtag Grid**: Auto-adjusting layout optimized for different screen sizes
+
+### 🔧 Enhanced
+- **Admin Dashboard**: Added hashtag overview section with visual buttons and navigation
+- **Project Management**: Enhanced CRUD operations with hashtag support
+- **Database Schema**: Extended project documents to include hashtags array field
+- **State Management**: Improved React state handling for hashtag calculations and updates
+
+### 🔍 Technical Improvements
+- **Next.js 15 Compatibility**: Fixed async params pattern for dynamic routes
+- **TypeScript Enhancements**: Proper type safety for hashtag-related components
+- **Error Handling**: Comprehensive error states for hashtag operations
+- **Performance Optimization**: Efficient hashtag calculation using client-side aggregation
+
+### 📊 Admin Dashboard Features
+- **Hashtag Buttons**: Large, interactive buttons showing hashtag names and project counts
+- **Visual Design**: Gradient backgrounds with hover effects and smooth animations
+- **Navigation Integration**: Direct links from hashtag overview to detailed statistics pages
+- **Empty State Handling**: Graceful display when no hashtags exist in the system
+
+### 🚀 Migration Benefits
+- **Better Organization**: Projects can now be categorized and grouped using hashtags
+- **Enhanced Reporting**: Aggregate analytics across multiple related events
+- **Improved Navigation**: Quick access to related project statistics
+- **Future-Proof**: Foundation for advanced filtering and search capabilities
+
 ## [1.3.0] - 2025-08-18
 
 ### 🏗️ Major Architecture Refactor

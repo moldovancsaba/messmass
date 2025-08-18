@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { AdminUser } from '@/lib/auth';
+import HashtagInput from './HashtagInput';
 
 // Props interface for AdminDashboard component
 interface AdminDashboardProps {
@@ -19,6 +20,7 @@ interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
+  hashtags?: string[]; // Array of hashtag strings
   viewSlug?: string; // UUID for client read-only access
   editSlug?: string; // UUID for editor access
   stats: {
@@ -66,20 +68,23 @@ interface Project {
 
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [hashtags, setHashtags] = useState<Array<{hashtag: string, slug: string, count: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showProjectStats, setShowProjectStats] = useState(false);
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
   const [newProjectData, setNewProjectData] = useState({
     eventName: '',
-    eventDate: ''
+    eventDate: '',
+    hashtags: [] as string[]
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [showEditProjectForm, setShowEditProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editProjectData, setEditProjectData] = useState({
     eventName: '',
-    eventDate: ''
+    eventDate: '',
+    hashtags: [] as string[]
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
@@ -95,6 +100,15 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Load hashtags whenever projects change
+  useEffect(() => {
+    if (projects.length > 0) {
+      loadHashtags();
+    } else {
+      setHashtags([]); // Clear hashtags when no projects
+    }
+  }, [projects]);
 
   const loadProjects = async () => {
     try {
@@ -116,6 +130,41 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       console.error('❌ Failed to load projects:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadHashtags = async () => {
+    try {
+      console.log('🏷️ Loading hashtags with UUIDs...');
+      
+      const response = await fetch('/api/hashtags/slugs');
+      const data = await response.json();
+      
+      if (data.success) {
+        setHashtags(data.hashtags);
+        console.log('✅ Hashtags with UUIDs loaded successfully:', data.hashtags.length, 'unique hashtags');
+      } else {
+        console.error('❌ Failed to load hashtag UUIDs:', data.error);
+        // Fallback to old method
+        const hashtagCounts: { [key: string]: number } = {};
+        projects.forEach(project => {
+          if (project.hashtags && Array.isArray(project.hashtags)) {
+            project.hashtags.forEach((hashtag: string) => {
+              hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
+            });
+          }
+        });
+        
+        const hashtagsWithCounts = Object.keys(hashtagCounts).map(hashtag => ({
+          hashtag,
+          slug: hashtag, // Fallback to hashtag name
+          count: hashtagCounts[hashtag]
+        })).sort((a, b) => b.count - a.count);
+        
+        setHashtags(hashtagsWithCounts);
+      }
+    } catch (error) {
+      console.error('❌ Failed to load hashtags:', error);
     }
   };
 
@@ -167,6 +216,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           setSelectedProject(null);
           setShowProjectStats(false);
         }
+        // Hashtags will be automatically recalculated when projects state updates
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
@@ -177,7 +227,8 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     setEditingProject(project);
     setEditProjectData({
       eventName: project.eventName,
-      eventDate: project.eventDate
+      eventDate: project.eventDate,
+      hashtags: project.hashtags || []
     });
     setShowEditProjectForm(true);
   };
@@ -198,6 +249,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           projectId: editingProject._id,
           eventName: editProjectData.eventName.trim(),
           eventDate: editProjectData.eventDate,
+          hashtags: editProjectData.hashtags,
           stats: editingProject.stats // Keep existing stats
         })
       });
@@ -208,7 +260,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         // Update project in the list
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
-            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate }
+            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags }
             : p
         ));
         
@@ -217,12 +269,15 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           setSelectedProject(prev => prev ? {
             ...prev,
             eventName: editProjectData.eventName.trim(),
-            eventDate: editProjectData.eventDate
+            eventDate: editProjectData.eventDate,
+            hashtags: editProjectData.hashtags
           } : null);
         }
         
+        // Hashtags will be automatically recalculated when projects state updates
+        
         // Reset form and close modal
-        setEditProjectData({ eventName: '', eventDate: '' });
+        setEditProjectData({ eventName: '', eventDate: '', hashtags: [] });
         setEditingProject(null);
         setShowEditProjectForm(false);
         
@@ -293,6 +348,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         body: JSON.stringify({
           eventName: newProjectData.eventName.trim(),
           eventDate: newProjectData.eventDate,
+          hashtags: newProjectData.hashtags,
           stats: defaultStats
         })
       });
@@ -303,8 +359,10 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         // Add new project to the list
         setProjects(prev => [result.project, ...prev]);
         
+        // Hashtags will be automatically recalculated when projects state updates
+        
         // Reset form and close modal
-        setNewProjectData({ eventName: '', eventDate: '' });
+        setNewProjectData({ eventName: '', eventDate: '', hashtags: [] });
         setShowNewProjectForm(false);
         
         alert(`Project "${result.project.eventName}" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nStats Link: /stats/${result.project.viewSlug}`);
@@ -1197,6 +1255,82 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         </div>
       </div>
 
+      {/* Hashtag Overview - between Success Manager and Project Management */}
+      <div className="glass-card admin-overview">
+        <h2 className="section-title">🏷️ Hashtag Overview</h2>
+        {hashtags.length > 0 ? (
+          <div className="hashtag-overview-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+            gap: '1rem',
+            marginTop: '1rem'
+          }}>
+            {hashtags.map((item, index) => (
+              <a
+                key={item.hashtag}
+                href={`/hashtag/${item.slug}`}
+                className="hashtag-overview-button"
+                style={{
+                  display: 'block',
+                  padding: '1.5rem',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  transition: 'all 0.2s ease',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                }}
+              >
+                <div style={{
+                  fontSize: '3rem',
+                  fontWeight: 'bold',
+                  marginBottom: '0.5rem',
+                  color: 'white'
+                }}>
+                  {item.count}
+                </div>
+                <div style={{
+                  fontSize: '1.125rem',
+                  fontWeight: '600',
+                  color: 'white'
+                }}>
+                  #{item.hashtag}
+                </div>
+                <div style={{
+                  fontSize: '0.875rem',
+                  opacity: 0.9,
+                  marginTop: '0.25rem',
+                  color: 'white'
+                }}>
+                  {item.count} project{item.count !== 1 ? 's' : ''}
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            textAlign: 'center',
+            padding: '2rem',
+            color: '#6b7280'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏷️</div>
+            <div style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No Hashtags Yet</div>
+            <div style={{ fontSize: '0.875rem' }}>Create projects with hashtags to see them here</div>
+          </div>
+        )}
+      </div>
+
       {/* Projects Management */}
       <div className="glass-card admin-projects">
         <div className="projects-header">
@@ -1273,6 +1407,18 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                         ) : (
                           <span className="project-name-text">{project.eventName}</span>
                         )}
+                        
+                        {/* Hashtags display */}
+                        {project.hashtags && project.hashtags.length > 0 && (
+                          <div className="project-hashtags" style={{ marginTop: '0.5rem' }}>
+                            {project.hashtags.map((hashtag, index) => (
+                              <span key={index} className="hashtag hashtag-small">
+                                #{hashtag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        
                         <br />
                         {/* Event name links to editing dashboard using editSlug */}
                         {project.editSlug ? (
@@ -1302,15 +1448,6 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                           title="Edit project name and date"
                         >
                           ✏️ Edit
-                        </button>
-                        <button 
-                          className="btn btn-sm btn-info"
-                          onClick={() => {
-                            setSelectedProject(project);
-                            setShowProjectStats(true);
-                          }}
-                        >
-                          📊 Stats
                         </button>
                         <button 
                           className="btn btn-sm btn-success"
@@ -1694,6 +1831,16 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 />
               </div>
               
+              <div className="form-group">
+                <label className="form-label">Hashtags</label>
+                <HashtagInput
+                  value={newProjectData.hashtags}
+                  onChange={(hashtags) => setNewProjectData(prev => ({ ...prev, hashtags }))}
+                  disabled={isCreatingProject}
+                  placeholder="Add hashtags to categorize this project..."
+                />
+              </div>
+              
               <div style={{
                 padding: '1rem',
                 background: 'rgba(102, 126, 234, 0.1)',
@@ -1723,7 +1870,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 className="btn btn-secondary"
                 onClick={() => {
                   setShowNewProjectForm(false);
-                  setNewProjectData({ eventName: '', eventDate: '' });
+                  setNewProjectData({ eventName: '', eventDate: '', hashtags: [] });
                 }}
                 disabled={isCreatingProject}
                 style={{ flex: '1' }}
@@ -1810,6 +1957,16 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 />
               </div>
               
+              <div className="form-group">
+                <label className="form-label">Hashtags</label>
+                <HashtagInput
+                  value={editProjectData.hashtags}
+                  onChange={(hashtags) => setEditProjectData(prev => ({ ...prev, hashtags }))}
+                  disabled={isUpdatingProject}
+                  placeholder="Add hashtags to categorize this project..."
+                />
+              </div>
+              
               <div style={{
                 padding: '1rem',
                 background: 'rgba(251, 191, 36, 0.1)',
@@ -1825,7 +1982,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                   alignItems: 'center',
                   gap: '0.5rem'
                 }}>
-                  ⚠️ Only the project name and date will be updated. All statistics will remain unchanged.
+                  ⚠️ Project name, date, and hashtags will be updated. All statistics will remain unchanged.
                 </p>
               </div>
             </div>
@@ -1840,7 +1997,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 onClick={() => {
                   setShowEditProjectForm(false);
                   setEditingProject(null);
-                  setEditProjectData({ eventName: '', eventDate: '' });
+                  setEditProjectData({ eventName: '', eventDate: '', hashtags: [] });
                 }}
                 disabled={isUpdatingProject}
                 style={{ flex: '1' }}
