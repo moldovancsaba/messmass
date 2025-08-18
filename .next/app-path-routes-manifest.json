@@ -5,8 +5,9 @@
   "/api/admin/projects/[id]/route": "/api/admin/projects/[id]",
   "/api/admin/projects/route": "/api/admin/projects",
   "/api/admin/users/route": "/api/admin/users",
-  "/api/chart-config/route": "/api/chart-config",
   "/api/auth/check/route": "/api/auth/check",
+  "/api/chart-config/public/route": "/api/chart-config/public",
+  "/api/chart-config/route": "/api/chart-config",
   "/api/projects/[id]/route": "/api/projects/[id]",
   "/api/projects/edit/[slug]/route": "/api/projects/edit/[slug]",
   "/api/projects/route": "/api/projects",
@@ -15,6 +16,6 @@
   "/admin/login/page": "/admin/login",
   "/admin/page": "/admin",
   "/edit/[slug]/page": "/edit/[slug]",
-  "/stats/[slug]/page": "/stats/[slug]",
-  "/page": "/"
+  "/page": "/",
+  "/stats/[slug]/page": "/stats/[slug]"
 }

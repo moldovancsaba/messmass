@@ -130,6 +130,9 @@ export interface ChartCalculationResult {
   chartId: string;
   title: string;
   type: 'pie' | 'bar';
+  emoji?: string; // Chart emoji from configuration
+  subtitle?: string; // Chart subtitle from configuration
+  totalLabel?: string; // Custom total label from configuration
   elements: {
     id: string;
     label: string;

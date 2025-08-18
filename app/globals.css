@@ -333,6 +333,153 @@ button {
   color: white;
 }
 
+/* DYNAMIC CHARTS STYLES */
+.dynamic-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.chart-header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.chart-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  margin: 0;
+}
+
+.chart-emoji {
+  font-size: 1.5rem;
+}
+
+.pie-chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.pie-chart {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+}
+
+.bar-text {
+  font-weight: 500;
+}
+
+.bar-value {
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.bar-container {
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.chart-total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-gray-200);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+}
+
+.no-data-message {
+  text-align: center;
+  color: var(--color-gray-500);
+  font-style: italic;
+  padding: 2rem;
+}
+
+.chart-error {
+  text-align: center;
+  color: #ef4444;
+  padding: 2rem;
+  background: rgba(239, 68, 68, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 /* ADMIN DASHBOARD STYLES */
 .admin-dashboard {
   min-height: 100vh;

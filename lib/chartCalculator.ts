@@ -167,6 +167,9 @@ export function calculateChart(
     chartId: configuration.chartId,
     title: configuration.title,
     type: configuration.type,
+    emoji: configuration.emoji,
+    subtitle: configuration.subtitle,
+    totalLabel: configuration.totalLabel,
     elements,
     total,
     hasErrors

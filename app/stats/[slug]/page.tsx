@@ -3,57 +3,58 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import styles from './stats.module.css';
-import {
-  GenderCircleChart,
-  FansLocationPieChart,
-  AgeGroupsPieChart,
-  MerchandiseHorizontalBars,
-  VisitorSourcesPieChart,
-  ValueHorizontalBars,
-  EngagementHorizontalBars,
-  ChartContainer
-} from '@/components/StatsCharts';
+import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
+import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { calculateActiveCharts } from '@/lib/chartCalculator';
+
+interface ProjectStats {
+  remoteImages: number;
+  hostessImages: number;
+  selfies: number;
+  indoor: number;
+  outdoor: number;
+  stadium: number;
+  female: number;
+  male: number;
+  genAlpha: number;
+  genYZ: number;
+  genX: number;
+  boomer: number;
+  merched: number;
+  jersey: number;
+  scarf: number;
+  flags: number;
+  baseballCap: number;
+  other: number;
+  approvedImages?: number;
+  rejectedImages?: number;
+  visitQrCode?: number;
+  visitShortUrl?: number;
+  visitWeb?: number;
+  visitFacebook?: number;
+  visitInstagram?: number;
+  visitYoutube?: number;
+  visitTiktok?: number;
+  visitX?: number;
+  visitTrustpilot?: number;
+  eventAttendees?: number;
+  eventTicketPurchases?: number;
+  eventResultHome?: number;
+  eventResultVisitor?: number;
+  eventValuePropositionVisited?: number;
+  eventValuePropositionPurchases?: number;
+  // Merchandise pricing variables
+  jerseyPrice?: number;
+  scarfPrice?: number;
+  flagsPrice?: number;
+  capPrice?: number;
+  otherPrice?: number;
+}
 
 interface Project {
   eventName: string;
   eventDate: string;
-  stats: {
-    remoteImages: number;
-    hostessImages: number;
-    selfies: number;
-    indoor: number;
-    outdoor: number;
-    stadium: number;
-    female: number;
-    male: number;
-    genAlpha: number;
-    genYZ: number;
-    genX: number;
-    boomer: number;
-    merched: number;
-    jersey: number;
-    scarf: number;
-    flags: number;
-    baseballCap: number;
-    other: number;
-    approvedImages?: number;
-    rejectedImages?: number;
-    visitQrCode?: number;
-    visitShortUrl?: number;
-    visitWeb?: number;
-    visitFacebook?: number;
-    visitInstagram?: number;
-    visitYoutube?: number;
-    visitTiktok?: number;
-    visitX?: number;
-    visitTrustpilot?: number;
-    eventAttendees?: number;
-    eventTicketPurchases?: number;
-    eventResultHome?: number;
-    eventResultVisitor?: number;
-    eventValuePropositionVisited?: number;
-    eventValuePropositionPurchases?: number;
-  };
+  stats: ProjectStats;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,7 +64,10 @@ export default function StatsPage() {
   const slug = params.slug as string;
   
   const [project, setProject] = useState<Project | null>(null);
+  const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
+  const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -90,6 +94,45 @@ export default function StatsPage() {
       fetchProject();
     }
   }, [slug]);
+
+  // Fetch chart configurations
+  useEffect(() => {
+    const fetchChartConfigurations = async () => {
+      try {
+        console.log('📊 Fetching chart configurations...');
+        const response = await fetch('/api/chart-config/public');
+        const data = await response.json();
+
+        if (data.success) {
+          setChartConfigurations(data.configurations);
+          console.log(`✅ Loaded ${data.configurations.length} chart configurations`);
+        } else {
+          console.error('Failed to load chart configurations:', data.error);
+        }
+      } catch (err) {
+        console.error('Failed to fetch chart configurations:', err);
+      }
+    };
+
+    fetchChartConfigurations();
+  }, []);
+
+  // Calculate chart results when project and configurations are loaded
+  useEffect(() => {
+    if (project && chartConfigurations.length > 0) {
+      setChartsLoading(true);
+      try {
+        console.log('🧮 Calculating chart results with project stats...');
+        const results = calculateActiveCharts(chartConfigurations, project.stats);
+        setChartResults(results);
+        console.log(`✅ Calculated ${results.length} chart results`);
+      } catch (err) {
+        console.error('Failed to calculate chart results:', err);
+      } finally {
+        setChartsLoading(false);
+      }
+    }
+  }, [project, chartConfigurations]);
 
   // Calculate totals
   const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
@@ -157,51 +200,41 @@ export default function StatsPage() {
       <div className="glass-card charts-section">
         <h2 className="section-title">📊 Data Visualization</h2>
         
-        {/* First Row: Merchandise, Engagement, Value */}
-        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-          <ChartContainer title="Merchandise" className="chart-item">
-            <MerchandiseHorizontalBars stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          {/* Conditional rendering for Engagement - only if data exists */}
-          {((project.stats.eventAttendees || 0) > 0 || (project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0) && (
-            <ChartContainer title="Engagement" className="chart-item">
-              <EngagementHorizontalBars stats={project.stats} eventName={project.eventName} />
-            </ChartContainer>
-          )}
-          
-          {/* Combined Value chart - only if we have relevant data */}
-          {((project.stats.eventValuePropositionVisited || 0) > 0 || (project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0 || (project.stats.indoor + project.stats.outdoor + project.stats.stadium) > 0 || ((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0) && (
-            <ChartContainer title="Value" className="chart-item">
-              <ValueHorizontalBars stats={project.stats} eventName={project.eventName} />
-            </ChartContainer>
-          )}
-        </div>
-        
-        {/* Second Row: Gender Distribution and Age Groups */}
-        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-          <ChartContainer title="Gender Distribution" className="chart-item">
-            <GenderCircleChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          <ChartContainer title="Age Groups" className="chart-item">
-            <AgeGroupsPieChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-        </div>
-        
-        {/* Third Row: Location and Sources */}
-        <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-          <ChartContainer title="Location" className="chart-item">
-            <FansLocationPieChart stats={project.stats} eventName={project.eventName} />
-          </ChartContainer>
-          
-          {/* Conditional rendering for Sources - only QR Code, Short URL, and Web */}
-          {((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0 && (
-            <ChartContainer title="Sources" className="chart-item">
-              <VisitorSourcesPieChart stats={project.stats} eventName={project.eventName} />
-            </ChartContainer>
-          )}
-        </div>
+        {chartsLoading ? (
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Loading charts...</p>
+          </div>
+        ) : chartResults.length > 0 ? (
+          <div className="dynamic-charts-grid">
+            {chartResults.map((result, index) => {
+              // Filter out charts with no data
+              const hasData = result.elements.some(element => 
+                typeof element.value === 'number' && element.value > 0
+              );
+              
+              if (!hasData) {
+                return null;
+              }
+              
+              return (
+                <ChartContainer 
+                  key={result.chartId}
+                  title={result.title}
+                  subtitle={result.subtitle}
+                  emoji={result.emoji}
+                  className="chart-item"
+                >
+                  <DynamicChart result={result} />
+                </ChartContainer>
+              );
+            }).filter(Boolean)}
+          </div>
+        ) : (
+          <div className={styles.error}>
+            <p>No chart configurations available</p>
+          </div>
+        )}
       </div>
 
       <div className={styles.statsGrid}>
