@@ -178,19 +178,13 @@ const BarChart: React.FC<{
     );
   }
 
-  const bars = result.elements.map((element) => {
+  const barsWithLegend = result.elements.map((element) => {
     const value = element.value;
     const isValid = typeof value === 'number';
     const barWidth = isValid ? ((value as number) / maxValue) * 100 : 0;
     
     return (
-      <div key={element.id} className="bar-item">
-        <div className="bar-label">
-          <span className="bar-text">{element.label}</span>
-          <span className="bar-value">
-            {isValid ? formatChartValue(value as number) : 'N/A'}
-          </span>
-        </div>
+      <div key={element.id} className="bar-row">
         <div className="bar-container">
           <div 
             className="bar-fill" 
@@ -200,22 +194,39 @@ const BarChart: React.FC<{
             }}
           />
         </div>
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: element.color }}></div>
+          <span>{element.label}: {isValid ? formatChartValue(value as number) : 'N/A'}</span>
+        </div>
       </div>
     );
   });
 
+  // Format total value with currency if it looks like money
+  const formatTotal = (total: number | 'NA') => {
+    if (total === 'NA') return 'N/A';
+    // If it's a large number, format as currency
+    if (total > 1000) {
+      return `€${total.toLocaleString()}`;
+    }
+    return total.toString();
+  };
+
   return (
     <div className={className}>
-      <div className="bar-chart">
-        {bars}
-      </div>
       {result.total !== undefined && (
-        <div className="chart-total">
-          <strong>
-            {result.totalLabel || 'Total'}: {formatChartValue(result.total)}
-          </strong>
+        <div className="chart-total-top">
+          <div className="chart-total-value">
+            {formatTotal(result.total)}
+          </div>
+          <div className="chart-total-label">
+            {result.totalLabel || 'Total'}
+          </div>
         </div>
       )}
+      <div className="bar-chart-large">
+        {barsWithLegend}
+      </div>
     </div>
   );
 };
@@ -235,7 +246,6 @@ export const ChartContainer: React.FC<{
     <div className={`chart-container ${className}`}>
       <div className="chart-header">
         <h3 className="chart-title">
-          {emoji && <span className="chart-emoji">{emoji}</span>}
           {title}
         </h3>
         {subtitle && <p className="chart-subtitle">{subtitle}</p>}

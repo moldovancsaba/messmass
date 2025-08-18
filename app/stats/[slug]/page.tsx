@@ -123,11 +123,26 @@ export default function StatsPage() {
       setChartsLoading(true);
       try {
         console.log('🧮 Calculating chart results with project stats...');
+        console.log('Project stats:', project.stats);
+        console.log('Chart configurations:', chartConfigurations);
+        
+        // Try to import the calculateActiveCharts function
+        if (typeof calculateActiveCharts !== 'function') {
+          console.error('❌ calculateActiveCharts is not a function:', calculateActiveCharts);
+          throw new Error('calculateActiveCharts is not a function');
+        }
+        
         const results = calculateActiveCharts(chartConfigurations, project.stats);
+        console.log('Raw calculation results:', results);
         setChartResults(results);
         console.log(`✅ Calculated ${results.length} chart results`);
       } catch (err) {
-        console.error('Failed to calculate chart results:', err);
+        console.error('❌ Failed to calculate chart results:', err);
+        if (err instanceof Error) {
+          console.error('Error details:', err.message, err.stack);
+        }
+        // Set empty results to show the error in debug panel
+        setChartResults([]);
       } finally {
         setChartsLoading(false);
       }
@@ -207,38 +222,6 @@ export default function StatsPage() {
           </div>
         ) : (
           <div>
-            <div style={{background: 'yellow', padding: '1rem', margin: '1rem 0', borderRadius: '8px'}}>
-              <h3>🐛 DEBUG INFO:</h3>
-              <p>Chart Configurations: {chartConfigurations.length}</p>
-              <p>Chart Results: {chartResults.length}</p>
-              <p>Project loaded: {project ? 'Yes' : 'No'}</p>
-              {chartResults.length > 0 && (
-                <div>
-                  <h4>Chart Results:</h4>
-                  {chartResults.map((result, index) => {
-                    const validElements = result.elements.filter(element => 
-                      typeof element.value === 'number'
-                    );
-                    const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-                    const shouldShow = validElements.length > 0 && (
-                      result.type === 'bar' || totalValue > 0
-                    );
-                    
-                    return (
-                      <div key={result.chartId} style={{margin: '0.5rem 0', padding: '0.5rem', background: 'white'}}>
-                        <strong>{result.chartId}</strong> ({result.type}): 
-                        {validElements.length} valid elements, 
-                        total: {totalValue}, 
-                        should show: {shouldShow ? 'YES' : 'NO'}
-                        <br/>
-                        Elements: {result.elements.map(el => `${el.label}=${el.value}`).join(', ')}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-            
             {chartResults.length > 0 ? (
               <div className="dynamic-charts-grid">
                 {chartResults.map((result, index) => {

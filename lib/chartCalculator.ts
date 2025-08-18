@@ -66,13 +66,17 @@ export function calculateChart(
   stats: ProjectStats
 ): ChartCalculationResult {
   console.log(`🧮 Calculating chart: ${configuration.title} (${configuration.type})`);
+  console.log('Configuration elements:', configuration.elements);
+  console.log('Available stats:', Object.keys(stats));
   
   let hasErrors = false;
   
   // Evaluate each element's formula
   const elements = configuration.elements.map(element => {
     try {
+      console.log(`Evaluating element: ${element.label} with formula: ${element.formula}`);
       const value = evaluateFormula(element.formula, stats);
+      console.log(`Result for ${element.label}: ${value}`);
       
       if (value === 'NA') {
         hasErrors = true;
@@ -88,6 +92,9 @@ export function calculateChart(
     } catch (error) {
       hasErrors = true;
       console.error(`❌ Error evaluating formula for element "${element.label}":`, error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message, error.stack);
+      }
       
       return {
         id: element.id,
@@ -209,9 +216,28 @@ export function calculateActiveCharts(
   configurations: ChartConfiguration[],
   stats: ProjectStats
 ): ChartCalculationResult[] {
-  const activeConfigurations = configurations.filter(config => config.isActive);
+  console.log('🧮 calculateActiveCharts called with:', {
+    configurationsCount: configurations.length,
+    statsKeys: Object.keys(stats),
+    configurations: configurations.map(c => ({ 
+      id: c.chartId, 
+      title: c.title, 
+      active: (c as any).active !== undefined ? (c as any).active : c.isActive
+    }))
+  });
+  
+  // Handle both 'active' and 'isActive' property names - if neither exists, assume active
+  const activeConfigurations = configurations.filter(config => {
+    const hasActiveProperty = (config as any).active !== undefined || config.isActive !== undefined;
+    if (!hasActiveProperty) {
+      // If no active property exists, assume the chart is active
+      return true;
+    }
+    return (config as any).active === true || config.isActive === true;
+  });
   
   console.log(`🧮 Calculating ${activeConfigurations.length} active charts (${configurations.length - activeConfigurations.length} inactive)`);
+  console.log('Active configurations:', activeConfigurations.map(c => c.title));
   
   return calculateChartsBatch(activeConfigurations, stats);
 }
