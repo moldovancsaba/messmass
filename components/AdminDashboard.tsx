@@ -75,6 +75,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     eventDate: ''
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [showEditProjectForm, setShowEditProjectForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editProjectData, setEditProjectData] = useState({
+    eventName: '',
+    eventDate: ''
+  });
+  const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
   // Chart export references
   const genderChartRef = useRef<HTMLDivElement>(null);
@@ -163,6 +170,71 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       }
     } catch (error) {
       console.error('Failed to delete project:', error);
+    }
+  };
+
+  const editProject = (project: Project) => {
+    setEditingProject(project);
+    setEditProjectData({
+      eventName: project.eventName,
+      eventDate: project.eventDate
+    });
+    setShowEditProjectForm(true);
+  };
+
+  const updateProject = async () => {
+    if (!editingProject || !editProjectData.eventName.trim() || !editProjectData.eventDate) {
+      alert('Please fill in both Event Name and Event Date.');
+      return;
+    }
+
+    setIsUpdatingProject(true);
+    
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: editingProject._id,
+          eventName: editProjectData.eventName.trim(),
+          eventDate: editProjectData.eventDate,
+          stats: editingProject.stats // Keep existing stats
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Update project in the list
+        setProjects(prev => prev.map(p => 
+          p._id === editingProject._id 
+            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate }
+            : p
+        ));
+        
+        // Update selected project if it's the one being edited
+        if (selectedProject && selectedProject._id === editingProject._id) {
+          setSelectedProject(prev => prev ? {
+            ...prev,
+            eventName: editProjectData.eventName.trim(),
+            eventDate: editProjectData.eventDate
+          } : null);
+        }
+        
+        // Reset form and close modal
+        setEditProjectData({ eventName: '', eventDate: '' });
+        setEditingProject(null);
+        setShowEditProjectForm(false);
+        
+        alert(`Project "${editProjectData.eventName}" updated successfully!`);
+      } else {
+        alert(`Failed to update project: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Failed to update project:', error);
+      alert('Failed to update project. Please try again.');
+    } finally {
+      setIsUpdatingProject(false);
     }
   };
 
@@ -1225,6 +1297,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                       <td className="stat-number">{merch}</td>
                       <td className="actions-cell">
                         <button 
+                          className="btn btn-sm btn-secondary"
+                          onClick={() => editProject(project)}
+                          title="Edit project name and date"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button 
                           className="btn btn-sm btn-info"
                           onClick={() => {
                             setSelectedProject(project);
@@ -1658,6 +1737,123 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 style={{ flex: '1' }}
               >
                 {isCreatingProject ? 'Creating...' : 'Create Project'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {showEditProjectForm && editingProject && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '1rem'
+        }}>
+          <div className="glass-card" style={{ 
+            width: '100%', 
+            maxWidth: '500px',
+            padding: '2rem'
+          }}>
+            <div style={{
+              marginBottom: '2rem',
+              textAlign: 'center'
+            }}>
+              <h3 className="title" style={{
+                fontSize: '2rem',
+                marginBottom: '0.5rem'
+              }}>Edit Project</h3>
+              <p className="subtitle" style={{ 
+                marginBottom: '0',
+                fontSize: '1rem'
+              }}>Update project name and date</p>
+            </div>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <div className="form-group">
+                <label className="form-label">Event Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editProjectData.eventName}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+                  placeholder="Enter event name"
+                  disabled={isUpdatingProject}
+                  autoFocus
+                  style={{
+                    color: '#1a202c',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">Event Date</label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={editProjectData.eventDate}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+                  disabled={isUpdatingProject}
+                  style={{
+                    color: '#1a202c',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
+              
+              <div style={{
+                padding: '1rem',
+                background: 'rgba(251, 191, 36, 0.1)',
+                borderRadius: '12px',
+                border: '1px solid rgba(251, 191, 36, 0.2)',
+                marginBottom: '0'
+              }}>
+                <p style={{
+                  color: '#4a5568',
+                  fontSize: '0.9rem',
+                  margin: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  ⚠️ Only the project name and date will be updated. All statistics will remain unchanged.
+                </p>
+              </div>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center'
+            }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowEditProjectForm(false);
+                  setEditingProject(null);
+                  setEditProjectData({ eventName: '', eventDate: '' });
+                }}
+                disabled={isUpdatingProject}
+                style={{ flex: '1' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={updateProject}
+                disabled={isUpdatingProject || !editProjectData.eventName.trim() || !editProjectData.eventDate}
+                style={{ flex: '1' }}
+              >
+                {isUpdatingProject ? 'Updating...' : 'Update Project'}
               </button>
             </div>
           </div>
