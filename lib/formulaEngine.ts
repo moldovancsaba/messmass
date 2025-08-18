@@ -151,6 +151,12 @@ interface ProjectStats {
   eventResultVisitor?: number;
   eventValuePropositionVisited?: number;
   eventValuePropositionPurchases?: number;
+  // Merchandise pricing variables
+  jerseyPrice?: number;
+  scarfPrice?: number;
+  flagsPrice?: number;
+  capPrice?: number;
+  otherPrice?: number;
 }
 
 /**
@@ -223,7 +229,7 @@ export function validateFormula(formula: string): FormulaValidationResult {
     // Test evaluation with sample data (all variables set to 1)
     const testStats = Object.fromEntries(
       Object.values(VARIABLE_MAPPINGS).map(field => [field, 1])
-    ) as ProjectStats;
+    ) as unknown as ProjectStats;
     
     const testResult = evaluateFormula(formula, testStats);
     
@@ -293,7 +299,7 @@ function processMathFunctions(formula: string): string {
         });
         
         // Call the function with parsed arguments
-        const result = functionImpl(...args);
+        const result = (functionImpl as any)(...args);
         return result === 'NA' ? 'NaN' : result.toString();
         
       } catch (error) {
