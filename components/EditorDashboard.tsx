@@ -92,19 +92,21 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   // Increment/Decrement functions for click-to-increment cards
   const incrementStat = (key: keyof typeof project.stats) => {
+    const currentValue = project.stats[key] ?? 0;
     const newStats = {
       ...project.stats,
-      [key]: project.stats[key] + 1
+      [key]: currentValue + 1
     };
     setProject(prev => ({ ...prev, stats: newStats }));
     saveProject(newStats);
   };
 
   const decrementStat = (key: keyof typeof project.stats) => {
-    if (project.stats[key] > 0) {
+    const currentValue = project.stats[key] ?? 0;
+    if (currentValue > 0) {
       const newStats = {
         ...project.stats,
-        [key]: project.stats[key] - 1
+        [key]: currentValue - 1
       };
       setProject(prev => ({ ...prev, stats: newStats }));
       saveProject(newStats);

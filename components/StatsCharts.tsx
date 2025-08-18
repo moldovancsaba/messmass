@@ -415,20 +415,14 @@ export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventNa
 
 /**
  * Visitor Sources Distribution Pie Chart
- * Shows where visitors come from: QR Code, Web, Social Media platforms
+ * Shows where visitors come from: QR Code, Short URL, and Web visits only
  * Only renders if visitor data exists, otherwise shows no data message
  */
 export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
   const visitorData = [
     { label: 'QR Code', value: stats.visitQrCode || 0, color: '#3b82f6' },
     { label: 'Short URL', value: stats.visitShortUrl || 0, color: '#10b981' },
-    { label: 'Web', value: stats.visitWeb || 0, color: '#f59e0b' },
-    { label: 'Facebook', value: stats.visitFacebook || 0, color: '#1877f2' },
-    { label: 'Instagram', value: stats.visitInstagram || 0, color: '#e4405f' },
-    { label: 'YouTube', value: stats.visitYoutube || 0, color: '#ff0000' },
-    { label: 'TikTok', value: stats.visitTiktok || 0, color: '#000000' },
-    { label: 'X (Twitter)', value: stats.visitX || 0, color: '#1da1f2' },
-    { label: 'Trustpilot', value: stats.visitTrustpilot || 0, color: '#00b67a' }
+    { label: 'Web', value: stats.visitWeb || 0, color: '#f59e0b' }
   ];
   
   const total = visitorData.reduce((sum, item) => sum + item.value, 0);
@@ -524,6 +518,137 @@ export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName 
         {legend}
       </div>
     </>
+  );
+};
+
+/**
+ * Value Proposition Vertical Bar Chart
+ * Shows Value Prop Viewed (100%) and Value Prop Visited as percentage of Value Prop Viewed
+ * Uses vertical bars with MessMass color scheme
+ */
+export const ValuePropositionVerticalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const valuePropViewed = stats.eventValuePropositionVisited || 0;
+  const valuePropPurchases = stats.eventValuePropositionPurchases || 0;
+  
+  // Calculate percentage - visited as percentage of viewed (if viewed > 0)
+  const visitedPercentage = valuePropViewed > 0 ? (valuePropPurchases / valuePropViewed) * 100 : 0;
+  
+  const valueData = [
+    { 
+      label: 'Value Prop Viewed', 
+      value: 100, // Always 100% as baseline
+      displayValue: valuePropViewed,
+      color: '#3b82f6' 
+    },
+    { 
+      label: 'Value Prop Visited', 
+      value: visitedPercentage,
+      displayValue: valuePropPurchases,
+      color: '#10b981' 
+    }
+  ];
+  
+  if (valuePropViewed === 0) {
+    return <div className="no-data-message">No value proposition data available</div>;
+  }
+  
+  return (
+    <div className="vertical-bars-container">
+      {valueData.map((item, index) => (
+        <div key={item.label} className="vertical-bar-item" data-testid={`value-prop-bar-${index}`}>
+          <div className="vertical-bar-container">
+            <div 
+              className="vertical-bar-fill"
+              style={{ 
+                height: `${item.value}%`,
+                backgroundColor: item.color,
+                minHeight: '20px'
+              }}
+            >
+              <span className="vertical-bar-value">{item.displayValue}</span>
+              {index === 1 && <span className="vertical-bar-percentage">({visitedPercentage.toFixed(1)}%)</span>}
+            </div>
+          </div>
+          <div className="vertical-bar-label">{item.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Engagement Vertical Bar Chart
+ * Shows Fan Engagement % (Fans / Event Attendees) and Fan Interaction % (Social Media Visits + Value Prop / Images)
+ * Uses vertical bars with MessMass color scheme
+ */
+export const EngagementVerticalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const eventAttendees = stats.eventAttendees || 0;
+  const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
+  
+  // Calculate social media visits total
+  const socialMediaVisits = (
+    (stats.visitFacebook || 0) + 
+    (stats.visitInstagram || 0) + 
+    (stats.visitYoutube || 0) + 
+    (stats.visitTiktok || 0) + 
+    (stats.visitX || 0) + 
+    (stats.visitTrustpilot || 0)
+  );
+  
+  const valueProp = (stats.eventValuePropositionVisited || 0) + (stats.eventValuePropositionPurchases || 0);
+  
+  // Calculate percentages
+  const fanEngagement = eventAttendees > 0 ? (totalFans / eventAttendees) * 100 : 0;
+  const fanInteraction = totalImages > 0 ? ((socialMediaVisits + valueProp) / totalImages) * 100 : 0;
+  
+  const engagementData = [
+    { 
+      label: 'Fan Engagement', 
+      value: Math.min(fanEngagement, 100), // Cap at 100%
+      displayValue: `${fanEngagement.toFixed(1)}%`,
+      color: '#8b5cf6' 
+    },
+    { 
+      label: 'Fan Interaction', 
+      value: Math.min(fanInteraction, 100), // Cap at 100%
+      displayValue: `${fanInteraction.toFixed(1)}%`,
+      color: '#f59e0b' 
+    }
+  ];
+  
+  if (eventAttendees === 0 && totalImages === 0) {
+    return <div className="no-data-message">No engagement data available</div>;
+  }
+  
+  return (
+    <div className="vertical-bars-container">
+      {engagementData.map((item, index) => (
+        <div key={item.label} className="vertical-bar-item" data-testid={`engagement-bar-${index}`}>
+          <div className="vertical-bar-container">
+            <div 
+              className="vertical-bar-fill"
+              style={{ 
+                height: `${item.value}%`,
+                backgroundColor: item.color,
+                minHeight: '20px'
+              }}
+            >
+              <span className="vertical-bar-value">{item.displayValue}</span>
+            </div>
+          </div>
+          <div className="vertical-bar-label">{item.label}</div>
+        </div>
+      ))}
+      <div className="engagement-legend">
+        <div className="engagement-legend-item">
+          <small>Fan Engagement = Fans / Event Attendees</small>
+        </div>
+        <div className="engagement-legend-item">
+          <small>Fan Interaction = (Social Media + Value Prop) / Images</small>
+        </div>
+      </div>
+    </div>
   );
 };
 

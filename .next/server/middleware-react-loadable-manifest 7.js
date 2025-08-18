@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST="{\"components/AdminDashboard.tsx -> html2canvas\":{\"id\":\"components/AdminDashboard.tsx -> html2canvas\",\"files\":[\"static/chunks/_app-pages-browser_node_modules_html2canvas_dist_html2canvas_js.js\"]}}"

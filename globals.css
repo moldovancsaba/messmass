@@ -944,6 +944,246 @@ button {
   font-size: 0.875rem;
 }
 
+/* VERTICAL BAR CHART STYLES */
+.vertical-bars-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2rem;
+  height: 200px;
+  padding: 1rem;
+  position: relative;
+}
+
+.vertical-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 120px;
+}
+
+.vertical-bar-container {
+  width: 60px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.vertical-bar-fill {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.vertical-bar-fill:hover {
+  transform: scaleY(1.05);
+  filter: brightness(1.1);
+}
+
+.vertical-bar-value {
+  margin-bottom: 2px;
+}
+
+.vertical-bar-percentage {
+  font-size: 0.65rem;
+  opacity: 0.9;
+}
+
+.vertical-bar-label {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Engagement Legend */
+.engagement-legend {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: var(--color-gray-600);
+  text-align: center;
+}
+
+.engagement-legend-item {
+  opacity: 0.8;
+}
+
+/* CHART CONTAINER ENHANCEMENTS */
+.chart-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.chart-header {
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  text-align: center;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chart-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* PIE CHART ENHANCEMENTS */
+.pie-chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.pie-chart {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.legend-item:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* HORIZONTAL BAR CHART ENHANCEMENTS */
+.horizontal-bars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.horizontal-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.horizontal-bar-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  min-width: 100px;
+  text-align: right;
+}
+
+.horizontal-bar-container {
+  flex: 1;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 15px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.horizontal-bar-fill {
+  height: 100%;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  min-width: 30px;
+}
+
+.horizontal-bar-fill:hover {
+  filter: brightness(1.1);
+  transform: scaleX(1.02);
+}
+
+.horizontal-bar-value {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.no-data-message {
+  text-align: center;
+  color: var(--color-gray-600);
+  font-style: italic;
+  padding: 2rem;
+  font-size: 0.95rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .app-container {
@@ -990,4 +1230,34 @@ button {
   .success-manager-section {
     padding: 1.5rem;
     margin-top: 1.5rem;
+  }
   
+  /* Responsive chart adjustments */
+  .vertical-bars-container {
+    gap: 1rem;
+    height: 180px;
+  }
+  
+  .vertical-bar-container {
+    width: 50px;
+    height: 120px;
+  }
+  
+  .chart-container {
+    min-height: 250px;
+    padding: 1rem;
+  }
+  
+  .horizontal-bars-container {
+    max-width: 100%;
+  }
+  
+  .horizontal-bar-label {
+    min-width: 80px;
+    font-size: 0.8rem;
+  }
+  
+  .engagement-legend {
+    bottom: -50px;
+    font-size: 0.65rem;
+  }

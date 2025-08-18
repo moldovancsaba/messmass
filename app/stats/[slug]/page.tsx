@@ -9,6 +9,8 @@ import {
   AgeGroupsPieChart,
   MerchandiseHorizontalBars,
   VisitorSourcesPieChart,
+  ValuePropositionVerticalBars,
+  EngagementVerticalBars,
   ChartContainer
 } from '@/components/StatsCharts';
 
@@ -171,10 +173,24 @@ export default function StatsPage() {
             <MerchandiseHorizontalBars stats={project.stats} eventName={project.eventName} />
           </ChartContainer>
           
-          {/* Conditional rendering for Visitor Sources - only if data exists */}
-          {((project.stats.visitQrCode || 0) + (project.stats.visitWeb || 0) + (project.stats.visitFacebook || 0) + (project.stats.visitInstagram || 0) + (project.stats.visitYoutube || 0) + (project.stats.visitTiktok || 0) + (project.stats.visitX || 0) + (project.stats.visitTrustpilot || 0) + (project.stats.visitShortUrl || 0)) > 0 && (
+          {/* Conditional rendering for Visitor Sources - only QR Code, Short URL, and Web */}
+          {((project.stats.visitQrCode || 0) + (project.stats.visitShortUrl || 0) + (project.stats.visitWeb || 0)) > 0 && (
             <ChartContainer title="Visitor Sources" className="chart-item">
               <VisitorSourcesPieChart stats={project.stats} eventName={project.eventName} />
+            </ChartContainer>
+          )}
+          
+          {/* Conditional rendering for Value Proposition - only if data exists */}
+          {((project.stats.eventValuePropositionVisited || 0) > 0) && (
+            <ChartContainer title="Value Proposition" className="chart-item">
+              <ValuePropositionVerticalBars stats={project.stats} eventName={project.eventName} />
+            </ChartContainer>
+          )}
+          
+          {/* Conditional rendering for Engagement - only if data exists */}
+          {((project.stats.eventAttendees || 0) > 0 || (project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies) > 0) && (
+            <ChartContainer title="Engagement" className="chart-item">
+              <EngagementVerticalBars stats={project.stats} eventName={project.eventName} />
             </ChartContainer>
           )}
         </div>
