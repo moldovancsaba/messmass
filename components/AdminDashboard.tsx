@@ -1130,6 +1130,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         <div className="projects-header">
           <h2 className="section-title">Project Management</h2>
           <div className="projects-header-buttons">
+            <a 
+              href="/admin/charts"
+              className="btn btn-info"
+              title="Manage chart algorithms and formulas"
+            >
+              📊 Chart Algorithm Manager
+            </a>
             <button 
               className="btn btn-secondary"
               onClick={() => setShowNewProjectForm(true)}
