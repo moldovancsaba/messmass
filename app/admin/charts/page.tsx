@@ -5,8 +5,13 @@ import { redirect } from 'next/navigation';
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import { useEffect, useState } from 'react';
 
+interface User {
+  name: string;
+  role: string;
+}
+
 export default function ChartAlgorithmManagerPage() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
