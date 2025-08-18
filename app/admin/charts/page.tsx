@@ -4,6 +4,7 @@ import { getAdminUser, hasPermission } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import { useEffect, useState } from 'react';
+import '../../styles/admin.css';
 
 interface User {
   name: string;

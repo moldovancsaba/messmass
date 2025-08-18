@@ -20,6 +20,8 @@ A professional real-time collaborative event statistics platform with advanced a
 - 💰 **Value Metrics** - Advertisement value breakdown (CPM, eDM, Ads, U40 Eng., Branding)
 - 🎯 **Core Fan Team** - Advanced engagement metric: (merched/fans) × event attendees
 - 📥 **Chart Export** - High-quality PNG downloads
+- ⚙️ **Chart Algorithm Manager** - Admin interface for customizing chart formulas and configurations
+- 🔄 **Dynamic Chart System** - Data-driven chart rendering with configurable calculations
 
 ## 🚀 Getting Started
 
@@ -76,29 +78,44 @@ messmass/
 │   │   ├── admin/
 │   │   │   └── login/
 │   │   │       └── route.ts        # Admin authentication API
+│   │   ├── chart-config/
+│   │   │   └── route.ts            # Chart configuration CRUD API
 │   │   └── projects/
 │   │       ├── route.ts            # CRUD operations
 │   │       └── stats/[slug]/
 │   │           └── route.ts        # Public stats viewing
 │   ├── admin/
 │   │   ├── page.tsx               # Admin dashboard
+│   │   ├── charts/
+│   │   │   └── page.tsx           # Chart Algorithm Manager
 │   │   └── login/
 │   │       └── page.tsx           # Admin login form
 │   ├── stats/[slug]/
 │   │   └── page.tsx               # Public stats viewing
-│   ├── globals.css                # Unified design system
+│   ├── globals.css                # Main CSS entry point
+│   ├── theme.css                  # Design tokens and variables
+│   ├── components.css             # Reusable UI components
+│   ├── layout.css                 # Layout utilities and grids
+│   ├── admin.css                  # Admin-specific styles
+│   ├── charts.css                 # Chart visualization styles
 │   ├── layout.tsx                 # App layout
 │   └── page.tsx                   # Main event dashboard
 ├── components/
 │   ├── AdminDashboard.tsx         # Admin dashboard component
+│   ├── ChartAlgorithmManager.tsx  # Chart config management
+│   ├── DynamicChart.tsx           # Dynamic chart renderer
 │   └── StatsCharts.tsx            # Chart visualization components
 ├── lib/
-│   └── auth.ts                    # Authentication utilities
+│   ├── auth.ts                    # Authentication utilities
+│   ├── mongodb.ts                 # Database connection
+│   ├── chartCalculator.ts         # Chart calculation engine
+│   └── formulaParser.ts           # Formula parsing utilities
 ├── server/
 │   └── websocket-server.js        # Railway WebSocket server
 ├── middleware.ts                  # Admin route protection
 ├── .env.local                     # Environment configuration
-├── package.json                   # v1.0.3 professional metadata
+├── package.json                   # v1.3.0 with chart system
+├── CSS_ARCHITECTURE.md            # Design system documentation
 └── memory.md                      # Project documentation
 ```
 
@@ -170,6 +187,8 @@ messmass/
 - CSV export functionality
 - Real-time monitoring and system status
 - Professional chart visualizations with PNG export
+- **Chart Algorithm Manager** - Configure chart formulas, labels, and calculations
+- **Dynamic Chart System** - Create and modify chart algorithms with live preview
 
 ## 🎯 Chart System
 
@@ -187,8 +206,31 @@ messmass/
 - **Advertisement Value**: Multi-factor calculation for marketing ROI
 - **Engagement Percentages**: Real-time fan interaction analysis
 
+## 🎨 CSS Architecture
+
+MessMass features a modular CSS design system for maintainability and performance:
+
+### Design System Structure
+- **`theme.css`** - Design tokens, CSS variables, color palettes, typography scales
+- **`components.css`** - Reusable UI components (buttons, cards, forms, typography)
+- **`layout.css`** - Grid systems, flexbox utilities, responsive containers
+- **`charts.css`** - Chart-specific styles and animations
+- **`admin.css`** - Admin dashboard specific styling
+- **`globals.css`** - Main entry point with imports and base styles
+
+### Modular Loading
+- CSS files are imported per-page for optimal performance
+- Admin pages load only admin-specific styles
+- Chart pages load chart visualization styles
+- Consistent design tokens across all modules
+
+For detailed CSS architecture documentation, see [CSS_ARCHITECTURE.md](CSS_ARCHITECTURE.md).
+
 ## 📈 Version History
 
+- **v1.3.0** - Major CSS architecture refactor with modular design system
+- **v1.2.0** - Chart Algorithm Manager and dynamic chart system
+- **v1.1.0** - MongoDB integration improvements and error handling
 - **v1.0.3** - Enhanced chart system with Core Fan Team metric
 - **v1.0.2** - html2canvas integration and chart exports
 - **v1.0.1** - Admin dashboard and authentication system

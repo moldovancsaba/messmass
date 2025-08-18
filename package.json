@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "1.0.3",
+  "version": "1.3.0",
   "description": "Real-time collaborative event statistics dashboard with admin panel for tracking audience demographics, images, and merchandise at live events",
   "keywords": [
     "event-statistics",

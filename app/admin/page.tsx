@@ -2,6 +2,7 @@
 import { getAdminUser, hasPermission } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import AdminDashboard from '@/components/AdminDashboard'
+import '../styles/admin.css'
 
 export default async function AdminPage() {
   const user = await getAdminUser()

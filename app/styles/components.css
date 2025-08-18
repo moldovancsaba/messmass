@@ -1,0 +1,385 @@
+/* MessMass Design System - UI Components */
+/* Reusable component styles used across the application */
+
+/* ========================================
+   GLASS CARD SYSTEM
+======================================== */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(var(--blur-base));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all var(--transition-slow);
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   BUTTON SYSTEM
+======================================== */
+
+.btn {
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-xl);
+  border: none;
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+}
+
+/* Button Sizes */
+.btn-small {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  border-radius: var(--radius-lg);
+}
+
+.btn-large {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-2xl);
+}
+
+/* Button Variants */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  background: var(--gradient-secondary);
+  color: var(--color-white);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+}
+
+.btn-success {
+  background: var(--gradient-success);
+  color: var(--color-white);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+}
+
+.btn-danger {
+  background: var(--gradient-error);
+  color: var(--color-white);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-info {
+  background: var(--gradient-info);
+  color: var(--color-white);
+}
+
+.btn-info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-logout {
+  background: var(--gradient-error);
+  color: var(--color-white);
+}
+
+.btn-logout:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* ========================================
+   FORM SYSTEM
+======================================== */
+
+.form-group {
+  margin-bottom: var(--space-6);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--color-gray-700);
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
+  background: var(--color-white);
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--color-gray-400);
+}
+
+.form-input:disabled {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-400);
+  cursor: not-allowed;
+}
+
+/* Form Input Variants */
+.form-input-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-input-success {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ========================================
+   TYPOGRAPHY COMPONENTS
+======================================== */
+
+.title {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: var(--text-5xl);
+  font-weight: var(--font-bold);
+  text-align: center;
+  margin-bottom: var(--space-2);
+  line-height: var(--leading-tight);
+}
+
+.subtitle {
+  color: var(--color-gray-600);
+  text-align: center;
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-8);
+  line-height: var(--leading-normal);
+}
+
+.section-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-gray-800);
+  margin: 0 0 var(--space-6) 0;
+  line-height: var(--leading-tight);
+}
+
+.section-subtitle {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-gray-700);
+  margin: var(--space-8) 0 var(--space-4) 0;
+  line-height: var(--leading-tight);
+}
+
+/* ========================================
+   STAT CARD SYSTEM
+======================================== */
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(var(--blur-base));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  padding: var(--space-6);
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-slow);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-value {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  margin-bottom: var(--space-2);
+  color: var(--color-gray-900);
+  line-height: var(--leading-tight);
+}
+
+.stat-label {
+  color: var(--color-gray-600);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: var(--leading-normal);
+}
+
+/* ========================================
+   LOADING STATES
+======================================== */
+
+.loading-spinner {
+  text-align: center;
+  padding: var(--space-16);
+  font-size: var(--text-xl);
+  color: var(--color-gray-600);
+}
+
+.spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--color-gray-200);
+  border-top: 3px solid var(--color-primary-500);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-4);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   ERROR & SUCCESS STATES
+======================================== */
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.warning-message {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.info-message {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--color-info);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ========================================
+   STATUS INDICATORS
+======================================== */
+
+.connection-status {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  z-index: var(--z-toast);
+  transition: all var(--transition-base);
+}
+
+.connection-connected {
+  background: rgba(34, 197, 94, 0.9);
+  color: var(--color-white);
+}
+
+.connection-connecting {
+  background: rgba(234, 179, 8, 0.9);
+  color: var(--color-white);
+}
+
+.connection-disconnected {
+  background: rgba(239, 68, 68, 0.9);
+  color: var(--color-white);
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+======================================== */
+
+/* Mobile First Responsive Design */
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--text-4xl);
+  }
+  
+  .subtitle {
+    font-size: var(--text-base);
+  }
+  
+  .section-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .btn {
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-sm);
+  }
+  
+  .stat-value {
+    font-size: var(--text-3xl);
+  }
+  
+  .glass-card {
+    padding: var(--space-4);
+  }
+}

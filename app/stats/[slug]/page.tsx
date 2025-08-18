@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import styles from './stats.module.css';
+import '../../charts.css';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';

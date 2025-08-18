@@ -4,6 +4,68 @@ All notable changes to the MessMass project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-08-18
+
+### 🏗️ Major Architecture Refactor
+- **Modular CSS System**: Complete refactor from monolithic `globals.css` to focused CSS modules
+- **Design Token System**: Centralized CSS variables for colors, typography, spacing, and effects
+- **Performance Optimization**: Per-page CSS loading to reduce bundle size and improve loading performance
+- **Maintainable Architecture**: Clear separation of concerns with dedicated files for different functionalities
+
+### ✨ Added
+- **`theme.css`**: Design tokens and CSS custom properties for consistent theming
+- **`components.css`**: Reusable UI component styles (buttons, cards, forms, typography)
+- **`layout.css`**: Grid systems, flexbox utilities, and responsive containers
+- **`admin.css`**: Admin dashboard specific styling with modular imports
+- **`charts.css`**: Chart visualization styles with enhanced bar and pie chart layouts
+- **CSS_ARCHITECTURE.md**: Comprehensive documentation of the new design system
+
+### 🎨 Enhanced Chart Styling
+- **Two-Column Bar Charts**: Legends on left, colored bars on right for better readability
+- **Improved Pie Charts**: Larger scale (1.4x), drop shadows, and shimmer animations
+- **Clean Legend Design**: Removed box backgrounds, consistent with flat design principles
+- **Color System**: CSS custom properties for dynamic bar colors and consistent theming
+- **Responsive Grids**: Optimized chart layouts for different screen sizes
+
+### 🔧 Technical Improvements
+- **Import Strategy**: Selective CSS loading per page instead of global imports
+- **CSS Custom Properties**: Dynamic color application using CSS variables
+- **Build Optimization**: Improved CSS bundling and tree-shaking
+- **Browser Compatibility**: Enhanced support across different browsers
+- **Performance**: Reduced initial CSS payload and faster page loads
+
+### 📚 Documentation Updates
+- **README.md**: Updated with CSS architecture overview and modular system documentation
+- **CSS_ARCHITECTURE.md**: Detailed design system documentation with examples and best practices
+- **Project Structure**: Updated file structure to reflect new CSS organization
+
+### 🚀 Migration Benefits
+- **Maintainability**: Easier to modify and extend specific UI components
+- **Performance**: Faster loading with reduced CSS bundle sizes
+- **Scalability**: Clear patterns for adding new components and styles
+- **Developer Experience**: Better organization and easier debugging
+
+## [1.2.0] - 2025-08-18
+
+### ✨ Added
+- **Chart Algorithm Manager**: Admin interface for customizing chart formulas and configurations
+- **Dynamic Chart System**: Data-driven chart rendering with configurable calculations
+- **Formula Parser**: Advanced formula parsing with variables and mathematical functions
+- **Chart Configuration API**: CRUD operations for chart settings and algorithms
+- **Live Preview**: Real-time chart preview when editing formulas in admin panel
+
+### 🔧 Enhanced
+- **Admin Dashboard**: Integrated Chart Algorithm Manager with dedicated navigation
+- **Chart Rendering**: Dynamic chart generation based on database configurations
+- **Error Handling**: Improved error handling for chart calculations and API operations
+
+## [1.1.0] - 2025-08-18
+
+### 🔧 Fixed
+- **MongoDB Connection**: Enhanced connection handling with timeout and retry options
+- **Error Handling**: Improved API error responses and connection stability
+- **Environment Variables**: Cleaned up duplicate configurations
+
 ## [1.0.3] - 2025-08-18
 
 ### ✨ Added
