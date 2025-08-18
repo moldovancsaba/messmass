@@ -1,20 +1,33 @@
-# Hello World Next.js App
+# MessMass - Real-time Event Statistics Dashboard
 
-A beautiful and modern "Hello World" application built with Next.js 14, React 18, and TypeScript.
+A professional real-time collaborative event statistics platform with advanced analytics and admin panel. Built with Next.js 15, React 18, TypeScript, and MongoDB.
 
-## Features
+## 🎯 Features
 
-- ✨ Modern Next.js 14 with App Router
-- ⚛️ React 18 with TypeScript
-- 🎨 Beautiful gradient design with animations
-- 📱 Fully responsive design
-- 🚀 Ready for deployment
+### Core Functionality
+- 📊 **Real-time Event Statistics** - Live collaborative editing with WebSocket synchronization
+- 🔐 **Admin Dashboard** - Password-protected management interface
+- 📈 **Advanced Analytics** - Core Fan Team metric and 5-metric engagement analysis
+- 📱 **Responsive Design** - Optimized for mobile, tablet, and desktop
+- 🎨 **Professional UI** - Glass-card effects with gradient backgrounds
+- 💾 **MongoDB Integration** - Cloud database with automatic persistence
 
-## Getting Started
+### Enhanced Chart System
+- 👥 **Gender/Age Demographics** - Visual pie charts with emoji centers
+- 📍 **Location Analytics** - Remote vs Event fan distribution
+- 🛍️ **Merchandise Tracking** - Potential sales calculations
+- 🌐 **Traffic Sources** - QR codes, short URLs, and web visits
+- 💰 **Value Metrics** - Advertisement value breakdown (CPM, eDM, Ads, U40 Eng., Branding)
+- 🎯 **Core Fan Team** - Advanced engagement metric: (merched/fans) × event attendees
+- 📥 **Chart Export** - High-quality PNG downloads
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-Make sure you have Node.js 18+ installed on your system.
+- Node.js 18+ installed on your system
+- MongoDB Atlas account (for database)
+- Railway account (for WebSocket server deployment)
 
 ### Installation
 
@@ -29,48 +42,162 @@ cd messmass
 npm install
 ```
 
-3. Run the development server:
+3. Set up environment variables in `.env.local`:
+```bash
+MONGODB_URI=your_mongodb_atlas_connection_string
+NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
+ADMIN_PASSWORD=your_secure_admin_password
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+5. Open [http://localhost:3000](http://localhost:3000) to see the main dashboard
+6. Access admin panel at [http://localhost:3000/admin](http://localhost:3000/admin)
 
-## Available Scripts
+## 📜 Available Scripts
 
 - `npm run dev` - Runs the app in development mode
 - `npm run build` - Builds the app for production
 - `npm run start` - Runs the built app in production mode
-- `npm run lint` - Runs the linter
+- `npm run lint` - Runs ESLint for code quality
+- `npm run type-check` - TypeScript validation without emitting files
+- `npm run export` - Export static files (if needed)
+- `npm run clean` - Remove .next and out directories
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 messmass/
 ├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── page.module.css
-├── package.json
-└── README.md
+│   ├── api/
+│   │   ├── admin/
+│   │   │   └── login/
+│   │   │       └── route.ts        # Admin authentication API
+│   │   └── projects/
+│   │       ├── route.ts            # CRUD operations
+│   │       └── stats/[slug]/
+│   │           └── route.ts        # Public stats viewing
+│   ├── admin/
+│   │   ├── page.tsx               # Admin dashboard
+│   │   └── login/
+│   │       └── page.tsx           # Admin login form
+│   ├── stats/[slug]/
+│   │   └── page.tsx               # Public stats viewing
+│   ├── globals.css                # Unified design system
+│   ├── layout.tsx                 # App layout
+│   └── page.tsx                   # Main event dashboard
+├── components/
+│   ├── AdminDashboard.tsx         # Admin dashboard component
+│   └── StatsCharts.tsx            # Chart visualization components
+├── lib/
+│   └── auth.ts                    # Authentication utilities
+├── server/
+│   └── websocket-server.js        # Railway WebSocket server
+├── middleware.ts                  # Admin route protection
+├── .env.local                     # Environment configuration
+├── package.json                   # v1.0.3 professional metadata
+└── memory.md                      # Project documentation
 ```
 
-## Deployment
+## 🌐 Live Demo
 
-This app can be easily deployed to:
+**Production Application**: [https://messmass.doneisbetter.com](https://messmass.doneisbetter.com)
+**Admin Dashboard**: [https://messmass.doneisbetter.com/admin](https://messmass.doneisbetter.com/admin)
 
-- **Vercel** (recommended for Next.js): Connect your GitHub repo at [vercel.com](https://vercel.com)
-- **Netlify**: Deploy directly from GitHub
-- **GitHub Pages**: Use `npm run build` and deploy the `out` folder
+## 🚀 Deployment
 
-## Technologies Used
+### Frontend (Vercel)
+1. Connect your GitHub repository to Vercel
+2. Set environment variables:
+   - `MONGODB_URI`
+   - `NEXT_PUBLIC_WS_URL` 
+   - `ADMIN_PASSWORD`
+3. Deploy automatically from main branch
 
-- [Next.js 14](https://nextjs.org/) - React framework
-- [React 18](https://reactjs.org/) - JavaScript library for building user interfaces
-- [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript
-- CSS Modules - Scoped CSS styling
+### WebSocket Server (Railway)
+1. Deploy `server/websocket-server.js` to Railway
+2. Set `PORT` environment variable
+3. Update `NEXT_PUBLIC_WS_URL` with Railway WebSocket URL
 
-## License
+### Database (MongoDB Atlas)
+1. Create MongoDB Atlas cluster
+2. Set up database user and connection string
+3. Configure IP whitelist for production access
+
+## 🛠️ Technologies Used
+
+### Core Framework
+- [Next.js 15.4.6](https://nextjs.org/) - React framework with App Router
+- [React 18.3.1](https://reactjs.org/) - JavaScript library for building user interfaces
+- [TypeScript 5.6.3](https://www.typescriptlang.org/) - Typed JavaScript
+
+### Database & Real-time
+- [MongoDB Atlas](https://www.mongodb.com/atlas) - Cloud database
+- [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) - Real-time communication
+- [Railway](https://railway.app/) - WebSocket server hosting
+
+### Authentication & Security
+- Password-based admin authentication
+- Session management with HTTP-only cookies
+- Environment variable configuration
+
+### Visualization & Export
+- [html2canvas](https://html2canvas.hertzen.com/) - Chart export functionality
+- Custom SVG chart rendering
+- Professional data visualization components
+
+## 📊 Core Features
+
+### Real-time Collaboration
+- Multi-user editing with live synchronization
+- WebSocket-based instant updates
+- Automatic reconnection with error recovery
+- Project-based collaboration rooms
+
+### Advanced Analytics
+- **Core Fan Team Metric**: Calculate highly engaged stadium projection
+- **5-Metric Engagement System**: Engaged, Interactive, Front-runners, Fanaticals, Casuals
+- **Value Analysis**: CPM, eDM, Ads, U40 Engagement, Branding calculations
+- **Demographics**: Gender, age, and location breakdowns
+- **Traffic Sources**: QR codes, short URLs, web visits
+
+### Admin Dashboard
+- Password-protected management interface
+- Complete project overview and statistics
+- CSV export functionality
+- Real-time monitoring and system status
+- Professional chart visualizations with PNG export
+
+## 🎯 Chart System
+
+### Visual Design
+- **Pie Charts**: Large emoji centers (👥📍🌐) with clean legends
+- **Horizontal Bars**: Color-coded with value displays
+- **Organized Layout**: Logical grouping in rows
+  - Row 1: Merchandise, Engagement, Value
+  - Row 2: Gender Distribution, Age Groups
+  - Row 3: Location, Sources
+
+### Key Metrics
+- **Core Fan Team**: `(merched fans / total fans) × event attendees`
+- **Potential Merch Sales**: `(total fans - merched fans) × €10`
+- **Advertisement Value**: Multi-factor calculation for marketing ROI
+- **Engagement Percentages**: Real-time fan interaction analysis
+
+## 📈 Version History
+
+- **v1.0.3** - Enhanced chart system with Core Fan Team metric
+- **v1.0.2** - html2canvas integration and chart exports
+- **v1.0.1** - Admin dashboard and authentication system
+- **v1.0.0** - Initial production release
+
+## 📝 License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+## 👨‍💻 Author
+
+Csaba Moldovan - [moldovancsaba@gmail.com](mailto:moldovancsaba@gmail.com)

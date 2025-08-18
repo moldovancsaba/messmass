@@ -70,12 +70,14 @@ The application implements multi-user real-time statistics tracking:
 - Simple password-based authentication
 - Session stored in HTTP-only cookies
 - Role-based permissions system
-
-**Admin Features:**
+### Admin Features
 - View all projects with detailed statistics
 - Export projects to CSV
 - Delete projects (with confirmation)
 - Update "Success Manager" metrics
+- Real-time admin dashboard
+- Enhanced chart visualizations with PNG export
+- Core Fan Team metric calculation and analysis
 - Real-time admin dashboard
 
 **Authentication Flow:**
@@ -83,6 +85,27 @@ The application implements multi-user real-time statistics tracking:
 - Session validation via `lib/auth.ts`
 - Route protection via `middleware.ts`
 - Cookie-based session management
+
+### Chart System Architecture
+
+**Enhanced Visualization Components (`components/StatsCharts.tsx`):**
+- **Pie Charts**: SVG-rendered with large emoji centers and simplified legends
+- **Horizontal Bar Charts**: Color-coded metrics with value calculations
+- **Chart Export**: html2canvas integration for PNG downloads
+- **Responsive Layout**: Organized in logical rows for optimal viewing
+
+**Chart Layout Structure:**
+```
+Row 1: Merchandise | Engagement | Value
+Row 2: Gender Distribution | Age Groups
+Row 3: Location | Sources
+```
+
+**Core Fan Team Metric:**
+- **Formula**: `(merched fans / total fans) × event attendees`
+- **Purpose**: Projects highly engaged merchandise-wearing fans to stadium attendance
+- **Example**: (16 merched / 257 fans) × 1200 attendees = 75 core fans
+- **Display**: Whole number result with "Core Fan Team" description
 
 ## Database Structure (MongoDB)
 
@@ -118,7 +141,20 @@ The application implements multi-user real-time statistics tracking:
     approvedImages?: number,
     rejectedImages?: number,
     visitQrCode?: number,
-    // ... additional success manager metrics
+    visitShortUrl?: number,
+    visitWeb?: number,
+    visitFacebook?: number,
+    visitInstagram?: number,
+    visitYoutube?: number,
+    visitTiktok?: number,
+    visitX?: number,
+    visitTrustpilot?: number,
+    eventAttendees?: number,
+    eventTicketPurchases?: number,
+    eventResultHome?: number,
+    eventResultVisitor?: number,
+    eventValuePropositionVisited?: number,
+    eventValuePropositionPurchases?: number
   },
   createdAt: string, // ISO 8601 with milliseconds
   updatedAt: string  // ISO 8601 with milliseconds
@@ -204,6 +240,14 @@ ADMIN_PASSWORD=your_secure_password
 - All code must include functional and strategic comments
 - ESLint configuration enforced
 - No test frameworks (MVP factory approach - tests prohibited)
+
+**Chart Implementation Standards:**
+- SVG-based pie charts for scalability and clarity
+- Emoji centers (36px) for visual appeal: 👥 📍 🌐
+- Simplified legends without calculation details
+- Consistent color schemes across chart types
+- Responsive design with proper mobile optimization
+- Math.round() for whole number results in calculations
 
 ## Prohibited Patterns
 
