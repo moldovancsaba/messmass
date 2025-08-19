@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Real-time collaborative event statistics dashboard with admin panel for tracking audience demographics, images, and merchandise at live events",
   "keywords": [
     "event-statistics",
@@ -40,6 +40,7 @@
     "dotenv": "^17.2.1",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.1",
     "mongodb": "^6.8.0",
     "next": "15.4.6",
     "react": "^18.3.1",

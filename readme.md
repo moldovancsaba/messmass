@@ -131,7 +131,7 @@ messmass/
 │   └── websocket-server.js        # Railway WebSocket server
 ├── middleware.ts                  # Admin route protection
 ├── .env.local                     # Environment configuration
-├── package.json                   # v1.4.0 with hashtag system
+├── package.json                   # v1.5.0 with professional layout system
 ├── CSS_ARCHITECTURE.md            # Design system documentation
 └── memory.md                      # Project documentation
 ```
@@ -247,6 +247,7 @@ For detailed CSS architecture documentation, see [CSS_ARCHITECTURE.md](CSS_ARCHI
 
 ## 📈 Version History
 
+- **v1.5.0** - Major statistics layout overhaul with professional dashboard-style grid system
 - **v1.4.0** - Hashtag system implementation with overview dashboard and aggregated statistics
 - **v1.3.0** - Major CSS architecture refactor with modular design system
 - **v1.2.0** - Chart Algorithm Manager and dynamic chart system

@@ -1614,14 +1614,10 @@ img {
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 0 2rem 0;
-  color: #2d3748;
+  color: #2d3748 !important;
   text-align: center;
   padding-bottom: 0.75rem;
   border-bottom: 3px solid #667eea;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* Responsive Design for Charts */

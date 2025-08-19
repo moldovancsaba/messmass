@@ -7,6 +7,7 @@ import '../../charts.css';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
+import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 
 interface ProjectStats {
   remoteImages: number;
@@ -171,6 +172,7 @@ export default function HashtagStatsPage() {
     }
   }, [project, chartConfigurations]);
 
+
   // Calculate totals
   const totalImages = project ? project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies : 0;
   const totalFans = project ? project.stats.indoor + project.stats.outdoor + project.stats.stadium : 0;
@@ -220,17 +222,34 @@ export default function HashtagStatsPage() {
       <div className="glass-card admin-header">
         <div className="admin-header-content">
           <div className="admin-branding">
-            <h1 className="admin-title">#{actualHashtag || hashtagParam}</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <ColoredHashtagBubble 
+                hashtag={actualHashtag || hashtagParam}
+                customStyle={{
+                  fontSize: '2.5rem',
+                  fontWeight: '700',
+                  padding: '1rem 2rem'
+                }}
+              />
+            </div>
             <p className="admin-subtitle">Aggregated Statistics - {project.dateRange.formatted}</p>
             <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-              📊 {project.projectCount} project{project.projectCount !== 1 ? 's' : ''} with this hashtag
-            </div>
-          </div>
-          <div className="admin-user-info">
-            <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>
-              <p className="admin-role">📅 {project.dateRange.formatted}</p>
-              <p className="admin-level">📊 Projects</p>
-              <p className="admin-status">{project.projectCount}</p>
+              <a 
+                href="#projects-list"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('projects-list')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                style={{ 
+                  cursor: 'pointer', 
+                  color: '#6366f1',
+                  textDecoration: 'none',
+                  borderBottom: '1px dashed #6366f1'
+                }}
+                title="Click to view projects"
+              >
+                📊 {project.projectCount} project{project.projectCount !== 1 ? 's' : ''} with this hashtag
+              </a>
             </div>
           </div>
         </div>
@@ -238,7 +257,13 @@ export default function HashtagStatsPage() {
 
       {/* Charts Grid Section */}
       <div className="glass-card charts-section">
-        <h2 className="section-title">📊 Data Visualization</h2>
+        <h2 style={{
+          fontSize: '1.875rem',
+          fontWeight: 'bold',
+          color: '#1f2937',
+          margin: '0 0 1.5rem 0',
+          lineHeight: '1.25'
+        }}>📊 Data Visualization</h2>
         
         {chartsLoading ? (
           <div className={styles.loading}>
@@ -292,135 +317,131 @@ export default function HashtagStatsPage() {
         )}
       </div>
 
-      <div className={styles.statsGrid}>
-        {/* Images Section */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>📸 Images ({totalImages})</h2>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Remote Images</div>
-              <div className={styles.statValue}>{project.stats.remoteImages}</div>
+      {/* New Stats Layout */}
+      <div className="stats-layout-container">
+        {/* Row 1: Images, Fans, Gender */}
+        <div className="stats-row-3">
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">📸 Images ({totalImages})</h2>
+            <div className="stats-cards-row">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Remote Images</div>
+                <div className={styles.statValue}>{project.stats.remoteImages}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Hostess Images</div>
+                <div className={styles.statValue}>{project.stats.hostessImages}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Selfies</div>
+                <div className={styles.statValue}>{project.stats.selfies}</div>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Hostess Images</div>
-              <div className={styles.statValue}>{project.stats.hostessImages}</div>
+          </div>
+
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">👥 Fans ({totalFans})</h2>
+            <div className="stats-cards-row">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Indoor</div>
+                <div className={styles.statValue}>{project.stats.indoor}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Outdoor</div>
+                <div className={styles.statValue}>{project.stats.outdoor}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Stadium</div>
+                <div className={styles.statValue}>{project.stats.stadium}</div>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Selfies</div>
-              <div className={styles.statValue}>{project.stats.selfies}</div>
+          </div>
+
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">⚧️ Gender ({totalGender})</h2>
+            <div className="stats-cards-row">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Female</div>
+                <div className={styles.statValue}>{project.stats.female}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Male</div>
+                <div className={styles.statValue}>{project.stats.male}</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Fans Section */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>👥 Fans ({totalFans})</h2>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Indoor</div>
-              <div className={styles.statValue}>{project.stats.indoor}</div>
+        {/* Row 2: Age Groups (2/3) and Fans with Merchandise (1/3) */}
+        <div className="stats-row-2-3-1">
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">🎂 Age Groups ({totalAge})</h2>
+            <div className="stats-cards-row-age">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Gen Alpha</div>
+                <div className={styles.statValue}>{project.stats.genAlpha}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Gen Y+Z</div>
+                <div className={styles.statValue}>{project.stats.genYZ}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Total Under 40</div>
+                <div className={styles.statValue}>{totalUnder40}</div>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Outdoor</div>
-              <div className={styles.statValue}>{project.stats.outdoor}</div>
+            <div className="stats-cards-row-age">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Gen X</div>
+                <div className={styles.statValue}>{project.stats.genX}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Boomer</div>
+                <div className={styles.statValue}>{project.stats.boomer}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Total Over 40</div>
+                <div className={styles.statValue}>{totalOver40}</div>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Stadium</div>
-              <div className={styles.statValue}>{project.stats.stadium}</div>
+          </div>
+
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">🛑️ Fans with Merchandise</h2>
+            <div className="stats-cards-row">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Merched Fans</div>
+                <div className={styles.statValue}>{project.stats.merched}</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Gender Section */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>⚧️ Gender ({totalGender})</h2>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Female</div>
-              <div className={styles.statValue}>{project.stats.female}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Male</div>
-              <div className={styles.statValue}>{project.stats.male}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Total Gender</div>
-              <div className={styles.statValue}>{totalGender}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Age Section */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>🎂 Age Groups ({totalAge})</h2>
-          {/* First row: Gen Alpha, Gen Y+Z, Total Under 40 */}
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Gen Alpha</div>
-              <div className={styles.statValue}>{project.stats.genAlpha}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Gen Y+Z</div>
-              <div className={styles.statValue}>{project.stats.genYZ}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Total Under 40</div>
-              <div className={styles.statValue}>{totalUnder40}</div>
-            </div>
-          </div>
-          {/* Second row: Gen X, Boomer, Total Over 40 */}
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Gen X</div>
-              <div className={styles.statValue}>{project.stats.genX}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Boomer</div>
-              <div className={styles.statValue}>{project.stats.boomer}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Total Over 40</div>
-              <div className={styles.statValue}>{totalOver40}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Fans with Merchandise */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>🛑️ Fans with Merchandise</h2>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Merched Fans</div>
-              <div className={styles.statValue}>{project.stats.merched}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Merchandise Types */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>👕 Merchandise Types ({project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other})</h2>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Jersey</div>
-              <div className={styles.statValue}>{project.stats.jersey}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Scarf</div>
-              <div className={styles.statValue}>{project.stats.scarf}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Flags</div>
-              <div className={styles.statValue}>{project.stats.flags}</div>
-            </div>
-          </div>
-          <div className={styles.statsRow}>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Baseball Cap</div>
-              <div className={styles.statValue}>{project.stats.baseballCap}</div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statLabel}>Other</div>
-              <div className={styles.statValue}>{project.stats.other}</div>
+        {/* Row 3: Merchandise Types (Full Width) */}
+        <div className="stats-row-full">
+          <div className="stats-section-new">
+            <h2 className="stats-section-title">👕 Merchandise Types ({totalMerch})</h2>
+            <div className="merch-cards-grid">
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Jersey</div>
+                <div className={styles.statValue}>{project.stats.jersey}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Scarf</div>
+                <div className={styles.statValue}>{project.stats.scarf}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Flags</div>
+                <div className={styles.statValue}>{project.stats.flags}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Baseball Cap</div>
+                <div className={styles.statValue}>{project.stats.baseballCap}</div>
+              </div>
+              <div className={styles.statCard}>
+                <div className={styles.statLabel}>Other</div>
+                <div className={styles.statValue}>{project.stats.other}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -455,8 +476,26 @@ export default function HashtagStatsPage() {
 
       {/* Projects List Section */}
       {projects.length > 0 && (
-        <div className="glass-card">
-          <h2 className="section-title">📊 Projects with #{actualHashtag || hashtagParam}</h2>
+        <div id="projects-list" className="glass-card" style={{ marginTop: '3rem' }}>
+          <h2 style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem',
+            color: '#1f2937 !important',
+            fontWeight: '600',
+            fontSize: '1.875rem',
+            marginBottom: '1.5rem'
+          }}>
+            <span style={{ color: '#1f2937' }}>📊 Projects with </span>
+            <ColoredHashtagBubble 
+              hashtag={actualHashtag || hashtagParam}
+              customStyle={{
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                color: 'white'
+              }}
+            />
+          </h2>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',

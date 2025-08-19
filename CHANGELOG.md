@@ -4,6 +4,55 @@ All notable changes to the MessMass project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-08-19
+
+### 🎨 Major Feature: Professional Statistics Layout System
+- **Dashboard-Style Grid Layout**: Complete transformation from vertical stacked sections to professional 3-row grid system
+- **Strategic Column Ratios**: Row 1 (3 equal columns), Row 2 (2/3 + 1/3), Row 3 (full width)
+- **Responsive Design**: Optimized layouts for desktop, tablet, and mobile with intelligent stacking
+- **Cross-Page Consistency**: Unified layout structure across individual stats and aggregated hashtag pages
+- **Enhanced User Experience**: Better space utilization, improved visual hierarchy, and reduced scrolling
+
+### ✨ Added
+- **New Grid CSS Classes**: 6 new CSS classes for flexible layout management (`stats-layout-container`, `stats-row-3`, `stats-row-2-3-1`, etc.)
+- **Professional Section Styling**: Glass morphism sections with hover effects and smooth animations
+- **Improved Information Architecture**: Logical grouping of related statistics with priority-based placement
+- **Mobile-First Responsive System**: Comprehensive responsive design with optimized breakpoints
+
+### 🔧 Enhanced Layout Structure
+- **Row 1**: 📸 Images, 👥 Fans, ⚧️ Gender (3 equal columns)
+- **Row 2**: 🎂 Age Groups (2/3 width with sub-grid), 🛑️ Fans with Merchandise (1/3 width)
+- **Row 3**: 👕 Merchandise Types (full width with 5-item responsive grid)
+
+### 🎯 Technical Improvements
+- **Global Component Integration**: Leverages existing MessMass design system with new grid components
+- **CSS Architecture Enhancement**: Extended modular CSS system with professional layout utilities
+- **Cross-Platform Compatibility**: Consistent experience across `/stats/[slug]` and `/hashtag/[hashtag]` pages
+- **Performance Optimization**: Efficient CSS grid implementation with minimal overhead
+
+### 🔍 Visual Enhancements
+- **Hover Effects**: Subtle translateY animations with enhanced shadows on section interactions
+- **Consistent Typography**: Unified section titles with proper spacing and visual hierarchy
+- **Professional Spacing**: Optimal padding, margins, and gaps following design system standards
+- **Glass Morphism Integration**: Maintains beautiful MessMass visual language with backdrop blur effects
+
+### 📊 User Experience Impact
+- **Improved Scanability**: Related metrics are visually grouped for easier comparison and analysis
+- **Reduced Cognitive Load**: Strategic placement of information reduces mental processing time
+- **Better Mobile Experience**: Responsive design ensures optimal viewing on all device sizes
+- **Professional Presentation**: Statistics now resemble a sophisticated analytics dashboard
+
+### 🚀 Business Value
+- **Enhanced Data Insights**: Visual grouping enables better understanding of related metrics
+- **Professional Appearance**: Dashboard-style layout improves credibility and user perception
+- **Scalable Design**: Layout architecture can accommodate future statistical categories
+- **Improved Analytics Experience**: Users can quickly identify patterns and trends across data sets
+
+### 🔧 Fixed
+- **Purple Text Issue**: Resolved duplicate `.section-title` CSS definitions causing text color conflicts
+- **Layout Consistency**: Eliminated visual inconsistencies between different statistics pages
+- **Responsive Breakpoints**: Fixed layout issues on intermediate screen sizes
+
 ## [1.4.0] - 2025-08-18
 
 ### 🏷️ Major Feature: Hashtag System Implementation
