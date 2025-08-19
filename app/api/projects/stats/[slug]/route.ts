@@ -33,6 +33,7 @@ export async function GET(
     const readOnlyProject = {
       eventName: project.eventName,
       eventDate: project.eventDate,
+      hashtags: project.hashtags, // Include hashtags for display
       stats: project.stats,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt

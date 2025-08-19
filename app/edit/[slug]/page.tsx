@@ -8,6 +8,7 @@ interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
+  hashtags?: string[];
   stats: {
     remoteImages: number;
     hostessImages: number;

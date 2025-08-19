@@ -222,11 +222,30 @@ const BarChart: React.FC<{
   return (
     <div className={className}>
       {result.total !== undefined && (
-        <div className="chart-total-top">
-          <div className="chart-total-value">
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+          padding: '1.5rem',
+          background: 'rgba(102, 126, 234, 0.05)',
+          borderRadius: '1rem',
+          border: '2px solid rgba(102, 126, 234, 0.1)'
+        }}>
+          <div style={{
+            fontSize: '3rem',
+            fontWeight: '700',
+            color: '#667eea',
+            marginBottom: '0.5rem',
+            lineHeight: 1
+          }}>
             {formatTotal(result.total)}
           </div>
-          <div className="chart-total-label">
+          <div style={{
+            fontSize: '1.1rem',
+            fontWeight: '600',
+            color: '#4a5568',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          }}>
             {result.totalLabel || 'Total'}
           </div>
         </div>
@@ -267,7 +286,8 @@ export const ChartContainer: React.FC<{
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const canvas = await html2canvas(chartRef.current, {
-        logging: false
+        logging: false,
+        useCORS: true
       });
       
       // Create download link
@@ -288,26 +308,48 @@ export const ChartContainer: React.FC<{
   };
   
   return (
-    <div className={`chart-container ${className}`} ref={chartRef}>
-      <div className="chart-header">
-        <h3 className="chart-title">
-          {title}
-        </h3>
-        {subtitle && <p className="chart-subtitle">{subtitle}</p>}
-        <button 
-          className="btn btn-sm btn-primary chart-download-btn"
-          onClick={exportChartAsPNG}
-          title="Download chart as PNG"
-          style={{
-            fontSize: '0.75rem',
-            padding: '0.25rem 0.5rem',
-            marginLeft: 'auto'
-          }}
-        >
-          📥 Download PNG
-        </button>
-      </div>
-      <div className="chart-content">
+    <div style={{ position: 'relative', width: '100%' }}>
+      {/* Download button positioned outside the container */}
+      <button 
+        className="btn btn-sm btn-primary chart-download-btn"
+        onClick={exportChartAsPNG}
+        title="Download chart as PNG"
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          fontSize: '0.75rem',
+          padding: '0.25rem 0.5rem',
+          zIndex: 10,
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '1px solid rgba(99, 102, 241, 0.2)',
+          borderRadius: '6px',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          color: '#4f46e5'
+        }}
+      >
+        📥 Download PNG
+      </button>
+      
+      {/* Beautiful rounded container that will be captured */}
+      <div className={`chart-container ${className}`} ref={chartRef} style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '0.75rem',
+        padding: '2rem',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+        width: '100%',
+        minWidth: '400px',
+        maxWidth: '550px',
+        margin: '0 auto'
+      }}>
+        <div className="chart-title-for-export" style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
+            {title}
+          </h3>
+          {subtitle && <p style={{ margin: '0 0 0', fontSize: '0.9rem', color: '#6b7280' }}>{subtitle}</p>}
+        </div>
         {children}
       </div>
     </div>

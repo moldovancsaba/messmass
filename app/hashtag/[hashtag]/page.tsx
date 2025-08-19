@@ -90,33 +90,43 @@ export default function HashtagStatsPage() {
   const [error, setError] = useState<string | null>(null);
   const [actualHashtag, setActualHashtag] = useState<string>('');
 
-  useEffect(() => {
-    const fetchHashtagStats = async () => {
-      try {
-        console.log('🔍 Fetching hashtag stats for:', hashtagParam);
-        const response = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}`);
-        const data = await response.json();
+  // Function to force refresh data
+  const refreshData = async () => {
+    setLoading(true);
+    setError(null);
+    await fetchHashtagStatsData();
+  };
 
-        if (data.success) {
-          setProject(data.project);
-          setProjects(data.projects || []);
-          // Extract the actual hashtag name from the project data
-          if (data.project.hashtags && data.project.hashtags.length > 0) {
-            setActualHashtag(data.project.hashtags[0]);
-          }
-        } else {
-          setError(data.error || 'Failed to load hashtag statistics');
+  // Function to fetch hashtag stats data
+  const fetchHashtagStatsData = async () => {
+    try {
+      console.log('🔍 Fetching hashtag stats for:', hashtagParam);
+      // Add cache-busting parameter to force fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}?refresh=${timestamp}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setProject(data.project);
+        setProjects(data.projects || []);
+        // Extract the actual hashtag name from the project data
+        if (data.project.hashtags && data.project.hashtags.length > 0) {
+          setActualHashtag(data.project.hashtags[0]);
         }
-      } catch (err) {
-        console.error('Failed to fetch hashtag stats:', err);
-        setError('Failed to load hashtag statistics');
-      } finally {
-        setLoading(false);
+      } else {
+        setError(data.error || 'Failed to load hashtag statistics');
       }
-    };
+    } catch (err) {
+      console.error('Failed to fetch hashtag stats:', err);
+      setError('Failed to load hashtag statistics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (hashtagParam) {
-      fetchHashtagStats();
+      fetchHashtagStatsData();
     }
   }, [hashtagParam]);
 
@@ -250,6 +260,26 @@ export default function HashtagStatsPage() {
               >
                 📊 {project.projectCount} project{project.projectCount !== 1 ? 's' : ''} with this hashtag
               </a>
+            </div>
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <button 
+                onClick={refreshData}
+                disabled={loading}
+                style={{
+                  background: loading ? '#6b7280' : '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'background-color 0.2s ease'
+                }}
+                title="Refresh data to see latest updates"
+              >
+                {loading ? '⏳ Refreshing...' : '🔄 Refresh Data'}
+              </button>
             </div>
           </div>
         </div>

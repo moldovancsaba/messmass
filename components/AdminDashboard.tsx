@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { AdminUser } from '@/lib/auth';
 import HashtagInput from './HashtagInput';
+import HashtagEditor from './HashtagEditor';
+import ColoredHashtagBubble from './ColoredHashtagBubble';
 
 // Props interface for AdminDashboard component
 interface AdminDashboardProps {
@@ -87,6 +89,8 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     hashtags: [] as string[]
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
+  const [showAllHashtags, setShowAllHashtags] = useState(false);
+  const [showHashtagManager, setShowHashtagManager] = useState(false);
   
   // Chart export references
   const genderChartRef = useRef<HTMLDivElement>(null);
@@ -1255,68 +1259,55 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         </div>
       </div>
 
-      {/* Hashtag Overview - between Success Manager and Project Management */}
+      {/* Aggregated Statistics - between Success Manager and Project Management */}
       <div className="glass-card admin-overview">
-        <h2 className="section-title">🏷️ Hashtag Overview</h2>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem'
+        }}>
+          <h2 className="section-title" style={{ margin: 0 }}>📊 Aggregated Statistics</h2>
+        </div>
         {hashtags.length > 0 ? (
-          <div className="hashtag-overview-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-            gap: '1rem',
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            alignItems: 'center',
             marginTop: '1rem'
           }}>
-            {hashtags.map((item, index) => (
-              <a
-                key={item.hashtag}
-                href={`/hashtag/${item.slug}`}
-                className="hashtag-overview-button"
-                style={{
-                  display: 'block',
-                  padding: '1.5rem',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  borderRadius: '12px',
-                  textDecoration: 'none',
-                  textAlign: 'center',
-                  transition: 'all 0.2s ease',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                }}
-              >
-                <div style={{
-                  fontSize: '3rem',
-                  fontWeight: 'bold',
-                  marginBottom: '0.5rem',
-                  color: 'white'
-                }}>
-                  {item.count}
-                </div>
-                <div style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: 'white'
-                }}>
-                  #{item.hashtag}
-                </div>
-                <div style={{
-                  fontSize: '0.875rem',
-                  opacity: 0.9,
-                  marginTop: '0.25rem',
-                  color: 'white'
-                }}>
-                  {item.count} project{item.count !== 1 ? 's' : ''}
-                </div>
-              </a>
-            ))}
+            {hashtags
+              .filter(item => item.count > 1)
+              .map((item, index) => (
+                <span key={item.hashtag} style={{ display: 'flex', alignItems: 'center' }}>
+                  <a
+                    href={`/hashtag/${item.slug}?refresh=${new Date().getTime()}`}
+                    style={{
+                      textDecoration: 'none',
+                      transition: 'transform 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    title="View aggregated hashtag statistics (fresh data)"
+                  >
+                    <ColoredHashtagBubble 
+                      hashtag={item.hashtag}
+                      customStyle={{
+                        fontSize: '1.125rem',
+                        fontWeight: '600'
+                      }}
+                    />
+                  </a>
+                  {index < hashtags.filter(item => item.count > 1).length - 1 && (
+                    <span style={{ margin: '0 0.25rem', color: '#6b7280' }}>, </span>
+                  )}
+                </span>
+              ))}
           </div>
         ) : (
           <div style={{
@@ -1324,12 +1315,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             padding: '2rem',
             color: '#6b7280'
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏷️</div>
-            <div style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No Hashtags Yet</div>
-            <div style={{ fontSize: '0.875rem' }}>Create projects with hashtags to see them here</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
+            <div style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>No Statistics Yet</div>
+            <div style={{ fontSize: '0.875rem' }}>Create projects with hashtags to see aggregated statistics here</div>
           </div>
         )}
       </div>
+
 
       {/* Projects Management */}
       <div className="glass-card admin-projects">
@@ -1351,9 +1343,9 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             </button>
             <button 
               className="btn btn-primary"
-              onClick={() => setShowProjectStats(!showProjectStats)}
+              onClick={() => setShowHashtagManager(!showHashtagManager)}
             >
-              {showProjectStats ? 'Hide' : 'Show'} Project Details
+              {showHashtagManager ? 'Hide' : 'Show'} Hashtag Manager
             </button>
           </div>
         </div>
@@ -1396,9 +1388,9 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                         {/* Title links to read-only stats page using viewSlug */}
                         {project.viewSlug ? (
                           <a 
-                            href={`/stats/${project.viewSlug}`}
+                            href={`/stats/${project.viewSlug}?refresh=${new Date().getTime()}`}
                             className="project-title-link"
-                            title={`View detailed statistics for ${project.eventName}`}
+                            title={`View detailed statistics for ${project.eventName} (fresh data)`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1412,8 +1404,12 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                         {project.hashtags && project.hashtags.length > 0 && (
                           <div className="project-hashtags" style={{ marginTop: '0.5rem' }}>
                             {project.hashtags.map((hashtag, index) => (
-                              <span key={index} className="hashtag hashtag-small">
-                                #{hashtag}
+                              <span key={index}>
+                                <ColoredHashtagBubble 
+                                  hashtag={hashtag}
+                                  small={true}
+                                />
+                                {index < (project.hashtags?.length || 0) - 1 && <span style={{ color: '#6b7280', margin: '0 0.25rem' }}>, </span>}
                               </span>
                             ))}
                           </div>
@@ -2014,6 +2010,27 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Hashtag Color Management - Moved to bottom with toggle */}
+      {showHashtagManager && (
+        <div className="glass-card" style={{ marginTop: '2rem' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem'
+          }}>
+            <h2 className="section-title" style={{ margin: 0 }}>🏷️ Hashtag Color Manager</h2>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setShowHashtagManager(false)}
+            >
+              ✕ Close
+            </button>
+          </div>
+          <HashtagEditor />
         </div>
       )}
     </div>

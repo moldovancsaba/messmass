@@ -73,28 +73,38 @@ export default function StatsPage() {
   const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        console.log('🔍 Fetching project stats for slug:', slug);
-        const response = await fetch(`/api/projects/stats/${slug}`);
-        const data = await response.json();
+  // Function to force refresh data
+  const refreshData = async () => {
+    setLoading(true);
+    setError(null);
+    await fetchProjectData();
+  };
 
-        if (data.success) {
-          setProject(data.project);
-        } else {
-          setError(data.error || 'Failed to load project');
-        }
-      } catch (err) {
-        console.error('Failed to fetch project:', err);
-        setError('Failed to load project data');
-      } finally {
-        setLoading(false);
+  // Function to fetch project data
+  const fetchProjectData = async () => {
+    try {
+      console.log('🔍 Fetching project stats for slug:', slug);
+      // Add cache-busting parameter to force fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/projects/stats/${slug}?refresh=${timestamp}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setProject(data.project);
+      } else {
+        setError(data.error || 'Failed to load project');
       }
-    };
+    } catch (err) {
+      console.error('Failed to fetch project:', err);
+      setError('Failed to load project data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (slug) {
-      fetchProject();
+      fetchProjectData();
     }
   }, [slug]);
 
@@ -232,6 +242,25 @@ export default function StatsPage() {
               <p className="admin-role">📅 {new Date(project.eventDate).toLocaleDateString()}</p>
               <p className="admin-level">📊 Last Updated</p>
               <p className="admin-status">{new Date(project.updatedAt).toLocaleDateString()}</p>
+              <button 
+                onClick={refreshData}
+                disabled={loading}
+                style={{
+                  background: loading ? '#6b7280' : '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  marginTop: '0.5rem',
+                  transition: 'background-color 0.2s ease'
+                }}
+                title="Refresh data to see latest updates"
+              >
+                {loading ? '⏳ Refreshing...' : '🔄 Refresh Data'}
+              </button>
             </div>
           </div>
         </div>
