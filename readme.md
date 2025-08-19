@@ -20,17 +20,22 @@ A professional real-time collaborative event statistics platform with advanced a
 - 🌐 **Traffic Sources** - QR codes, short URLs, and web visits
 - 💰 **Value Metrics** - Advertisement value breakdown (CPM, eDM, Ads, U40 Eng., Branding)
 - 🎯 **Core Fan Team** - Advanced engagement metric: (merched/fans) × event attendees
-- 📅 **Chart Export** - High-quality PNG downloads
+- 📅 **Chart Export** - High-quality PNG downloads with enhanced styling
 - ⚙️ **Chart Algorithm Manager** - Admin interface for customizing chart formulas and configurations
 - 🔄 **Dynamic Chart System** - Data-driven chart rendering with configurable calculations
+- 🔧 **Currency Format Fix** - Resolved incorrect € display in Engagement chart totals
+- 📊 **Enhanced Export Styling** - Improved chart container design for PNG downloads
 
-### Hashtag System
+### Hashtag System & Color Management
 - 🏷️ **Project Tagging** - Add up to 5 hashtags per project for easy categorization
 - 📈 **Hashtag Overview** - Visual dashboard showing all hashtags with project counts
 - 🔗 **Aggregated Statistics** - Combined analytics from all projects sharing the same hashtag
 - 📊 **Cross-Project Analysis** - Compare performance across related events
 - 📅 **Date Range Aggregation** - Shows time span from oldest to newest project per hashtag
 - 🔄 **Real-time Updates** - Hashtag counts update automatically when projects change
+- 🎨 **Dynamic Color Management** - ColoredHashtagBubble component with automatic color generation
+- ✏️ **Hashtag Editor** - Admin interface for customizing hashtag colors and appearance
+- 🎯 **Consistent Styling** - Unified hashtag display across all interface elements
 
 ## 🚀 Getting Started
 
@@ -117,10 +122,12 @@ messmass/
 │   ├── layout.tsx                 # App layout
 │   └── page.tsx                   # Main event dashboard
 ├── components/
-│   ├── AdminDashboard.tsx         # Admin dashboard with hashtag overview
+│   ├── AdminDashboard.tsx         # Admin dashboard with hashtag color management
 │   ├── ChartAlgorithmManager.tsx  # Chart config management
-│   ├── DynamicChart.tsx           # Dynamic chart renderer
+│   ├── DynamicChart.tsx           # Enhanced chart renderer with improved exports
 │   ├── HashtagInput.tsx           # Hashtag input component
+│   ├── HashtagEditor.tsx          # Hashtag color management component
+│   ├── ColoredHashtagBubble.tsx   # Dynamic colored hashtag display
 │   └── StatsCharts.tsx            # Chart visualization components
 ├── lib/
 │   ├── auth.ts                    # Authentication utilities
@@ -131,7 +138,7 @@ messmass/
 │   └── websocket-server.js        # Railway WebSocket server
 ├── middleware.ts                  # Admin route protection
 ├── .env.local                     # Environment configuration
-├── package.json                   # v1.5.0 with professional layout system
+├── package.json                   # v1.7.0 with hashtag color management
 ├── CSS_ARCHITECTURE.md            # Design system documentation
 └── memory.md                      # Project documentation
 ```
@@ -208,6 +215,8 @@ messmass/
 - **Dynamic Chart System** - Create and modify chart algorithms with live preview
 - **Hashtag Overview** - Visual dashboard of all hashtags with project counts and navigation
 - **Aggregated Reporting** - Cross-project analytics via hashtag categorization
+- **Hashtag Color Management** - ColoredHashtagBubble component with dynamic color generation
+- **Table Column Reordering** - Updated admin table: Event Name | Date | Images | Total Fans | Attendees | Actions
 
 ## 🎯 Chart System
 
@@ -247,6 +256,8 @@ For detailed CSS architecture documentation, see [CSS_ARCHITECTURE.md](CSS_ARCHI
 
 ## 📈 Version History
 
+- **v1.7.0** - Hashtag color management system, chart export enhancements, and admin table reordering
+- **v1.6.0** - Enhanced chart export functionality and improved user interface
 - **v1.5.0** - Major statistics layout overhaul with professional dashboard-style grid system
 - **v1.4.0** - Hashtag system implementation with overview dashboard and aggregated statistics
 - **v1.3.0** - Major CSS architecture refactor with modular design system

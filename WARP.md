@@ -82,6 +82,10 @@ The application implements multi-user real-time statistics tracking:
 - **Hashtag Overview Dashboard**: Visual grid of hashtags with project counts
 - **Aggregated Statistics**: Cross-project analytics via hashtag categorization
 - **Project Tagging**: Add up to 5 hashtags per project for organization
+- **Hashtag Color Management**: ColoredHashtagBubble component with dynamic colors
+- **Hashtag Editor**: HashtagEditor component for color customization
+- **Enhanced Chart Export**: Improved PNG styling with better container design
+- **Table Column Reordering**: Event Name | Date | Images | Total Fans | Attendees | Actions
 
 **Authentication Flow:**
 - Login at `/admin/login`
@@ -109,6 +113,18 @@ Row 3: Location | Sources
 - **Purpose**: Projects highly engaged merchandise-wearing fans to stadium attendance
 - **Example**: (16 merched / 257 fans) × 1200 attendees = 75 core fans
 - **Display**: Whole number result with "Core Fan Team" description
+- **Fix Applied**: Removed incorrect currency (€) formatting for Engagement chart totals
+
+**Chart Export Enhancements:**
+- **Improved Styling**: Better container design with rounded corners and shadows
+- **Download Button Positioning**: External positioning to avoid interference with exported content
+- **Enhanced Visual Hierarchy**: Better typography and spacing in exported charts
+- **CORS Support**: Added useCORS option for html2canvas compatibility
+
+**New Components (v1.7.0):**
+- **ColoredHashtagBubble.tsx**: Dynamic colored hashtag display component
+- **HashtagEditor.tsx**: Hashtag color management component
+- **Enhanced DynamicChart.tsx**: Improved chart export with better styling
 
 ## Database Structure (MongoDB)
 

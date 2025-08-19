@@ -4,6 +4,66 @@ All notable changes to the MessMass project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-08-19
+
+### 🎨 Major Feature: Hashtag Color Management System
+- **ColoredHashtagBubble Component**: Dynamic hashtag display with automatic color generation based on hashtag content
+- **HashtagEditor Component**: Admin interface for customizing hashtag colors and appearance management
+- **Consistent Color Styling**: Unified hashtag appearance across all interface elements (admin dashboard, project lists, hashtag pages)
+- **Dynamic Color Generation**: Automatic color assignment using hashtag string hashing for consistent colors
+- **Admin Color Management**: Toggle-able hashtag manager in admin dashboard for color customization
+
+### ✨ Added
+- **components/ColoredHashtagBubble.tsx**: New component for dynamic colored hashtag display
+- **components/HashtagEditor.tsx**: New component for hashtag color management in admin interface
+- **Hashtag Manager Toggle**: Added show/hide hashtag manager button in admin dashboard
+- **Enhanced Admin Table**: Reordered columns to Event Name | Date | Images | Total Fans | Attendees | Actions
+- **Fresh Data Links**: Added cache-busting refresh parameters to all hashtag and stats links
+
+### 🔧 Enhanced Chart System
+- **Currency Format Fix**: Resolved incorrect € symbol display in Engagement chart totals (Core Fan Team now displays as plain numbers)
+- **Improved Chart Export Styling**: Enhanced PNG export with better container design, rounded corners, and professional typography
+- **Download Button Positioning**: External positioning to avoid interference with exported chart content
+- **CORS Support**: Added useCORS option to html2canvas for better compatibility
+- **Enhanced Visual Hierarchy**: Improved spacing and typography in exported charts
+
+### 🔍 Admin Dashboard Improvements
+- **Table Column Reordering**: Changed from Total Fans | Images | Merch to Images | Total Fans | Attendees for better information flow
+- **Attendees Column**: Added dedicated Attendees column showing eventAttendees count
+- **Hashtag Color Integration**: All hashtag displays now use ColoredHashtagBubble component for consistency
+- **Aggregated Statistics Enhancement**: Improved hashtag overview with colored hashtag bubbles
+
+### 🎯 Technical Improvements
+- **Chart Total Formatting**: Fixed formatTotal function to properly handle different chart types (no currency for Engagement)
+- **Component Architecture**: Enhanced modular component system with reusable hashtag color management
+- **State Management**: Improved React state handling for hashtag color management
+- **Responsive Design**: ColoredHashtagBubble component works seamlessly across mobile and desktop
+
+### 📊 User Experience Impact
+- **Visual Consistency**: Hashtags now have consistent colors across all pages and components
+- **Improved Navigation**: Easier identification of related projects through color-coded hashtags
+- **Professional Chart Exports**: Higher quality PNG downloads with improved styling
+- **Accurate Metrics Display**: Engagement chart now correctly shows numbers without misleading currency symbols
+- **Enhanced Admin Workflow**: Better column ordering and hashtag management in admin interface
+
+### 🚀 Business Value
+- **Brand Consistency**: Unified hashtag appearance strengthens visual identity
+- **Data Accuracy**: Fixed currency formatting prevents misinterpretation of engagement metrics
+- **Professional Presentation**: Enhanced chart exports improve client-facing materials
+- **Administrative Efficiency**: Improved admin table layout and hashtag management tools
+
+## [1.6.0] - 2025-08-19
+
+### ✨ Enhanced Chart Export and User Interface
+- **Improved Chart Container Design**: Better visual styling for exported charts with professional appearance
+- **Enhanced User Interface**: General UI improvements and refinements across the application
+- **Chart Export Optimizations**: Performance improvements for PNG export functionality
+
+### 🔧 Technical Improvements
+- **Export Functionality**: Enhanced html2canvas integration with better error handling
+- **Component Refinements**: Improved chart component architecture and styling
+- **User Experience**: Various UX improvements and visual enhancements
+
 ## [1.5.0] - 2025-08-19
 
 ### 🎨 Major Feature: Professional Statistics Layout System
