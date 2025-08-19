@@ -210,8 +210,21 @@ export default function StatsPage() {
       {/* Header with same styling as admin page */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
-          <div className="admin-branding">
-            <h1 className="admin-title">{project.eventName}</h1>
+          <div className="admin-branding" style={{ textAlign: 'center' }}>
+            {/* Beautiful title using existing hashtag bubble class for consistency */}
+            <span className="hashtag" style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              padding: '1rem 2rem',
+              borderRadius: '50px',
+              display: 'inline-block',
+              marginBottom: '0.5rem',
+              maxWidth: '100%',
+              wordWrap: 'break-word',
+              textAlign: 'center'
+            }}>
+              {project.eventName}
+            </span>
             <p className="admin-subtitle">Event Statistics - {new Date(project.eventDate).toLocaleDateString()}</p>
             
             {/* Beautiful bubble hashtags display */}

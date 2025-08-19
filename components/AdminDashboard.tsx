@@ -1280,33 +1280,29 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             {hashtags
               .filter(item => item.count > 1)
               .map((item, index) => (
-                <span key={item.hashtag} style={{ display: 'flex', alignItems: 'center' }}>
-                  <a
-                    href={`/hashtag/${item.slug}?refresh=${new Date().getTime()}`}
-                    style={{
-                      textDecoration: 'none',
-                      transition: 'transform 0.2s ease'
+                <a
+                  key={item.hashtag}
+                  href={`/hashtag/${item.slug}?refresh=${new Date().getTime()}`}
+                  style={{
+                    textDecoration: 'none',
+                    transition: 'transform 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="View aggregated hashtag statistics (fresh data)"
+                >
+                  <ColoredHashtagBubble 
+                    hashtag={item.hashtag}
+                    customStyle={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600'
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                    title="View aggregated hashtag statistics (fresh data)"
-                  >
-                    <ColoredHashtagBubble 
-                      hashtag={item.hashtag}
-                      customStyle={{
-                        fontSize: '1.125rem',
-                        fontWeight: '600'
-                      }}
-                    />
-                  </a>
-                  {index < hashtags.filter(item => item.count > 1).length - 1 && (
-                    <span style={{ margin: '0 0.25rem', color: '#6b7280' }}>, </span>
-                  )}
-                </span>
+                  />
+                </a>
               ))}
           </div>
         ) : (
@@ -1404,13 +1400,11 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                         {project.hashtags && project.hashtags.length > 0 && (
                           <div className="project-hashtags" style={{ marginTop: '0.5rem' }}>
                             {project.hashtags.map((hashtag, index) => (
-                              <span key={index}>
-                                <ColoredHashtagBubble 
-                                  hashtag={hashtag}
-                                  small={true}
-                                />
-                                {index < (project.hashtags?.length || 0) - 1 && <span style={{ color: '#6b7280', margin: '0 0.25rem' }}>, </span>}
-                              </span>
+                              <ColoredHashtagBubble 
+                                key={index}
+                                hashtag={hashtag}
+                                small={true}
+                              />
                             ))}
                           </div>
                         )}

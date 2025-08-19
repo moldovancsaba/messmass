@@ -1,36 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
+import clientPromise from '@/lib/mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    
-    // Test the connection
-    await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully');
-    
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
-    throw error;
-  }
-}
 
 export async function GET(
   request: NextRequest,
@@ -42,7 +13,7 @@ export async function GET(
     
     console.log('📊 Fetching aggregated stats for hashtag/slug:', hashtagOrSlug);
     
-    const client = await connectToDatabase();
+    const client = await clientPromise;
     const db = client.db(MONGODB_DB);
     const projectsCollection = db.collection('projects');
     const hashtagSlugsCollection = db.collection('hashtag_slugs');

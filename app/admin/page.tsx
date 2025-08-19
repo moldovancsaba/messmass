@@ -34,8 +34,21 @@ export default async function AdminPage() {
       {/* Glass Card Header with MessMass Design System */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
-          <div className="admin-branding">
-            <h1 className="admin-title">MessMass Admin</h1>
+          <div className="admin-branding" style={{ textAlign: 'center' }}>
+            {/* Beautiful title using existing hashtag bubble class for consistency */}
+            <span className="hashtag" style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              padding: '1rem 2rem',
+              borderRadius: '50px',
+              display: 'inline-block',
+              marginBottom: '0.5rem',
+              maxWidth: '100%',
+              wordWrap: 'break-word',
+              textAlign: 'center'
+            }}>
+              MessMass Admin
+            </span>
             <p className="admin-subtitle">Event Statistics Management</p>
           </div>
           <div className="admin-user-info">
