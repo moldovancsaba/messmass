@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ColoredHashtagBubble from './ColoredHashtagBubble';
+import HashtagInput from './HashtagInput';
 
 interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
+  hashtags?: string[];
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -55,14 +58,16 @@ interface EditorDashboardProps {
 export default function EditorDashboard({ project: initialProject }: EditorDashboardProps) {
   const [project, setProject] = useState<Project>(initialProject);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [hashtags, setHashtags] = useState<string[]>(initialProject.hashtags || []);
 
   // Update project when initialProject changes
   useEffect(() => {
     setProject(initialProject);
+    setHashtags(initialProject.hashtags || []);
   }, [initialProject]);
 
   // Auto-save function
-  const saveProject = async (updatedStats: typeof project.stats) => {
+  const saveProject = async (updatedStats?: typeof project.stats, updatedHashtags?: string[]) => {
     setSaveStatus('saving');
     try {
       const response = await fetch('/api/projects', {
@@ -72,7 +77,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           projectId: project._id,
           eventName: project.eventName,
           eventDate: project.eventDate,
-          stats: updatedStats
+          hashtags: updatedHashtags !== undefined ? updatedHashtags : hashtags,
+          stats: updatedStats || project.stats
         })
       });
 
@@ -121,6 +127,13 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     };
     setProject(prev => ({ ...prev, stats: newStats }));
     saveProject(newStats);
+  };
+
+  // Hashtag management functions
+  const handleHashtagsUpdate = (newHashtags: string[]) => {
+    setHashtags(newHashtags);
+    setProject(prev => ({ ...prev, hashtags: newHashtags }));
+    saveProject(undefined, newHashtags);
   };
 
   // Calculate totals
@@ -279,6 +292,29 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div className="admin-branding">
             <h1 className="admin-title">{project.eventName}</h1>
             <p className="admin-subtitle">Record Stats - {new Date(project.eventDate).toLocaleDateString()}</p>
+            
+            {/* Beautiful hashtag display */}
+            {hashtags && hashtags.length > 0 && (
+              <div style={{ 
+                marginTop: '1rem',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                {hashtags.map((hashtag, index) => (
+                  <ColoredHashtagBubble 
+                    key={index}
+                    hashtag={hashtag}
+                    customStyle={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600'
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           <div className="admin-user-info">
             <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>
@@ -296,6 +332,40 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       </div>
 
       <div style={{ display: 'grid', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Hashtag Management Section */}
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <h2 style={{ 
+            fontSize: '1.5rem', 
+            fontWeight: 700, 
+            margin: '0 0 1.5rem 0',
+            color: '#2d3748',
+            borderBottom: '2px solid #e2e8f0',
+            paddingBottom: '0.5rem'
+          }}>🏷️ Hashtags ({hashtags.length}/5)</h2>
+          
+          <div style={{ marginBottom: '1rem' }}>
+            <HashtagInput
+              value={hashtags}
+              onChange={handleHashtagsUpdate}
+              placeholder="Add hashtags to categorize this project..."
+              maxTags={5}
+            />
+          </div>
+          
+          {hashtags.length === 0 && (
+            <p style={{
+              color: '#6b7280',
+              fontStyle: 'italic',
+              textAlign: 'center',
+              margin: '1rem 0',
+              padding: '1rem',
+              background: 'rgba(107, 114, 128, 0.1)',
+              borderRadius: '8px'
+            }}>
+              💡 Add hashtags to categorize your project and enable aggregated statistics!
+            </p>
+          )}
+        </div>
         {/* Images Section */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>
           <h2 style={{ 
