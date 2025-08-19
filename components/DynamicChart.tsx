@@ -209,14 +209,30 @@ const BarChart: React.FC<{
     );
   });
 
-  // Format total value with currency if it looks like money
+  // Format total value based on chart type and total label
   const formatTotal = (total: number | 'NA') => {
     if (total === 'NA') return 'N/A';
-    // If it's a large number, format as currency
-    if (total > 1000) {
+    
+    // Check if this is a currency value based on totalLabel
+    const isCurrencyValue = result.totalLabel && (
+      result.totalLabel.toLowerCase().includes('sales') ||
+      result.totalLabel.toLowerCase().includes('value') ||
+      result.totalLabel.toLowerCase().includes('euro') ||
+      result.totalLabel.toLowerCase().includes('eur') ||
+      result.totalLabel.toLowerCase().includes('€')
+    );
+    
+    // Check if this is the engagement chart specifically (Core Fan Team)
+    const isEngagementChart = result.chartId === 'engagement' || 
+      (result.totalLabel && result.totalLabel.toLowerCase().includes('core fan team'));
+    
+    // Format as currency only if it's explicitly a currency value
+    if (isCurrencyValue && !isEngagementChart) {
       return `€${total.toLocaleString()}`;
     }
-    return total.toString();
+    
+    // For engagement chart and other person counts, just show the number
+    return total.toLocaleString();
   };
 
   return (

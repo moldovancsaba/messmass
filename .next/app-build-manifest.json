@@ -1,41 +1,10 @@
 {
   "pages": {
-    "/api/hashtags/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/hashtags/route.js"
-    ],
-    "/api/projects/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/projects/route.js"
-    ],
-    "/api/hashtags/slugs/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/hashtags/slugs/route.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
-    ],
-    "/stats/[slug]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/stats/[slug]/page.css",
-      "static/chunks/app/stats/[slug]/page.js"
-    ],
-    "/api/chart-config/public/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/chart-config/public/route.js"
-    ],
-    "/api/projects/stats/[slug]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/projects/stats/[slug]/route.js"
     ],
     "/page": [
       "static/chunks/webpack.js",
@@ -48,42 +17,31 @@
       "static/css/app/admin/page.css",
       "static/chunks/app/admin/page.js"
     ],
+    "/api/projects/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/projects/route.js"
+    ],
     "/api/hashtag-colors/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/hashtag-colors/route.js"
     ],
-    "/admin/charts/page": [
+    "/api/hashtags/slugs/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/admin/charts/page.css",
-      "static/chunks/app/admin/charts/page.js"
-    ],
-    "/api/auth/check/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/check/route.js"
-    ],
-    "/api/chart-config/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/chart-config/route.js"
-    ],
-    "/edit/[slug]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/edit/[slug]/page.js"
-    ],
-    "/api/projects/edit/[slug]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/projects/edit/[slug]/route.js"
+      "static/chunks/app/api/hashtags/slugs/route.js"
     ],
     "/hashtag/[hashtag]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/hashtag/[hashtag]/page.css",
       "static/chunks/app/hashtag/[hashtag]/page.js"
+    ],
+    "/api/chart-config/public/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/chart-config/public/route.js"
     ],
     "/api/hashtags/[hashtag]/route": [
       "static/chunks/webpack.js",

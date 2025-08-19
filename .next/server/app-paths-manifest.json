@@ -1,14 +1,10 @@
 {
   "/api/projects/route": "app/api/projects/route.js",
-  "/api/hashtags/route": "app/api/hashtags/route.js",
+  "/api/hashtag-colors/route": "app/api/hashtag-colors/route.js",
   "/api/hashtags/slugs/route": "app/api/hashtags/slugs/route.js",
   "/api/chart-config/public/route": "app/api/chart-config/public/route.js",
-  "/api/hashtag-colors/route": "app/api/hashtag-colors/route.js",
-  "/api/projects/stats/[slug]/route": "app/api/projects/stats/[slug]/route.js",
   "/api/hashtags/[hashtag]/route": "app/api/hashtags/[hashtag]/route.js",
-  "/stats/[slug]/page": "app/stats/[slug]/page.js",
+  "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",
-  "/admin/charts/page": "app/admin/charts/page.js",
-  "/edit/[slug]/page": "app/edit/[slug]/page.js",
   "/hashtag/[hashtag]/page": "app/hashtag/[hashtag]/page.js"
 }
