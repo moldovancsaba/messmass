@@ -1352,9 +1352,9 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
               <tr>
                 <th>Event Name</th>
                 <th>Date</th>
-                <th>Total Fans</th>
                 <th>Images</th>
-                <th>Merch</th>
+                <th>Total Fans</th>
+                <th>Attendees</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1375,8 +1375,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                 projects.map((project) => {
                   const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
                   const images = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
-                  const merch = project.stats.merched + project.stats.jersey + project.stats.scarf + 
-                              project.stats.flags + project.stats.baseballCap + project.stats.other;
+                  const attendees = project.stats.eventAttendees || 0;
                   
                   return (
                     <tr key={project._id}>
@@ -1428,9 +1427,9 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                         )}
                       </td>
                       <td>{new Date(project.eventDate).toLocaleDateString()}</td>
-                      <td className="stat-number">{fans}</td>
                       <td className="stat-number">{images}</td>
-                      <td className="stat-number">{merch}</td>
+                      <td className="stat-number">{fans}</td>
+                      <td className="stat-number">{attendees}</td>
                       <td className="actions-cell">
                         <button 
                           className="btn btn-sm btn-secondary"
