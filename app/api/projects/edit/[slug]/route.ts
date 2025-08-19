@@ -33,6 +33,7 @@ export async function GET(
       _id: project._id,
       eventName: project.eventName,
       eventDate: project.eventDate,
+      hashtags: project.hashtags || [], // Include hashtags to prevent data loss
       stats: project.stats,
       viewSlug: project.viewSlug,
       editSlug: project.editSlug,
