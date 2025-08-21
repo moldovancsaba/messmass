@@ -1,10 +1,1 @@
-{
-  "/api/projects/route": "app/api/projects/route.js",
-  "/api/hashtag-colors/route": "app/api/hashtag-colors/route.js",
-  "/api/hashtags/slugs/route": "app/api/hashtags/slugs/route.js",
-  "/api/chart-config/public/route": "app/api/chart-config/public/route.js",
-  "/api/hashtags/[hashtag]/route": "app/api/hashtags/[hashtag]/route.js",
-  "/page": "app/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/hashtag/[hashtag]/page": "app/hashtag/[hashtag]/page.js"
-}
+{}
