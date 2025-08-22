@@ -1,6 +1,6 @@
 // lib/chartCalculator.ts - Chart Calculator utility
 // Applies formula engine to chart configurations and returns chart-ready data
-// Handles both PieChart and HorizontalBar chart types with "NA" error substitution
+// Handles PieChart, HorizontalBar, and KPI chart types with "NA" error substitution
 
 import { ChartConfiguration, ChartCalculationResult } from './chartConfigTypes';
 import { evaluateFormula, evaluateFormulasBatch } from './formulaEngine';
@@ -105,10 +105,26 @@ export function calculateChart(
     }
   });
   
-  // Calculate total for bar charts (optional for pie charts)
+  // Calculate total for bar charts or kpiValue for KPI charts
   let total: number | 'NA' | undefined;
+  let kpiValue: number | 'NA' | undefined;
   
-  if (configuration.type === 'bar' && configuration.showTotal) {
+  // Special handling for KPI charts
+  if (configuration.type === 'kpi') {
+    // KPI charts should have exactly one element with the calculation formula
+    if (elements.length > 0) {
+      kpiValue = elements[0].value;
+      
+      // For KPI charts, if the value is NA, it's likely due to division by zero or missing data
+      if (kpiValue === 'NA') {
+        console.warn(`⚠️ KPI calculation returned NA for "${configuration.title}"`);
+      }
+    } else {
+      kpiValue = 'NA';
+      hasErrors = true;
+      console.error(`❌ KPI chart "${configuration.title}" has no elements`);
+    }
+  } else if (configuration.type === 'bar' && configuration.showTotal) {
     try {
       // For bar charts, total is the sum of all elements (excluding NA values)
       const validValues = elements
@@ -185,6 +201,7 @@ export function calculateChart(
     totalLabel: configuration.totalLabel,
     elements,
     total,
+    kpiValue,
     hasErrors
   };
 }
@@ -285,6 +302,10 @@ export function validateChartWithStats(
     errors.push('Bar charts must have exactly 5 elements');
   }
   
+  if (configuration.type === 'kpi' && configuration.elements.length !== 1) {
+    errors.push('KPI charts must have exactly 1 element');
+  }
+  
   // Check for potential issues with zero values in pie charts
   if (configuration.type === 'pie') {
     const validValues = calculationResult.elements.filter(el => typeof el.value === 'number');
@@ -326,7 +347,7 @@ export function getCalculationSummary(
   chartsWithErrors: number;
   elementsWithErrors: number;
   totalElements: number;
-  chartTypes: { pie: number; bar: number };
+  chartTypes: { pie: number; bar: number; kpi: number };
 } {
   const activeCharts = configurations.filter(config => config.isActive).length;
   const chartsWithErrors = results.filter(result => result.hasErrors).length;
@@ -348,7 +369,7 @@ export function getCalculationSummary(
       acc[result.type]++;
       return acc;
     },
-    { pie: 0, bar: 0 }
+    { pie: 0, bar: 0, kpi: 0 }
   );
   
   return {

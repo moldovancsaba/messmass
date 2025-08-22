@@ -2,8 +2,9 @@
 // This module defines all TypeScript interfaces and validation schemas for the Chart Algorithm Manager
 
 /**
- * Chart configuration element for PieChart (always 2 elements) or HorizontalBar (always 5 elements)
+ * Chart configuration element for PieChart (always 2 elements), HorizontalBar (always 5 elements), or KPI (1 element)
  * Each element represents a segment/bar with its label, formula, and color
+ * For KPI charts, only one element is used with the main calculation formula
  */
 export interface ChartElement {
   id: string; // Unique identifier for this element
@@ -15,16 +16,16 @@ export interface ChartElement {
 
 /**
  * Complete chart configuration document structure for MongoDB
- * Supports both PieChart (2 elements) and HorizontalBar (5 elements) types
+ * Supports PieChart (2 elements), HorizontalBar (5 elements), and KPI (1 element) types
  */
 export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar'; // Chart type: pie (2 elements) or bar (5 elements)
+  type: 'pie' | 'bar' | 'kpi'; // Chart type: pie (2 elements), bar (5 elements), or kpi (1 element)
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
-  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar)
+  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi)
   
   // Metadata fields with ISO 8601 millisecond precision
   createdAt: string; // ISO 8601: "2025-08-18T10:18:40.123Z"
@@ -129,7 +130,7 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar';
+  type: 'pie' | 'bar' | 'kpi';
   emoji?: string; // Chart emoji from configuration
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
@@ -140,6 +141,7 @@ export interface ChartCalculationResult {
     color: string;
   }[];
   total?: number | 'NA'; // Total value for bar charts
+  kpiValue?: number | 'NA'; // Single value for KPI charts
   hasErrors: boolean; // Whether any element had calculation errors
 }
 
@@ -256,6 +258,25 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
       { id: 'front-runners', label: 'Front-runners', formula: '[MERCHED] / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#10b981', description: 'Merched fans %' },
       { id: 'fanaticals', label: 'Fanaticals', formula: '([FLAGS] + [SCARF]) / [MERCHED] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %' },
       { id: 'casuals', label: 'Casuals', formula: '(([INDOOR] + [OUTDOOR] + [STADIUM]) - [MERCHED]) / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
+    ]
+  },
+  
+  // 8. Faces per Image KPI Chart
+  {
+    chartId: 'faces-per-image',
+    title: 'Faces per Image',
+    type: 'kpi',
+    order: 8,
+    isActive: true,
+    emoji: '👀',
+    elements: [
+      { 
+        id: 'faces-per-image-value', 
+        label: 'Average faces per approved image', 
+        formula: '([FEMALE] + [MALE]) / [APPROVED_IMAGES]', 
+        color: '#10b981', 
+        description: 'Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure.' 
+      }
     ]
   }
 ];

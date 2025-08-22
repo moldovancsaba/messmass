@@ -41,6 +41,8 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     return <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} className={className} />;
   } else if (result.type === 'bar') {
     return <BarChart result={result} className={className} />;
+  } else if (result.type === 'kpi') {
+    return <KPIChart result={result} className={className} />;
   }
 
   return (
@@ -273,6 +275,87 @@ const BarChart: React.FC<{
         <div className="bars-column">
           {bars}
         </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * KPI Chart Component
+ * Renders a single metric tile with large value display and subtitle
+ */
+const KPIChart: React.FC<{
+  result: ChartCalculationResult;
+  className?: string;
+}> = ({ result, className }) => {
+  // Get the KPI value - either from kpiValue field or from first element
+  let kpiValue: number | 'NA' = 'NA';
+  
+  if (result.kpiValue !== undefined) {
+    kpiValue = result.kpiValue;
+  } else if (result.elements.length > 0 && result.elements[0].value !== 'NA') {
+    kpiValue = result.elements[0].value;
+  }
+  
+  // Format KPI value - show 2 decimal places for non-NA values
+  const formatKPIValue = (value: number | 'NA') => {
+    if (value === 'NA') return 'N/A';
+    
+    // Format to 2 decimal places
+    return value.toFixed(2);
+  };
+  
+  return (
+    <div className={className}>
+      <div style={{
+        textAlign: 'center',
+        padding: '2rem',
+        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%)',
+        borderRadius: '1rem',
+        border: '2px solid rgba(16, 185, 129, 0.15)',
+        position: 'relative',
+        minHeight: '250px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        {/* Large emoji at the top */}
+        {result.emoji && (
+          <div style={{
+            fontSize: '3.5rem',
+            marginBottom: '1rem',
+            lineHeight: 1
+          }}>
+            {result.emoji}
+          </div>
+        )}
+        
+        {/* Large KPI value */}
+        <div style={{
+          fontSize: '4rem',
+          fontWeight: '700',
+          color: '#10b981',
+          marginBottom: '0.5rem',
+          lineHeight: 1,
+          textShadow: '0 2px 4px rgba(16, 185, 129, 0.1)'
+        }}>
+          {formatKPIValue(kpiValue)}
+        </div>
+        
+        {/* Label with description */}
+        {result.elements[0]?.label && (
+          <div style={{
+            fontSize: '1.1rem',
+            fontWeight: '500',
+            color: '#4a5568',
+            marginTop: '0.5rem',
+            maxWidth: '90%'
+          }}>
+            {result.elements[0].label}
+          </div>
+        )}
+        
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ interface ChartConfigFormData {
   _id?: string;
   chartId: string;
   title: string;
-  type: 'pie' | 'bar';
+  type: 'pie' | 'bar' | 'kpi';
   order: number;
   isActive: boolean;
   elements: {
@@ -324,6 +324,10 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
             <div className="stat-value-admin">{configurations.filter(c => c.type === 'bar').length}</div>
             <div className="stat-label-admin">Bar Charts</div>
           </div>
+          <div className="stat-card-admin">
+            <div className="stat-value-admin">{configurations.filter(c => c.type === 'kpi').length}</div>
+            <div className="stat-label-admin">KPI Charts</div>
+          </div>
         </div>
       </div>
 
@@ -448,7 +452,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                     <td>
                       <span className={`chart-type-badge ${config.type}`}>
-                        {config.type === 'pie' ? '🥧 Pie' : '📊 Bar'}
+                        {config.type === 'pie' ? '🥧 Pie' : config.type === 'bar' ? '📊 Bar' : '📈 KPI'}
                       </span>
                     </td>
                     <td className="stat-number">{config.elements.length}</td>
@@ -621,6 +625,11 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           color: #3b82f6;
         }
 
+        .chart-type-badge.kpi {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+        }
+
         .actions-cell {
           display: flex;
           gap: 0.5rem;
@@ -715,10 +724,11 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
               <select
                 className="form-input"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'pie' | 'bar' })}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'pie' | 'bar' | 'kpi' })}
               >
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
+                <option value="kpi">KPI Chart (1 element)</option>
               </select>
             </div>
 
