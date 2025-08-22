@@ -92,6 +92,15 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   const [showAllHashtags, setShowAllHashtags] = useState(false);
   const [showHashtagManager, setShowHashtagManager] = useState(false);
   
+  // Search functionality state - enables filtering projects by name, date, or hashtags
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Handler for search input changes - updates the search query state
+  // This triggers automatic re-filtering of the projects table in real-time
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+  
   // Chart export references
   const genderChartRef = useRef<HTMLDivElement>(null);
   const fansLocationChartRef = useRef<HTMLDivElement>(null);
@@ -1345,6 +1354,75 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             </button>
           </div>
         </div>
+        
+        {/* Search Bar - strategically placed below header for prominent visibility */}
+        {/* Provides real-time filtering across event names, dates, and hashtags */}
+        <div style={{
+          padding: '0 1.5rem 1rem 1.5rem',
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'center'
+        }}>
+          <div style={{
+            flex: 1,
+            position: 'relative'
+          }}>
+            {/* Accessible label for screen readers - hidden visually */}
+            <label htmlFor="project-search" className="sr-only">
+              Search projects by event name, date, or hashtag
+            </label>
+            <input
+              id="project-search"
+              type="text"
+              className="form-input"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="🔍 Search by event name, date, or hashtag..."
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(102, 126, 234, 0.2)',
+                background: 'rgba(255, 255, 255, 0.95)',
+                color: '#1a202c',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(102, 126, 234, 0.5)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  fontSize: '1.25rem',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Clear search"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
 
         <div className="projects-table-container">
           <table className="projects-table">
@@ -1372,10 +1450,39 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                   </td>
                 </tr>
               ) : (
-                projects.map((project) => {
-                  const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
-                  const images = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
-                  const attendees = project.stats.eventAttendees || 0;
+                // Filter projects based on search query - comprehensive multi-field search
+                // Strategy: Search across event name, date, and hashtags for maximum flexibility
+                projects
+                  .filter((project) => {
+                    // If no search query, show all projects
+                    if (!searchQuery) return true;
+                    
+                    const query = searchQuery.toLowerCase().trim();
+                    
+                    // Check 1: Event name (case-insensitive, partial match)
+                    const matchesEventName = project.eventName.toLowerCase().includes(query);
+                    
+                    // Check 2: Event date (allow various formats: "2024", "03-15", "march", etc.)
+                    const dateString = new Date(project.eventDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }).toLowerCase();
+                    const isoDateString = project.eventDate.toLowerCase();
+                    const matchesDate = dateString.includes(query) || isoDateString.includes(query);
+                    
+                    // Check 3: Hashtags (case-insensitive, partial match on any hashtag)
+                    const matchesHashtag = project.hashtags?.some(
+                      hashtag => hashtag.toLowerCase().includes(query)
+                    ) || false;
+                    
+                    // Return true if ANY of the criteria match
+                    return matchesEventName || matchesDate || matchesHashtag;
+                  })
+                  .map((project) => {
+                    const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
+                    const images = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
+                    const attendees = project.stats.eventAttendees || 0;
                   
                   return (
                     <tr key={project._id}>
