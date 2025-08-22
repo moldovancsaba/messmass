@@ -278,5 +278,24 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
         description: 'Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure.' 
       }
     ]
+  },
+  
+  // 9. Image Density KPI Chart
+  {
+    chartId: 'image-density',
+    title: 'Image Density',
+    type: 'kpi',
+    order: 9,
+    isActive: true,
+    emoji: '🧮',
+    elements: [
+      { 
+        id: 'image-density-value', 
+        label: 'Images per 100 fans', 
+        formula: '([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) / ([FEMALE] + [MALE]) * 100', 
+        color: '#3b82f6', 
+        description: 'Show how actively fans created content. Help venues and rights holders benchmark activation performance. Derived from your counts - a simple, comparable index across events. Target audience: Event ops, sponsorship sales, client success.' 
+      }
+    ]
   }
 ];

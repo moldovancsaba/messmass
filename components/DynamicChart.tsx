@@ -305,14 +305,29 @@ const KPIChart: React.FC<{
     return value.toFixed(2);
   };
   
+  // Get the color from the first element or use default
+  const kpiColor = result.elements[0]?.color || '#10b981';
+  
+  // Convert hex to RGB for dynamic color usage
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 16, g: 185, b: 129 }; // fallback to green
+  };
+  
+  const rgb = hexToRgb(kpiColor);
+  
   return (
     <div className={className}>
       <div style={{
         textAlign: 'center',
         padding: '2rem',
-        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%)',
+        background: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
         borderRadius: '1rem',
-        border: '2px solid rgba(16, 185, 129, 0.15)',
+        border: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
         position: 'relative',
         minHeight: '250px',
         display: 'flex',
@@ -335,10 +350,10 @@ const KPIChart: React.FC<{
         <div style={{
           fontSize: '4rem',
           fontWeight: '700',
-          color: '#10b981',
+          color: kpiColor,
           marginBottom: '0.5rem',
           lineHeight: 1,
-          textShadow: '0 2px 4px rgba(16, 185, 129, 0.1)'
+          textShadow: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
         }}>
           {formatKPIValue(kpiValue)}
         </div>
