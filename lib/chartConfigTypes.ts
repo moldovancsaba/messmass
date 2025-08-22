@@ -225,21 +225,53 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     ]
   },
   
-  // 6. Value Horizontal Bar Chart
+  // 6. Generated Value Horizontal Bar Chart
   {
     chartId: 'value',
-    title: 'Value',
+    title: 'Generated Value',
     type: 'bar',
     order: 6,
     isActive: true,
     showTotal: true,
-    totalLabel: 'Advertisement Value',
+    totalLabel: 'Total Generated Value',
+    emoji: '📊',
+    subtitle: 'Breakdown of Event-Generated Brand Value',
     elements: [
-      { id: 'cpm', label: 'CPM', formula: '[EVENT_VALUE_PROPOSITION_VISITED] * 15', color: '#3b82f6', description: 'Value Prop Visited × €15' },
-      { id: 'edm', label: 'eDM', formula: '([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 5', color: '#10b981', description: 'Images × €5' },
-      { id: 'ads', label: 'Ads', formula: '([INDOOR] + [OUTDOOR] + [STADIUM]) * 3', color: '#f59e0b', description: 'Fans × €3' },
-      { id: 'u40-eng', label: 'U40 Eng.', formula: '([GEN_ALPHA] + [GEN_YZ]) * 4', color: '#8b5cf6', description: 'Under 40 fans × €4' },
-      { id: 'branding', label: 'Branding', formula: '([VISIT_QR_CODE] + [VISIT_SHORT_URL] + [VISIT_WEB] + [VISIT_FACEBOOK] + [VISIT_INSTAGRAM] + [VISIT_YOUTUBE] + [VISIT_TIKTOK] + [VISIT_X] + [VISIT_TRUSTPILOT]) * 1', color: '#ef4444', description: 'Total visitors × €1' }
+      { 
+        id: 'marketing-optin', 
+        label: 'Marketing Opt-in Users', 
+        formula: '([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 4.87', 
+        color: '#3b82f6', 
+        description: 'Every image corresponds to a GDPR-compliant opt-in fan. Each contact has measurable acquisition cost in digital marketing (€4.87 avg market cost per email opt-in in Europe, 2025)' 
+      },
+      { 
+        id: 'value-prop-emails', 
+        label: 'Value Proposition Emails', 
+        formula: '([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 1.07', 
+        color: '#10b981', 
+        description: 'Every email delivered includes branded fan photo plus sponsor offer. Add-on ad space valued at €1.07 avg CPM email value add per send' 
+      },
+      { 
+        id: 'giant-screen-ads', 
+        label: 'Ads on Giant Screen', 
+        formula: '([EVENT_ATTENDEES] / 1000) * 6 * 0.2 * ([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES])', 
+        color: '#f59e0b', 
+        description: 'Fans + brands shown on stadium big screen = in-stadium advertising equivalent. Stadium advertising CPM ≈ €6.00 per 1,000 attendees per 30s slot. 6s exposure = 0.2 of CPM' 
+      },
+      { 
+        id: 'under40-engagement', 
+        label: 'Under-40 Engagement', 
+        formula: '([GEN_ALPHA] + [GEN_YZ]) * 2.14', 
+        color: '#8b5cf6', 
+        description: '80% of engaged fans are under 40 - critical target for most brands. Each identified contact carries premium value (€2.14 avg value of youth contact vs older groups)' 
+      },
+      { 
+        id: 'brand-awareness', 
+        label: 'Brand Awareness Boost', 
+        formula: '200 * 300 * 0.0145', 
+        color: '#ef4444', 
+        description: 'Organic shares amplify brand presence into social feeds. 200 shared images × 300 avg views = 60,000 impressions. Benchmarked to €14.50 CPM for social organic impressions (2025)' 
+      }
     ]
   },
   
