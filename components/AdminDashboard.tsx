@@ -101,6 +101,32 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     setSearchQuery(e.target.value);
   };
   
+  // Sorting functionality state - enables column-based sorting for the projects table
+  // Strategy: Click column header to sort ascending, click again for descending, third click removes sort
+  type SortField = 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees' | null;
+  type SortOrder = 'asc' | 'desc' | null;
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+  
+  // Handler for column header clicks - implements three-state sorting logic
+  // First click: ascending, Second click: descending, Third click: no sort (back to original order)
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Same field clicked - cycle through sort states
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else if (sortOrder === 'desc') {
+        // Reset to no sorting
+        setSortField(null);
+        setSortOrder(null);
+      }
+    } else {
+      // Different field clicked - start with ascending
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+  
   // Chart export references
   const genderChartRef = useRef<HTMLDivElement>(null);
   const fansLocationChartRef = useRef<HTMLDivElement>(null);
@@ -1428,11 +1454,112 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           <table className="projects-table">
             <thead>
               <tr>
-                <th>Event Name</th>
-                <th>Date</th>
-                <th>Images</th>
-                <th>Total Fans</th>
-                <th>Attendees</th>
+                {/* Clickable headers with sort indicators - provides visual feedback for current sort state */}
+                <th 
+                  onClick={() => handleSort('eventName')}
+                  style={{ 
+                    cursor: 'pointer', 
+                    userSelect: 'none',
+                    position: 'relative',
+                    paddingRight: '1.5rem'
+                  }}
+                  title="Click to sort by Event Name"
+                >
+                  Event Name
+                  {sortField === 'eventName' && (
+                    <span style={{ 
+                      position: 'absolute', 
+                      right: '0.5rem',
+                      fontSize: '0.8rem'
+                    }}>
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  onClick={() => handleSort('eventDate')}
+                  style={{ 
+                    cursor: 'pointer', 
+                    userSelect: 'none',
+                    position: 'relative',
+                    paddingRight: '1.5rem'
+                  }}
+                  title="Click to sort by Date"
+                >
+                  Date
+                  {sortField === 'eventDate' && (
+                    <span style={{ 
+                      position: 'absolute', 
+                      right: '0.5rem',
+                      fontSize: '0.8rem'
+                    }}>
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  onClick={() => handleSort('images')}
+                  style={{ 
+                    cursor: 'pointer', 
+                    userSelect: 'none',
+                    position: 'relative',
+                    paddingRight: '1.5rem'
+                  }}
+                  title="Click to sort by Images"
+                >
+                  Images
+                  {sortField === 'images' && (
+                    <span style={{ 
+                      position: 'absolute', 
+                      right: '0.5rem',
+                      fontSize: '0.8rem'
+                    }}>
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  onClick={() => handleSort('fans')}
+                  style={{ 
+                    cursor: 'pointer', 
+                    userSelect: 'none',
+                    position: 'relative',
+                    paddingRight: '1.5rem'
+                  }}
+                  title="Click to sort by Total Fans"
+                >
+                  Total Fans
+                  {sortField === 'fans' && (
+                    <span style={{ 
+                      position: 'absolute', 
+                      right: '0.5rem',
+                      fontSize: '0.8rem'
+                    }}>
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  onClick={() => handleSort('attendees')}
+                  style={{ 
+                    cursor: 'pointer', 
+                    userSelect: 'none',
+                    position: 'relative',
+                    paddingRight: '1.5rem'
+                  }}
+                  title="Click to sort by Attendees"
+                >
+                  Attendees
+                  {sortField === 'attendees' && (
+                    <span style={{ 
+                      position: 'absolute', 
+                      right: '0.5rem',
+                      fontSize: '0.8rem'
+                    }}>
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1478,6 +1605,46 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
                     
                     // Return true if ANY of the criteria match
                     return matchesEventName || matchesDate || matchesHashtag;
+                  })
+                  // Apply sorting after filtering - implements column-based sorting with computed values
+                  .sort((a, b) => {
+                    // If no sorting is active, maintain original order
+                    if (!sortField || !sortOrder) return 0;
+                    
+                    let aValue: number | string = 0;
+                    let bValue: number | string = 0;
+                    
+                    // Compute values based on the selected sort field
+                    switch (sortField) {
+                      case 'eventName':
+                        aValue = a.eventName.toLowerCase();
+                        bValue = b.eventName.toLowerCase();
+                        break;
+                      case 'eventDate':
+                        aValue = a.eventDate; // ISO format, naturally sortable
+                        bValue = b.eventDate;
+                        break;
+                      case 'images':
+                        // Sum of all image types
+                        aValue = a.stats.remoteImages + a.stats.hostessImages + a.stats.selfies;
+                        bValue = b.stats.remoteImages + b.stats.hostessImages + b.stats.selfies;
+                        break;
+                      case 'fans':
+                        // Sum of all fan locations
+                        aValue = a.stats.indoor + a.stats.outdoor + a.stats.stadium;
+                        bValue = b.stats.indoor + b.stats.outdoor + b.stats.stadium;
+                        break;
+                      case 'attendees':
+                        // Event attendees count
+                        aValue = a.stats.eventAttendees || 0;
+                        bValue = b.stats.eventAttendees || 0;
+                        break;
+                    }
+                    
+                    // Compare values based on sort order
+                    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+                    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+                    return 0;
                   })
                   .map((project) => {
                     const fans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
