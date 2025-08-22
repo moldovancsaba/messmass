@@ -99,21 +99,7 @@ export async function GET() {
     const stats = await collection.estimatedDocumentCount();
     console.log(`📈 Chart configurations collection has ${stats} documents`);
 
-    // If no configurations exist, initialize with defaults
-    if (stats === 0) {
-      console.log('🔧 No chart configurations found, initializing with defaults...');
-      
-      const now = new Date().toISOString();
-      const defaultConfigs = DEFAULT_CHART_CONFIGURATIONS.map(config => ({
-        ...config,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: user.id
-      }));
-      
-      await collection.insertMany(defaultConfigs);
-      console.log(`✅ Initialized ${defaultConfigs.length} default chart configurations`);
-    }
+    // Note: Removed automatic initialization - admin has full control over chart configurations
 
     const configurations = await collection
       .find({})
