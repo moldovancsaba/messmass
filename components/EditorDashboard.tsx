@@ -260,7 +260,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           }}
           onBlur={handleBlur}
           style={{
-            width: '80px',
+            width: '120px',
             padding: '0.5rem',
             border: '2px solid #e2e8f0',
             borderRadius: '8px',

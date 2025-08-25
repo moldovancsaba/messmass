@@ -1585,7 +1585,7 @@ img {
 /* Input Field for Success Manager (Admin Page) */
 .success-manager-input input {
   width: 100%;
-  max-width: 60px;
+  max-width: 100px;
   text-align: center;
 }
 
