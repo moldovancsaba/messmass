@@ -16,13 +16,13 @@ export interface ChartElement {
 
 /**
  * Complete chart configuration document structure for MongoDB
- * Supports PieChart (2 elements), HorizontalBar (5 elements), and KPI (1 element) types
+ * Supports PieChart (2 elements), HorizontalBar (5 elements), KPI (1 element), and Overview (variable elements) types
  */
 export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi'; // Chart type: pie (2 elements), bar (5 elements), or kpi (1 element)
+  type: 'pie' | 'bar' | 'kpi' | 'overview'; // Chart type: pie (2 elements), bar (5 elements), kpi (1 element), or overview (variable elements)
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
   elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi)
@@ -130,7 +130,7 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi';
+  type: 'pie' | 'bar' | 'kpi' | 'overview';
   emoji?: string; // Chart emoji from configuration
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration

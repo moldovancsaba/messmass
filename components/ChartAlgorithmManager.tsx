@@ -14,7 +14,7 @@ interface ChartConfigFormData {
   _id?: string;
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi';
+  type: 'pie' | 'bar' | 'kpi' | 'overview';
   order: number;
   isActive: boolean;
   elements: {
@@ -327,6 +327,10 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
             <div className="stat-value-admin">{configurations.filter(c => c.type === 'kpi').length}</div>
             <div className="stat-label-admin">KPI Charts</div>
           </div>
+          <div className="stat-card-admin">
+            <div className="stat-value-admin">{configurations.filter(c => c.type === 'overview').length}</div>
+            <div className="stat-label-admin">Overview Charts</div>
+          </div>
         </div>
       </div>
 
@@ -451,7 +455,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                     <td>
                       <span className={`chart-type-badge ${config.type}`}>
-                        {config.type === 'pie' ? '🥧 Pie' : config.type === 'bar' ? '📊 Bar' : '📈 KPI'}
+                        {config.type === 'pie' ? '🥧 Pie' : config.type === 'bar' ? '📊 Bar' : config.type === 'kpi' ? '📈 KPI' : '📋 Overview'}
                       </span>
                     </td>
                     <td className="stat-number">{config.elements.length}</td>
@@ -628,6 +632,11 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           background: rgba(16, 185, 129, 0.1);
           color: #10b981;
         }
+        
+        .chart-type-badge.overview {
+          background: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+        }
 
         .actions-cell {
           display: flex;
@@ -723,11 +732,12 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
               <select
                 className="form-input"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'pie' | 'bar' | 'kpi' })}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'pie' | 'bar' | 'kpi' | 'overview' })}
               >
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
                 <option value="kpi">KPI Chart (1 element)</option>
+                <option value="overview">Overview (variable elements)</option>
               </select>
             </div>
 

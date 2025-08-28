@@ -348,7 +348,7 @@ export function getCalculationSummary(
   chartsWithErrors: number;
   elementsWithErrors: number;
   totalElements: number;
-  chartTypes: { pie: number; bar: number; kpi: number };
+  chartTypes: { pie: number; bar: number; kpi: number; overview: number };
 } {
   const activeCharts = configurations.filter(config => config.isActive).length;
   const chartsWithErrors = results.filter(result => result.hasErrors).length;
@@ -370,7 +370,7 @@ export function getCalculationSummary(
       acc[result.type]++;
       return acc;
     },
-    { pie: 0, bar: 0, kpi: 0 }
+    { pie: 0, bar: 0, kpi: 0, overview: 0 }
   );
   
   return {
