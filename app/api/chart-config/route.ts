@@ -43,8 +43,8 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   }
   
   // Chart type validation
-  if (!['pie', 'bar', 'kpi'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", or "kpi"' };
+  if (!['pie', 'bar', 'kpi', 'overview'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", or "overview"' };
   }
   
   // Elements validation
@@ -63,6 +63,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   
   if (config.type === 'kpi' && config.elements.length !== 1) {
     return { isValid: false, error: 'KPI charts must have exactly 1 element' };
+  }
+  
+  if (config.type === 'overview' && config.elements.length < 1) {
+    return { isValid: false, error: 'Overview charts must have at least 1 element' };
   }
   
   // Order validation

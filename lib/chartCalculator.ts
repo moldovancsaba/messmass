@@ -307,6 +307,10 @@ export function validateChartWithStats(
     errors.push('KPI charts must have exactly 1 element');
   }
   
+  if (configuration.type === 'overview' && configuration.elements.length < 1) {
+    errors.push('Overview charts must have at least 1 element');
+  }
+  
   // Check for potential issues with zero values in pie charts
   if (configuration.type === 'pie') {
     const validValues = calculationResult.elements.filter(el => typeof el.value === 'number');
