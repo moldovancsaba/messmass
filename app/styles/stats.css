@@ -1,0 +1,222 @@
+/* MessMass Stats Pages - Global CSS Module */
+/* This file controls ALL stats page layouts and chart widths */
+/* Modify once, affects: /stats/[slug], /filter/[slug], /hashtag/[hashtag] */
+
+/* ========================================
+   STATS PAGE CONTAINERS - FULL WIDTH
+======================================== */
+
+/* Main page container - remove all width constraints */
+.stats-page-container {
+  min-height: 100vh;
+  width: 100vw !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Data visualization wrapper - use full viewport width */
+.stats-data-visualization-wrapper {
+  width: 100vw !important;
+  max-width: none !important;
+  padding: 0 1rem !important;
+  box-sizing: border-box;
+  margin: 0 !important;
+}
+
+/* Projects section wrapper */
+.stats-projects-wrapper {
+  width: 100vw !important;
+  max-width: none !important;
+  padding: 0 1rem !important;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   CHART CONTAINERS - MAXIMUM WIDTH
+======================================== */
+
+/* Override any existing width constraints globally */
+.stats-page-container *,
+.stats-data-visualization-wrapper *,
+.unified-chart-item,
+.chart-container,
+.chart-item,
+.charts-grid,
+.chart-grid-item {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Chart blocks - full width */
+.stats-chart-block {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 2rem !important;
+  margin-bottom: 2rem !important;
+  box-sizing: border-box;
+}
+
+/* Chart grid system - responsive but full width */
+.stats-charts-grid {
+  display: grid !important;
+  width: 100% !important;
+  max-width: none !important;
+  gap: 1.5rem !important;
+  /* Mobile: 1 chart per row */
+  grid-template-columns: 1fr !important;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS - FULL WIDTH
+======================================== */
+
+/* Tablet: 2 units per row - full width */
+@media (min-width: 768px) {
+  .stats-charts-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Desktop: 4 units per row - full width */
+@media (min-width: 1024px) {
+  .stats-charts-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* Large desktop: maintain 4 column layout but use full width */
+@media (min-width: 1440px) {
+  .stats-charts-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* ========================================
+   CHART WIDTH SPANS - RESPONSIVE
+======================================== */
+
+.stats-chart-width-1 {
+  grid-column: span 1 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.stats-chart-width-2 {
+  grid-column: span 2 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Mobile: all charts fill full width */
+@media (max-width: 767px) {
+  .stats-chart-width-1,
+  .stats-chart-width-2 {
+    grid-column: span 1 !important;
+    width: 100% !important;
+  }
+}
+
+/* ========================================
+   CHART CONTENT - FULL WIDTH FILL
+======================================== */
+
+/* Bar charts - full width utilization */
+.stats-bar-chart-two-columns {
+  display: flex !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+}
+
+.stats-legends-column {
+  flex: 1 1 50% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-around !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.stats-bars-column {
+  flex: 1 1 50% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-around !important;
+  width: 100% !important;
+}
+
+/* Pie charts - expand to fill available space */
+.stats-pie-chart-container {
+  width: 100% !important;
+  max-width: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* KPI charts - full width utilization */
+.stats-kpi-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 2rem !important;
+  text-align: center !important;
+}
+
+/* ========================================
+   OVERRIDE EXISTING CONSTRAINTS
+======================================== */
+
+/* Force override any layout.css constraints */
+.page-container,
+.content-wrapper,
+.admin-container {
+  max-width: none !important;
+}
+
+/* Override any chart-specific width limits */
+.chart-container,
+.unified-chart-item,
+.chart-item > * {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* ========================================
+   LOADING AND ERROR STATES
+======================================== */
+
+.stats-loading-container,
+.stats-error-container {
+  width: 100vw !important;
+  max-width: none !important;
+  padding: 2rem !important;
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+}
+
+/* ========================================
+   UTILITIES - FULL WIDTH ENFORCEMENT
+======================================== */
+
+/* Global full-width utility class */
+.stats-full-width {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Global viewport-width utility class */
+.stats-viewport-width {
+  width: 100vw !important;
+  max-width: none !important;
+}
+
+/* Box-sizing enforcement */
+.stats-box-border {
+  box-sizing: border-box !important;
+}

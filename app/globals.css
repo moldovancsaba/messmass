@@ -14,6 +14,9 @@
 /* 3. Layout System */
 @import './styles/layout.css';
 
+/* 4. Stats Pages System */
+@import './styles/stats.css';
+
 /* ========================================
    CSS RESET & BASE STYLES
 ======================================== */
