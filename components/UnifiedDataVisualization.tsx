@@ -94,7 +94,7 @@ export default function UnifiedDataVisualization({
   }
 
   return (
-    <div style={{ marginBottom: '2rem' }}>
+    <div style={{ width: '100%', marginBottom: '2rem', maxWidth: 'none' }}>
       {blocks
         .filter(block => block.isActive)
         .sort((a, b) => a.order - b.order)
@@ -104,7 +104,9 @@ export default function UnifiedDataVisualization({
             borderRadius: '16px',
             padding: '2rem',
             marginBottom: '2rem',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            width: '100%',
+            maxWidth: 'none'
           }}>
             {/* Block Title */}
             <h2 style={{
@@ -144,7 +146,9 @@ export default function UnifiedDataVisualization({
                       key={`${block._id}-${chart.chartId}`}
                       className={`chart-item chart-width-${chart.width}`}
                       style={{
-                        minHeight: '300px'
+                        minHeight: '300px',
+                        width: '100%',
+                        maxWidth: 'none'
                       }}
                     >
                       <ChartContainer
@@ -247,6 +251,8 @@ export default function UnifiedDataVisualization({
           border: 1px solid rgba(226, 232, 240, 0.8);
           transition: all 0.2s ease;
           height: 100%;
+          width: 100%;
+          max-width: none;
         }
         
         .unified-chart-item:hover {
@@ -261,6 +267,7 @@ export default function UnifiedDataVisualization({
           width: 100%;
           height: 100%;
           min-height: 350px;
+          max-width: none;
         }
         
         /* Ensure all chart content fills the available space */
@@ -268,6 +275,7 @@ export default function UnifiedDataVisualization({
           width: 100%;
           height: 100%;
           flex: 1;
+          max-width: none;
         }
         
         /* Bar chart specific styles to fill width */

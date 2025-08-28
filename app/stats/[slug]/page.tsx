@@ -300,7 +300,10 @@ export default function StatsPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc'
+      background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
+      width: '100%',
+      maxWidth: 'none',
+      padding: 0
     }}>
       {/* Unified Hero Section */}
       <UnifiedStatsHero
@@ -312,7 +315,12 @@ export default function StatsPage() {
       />
 
       {/* Unified Data Visualization */}
-      <div style={{ width: '100%', padding: '0' }}>
+      <div style={{ 
+        width: '100%', 
+        padding: '0 1rem', 
+        maxWidth: 'none',
+        boxSizing: 'border-box'
+      }}>
         <UnifiedDataVisualization
           blocks={dataBlocks}
           chartResults={chartResults}
