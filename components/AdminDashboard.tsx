@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { AdminUser } from '@/lib/auth';
 import HashtagInput from './HashtagInput';
@@ -136,19 +136,6 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   const valueChartRef = useRef<HTMLDivElement>(null);
   const visitorSourcesChartRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  // Load hashtags whenever projects change
-  useEffect(() => {
-    if (projects.length > 0) {
-      loadHashtags();
-    } else {
-      setHashtags([]); // Clear hashtags when no projects
-    }
-  }, [projects]);
-
   const loadProjects = async () => {
     try {
       console.log('🔄 Loading projects from /api/projects...');
@@ -172,7 +159,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     }
   };
 
-  const loadHashtags = async () => {
+  const loadHashtags = useCallback(async () => {
     try {
       console.log('🏷️ Loading hashtags with UUIDs...');
       
@@ -205,7 +192,20 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
     } catch (error) {
       console.error('❌ Failed to load hashtags:', error);
     }
-  };
+  }, [projects]);
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  // Load hashtags whenever projects change
+  useEffect(() => {
+    if (projects.length > 0) {
+      loadHashtags();
+    } else {
+      setHashtags([]); // Clear hashtags when no projects
+    }
+  }, [projects, loadHashtags]);
 
   const updateSuccessManagerField = async (project: Project, field: string, value: number) => {
     try {
@@ -1303,7 +1303,51 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           marginBottom: '1rem'
         }}>
           <h2 className="section-title" style={{ margin: 0 }}>📊 Aggregated Statistics</h2>
+          
+          {/* Multi-Hashtag Filter Button */}
+          <a
+            href="/hashtags/filter"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.75rem 1rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(102, 126, 234, 0.3)';
+            }}
+            title="Filter statistics by multiple hashtags (AND logic - projects must have ALL selected tags)"
+          >
+            🔍 Multi-Hashtag Filter
+          </a>
         </div>
+        
+        <div style={{ 
+          fontSize: '0.875rem', 
+          color: '#6b7280', 
+          marginBottom: '1rem',
+          textAlign: 'center',
+          padding: '0.75rem',
+          background: 'rgba(102, 126, 234, 0.05)',
+          borderRadius: '8px',
+          border: '1px solid rgba(102, 126, 234, 0.1)'
+        }}>
+          💡 <strong>Single hashtags</strong> show individual stats • <strong>Multi-Hashtag Filter</strong> combines multiple hashtags with AND logic
+        </div>
+        
         {hashtags.length > 0 ? (
           <div style={{
             display: 'flex',
@@ -1365,6 +1409,13 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
               title="Manage chart algorithms and formulas"
             >
               📊 Chart Algorithm Manager
+            </a>
+            <a 
+              href="/admin/design"
+              className="btn btn-info"
+              title="Manage design styles and theme settings"
+            >
+              🎨 Design Manager
             </a>
             <button 
               className="btn btn-secondary"

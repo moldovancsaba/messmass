@@ -152,7 +152,7 @@ export default function EditPage() {
           <h1 style={{ margin: '0 0 1rem 0', fontSize: '2rem' }}>❌ Access Error</h1>
           <p style={{ margin: '0.5rem 0', fontSize: '1.125rem', opacity: 0.9 }}>{error}</p>
           <p style={{ margin: '0.5rem 0', opacity: 0.8 }}>
-            The editing link you're trying to access might not exist or may have been removed.
+            The editing link you&apos;re trying to access might not exist or may have been removed.
           </p>
           <button 
             onClick={() => window.close()}

@@ -7,6 +7,7 @@ import { formatChartValue } from '@/lib/chartCalculator';
 interface DynamicChartProps {
   result: ChartCalculationResult;
   className?: string;
+  chartWidth?: number; // 1 = portrait, 2+ = landscape
 }
 
 /**
@@ -14,7 +15,7 @@ interface DynamicChartProps {
  * Renders charts based on ChartCalculationResult from the chart configuration system
  * Supports both pie charts and horizontal bar charts with consistent styling
  */
-export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '' }) => {
+export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '', chartWidth = 1 }) => {
   // Handle empty or error cases
   if (!result || !result.elements || result.elements.length === 0) {
     return (
@@ -38,11 +39,11 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
   }
 
   if (result.type === 'pie') {
-    return <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} className={className} />;
+    return <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} className={className} chartWidth={chartWidth} />;
   } else if (result.type === 'bar') {
-    return <BarChart result={result} className={className} />;
+    return <BarChart result={result} className={className} chartWidth={chartWidth} />;
   } else if (result.type === 'kpi') {
-    return <KPIChart result={result} className={className} />;
+    return <KPIChart result={result} className={className} chartWidth={chartWidth} />;
   }
 
   return (
@@ -68,49 +69,55 @@ const PieChart: React.FC<{
   validElements: ValidPieElement[];
   totalValue: number;
   className?: string;
-}> = ({ result, validElements, totalValue, className }) => {
-  let currentAngle = 0;
+  chartWidth?: number;
+}> = ({ result, validElements, totalValue, className, chartWidth = 1 }) => {
+  const isLandscape = chartWidth >= 2;
   
-  const segments = validElements.map((element) => {
-    const percentage = (element.value / totalValue) * 100;
-    const angle = (element.value / totalValue) * 360;
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + angle;
-    currentAngle += angle;
+  // Create segments for both portrait and landscape layouts
+  const createSegments = (radius: number, centerX: number, centerY: number) => {
+    let currentAngle = 0;
     
-    const radius = 80;
-    const centerX = 90;
-    const centerY = 90;
-    
-    // Calculate arc coordinates using trigonometry
-    const x1 = centerX + radius * Math.cos((startAngle - 90) * Math.PI / 180);
-    const y1 = centerY + radius * Math.sin((startAngle - 90) * Math.PI / 180);
-    const x2 = centerX + radius * Math.cos((endAngle - 90) * Math.PI / 180);
-    const y2 = centerY + radius * Math.sin((endAngle - 90) * Math.PI / 180);
-    
-    const largeArc = angle > 180 ? 1 : 0;
-    
-    // SVG path for the pie segment
-    const pathData = [
-      `M ${centerX} ${centerY}`,
-      `L ${x1} ${y1}`,
-      `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
-      'Z'
-    ].join(' ');
-    
-    return (
-      <g key={element.id}>
-        <path
-          d={pathData}
-          fill={element.color}
-          stroke="white"
-          strokeWidth="2"
-        >
-          <title>{`${element.label}: ${formatChartValue(element.value)} (${percentage.toFixed(1)}%)`}</title>
-        </path>
-      </g>
-    );
-  });
+    return validElements.map((element) => {
+      const percentage = (element.value / totalValue) * 100;
+      const angle = (element.value / totalValue) * 360;
+      const startAngle = currentAngle;
+      const endAngle = currentAngle + angle;
+      currentAngle += angle;
+      
+      // Calculate arc coordinates using trigonometry
+      const x1 = centerX + radius * Math.cos((startAngle - 90) * Math.PI / 180);
+      const y1 = centerY + radius * Math.sin((startAngle - 90) * Math.PI / 180);
+      const x2 = centerX + radius * Math.cos((endAngle - 90) * Math.PI / 180);
+      const y2 = centerY + radius * Math.sin((endAngle - 90) * Math.PI / 180);
+      
+      const largeArc = angle > 180 ? 1 : 0;
+      
+      // SVG path for the pie segment
+      const pathData = [
+        `M ${centerX} ${centerY}`,
+        `L ${x1} ${y1}`,
+        `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
+        'Z'
+      ].join(' ');
+      
+      return (
+        <g key={element.id}>
+          <path
+            d={pathData}
+            fill={element.color}
+            stroke="white"
+            strokeWidth="2"
+          >
+            <title>{`${element.label}: ${formatChartValue(element.value)} (${percentage.toFixed(1)}%)`}</title>
+          </path>
+        </g>
+      );
+    });
+  };
+  
+  // Get appropriate segments based on layout
+  const portraitSegments = createSegments(80, 90, 90);
+  const landscapeSegments = createSegments(100, 110, 110);
 
   const legend = validElements.map((element) => {
     const percentage = ((element.value / totalValue) * 100).toFixed(1);
@@ -122,41 +129,87 @@ const PieChart: React.FC<{
     );
   });
 
-  return (
-    <div className={className}>
-      <div className="pie-chart-container">
-        <svg width="180" height="180" className="pie-chart">
-          {segments}
-          <circle
-            cx="90"
-            cy="90"
-            r="35"
-            fill="white"
-            stroke="#e5e7eb"
-            strokeWidth="2"
-          />
-          <text
-            x="90"
-            y="98"
-            textAnchor="middle"
-            className="chart-emoji"
-            fontSize="36"
-            fill="#1a202c"
-          >
-            {result.emoji || '📊'}
-          </text>
-        </svg>
-      </div>
-      <div className="chart-legend">
-        {legend}
-      </div>
-      {result.total !== undefined && (
-        <div className="chart-total">
-          <strong>Total: {formatChartValue(result.total)}</strong>
+  if (isLandscape) {
+    // Landscape layout: chart on left, legend on right - COMPLETELY FILLS 2 units width
+    return (
+      <div className={className} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width: '100%', height: '100%', minHeight: '300px' }}>
+        <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <div style={{ width: '100%', aspectRatio: '1', maxWidth: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <svg viewBox="0 0 220 220" className="pie-chart" style={{ width: '100%', height: '100%', maxWidth: 'none' }}>
+              {landscapeSegments}
+              <circle
+                cx="110"
+                cy="110"
+                r="50"
+                fill="white"
+                stroke="#e5e7eb"
+                strokeWidth="2"
+              />
+              <text
+                x="110"
+                y="120"
+                textAnchor="middle"
+                className="chart-emoji"
+                fontSize="42"
+                fill="#1a202c"
+              >
+                {result.emoji || '📊'}
+              </text>
+            </svg>
+          </div>
+          {result.total !== undefined && (
+            <div className="chart-total" style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.9rem', width: '100%' }}>
+              <strong>Total: {formatChartValue(result.total)}</strong>
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  );
+        <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', minWidth: 0 }}>
+          <div className="chart-legend" style={{ textAlign: 'left', fontSize: '0.85rem', width: '100%' }}>
+            {legend}
+          </div>
+        </div>
+      </div>
+    );
+  } else {
+    // Portrait layout: traditional stacked layout - COMPLETELY FILLS 1 unit width
+    return (
+      <div className={className} style={{ width: '100%', height: '100%', minHeight: '300px', display: 'flex', flexDirection: 'column' }}>
+        <div className="pie-chart-container" style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+          <div style={{ width: '80%', aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <svg viewBox="0 0 180 180" className="pie-chart" style={{ width: '100%', height: '100%' }}>
+              {portraitSegments}
+              <circle
+                cx="90"
+                cy="90"
+                r="35"
+                fill="white"
+                stroke="#e5e7eb"
+                strokeWidth="2"
+              />
+              <text
+                x="90"
+                y="98"
+                textAnchor="middle"
+                className="chart-emoji"
+                fontSize="36"
+                fill="#1a202c"
+              >
+                {result.emoji || '📊'}
+              </text>
+            </svg>
+          </div>
+        </div>
+        <div className="chart-legend" style={{ fontSize: '0.8rem', padding: '0.5rem 0' }}>
+          {legend}
+        </div>
+        {result.total !== undefined && (
+          <div className="chart-total" style={{ fontSize: '0.8rem', padding: '0.25rem 0' }}>
+            <strong>Total: {formatChartValue(result.total)}</strong>
+          </div>
+        )}
+      </div>
+    );
+  }
 };
 
 /**
@@ -166,10 +219,14 @@ const PieChart: React.FC<{
 const BarChart: React.FC<{
   result: ChartCalculationResult;
   className?: string;
-}> = ({ result, className }) => {
+  chartWidth?: number;
+}> = ({ result, className, chartWidth = 1 }) => {
   // Find the maximum value for scaling
   const validElements = result.elements.filter(element => typeof element.value === 'number');
   const maxValue = Math.max(...validElements.map(element => element.value as number));
+  
+  // Determine if this is a landscape layout
+  const isLandscape = chartWidth === 2;
 
   // If no valid data, show message
   if (validElements.length === 0 || maxValue === 0) {
@@ -237,47 +294,103 @@ const BarChart: React.FC<{
     return total.toLocaleString();
   };
 
-  return (
-    <div className={className}>
-      {result.total !== undefined && (
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '2rem',
-          padding: '1.5rem',
-          background: 'rgba(102, 126, 234, 0.05)',
-          borderRadius: '1rem',
-          border: '2px solid rgba(102, 126, 234, 0.1)'
-        }}>
+  if (isLandscape) {
+    // Landscape layout: total on left, chart on right - FILLS 2 units width
+    return (
+      <div className={className} style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', width: '100%', height: '100%' }}>
+        {/* Total value display on the left */}
+        {result.total !== undefined && (
           <div style={{
-            fontSize: '3rem',
-            fontWeight: '700',
-            color: '#667eea',
-            marginBottom: '0.5rem',
-            lineHeight: 1
+            flex: '0 0 35%',
+            textAlign: 'center',
+            padding: '1.5rem',
+            background: 'rgba(102, 126, 234, 0.05)',
+            borderRadius: '1rem',
+            border: '2px solid rgba(102, 126, 234, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '180px'
           }}>
-            {formatTotal(result.total)}
+            <div style={{
+              fontSize: '2rem',
+              fontWeight: '700',
+              color: '#667eea',
+              marginBottom: '0.5rem',
+              lineHeight: 1
+            }}>
+              {formatTotal(result.total)}
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              color: '#4a5568',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em'
+            }}>
+              {result.totalLabel || 'Total'}
+            </div>
           </div>
-          <div style={{
-            fontSize: '1.1rem',
-            fontWeight: '600',
-            color: '#4a5568',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em'
-          }}>
-            {result.totalLabel || 'Total'}
+        )}
+        
+        {/* Bar chart on the right */}
+        <div style={{ flex: '1 1 65%', width: '100%' }}>
+          <div className="bar-chart-two-columns" style={{ width: '100%' }}>
+            <div className="legends-column" style={{ fontSize: '0.85rem' }}>
+              {legends}
+            </div>
+            <div className="bars-column" style={{ width: '100%' }}>
+              {bars}
+            </div>
           </div>
-        </div>
-      )}
-      <div className="bar-chart-two-columns">
-        <div className="legends-column">
-          {legends}
-        </div>
-        <div className="bars-column">
-          {bars}
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    // Portrait layout: traditional stacked layout - FILLS 1 unit width
+    return (
+      <div className={className} style={{ width: '100%', height: '100%' }}>
+        {result.total !== undefined && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '1.5rem',
+            padding: '1.25rem',
+            background: 'rgba(102, 126, 234, 0.05)',
+            borderRadius: '1rem',
+            border: '2px solid rgba(102, 126, 234, 0.1)'
+          }}>
+            <div style={{
+              fontSize: '2.25rem',
+              fontWeight: '700',
+              color: '#667eea',
+              marginBottom: '0.5rem',
+              lineHeight: 1
+            }}>
+              {formatTotal(result.total)}
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              color: '#4a5568',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em'
+            }}>
+              {result.totalLabel || 'Total'}
+            </div>
+          </div>
+        )}
+        <div className="bar-chart-two-columns" style={{ width: '100%' }}>
+          <div className="legends-column" style={{ fontSize: '0.85rem' }}>
+            {legends}
+          </div>
+          <div className="bars-column" style={{ width: '100%' }}>
+            {bars}
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 /**
@@ -287,7 +400,8 @@ const BarChart: React.FC<{
 const KPIChart: React.FC<{
   result: ChartCalculationResult;
   className?: string;
-}> = ({ result, className }) => {
+  chartWidth?: number;
+}> = ({ result, className, chartWidth = 1 }) => {
   // Get the KPI value - either from kpiValue field or from first element
   let kpiValue: number | 'NA' = 'NA';
   
@@ -296,6 +410,9 @@ const KPIChart: React.FC<{
   } else if (result.elements.length > 0 && result.elements[0].value !== 'NA') {
     kpiValue = result.elements[0].value;
   }
+  
+  // Determine if this is a landscape layout
+  const isLandscape = chartWidth === 2;
   
   // Format KPI value - show 2 decimal places for non-NA values
   const formatKPIValue = (value: number | 'NA') => {
@@ -320,25 +437,35 @@ const KPIChart: React.FC<{
   
   const rgb = hexToRgb(kpiColor);
   
+  // Responsive sizing based on layout
+  const emojiSize = isLandscape ? '4.5rem' : '3.5rem';
+  const valueSize = isLandscape ? '5rem' : '4rem';
+  const labelSize = isLandscape ? '1.25rem' : '1.1rem';
+  const minHeight = isLandscape ? '300px' : '250px';
+  const padding = isLandscape ? '3rem' : '2rem';
+  
   return (
-    <div className={className}>
+    <div className={className} style={{ width: '100%', height: '100%' }}>
       <div style={{
         textAlign: 'center',
-        padding: '2rem',
+        padding,
         background: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
         borderRadius: '1rem',
         border: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
         position: 'relative',
-        minHeight: '250px',
+        minHeight,
+        width: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        boxSizing: 'border-box'
       }}>
         {/* Large emoji at the top */}
         {result.emoji && (
           <div style={{
-            fontSize: '3.5rem',
+            fontSize: emojiSize,
             marginBottom: '1rem',
             lineHeight: 1
           }}>
@@ -348,7 +475,7 @@ const KPIChart: React.FC<{
         
         {/* Large KPI value */}
         <div style={{
-          fontSize: '4rem',
+          fontSize: valueSize,
           fontWeight: '700',
           color: kpiColor,
           marginBottom: '0.5rem',
@@ -361,7 +488,7 @@ const KPIChart: React.FC<{
         {/* Label with description */}
         {result.elements[0]?.label && (
           <div style={{
-            fontSize: '1.1rem',
+            fontSize: labelSize,
             fontWeight: '500',
             color: '#4a5568',
             marginTop: '0.5rem',
@@ -386,7 +513,8 @@ export const ChartContainer: React.FC<{
   emoji?: string;
   children: React.ReactNode;
   className?: string;
-}> = ({ title, subtitle, emoji, children, className = '' }) => {
+  chartWidth?: number;
+}> = ({ title, subtitle, emoji, children, className = '', chartWidth = 1 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   
   const exportChartAsPNG = async () => {
@@ -454,9 +582,7 @@ export const ChartContainer: React.FC<{
         border: '1px solid rgba(255, 255, 255, 0.2)',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
         width: '100%',
-        minWidth: '400px',
-        maxWidth: '550px',
-        margin: '0 auto'
+        height: '100%'
       }}>
         <div className="chart-title-for-export" style={{ marginBottom: '1.5rem' }}>
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>

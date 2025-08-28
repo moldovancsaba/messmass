@@ -239,18 +239,19 @@ export function calculateActiveCharts(
     configurations: configurations.map(c => ({ 
       id: c.chartId, 
       title: c.title, 
-      active: (c as any).active !== undefined ? (c as any).active : c.isActive
+      active: 'active' in c ? (c as ChartConfiguration & { active: boolean }).active : c.isActive
     }))
   });
   
   // Handle both 'active' and 'isActive' property names - if neither exists, assume active
   const activeConfigurations = configurations.filter(config => {
-    const hasActiveProperty = (config as any).active !== undefined || config.isActive !== undefined;
+    const configWithActive = config as ChartConfiguration & { active?: boolean };
+    const hasActiveProperty = configWithActive.active !== undefined || config.isActive !== undefined;
     if (!hasActiveProperty) {
       // If no active property exists, assume the chart is active
       return true;
     }
-    return (config as any).active === true || config.isActive === true;
+    return configWithActive.active === true || config.isActive === true;
   });
   
   console.log(`🧮 Calculating ${activeConfigurations.length} active charts (${configurations.length - activeConfigurations.length} inactive)`);

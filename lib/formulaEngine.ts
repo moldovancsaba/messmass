@@ -261,7 +261,7 @@ function substituteVariables(formula: string, stats: ProjectStats): string {
   // Replace all variables with their actual values
   for (const [variableName, fieldName] of Object.entries(VARIABLE_MAPPINGS)) {
     const variablePattern = new RegExp(`\\[${variableName}\\]`, 'g');
-    const value = (stats as any)[fieldName];
+    const value = stats[fieldName as keyof ProjectStats];
     
     // Handle missing or undefined values
     const actualValue = (value !== undefined && value !== null) ? value : 0;
@@ -299,7 +299,7 @@ function processMathFunctions(formula: string): string {
         });
         
         // Call the function with parsed arguments
-        const result = (functionImpl as any)(...args);
+        const result = (functionImpl as (...args: number[]) => number | 'NA')(...args);
         return result === 'NA' ? 'NaN' : result.toString();
         
       } catch (error) {

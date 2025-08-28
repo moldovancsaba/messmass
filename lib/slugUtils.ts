@@ -202,3 +202,101 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
     throw error;
   }
 }
+
+// Filter interface for saved filter combinations
+interface FilterCombination {
+  _id?: string;
+  slug: string;
+  hashtags: string[];
+  createdAt: string;
+  lastAccessed: string;
+}
+
+/**
+ * Generate and save a filter slug for a hashtag combination
+ */
+export async function generateFilterSlug(hashtags: string[]): Promise<string> {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db(MONGODB_DB);
+    const collection = db.collection('filter_slugs');
+
+    // Normalize hashtags (lowercase, sorted)
+    const normalizedHashtags = hashtags
+      .map(tag => tag.toLowerCase().trim())
+      .filter(tag => tag.length > 0)
+      .sort();
+
+    if (normalizedHashtags.length === 0) {
+      throw new Error('No valid hashtags provided');
+    }
+
+    // Check if this combination already exists
+    const existingFilter = await collection.findOne({
+      hashtags: { $eq: normalizedHashtags }
+    });
+
+    if (existingFilter) {
+      // Update last accessed time and return existing slug
+      await collection.updateOne(
+        { _id: existingFilter._id },
+        { $set: { lastAccessed: new Date().toISOString() } }
+      );
+      return existingFilter.slug;
+    }
+
+    // Generate new slug
+    let slug = generateSlug();
+    let isUnique = false;
+    
+    while (!isUnique) {
+      const existingSlug = await collection.findOne({ slug });
+      if (!existingSlug) {
+        isUnique = true;
+      } else {
+        slug = generateSlug();
+      }
+    }
+
+    // Save new filter combination
+    const now = new Date().toISOString();
+    await collection.insertOne({
+      slug,
+      hashtags: normalizedHashtags,
+      createdAt: now,
+      lastAccessed: now
+    });
+
+    return slug;
+  } catch (error) {
+    console.error('Error generating filter slug:', error);
+    throw error;
+  }
+}
+
+/**
+ * Find hashtags by filter slug
+ */
+export async function findHashtagsByFilterSlug(filterSlug: string): Promise<string[] | null> {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db(MONGODB_DB);
+    const collection = db.collection('filter_slugs');
+
+    const filter = await collection.findOne({ slug: filterSlug });
+    
+    if (filter) {
+      // Update last accessed time
+      await collection.updateOne(
+        { _id: filter._id },
+        { $set: { lastAccessed: new Date().toISOString() } }
+      );
+      return filter.hashtags;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error finding hashtags by filter slug:', error);
+    throw error;
+  }
+}

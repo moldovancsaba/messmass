@@ -1,12 +1,11 @@
 {
-  "/api/admin/login/route": "app/api/admin/login/route.js",
   "/api/projects/route": "app/api/projects/route.js",
   "/api/hashtag-colors/route": "app/api/hashtag-colors/route.js",
   "/api/hashtags/slugs/route": "app/api/hashtags/slugs/route.js",
-  "/api/projects/edit/[slug]/route": "app/api/projects/edit/[slug]/route.js",
-  "/icon.png/route": "app/icon.png/route.js",
-  "/admin/login/page": "app/admin/login/page.js",
+  "/api/page-config/route": "app/api/page-config/route.js",
+  "/api/projects/stats/[slug]/route": "app/api/projects/stats/[slug]/route.js",
+  "/api/chart-config/public/route": "app/api/chart-config/public/route.js",
   "/admin/page": "app/admin/page.js",
   "/page": "app/page.js",
-  "/edit/[slug]/page": "app/edit/[slug]/page.js"
+  "/stats/[slug]/page": "app/stats/[slug]/page.js"
 }

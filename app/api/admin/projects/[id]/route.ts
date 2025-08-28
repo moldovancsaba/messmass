@@ -48,9 +48,17 @@ async function verifySSO(token: string) {
   }
 }
 
+// User interface for SSO validation
+interface SSOUser {
+  name: string;
+  email: string;
+  role: string;
+  id?: string;
+}
+
 // Check if user has admin privileges
-function isAdmin(user: any): boolean {
-  return user && (user.role === 'admin' || user.role === 'super_admin');
+function isAdmin(user: SSOUser | null): boolean {
+  return user !== null && (user.role === 'admin' || user.role === 'super_admin');
 }
 
 // DELETE /api/admin/projects/[id] - Delete project (admin only)

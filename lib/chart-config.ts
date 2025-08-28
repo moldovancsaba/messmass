@@ -251,10 +251,29 @@ export const defaultChartConfig: ChartConfiguration = {
   }
 };
 
+// Define interface for calculation data
+interface CalculationData {
+  totalFans: number;
+  merchedFans: number;
+  eventAttendees: number;
+  totalImages: number;
+  socialMediaVisits: number;
+  valueProp: number;
+  flags: number;
+  scarfs: number;
+  valuePropVisited: number;
+  under40Fans: number;
+  totalVisitors: number;
+  visitQrCode: number;
+  visitShortUrl: number;
+  visitWeb: number;
+  [key: string]: number;
+}
+
 // Helper function to calculate values using the configuration
 export const calculateValue = (
   algorithm: ChartAlgorithm,
-  data: any
+  data: CalculationData
 ): number => {
   if (!algorithm.enabled) return 0;
 

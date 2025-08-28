@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
+import clientPromise from '@/lib/mongodb';
+
+// Define project interface for type safety
+interface ProjectDocument {
+  _id?: ObjectId;
+  hashtags?: string[];
+  [key: string]: unknown;
+}
 
 // Hashtag cleanup utility function
-async function cleanupUnusedHashtags(db: any) {
+async function cleanupUnusedHashtags(db: Db) {
   try {
     console.log('🧹 Starting hashtag cleanup...');
     
@@ -14,7 +22,7 @@ async function cleanupUnusedHashtags(db: any) {
     const projects = await projectsCollection.find({}).toArray();
     const usedHashtags = new Set<string>();
     
-    projects.forEach((project: any) => {
+    projects.forEach((project: ProjectDocument) => {
       if (project.hashtags && Array.isArray(project.hashtags)) {
         project.hashtags.forEach((hashtag: string) => {
           usedHashtags.add(hashtag.toLowerCase());
@@ -35,30 +43,17 @@ async function cleanupUnusedHashtags(db: any) {
   }
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
 
-let cachedClient: MongoClient | null = null;
-
 async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
   try {
     console.log('🔗 Connecting to MongoDB Atlas...');
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
+    const client = await clientPromise;
     
     // Test the connection
     await client.db(MONGODB_DB).admin().ping();
     console.log('✅ MongoDB Atlas connected successfully');
     
-    cachedClient = client;
     return client;
   } catch (error) {
     console.error('❌ Failed to connect to MongoDB Atlas:', error);
@@ -116,7 +111,7 @@ export async function GET() {
       error: error instanceof Error ? error.message : 'Failed to fetch projects',
       debug: {
         databaseName: MONGODB_DB,
-        mongoUri: MONGODB_URI ? 'Set' : 'Not set',
+        mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
         errorType: error instanceof Error ? error.constructor.name : 'Unknown'
       }
     }, { status: 500 });

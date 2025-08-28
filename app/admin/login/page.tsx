@@ -33,7 +33,7 @@ export default function AdminLogin() {
       } else {
         setError(data.error || 'Invalid password')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Login failed. Please try again.')
     } finally {
       setLoading(false)

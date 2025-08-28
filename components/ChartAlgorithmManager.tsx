@@ -5,10 +5,9 @@ import { ChartConfiguration, AVAILABLE_VARIABLES, AvailableVariable } from '@/li
 import { validateFormula, testFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 
-// Props interface for the Chart Algorithm Manager component
-interface ChartAlgorithmManagerProps {
-  // No props needed - component manages its own state
-}
+// Props type for the Chart Algorithm Manager component
+// This component doesn't require any props as it manages its own state
+type ChartAlgorithmManagerProps = Record<string, never>;
 
 // Interface for chart configuration form data
 interface ChartConfigFormData {

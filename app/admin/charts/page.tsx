@@ -1,7 +1,5 @@
 'use client';
 
-import { getAdminUser, hasPermission } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
 import { useEffect, useState } from 'react';
 import '../../styles/admin.css';
@@ -56,7 +54,7 @@ export default function ChartAlgorithmManagerPage() {
         <div className="glass-card">
           <div className="admin-access-denied">
             <h2>Access Denied</h2>
-            <p>You don't have permission to access the Chart Algorithm Manager.</p>
+            <p>You don&apos;t have permission to access the Chart Algorithm Manager.</p>
             <p>Only administrators can manage chart configurations.</p>
             <a href="/admin" className="btn btn-primary">
               ← Back to Admin Dashboard

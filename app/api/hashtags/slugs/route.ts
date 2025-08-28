@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import { v4 as uuidv4 } from 'uuid';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
@@ -91,7 +92,6 @@ export async function GET(request: NextRequest) {
       
       if (!slugDoc) {
         // Create new UUID slug for this hashtag
-        const { v4: uuidv4 } = require('uuid');
         const newSlug = uuidv4();
         
         const newSlugDoc = {

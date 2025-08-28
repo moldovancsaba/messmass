@@ -122,7 +122,7 @@ export async function GET(
       // Aggregate all stats
       Object.keys(aggregatedStats).forEach(key => {
         if (project.stats[key] !== undefined) {
-          (aggregatedStats as any)[key] += project.stats[key] || 0;
+          aggregatedStats[key as keyof typeof aggregatedStats] += project.stats[key] || 0;
         }
       });
     });
