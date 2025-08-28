@@ -93,7 +93,7 @@ export default function EditPage() {
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(0deg, #444444ff 0%, #888888ff 100%)',
         color: 'white',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
@@ -135,7 +135,7 @@ export default function EditPage() {
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(0deg, #444444ff 0%, #888888ff 100%)',
         color: 'white',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         padding: '2rem'

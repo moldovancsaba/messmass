@@ -72,7 +72,6 @@ export default function ChartAlgorithmManagerPage() {
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">MessMass Admin</h1>
-            <p className="admin-subtitle">Chart Algorithm Manager</p>
           </div>
           <div className="admin-user-info">
             <div className="admin-badge">
@@ -94,7 +93,7 @@ export default function ChartAlgorithmManagerPage() {
       <style jsx>{`
         .admin-container {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--gradient-primary);
           padding: 2rem;
         }
 

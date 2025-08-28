@@ -49,7 +49,6 @@ export default async function AdminPage() {
             }}>
               MessMass Admin
             </span>
-            <p className="admin-subtitle">Event Statistics Management</p>
           </div>
           <div className="admin-user-info">
             <div className="admin-badge">

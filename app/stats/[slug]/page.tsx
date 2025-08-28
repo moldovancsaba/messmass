@@ -300,7 +300,7 @@ export default function StatsPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(0deg, #444444ff 0%, #888888ff 100%)',
       width: '100%',
       maxWidth: 'none',
       padding: 0
