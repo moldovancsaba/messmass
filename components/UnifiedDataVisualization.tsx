@@ -32,36 +32,34 @@ export default function UnifiedDataVisualization({
 
   if (loading) {
     return (
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '16px',
-        padding: '2rem',
-        marginBottom: '2rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem'
+      <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
+        <div className="glass-card" style={{
+          padding: '2rem',
+          textAlign: 'center'
         }}>
           <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Loading charts...</p>
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            <div style={{
+              width: '50px',
+              height: '50px',
+              border: '4px solid rgba(102, 126, 234, 0.3)',
+              borderTop: '4px solid #667eea',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+            <p style={{ color: '#4a5568', margin: 0 }}>Loading charts...</p>
+          </div>
+          <style jsx>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }
@@ -94,31 +92,19 @@ export default function UnifiedDataVisualization({
   }
 
   return (
-    <div style={{ width: '100%', marginBottom: '2rem', maxWidth: 'none' }}>
+    <div className="admin-container" style={{ padding: '0 2rem 2rem', minHeight: 'auto' }}>
       {blocks
         .filter(block => block.isActive)
         .sort((a, b) => a.order - b.order)
         .map((block) => (
-          <div key={block._id} style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            borderRadius: '16px',
-            padding: '2rem',
-            marginBottom: '2rem',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            width: '100%',
-            maxWidth: 'none'
-          }}>
+          <div key={block._id} className="admin-overview glass-card" style={{ margin: '0 0 2rem 0' }}>
             {/* Block Title */}
-            <h2 style={{
-              fontSize: '1.875rem',
-              fontWeight: '700',
-              color: '#1f2937',
-              margin: '0 0 2rem 0',
+            <h2 className="section-title" style={{
               textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem'
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
             }}>
               📊 {block.name}
             </h2>
@@ -245,11 +231,13 @@ export default function UnifiedDataVisualization({
         }
         
         .unified-chart-item {
-          background: rgba(248, 250, 252, 0.8);
-          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 0.75rem;
           padding: 1.5rem;
-          border: 1px solid rgba(226, 232, 240, 0.8);
-          transition: all 0.2s ease;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+          transition: all 0.3s ease;
           height: 100%;
           width: 100%;
           max-width: none;
@@ -258,7 +246,7 @@ export default function UnifiedDataVisualization({
         .unified-chart-item:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-          border-color: rgba(99, 102, 241, 0.3);
+          border-color: rgba(102, 126, 234, 0.3);
         }
         
         .chart-item {

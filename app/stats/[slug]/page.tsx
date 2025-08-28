@@ -188,54 +188,6 @@ export default function StatsPage() {
   const totalAge = totalUnder40 + totalOver40;
   const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
 
-  // CSV export function
-  const exportCSV = () => {
-    if (!project) return;
-
-    const stats = project.stats;
-    const csvData = [
-      ['MessMass Event Statistics Export'],
-      ['Event Name', project.eventName],
-      ['Event Date', new Date(project.eventDate).toLocaleDateString()],
-      ['Generated', new Date().toLocaleString()],
-      [''],
-      ['Category', 'Metric', 'Count'],
-      ['Images', 'Remote Images', stats.remoteImages],
-      ['Images', 'Hostess Images', stats.hostessImages],
-      ['Images', 'Selfies', stats.selfies],
-      ['Images', 'Approved Images', stats.approvedImages || 0],
-      ['Images', 'Rejected Images', stats.rejectedImages || 0],
-      ['Fans', 'Indoor', stats.indoor],
-      ['Fans', 'Outdoor', stats.outdoor],
-      ['Fans', 'Stadium', stats.stadium],
-      ['Gender', 'Female', stats.female],
-      ['Gender', 'Male', stats.male],
-      ['Age', 'Gen Alpha', stats.genAlpha],
-      ['Age', 'Gen Y+Z', stats.genYZ],
-      ['Age', 'Gen X', stats.genX],
-      ['Age', 'Boomer', stats.boomer],
-      ['Merchandise', 'Merched', stats.merched],
-      ['Merchandise', 'Jersey', stats.jersey],
-      ['Merchandise', 'Scarf', stats.scarf],
-      ['Merchandise', 'Flags', stats.flags],
-      ['Merchandise', 'Baseball Cap', stats.baseballCap],
-      ['Merchandise', 'Other', stats.other],
-    ];
-
-    const csvContent = csvData.map(row => row.join(',')).join('\\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_stats_export.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
 
   if (loading) {
     return (
@@ -297,10 +249,58 @@ export default function StatsPage() {
     );
   }
 
+  const exportCSV = () => {
+    if (!project) return;
+
+    const stats = project.stats;
+    const csvData = [
+      ['MessMass Event Statistics Export'],
+      ['Event Name', project.eventName],
+      ['Event Date', new Date(project.eventDate).toLocaleDateString()],
+      ['Generated', new Date().toLocaleString()],
+      [''],
+      ['Category', 'Metric', 'Count'],
+      ['Images', 'Remote Images', stats.remoteImages],
+      ['Images', 'Hostess Images', stats.hostessImages],
+      ['Images', 'Selfies', stats.selfies],
+      ['Images', 'Approved Images', stats.approvedImages || 0],
+      ['Images', 'Rejected Images', stats.rejectedImages || 0],
+      ['Fans', 'Indoor', stats.indoor],
+      ['Fans', 'Outdoor', stats.outdoor],
+      ['Fans', 'Stadium', stats.stadium],
+      ['Gender', 'Female', stats.female],
+      ['Gender', 'Male', stats.male],
+      ['Age', 'Gen Alpha', stats.genAlpha],
+      ['Age', 'Gen Y+Z', stats.genYZ],
+      ['Age', 'Gen X', stats.genX],
+      ['Age', 'Boomer', stats.boomer],
+      ['Merchandise', 'Merched', stats.merched],
+      ['Merchandise', 'Jersey', stats.jersey],
+      ['Merchandise', 'Scarf', stats.scarf],
+      ['Merchandise', 'Flags', stats.flags],
+      ['Merchandise', 'Baseball Cap', stats.baseballCap],
+      ['Merchandise', 'Other', stats.other],
+    ];
+
+    const csvContent = csvData.map(row => row.join(',')).join('\\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_stats_export.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       width: '100%',
       maxWidth: 'none',
       padding: 0
@@ -312,21 +312,15 @@ export default function StatsPage() {
         createdDate={project.createdAt}
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
+        onExportCSV={exportCSV}
       />
 
       {/* Unified Data Visualization */}
-      <div style={{ 
-        width: '100%', 
-        padding: '0 1rem', 
-        maxWidth: 'none',
-        boxSizing: 'border-box'
-      }}>
-        <UnifiedDataVisualization
-          blocks={dataBlocks}
-          chartResults={chartResults}
-          loading={chartsLoading}
-        />
-      </div>
+      <UnifiedDataVisualization
+        blocks={dataBlocks}
+        chartResults={chartResults}
+        loading={chartsLoading}
+      />
 
     </div>
   );

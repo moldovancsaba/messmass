@@ -21,10 +21,10 @@ export default function UnifiedStatsHero({
 }: UnifiedStatsHeroProps) {
   const defaultStyle: PageStyle = {
     name: 'Default',
-    backgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
-    headerBackgroundGradient: '0deg, #ffffff 0%, #f8fafc 100%',
+    backgroundGradient: '135deg, #667eea 0%, #764ba2 100%',
+    headerBackgroundGradient: '135deg, #667eea 0%, #764ba2 100%',
     titleBubble: {
-      backgroundColor: '#6366f1',
+      backgroundColor: '#667eea',
       textColor: '#ffffff'
     }
   };
@@ -40,70 +40,61 @@ export default function UnifiedStatsHero({
   };
 
   return (
-    <div 
-      style={{
-        background: `linear-gradient(${style.headerBackgroundGradient})`,
-        padding: '3rem 2rem',
-        borderRadius: '0 0 24px 24px',
-        marginBottom: '2rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-      }}
-    >
-      <div style={{ 
-        width: '100%',
-        textAlign: 'center'
-      }}>
-        {/* Main Title in Beautiful Bubble */}
-        <div style={{
-          display: 'inline-block',
-          background: style.titleBubble.backgroundColor,
-          color: style.titleBubble.textColor,
-          padding: '1.5rem 3rem',
-          borderRadius: '50px',
-          fontSize: '2rem',
-          fontWeight: '700',
-          marginBottom: '2rem',
-          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-          transform: 'scale(1)',
-          transition: 'all 0.3s ease'
-        }}>
-          {title}
-        </div>
-
-        {/* Hashtags Display */}
-        {hashtags.length > 0 && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            marginBottom: '2rem'
-          }}>
-            {hashtags.map((hashtag) => (
-              <ColoredHashtagBubble 
-                key={hashtag}
-                hashtag={hashtag}
-                customStyle={{
-                  fontSize: '1.25rem',
-                  fontWeight: '600',
-                  padding: '0.75rem 1.5rem'
-                }}
-              />
-            ))}
+    <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
+      <div className="admin-header glass-card" style={{ margin: 0 }}>
+        <div className="admin-header-content">
+          <div className="admin-branding">
+            <h1 className="admin-title">{title}</h1>
+            <p className="admin-subtitle">Event Statistics Dashboard</p>
+            
+            {/* Hashtags Display */}
+            {hashtags.length > 0 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                marginTop: '1rem'
+              }}>
+                {hashtags.map((hashtag) => (
+                  <ColoredHashtagBubble 
+                    key={hashtag}
+                    hashtag={hashtag}
+                    customStyle={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      padding: '0.5rem 1rem'
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
-
+          
+          <div className="admin-user-info">
+            <div className="admin-badge">
+              <div className="admin-role">Event Statistics</div>
+              <div className="admin-level">Live Data</div>
+              <div className="admin-status">✅ Active</div>
+            </div>
+          </div>
+        </div>
+        
         {/* Creation and Update Dates */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          maxWidth: '600px',
-          margin: '0 auto',
-          fontSize: '0.95rem',
-          color: '#6b7280',
-          fontWeight: '500'
+          maxWidth: '100%',
+          marginTop: '1.5rem',
+          paddingTop: '1rem',
+          borderTop: '1px solid rgba(102, 126, 234, 0.2)',
+          fontSize: '0.9rem',
+          color: '#4a5568',
+          fontWeight: '500',
+          flexWrap: 'wrap',
+          gap: '1rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>Created:</span>
@@ -121,8 +112,8 @@ export default function UnifiedStatsHero({
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>Last Updated:</span>
             <span style={{ 
-              background: 'rgba(99, 102, 241, 0.1)',
-              color: '#6366f1',
+              background: 'rgba(102, 126, 234, 0.1)',
+              color: '#667eea',
               padding: '0.25rem 0.75rem',
               borderRadius: '12px',
               fontWeight: '600'
@@ -130,8 +121,17 @@ export default function UnifiedStatsHero({
               📅 {formatDate(lastUpdatedDate)}
             </span>
           </div>
+          
+          {onExportCSV && (
+            <button 
+              onClick={onExportCSV}
+              className="btn btn-primary btn-sm"
+              style={{ marginLeft: 'auto' }}
+            >
+              📊 Export CSV
+            </button>
+          )}
         </div>
-
       </div>
     </div>
   );
