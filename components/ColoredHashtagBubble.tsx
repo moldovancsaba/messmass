@@ -19,6 +19,9 @@ interface ColoredHashtagBubbleProps {
   interactive?: boolean;
   onClick?: (hashtag: string) => void;
   showCategoryPrefix?: boolean;
+  categoryColor?: string;
+  removable?: boolean;
+  onRemove?: () => void;
 }
 
 // Cache to avoid repeated API calls across multiple hashtag components
@@ -42,7 +45,10 @@ export default function ColoredHashtagBubble({
   customStyle = {},
   interactive = false,
   onClick,
-  showCategoryPrefix = false 
+  showCategoryPrefix = false,
+  categoryColor,
+  removable = false,
+  onRemove
 }: ColoredHashtagBubbleProps) {
   const [hashtagColors, setHashtagColors] = useState<HashtagColor[]>(hashtagColorsCache || []);
   const [loading, setLoading] = useState(!hashtagColorsCache);
@@ -115,9 +121,9 @@ export default function ColoredHashtagBubble({
     );
   }, [hashtagColors, hashtag]);
 
-  // Use the managed color or fall back to the default color
-  const backgroundColor = hashtagColor?.color || '#667eea';
-  const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${className}`.trim();
+  // Use categoryColor if provided, otherwise use the managed color, or fall back to default
+  const backgroundColor = categoryColor || hashtagColor?.color || '#667eea';
+  const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${removable ? 'hashtag-removable' : ''} ${className}`.trim();
 
   // Handle empty hashtag gracefully
   if (!hashtag || !hashtag.trim()) {
@@ -131,9 +137,17 @@ export default function ColoredHashtagBubble({
     }
   };
 
+  // Handle remove functionality
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering onClick
+    if (removable && onRemove) {
+      onRemove();
+    }
+  };
+
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === 'development') {
-    console.log(`Hashtag: ${hashtag}, Color: ${backgroundColor}, HasCustomColor: ${!!hashtagColor}`);
+    console.log(`Hashtag: ${hashtag}, Color: ${backgroundColor}, HasCustomColor: ${!!hashtagColor}, CategoryColor: ${categoryColor}`);
   }
 
   return (
@@ -144,12 +158,40 @@ export default function ColoredHashtagBubble({
         background: backgroundColor, // Ensure both properties are set
         color: 'white', // Force text color to always be white
         cursor: interactive ? 'pointer' : 'default',
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: removable ? '0.25rem' : '0',
         ...customStyle 
       }}
-      title={hashtagColor ? `Custom color: ${hashtagColor.color}` : 'Default color (#667eea)'}
+      title={categoryColor ? `Category color: ${categoryColor}` : (hashtagColor ? `Custom color: ${hashtagColor.color}` : 'Default color (#667eea)')}
       onClick={handleClick}
     >
       #{hashtag}
+      {removable && (
+        <button
+          onClick={handleRemove}
+          style={{
+            background: 'rgba(255, 255, 255, 0.3)',
+            border: 'none',
+            borderRadius: '50%',
+            color: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: small ? '14px' : '16px',
+            height: small ? '14px' : '16px',
+            fontSize: small ? '8px' : '10px',
+            marginLeft: '0.25rem',
+            padding: '0',
+            lineHeight: '1'
+          }}
+          title="Remove hashtag"
+        >
+          ×
+        </button>
+      )}
     </span>
   );
 }
