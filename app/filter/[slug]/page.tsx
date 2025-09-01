@@ -8,6 +8,7 @@ import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 
 interface ProjectStats {
   remoteImages: number;
@@ -76,6 +77,10 @@ export default function FilterPage() {
   const params = useParams();
   const filterSlug = params?.slug as string;
   
+  // Authentication state
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
@@ -138,13 +143,31 @@ export default function FilterPage() {
     }
   }, []);
 
+  // Check authentication on component mount
   useEffect(() => {
     if (filterSlug) {
-      fetchFilterData();
-      fetchPageConfig();
-      loadChartConfigurations();
+      const authenticated = isAuthenticated(filterSlug, 'filter');
+      setIsAuthorized(authenticated);
+      setCheckingAuth(false);
+      
+      // Only load data if authenticated
+      if (authenticated) {
+        fetchFilterData();
+        fetchPageConfig();
+        loadChartConfigurations();
+      }
     }
   }, [filterSlug, fetchFilterData, fetchPageConfig, loadChartConfigurations]);
+
+  // Handle successful login
+  const handleLoginSuccess = (isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    // Load data after successful authentication
+    fetchFilterData();
+    fetchPageConfig();
+    loadChartConfigurations();
+  };
 
   // Calculate chart results when project and configurations are loaded
   useEffect(() => {
@@ -209,6 +232,50 @@ export default function FilterPage() {
       document.body.removeChild(link);
     }
   };
+
+  // Show checking authentication screen
+  if (checkingAuth) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
+        padding: '2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '2rem',
+          borderRadius: '16px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid rgba(99, 102, 241, 0.3)',
+            borderTop: '4px solid #6366f1',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }}></div>
+          <p style={{ color: '#6b7280', margin: 0 }}>Checking access permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login form if not authorized
+  if (!isAuthorized) {
+    return (
+      <PagePasswordLogin
+        pageId={filterSlug}
+        pageType="filter"
+        onSuccess={handleLoginSuccess}
+      />
+    );
+  }
 
   if (loading) {
     return (

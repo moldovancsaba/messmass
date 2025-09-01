@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
+import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 
 interface Project {
   _id: string;
@@ -55,36 +56,110 @@ export default function EditPage() {
   const params = useParams();
   const slug = params?.slug as string;
   
+  // Authentication state
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
 
-  useEffect(() => {
-    const loadProjectForEditing = async () => {
-      try {
-        console.log('🔍 Fetching project for editing with slug:', slug);
-        const response = await fetch(`/api/projects/edit/${slug}`);
-        const data = await response.json();
+  const loadProjectForEditing = async () => {
+    try {
+      console.log('🔍 Fetching project for editing with slug:', slug);
+      const response = await fetch(`/api/projects/edit/${slug}`);
+      const data = await response.json();
 
-        if (data.success) {
-          console.log('✅ Found project for editing:', data.project.eventName);
-          setProject(data.project);
-          setLoading(false);
-        } else {
-          setError(data.error || 'Project not found');
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error('Failed to fetch project:', err);
-        setError('Failed to load project for editing');
+      if (data.success) {
+        console.log('✅ Found project for editing:', data.project.eventName);
+        setProject(data.project);
+        setLoading(false);
+      } else {
+        setError(data.error || 'Project not found');
         setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error('Failed to fetch project:', err);
+      setError('Failed to load project for editing');
+      setLoading(false);
+    }
+  };
 
+  // Check authentication on component mount
+  useEffect(() => {
     if (slug) {
-      loadProjectForEditing();
+      const authenticated = isAuthenticated(slug, 'edit');
+      setIsAuthorized(authenticated);
+      setCheckingAuth(false);
+      
+      // Only load data if authenticated
+      if (authenticated) {
+        loadProjectForEditing();
+      }
     }
   }, [slug]);
+
+  // Handle successful login
+  const handleLoginSuccess = (isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    // Load data after successful authentication
+    loadProjectForEditing();
+  };
+
+  // Show login screen if not authenticated
+  if (checkingAuth) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.1)', 
+          backdropFilter: 'blur(10px)',
+          padding: '2rem',
+          borderRadius: '16px',
+          textAlign: 'center',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid rgba(255, 255, 255, 0.3)',
+            borderTop: '4px solid white',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem auto'
+          }}></div>
+          <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Checking Access</h2>
+          <p style={{ margin: 0, opacity: 0.8 }}>Verifying permissions...</p>
+        </div>
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Show login form if not authorized
+  if (!isAuthorized) {
+    return (
+      <PagePasswordLogin
+        pageId={slug}
+        pageType="edit"
+        onSuccess={handleLoginSuccess}
+      />
+    );
+  }
 
   if (loading) {
     return (

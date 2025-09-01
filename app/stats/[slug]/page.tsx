@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
+import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
@@ -67,6 +68,10 @@ export default function StatsPage() {
   const params = useParams();
   const slug = params?.slug as string;
   
+  // Authentication state
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  
   const [project, setProject] = useState<Project | null>(null);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
@@ -120,12 +125,29 @@ export default function StatsPage() {
     }
   }, []);
 
+  // Check authentication on component mount
   useEffect(() => {
     if (slug) {
-      fetchProjectData();
-      fetchPageConfig();
+      const authenticated = isAuthenticated(slug, 'stats');
+      setIsAuthorized(authenticated);
+      setCheckingAuth(false);
+      
+      // Only load data if authenticated
+      if (authenticated) {
+        fetchProjectData();
+        fetchPageConfig();
+      }
     }
   }, [slug, fetchProjectData, fetchPageConfig]);
+
+  // Handle successful login
+  const handleLoginSuccess = (isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    // Load data after successful authentication
+    fetchProjectData();
+    fetchPageConfig();
+  };
 
   // Fetch chart configurations
   const fetchChartConfigurations = useCallback(async () => {
@@ -238,6 +260,22 @@ export default function StatsPage() {
       document.body.removeChild(link);
     }
   };
+
+  // Show login screen if not authenticated
+  if (checkingAuth || (!isAuthorized && slug)) {
+    return (
+      <PagePasswordLogin
+        pageId={slug}
+        pageType="stats"
+        onSuccess={handleLoginSuccess}
+        title={project ? `${project.eventName} - Statistics Access` : 'Statistics Access Required'}
+        description={project ? 
+          `Enter the password to view statistics for "${project.eventName}"` : 
+          'This statistics page is password protected. Enter the admin password or page-specific password to continue.'
+        }
+      />
+    );
+  }
 
   if (loading) {
     return (

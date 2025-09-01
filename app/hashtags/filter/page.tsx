@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
+import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 
 interface ProjectStats {
   remoteImages: number;
@@ -79,6 +80,10 @@ function HashtagFilterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
+  // Authentication state
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  
   const [availableHashtags, setAvailableHashtags] = useState<HashtagItem[]>([]);
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
   const [project, setProject] = useState<Project | null>(null);
@@ -121,10 +126,26 @@ function HashtagFilterPageContent() {
     }
   }, []);
 
-  // Load available hashtags on mount
+  // Check authentication and load available hashtags on mount
   useEffect(() => {
-    loadAvailableHashtags();
+    // Check authentication for this page type - using 'filter' as pageType
+    const authenticated = isAuthenticated('hashtags-filter', 'filter');
+    setIsAuthorized(authenticated);
+    setCheckingAuth(false);
+    
+    // Only load data if authenticated
+    if (authenticated) {
+      loadAvailableHashtags();
+    }
   }, []);
+
+  // Handle successful login
+  const handleLoginSuccess = (isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    // Load data after successful authentication
+    loadAvailableHashtags();
+  };
 
   // Parse URL parameters on mount
   useEffect(() => {
@@ -258,6 +279,29 @@ function HashtagFilterPageContent() {
   const totalOver40 = project ? project.stats.genX + project.stats.boomer : 0;
   const totalAge = totalUnder40 + totalOver40;
   const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
+
+  // Show checking authentication screen
+  if (checkingAuth) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+          <p>Checking access permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login form if not authorized
+  if (!isAuthorized) {
+    return (
+      <PagePasswordLogin
+        pageId="hashtags-filter"
+        pageType="filter"
+        onSuccess={handleLoginSuccess}
+      />
+    );
+  }
 
   if (loading) {
     return (
