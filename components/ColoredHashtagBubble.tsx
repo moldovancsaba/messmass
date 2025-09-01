@@ -16,6 +16,9 @@ interface ColoredHashtagBubbleProps {
   className?: string;
   small?: boolean;
   customStyle?: React.CSSProperties;
+  interactive?: boolean;
+  onClick?: (hashtag: string) => void;
+  showCategoryPrefix?: boolean;
 }
 
 // Cache to avoid repeated API calls across multiple hashtag components
@@ -32,7 +35,15 @@ export function invalidateHashtagColorsCache() {
   }
 }
 
-export default function ColoredHashtagBubble({ hashtag, className = '', small = false, customStyle = {} }: ColoredHashtagBubbleProps) {
+export default function ColoredHashtagBubble({ 
+  hashtag, 
+  className = '', 
+  small = false, 
+  customStyle = {},
+  interactive = false,
+  onClick,
+  showCategoryPrefix = false 
+}: ColoredHashtagBubbleProps) {
   const [hashtagColors, setHashtagColors] = useState<HashtagColor[]>(hashtagColorsCache || []);
   const [loading, setLoading] = useState(!hashtagColorsCache);
 
@@ -106,12 +117,19 @@ export default function ColoredHashtagBubble({ hashtag, className = '', small = 
 
   // Use the managed color or fall back to the default color
   const backgroundColor = hashtagColor?.color || '#667eea';
-  const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${className}`.trim();
+  const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${className}`.trim();
 
   // Handle empty hashtag gracefully
   if (!hashtag || !hashtag.trim()) {
     return null;
   }
+
+  // Handle click functionality
+  const handleClick = () => {
+    if (interactive && onClick) {
+      onClick(hashtag);
+    }
+  };
 
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === 'development') {
@@ -125,9 +143,11 @@ export default function ColoredHashtagBubble({ hashtag, className = '', small = 
         backgroundColor: backgroundColor,
         background: backgroundColor, // Ensure both properties are set
         color: 'white', // Force text color to always be white
+        cursor: interactive ? 'pointer' : 'default',
         ...customStyle 
       }}
       title={hashtagColor ? `Custom color: ${hashtagColor.color}` : 'Default color (#667eea)'}
+      onClick={handleClick}
     >
       #{hashtag}
     </span>
