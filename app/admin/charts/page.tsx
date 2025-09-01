@@ -1,6 +1,7 @@
 'use client';
 
 import ChartAlgorithmManager from '@/components/ChartAlgorithmManager';
+import AdminPageHero from '@/components/AdminPageHero';
 import { useEffect, useState } from 'react';
 import '../../styles/admin.css';
 
@@ -67,25 +68,17 @@ export default function ChartAlgorithmManagerPage() {
 
   return (
     <div className="admin-container">
-      {/* Header with navigation */}
-      <div className="glass-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding">
-            <h1 className="admin-title">MessMass Admin</h1>
-            <p className="admin-subtitle">Chart Algorithm Manager</p>
-          </div>
-          <div className="admin-user-info">
-            <div className="admin-badge">
-              <p className="admin-role">{user?.name}</p>
-              <p className="admin-level">{user?.role}</p>
-              <p className="admin-status">✓ Authenticated</p>
-            </div>
-            <a href="/admin" className="btn btn-secondary">
-              ← Back to Dashboard
-            </a>
-          </div>
-        </div>
-      </div>
+      <AdminPageHero 
+        title="Chart Algorithm Manager"
+        subtitle="Configure chart algorithms, data processing & visualization settings"
+        icon="📊"
+        showSearch={false}
+        badges={[
+          { text: `${user?.name}`, variant: 'primary' },
+          { text: user?.role || '', variant: 'secondary' }
+        ]}
+        backLink="/admin"
+      />
 
       {/* Chart Algorithm Manager Component */}
       <ChartAlgorithmManager />
@@ -94,7 +87,7 @@ export default function ChartAlgorithmManagerPage() {
       <style jsx>{`
         .admin-container {
           min-height: 100vh;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--gradient-primary);
           padding: 2rem;
         }
 

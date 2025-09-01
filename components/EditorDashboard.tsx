@@ -2,13 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
-import HashtagInput from './HashtagInput';
+import UnifiedHashtagInput from './UnifiedHashtagInput';
+import { 
+  mergeHashtagSystems, 
+  getAllHashtagRepresentations,
+  expandHashtagsWithCategories 
+} from '@/lib/hashtagCategoryUtils';
 
 interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
   hashtags?: string[];
+  categorizedHashtags?: { [categoryName: string]: string[] };
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -59,15 +65,21 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [project, setProject] = useState<Project>(initialProject);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [hashtags, setHashtags] = useState<string[]>(initialProject.hashtags || []);
+  const [categorizedHashtags, setCategorizedHashtags] = useState<{ [categoryName: string]: string[] }>(initialProject.categorizedHashtags || {});
 
   // Update project when initialProject changes
   useEffect(() => {
     setProject(initialProject);
     setHashtags(initialProject.hashtags || []);
+    setCategorizedHashtags(initialProject.categorizedHashtags || {});
   }, [initialProject]);
 
   // Auto-save function
-  const saveProject = async (updatedStats?: typeof project.stats, updatedHashtags?: string[]) => {
+  const saveProject = async (
+    updatedStats?: typeof project.stats, 
+    updatedHashtags?: string[], 
+    updatedCategorizedHashtags?: { [categoryName: string]: string[] }
+  ) => {
     setSaveStatus('saving');
     try {
       const response = await fetch('/api/projects', {
@@ -78,6 +90,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           eventName: project.eventName,
           eventDate: project.eventDate,
           hashtags: updatedHashtags !== undefined ? updatedHashtags : hashtags,
+          categorizedHashtags: updatedCategorizedHashtags !== undefined ? updatedCategorizedHashtags : categorizedHashtags,
           stats: updatedStats || project.stats
         })
       });
@@ -130,10 +143,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   };
 
   // Hashtag management functions
-  const handleHashtagsUpdate = (newHashtags: string[]) => {
+  const handleGeneralHashtagsChange = (newHashtags: string[]) => {
     setHashtags(newHashtags);
     setProject(prev => ({ ...prev, hashtags: newHashtags }));
-    saveProject(undefined, newHashtags);
+    saveProject(undefined, newHashtags, undefined);
+  };
+
+  const handleCategorizedHashtagsChange = (newCategorizedHashtags: { [categoryName: string]: string[] }) => {
+    setCategorizedHashtags(newCategorizedHashtags);
+    setProject(prev => ({ ...prev, categorizedHashtags: newCategorizedHashtags }));
+    saveProject(undefined, undefined, newCategorizedHashtags);
   };
 
   // Calculate totals
@@ -284,6 +303,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     );
   };
 
+  // Get all hashtag representations for display
+  const allHashtagRepresentations = getAllHashtagRepresentations({ hashtags, categorizedHashtags });
+  const totalHashtagCount = allHashtagRepresentations.length;
+
   return (
     <div className="admin-container">
       {/* Header with same styling as stats page */}
@@ -293,8 +316,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             <h1 className="admin-title">{project.eventName}</h1>
             <p className="admin-subtitle">Record Stats - {new Date(project.eventDate).toLocaleDateString()}</p>
             
-            {/* Beautiful hashtag display */}
-            {hashtags && hashtags.length > 0 && (
+            {/* Beautiful hashtag display - showing all hashtags including categorized ones */}
+            {allHashtagRepresentations.length > 0 && (
               <div style={{ 
                 marginTop: '1rem',
                 display: 'flex',
@@ -303,14 +326,15 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
-                {hashtags.map((hashtag, index) => (
+                {allHashtagRepresentations.map((hashtagDisplay, index) => (
                   <ColoredHashtagBubble 
                     key={index}
-                    hashtag={hashtag}
+                    hashtag={hashtagDisplay}
                     customStyle={{
                       fontSize: '1.125rem',
                       fontWeight: '600'
                     }}
+                    showCategoryPrefix={true}
                   />
                 ))}
               </div>
@@ -341,18 +365,19 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             color: '#2d3748',
             borderBottom: '2px solid #e2e8f0',
             paddingBottom: '0.5rem'
-          }}>🏷️ Hashtags ({hashtags.length}/5)</h2>
+          }}>🏷️ Hashtags ({totalHashtagCount}/∞)</h2>
           
           <div style={{ marginBottom: '1rem' }}>
-            <HashtagInput
-              value={hashtags}
-              onChange={handleHashtagsUpdate}
+            <UnifiedHashtagInput
+              generalHashtags={hashtags}
+              onGeneralChange={handleGeneralHashtagsChange}
+              categorizedHashtags={categorizedHashtags}
+              onCategorizedChange={handleCategorizedHashtagsChange}
               placeholder="Add hashtags to categorize this project..."
-              maxTags={5}
             />
           </div>
           
-          {hashtags.length === 0 && (
+          {totalHashtagCount === 0 && (
             <p style={{
               color: '#6b7280',
               fontStyle: 'italic',

@@ -40,17 +40,29 @@ export async function GET(request: NextRequest) {
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     
-    // Get all unique hashtags from projects
+    // Get all unique hashtags from projects (both old and new format)
     const projects = await db.collection('projects').find({}, { 
-      projection: { hashtags: 1 } 
+      projection: { hashtags: 1, categorizedHashtags: 1 } 
     }).toArray();
     
     // Extract all hashtags and count usage
     const hashtagCounts: { [key: string]: number } = {};
     projects.forEach(project => {
+      // Handle old format hashtags (general hashtags)
       if (project.hashtags && Array.isArray(project.hashtags)) {
         project.hashtags.forEach((hashtag: string) => {
           hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
+        });
+      }
+      
+      // Handle new format categorized hashtags
+      if (project.categorizedHashtags && typeof project.categorizedHashtags === 'object') {
+        Object.values(project.categorizedHashtags).forEach((categoryHashtags: any) => {
+          if (Array.isArray(categoryHashtags)) {
+            categoryHashtags.forEach((hashtag: string) => {
+              hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
+            });
+          }
         });
       }
     });
@@ -147,10 +159,28 @@ export async function DELETE(request: NextRequest) {
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     
-    // Check if hashtag is still being used
-    const projectsUsingHashtag = await db.collection('projects').countDocuments({
+    // Check if hashtag is still being used in either format
+    const projectsUsingHashtagOld = await db.collection('projects').countDocuments({
       hashtags: hashtag
     });
+    
+    const projectsUsingHashtagCategorized = await db.collection('projects').countDocuments({
+      $expr: {
+        $gt: [
+          {
+            $size: {
+              $filter: {
+                input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                cond: { $in: [hashtag, "$$this.v"] }
+              }
+            }
+          },
+          0
+        ]
+      }
+    });
+    
+    const projectsUsingHashtag = projectsUsingHashtagOld + projectsUsingHashtagCategorized;
     
     if (projectsUsingHashtag > 0) {
       return NextResponse.json(

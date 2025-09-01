@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findProjectByViewSlug } from '@/lib/slugUtils';
+import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 
 // GET /api/projects/stats/[slug] - Fetch project by view slug (read-only access)
 export async function GET(
@@ -29,11 +30,19 @@ export async function GET(
 
     console.log('✅ Found project:', project.eventName);
 
+    // Get all hashtag representations (traditional + category-prefixed)
+    const allHashtags = getAllHashtagRepresentations({
+      hashtags: project.hashtags,
+      categorizedHashtags: project.categorizedHashtags
+    });
+
     // Format project data for read-only access (no sensitive information)
     const readOnlyProject = {
       eventName: project.eventName,
       eventDate: project.eventDate,
-      hashtags: project.hashtags, // Include hashtags for display
+      hashtags: project.hashtags || [], // Keep original hashtags
+      categorizedHashtags: project.categorizedHashtags || {}, // Include categorized structure
+      allHashtagRepresentations: allHashtags, // Include all representations for search
       stats: project.stats,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt

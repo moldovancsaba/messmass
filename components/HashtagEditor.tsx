@@ -193,13 +193,6 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
 
   return (
     <div className={`hashtag-editor ${className}`}>
-      {/* Header */}
-      <div className="hashtag-editor-header">
-        <h3>🏷️ Hashtag Color Manager</h3>
-        <div className="hashtag-manager-info">
-          <small>Manage colors for hashtags used in your projects</small>
-        </div>
-      </div>
 
       {/* Form */}
       {showForm && (
@@ -324,14 +317,14 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
                       className="btn btn-sm btn-info"
                       onClick={() => handleEdit(projectHashtag.hashtag)}
                     >
-                      ✏️ Edit Color
+                      ✏️ Edit Hashtag
                     </button>
                     {hasCustomColor && (
                       <button
                         className="btn btn-sm btn-danger"
                         onClick={() => handleDelete(projectHashtag.hashtag)}
                       >
-                        🗑️ Reset Color
+                        🗑️ Delete
                       </button>
                     )}
                   </div>

@@ -1,5 +1,6 @@
 import React from 'react';
-import ColoredHashtagBubble from './ColoredHashtagBubble';
+import CategorizedHashtagBubble from './CategorizedHashtagBubble';
+import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 
 interface ProjectItem {
   _id: string;
@@ -7,6 +8,7 @@ interface ProjectItem {
   eventDate: string;
   viewSlug?: string;
   hashtags?: string[];
+  categorizedHashtags?: { [categoryName: string]: string[] };
   createdAt: string;
   updatedAt: string;
 }
@@ -114,35 +116,51 @@ export default function UnifiedProjectsSection({
               )}
             </h3>
 
-            {/* Hashtags */}
-            {project.hashtags && project.hashtags.length > 0 && (
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                {project.hashtags.slice(0, 6).map((hashtag, index) => (
-                  <ColoredHashtagBubble
-                    key={index}
-                    hashtag={hashtag}
-                    small={true}
-                  />
-                ))}
-                {project.hashtags.length > 6 && (
-                  <span style={{
-                    fontSize: '0.75rem',
-                    color: '#6b7280',
-                    padding: '0.25rem 0.5rem',
-                    background: 'rgba(107, 114, 128, 0.1)',
-                    borderRadius: '6px',
-                    fontWeight: '500'
-                  }}>
-                    +{project.hashtags.length - 6} more
-                  </span>
-                )}
-              </div>
-            )}
+            {/* Hashtags with Categories */}
+            {(() => {
+              // Get all hashtags with their categories from the project data
+              const projectData: ProjectHashtagData = {
+                hashtags: project.hashtags,
+                categorizedHashtags: project.categorizedHashtags
+              };
+              const hashtagsWithCategories = getAllHashtagsWithCategories(projectData);
+              
+              if (hashtagsWithCategories.length === 0) return null;
+              
+              return (
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.75rem',
+                  marginBottom: '1rem',
+                  minHeight: '40px'
+                }}>
+                  {hashtagsWithCategories.slice(0, 6).map((hashtagData, index) => (
+                    <CategorizedHashtagBubble
+                      key={index}
+                      hashtag={hashtagData.hashtag}
+                      category={hashtagData.primaryCategory}
+                      small={true}
+                      showCategoryLabel={hashtagData.primaryCategory !== 'general'}
+                    />
+                  ))}
+                  {hashtagsWithCategories.length > 6 && (
+                    <span style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      padding: '0.25rem 0.5rem',
+                      background: 'rgba(107, 114, 128, 0.1)',
+                      borderRadius: '6px',
+                      fontWeight: '500',
+                      alignSelf: 'flex-end',
+                      marginBottom: '0.25rem'
+                    }}>
+                      +{hashtagsWithCategories.length - 6} more
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Footer with Date and Link */}
             <div style={{

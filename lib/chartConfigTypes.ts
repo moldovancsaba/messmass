@@ -22,7 +22,7 @@ export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi'; // Chart type: pie (2 elements), bar (5 elements), or kpi (1 element)
+  type: 'pie' | 'bar' | 'kpi'; // Chart type: pie (2 elements), bar (5 elements), kpi (1 element)
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
   elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi)

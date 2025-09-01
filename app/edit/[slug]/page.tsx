@@ -9,6 +9,7 @@ interface Project {
   eventName: string;
   eventDate: string;
   hashtags?: string[];
+  categorizedHashtags?: { [categoryName: string]: string[] };
   stats: {
     remoteImages: number;
     hostessImages: number;

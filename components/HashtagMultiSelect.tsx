@@ -105,29 +105,12 @@ export default function HashtagMultiSelect({
 
   return (
     <div className={`hashtag-multi-select ${className}`}>
-      {/* Header */}
-      <div style={{
-        marginBottom: '1.5rem',
-        textAlign: 'center'
-      }}>
-        <h3 style={{
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          color: '#1f2937',
-          margin: '0 0 0.5rem 0'
+      {/* Preview Results - Only show if we have selections */}
+      {showPreview && selectedHashtags.length > 0 && (
+        <div style={{
+          marginBottom: '1.5rem',
+          textAlign: 'center'
         }}>
-          🏷️ Multi-Hashtag Filter
-        </h3>
-        <p style={{
-          color: '#6b7280',
-          fontSize: '0.875rem',
-          margin: '0 0 0.5rem 0'
-        }}>
-          Select multiple hashtags to view aggregated statistics (AND logic - projects must have ALL selected tags)
-        </p>
-        
-        {/* Preview Results */}
-        {showPreview && selectedHashtags.length > 0 && (
           <div style={{
             padding: '0.75rem 1rem',
             background: matchPreview.loading 
@@ -154,8 +137,8 @@ export default function HashtagMultiSelect({
               </>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Selected Hashtags Display */}
       {selectedHashtags.length > 0 && (
@@ -198,6 +181,10 @@ export default function HashtagMultiSelect({
                     fontSize: '1rem',
                     fontWeight: '600'
                   }}
+                  removable={!disabled}
+                  onRemove={() => handleHashtagToggle(hashtag)}
+                  interactive={true}
+                  onClick={() => handleHashtagToggle(hashtag)}
                 />
               </div>
             ))}
@@ -282,79 +269,201 @@ export default function HashtagMultiSelect({
         </div>
 
         {/* Hashtags Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '0.75rem'
-        }}>
-          {sortedHashtags.map((item) => (
-            <label
-              key={item.hashtag}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0.75rem',
-                background: selectedHashtags.includes(item.hashtag) 
-                  ? 'rgba(99, 102, 241, 0.1)' 
-                  : 'rgba(255, 255, 255, 0.9)',
-                border: `2px solid ${
-                  selectedHashtags.includes(item.hashtag) 
-                    ? 'rgba(99, 102, 241, 0.3)' 
-                    : 'rgba(229, 231, 235, 0.5)'
-                }`,
-                borderRadius: '12px',
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease',
-                opacity: disabled ? 0.6 : 1
-              }}
-              onMouseEnter={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={selectedHashtags.includes(item.hashtag)}
-                onChange={() => handleHashtagToggle(item.hashtag)}
-                disabled={disabled}
-                style={{
-                  marginRight: '0.75rem',
-                  width: '1.25rem',
-                  height: '1.25rem',
-                  cursor: disabled ? 'not-allowed' : 'pointer'
-                }}
-              />
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <ColoredHashtagBubble 
-                  hashtag={item.hashtag}
-                  customStyle={{
-                    fontSize: '0.875rem',
-                    fontWeight: '500'
-                  }}
-                />
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  background: 'rgba(107, 114, 128, 0.1)',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '12px',
-                  marginLeft: '0.5rem'
-                }}>
-                  {item.count}
-                </span>
-              </div>
-            </label>
-          ))}
-        </div>
+        {(() => {
+          // Group hashtags by category vs traditional
+          const traditionalHashtags = sortedHashtags.filter(item => !item.hashtag.includes(':'));
+          const categorizedHashtags = sortedHashtags.filter(item => item.hashtag.includes(':'));
+          
+          // Group categorized hashtags by category
+          const categorizedByCategory = categorizedHashtags.reduce((acc, item) => {
+            const [category] = item.hashtag.split(':');
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(item);
+            return acc;
+          }, {} as Record<string, typeof sortedHashtags>);
+          
+          return (
+            <div>
+              {/* Traditional Hashtags */}
+              {traditionalHashtags.length > 0 && (
+                <div style={{ marginBottom: '2rem' }}>
+                  <h5 style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                    margin: '0 0 1rem 0',
+                    padding: '0.5rem 0',
+                    borderBottom: '2px solid #e5e7eb'
+                  }}>
+                    🏷️ General Hashtags ({traditionalHashtags.length})
+                  </h5>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                    gap: '0.75rem'
+                  }}>
+                    {traditionalHashtags.map((item) => (
+                      <label
+                        key={item.hashtag}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '0.75rem',
+                          background: selectedHashtags.includes(item.hashtag) 
+                            ? 'rgba(99, 102, 241, 0.1)' 
+                            : 'rgba(255, 255, 255, 0.9)',
+                          border: `2px solid ${
+                            selectedHashtags.includes(item.hashtag) 
+                              ? 'rgba(99, 102, 241, 0.3)' 
+                              : 'rgba(229, 231, 235, 0.5)'
+                          }`,
+                          borderRadius: '12px',
+                          cursor: disabled ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.2s ease',
+                          opacity: disabled ? 0.6 : 1
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!disabled) {
+                            e.currentTarget.style.transform = 'scale(1.02)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!disabled) {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedHashtags.includes(item.hashtag)}
+                          onChange={() => handleHashtagToggle(item.hashtag)}
+                          disabled={disabled}
+                          style={{
+                            marginRight: '0.75rem',
+                            width: '1.25rem',
+                            height: '1.25rem',
+                            cursor: disabled ? 'not-allowed' : 'pointer'
+                          }}
+                        />
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <ColoredHashtagBubble 
+                            hashtag={item.hashtag}
+                            customStyle={{
+                              fontSize: '0.875rem',
+                              fontWeight: '500'
+                            }}
+                          />
+                          <span style={{
+                            fontSize: '0.75rem',
+                            fontWeight: '600',
+                            color: '#6b7280',
+                            background: 'rgba(107, 114, 128, 0.1)',
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: '12px',
+                            marginLeft: '0.5rem'
+                          }}>
+                            {item.count}
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Categorized Hashtags */}
+              {Object.entries(categorizedByCategory).map(([category, categoryHashtags]) => (
+                <div key={category} style={{ marginBottom: '2rem' }}>
+                  <h5 style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                    margin: '0 0 1rem 0',
+                    padding: '0.5rem 0',
+                    borderBottom: '2px solid #e5e7eb'
+                  }}>
+                    📂 {category.charAt(0).toUpperCase() + category.slice(1)} Category ({categoryHashtags.length})
+                  </h5>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                    gap: '0.75rem'
+                  }}>
+                    {categoryHashtags.map((item) => (
+                      <label
+                        key={item.hashtag}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '0.75rem',
+                          background: selectedHashtags.includes(item.hashtag) 
+                            ? 'rgba(99, 102, 241, 0.1)' 
+                            : 'rgba(255, 255, 255, 0.9)',
+                          border: `2px solid ${
+                            selectedHashtags.includes(item.hashtag) 
+                              ? 'rgba(99, 102, 241, 0.3)' 
+                              : 'rgba(229, 231, 235, 0.5)'
+                          }`,
+                          borderRadius: '12px',
+                          cursor: disabled ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.2s ease',
+                          opacity: disabled ? 0.6 : 1
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!disabled) {
+                            e.currentTarget.style.transform = 'scale(1.02)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!disabled) {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedHashtags.includes(item.hashtag)}
+                          onChange={() => handleHashtagToggle(item.hashtag)}
+                          disabled={disabled}
+                          style={{
+                            marginRight: '0.75rem',
+                            width: '1.25rem',
+                            height: '1.25rem',
+                            cursor: disabled ? 'not-allowed' : 'pointer'
+                          }}
+                        />
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <ColoredHashtagBubble 
+                            hashtag={item.hashtag}
+                            customStyle={{
+                              fontSize: '0.875rem',
+                              fontWeight: '500'
+                            }}
+                          />
+                          <span style={{
+                            fontSize: '0.75rem',
+                            fontWeight: '600',
+                            color: '#6b7280',
+                            background: 'rgba(107, 114, 128, 0.1)',
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: '12px',
+                            marginLeft: '0.5rem'
+                          }}>
+                            {item.count}
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Action Buttons */}

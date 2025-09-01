@@ -38,9 +38,31 @@ body {
   font-family: var(--font-primary);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  color: var(--color-gray-900);
+  color: #000000;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure black text on white/light backgrounds */
+.glass-card,
+.admin-header,
+.admin-stat-card,
+.admin-projects-container,
+.login-card,
+[style*="background: rgba(255, 255, 255"],
+[style*="background: white"],
+[style*="background-color: white"],
+[style*="background-color: rgba(255, 255, 255"] {
+  color: #000000 !important;
+}
+
+/* Specific text elements that should always be black on light backgrounds */
+.glass-card *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
+.admin-header *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
+.admin-stat-card *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
+.admin-projects-container *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
+.login-card *:not(.btn):not(.admin-logout-btn):not([style*="color:"]) {
+  color: #000000 !important;
 }
 
 /* Base Element Styles */
@@ -108,10 +130,7 @@ img {
 }
 
 .admin-title {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-gray-900);
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
@@ -467,10 +486,7 @@ img {
 }
 
 .login-title {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-gray-900);
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
@@ -584,12 +600,8 @@ img {
 .admin-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-gray-900);
   margin: 0;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .admin-subtitle {
@@ -683,12 +695,8 @@ img {
 .stat-value-admin {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-gray-900);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .stat-label-admin {
@@ -898,6 +906,7 @@ img {
   border-radius: 0.5rem;
   padding: 1rem;
   border: 1px solid rgba(102, 126, 234, 0.2);
+  color: #1a202c;
 }
 
 .sm-label {
@@ -1159,13 +1168,9 @@ img {
 }
 
 .stat-item span:last-child {
-  color: #1a202c;
+  color: var(--color-gray-900);
   font-weight: 700;
   font-size: 1rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 @media (max-width: 768px) {
@@ -1215,14 +1220,10 @@ img {
 .column-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-gray-900);
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid #667eea;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* Success Manager in Left Column - Compact */
@@ -1699,12 +1700,8 @@ img {
 .chart-total-value {
   font-size: 3rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-gray-900);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   line-height: 1;
 }
 

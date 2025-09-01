@@ -1,55 +1,40 @@
-// app/admin/page.tsx - Update with logout functionality
-import { getAdminUser, hasPermission } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import AdminDashboard from '@/components/AdminDashboard'
-import '../styles/admin.css'
+'use client';
 
-export default async function AdminPage() {
-  const user = await getAdminUser()
-  
-  if (!user) {
-    redirect('/admin/login')
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import AdminDashboard from '@/components/AdminDashboard';
+import '../styles/admin.css';
+
+export default function AdminPage() {
+  const { user, loading, logout } = useAdminAuth();
+
+  if (loading) {
+    return (
+      <div className="admin-container">
+        <div className="glass-card">
+          <div className="loading-spinner">Loading admin...</div>
+        </div>
+      </div>
+    );
   }
-  
-  const canManageUsers = await hasPermission('manage-users')
-  const canDelete = await hasPermission('delete')
-  
-  const handleLogout = async () => {
-    'use server'
-    
-    try {
-      // Clear the admin session cookie
-      const { cookies } = await import('next/headers')
-      const cookieStore = await cookies()
-      cookieStore.delete('admin-session')
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-    
-    redirect('/admin/login')
+
+  if (!user) {
+    return null; // Will redirect to login
   }
 
   return (
     <div className="admin-container">
-      {/* Glass Card Header with MessMass Design System */}
+      {/* Glass Card Header */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
           <div className="admin-branding" style={{ textAlign: 'center' }}>
-            {/* Beautiful title using existing hashtag bubble class for consistency */}
-            <span className="hashtag" style={{
-              fontSize: '1.5rem',
+            <h1 style={{
+              fontSize: '2rem',
               fontWeight: '700',
-              padding: '1rem 2rem',
-              borderRadius: '50px',
-              display: 'inline-block',
-              marginBottom: '0.5rem',
-              maxWidth: '100%',
-              wordWrap: 'break-word',
-              textAlign: 'center'
+              marginBottom: '0rem',
+              color: '#1f2937'
             }}>
-              MessMass Admin
-            </span>
-            <p className="admin-subtitle">Event Statistics Management</p>
+              Admin Dashboard
+            </h1>
           </div>
           <div className="admin-user-info">
             <div className="admin-badge">
@@ -57,14 +42,12 @@ export default async function AdminPage() {
               <p className="admin-level">{user.role}</p>
               <p className="admin-status">✓ Authenticated</p>
             </div>
-            <form action={handleLogout}>
-              <button
-                type="submit"
-                className="btn btn-logout"
-              >
-                Logout
-              </button>
-            </form>
+            <button
+              onClick={logout}
+              className="btn btn-logout"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
@@ -73,12 +56,12 @@ export default async function AdminPage() {
       <AdminDashboard 
         user={user}
         permissions={{
-          canManageUsers,
-          canDelete,
+          canManageUsers: true,
+          canDelete: true,
           canRead: true,
-          canWrite: await hasPermission('write')
+          canWrite: true
         }}
       />
     </div>
-  )
+  );
 }

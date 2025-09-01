@@ -27,32 +27,50 @@ export default function HashtagInput({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const lastSearchRef = useRef<string>('');
+  const valueRef = useRef<string[]>(value);
   
-  // Fetch hashtag suggestions
-  const fetchSuggestions = useCallback(async (search: string) => {
-    if (!search.trim()) {
+  // Keep valueRef in sync with value prop
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+  
+  // Fetch hashtag suggestions - only when active and 3+ characters
+  const fetchSuggestions = async (search: string) => {
+    // Only proceed if this input is active and has 3+ characters
+    if (!isActive || search.length < 3) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
     
+    // Don't re-fetch if same search as last time
+    if (search === lastSearchRef.current) {
+      return;
+    }
+    
+    lastSearchRef.current = search;
     setLoading(true);
+    
     try {
       const response = await fetch(`/api/hashtags?search=${encodeURIComponent(search)}`);
       const data = await response.json();
       
       if (data.success) {
+        const currentValue = valueRef.current;
         const existingSuggestions: HashtagSuggestion[] = data.hashtags
-          .filter((hashtag: string) => !value.includes(hashtag))
+          .filter((hashtag: string) => !currentValue.includes(hashtag))
           .map((hashtag: string) => ({ hashtag, isExisting: true }));
         
         // Add the current input as a new suggestion if it's not in existing hashtags
         const cleanedInput = search.replace(/^#/, '').toLowerCase().trim();
         const isValidInput = /^[a-z0-9_]+$/.test(cleanedInput);
         const inputNotInExisting = !data.hashtags.includes(cleanedInput);
-        const inputNotInSelected = !value.includes(cleanedInput);
+        const inputNotInSelected = !currentValue.includes(cleanedInput);
         
         let allSuggestions = existingSuggestions;
         
@@ -63,29 +81,41 @@ export default function HashtagInput({
           ];
         }
         
-        setSuggestions(allSuggestions.slice(0, 8)); // Limit to 8 suggestions
+        setSuggestions(allSuggestions.slice(0, 8));
+        setShowSuggestions(allSuggestions.length > 0);
       }
     } catch (error) {
       console.error('Failed to fetch hashtag suggestions:', error);
+      setSuggestions([]);
+      setShowSuggestions(false);
     } finally {
       setLoading(false);
     }
-  }, [value]);
+  };
   
-  // Debounced suggestion fetching
+  // Only trigger search when input changes and meets criteria
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+    
+    const search = inputValue.trim();
+    
+    // Clear suggestions if less than 3 characters
+    if (search.length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      lastSearchRef.current = '';
+      return;
+    }
+    
+    // Debounce API calls
     const timeoutId = setTimeout(() => {
-      if (inputValue.trim()) {
-        fetchSuggestions(inputValue);
-        setShowSuggestions(true);
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
+      fetchSuggestions(search);
     }, 300);
     
     return () => clearTimeout(timeoutId);
-  }, [inputValue, value, fetchSuggestions]);
+  }, [inputValue, isActive]);
   
   const addHashtag = async (hashtag: string) => {
     // Remove the hashtag limit check
@@ -159,16 +189,21 @@ export default function HashtagInput({
   };
   
   const handleInputFocus = () => {
-    if (inputValue.trim()) {
-      setShowSuggestions(true);
+    setIsActive(true);
+    
+    // Only show suggestions if we have 3+ characters
+    if (inputValue.trim().length >= 3) {
+      setShowSuggestions(suggestions.length > 0);
     }
   };
   
   const handleInputBlur = () => {
-    // Delay hiding suggestions to allow clicks
+    // Delay to allow suggestion clicks
     setTimeout(() => {
+      setIsActive(false);
       setShowSuggestions(false);
       setSelectedSuggestionIndex(-1);
+      lastSearchRef.current = '';
     }, 200);
   };
   

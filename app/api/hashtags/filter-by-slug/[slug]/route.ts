@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findHashtagsByFilterSlug } from '@/lib/slugUtils';
+import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 import clientPromise from '@/lib/mongodb';
 
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
@@ -47,13 +48,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const collection = db.collection('projects');
 
     // Find projects that contain ALL specified hashtags
-    const projects = await collection
-      .find({
-        hashtags: { 
-          $all: hashtags.map(tag => new RegExp(`^${tag}$`, 'i'))
-        }
-      })
-      .toArray();
+    // Need to handle both traditional hashtags and category-prefixed hashtags
+    const allProjects = await collection.find({}).toArray();
+    
+    // Filter projects that match ALL specified hashtags
+    const projects = allProjects.filter(project => {
+      // Get all hashtag representations for this project
+      const allHashtagRepresentations = getAllHashtagRepresentations({
+        hashtags: project.hashtags || [],
+        categorizedHashtags: project.categorizedHashtags || {}
+      });
+      
+      // Check if ALL filter hashtags are present in this project
+      return hashtags.every(filterHashtag => 
+        allHashtagRepresentations.some(projectHashtag => 
+          projectHashtag.toLowerCase() === filterHashtag.toLowerCase()
+        )
+      );
+    });
 
     if (projects.length === 0) {
       return NextResponse.json({
@@ -108,15 +120,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     };
 
     // Format projects list for public consumption (same as hashtag filter)
-    const publicProjects = projects.map(project => ({
-      _id: project._id.toString(),
-      eventName: project.eventName,
-      eventDate: project.eventDate,
-      hashtags: project.hashtags || [],
-      viewSlug: project.viewSlug,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt
-    })).sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+    const publicProjects = projects.map(project => {
+      // Get all hashtag representations for display
+      const allHashtagRepresentations = getAllHashtagRepresentations({
+        hashtags: project.hashtags || [],
+        categorizedHashtags: project.categorizedHashtags || {}
+      });
+      
+      return {
+        _id: project._id.toString(),
+        eventName: project.eventName,
+        eventDate: project.eventDate,
+        hashtags: allHashtagRepresentations,
+        viewSlug: project.viewSlug,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt
+      };
+    }).sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
 
     console.log(`📊 Returning aggregated stats for ${hashtags.length} hashtags and ${projects.length} projects`);
 

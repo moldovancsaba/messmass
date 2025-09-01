@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
@@ -46,23 +47,19 @@ export async function GET(request: NextRequest) {
     
     console.log(`📊 Found ${projects.length} projects in database`);
     
-    // Calculate hashtag counts from projects
+    // Calculate hashtag counts from projects (including category-prefixed hashtags)
     const hashtagCounts: { [key: string]: number } = {};
     projects.forEach(project => {
-      if (project.hashtags) {
-        let hashtagList: string[] = [];
-        
-        // Handle both array and comma-separated string formats
-        if (Array.isArray(project.hashtags)) {
-          hashtagList = project.hashtags;
-        } else if (typeof project.hashtags === 'string') {
-          hashtagList = project.hashtags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-        }
-        
-        hashtagList.forEach((hashtag: string) => {
-          hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
-        });
-      }
+      // Get all hashtag representations for this project
+      const allHashtagRepresentations = getAllHashtagRepresentations({
+        hashtags: project.hashtags || [],
+        categorizedHashtags: project.categorizedHashtags || {}
+      });
+      
+      // Count each hashtag representation
+      allHashtagRepresentations.forEach((hashtag: string) => {
+        hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
+      });
     });
     
     const uniqueHashtags = Object.keys(hashtagCounts);

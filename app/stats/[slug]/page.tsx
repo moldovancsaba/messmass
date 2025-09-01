@@ -55,7 +55,9 @@ interface ProjectStats {
 interface Project {
   eventName: string;
   eventDate: string;
-  hashtags?: string[]; // Array of hashtag strings
+  hashtags?: string[]; // Array of hashtag strings (traditional/general)
+  categorizedHashtags?: { [categoryName: string]: string[] }; // Categorized hashtags
+  allHashtagRepresentations?: string[]; // All possible representations
   stats: ProjectStats;
   createdAt: string;
   updatedAt: string;
@@ -306,6 +308,7 @@ export default function StatsPage() {
       <UnifiedStatsHero
         title={project.eventName}
         hashtags={project.hashtags || []}
+        categorizedHashtags={project.categorizedHashtags || {}}
         createdDate={project.createdAt}
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}

@@ -3,10 +3,20 @@ import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
 
+// Import hashtag category types for categorized hashtags support
+import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
+import { 
+  mergeHashtagSystems, 
+  expandHashtagsWithCategories,
+  getAllHashtagRepresentations 
+} from '@/lib/hashtagCategoryUtils';
+
 // Define project interface for type safety
+// Enhanced to support both traditional and categorized hashtags
 interface ProjectDocument {
   _id?: ObjectId;
-  hashtags?: string[];
+  hashtags?: string[];                    // Traditional hashtags (maintained for backward compatibility)
+  categorizedHashtags?: CategorizedHashtagMap; // New field for category-hashtag mapping
   [key: string]: unknown;
 }
 
@@ -19,13 +29,26 @@ async function cleanupUnusedHashtags(db: Db) {
     const hashtagsCollection = db.collection('hashtags');
     
     // Get all hashtags currently used in projects
+    // Enhanced to include both traditional and categorized hashtags
     const projects = await projectsCollection.find({}).toArray();
     const usedHashtags = new Set<string>();
     
     projects.forEach((project: ProjectDocument) => {
+      // Add traditional hashtags (for backward compatibility)
       if (project.hashtags && Array.isArray(project.hashtags)) {
         project.hashtags.forEach((hashtag: string) => {
           usedHashtags.add(hashtag.toLowerCase());
+        });
+      }
+      
+      // Add categorized hashtags (new feature)
+      if (project.categorizedHashtags) {
+        Object.values(project.categorizedHashtags).forEach((categoryHashtags) => {
+          if (Array.isArray(categoryHashtags)) {
+            categoryHashtags.forEach((hashtag: string) => {
+              usedHashtags.add(hashtag.toLowerCase());
+            });
+          }
         });
       }
     });
@@ -81,11 +104,13 @@ export async function GET() {
 
     console.log(`✅ Found ${projects.length} projects`);
 
+    // Enhanced project formatting to include categorized hashtags
     const formattedProjects = projects.map(project => ({
       _id: project._id.toString(),
       eventName: project.eventName,
       eventDate: project.eventDate,
-      hashtags: project.hashtags || [],
+      hashtags: project.hashtags || [],               // Traditional hashtags (backward compatibility)
+      categorizedHashtags: project.categorizedHashtags || {}, // New categorized hashtags
       stats: project.stats,
       viewSlug: project.viewSlug,
       editSlug: project.editSlug,
@@ -122,7 +147,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { eventName, eventDate, hashtags = [], stats } = body;
+    // Enhanced to support both traditional and categorized hashtags
+    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats } = body;
 
     if (!eventName || !eventDate || !stats) {
       return NextResponse.json(
@@ -143,10 +169,13 @@ export async function POST(request: NextRequest) {
     const collection = db.collection('projects');
 
     const now = new Date().toISOString();
+    
+    // Enhanced project structure to support categorized hashtags
     const project = {
       eventName,
       eventDate,
-      hashtags: hashtags || [],
+      hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
+      categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
       stats,
       viewSlug,
       editSlug,
@@ -154,13 +183,19 @@ export async function POST(request: NextRequest) {
       updatedAt: now
     };
 
-    // Add hashtags to the hashtags collection if they don't exist
-    if (hashtags && hashtags.length > 0) {
+    // Enhanced hashtag processing to handle both traditional and categorized hashtags
+    // Store both plain hashtags and category-prefixed versions for comprehensive filtering
+    const allHashtagRepresentations = getAllHashtagRepresentations({
+      hashtags,
+      categorizedHashtags
+    });
+    
+    if (allHashtagRepresentations.length > 0) {
       const hashtagsCollection = db.collection('hashtags');
       
-      // Process each hashtag individually to avoid conflicts
-      for (const hashtag of hashtags) {
-        const normalizedHashtag = hashtag.toLowerCase();
+      // Process each hashtag representation individually to avoid conflicts
+      for (const hashtagRepresentation of allHashtagRepresentations) {
+        const normalizedHashtag = hashtagRepresentation.toLowerCase();
         
         // First try to increment existing hashtag
         const updateResult = await hashtagsCollection.updateOne(
@@ -184,7 +219,7 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      console.log(`✅ Updated hashtag counts for ${hashtags.length} hashtags`);
+      console.log(`✅ Updated hashtag counts for ${allHashtagRepresentations.length} hashtag representations (${hashtags.length} traditional, ${Object.keys(categorizedHashtags).length} categories)`);
     }
 
     const result = await collection.insertOne(project);
@@ -215,7 +250,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { projectId, eventName, eventDate, hashtags = [], stats } = body;
+    // Enhanced to support both traditional and categorized hashtags
+    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats } = body;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -239,25 +275,35 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Enhanced update data to include categorized hashtags
     const updateData = {
       eventName,
       eventDate,
-      hashtags: hashtags || [],
+      hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
+      categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
       stats,
       updatedAt: new Date().toISOString()
     };
     
-    // Handle hashtag changes
-    const currentHashtags = (currentProject.hashtags || []).map((h: string) => h.toLowerCase());
-    const newHashtags = (hashtags || []).map((h: string) => h.toLowerCase());
+    // Enhanced hashtag change handling for both traditional and categorized hashtags
+    // Use all hashtag representations (including category-prefixed versions)
+    const currentAllHashtagRepresentations = getAllHashtagRepresentations({
+      hashtags: currentProject.hashtags || [],
+      categorizedHashtags: currentProject.categorizedHashtags || {}
+    }).map((h: string) => h.toLowerCase());
+    
+    const newAllHashtagRepresentations = getAllHashtagRepresentations({
+      hashtags: hashtags || [],
+      categorizedHashtags: categorizedHashtags || {}
+    }).map((h: string) => h.toLowerCase());
     
     const hashtagsCollection = db.collection('hashtags');
     const now = new Date().toISOString();
     
     // Hashtags to add (in new but not in current)
-    const hashtagsToAdd = newHashtags.filter((h: string) => !currentHashtags.includes(h));
+    const hashtagsToAdd = newAllHashtagRepresentations.filter((h: string) => !currentAllHashtagRepresentations.includes(h));
     // Hashtags to remove (in current but not in new)
-    const hashtagsToRemove = currentHashtags.filter((h: string) => !newHashtags.includes(h));
+    const hashtagsToRemove = currentAllHashtagRepresentations.filter((h: string) => !newAllHashtagRepresentations.includes(h));
     
     // Update hashtag counts
     if (hashtagsToAdd.length > 0) {
@@ -358,19 +404,25 @@ export async function DELETE(request: NextRequest) {
 
     console.log('✅ Project deleted successfully');
     
-    // Decrement hashtag counts and clean up unused hashtags
-    if (project.hashtags && project.hashtags.length > 0) {
+    // Enhanced hashtag cleanup for both traditional and categorized hashtags
+    // Remove all hashtag representations (including category-prefixed versions)
+    const allDeletedHashtagRepresentations = getAllHashtagRepresentations({
+      hashtags: project.hashtags || [],
+      categorizedHashtags: project.categorizedHashtags || {}
+    });
+    
+    if (allDeletedHashtagRepresentations.length > 0) {
       const hashtagsCollection = db.collection('hashtags');
       
-      // Decrement count for each hashtag
-      for (const hashtag of project.hashtags) {
+      // Decrement count for each hashtag representation
+      for (const hashtagRepresentation of allDeletedHashtagRepresentations) {
         await hashtagsCollection.updateOne(
-          { hashtag: hashtag.toLowerCase() },
+          { hashtag: hashtagRepresentation.toLowerCase() },
           { $inc: { count: -1 } }
         );
       }
       
-      console.log(`✅ Decremented count for ${project.hashtags.length} hashtags`);
+      console.log(`✅ Decremented count for ${allDeletedHashtagRepresentations.length} hashtag representations (including categorized)`);
       
       // Clean up unused hashtags
       await cleanupUnusedHashtags(db);

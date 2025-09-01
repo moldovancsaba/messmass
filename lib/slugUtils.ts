@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import { CategorizedHashtagMap } from './hashtagCategoryTypes';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
@@ -10,6 +11,7 @@ interface Project {
   eventName: string;
   eventDate: string;
   hashtags?: string[]; // Array of hashtag strings
+  categorizedHashtags?: CategorizedHashtagMap; // Categorized hashtags
   stats: {
     remoteImages: number;
     hostessImages: number;

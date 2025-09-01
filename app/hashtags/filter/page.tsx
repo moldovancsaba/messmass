@@ -3,10 +3,6 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '../../stats/[slug]/stats.module.css';
-import '../../charts.css';
-import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
-import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
-import { calculateActiveCharts } from '@/lib/chartCalculator';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 
@@ -87,11 +83,8 @@ function HashtagFilterPageContent() {
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
-  const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
-  const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(false);
-  const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasAppliedFilter, setHasAppliedFilter] = useState(false);
 
@@ -101,7 +94,6 @@ function HashtagFilterPageContent() {
 
     setStatsLoading(true);
     setError(null);
-    setChartsLoading(true);
     
     try {
       const tagsParam = hashtags.join(',');
@@ -112,22 +104,10 @@ function HashtagFilterPageContent() {
         setProject(data.project);
         setProjects(data.projects || []);
         setHasAppliedFilter(true);
-        
-        // Calculate chart results
-        if (chartConfigurations.length > 0) {
-          try {
-            const results = calculateActiveCharts(chartConfigurations, data.project.stats);
-            setChartResults(results);
-          } catch (err) {
-            console.error('Failed to calculate chart results:', err);
-            setChartResults([]);
-          }
-        }
       } else {
         setError(data.error || 'Failed to load filtered statistics');
         setProject(null);
         setProjects([]);
-        setChartResults([]);
         setHasAppliedFilter(false);
       }
     } catch (error) {
@@ -135,18 +115,15 @@ function HashtagFilterPageContent() {
       setError('Failed to load filtered statistics');
       setProject(null);
       setProjects([]);
-      setChartResults([]);
       setHasAppliedFilter(false);
     } finally {
       setStatsLoading(false);
-      setChartsLoading(false);
     }
-  }, [selectedHashtags, chartConfigurations]);
+  }, []);
 
   // Load available hashtags on mount
   useEffect(() => {
     loadAvailableHashtags();
-    loadChartConfigurations();
   }, []);
 
   // Parse URL parameters on mount
@@ -163,7 +140,7 @@ function HashtagFilterPageContent() {
       }
     }
     setLoading(false);
-  }, [searchParams, fetchFilteredStats]);
+  }, [searchParams]);
 
   // Load available hashtags
   const loadAvailableHashtags = async () => {
@@ -181,21 +158,6 @@ function HashtagFilterPageContent() {
     }
   };
 
-  // Load chart configurations
-  const loadChartConfigurations = async () => {
-    try {
-      const response = await fetch('/api/chart-config/public');
-      const data = await response.json();
-
-      if (data.success) {
-        setChartConfigurations(data.configurations);
-      } else {
-        console.error('Failed to load chart configurations:', data.error);
-      }
-    } catch (err) {
-      console.error('Failed to fetch chart configurations:', err);
-    }
-  };
 
   // Update URL when selection changes
   const updateURL = (hashtags: string[]) => {
@@ -217,7 +179,6 @@ function HashtagFilterPageContent() {
     if (hasAppliedFilter && selected.join(',') !== project?.hashtags?.join(',')) {
       setProject(null);
       setProjects([]);
-      setChartResults([]);
       setHasAppliedFilter(false);
     }
   };
@@ -316,7 +277,38 @@ function HashtagFilterPageContent() {
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">🔍 Multi-Hashtag Filter</h1>
-            <p className="admin-subtitle">View aggregated statistics for projects with specific hashtag combinations</p>
+            
+            {/* Search bar for hashtag filtering */}
+            <div style={{
+              marginTop: '1rem',
+              maxWidth: '400px',
+              margin: '1rem auto 0 auto'
+            }}>
+              <input
+                type="text"
+                placeholder="Search hashtags..."
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  fontSize: '1rem',
+                  border: '2px solid rgba(102, 126, 234, 0.2)',
+                  borderRadius: '25px',
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.2s ease',
+                  outline: 'none',
+                  textAlign: 'center'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#667eea';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
             
             {hasAppliedFilter && project && (
               <div style={{ marginTop: '1rem', textAlign: 'center' }}>
@@ -500,62 +492,6 @@ function HashtagFilterPageContent() {
       {/* Results Section */}
       {hasAppliedFilter && project && !error && (
         <>
-          {/* Charts Grid Section */}
-          <div className="glass-card charts-section">
-            <h2 style={{
-              fontSize: '1.875rem',
-              fontWeight: 'bold',
-              color: '#1f2937',
-              margin: '0 0 1.5rem 0',
-              lineHeight: '1.25'
-            }}>📊 Data Visualization</h2>
-            
-            {chartsLoading ? (
-              <div className={styles.loading}>
-                <div className={styles.spinner}></div>
-                <p>Loading charts...</p>
-              </div>
-            ) : (
-              <div>
-                {chartResults.length > 0 ? (
-                  <div className="dynamic-charts-grid">
-                    {chartResults.map((result, _index) => {
-                      // Check if chart has any valid data
-                      const validElements = result.elements.filter(element => 
-                        typeof element.value === 'number'
-                      );
-                      const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-                      
-                      // Only hide charts if ALL elements are NA or if it's a pie chart with zero total
-                      const shouldShow = validElements.length > 0 && (
-                        result.type === 'bar' || totalValue > 0
-                      );
-                      
-                      if (!shouldShow) {
-                        return null;
-                      }
-                      
-                      return (
-                        <ChartContainer 
-                          key={result.chartId}
-                          title={result.title}
-                          subtitle={result.subtitle}
-                          emoji={result.emoji}
-                          className="chart-item"
-                        >
-                          <DynamicChart result={result} />
-                        </ChartContainer>
-                      );
-                    }).filter(Boolean)}
-                  </div>
-                ) : (
-                  <div className={styles.error}>
-                    <p>No chart configurations available</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Stats Layout */}
           <div className="stats-layout-container">

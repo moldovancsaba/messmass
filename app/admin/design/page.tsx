@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminPageHero from '@/components/AdminPageHero';
 import { PageStyle, DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 
 // Available chart type for chart assignment
@@ -276,33 +277,17 @@ export default function AdminDesignPage() {
 
   return (
     <div className="admin-container">
-      {/* Header */}
-      <div className="glass-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding">
-            <h1 className="admin-title">🎨 Design Manager</h1>
-            <p className="admin-subtitle">Manage page styles and data visualization layouts</p>
-          </div>
-          <div className="admin-user-info">
-            <div className="admin-badge">
-              <button 
-                onClick={() => router.push('/admin')}
-                style={{
-                  background: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer'
-                }}
-              >
-                ← Back to Admin
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AdminPageHero 
+        title="Design Manager"
+        subtitle="Manage page styles and data visualization layouts"
+        icon="🎨"
+        showSearch={false}
+        badges={[
+          { text: `${pageStyles.length} Styles`, variant: 'primary' },
+          { text: `${dataBlocks.length} Data Blocks`, variant: 'secondary' }
+        ]}
+        backLink="/admin"
+      />
 
       {/* Tab Navigation */}
       <div className="glass-card" style={{ marginBottom: '2rem' }}>

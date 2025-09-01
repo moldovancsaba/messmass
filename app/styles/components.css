@@ -138,6 +138,7 @@
   font-size: var(--text-base);
   transition: all var(--transition-base);
   background: var(--color-white);
+  color: var(--color-gray-900);
   font-family: inherit;
 }
 
@@ -167,6 +168,33 @@
 .form-input-success {
   border-color: var(--color-success);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Global input text color fix to prevent white text on white backgrounds */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  color: var(--color-gray-900) !important;
+}
+
+/* Ensure placeholder text has proper contrast */
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="search"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="url"]::placeholder,
+textarea::placeholder {
+  color: var(--color-gray-400) !important;
+  opacity: 1;
 }
 
 /* ========================================

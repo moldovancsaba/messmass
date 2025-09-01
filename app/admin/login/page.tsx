@@ -1,7 +1,7 @@
 // app/admin/login/page.tsx - Updated to use existing CSS classes
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
@@ -9,6 +9,29 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [checkingAuth, setCheckingAuth] = useState(true)
+
+  // Check if already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/auth')
+        const data = await response.json()
+        
+        if (response.ok && data.user) {
+          // Already authenticated, redirect to admin
+          router.push('/admin')
+          return
+        }
+      } catch (error) {
+        // Not authenticated or error, stay on login page
+        console.log('Not authenticated, staying on login page')
+      }
+      setCheckingAuth(false)
+    }
+    
+    checkAuth()
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,8 +50,7 @@ export default function AdminLogin() {
       const data = await response.json()
 
       if (response.ok) {
-        // Set admin session cookie
-        document.cookie = `admin-session=${data.token}; path=/; secure; samesite=lax; max-age=${60 * 60 * 24 * 7}` // 7 days
+        // Cookie is set by the server, just redirect
         router.push('/admin')
       } else {
         setError(data.error || 'Invalid password')

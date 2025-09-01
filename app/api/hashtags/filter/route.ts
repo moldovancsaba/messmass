@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { 
+  parseHashtagQuery, 
+  matchHashtagInProject, 
+  mergeHashtagSystems 
+} from '@/lib/hashtagCategoryUtils';
+import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
 
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
 
@@ -33,11 +39,46 @@ export async function GET(request: NextRequest) {
     const db = client.db(MONGODB_DB);
     const projectsCollection = db.collection('projects');
     
-    // Find all projects that contain ALL specified hashtags (AND logic)
-    // Using $all operator to ensure projects have all hashtags in the array
-    const projects = await projectsCollection.find({
-      hashtags: { $all: hashtags }
-    }).toArray();
+    // Enhanced filtering to support both traditional and categorized hashtags
+    // Build MongoDB query that supports category-prefixed hashtags
+    const mongoQueries: any[] = [];
+    
+    hashtags.forEach(hashtagQuery => {
+      const { category, hashtag } = parseHashtagQuery(hashtagQuery);
+      
+      if (category === null) {
+        // Plain hashtag - search in traditional hashtags and all categorized hashtags
+        mongoQueries.push({
+          $or: [
+            // Search in traditional hashtags field
+            { hashtags: hashtag },
+            // Search in any category within categorizedHashtags
+            { [`categorizedHashtags.${category}`]: hashtag }
+            // Note: We need to build this dynamically since we don't know category names
+          ]
+        });
+      } else {
+        // Category-prefixed hashtag - search only in specified category
+        mongoQueries.push({
+          [`categorizedHashtags.${category}`]: hashtag
+        });
+      }
+    });
+    
+    // Get all projects first, then filter with our custom logic
+    // This approach is more reliable than complex MongoDB queries for this use case
+    const allProjects = await projectsCollection.find({}).toArray();
+    
+    // Filter projects using our custom matching logic
+    const projects = allProjects.filter(project => {
+      // Check if project contains ALL specified hashtags (AND logic)
+      return hashtags.every(hashtagQuery => 
+        matchHashtagInProject(hashtagQuery, {
+          hashtags: project.hashtags,
+          categorizedHashtags: project.categorizedHashtags
+        })
+      );
+    });
     
     // Create project list for display
     const projectList = projects.map(project => ({
@@ -46,6 +87,7 @@ export async function GET(request: NextRequest) {
       eventDate: project.eventDate,
       viewSlug: project.viewSlug,
       hashtags: project.hashtags,
+      categorizedHashtags: project.categorizedHashtags,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     })).sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());

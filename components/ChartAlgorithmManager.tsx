@@ -236,17 +236,16 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
         totalLabel: config.totalLabel
       });
     } else {
-      // Create new configuration
+      // Create new configuration with proper element count based on type
       const nextOrder = Math.max(...configurations.map(c => c.order), 0) + 1;
       setEditingConfig({
         chartId: '',
         title: '',
-        type: 'pie',
+        type: 'kpi',
         order: nextOrder,
         isActive: true,
         elements: [
-          { id: 'element1', label: '', formula: '', color: '#3b82f6', description: '' },
-          { id: 'element2', label: '', formula: '', color: '#f59e0b', description: '' }
+          { id: 'element1', label: '', formula: '', color: '#10b981', description: '' }
         ],
         emoji: '📊',
         showTotal: false,
@@ -628,6 +627,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           background: rgba(16, 185, 129, 0.1);
           color: #10b981;
         }
+        
 
         .actions-cell {
           display: flex;
@@ -647,11 +647,46 @@ interface ChartConfigurationEditorProps {
 
 function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurationEditorProps) {
   const [formData, setFormData] = useState<ChartConfigFormData>(config);
+  const [showVariablePicker, setShowVariablePicker] = useState<{ elementIndex: number } | null>(null);
+  const [variableSearchTerm, setVariableSearchTerm] = useState('');
+  const [selectedVariableCategory, setSelectedVariableCategory] = useState<string>('All');
+  const [formulaValidation, setFormulaValidation] = useState<Record<number, { isValid: boolean; error?: string; result?: number | 'NA' }>>({});
+  
+  // Get the exact required element count for each chart type
+  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi'): number => {
+    switch (type) {
+      case 'kpi': return 1;
+      case 'pie': return 2;
+      case 'bar': return 5;
+      default: return 1;
+    }
+  };
   
   const handleSave = () => {
-    // Basic validation
+    // Enhanced validation
     if (!formData.chartId || !formData.title) {
       alert('Please fill in Chart ID and Title');
+      return;
+    }
+    
+    // Validate element count matches requirements
+    const requiredCount = getRequiredElementCount(formData.type);
+    if (formData.elements.length !== requiredCount) {
+      alert(`${formData.type.toUpperCase()} charts must have exactly ${requiredCount} element${requiredCount !== 1 ? 's' : ''}`);
+      return;
+    }
+    
+    // Validate that all elements have labels and formulas
+    const missingData = formData.elements.find((element, index) => !element.label.trim() || !element.formula.trim());
+    if (missingData) {
+      alert('Please fill in all element labels and formulas');
+      return;
+    }
+    
+    // Validate formulas
+    const invalidFormula = Object.entries(formulaValidation).find(([_, validation]) => !validation.isValid);
+    if (invalidFormula) {
+      alert('Please fix all formula errors before saving');
       return;
     }
     
@@ -662,27 +697,116 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
     const newElements = [...formData.elements];
     newElements[index] = { ...newElements[index], [field]: value };
     setFormData({ ...formData, elements: newElements });
-  };
-
-  const addElement = () => {
-    if (formData.elements.length < 5) {
-      setFormData({
-        ...formData,
-        elements: [...formData.elements, {
-          id: `element${formData.elements.length + 1}`,
-          label: '',
-          formula: '',
-          color: '#6b7280',
-          description: ''
-        }]
-      });
+    
+    // If updating formula, validate it
+    if (field === 'formula') {
+      validateFormula(index, value);
     }
   };
 
-  const removeElement = (index: number) => {
-    if (formData.elements.length > 1) {
-      const newElements = formData.elements.filter((_, i) => i !== index);
-      setFormData({ ...formData, elements: newElements });
+  const validateFormula = (elementIndex: number, formula: string) => {
+    if (!formula.trim()) {
+      setFormulaValidation(prev => ({ ...prev, [elementIndex]: { isValid: true } }));
+      return;
+    }
+    
+    try {
+      const testResult = testConfigurationFormula(formula);
+      if (testResult?.error) {
+        setFormulaValidation(prev => ({ 
+          ...prev, 
+          [elementIndex]: { isValid: false, error: testResult.error } 
+        }));
+      } else {
+        setFormulaValidation(prev => ({ 
+          ...prev, 
+          [elementIndex]: { isValid: true, result: testResult?.result as number | 'NA' | undefined } 
+        }));
+      }
+    } catch (error) {
+      setFormulaValidation(prev => ({ 
+        ...prev, 
+        [elementIndex]: { isValid: false, error: 'Invalid formula syntax' } 
+      }));
+    }
+  };
+
+  // Filter variables for picker
+  const getFilteredVariablesForPicker = () => {
+    let filtered = AVAILABLE_VARIABLES;
+    
+    if (selectedVariableCategory !== 'All') {
+      filtered = filtered.filter(variable => variable.category === selectedVariableCategory);
+    }
+    
+    if (variableSearchTerm) {
+      filtered = filtered.filter(variable => 
+        variable.name.toLowerCase().includes(variableSearchTerm.toLowerCase()) ||
+        variable.displayName.toLowerCase().includes(variableSearchTerm.toLowerCase()) ||
+        variable.description.toLowerCase().includes(variableSearchTerm.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  };
+  
+  const insertVariable = (variableName: string) => {
+    if (showVariablePicker) {
+      const { elementIndex } = showVariablePicker;
+      const currentFormula = formData.elements[elementIndex].formula;
+      const newFormula = currentFormula + `[${variableName}]`;
+      updateElement(elementIndex, 'formula', newFormula);
+      setShowVariablePicker(null);
+      setVariableSearchTerm('');
+    }
+  };
+  
+  const variableCategories = ['All', ...Array.from(new Set(AVAILABLE_VARIABLES.map(v => v.category)))];
+  
+  // Test function for formulas (moved to component scope)
+  const testConfigurationFormula = (formula: string) => {
+    if (!formula.trim()) return null;
+    
+    // Simple validation - check for balanced brackets and valid variable names
+    const variablePattern = /\[([A-Z_]+)\]/g;
+    const variables: string[] = [];
+    let match;
+    
+    while ((match = variablePattern.exec(formula)) !== null) {
+      variables.push(match[1]);
+    }
+    
+    // Check if all variables are valid
+    const invalidVariables = variables.filter(variable => 
+      !AVAILABLE_VARIABLES.some(v => v.name === variable)
+    );
+    
+    if (invalidVariables.length > 0) {
+      return { error: `Unknown variables: ${invalidVariables.join(', ')}`, result: null };
+    }
+    
+    // Simple test calculation with sample data
+    try {
+      let testFormula = formula;
+      const sampleData = {
+        FEMALE: 120, MALE: 160, INDOOR: 50, OUTDOOR: 30, STADIUM: 200,
+        GEN_ALPHA: 20, GEN_YZ: 100, GEN_X: 80, BOOMER: 80,
+        JERSEY: 15, SCARF: 8, FLAGS: 12, BASEBALL_CAP: 5, OTHER: 3,
+        REMOTE_IMAGES: 10, HOSTESS_IMAGES: 25, SELFIES: 15,
+        APPROVED_IMAGES: 45, REJECTED_IMAGES: 5
+      };
+      
+      // Replace variables with sample values
+      variables.forEach(variable => {
+        const value = sampleData[variable as keyof typeof sampleData] || 1;
+        testFormula = testFormula.replace(new RegExp(`\\[${variable}\\]`, 'g'), value.toString());
+      });
+      
+      // Evaluate the formula safely
+      const result = Function('"use strict"; return (' + testFormula + ')')();
+      return { error: null, result: typeof result === 'number' ? Math.round(result * 100) / 100 : 'NA' as 'NA' };
+    } catch (error) {
+      return { error: 'Invalid formula syntax', result: null };
     }
   };
 
@@ -723,11 +847,36 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
               <select
                 className="form-input"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'pie' | 'bar' | 'kpi' })}
+                onChange={(e) => {
+                  const newType = e.target.value as 'pie' | 'bar' | 'kpi';
+                  const requiredCount = getRequiredElementCount(newType);
+                  let newElements = [...formData.elements];
+                  
+                  // Always adjust to exact required element count
+                  if (formData.elements.length !== requiredCount) {
+                    const elementColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'];
+                    newElements = [];
+                    
+                    // Create exactly the required number of elements
+                    for (let i = 0; i < requiredCount; i++) {
+                      newElements.push({
+                        id: `element${i + 1}`,
+                        label: i < formData.elements.length ? formData.elements[i].label : '',
+                        formula: i < formData.elements.length ? formData.elements[i].formula : '',
+                        color: elementColors[i] || '#6b7280',
+                        description: i < formData.elements.length ? formData.elements[i].description : ''
+                      });
+                    }
+                  }
+                  
+                  setFormData({ ...formData, type: newType, elements: newElements });
+                  // Clear validation when type changes
+                  setFormulaValidation({});
+                }}
               >
+                <option value="kpi">KPI Chart (1 element)</option>
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
-                <option value="kpi">KPI Chart (1 element)</option>
               </select>
             </div>
 
@@ -744,53 +893,91 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
           </div>
 
           <div className="form-group">
-            <label className="form-label">Elements</label>
-            {formData.elements.map((element, index) => (
-              <div key={element.id} className="element-editor">
-                <div className="element-header">
-                  <strong>Element {index + 1}</strong>
-                  {formData.elements.length > 1 && (
-                    <button 
-                      className="btn btn-xs btn-danger"
-                      onClick={() => removeElement(index)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                
-                <div className="element-fields">
-                  <input
-                    type="text"
-                    placeholder="Label"
-                    value={element.label}
-                    onChange={(e) => updateElement(index, 'label', e.target.value)}
-                    className="form-input"
-                  />
+            <label className="form-label">Elements (Required: {getRequiredElementCount(formData.type)})</label>
+            {formData.elements.map((element, index) => {
+              const validation = formulaValidation[index];
+              return (
+                <div key={element.id} className="element-editor">
+                  <div className="element-header">
+                    <strong>Element {index + 1}</strong>
+                    <div className="element-header-info">
+                      {formData.type === 'kpi' && <span className="chart-type-info">📈 KPI Value</span>}
+                      {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
+                      {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
+                    </div>
+                  </div>
                   
-                  <input
-                    type="text"
-                    placeholder="Formula (e.g., [FEMALE] + [MALE])"
-                    value={element.formula}
-                    onChange={(e) => updateElement(index, 'formula', e.target.value)}
-                    className="form-input formula-input"
-                  />
-                  
-                  <input
-                    type="color"
-                    value={element.color}
-                    onChange={(e) => updateElement(index, 'color', e.target.value)}
-                    className="color-input"
-                  />
+                  <div className="element-fields">
+                    <div className="field-group">
+                      <label className="field-label">Label</label>
+                      <input
+                        type="text"
+                        placeholder={`Element ${index + 1} label`}
+                        value={element.label}
+                        onChange={(e) => updateElement(index, 'label', e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    
+                    <div className="field-group">
+                      <label className="field-label">Formula</label>
+                      <div className="formula-field-container">
+                        <input
+                          type="text"
+                          placeholder="e.g., [FEMALE] + [MALE]"
+                          value={element.formula}
+                          onChange={(e) => updateElement(index, 'formula', e.target.value)}
+                          className={`form-input formula-input ${
+                            validation && !validation.isValid ? 'formula-error' : 
+                            validation && validation.isValid && validation.result !== undefined ? 'formula-valid' : ''
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-xs btn-secondary variable-picker-btn"
+                          onClick={() => setShowVariablePicker({ elementIndex: index })}
+                          title="Pick variables"
+                        >
+                          📚
+                        </button>
+                      </div>
+                      {validation && !validation.isValid && (
+                        <div className="formula-error-message">
+                          ❌ {validation.error}
+                        </div>
+                      )}
+                      {validation && validation.isValid && validation.result !== undefined && (
+                        <div className="formula-success-message">
+                          ✅ Test result: {validation.result}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="field-group">
+                      <label className="field-label">Color</label>
+                      <input
+                        type="color"
+                        value={element.color}
+                        onChange={(e) => updateElement(index, 'color', e.target.value)}
+                        className="color-input"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             
-            {formData.elements.length < 5 && (
-              <button className="btn btn-secondary" onClick={addElement}>
-                + Add Element
-              </button>
-            )}
+            {/* Show constraint info instead of add/remove buttons */}
+            <div className="element-constraint-info">
+              <div className="constraint-badge">
+                {formData.type === 'kpi' && '📈 KPI charts require exactly 1 element'}
+                {formData.type === 'pie' && '🥧 Pie charts require exactly 2 elements'}
+                {formData.type === 'bar' && '📊 Bar charts require exactly 5 elements'}
+              </div>
+              <div className="constraint-note">
+                Element count is automatically managed when you change the chart type.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -803,6 +990,59 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
           </button>
         </div>
       </div>
+      
+      {/* Variable Picker Modal */}
+      {showVariablePicker && (
+        <div className="variable-picker-overlay">
+          <div className="variable-picker-modal">
+            <div className="variable-picker-header">
+              <h4>Select Variable for Element {showVariablePicker.elementIndex + 1}</h4>
+              <button 
+                className="btn btn-xs btn-secondary"
+                onClick={() => setShowVariablePicker(null)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="variable-picker-filters">
+              <input
+                type="text"
+                placeholder="Search variables..."
+                value={variableSearchTerm}
+                onChange={(e) => setVariableSearchTerm(e.target.value)}
+                className="form-input"
+              />
+              <select
+                value={selectedVariableCategory}
+                onChange={(e) => setSelectedVariableCategory(e.target.value)}
+                className="form-input"
+              >
+                {variableCategories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="variable-picker-list">
+              {getFilteredVariablesForPicker().map(variable => (
+                <div 
+                  key={variable.name} 
+                  className="variable-picker-item"
+                  onClick={() => insertVariable(variable.name)}
+                >
+                  <div className="variable-picker-item-header">
+                    <strong>[{variable.name}]</strong>
+                    <span className="variable-picker-category">{variable.category}</span>
+                  </div>
+                  <div className="variable-picker-item-name">{variable.displayName}</div>
+                  <div className="variable-picker-item-description">{variable.description}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .modal-overlay {
@@ -975,6 +1215,199 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
 
         .btn-danger:hover {
           background: #dc2626;
+        }
+        
+        .element-header-info {
+          display: flex;
+          align-items: center;
+        }
+        
+        .chart-type-info {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+        
+        .element-fields {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        .field-group {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .field-label {
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+          text-transform: uppercase;
+        }
+        
+        .formula-field-container {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
+        
+        .formula-field-container input {
+          flex: 1;
+        }
+        
+        .variable-picker-btn {
+          padding: 0.5rem;
+          min-width: 40px;
+        }
+        
+        .formula-error {
+          border-color: #ef4444 !important;
+          background: rgba(239, 68, 68, 0.05) !important;
+        }
+        
+        .formula-valid {
+          border-color: #10b981 !important;
+          background: rgba(16, 185, 129, 0.05) !important;
+        }
+        
+        .formula-error-message {
+          color: #ef4444;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+        }
+        
+        .formula-success-message {
+          color: #10b981;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+        }
+        
+        .element-constraint-info {
+          background: rgba(59, 130, 246, 0.05);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-top: 1rem;
+        }
+        
+        .constraint-badge {
+          color: #1e40af;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+        
+        .constraint-note {
+          color: #6b7280;
+          font-size: 0.875rem;
+          font-style: italic;
+        }
+        
+        .variable-picker-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1100;
+          padding: 1rem;
+        }
+        
+        .variable-picker-modal {
+          background: white;
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          max-width: 600px;
+          width: 100%;
+          max-height: 80vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .variable-picker-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .variable-picker-header h4 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 1.125rem;
+          font-weight: 600;
+        }
+        
+        .variable-picker-filters {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+        
+        .variable-picker-filters input,
+        .variable-picker-filters select {
+          flex: 1;
+        }
+        
+        .variable-picker-list {
+          flex: 1;
+          overflow-y: auto;
+          display: grid;
+          gap: 0.5rem;
+        }
+        
+        .variable-picker-item {
+          padding: 0.75rem;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .variable-picker-item:hover {
+          border-color: #667eea;
+          background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .variable-picker-item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.25rem;
+        }
+        
+        .variable-picker-category {
+          background: rgba(107, 114, 128, 0.1);
+          color: #6b7280;
+          padding: 0.125rem 0.375rem;
+          border-radius: 0.25rem;
+          font-size: 0.625rem;
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        
+        .variable-picker-item-name {
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.25rem;
+        }
+        
+        .variable-picker-item-description {
+          font-size: 0.875rem;
+          color: #6b7280;
+          line-height: 1.4;
         }
       `}</style>
     </div>
