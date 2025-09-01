@@ -34,6 +34,7 @@ export async function GET(
       eventName: project.eventName,
       eventDate: project.eventDate,
       hashtags: project.hashtags || [], // Include hashtags to prevent data loss
+      categorizedHashtags: project.categorizedHashtags || {}, // Include categorized hashtags for editing
       stats: project.stats,
       viewSlug: project.viewSlug,
       editSlug: project.editSlug,
