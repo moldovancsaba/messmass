@@ -1,5 +1,20 @@
 # MessMass Release Notes
 
+## [v2.6.1] — 2025-01-02
+
+### 🎨 UI/UX Improvements
+- **Unified Block Styling**: Updated data visualization blocks in stats and filter pages to use consistent glass-card styling
+- **Visual Consistency**: All data blocks now match the admin dashboard card design with proper border-radius and glass effect
+- **Loading State Polish**: Improved loading and error state cards across stats and filter pages for consistent user experience
+
+### 🛠 Technical Changes
+- Enhanced UnifiedDataVisualization component to use `.glass-card` class for consistent styling
+- Updated stats page loading/error states to match admin panel design system
+- Updated filter page loading/error states to match admin panel design system
+- Applied 20px border-radius and glass backdrop effect across all data visualization blocks
+
+---
+
 ## [v2.6.0] — 2025-01-02
 
 ### ✨ Major Changes

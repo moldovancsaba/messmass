@@ -287,12 +287,9 @@ export default function StatsPage() {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <div style={{
+        <div className="glass-card" style={{
           textAlign: 'center',
-          background: 'rgba(255, 255, 255, 0.9)',
-          padding: '2rem',
-          borderRadius: '16px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          padding: '2rem'
         }}>
           <div style={{
             width: '50px',
@@ -319,12 +316,9 @@ export default function StatsPage() {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <div style={{
+        <div className="glass-card" style={{
           textAlign: 'center',
-          background: 'rgba(255, 255, 255, 0.9)',
-          padding: '2rem',
-          borderRadius: '16px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          padding: '2rem'
         }}>
           <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>
             {error ? '❌ Error' : '📊 Project Not Found'}
