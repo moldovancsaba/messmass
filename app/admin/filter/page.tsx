@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
+import SharePopup from '@/components/SharePopup';
 
 interface ProjectStats {
   remoteImages: number;
@@ -87,6 +88,8 @@ function HashtagFilterPageContent() {
   const [statsLoading, setStatsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasAppliedFilter, setHasAppliedFilter] = useState(false);
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [shareSlug, setShareSlug] = useState<string | null>(null);
 
   // Fetch filtered statistics
   const fetchFilteredStats = useCallback(async (hashtags = selectedHashtags) => {
@@ -346,8 +349,8 @@ function HashtagFilterPageContent() {
                           const data = await response.json();
                           
                           if (data.success) {
-                            const publicUrl = `${window.location.origin}/filter/${data.slug}`;
-                            window.open(publicUrl, '_blank');
+                            setShareSlug(data.slug);
+                            setSharePopupOpen(true);
                           } else {
                             alert('Failed to generate shareable link: ' + data.error);
                           }
@@ -374,7 +377,7 @@ function HashtagFilterPageContent() {
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = '#6366f1';
                       }}
-                      title="Open shareable filter link in new window"
+                      title="Share filter with password protection"
                     >
                       🔗 Share Filter
                     </button>
@@ -737,6 +740,15 @@ function HashtagFilterPageContent() {
       <div className={styles.footer}>
         <p>Generated on {new Date().toLocaleDateString()} • MessMass Multi-Hashtag Filter</p>
       </div>
+
+      {/* Share Popup */}
+      <SharePopup
+        isOpen={sharePopupOpen}
+        onClose={() => setSharePopupOpen(false)}
+        pageId={shareSlug || ''}
+        pageType="filter"
+        customTitle="Share Hashtag Filter"
+      />
     </div>
   );
 }

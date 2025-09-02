@@ -214,7 +214,7 @@ export async function generateShareableLink(
       url += `/edit/${pageId}`;
       break;
     case 'filter':
-      url += `/hashtags/filter`;
+      url += `/filter/${pageId}`;
       break;
   }
 

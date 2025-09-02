@@ -5,6 +5,7 @@ import { AdminUser } from '@/lib/auth';
 import UnifiedAdminHero from '@/components/UnifiedAdminHero';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import SharePopup from '@/components/SharePopup';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -95,6 +96,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     categorizedHashtags: {} as { [categoryName: string]: string[] }
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
+
+  // SharePopup states
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [sharePageId, setSharePageId] = useState<string | null>(null);
+  const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | null>(null);
 
   useEffect(() => {
     loadProjects();
@@ -501,15 +507,27 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                     <tr key={project._id}>
                       <td className="project-name">
                         {project.viewSlug ? (
-                          <a 
-                            href={`/stats/${project.viewSlug}?refresh=${new Date().getTime()}`}
+                          <button 
+                            onClick={() => {
+                              setSharePageId(project.viewSlug!);
+                              setSharePageType('stats');
+                              setSharePopupOpen(true);
+                            }}
                             className="project-title-link"
-                            title={`View detailed statistics for ${project.eventName}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            title={`Share statistics page for ${project.eventName}`}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#6366f1',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                              fontSize: 'inherit',
+                              fontFamily: 'inherit',
+                              padding: 0
+                            }}
                           >
                             {project.eventName}
-                          </a>
+                          </button>
                         ) : (
                           <span className="project-name-text">{project.eventName}</span>
                         )}
@@ -566,15 +584,27 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                         <br />
                         {project.editSlug ? (
                           <small>
-                            <a 
-                              href={`/edit/${project.editSlug}`}
+                            <button 
+                              onClick={() => {
+                                setSharePageId(project.editSlug!);
+                                setSharePageType('edit');
+                                setSharePopupOpen(true);
+                              }}
                               className="project-edit-link"
-                              title={`Edit ${project.eventName} statistics`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              title={`Share edit page for ${project.eventName} statistics`}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#059669',
+                                textDecoration: 'underline',
+                                cursor: 'pointer',
+                                fontSize: 'inherit',
+                                fontFamily: 'inherit',
+                                padding: 0
+                              }}
                             >
                               📝 Edit Statistics
-                            </a>
+                            </button>
                           </small>
                         ) : (
                           <small className="no-edit-link">Legacy Project - No Edit Link</small>
@@ -839,6 +869,15 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
           </div>
         </div>
       )}
+
+      {/* Share Popup */}
+      <SharePopup
+        isOpen={sharePopupOpen}
+        onClose={() => setSharePopupOpen(false)}
+        pageId={sharePageId || ''}
+        pageType={sharePageType || 'stats'}
+        customTitle={sharePageType === 'stats' ? 'Share Statistics Page' : 'Share Edit Page'}
+      />
     </div>
   );
 }

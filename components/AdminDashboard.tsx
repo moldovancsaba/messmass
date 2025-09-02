@@ -58,7 +58,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           </a>
 
           <a
-            href="/hashtags/filter"
+            href="/admin/filter"
             style={{
               display: 'flex',
               alignItems: 'center',
