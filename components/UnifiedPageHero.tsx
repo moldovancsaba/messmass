@@ -24,7 +24,7 @@ export default function UnifiedPageHero({
   children
 }: UnifiedPageHeroProps) {
   return (
-    <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
+    <div style={{ padding: '2rem' }}>
       <div className="admin-header glass-card" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">

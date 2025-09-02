@@ -1,5 +1,18 @@
 # MessMass Release Notes
 
+## [v2.6.2] — 2025-01-02
+
+### 🐛 Bug Fixes
+- **Background Overlay Fix**: Fixed white background overlay issue on stats pages caused by UnifiedPageHero component
+- **Visual Consistency**: Resolved background gradient conflicts that were affecting page appearance
+
+### 🛠 Technical Changes
+- Removed `admin-container` class from UnifiedPageHero component which was adding unwanted background
+- UnifiedPageHero now properly inherits page background without overlay interference
+- Maintained all styling while fixing background rendering issue
+
+---
+
 ## [v2.6.1] — 2025-01-02
 
 ### 🎨 UI/UX Improvements
