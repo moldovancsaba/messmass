@@ -1,15 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-
-interface HashtagColor {
-  _id: string;
-  uuid: string;
-  name: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { useMemo } from 'react';
+import useHashtagColorResolver from '../hooks/useHashtagColorResolver';
 
 interface ColoredHashtagBubbleProps {
   hashtag: string;
@@ -22,20 +14,9 @@ interface ColoredHashtagBubbleProps {
   categoryColor?: string;
   removable?: boolean;
   onRemove?: () => void;
-}
-
-// Cache to avoid repeated API calls across multiple hashtag components
-let hashtagColorsCache: HashtagColor[] | null = null;
-let cachePromise: Promise<void> | null = null;
-
-// Function to invalidate cache when hashtag colors are updated
-export function invalidateHashtagColorsCache() {
-  hashtagColorsCache = null;
-  cachePromise = null;
-  // Force all components to refresh by triggering a custom event
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('hashtag-colors-updated'));
-  }
+  // New props for intelligent color resolution
+  projectCategorizedHashtags?: { [categoryName: string]: string[] };
+  autoResolveColor?: boolean;
 }
 
 export default function ColoredHashtagBubble({ 
@@ -48,81 +29,45 @@ export default function ColoredHashtagBubble({
   showCategoryPrefix = false,
   categoryColor,
   removable = false,
-  onRemove
+  onRemove,
+  projectCategorizedHashtags,
+  autoResolveColor = false
 }: ColoredHashtagBubbleProps) {
-  const [hashtagColors, setHashtagColors] = useState<HashtagColor[]>(hashtagColorsCache || []);
-  const [loading, setLoading] = useState(!hashtagColorsCache);
+  // Use the intelligent color resolver for all color determination
+  const { getHashtagColorInfo, resolveHashtagColor, findHashtagCategory } = useHashtagColorResolver();
 
-  useEffect(() => {
-    // If we already have data cached, use it
-    if (hashtagColorsCache) {
-      setHashtagColors(hashtagColorsCache);
-      setLoading(false);
-      return;
+  // Find which category this hashtag belongs to (if any)
+  const hashtagCategory = useMemo(() => {
+    if (projectCategorizedHashtags) {
+      return findHashtagCategory(hashtag, projectCategorizedHashtags);
     }
+    return undefined;
+  }, [hashtag, projectCategorizedHashtags, findHashtagCategory]);
 
-    // If there's already a request in progress, wait for it
-    if (cachePromise) {
-      cachePromise.then(() => {
-        if (hashtagColorsCache) {
-          setHashtagColors(hashtagColorsCache);
-          setLoading(false);
-        }
-      });
-      return;
+  // Determine the background color using the intelligent resolver or explicit color
+  const backgroundColor = useMemo(() => {
+    // If explicit categoryColor is provided, use it (highest priority)
+    if (categoryColor) {
+      return categoryColor;
     }
-
-    // Start a new request
-    loadHashtagColors();
-  }, []);
-
-  // Listen for cache invalidation events
-  useEffect(() => {
-    const handleCacheInvalidation = () => {
-      // Force reload data when cache is invalidated
-      setLoading(true);
-      loadHashtagColors();
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('hashtag-colors-updated', handleCacheInvalidation);
-      return () => {
-        window.removeEventListener('hashtag-colors-updated', handleCacheInvalidation);
-      };
-    }
-  }, []);
-
-  const loadHashtagColors = async () => {
-    cachePromise = (async () => {
-      try {
-        // Add cache busting to ensure fresh data
-        const response = await fetch(`/api/hashtag-colors?t=${Date.now()}`);
-        const data = await response.json();
-        
-        if (data.success) {
-          hashtagColorsCache = data.hashtagColors;
-          setHashtagColors(data.hashtagColors);
-        }
-      } catch (error) {
-        console.error('Failed to load hashtag colors:', error);
-      } finally {
-        setLoading(false);
-        cachePromise = null;
-      }
-    })();
     
-    await cachePromise;
-  };
+    // If auto-resolve is enabled and we have project context, use intelligent resolution
+    if (autoResolveColor && projectCategorizedHashtags) {
+      return resolveHashtagColor(hashtag, projectCategorizedHashtags);
+    }
+    
+    // Legacy fallback: use individual hashtag color or default
+    const colorInfo = getHashtagColorInfo(hashtag, projectCategorizedHashtags);
+    return colorInfo.effectiveColor;
+  }, [categoryColor, autoResolveColor, projectCategorizedHashtags, resolveHashtagColor, hashtag, getHashtagColorInfo]);
 
-  // Find the color for this hashtag (memoized for performance)
-  const hashtagColor = useMemo(() => {
-    return hashtagColors.find(hc => 
-      hc.name.toLowerCase() === hashtag.toLowerCase()
-    );
-  }, [hashtagColors, hashtag]);
-
-  // Use categoryColor if provided, otherwise use the managed color, or fall back to default
-  const backgroundColor = categoryColor || hashtagColor?.color || '#667eea';
+  // Determine the display text
+  const displayText = useMemo(() => {
+    if (showCategoryPrefix && hashtagCategory) {
+      return `${hashtagCategory}:${hashtag}`;
+    }
+    return hashtag;
+  }, [showCategoryPrefix, hashtagCategory, hashtag]);
   const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${removable ? 'hashtag-removable' : ''} ${className}`.trim();
 
   // Handle empty hashtag gracefully
@@ -145,9 +90,17 @@ export default function ColoredHashtagBubble({
     }
   };
 
-  // Debug logging (remove in production)
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`Hashtag: ${hashtag}, Color: ${backgroundColor}, HasCustomColor: ${!!hashtagColor}, CategoryColor: ${categoryColor}`);
+  // Enable debug logging for category resolution
+  if (process.env.NODE_ENV === 'development' && autoResolveColor) {
+    const colorInfo = getHashtagColorInfo(hashtag, projectCategorizedHashtags);
+    console.log(`🎨 Color Resolution for "${hashtag}":`, {
+      category: colorInfo.category,
+      categoryColor: colorInfo.categoryColor,
+      individualColor: colorInfo.individualColor,
+      effectiveColor: colorInfo.effectiveColor,
+      finalBackground: backgroundColor,
+      displayText: displayText
+    });
   }
 
   return (
@@ -164,10 +117,10 @@ export default function ColoredHashtagBubble({
         gap: removable ? '0.25rem' : '0',
         ...customStyle 
       }}
-      title={categoryColor ? `Category color: ${categoryColor}` : (hashtagColor ? `Custom color: ${hashtagColor.color}` : 'Default color (#667eea)')}
+      title={`Hashtag color: ${backgroundColor}`}
       onClick={handleClick}
     >
-      #{hashtag}
+      #{displayText}
       {removable && (
         <button
           onClick={handleRemove}

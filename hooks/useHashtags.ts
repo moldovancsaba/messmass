@@ -4,20 +4,11 @@
  * useHashtags hook
  * 
  * Provides consistent hashtag API integration across all components
- * Includes search, validation, colors, and categories
+ * Now uses HashtagDataProvider context for colors and categories to prevent duplicate API calls
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { HashtagCategory } from '@/lib/hashtagCategoryTypes';
-
-interface HashtagColor {
-  _id: string;
-  uuid: string;
-  name: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { useCallback } from 'react';
+import { useHashtagData } from '@/contexts/HashtagDataProvider';
 
 interface HashtagSuggestion {
   hashtag: string;
@@ -32,13 +23,13 @@ interface UseHashtagsReturn {
   // Validation
   validateHashtag: (hashtag: string) => Promise<{ success: boolean; hashtag?: string; error?: string }>;
   
-  // Colors
-  hashtagColors: HashtagColor[];
+  // Colors (from context)
+  hashtagColors: any[];
   loadingColors: boolean;
   refreshColors: () => Promise<void>;
   
-  // Categories
-  categories: HashtagCategory[];
+  // Categories (from context)
+  categories: any[];
   loadingCategories: boolean;
   refreshCategories: () => Promise<void>;
   
@@ -48,29 +39,18 @@ interface UseHashtagsReturn {
   getCategoryColor: (categoryName: string) => string | undefined;
 }
 
-// Global cache for hashtag colors to avoid repeated API calls
-let hashtagColorsCache: HashtagColor[] | null = null;
-let categoriesCache: HashtagCategory[] | null = null;
-
 export default function useHashtags(): UseHashtagsReturn {
-  const [hashtagColors, setHashtagColors] = useState<HashtagColor[]>(hashtagColorsCache || []);
-  const [loadingColors, setLoadingColors] = useState(!hashtagColorsCache);
-  const [categories, setCategories] = useState<HashtagCategory[]>(categoriesCache || []);
-  const [loadingCategories, setLoadingCategories] = useState(!categoriesCache);
-
-  // Load hashtag colors on mount
-  useEffect(() => {
-    if (!hashtagColorsCache) {
-      refreshColors();
-    }
-  }, []);
-
-  // Load categories on mount
-  useEffect(() => {
-    if (!categoriesCache) {
-      refreshCategories();
-    }
-  }, []);
+  // Use context for colors and categories data
+  const {
+    hashtagColors,
+    categories,
+    loadingColors,
+    loadingCategories,
+    getHashtagColor,
+    getCategoryColor,
+    refreshColors,
+    refreshCategories
+  } = useHashtagData();
 
   // Search hashtags with API
   const searchHashtags = useCallback(async (query: string): Promise<string[]> => {
@@ -142,42 +122,6 @@ export default function useHashtags(): UseHashtagsReturn {
     }
   }, []);
 
-  // Load hashtag colors
-  const refreshColors = useCallback(async () => {
-    setLoadingColors(true);
-    try {
-      const response = await fetch(`/api/hashtag-colors?t=${Date.now()}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        hashtagColorsCache = data.hashtagColors;
-        setHashtagColors(data.hashtagColors);
-      }
-    } catch (error) {
-      console.error('Failed to load hashtag colors:', error);
-    } finally {
-      setLoadingColors(false);
-    }
-  }, []);
-
-  // Load categories
-  const refreshCategories = useCallback(async () => {
-    setLoadingCategories(true);
-    try {
-      const response = await fetch('/api/hashtag-categories');
-      const data = await response.json();
-      
-      if (data.success) {
-        categoriesCache = data.categories;
-        setCategories(data.categories);
-      }
-    } catch (error) {
-      console.error('Failed to load hashtag categories:', error);
-    } finally {
-      setLoadingCategories(false);
-    }
-  }, []);
-
   // Get all hashtags from API
   const getAllHashtags = useCallback(async (): Promise<string[]> => {
     try {
@@ -194,22 +138,6 @@ export default function useHashtags(): UseHashtagsReturn {
     }
   }, []);
 
-  // Get color for a specific hashtag
-  const getHashtagColor = useCallback((hashtag: string): string | undefined => {
-    const colorRecord = hashtagColors.find(hc => 
-      hc.name.toLowerCase() === hashtag.toLowerCase()
-    );
-    return colorRecord?.color;
-  }, [hashtagColors]);
-
-  // Get color for a category
-  const getCategoryColor = useCallback((categoryName: string): string | undefined => {
-    const category = categories.find(cat => 
-      cat.name.toLowerCase() === categoryName.toLowerCase()
-    );
-    return category?.color;
-  }, [categories]);
-
   return {
     // Search and suggestions
     searchHashtags,
@@ -218,12 +146,12 @@ export default function useHashtags(): UseHashtagsReturn {
     // Validation
     validateHashtag,
     
-    // Colors
+    // Colors (from context)
     hashtagColors,
     loadingColors,
     refreshColors,
     
-    // Categories
+    // Categories (from context)
     categories,
     loadingCategories,
     refreshCategories,

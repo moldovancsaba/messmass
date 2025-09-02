@@ -57,7 +57,7 @@ export default function UnifiedPageHero({
                 });
               }
               
-              // Add categorized hashtags with category prefix
+              // Add categorized hashtags with category prefix and intelligent color resolution
               if (categorizedHashtags && Object.keys(categorizedHashtags).length > 0) {
                 Object.entries(categorizedHashtags).forEach(([category, categoryHashtagList]) => {
                   if (Array.isArray(categoryHashtagList)) {
@@ -69,12 +69,15 @@ export default function UnifiedPageHero({
                       displayHashtags.push(
                         <ColoredHashtagBubble 
                           key={`${category}-${hashtag}`}
-                          hashtag={displayText}
+                          hashtag={cleanHashtag}
+                          projectCategorizedHashtags={categorizedHashtags}
+                          autoResolveColor={true}
                           customStyle={{
                             fontSize: '1rem',
                             fontWeight: '600',
                             padding: '0.5rem 1rem'
                           }}
+                          showCategoryPrefix={true}
                         />
                       );
                     });
