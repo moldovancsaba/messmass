@@ -199,7 +199,10 @@ export default function DashboardPage() {
       <div className="glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <h1 className="title">📊 Dashboard</h1>
-          <a href="/admin" className="btn btn-secondary">← Back to Admin</a>
+          <a href="/admin" className="btn btn-secondary" style={{
+            textDecoration: 'none',
+            transition: 'all 0.2s ease'
+          }}>← Back to Admin</a>
         </div>
         <p className="subtitle">
           Comprehensive dashboard with overview, success metrics, statistics, and filtering

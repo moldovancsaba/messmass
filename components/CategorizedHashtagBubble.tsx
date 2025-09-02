@@ -2,6 +2,7 @@
 
 import React from 'react';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import useHashtags from '../hooks/useHashtags';
 
 interface CategorizedHashtagBubbleProps {
   hashtag: string;
@@ -23,23 +24,10 @@ export default function CategorizedHashtagBubble({
   showCategoryLabel = true
 }: CategorizedHashtagBubbleProps) {
   
-  const getCategoryColor = (categoryName?: string) => {
-    if (!categoryName) return '#6b7280'; // Default gray for general/unknown
-    
-    // Category-specific colors (you can customize these)
-    const categoryColors: { [key: string]: string } = {
-      'time': '#ef4444',      // Red
-      'sport': '#10b981',     // Green
-      'city': '#3b82f6',      // Blue
-      'person': '#f59e0b',    // Amber
-      'event': '#8b5cf6',     // Violet
-      'general': '#6b7280',   // Gray
-      'vetting': '#06b6d4',   // Cyan
-      'location': '#84cc16',  // Lime
-    };
-    
-    return categoryColors[categoryName.toLowerCase()] || '#667eea';
-  };
+  const { getCategoryColor } = useHashtags();
+  
+  const categoryColor = category ? getCategoryColor(category) : undefined;
+  const defaultColor = '#6b7280'; // Default gray for general/unknown
   
   return (
     <div style={{
@@ -54,14 +42,14 @@ export default function CategorizedHashtagBubble({
         <div style={{
           fontSize: small ? '0.625rem' : '0.75rem',
           fontWeight: '600',
-          color: getCategoryColor(category),
+          color: categoryColor || defaultColor,
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
-          background: `${getCategoryColor(category)}15`,
+          background: `${categoryColor || defaultColor}15`,
           padding: '0.125rem 0.375rem',
           borderRadius: '6px',
           lineHeight: '1',
-          border: `1px solid ${getCategoryColor(category)}30`
+          border: `1px solid ${categoryColor || defaultColor}30`
         }}>
           {category}
         </div>
@@ -70,7 +58,7 @@ export default function CategorizedHashtagBubble({
       {/* Hashtag Bubble */}
       <ColoredHashtagBubble
         hashtag={hashtag}
-        categoryColor={category ? getCategoryColor(category) : undefined}
+        categoryColor={categoryColor}
         small={small}
         customStyle={customStyle}
         removable={removable}

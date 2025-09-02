@@ -6,6 +6,16 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/error": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/error.js"
+    ],
+    "/not-found": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/not-found.js"
+    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -22,36 +32,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/admin/auth/route.js"
     ],
-    "/admin/filter/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/admin/filter/page.css",
-      "static/chunks/app/admin/filter/page.js"
-    ],
-    "/api/hashtags/slugs/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/hashtags/slugs/route.js"
-    ],
     "/api/hashtag-colors/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/hashtag-colors/route.js"
     ],
-    "/api/hashtags/filter/route": [
+    "/api/hashtag-categories/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/hashtags/filter/route.js"
-    ],
-    "/api/filter-slug/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/filter-slug/route.js"
-    ],
-    "/api/page-passwords/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/page-passwords/route.js"
+      "static/chunks/app/api/hashtag-categories/route.js"
     ],
     "/admin/projects/page": [
       "static/chunks/webpack.js",
@@ -64,10 +53,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/projects/route.js"
     ],
-    "/api/hashtag-categories/route": [
+    "/api/page-passwords/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/hashtag-categories/route.js"
+      "static/chunks/app/api/page-passwords/route.js"
+    ],
+    "/stats/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/stats/[slug]/page.js"
+    ],
+    "/api/chart-config/public/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/chart-config/public/route.js"
+    ],
+    "/api/page-config/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/page-config/route.js"
+    ],
+    "/api/projects/stats/[slug]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/projects/stats/[slug]/route.js"
     ]
   }
 }

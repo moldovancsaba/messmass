@@ -315,19 +315,21 @@ export default function UnifiedHashtagInput({
           </div>
         </div>
         <div className="hashtag-bubbles">
-          {hashtags.map((hashtag, index) => (
-            <ColoredHashtagBubble 
-              key={index}
-              hashtag={hashtag}
-              categoryColor={categoryColor}
-              customStyle={{
-                fontSize: '0.875rem',
-                fontWeight: '500'
-              }}
-              removable={!disabled}
-              onRemove={() => removeHashtag(hashtag, categoryName)}
-            />
-          ))}
+              {hashtags.map((hashtag, index) => (
+                <ColoredHashtagBubble 
+                  key={index}
+                  hashtag={hashtag}
+                  categoryColor={categoryColor}
+                  customStyle={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500'
+                  }}
+                  removable={!disabled}
+                  onRemove={() => removeHashtag(hashtag, categoryName)}
+                  projectCategorizedHashtags={categorizedHashtags}
+                  autoResolveColor={true}
+                />
+              ))}
         </div>
       </div>
     );

@@ -7,9 +7,8 @@ import AdminPageHero from '@/components/AdminPageHero';
 interface HashtagCategory {
   _id: string;
   name: string;
-  description?: string;
   color: string;
-  hashtags: string[];
+  order: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,14 +21,15 @@ export default function CategoriesPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<HashtagCategory | null>(null);
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     color: '#3b82f6',
-    hashtags: [] as string[]
+    order: 0
   });
-  const [newHashtag, setNewHashtag] = useState('');
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -61,9 +61,7 @@ export default function CategoriesPage() {
       setFilteredCategories(categories);
     } else {
       const filtered = categories.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        category.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (category.hashtags && category.hashtags.some(hashtag => hashtag.toLowerCase().includes(searchTerm.toLowerCase())))
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredCategories(filtered);
     }
@@ -73,14 +71,13 @@ export default function CategoriesPage() {
   const resetForm = () => {
     setFormData({
       name: '',
-      description: '',
       color: '#3b82f6',
-      hashtags: []
+      order: 0
     });
-    setNewHashtag('');
+    setEditingCategory(null);
   };
 
-  // Handle form submission
+  // Handle form submission for creating
   const handleCreateCategory = async () => {
     if (!formData.name.trim()) {
       alert('Category name is required');
@@ -94,9 +91,8 @@ export default function CategoriesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
-          description: formData.description.trim() || undefined,
           color: formData.color,
-          hashtags: formData.hashtags
+          order: formData.order
         })
       });
 
@@ -116,29 +112,54 @@ export default function CategoriesPage() {
     }
   };
 
-  // Add hashtag to form
-  const handleAddHashtag = () => {
-    const hashtag = newHashtag.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (hashtag && !formData.hashtags.includes(hashtag)) {
-      setFormData(prev => ({
-        ...prev,
-        hashtags: [...prev.hashtags, hashtag]
-      }));
-      setNewHashtag('');
+  // Handle form submission for updating
+  const handleUpdateCategory = async () => {
+    if (!formData.name.trim() || !editingCategory) {
+      alert('Category name is required');
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const response = await fetch('/api/hashtag-categories', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingCategory._id,
+          name: formData.name.trim(),
+          color: formData.color,
+          order: formData.order
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        resetForm();
+        setShowEditForm(false);
+        await fetchCategories();
+      } else {
+        alert(data.error || 'Failed to update category');
+      }
+    } catch (err) {
+      console.error('Failed to update category:', err);
+      alert('Failed to update category');
+    } finally {
+      setUpdating(false);
     }
   };
 
-  // Remove hashtag from form
-  const handleRemoveHashtag = (hashtagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      hashtags: prev.hashtags.filter(tag => tag !== hashtagToRemove)
-    }));
-  };
-
+  // Open edit form with category data
   const handleEditCategory = (categoryId: string) => {
-    // TODO: Open edit category modal/form
-    console.log('Edit category:', categoryId);
+    const category = categories.find(c => c._id === categoryId);
+    if (category) {
+      setEditingCategory(category);
+      setFormData({
+        name: category.name,
+        color: category.color,
+        order: category.order
+      });
+      setShowEditForm(true);
+    }
   };
 
   const handleDeleteCategory = async (categoryId: string, categoryName: string) => {
@@ -147,14 +168,14 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch(`/api/hashtag-categories/${categoryId}`, {
+      const response = await fetch(`/api/hashtag-categories?id=${categoryId}`, {
         method: 'DELETE'
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
         await fetchCategories();
       } else {
-        const data = await response.json();
         alert(data.error || 'Failed to delete category');
       }
     } catch (err) {
@@ -330,78 +351,17 @@ export default function CategoriesPage() {
                 </div>
               </div>
 
-              {/* Description */}
-              {category.description && (
-                <p style={{
-                  color: '#6b7280',
-                  fontSize: '0.875rem',
-                  marginBottom: '1rem',
-                  lineHeight: '1.5'
-                }}>
-                  {category.description}
-                </p>
-              )}
-
-              {/* Hashtags */}
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                {category.hashtags && category.hashtags.length > 0 ? (
-                  <>
-                    {category.hashtags.slice(0, 5).map((hashtag) => (
-                      <span
-                        key={hashtag}
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          background: 'rgba(107, 114, 128, 0.1)',
-                          color: '#4b5563',
-                          fontSize: '0.75rem',
-                          borderRadius: '6px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        #{hashtag}
-                      </span>
-                    ))}
-                    {category.hashtags.length > 5 && (
-                      <span style={{
-                        padding: '0.25rem 0.5rem',
-                        background: 'rgba(107, 114, 128, 0.1)',
-                        color: '#6b7280',
-                        fontSize: '0.75rem',
-                        borderRadius: '6px'
-                      }}>
-                        +{category.hashtags.length - 5} more
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span style={{
-                    padding: '0.25rem 0.5rem',
-                    background: 'rgba(107, 114, 128, 0.1)',
-                    color: '#6b7280',
-                    fontSize: '0.75rem',
-                    borderRadius: '6px',
-                    fontStyle: 'italic'
-                  }}>
-                    No hashtags yet
-                  </span>
-                )}
-              </div>
-
-              {/* Stats */}
+              {/* Category Info */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                fontSize: '0.75rem',
+                alignItems: 'center',
+                fontSize: '0.875rem',
                 color: '#6b7280',
                 borderTop: '1px solid rgba(107, 114, 128, 0.1)',
                 paddingTop: '0.75rem'
               }}>
-                <span>{category.hashtags ? category.hashtags.length : 0} hashtags</span>
+                <span>Order: {category.order}</span>
                 <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
@@ -526,7 +486,9 @@ export default function CategoriesPage() {
                   borderRadius: '8px',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: 'border-color 0.2s ease'
+                  transition: 'border-color 0.2s ease',
+                  background: 'white',
+                  color: '#000000'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#3b82f6';
@@ -537,7 +499,7 @@ export default function CategoriesPage() {
               />
             </div>
 
-            {/* Description */}
+            {/* Order */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{
                 display: 'block',
@@ -546,13 +508,13 @@ export default function CategoriesPage() {
                 color: '#374151',
                 marginBottom: '0.5rem'
               }}>
-                Description (optional)
+                Display Order
               </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Brief description of this category..."
-                rows={3}
+              <input
+                type="number"
+                value={formData.order}
+                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                placeholder="0"
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -561,7 +523,8 @@ export default function CategoriesPage() {
                   fontSize: '1rem',
                   outline: 'none',
                   transition: 'border-color 0.2s ease',
-                  resize: 'vertical'
+                  background: 'white',
+                  color: '#000000'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#3b82f6';
@@ -608,7 +571,9 @@ export default function CategoriesPage() {
                     borderRadius: '8px',
                     fontSize: '1rem',
                     outline: 'none',
-                    transition: 'border-color 0.2s ease'
+                    transition: 'border-color 0.2s ease',
+                    background: 'white',
+                    color: '#000000'
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = '#3b82f6';
@@ -620,114 +585,6 @@ export default function CategoriesPage() {
               </div>
             </div>
 
-            {/* Hashtags */}
-            <div style={{ marginBottom: '2rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                Hashtags (optional)
-              </label>
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                marginBottom: '1rem'
-              }}>
-                <input
-                  type="text"
-                  value={newHashtag}
-                  onChange={(e) => setNewHashtag(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddHashtag();
-                    }
-                  }}
-                  placeholder="Add a hashtag..."
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'border-color 0.2s ease'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#3b82f6';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
-                />
-                <button
-                  onClick={handleAddHashtag}
-                  disabled={!newHashtag.trim()}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    background: newHashtag.trim() ? '#10b981' : '#e5e7eb',
-                    color: newHashtag.trim() ? 'white' : '#9ca3af',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: newHashtag.trim() ? 'pointer' : 'not-allowed',
-                    fontWeight: '500',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Add
-                </button>
-              </div>
-
-              {/* Current Hashtags */}
-              {formData.hashtags.length > 0 && (
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  padding: '1rem',
-                  background: '#f9fafb',
-                  borderRadius: '8px',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {formData.hashtags.map((hashtag) => (
-                    <span
-                      key={hashtag}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        padding: '0.375rem 0.75rem',
-                        background: 'white',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        color: '#374151'
-                      }}
-                    >
-                      #{hashtag}
-                      <button
-                        onClick={() => handleRemoveHashtag(hashtag)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          padding: 0,
-                          fontSize: '1rem',
-                          lineHeight: 1
-                        }}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Form Actions */}
             <div style={{
@@ -769,6 +626,231 @@ export default function CategoriesPage() {
                 }}
               >
                 {creating ? 'Creating...' : '🆕 Create Category'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Category Modal */}
+      {showEditForm && editingCategory && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '2rem',
+            maxWidth: '500px',
+            width: '100%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '2rem'
+            }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                margin: 0
+              }}>
+                ✏️ Edit Category
+              </h2>
+              <button
+                onClick={() => {
+                  setShowEditForm(false);
+                  resetForm();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '0.25rem'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Category Name */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '0.5rem'
+              }}>
+                Category Name *
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., Sport, Team, Location"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  background: 'white',
+                  color: '#000000'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#3b82f6';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                }}
+              />
+            </div>
+
+            {/* Order */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '0.5rem'
+              }}>
+                Display Order
+              </label>
+              <input
+                type="number"
+                value={formData.order}
+                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                placeholder="0"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  background: 'white',
+                  color: '#000000'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#3b82f6';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                }}
+              />
+            </div>
+
+            {/* Color Picker */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '0.5rem'
+              }}>
+                Category Color
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <input
+                  type="color"
+                  value={formData.color}
+                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                  style={{
+                    width: '3rem',
+                    height: '3rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                />
+                <input
+                  type="text"
+                  value={formData.color}
+                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                  placeholder="#3b82f6"
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'border-color 0.2s ease',
+                    background: 'white',
+                    color: '#000000'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'flex-end'
+            }}>
+              <button
+                onClick={() => {
+                  setShowEditForm(false);
+                  resetForm();
+                }}
+                disabled={updating}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: '#f3f4f6',
+                  color: '#374151',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: updating ? 'not-allowed' : 'pointer',
+                  fontWeight: '500',
+                  opacity: updating ? 0.5 : 1
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateCategory}
+                disabled={updating || !formData.name.trim()}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: updating || !formData.name.trim() ? '#e5e7eb' : '#f59e0b',
+                  color: updating || !formData.name.trim() ? '#9ca3af' : 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: updating || !formData.name.trim() ? 'not-allowed' : 'pointer',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {updating ? 'Updating...' : '✏️ Update Category'}
               </button>
             </div>
           </div>

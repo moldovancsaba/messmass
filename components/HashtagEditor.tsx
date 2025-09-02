@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { invalidateHashtagColorsCache } from './ColoredHashtagBubble';
+import { useHashtagData } from '@/contexts/HashtagDataProvider';
 
 interface HashtagColor {
   _id: string;
@@ -23,8 +23,10 @@ interface HashtagEditorProps {
 }
 
 export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
+  // Use context for hashtag colors instead of local state
+  const { hashtagColors, loadingColors, refreshColors } = useHashtagData();
+  
   const [projectHashtags, setProjectHashtags] = useState<ProjectHashtag[]>([]);
-  const [hashtagColors, setHashtagColors] = useState<HashtagColor[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingHashtag, setEditingHashtag] = useState<{ name: string; color: string; hasColorRecord: boolean } | null>(null);
@@ -36,7 +38,7 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
 
   useEffect(() => {
     loadProjectHashtags();
-    loadHashtagColors();
+    // hashtagColors are already loaded via context
   }, []);
 
   const loadProjectHashtags = async () => {
@@ -51,25 +53,11 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
       }
     } catch (error) {
       console.error('Failed to load project hashtags:', error);
-    }
-  };
-
-  const loadHashtagColors = async () => {
-    try {
-      const response = await fetch('/api/hashtag-colors');
-      const data = await response.json();
-      
-      if (data.success) {
-        setHashtagColors(data.hashtagColors);
-      } else {
-        console.error('Failed to load hashtag colors:', data.error);
-      }
-    } catch (error) {
-      console.error('Failed to load hashtag colors:', error);
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,10 +89,8 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
       const data = await response.json();
 
       if (data.success) {
-        // Reload both datasets to ensure consistency
-        await loadHashtagColors();
-        // Invalidate the cache so all ColoredHashtagBubble components refresh
-        invalidateHashtagColorsCache();
+        // Refresh hashtag colors via context
+        await refreshColors();
         resetForm();
         alert('Hashtag updated successfully!');
       } else {
@@ -155,9 +141,8 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
       const data = await response.json();
 
       if (data.success) {
-        setHashtagColors(prev => prev.filter(h => h._id !== colorRecord._id));
-        // Invalidate the cache so all ColoredHashtagBubble components refresh
-        invalidateHashtagColorsCache();
+        // Refresh hashtag colors via context
+        await refreshColors();
         alert('Hashtag color configuration deleted successfully!');
       } else {
         alert(data.error || 'Failed to delete hashtag color');

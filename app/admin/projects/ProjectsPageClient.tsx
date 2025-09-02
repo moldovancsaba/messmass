@@ -548,6 +548,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                     // Navigate to hashtag filter page
                                     window.open(`/hashtag/${hashtag}`, '_blank');
                                   }}
+                                  projectCategorizedHashtags={project.categorizedHashtags}
+                                  autoResolveColor={true}
                                 />
                               );
                             });
@@ -568,6 +570,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                       // Navigate to hashtag filter page with category prefix
                                       window.open(`/hashtag/${hashtag}`, '_blank');
                                     }}
+                                    projectCategorizedHashtags={project.categorizedHashtags}
+                                    autoResolveColor={true}
                                   />
                                 );
                               });
