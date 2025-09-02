@@ -66,6 +66,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [hashtags, setHashtags] = useState<string[]>(initialProject.hashtags || []);
   const [categorizedHashtags, setCategorizedHashtags] = useState<{ [categoryName: string]: string[] }>(initialProject.categorizedHashtags || {});
+  const [editMode, setEditMode] = useState<'clicker' | 'manual'>('clicker'); // New state for edit mode
 
   // Update project when initialProject changes
   useEffect(() => {
@@ -164,7 +165,17 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const totalAge = totalUnder40 + totalOver40;
   const totalMerch = project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other;
 
-  // Clickable stat card component
+  // Manual input field update (on blur/leave)
+  const updateManualField = (field: keyof typeof project.stats, value: number) => {
+    const newStats = {
+      ...project.stats,
+      [field]: Math.max(0, value)
+    };
+    setProject(prev => ({ ...prev, stats: newStats }));
+    saveProject(newStats);
+  };
+
+  // Clickable stat card component (for clicker mode)
   const StatCard = ({ label, value, statKey, isCalculated = false }: { 
     label: string; 
     value: number; 
@@ -239,6 +250,69 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       )}
     </div>
   );
+
+  // Manual input card component (for manual mode)
+  const ManualInputCard = ({ label, value, statKey }: { 
+    label: string; 
+    value: number; 
+    statKey: keyof typeof project.stats;
+  }) => {
+    const [tempValue, setTempValue] = useState(value);
+
+    useEffect(() => {
+      setTempValue(value);
+    }, [value]);
+
+    const handleBlur = () => {
+      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
+      if (newValue !== value) {
+        updateManualField(statKey, newValue);
+      }
+    };
+
+    return (
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '12px',
+        padding: '1rem',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem'
+      }}>
+        <input
+          type="number"
+          value={tempValue}
+          onChange={(e) => {
+            const newValue = Math.max(0, parseInt(e.target.value) || 0);
+            setTempValue(newValue);
+          }}
+          onBlur={handleBlur}
+          style={{
+            width: '120px',
+            padding: '0.5rem',
+            border: '2px solid #e2e8f0',
+            borderRadius: '8px',
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            textAlign: 'center',
+            color: '#1a202c',
+            backgroundColor: '#ffffff',
+            outline: 'none',
+            transition: 'all 0.2s ease'
+          }}
+          min="0"
+        />
+        <div style={{
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: '#4a5568',
+          flex: 1
+        }}>{label}</div>
+      </div>
+    );
+  };
 
   // Success Manager input card component
   const SuccessManagerCard = ({ label, value, statKey }: { 
@@ -350,47 +424,32 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 {saveStatus === 'error' && '❌ Save Error'}
                 {saveStatus === 'idle' && '📝 Ready'}
               </p>
+              {/* Mode Toggle Button */}
+              <button
+                onClick={() => setEditMode(editMode === 'clicker' ? 'manual' : 'clicker')}
+                style={{
+                  background: editMode === 'clicker' ? '#667eea' : '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  marginTop: '0.5rem',
+                  transition: 'all 0.2s ease',
+                  width: '100%'
+                }}
+              >
+                {editMode === 'clicker' ? '🖱️ Clicker' : '✏️ Manual'}
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <div style={{ display: 'grid', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        {/* Hashtag Management Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>🏷️ Hashtags ({totalHashtagCount}/∞)</h2>
-          
-          <div style={{ marginBottom: '1rem' }}>
-            <UnifiedHashtagInput
-              generalHashtags={hashtags}
-              onGeneralChange={handleGeneralHashtagsChange}
-              categorizedHashtags={categorizedHashtags}
-              onCategorizedChange={handleCategorizedHashtagsChange}
-              placeholder="Add hashtags to categorize this project..."
-            />
-          </div>
-          
-          {totalHashtagCount === 0 && (
-            <p style={{
-              color: '#6b7280',
-              fontStyle: 'italic',
-              textAlign: 'center',
-              margin: '1rem 0',
-              padding: '1rem',
-              background: 'rgba(107, 114, 128, 0.1)',
-              borderRadius: '8px'
-            }}>
-              💡 Add hashtags to categorize your project and enable aggregated statistics!
-            </p>
-          )}
-        </div>
+        {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>
           <h2 style={{ 
@@ -402,9 +461,19 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>📸 Images ({totalImages})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <StatCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />
-            <StatCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />
-            <StatCard label="Selfies" value={project.stats.selfies} statKey="selfies" />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />
+                <StatCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />
+                <StatCard label="Selfies" value={project.stats.selfies} statKey="selfies" />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />
+                <ManualInputCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />
+                <ManualInputCard label="Selfies" value={project.stats.selfies} statKey="selfies" />
+              </>
+            )}
           </div>
         </div>
 
@@ -419,9 +488,19 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>👥 Fans ({totalFans})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <StatCard label="Indoor" value={project.stats.indoor} statKey="indoor" />
-            <StatCard label="Outdoor" value={project.stats.outdoor} statKey="outdoor" />
-            <StatCard label="Stadium" value={project.stats.stadium} statKey="stadium" />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Indoor" value={project.stats.indoor} statKey="indoor" />
+                <StatCard label="Outdoor" value={project.stats.outdoor} statKey="outdoor" />
+                <StatCard label="Stadium" value={project.stats.stadium} statKey="stadium" />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Indoor" value={project.stats.indoor} statKey="indoor" />
+                <ManualInputCard label="Outdoor" value={project.stats.outdoor} statKey="outdoor" />
+                <ManualInputCard label="Stadium" value={project.stats.stadium} statKey="stadium" />
+              </>
+            )}
           </div>
         </div>
 
@@ -436,9 +515,41 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>⚧️ Gender ({totalGender})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <StatCard label="Female" value={project.stats.female} statKey="female" />
-            <StatCard label="Male" value={project.stats.male} statKey="male" />
-            <StatCard label="Total Gender" value={totalGender} isCalculated={true} />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Female" value={project.stats.female} statKey="female" />
+                <StatCard label="Male" value={project.stats.male} statKey="male" />
+                <StatCard label="Total Gender" value={totalGender} isCalculated={true} />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Female" value={project.stats.female} statKey="female" />
+                <ManualInputCard label="Male" value={project.stats.male} statKey="male" />
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.95)', 
+                  borderRadius: '12px', 
+                  padding: '1rem', 
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1rem',
+                  opacity: 0.7
+                }}>
+                  <div style={{
+                    width: '120px',
+                    padding: '0.5rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    color: '#6b7280',
+                    backgroundColor: '#f9fafb'
+                  }}>{totalGender}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Gender (calculated)</div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -453,12 +564,69 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>🎂 Age ({totalAge})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-            <StatCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
-            <StatCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
-            <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />
-            <StatCard label="Gen X" value={project.stats.genX} statKey="genX" />
-            <StatCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
-            <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
+                <StatCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
+                <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />
+                <StatCard label="Gen X" value={project.stats.genX} statKey="genX" />
+                <StatCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
+                <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
+                <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.95)', 
+                  borderRadius: '12px', 
+                  padding: '1rem', 
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1rem',
+                  opacity: 0.7
+                }}>
+                  <div style={{
+                    width: '120px',
+                    padding: '0.5rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    color: '#6b7280',
+                    backgroundColor: '#f9fafb'
+                  }}>{totalUnder40}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Under 40 (calculated)</div>
+                </div>
+                <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />
+                <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.95)', 
+                  borderRadius: '12px', 
+                  padding: '1rem', 
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1rem',
+                  opacity: 0.7
+                }}>
+                  <div style={{
+                    width: '120px',
+                    padding: '0.5rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    color: '#6b7280',
+                    backgroundColor: '#f9fafb'
+                  }}>{totalOver40}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Over 40 (calculated)</div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -473,27 +641,48 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>🛍️ Merch ({totalMerch})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-            <StatCard label="Merched" value={project.stats.merched} statKey="merched" />
-            <StatCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
-            <StatCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Merched" value={project.stats.merched} statKey="merched" />
+                <StatCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
+                <StatCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Merched" value={project.stats.merched} statKey="merched" />
+                <ManualInputCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
+                <ManualInputCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
+              </>
+            )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <StatCard label="Flags" value={project.stats.flags} statKey="flags" />
-            <StatCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />
-            <StatCard label="Other" value={project.stats.other} statKey="other" />
+            {editMode === 'clicker' ? (
+              <>
+                <StatCard label="Flags" value={project.stats.flags} statKey="flags" />
+                <StatCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />
+                <StatCard label="Other" value={project.stats.other} statKey="other" />
+              </>
+            ) : (
+              <>
+                <ManualInputCard label="Flags" value={project.stats.flags} statKey="flags" />
+                <ManualInputCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />
+                <ManualInputCard label="Other" value={project.stats.other} statKey="other" />
+              </>
+            )}
           </div>
         </div>
 
-        {/* Success Manager Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>📈 Success Manager</h2>
+        {/* Success Manager Section - Only show in manual mode */}
+        {editMode === 'manual' && (
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: 700, 
+              margin: '0 0 1.5rem 0',
+              color: '#2d3748',
+              borderBottom: '2px solid #e2e8f0',
+              paddingBottom: '0.5rem'
+            }}>📈 Success Manager</h2>
           
           {/* Image Management */}
           <div style={{ marginBottom: '1.5rem' }}>
@@ -546,7 +735,46 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />
             </div>
           </div>
-        </div>
+          </div>
+        )}
+        
+        {/* Hashtag Management Section - Move to bottom and only show in manual mode */}
+        {editMode === 'manual' && (
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <h2 style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: 700, 
+              margin: '0 0 1.5rem 0',
+              color: '#2d3748',
+              borderBottom: '2px solid #e2e8f0',
+              paddingBottom: '0.5rem'
+            }}>🏷️ Hashtags ({totalHashtagCount}/∞)</h2>
+            
+            <div style={{ marginBottom: '1rem' }}>
+              <UnifiedHashtagInput
+                generalHashtags={hashtags}
+                onGeneralChange={handleGeneralHashtagsChange}
+                categorizedHashtags={categorizedHashtags}
+                onCategorizedChange={handleCategorizedHashtagsChange}
+                placeholder="Add hashtags to categorize this project..."
+              />
+            </div>
+            
+            {totalHashtagCount === 0 && (
+              <p style={{
+                color: '#6b7280',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                margin: '1rem 0',
+                padding: '1rem',
+                background: 'rgba(107, 114, 128, 0.1)',
+                borderRadius: '8px'
+              }}>
+                💡 Add hashtags to categorize your project and enable aggregated statistics!
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
