@@ -96,9 +96,12 @@ const parsed = parseHashtagQuery("country:hungary");
 - Both endpoints automatically store both plain and category-prefixed versions
 
 **Enhanced Filtering API**
-- `POST /api/hashtags/filter` - Filter projects by hashtags
+- `POST /api/hashtags/filter` - Filter projects by hashtags (admin)
+- `GET /api/hashtags/filter-by-slug/[slug]` - Public filter endpoint supporting both filter slugs and direct hashtag queries
+- `GET /api/hashtags/slugs` - Get available hashtags for filtering
 - Supports mixed queries: `["summer", "country:hungary"]`
 - Uses MongoDB `$or` queries to search both traditional and categorized hashtags
+- **Note**: Individual hashtag statistics pages (`/hashtag/[hashtag]`) have been consolidated into the filter system
 
 #### 4. UI Components
 
@@ -181,6 +184,40 @@ The system supports sophisticated filtering with both traditional and categorize
 - **Gradual Adoption**: Users can adopt categorized hashtags at their own pace
 - **Data Integrity**: Validation prevents duplicate hashtags within the same category
 - **API Compatibility**: All existing API endpoints maintain backward compatibility
+
+---
+
+## URL Structure and Routing
+
+### Public Pages
+- `/stats/[slug]` - Individual project statistics (password protected)
+- `/edit/[slug]` - Project editing interface (password protected)
+- `/filter/[slug]` - Hashtag filtering and statistics (supports both filter slugs and direct hashtag names)
+
+### Admin Pages
+- `/admin` - Admin dashboard
+- `/admin/projects` - Project management
+- `/admin/hashtags` - Hashtag color management
+- `/admin/categories` - Hashtag category management
+- `/admin/filter` - Advanced hashtag filtering tool
+- `/admin/charts` - Chart configuration management
+- `/admin/design` - UI design customization
+- `/admin/visualization` - Data visualization settings
+
+### API Endpoints
+- `/api/projects` - Project CRUD operations
+- `/api/hashtags/filter-by-slug/[slug]` - Public hashtag filtering (supports both slugs and direct hashtag queries)
+- `/api/hashtags/filter` - Admin hashtag filtering
+- `/api/hashtags/slugs` - Available hashtag listing
+- `/api/hashtag-categories` - Category management
+- `/api/hashtag-colors` - Hashtag color management
+- `/api/page-config` - Page styling configuration
+- `/api/chart-config` - Chart configuration management
+
+### URL Migration (v2.6.0)
+- **REMOVED**: `/hashtag/[hashtag]` - Individual hashtag statistics pages
+- **REDIRECT**: All `/hashtag/*` URLs automatically redirect to `/filter/*` with 301 status
+- **BENEFIT**: Unified statistics system with consistent user experience
 
 ---
 

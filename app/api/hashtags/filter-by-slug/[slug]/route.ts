@@ -30,22 +30,46 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     console.log('🔍 Fetching filter data for slug:', slug);
 
-    // Get hashtags for this filter slug
-    const hashtags = await findHashtagsByFilterSlug(slug);
-
-    if (!hashtags || hashtags.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Filter not found or no hashtags associated' },
-        { status: 404 }
-      );
-    }
-
-    console.log('✅ Found hashtags for filter:', hashtags);
-
-    // Now use the existing filter logic to get the data
+    // Connect to database first
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
+
+    // First, check if this is a UUID slug in filter_slugs collection
+    let hashtags = await findHashtagsByFilterSlug(slug);
+    
+    // If no filter slug found, treat the slug as a direct hashtag name
+    if (!hashtags || hashtags.length === 0) {
+      console.log('🏷️ No filter slug found, treating as direct hashtag:', slug);
+      
+      // Decode URL-encoded hashtag (in case it has special characters)
+      const decodedHashtag = decodeURIComponent(slug);
+      
+      // Check if projects exist with this hashtag to validate it's a real hashtag
+      const allProjects = await collection.find({}).toArray();
+      const testProjects = allProjects.filter(project => {
+        const allHashtagRepresentations = getAllHashtagRepresentations({
+          hashtags: project.hashtags || [],
+          categorizedHashtags: project.categorizedHashtags || {}
+        });
+        
+        return allHashtagRepresentations.some(projectHashtag => 
+          projectHashtag.toLowerCase() === decodedHashtag.toLowerCase()
+        );
+      });
+      
+      if (testProjects.length === 0) {
+        return NextResponse.json(
+          { success: false, error: 'No projects found with this hashtag' },
+          { status: 404 }
+        );
+      }
+      
+      // Use the single hashtag
+      hashtags = [decodedHashtag];
+    }
+
+    console.log('✅ Found hashtags for filter:', hashtags);
 
     // Find projects that contain ALL specified hashtags
     // Need to handle both traditional hashtags and category-prefixed hashtags

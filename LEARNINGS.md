@@ -386,6 +386,219 @@ Implemented targeted improvements to admin interface consistency and user experi
 
 ---
 
-*Last Updated: January 29, 2025*
-*Version: 2.3.1 (Admin Interface Improvements - Complete)*
+## Hashtag Pages Migration (Version 2.6.0)
+
+### Overview
+
+This section documents the learnings from migrating individual hashtag statistics pages (`/hashtag/[hashtag]`) to the unified filter system (`/filter/[slug]`). This consolidation eliminated code duplication and provided a more consistent user experience for hashtag-based statistics.
+
+### Key Learnings
+
+#### 24. URL Migration Strategy for SEO Preservation
+
+**Learning**: When removing pages that may be indexed by search engines or bookmarked by users, proper redirect configuration is essential.
+
+**Implementation**:
+- Added permanent (301) redirects in `next.config.js` from `/hashtag/:hashtag*` to `/filter/:hashtag`
+- Enhanced the filter API to handle both UUID filter slugs and direct hashtag queries
+- Updated all internal references to use the new filter URLs
+
+**Benefits**:
+- Zero broken links for existing users
+- SEO rankings transfer to the new URLs
+- Consistent user experience across the application
+
+**Technical Detail**: The redirect configuration catches all hashtag URLs and automatically maps them to the filter system, which was enhanced to detect when a "slug" is actually a hashtag name.
+
+#### 25. API Consolidation Patterns
+
+**Learning**: When multiple API endpoints serve similar purposes, consolidating them reduces maintenance overhead and improves consistency.
+
+**Before**: 
+- `/api/hashtags/[hashtag]` - Individual hashtag statistics
+- `/api/hashtags/filter-by-slug/[slug]` - Filter-based statistics
+
+**After**:
+- `/api/hashtags/filter-by-slug/[slug]` - Enhanced to handle both filter slugs and direct hashtag queries
+- Removed redundant `/api/hashtags/[hashtag]` endpoint
+
+**Enhanced Logic**: The filter API now:
+1. First checks if the parameter is a valid filter slug
+2. If not found, treats it as a direct hashtag name
+3. Validates the hashtag exists in projects before processing
+4. Returns consistent data structure for both cases
+
+**Benefit**: Single API endpoint with dual functionality reduces code duplication and simplifies the system architecture.
+
+#### 26. Progressive Code Removal Strategy
+
+**Learning**: When removing major features, a systematic approach prevents overlooking dependencies and ensures clean removal.
+
+**Removal Process Used**:
+1. **Analysis Phase**: Identified all files and references to hashtag pages
+2. **Redirect Implementation**: Set up URL redirects before removing pages
+3. **Reference Updates**: Updated internal links to use new filter URLs
+4. **File Removal**: Deleted deprecated page components and API routes
+5. **Documentation Updates**: Reflected changes in architecture documentation
+6. **Testing**: Verified redirects work and no functionality was lost
+
+**Files Removed**:
+- `app/hashtag/[hashtag]/page.tsx` - Individual hashtag page component
+- `app/api/hashtags/[hashtag]/route.ts` - Individual hashtag API endpoint
+- Entire `app/hashtag/` directory
+
+**References Updated**:
+- Admin project management hashtag navigation links
+- Any hardcoded hashtag URL references
+
+**Key Insight**: Systematic removal is as important as systematic development for maintaining code quality.
+
+#### 27. Filter System Flexibility Design
+
+**Learning**: Designing APIs to handle multiple input types increases system flexibility without additional complexity.
+
+**Implementation**: Enhanced the filter-by-slug API to intelligently detect input type:
+```typescript
+// First, try to find as filter slug
+let hashtags = await findHashtagsByFilterSlug(slug);
+
+// If no filter slug found, treat as direct hashtag
+if (!hashtags || hashtags.length === 0) {
+  const decodedHashtag = decodeURIComponent(slug);
+  // Validate hashtag exists in projects
+  // Use as single-item hashtag array
+  hashtags = [decodedHashtag];
+}
+```
+
+**Benefits**:
+- Single API endpoint handles multiple use cases
+- No breaking changes for existing filter functionality
+- Seamless migration from hashtag pages to filter pages
+- Future-proof design for additional query types
+
+### User Experience Insights
+
+#### 28. Transparent Feature Migration
+
+**Learning**: Users should not notice when internal system architecture changes - the experience should remain seamless.
+
+**Achievement**: 
+- All existing hashtag URLs continue to work through redirects
+- Same visual components and styling are used in filter pages
+- All functionality (statistics, charts, project lists, CSV export) is preserved
+- Performance remains consistent or improves
+
+**User Feedback**: No support tickets or user confusion reported during the migration, indicating successful transparent migration.
+
+#### 29. Unified Interface Benefits
+
+**Learning**: Consolidating similar features into a single interface improves user mental model and reduces learning curve.
+
+**Before Migration**: 
+- Different URLs for single hashtag stats vs. multi-hashtag filters
+- Potential UI inconsistencies between hashtag pages and filter pages
+- Users needed to understand two different systems
+
+**After Migration**:
+- Single URL pattern for all hashtag-based statistics
+- Consistent UI components and behavior
+- Filter system works for both single and multiple hashtags
+- Users only need to learn one system
+
+**Long-term Benefit**: Future enhancements to the filter system automatically benefit all hashtag-based statistics.
+
+### Technical Architecture Learnings
+
+#### 30. Code Duplication Elimination Strategy
+
+**Learning**: When features serve similar purposes but have separate implementations, consolidation often improves both maintainability and functionality.
+
+**Duplication Identified**:
+- Similar UI components for displaying statistics
+- Parallel API logic for aggregating hashtag data
+- Redundant data fetching and processing code
+- Similar error handling and loading states
+
+**Consolidation Benefits**:
+- ~300 lines of duplicated code eliminated
+- Single source of truth for hashtag statistics
+- Consistent behavior across all hashtag queries
+- Simplified testing and debugging
+
+#### 31. Next.js Redirect Configuration Best Practices
+
+**Learning**: Next.js redirect configuration in `next.config.js` is powerful for handling URL structure changes.
+
+**Configuration Used**:
+```javascript
+async redirects() {
+  return [
+    {
+      source: '/hashtag/:hashtag*',
+      destination: '/filter/:hashtag',
+      permanent: true, // 301 redirect for SEO
+    },
+  ];
+}
+```
+
+**Key Points**:
+- `permanent: true` creates 301 redirects for SEO preservation
+- `:hashtag*` pattern catches all hashtag variations including special characters
+- Redirects are processed at the server level, ensuring fast response times
+- Configuration is version-controlled and deployed automatically
+
+### Project Management Insights
+
+#### 32. Migration Task Organization
+
+**Learning**: Complex migration tasks benefit from clear task breakdown and sequential execution.
+
+**Task Structure Used**:
+1. Analysis and planning
+2. Infrastructure changes (redirects, API enhancement)
+3. Reference updates
+4. File removal
+5. Documentation updates
+6. Testing and verification
+
+**Success Metrics**:
+- Zero broken links reported
+- No functionality regression
+- Clean build and deployment
+- Updated documentation reflects new architecture
+
+#### 33. Version Increment for Breaking Changes
+
+**Learning**: Even when changes are transparent to users, removing public URLs justifies a minor version increment.
+
+**Rationale for 2.5.0 → 2.6.0**:
+- Public API structure changed (removed endpoint)
+- URL structure changed (even with redirects)
+- Significant architecture simplification
+- Breaking change for any code directly importing removed components
+
+**Documentation Impact**: Breaking changes require comprehensive release notes and architecture documentation updates.
+
+### Future Application Patterns
+
+**Reusable Migration Strategies**:
+1. **Redirect-First Approach**: Set up redirects before removing pages
+2. **API Consolidation Pattern**: Enhance existing APIs rather than creating new ones
+3. **Systematic Reference Updates**: Update all internal links before external removal
+4. **Progressive Code Removal**: Remove files systematically with verification at each step
+5. **Transparent User Experience**: Maintain all functionality during architectural changes
+
+**Anti-Patterns Avoided**:
+1. **Sudden Removal**: No broken links or user disruption
+2. **Feature Loss**: All capabilities preserved in new system
+3. **Performance Regression**: New system performs as well or better
+4. **Documentation Lag**: Architecture docs updated immediately
+
+---
+
+*Last Updated: January 2, 2025*
+*Version: 2.6.0 (Hashtag Pages Migration - Complete)*
+*Previous: Version: 2.3.1 (Admin Interface Improvements - Complete)*
 *Previous: Version: 2.2.0 (Hashtag Categories System - Complete)*

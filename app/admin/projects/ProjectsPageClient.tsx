@@ -545,8 +545,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                   small={true}
                                   interactive={true}
                                   onClick={(hashtag) => {
-                                    // Navigate to hashtag filter page
-                                    window.open(`/hashtag/${hashtag}`, '_blank');
+                                    // Navigate to filter page for single hashtag
+                                    window.open(`/filter/${hashtag}`, '_blank');
                                   }}
                                   projectCategorizedHashtags={project.categorizedHashtags}
                                   autoResolveColor={true}
@@ -567,8 +567,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                     small={true}
                                     interactive={true}
                                     onClick={(hashtag) => {
-                                      // Navigate to hashtag filter page with category prefix
-                                      window.open(`/hashtag/${hashtag}`, '_blank');
+                                      // Navigate to filter page for single hashtag with category prefix
+                                      window.open(`/filter/${hashtag}`, '_blank');
                                     }}
                                     projectCategorizedHashtags={project.categorizedHashtags}
                                     autoResolveColor={true}
