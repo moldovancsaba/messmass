@@ -110,13 +110,11 @@ export default function EditPage() {
   // Show login screen if not authenticated
   if (checkingAuth) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
+      <div className="admin-container" style={{ 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
@@ -163,13 +161,11 @@ export default function EditPage() {
 
   if (loading) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
+      <div className="admin-container" style={{ 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
@@ -205,16 +201,13 @@ export default function EditPage() {
 
   if (error) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
+      <div className="admin-container" style={{ 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        padding: '2rem'
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
         <div style={{ 
           background: 'rgba(220, 38, 38, 0.1)', 

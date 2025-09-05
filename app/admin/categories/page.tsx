@@ -186,9 +186,7 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      <div className="admin-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -208,9 +206,7 @@ export default function CategoriesPage() {
 
   if (error) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      <div className="admin-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -244,10 +240,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-    }}>
+    <div className="admin-container">
       <AdminPageHero
         title="Categories"
         icon="📂"
@@ -261,7 +254,7 @@ export default function CategoriesPage() {
       />
 
       {/* Categories Grid */}
-      <div className="admin-container">
+      <div style={{ padding: '0 2rem' }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',

@@ -279,28 +279,15 @@ export default function StatsPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
-        padding: '2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div className="glass-card" style={{
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Loading event statistics...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
+          <p style={{ 
+            color: '#6b7280', 
+            margin: 0, 
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>Loading event statistics...</p>
         </div>
       </div>
     );
@@ -308,10 +295,7 @@ export default function StatsPage() {
 
   if (error || !project) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
-        padding: '2rem',
+      <div className="admin-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -332,10 +316,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc'
-    }}>
+    <div className="admin-container">
       {/* Unified Hero Section */}
       <UnifiedStatsHero
         title={project.eventName}
@@ -344,6 +325,7 @@ export default function StatsPage() {
         createdDate={project.createdAt}
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
+        onExportCSV={exportCSV}
       />
 
       {/* Unified Data Visualization */}

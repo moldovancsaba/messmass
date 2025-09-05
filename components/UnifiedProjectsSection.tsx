@@ -28,12 +28,9 @@ export default function UnifiedProjectsSection({
   }
 
   return (
-    <div style={{
-      background: 'rgba(255, 255, 255, 0.95)',
-      borderRadius: '16px',
+    <div className="glass-card" style={{
       padding: '2rem',
-      marginBottom: '2rem',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+      marginBottom: '2rem'
     }}>
       {/* Section Title - Same style as Data Visualization */}
       <h2 style={{

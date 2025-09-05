@@ -55,11 +55,7 @@ export default function HashtagCategoriesDebugPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        padding: '2rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      }}>
+      <div className="admin-container">
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
@@ -75,11 +71,7 @@ export default function HashtagCategoriesDebugPage() {
 
   if (error || !data) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        padding: '2rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      }}>
+      <div className="admin-container">
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
@@ -94,11 +86,7 @@ export default function HashtagCategoriesDebugPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
+    <div className="admin-container">
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto'

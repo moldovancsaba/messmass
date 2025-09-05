@@ -236,28 +236,15 @@ export default function FilterPage() {
   // Show checking authentication screen
   if (checkingAuth) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
-        padding: '2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div className="glass-card" style={{
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Checking access permissions...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
+          <p style={{ 
+            color: '#6b7280', 
+            margin: 0, 
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>Checking access permissions...</p>
         </div>
       </div>
     );
@@ -276,28 +263,15 @@ export default function FilterPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
-        padding: '2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div className="glass-card" style={{
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Loading filter statistics...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
+          <p style={{ 
+            color: '#6b7280', 
+            margin: 0, 
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>Loading filter statistics...</p>
         </div>
       </div>
     );
@@ -305,10 +279,7 @@ export default function FilterPage() {
 
   if (error || !project) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc',
-        padding: '2rem',
+      <div className="admin-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -329,10 +300,7 @@ export default function FilterPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: pageStyle ? `linear-gradient(${pageStyle.backgroundGradient})` : '#f8fafc'
-    }}>
+    <div className="admin-container">
       {/* Unified Hero Section */}
       <UnifiedStatsHero
         title={`Aggregated Statistics - ${project.dateRange.formatted}`}
@@ -340,6 +308,7 @@ export default function FilterPage() {
         createdDate={project.createdAt}
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
+        onExportCSV={exportFilteredCSV}
       />
 
       {/* Unified Data Visualization */}
@@ -353,12 +322,10 @@ export default function FilterPage() {
 
       {/* Unified Projects Section */}
       {projects.length > 0 && (
-        <div style={{ width: '100%', padding: '0 1rem' }}>
-          <UnifiedProjectsSection
-            projects={projects}
-            title={`Projects with ${hashtags.map(h => `#${h}`).join(' + ')} (${projects.length})`}
-          />
-        </div>
+        <UnifiedProjectsSection
+          projects={projects}
+          title={`Projects with ${hashtags.map(h => `#${h}`).join(' + ')} (${projects.length})`}
+        />
       )}
     </div>
   );

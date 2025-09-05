@@ -262,10 +262,15 @@ function HashtagFilterPageContent() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Loading hashtag filter...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
+          <p style={{ 
+            color: '#6b7280', 
+            margin: 0, 
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>Loading hashtag filter...</p>
         </div>
       </div>
     );
@@ -427,10 +432,13 @@ function HashtagFilterPageContent() {
       {/* Loading State */}
       {statsLoading && (
         <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div className={styles.loading}>
-            <div className={styles.spinner}></div>
-            <p>Loading filtered statistics...</p>
-          </div>
+          <div className="curve-spinner" style={{ margin: '1rem auto' }}></div>
+          <p style={{ 
+            color: '#6b7280', 
+            margin: 0, 
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>Loading filtered statistics...</p>
         </div>
       )}
 
@@ -756,30 +764,15 @@ function HashtagFilterPageContent() {
 // Loading fallback component
 function HashtagFilterLoading() {
   return (
-    <div className="admin-container">
-      <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center',
-          gap: '1rem' 
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(102, 126, 234, 0.3)',
-            borderTop: '4px solid #667eea',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Loading hashtag filter...</p>
-        </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+    <div className="loading-centered-container">
+      <div className="loading-card">
+        <div className="curve-spinner"></div>
+        <p style={{ 
+          color: '#6b7280', 
+          margin: 0, 
+          fontSize: '1.1rem',
+          fontWeight: '500'
+        }}>Loading hashtag filter...</p>
       </div>
     </div>
   );

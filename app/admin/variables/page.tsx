@@ -124,9 +124,7 @@ export default function VariablesPage() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      <div className="admin-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -145,10 +143,7 @@ export default function VariablesPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
-    }}>
+    <div className="admin-container">
       <AdminPageHero
         title="Variables"
         subtitle="Manage data variables and metrics"

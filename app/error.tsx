@@ -24,13 +24,10 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    <div className="admin-container" style={{
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem'
+      justifyContent: 'center'
     }}>
       <div style={{
         background: 'rgba(255, 255, 255, 0.9)',
