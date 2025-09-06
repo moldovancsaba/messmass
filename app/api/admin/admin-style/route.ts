@@ -27,8 +27,7 @@ interface SettingsDoc {
 // GET /api/admin/admin-style - Retrieve current admin page style configuration
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
     const settings = db.collection<SettingsDoc>('settings');
     const pageStyles = db.collection('pageStyles');
 
@@ -56,8 +55,7 @@ export async function POST(request: NextRequest) {
   try {
     const { styleId } = await request.json();
 
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
     const settings = db.collection<SettingsDoc>('settings');
     const pageStyles = db.collection('pageStyles');
 

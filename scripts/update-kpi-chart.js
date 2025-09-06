@@ -3,14 +3,10 @@
 // Removes subtitle and updates label
 
 const { MongoClient } = require('mongodb');
-const dotenv = require('dotenv');
-const path = require('path');
+const config = require('./config');
 
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
-
-const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+const MONGODB_URI = config.mongodbUri;
+const MONGODB_DB = config.dbName;
 
 async function updateKPIChart() {
   if (!MONGODB_URI) {

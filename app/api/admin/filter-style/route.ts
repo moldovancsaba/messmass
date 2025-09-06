@@ -23,8 +23,7 @@ export async function GET(request: NextRequest) {
       .filter(Boolean)
       .sort();
 
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
 
     // Using filter_slugs to keep a single source of truth for combo -> style mapping.
     const collection = db.collection('filter_slugs');

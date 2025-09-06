@@ -30,8 +30,7 @@ export async function GET() {
   try {
     console.log('🎨 Fetching global style configuration...');
     
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
     const settingsCollection = db.collection<GlobalStyleSetting>('settings');
     const pageStylesCollection = db.collection('pageStyles');
 
@@ -92,8 +91,7 @@ export async function POST(request: NextRequest) {
     
     console.log('🎨 Setting global style:', styleId || 'null (clear)');
 
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
     const settingsCollection = db.collection<GlobalStyleSetting>('settings');
     const pageStylesCollection = db.collection('pageStyles');
 

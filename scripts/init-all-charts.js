@@ -1,8 +1,9 @@
 // Script to initialize all chart configurations in MongoDB with the updated Generated Value chart
 const { MongoClient } = require('mongodb');
+const config = require('./config');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://moldovancsaba:j8HxxytTjrtJXskz@messmass-cluster.r96vlxs.mongodb.net/messmass?retryWrites=true&w=majority&appName=messmass-cluster';
-const DATABASE_NAME = 'messmass';
+const MONGODB_URI = config.mongodbUri;
+const DATABASE_NAME = config.dbName;
 const COLLECTION_NAME = 'chartconfigurations';
 
 // All chart configurations with the updated Generated Value chart

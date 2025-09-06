@@ -1,36 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
-
-import config from '@/lib/config';
-const MONGODB_URI = config.mongodbUri;
-const MONGODB_DB = config.dbName;
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return { client: cachedClient, db: cachedClient.db(MONGODB_DB) };
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    
-    // Test the connection
-    await client.db(MONGODB_DB).admin().ping();
-    
-    cachedClient = client;
-    return { client, db: client.db(MONGODB_DB) };
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB:', error);
-    throw error;
-  }
-}
+import getDb from '@/lib/db';
 
 interface HashtagColor {
   _id?: ObjectId;
@@ -44,7 +15,7 @@ interface HashtagColor {
 // GET /api/hashtag-colors - Fetch all hashtag colors
 export async function GET() {
   try {
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     const hashtagColors = await db
       .collection('hashtagColors')
       .find({})
@@ -83,7 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     
     // Check if hashtag name already exists
     const existingHashtag = await db
@@ -134,7 +105,7 @@ export async function PUT(request: NextRequest) {
   try {
     const { _id, name, color } = await request.json();
 
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     
     // Handle two cases: update by _id (traditional) or by name (for editor)
     let filter;
@@ -237,7 +208,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     
     const result = await db
       .collection('hashtagColors')

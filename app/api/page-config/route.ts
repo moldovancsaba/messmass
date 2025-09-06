@@ -131,8 +131,7 @@ export async function GET(request: NextRequest) {
   const hashtagsParam = searchParams.get('hashtags');
   const hashtags = hashtagsParam ? hashtagsParam.split(',').map(s => s.trim()).filter(Boolean) : undefined;
   try {
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
 
     // Resolve page style using hierarchy (explicit → project → hashtag → global → default)
     const pageStyle = await resolvePageStyle(db, projectId || undefined, styleId || undefined, hashtags);

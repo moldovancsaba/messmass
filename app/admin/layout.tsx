@@ -9,8 +9,7 @@ type SettingsDoc = { _id: string; styleId: string | null; updatedAt?: string };
 
 async function getAdminStyle() {
   try {
-    const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+    const db = await (await import('@/lib/db')).getDb();
     const settings = db.collection<SettingsDoc>('settings');
     const pageStyles = db.collection('pageStyles');
 

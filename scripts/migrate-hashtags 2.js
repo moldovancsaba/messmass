@@ -1,8 +1,9 @@
 const { MongoClient } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
+const config = require('./config');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+const MONGODB_URI = config.mongodbUri;
+const MONGODB_DB = config.dbName;
 
 async function migrateHashtags() {
   if (!MONGODB_URI) {
