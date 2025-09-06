@@ -1,5 +1,15 @@
 # MessMass Release Notes
 
+## [v2.14.0] — 2025-09-06T14:10:34.000Z
+
+### ♻️ Variable Consolidation for Charts
+- New variables: [REMOTE_FANS] (indoor + outdoor) and [SOCIAL_VISIT] (sum of social platforms)
+- Formula engine supports REMOTE_FANS and SOCIAL_VISIT
+- Default chart configs updated to use new variables (Fans Location, Engagement)
+- Chart calculator totals now prefer stats.remoteFans when available
+
+---
+
 ## [v2.13.0] — 2025-09-06T13:58:02.000Z
 
 ### 🧮 Edit Stats UI Overhaul

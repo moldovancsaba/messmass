@@ -20,6 +20,7 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'INDOOR': 'indoor',
   'OUTDOOR': 'outdoor',
   'STADIUM': 'stadium',
+  'REMOTE_FANS': 'remoteFans', // New aggregated remote fans (indoor + outdoor)
   
   // Demographics
   'FEMALE': 'female',
@@ -47,6 +48,7 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'VISIT_TIKTOK': 'visitTiktok',
   'VISIT_X': 'visitX',
   'VISIT_TRUSTPILOT': 'visitTrustpilot',
+  'SOCIAL_VISIT': 'socialVisit', // New aggregated social visit
   
   // Event Metrics
   'EVENT_ATTENDEES': 'eventAttendees',

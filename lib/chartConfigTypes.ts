@@ -67,7 +67,8 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   // Location Statistics
   { name: 'INDOOR', displayName: 'Indoor Fans', category: 'Location', description: 'Number of indoor fans', exampleUsage: '[INDOOR] + [OUTDOOR]' },
   { name: 'OUTDOOR', displayName: 'Outdoor Fans', category: 'Location', description: 'Number of outdoor fans', exampleUsage: '[OUTDOOR] * 1.2' },
-  { name: 'STADIUM', displayName: 'Stadium Fans', category: 'Location', description: 'Number of stadium fans', exampleUsage: '[STADIUM] / ([INDOOR] + [OUTDOOR] + [STADIUM])' },
+  { name: 'STADIUM', displayName: 'Stadium Fans', category: 'Location', description: 'Number of stadium fans', exampleUsage: '[STADIUM] / ([REMOTE_FANS] + [STADIUM])' },
+  { name: 'REMOTE_FANS', displayName: 'Remote Fans', category: 'Location', description: 'Indoor + Outdoor (aggregated)', exampleUsage: '[REMOTE_FANS] + [STADIUM]' },
   
   // Demographics
   { name: 'FEMALE', displayName: 'Female Attendees', category: 'Demographics', description: 'Number of female attendees', exampleUsage: '[FEMALE] / ([FEMALE] + [MALE])' },
@@ -95,6 +96,7 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   { name: 'VISIT_TIKTOK', displayName: 'TikTok Visits', category: 'Social Media', description: 'Number of TikTok visits', exampleUsage: '[VISIT_TIKTOK] * 3' },
   { name: 'VISIT_X', displayName: 'X (Twitter) Visits', category: 'Social Media', description: 'Number of X (Twitter) visits', exampleUsage: '[VISIT_X] + [VISIT_FACEBOOK]' },
   { name: 'VISIT_TRUSTPILOT', displayName: 'Trustpilot Visits', category: 'Engagement', description: 'Number of Trustpilot visits', exampleUsage: '[VISIT_TRUSTPILOT] * 10' },
+  { name: 'SOCIAL_VISIT', displayName: 'Social Visit (Total)', category: 'Engagement', description: 'Sum of visits across all social platforms', exampleUsage: '[SOCIAL_VISIT] / [EVENT_ATTENDEES] * 100' },
   
   // Event Metrics
   { name: 'EVENT_ATTENDEES', displayName: 'Event Attendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[EVENT_ATTENDEES] * 0.1' },
@@ -173,7 +175,7 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     isActive: true,
     emoji: '📍',
     elements: [
-      { id: 'remote', label: 'Remote', formula: '[INDOOR] + [OUTDOOR]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
+      { id: 'remote', label: 'Remote', formula: '[REMOTE_FANS]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
       { id: 'event', label: 'Event', formula: '[STADIUM]', color: '#f59e0b', description: 'Stadium fans' }
     ]
   },
@@ -285,11 +287,11 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     showTotal: true,
     totalLabel: 'Core Fan Team',
     elements: [
-      { id: 'engaged', label: 'Engaged', formula: '([INDOOR] + [OUTDOOR] + [STADIUM]) / [EVENT_ATTENDEES] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
-      { id: 'interactive', label: 'Interactive', formula: '([VISIT_FACEBOOK] + [VISIT_INSTAGRAM] + [VISIT_YOUTUBE] + [VISIT_TIKTOK] + [VISIT_X] + [VISIT_TRUSTPILOT] + [EVENT_VALUE_PROPOSITION_VISITED] + [EVENT_VALUE_PROPOSITION_PURCHASES]) / ([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 100', color: '#f59e0b', description: 'Fan Interaction %' },
-      { id: 'front-runners', label: 'Front-runners', formula: '[MERCHED] / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#10b981', description: 'Merched fans %' },
+      { id: 'engaged', label: 'Engaged', formula: '([REMOTE_FANS] + [STADIUM]) / [EVENT_ATTENDEES] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
+      { id: 'interactive', label: 'Interactive', formula: '([SOCIAL_VISIT] + [EVENT_VALUE_PROPOSITION_VISITED] + [EVENT_VALUE_PROPOSITION_PURCHASES]) / ([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 100', color: '#f59e0b', description: 'Fan Interaction %' },
+      { id: 'front-runners', label: 'Front-runners', formula: '[MERCHED] / ([REMOTE_FANS] + [STADIUM]) * 100', color: '#10b981', description: 'Merched fans %' },
       { id: 'fanaticals', label: 'Fanaticals', formula: '([FLAGS] + [SCARF]) / [MERCHED] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %' },
-      { id: 'casuals', label: 'Casuals', formula: '(([INDOOR] + [OUTDOOR] + [STADIUM]) - [MERCHED]) / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
+      { id: 'casuals', label: 'Casuals', formula: '(([REMOTE_FANS] + [STADIUM]) - [MERCHED]) / ([REMOTE_FANS] + [STADIUM]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
     ]
   },
   

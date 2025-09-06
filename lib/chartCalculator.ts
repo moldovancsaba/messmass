@@ -153,7 +153,8 @@ export function calculateChart(
   if (configuration.chartId === 'engagement' && configuration.showTotal) {
     try {
       // Core Fan Team = (merched / total_fans) * event_attendees
-      const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+      const remoteFans = (stats as any).remoteFans ?? (stats.indoor + stats.outdoor);
+      const totalFans = remoteFans + stats.stadium;
       const merched = stats.merched;
       const eventAttendees = stats.eventAttendees || 0;
       
@@ -174,7 +175,8 @@ export function calculateChart(
   if (configuration.chartId === 'merchandise' && configuration.showTotal) {
     try {
       // Potential Sales = (total_fans - merched) * €10
-      const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+      const remoteFans = (stats as any).remoteFans ?? (stats.indoor + stats.outdoor);
+      const totalFans = remoteFans + stats.stadium;
       const merched = stats.merched;
       
       if (totalFans >= merched) {
