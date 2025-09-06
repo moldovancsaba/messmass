@@ -30,8 +30,6 @@ export default function VariablesPage() {
     { name: 'selfies', label: 'Selfies', type: 'count', category: 'Images', icon: '🤳', description: 'Self-taken photographs' },
     
     // Location variables
-    { name: 'indoor', label: 'Indoor', type: 'count', category: 'Location', icon: '🏠', description: 'Indoor venue attendees' },
-    { name: 'outdoor', label: 'Outdoor', type: 'count', category: 'Location', icon: '🌳', description: 'Outdoor venue attendees' },
     { name: 'remoteFans', label: 'Remote Fans', type: 'count', category: 'Location', icon: '🛰️', description: 'Indoor + Outdoor (aggregated)' },
     { name: 'stadium', label: 'Location', type: 'count', category: 'Location', icon: '🏟️', description: 'On-site (stadium) attendees' },
     
@@ -51,18 +49,18 @@ export default function VariablesPage() {
     { name: 'baseballCap', label: 'Baseball Caps', type: 'count', category: 'Merchandise', icon: '🧢', description: 'Baseball cap sales' },
     { name: 'other', label: 'Other Items', type: 'count', category: 'Merchandise', icon: '📦', description: 'Other merchandise' },
     
-    // Pricing variables
-    { name: 'jerseyPrice', label: 'Jersey Price', type: 'currency', category: 'Pricing', icon: '💰', description: 'Price per jersey' },
-    { name: 'scarfPrice', label: 'Scarf Price', type: 'currency', category: 'Pricing', icon: '💰', description: 'Price per scarf' },
-    { name: 'flagsPrice', label: 'Flag Price', type: 'currency', category: 'Pricing', icon: '💰', description: 'Price per flag' },
-    { name: 'capPrice', label: 'Cap Price', type: 'currency', category: 'Pricing', icon: '💰', description: 'Price per cap' },
-    { name: 'otherPrice', label: 'Other Price', type: 'currency', category: 'Pricing', icon: '💰', description: 'Price for other items' },
-    
-    // Engagement metrics
-    { name: 'visitQrCode', label: 'QR Code Visits', type: 'count', category: 'Engagement', icon: '📱', description: 'QR code scans' },
-    { name: 'visitShortUrl', label: 'Short URL Visits', type: 'count', category: 'Engagement', icon: '🔗', description: 'Short URL clicks' },
-    { name: 'visitWeb', label: 'Website Visits', type: 'count', category: 'Engagement', icon: '🌐', description: 'Direct website visits' },
-    { name: 'socialVisit', label: 'Social Visit (Total)', type: 'count', category: 'Engagement', icon: '📣', description: 'Sum of Facebook, Instagram, YouTube, TikTok, X, Trustpilot' },
+    // Success Manager (Engagement & Event)
+    { name: 'approvedImages', label: 'Approved Images', type: 'count', category: 'Success Manager', icon: '✅', description: 'Approved images' },
+    { name: 'rejectedImages', label: 'Rejected Images', type: 'count', category: 'Success Manager', icon: '❌', description: 'Rejected images' },
+    { name: 'visitQrCode', label: 'QR Code Visits', type: 'count', category: 'Success Manager', icon: '📱', description: 'QR code scans' },
+    { name: 'visitShortUrl', label: 'Short URL Visits', type: 'count', category: 'Success Manager', icon: '🔗', description: 'Short URL clicks' },
+    { name: 'visitWeb', label: 'Web Visits', type: 'count', category: 'Success Manager', icon: '🌐', description: 'Direct website visits' },
+    { name: 'socialVisit', label: 'Social Visit (Total)', type: 'count', category: 'Success Manager', icon: '📣', description: 'Sum of Facebook, Instagram, YouTube, TikTok, X, Trustpilot' },
+    { name: 'eventValuePropositionVisited', label: 'Value Prop Visited', type: 'count', category: 'Success Manager', icon: '✉️', description: 'eDM page visits' },
+    { name: 'eventValuePropositionPurchases', label: 'Value Prop Purchases', type: 'count', category: 'Success Manager', icon: '🛒', description: 'eDM purchases' },
+    { name: 'eventAttendees', label: 'Event Attendees', type: 'count', category: 'Success Manager', icon: '👥', description: 'Total event attendees' },
+    { name: 'eventResultHome', label: 'Event Result Home', type: 'count', category: 'Success Manager', icon: '🏠', description: 'Home team result' },
+    { name: 'eventResultVisitor', label: 'Event Result Visitor', type: 'count', category: 'Success Manager', icon: '🧳', description: 'Visitor team result' },
   ];
 
   useEffect(() => {
