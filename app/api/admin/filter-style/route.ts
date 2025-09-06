@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 // GET /api/admin/filter-style?hashtags=a,b,c
 // Returns persisted styleId for a saved hashtag combination (if any)

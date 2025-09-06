@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 // POST /api/page-passwords - Generate or retrieve page password and create shareable link
 export async function POST(request: NextRequest) {

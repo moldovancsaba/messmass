@@ -2,7 +2,8 @@ import React from 'react';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 type SettingsDoc = { _id: string; styleId: string | null; updatedAt?: string };
 

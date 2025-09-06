@@ -3,7 +3,8 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { PageStyle, DataVisualizationBlock, DEFAULT_PAGE_STYLE } from '@/lib/pageStyleTypes';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 /**
  * Resolve style based on fallback hierarchy:

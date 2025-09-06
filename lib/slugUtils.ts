@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { CategorizedHashtagMap } from './hashtagCategoryTypes';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from './config';
+const MONGODB_DB = config.dbName;
 
 // Project interface matching the database schema
 interface Project {

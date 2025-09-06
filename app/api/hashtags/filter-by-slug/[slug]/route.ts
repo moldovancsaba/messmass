@@ -3,7 +3,8 @@ import { findHashtagsByFilterSlug } from '@/lib/slugUtils';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 import clientPromise from '@/lib/mongodb';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 async function connectToDatabase() {
   try {

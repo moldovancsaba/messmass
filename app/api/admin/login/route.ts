@@ -4,7 +4,8 @@ import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
 // Admin password from environment variable
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'MessMassAdmin2025!'
+import config from '@/lib/config'
+const ADMIN_PASSWORD = config.adminPassword
 
 export async function POST(request: NextRequest) {
   try {

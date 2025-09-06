@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_URI = config.mongodbUri;
+const MONGODB_DB = config.dbName;
 
 let cachedClient: MongoClient | null = null;
 

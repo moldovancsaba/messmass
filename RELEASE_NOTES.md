@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v2.12.0] — 2025-09-06T12:49:22.000Z
+
+### 🔧 Internal
+- Centralized configuration in lib/config.ts (mongodbUri, dbName, adminPassword, nextPublicWsUrl, nodeEnv)
+- Refactored multiple APIs to use config.dbName and config.adminPassword for consistency
+
+---
+
 ## [v2.11.0] — 2025-09-06T12:38:27.000Z
 
 ### ✨ Improvements
