@@ -268,6 +268,23 @@ These patterns can be applied to future MessMass features:
 
 ## Admin Interface Consistency Improvements (Version 2.3.1)
 
+---
+
+## Style System & Page Config Improvements (Version 2.10.0)
+Last Updated: 2025-09-06T12:28:47.000Z
+
+1) Style Application Path
+- What: UnifiedStatsHero now forwards pageStyle to UnifiedPageHero; hashtag stats page fetches and injects styles via /api/page-config.
+- Why: Page styles existed but weren’t surfacing due to a missing prop pass-through and lack of hashtag-page application.
+
+2) Persistent Style for Hashtag Combinations
+- What: New POST /api/admin/filter-style persists styleId for normalized hashtag combinations in filter_slugs.
+- Why: Eliminates need for a separate “Set” action; dropdown auto-saves for better UX and consistency.
+
+3) Safe ObjectId Handling in page-config
+- What: Only construct ObjectId when valid; guard project.styleId conversion.
+- Why: Prevents BSONError when projectId is a UUID viewSlug; improves robustness across routes.
+
 ### Overview
 
 Implemented targeted improvements to admin interface consistency and user experience, addressing gradient overlay issues, reorganizing navigation cards, and removing unused chart functionality from the hashtags filter page.

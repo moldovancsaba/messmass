@@ -193,6 +193,7 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/stats/[slug]` - Individual project statistics (password protected)
 - `/edit/[slug]` - Project editing interface (password protected)
 - `/filter/[slug]` - Hashtag filtering and statistics (supports both filter slugs and direct hashtag names)
+- `/hashtag/[hashtag]` - Aggregated statistics for a single hashtag (resurfaced; leverages the same style system)
 
 ### Admin Pages
 - `/admin` - Admin dashboard
@@ -214,17 +215,17 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/api/page-config` - Page styling configuration
 - `/api/chart-config` - Chart configuration management
 
-### URL Migration (v2.6.0)
-- **REMOVED**: `/hashtag/[hashtag]` - Individual hashtag statistics pages
-- **REDIRECT**: All `/hashtag/*` URLs automatically redirect to `/filter/*` with 301 status
-- **BENEFIT**: Unified statistics system with consistent user experience
+### URL Notes (v2.6.0 → v2.10.0)
+- v2.6.0: Hashtag pages were deprecated in favor of the unified filter system
+- v2.10.0: `/hashtag/[hashtag]` is available for single-hashtag aggregated stats (shares styling and components with filter/stats pages)
+- Redirect behavior may exist for legacy routes, but the hashtag page is supported and styled
 
 ---
 
 ## Technology Stack
 
 ### Frontend
-- **Next.js 14** - React framework with App Router
+- **Next.js 15.4.6** - React framework with App Router
 - **TypeScript** - Type safety and developer experience
 - **Tailwind CSS** - Utility-first styling
 - **Lucide React** - Icon library

@@ -5,6 +5,20 @@
 ---
 
 ## Version 2.3.0 - Shareables Component Library Planning
+
+---
+
+## Session Update — v2.10.0 Style System and Page Config
+Date: 2025-09-06T12:28:47.000Z
+Version: 2.10.0
+
+Plan and Delivery Summary:
+- Implement persistent style selection for hashtag combinations (auto-save on dropdown change)
+- Ensure public filter and hashtag stats pages apply styles (UnifiedStatsHero pass-through, hashtag page style fetch)
+- Harden page-config ObjectId handling for UUID slugs
+
+Outcome:
+- Completed and released in v2.10.0; build OK; pushed to main
 **Date**: 2025-08-29T13:26:54.000Z
 **Version**: 2.2.0 → 2.3.0
 **Feature**: Public Component Library with Authentication System

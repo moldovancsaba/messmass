@@ -1,8 +1,18 @@
 # TASKLIST.md
+Current Version: 2.10.0
+Last Updated: 2025-09-06T12:28:47.000Z
+
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### New – Style System Consistency (2.10.x)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| STY-001 | Apply global/admin style on admin headers | AI Developer | 2025-09-10T12:00:00.000Z | Planned |
+| STY-002 | Add “✓ saved” confirmation for style dropdown | AI Developer | 2025-09-10T12:00:00.000Z | Planned |
 
 ### High Priority - Foundation
 
