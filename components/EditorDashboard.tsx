@@ -34,6 +34,9 @@ interface Project {
     flags: number;
     baseballCap: number;
     other: number;
+    // Derived/extended fields (new)
+    remoteFans?: number; // New aggregated fans count (indoor + outdoor)
+    socialVisit?: number; // New aggregated social visits (sum of individual socials)
     // Success Manager fields
     approvedImages?: number;
     rejectedImages?: number;
@@ -158,7 +161,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   // Calculate totals
   const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
-  const totalFans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
+  const remoteFansCalc = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+  const totalFans = remoteFansCalc + project.stats.stadium;
   const totalGender = project.stats.female + project.stats.male;
   const totalUnder40 = project.stats.genAlpha + project.stats.genYZ;
   const totalOver40 = project.stats.genX + project.stats.boomer;
@@ -488,17 +492,39 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>👥 Fans ({totalFans})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            {/* Remote is calculated (indoor + outdoor). We display it but do not edit directly */}
+            <StatCard label="Remote" value={remoteFansCalc} isCalculated={true} />
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="Indoor" value={project.stats.indoor} statKey="indoor" />
-                <StatCard label="Outdoor" value={project.stats.outdoor} statKey="outdoor" />
-                <StatCard label="Stadium" value={project.stats.stadium} statKey="stadium" />
+                <StatCard label="Location" value={project.stats.stadium} statKey="stadium" />
+                <StatCard label="Total Fans" value={totalFans} isCalculated={true} />
               </>
             ) : (
               <>
-                <ManualInputCard label="Indoor" value={project.stats.indoor} statKey="indoor" />
-                <ManualInputCard label="Outdoor" value={project.stats.outdoor} statKey="outdoor" />
-                <ManualInputCard label="Stadium" value={project.stats.stadium} statKey="stadium" />
+                <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.95)', 
+                  borderRadius: '12px', 
+                  padding: '1rem', 
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '1rem',
+                  opacity: 0.7
+                }}>
+                  <div style={{
+                    width: '120px',
+                    padding: '0.5rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    color: '#6b7280',
+                    backgroundColor: '#f9fafb'
+                  }}>{totalFans}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Fans (calculated)</div>
+                </div>
               </>
             )}
           </div>
@@ -643,13 +669,13 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="Merched" value={project.stats.merched} statKey="merched" />
+                <StatCard label="People with Merch" value={project.stats.merched} statKey="merched" />
                 <StatCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
                 <StatCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
               </>
             ) : (
               <>
-                <ManualInputCard label="Merched" value={project.stats.merched} statKey="merched" />
+                <ManualInputCard label="People with Merch" value={project.stats.merched} statKey="merched" />
                 <ManualInputCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
                 <ManualInputCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
               </>
@@ -703,16 +729,26 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             </div>
           </div>
 
-          {/* Social Media Visits */}
+          {/* eDM (Value Proposition) */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Social Media Visits</h4>
+            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>eDM</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="Facebook Visits" value={project.stats.visitFacebook || 0} statKey="visitFacebook" />
-              <SuccessManagerCard label="Instagram Visits" value={project.stats.visitInstagram || 0} statKey="visitInstagram" />
-              <SuccessManagerCard label="YouTube Visits" value={project.stats.visitYoutube || 0} statKey="visitYoutube" />
-              <SuccessManagerCard label="TikTok Visits" value={project.stats.visitTiktok || 0} statKey="visitTiktok" />
-              <SuccessManagerCard label="X Visits" value={project.stats.visitX || 0} statKey="visitX" />
-              <SuccessManagerCard label="Trustpilot Visits" value={project.stats.visitTrustpilot || 0} statKey="visitTrustpilot" />
+              <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />
+              <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />
+            </div>
+          </div>
+
+          {/* Social Visit (aggregated) */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Social Visit</h4>
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              {(() => {
+                const sumSocial = (project.stats.visitFacebook || 0) + (project.stats.visitInstagram || 0) + (project.stats.visitYoutube || 0) + (project.stats.visitTiktok || 0) + (project.stats.visitX || 0) + (project.stats.visitTrustpilot || 0);
+                const socialVal = project.stats.socialVisit ?? sumSocial;
+                return (
+                  <SuccessManagerCard label="Total Social Visit" value={socialVal} statKey={"socialVisit" as keyof typeof project.stats} />
+                );
+              })()}
             </div>
           </div>
 
@@ -721,18 +757,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Event Performance</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
               <SuccessManagerCard label="Event Attendees" value={project.stats.eventAttendees || 0} statKey="eventAttendees" />
-              <SuccessManagerCard label="Ticket Purchases" value={project.stats.eventTicketPurchases || 0} statKey="eventTicketPurchases" />
               <SuccessManagerCard label="Event Result Home" value={project.stats.eventResultHome || 0} statKey="eventResultHome" />
               <SuccessManagerCard label="Event Result Visitor" value={project.stats.eventResultVisitor || 0} statKey="eventResultVisitor" />
-            </div>
-          </div>
-
-          {/* Value Proposition */}
-          <div>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Value Proposition</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />
-              <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />
             </div>
           </div>
           </div>

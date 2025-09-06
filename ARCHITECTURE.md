@@ -269,5 +269,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-09-06T12:49:22.000Z*
-*Version: 2.12.0*
+*Last Updated: 2025-09-06T13:58:02.000Z*
+*Version: 2.13.0*

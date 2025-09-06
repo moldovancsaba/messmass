@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 2.12.0
-Last Updated: 2025-09-06T12:49:22.000Z
+Current Version: 2.13.0
+Last Updated: 2025-09-06T13:58:02.000Z
 
 ## Version 2.2.0 - Hashtag Categories System
 *Target Release: 2025-01-28*

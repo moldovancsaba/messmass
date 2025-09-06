@@ -1,5 +1,25 @@
 # MessMass Release Notes
 
+## [v2.13.0] — 2025-09-06T13:58:02.000Z
+
+### 🧮 Edit Stats UI Overhaul
+- Fans: show Remote (calculated Indoor+Outdoor), Location (renamed from Stadium), and Total Fans (calculated)
+- Merch: “People with Merch” (label only; still stored as merched)
+- Success Manager:
+  - Image Management: Approved/Rejected Images (unchanged)
+  - Visit Tracking: QR Code, Short URL, Web (unchanged)
+  - eDM (moved up): Value Prop Visited/Purchases (formerly “Value Proposition”)
+  - Social Visit: single aggregated field (sum of all social platforms)
+  - Event Performance: Event Attendees, Event Result Home/Visitor (Ticket Purchases removed)
+
+### 🔁 Migration Script
+- Added scripts/migrate-stats-v2.13.0.js
+  - stats.remoteFans = stats.indoor + stats.outdoor
+  - stats.socialVisit = sum of individual social visits
+  - Removes stats.eventTicketPurchases
+
+---
+
 ## [v2.12.0] — 2025-09-06T12:49:22.000Z
 
 ### 🔧 Internal
