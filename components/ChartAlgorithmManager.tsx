@@ -50,37 +50,12 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   const [configurations, setConfigurations] = useState<ChartConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
-  const [showVariableReference, setShowVariableReference] = useState(false);
   const [editingConfig, setEditingConfig] = useState<ChartConfigFormData | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  
-  // Variable reference state
-  const [filteredVariables, setFilteredVariables] = useState<AvailableVariable[]>(AVAILABLE_VARIABLES);
   
   // Load configurations on mount
   useEffect(() => {
     loadConfigurations();
   }, []);
-
-  // Filter variables based on search and category
-  useEffect(() => {
-    let filtered = AVAILABLE_VARIABLES;
-    
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(variable => variable.category === selectedCategory);
-    }
-    
-    if (searchTerm) {
-      filtered = filtered.filter(variable => 
-        variable.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        variable.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        variable.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    setFilteredVariables(filtered);
-  }, [searchTerm, selectedCategory]);
 
   const loadConfigurations = async () => {
     try {
@@ -255,10 +230,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
     setShowEditor(true);
   };
 
-  const copyVariableToClipboard = (variableName: string) => {
-    navigator.clipboard.writeText(`[${variableName}]`);
-    // Could show a toast notification here
-  };
 
   const testConfigurationFormula = (formula: string) => {
     if (!formula.trim()) return null;
@@ -272,8 +243,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
     return { error: null, result: test.result };
   };
 
-  // Get unique categories for filter dropdown
-  const categories = ['All', ...Array.from(new Set(AVAILABLE_VARIABLES.map(v => v.category)))];
 
   if (loading) {
     return (
@@ -290,12 +259,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
         <div className="projects-header">
           <h2 className="section-title">Chart Algorithm Manager</h2>
           <div className="projects-header-buttons">
-            <button 
-              className="btn btn-secondary"
-              onClick={() => setShowVariableReference(!showVariableReference)}
-            >
-              📚 Variable Reference ({AVAILABLE_VARIABLES.length})
-            </button>
             <button 
               className="btn btn-primary"
               onClick={() => startEditing()}
@@ -329,65 +292,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
         </div>
       </div>
 
-      {/* Variable Reference Panel */}
-      {showVariableReference && (
-        <div className="glass-card variable-reference-panel">
-          <div className="projects-header">
-            <h3 className="section-title">Variable Reference</h3>
-            <button 
-              className="btn btn-secondary"
-              onClick={() => setShowVariableReference(false)}
-            >
-              ✕ Close
-            </button>
-          </div>
-          
-          <div className="variable-filters">
-            <input
-              type="text"
-              placeholder="Search variables..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-input"
-              style={{ marginRight: '1rem', maxWidth: '300px' }}
-            />
-            
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-input"
-              style={{ maxWidth: '200px' }}
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="variables-grid">
-            {filteredVariables.map(variable => (
-              <div key={variable.name} className="variable-card">
-                <div className="variable-header">
-                  <strong>[{variable.name}]</strong>
-                  <button 
-                    className="btn btn-sm btn-secondary"
-                    onClick={() => copyVariableToClipboard(variable.name)}
-                    title="Copy to clipboard"
-                  >
-                    📋
-                  </button>
-                </div>
-                <div className="variable-display-name">{variable.displayName}</div>
-                <div className="variable-category">{variable.category}</div>
-                <div className="variable-description">{variable.description}</div>
-                <div className="variable-example">
-                  <strong>Example:</strong> <code>{variable.exampleUsage}</code>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Chart Configurations List */}
       <div className="glass-card admin-projects">

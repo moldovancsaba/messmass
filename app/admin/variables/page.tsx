@@ -32,7 +32,8 @@ export default function VariablesPage() {
     // Location variables
     { name: 'indoor', label: 'Indoor', type: 'count', category: 'Location', icon: '🏠', description: 'Indoor venue attendees' },
     { name: 'outdoor', label: 'Outdoor', type: 'count', category: 'Location', icon: '🌳', description: 'Outdoor venue attendees' },
-    { name: 'stadium', label: 'Stadium', type: 'count', category: 'Location', icon: '🏟️', description: 'Stadium attendees' },
+    { name: 'remoteFans', label: 'Remote Fans', type: 'count', category: 'Location', icon: '🛰️', description: 'Indoor + Outdoor (aggregated)' },
+    { name: 'stadium', label: 'Location', type: 'count', category: 'Location', icon: '🏟️', description: 'On-site (stadium) attendees' },
     
     // Demographics
     { name: 'female', label: 'Female', type: 'count', category: 'Demographics', icon: '👩', description: 'Female attendees' },
@@ -43,7 +44,7 @@ export default function VariablesPage() {
     { name: 'boomer', label: 'Boomers', type: 'count', category: 'Demographics', icon: '👴', description: 'Baby Boomers (1946-1964)' },
     
     // Merchandise
-    { name: 'merched', label: 'Merched', type: 'count', category: 'Merchandise', icon: '🛍️', description: 'Total merchandised items' },
+    { name: 'merched', label: 'People with Merch', type: 'count', category: 'Merchandise', icon: '🛍️', description: 'Fans wearing merch (formerly "Merched")' },
     { name: 'jersey', label: 'Jerseys', type: 'count', category: 'Merchandise', icon: '👕', description: 'Jersey sales' },
     { name: 'scarf', label: 'Scarves', type: 'count', category: 'Merchandise', icon: '🧣', description: 'Scarf sales' },
     { name: 'flags', label: 'Flags', type: 'count', category: 'Merchandise', icon: '🏴', description: 'Flag sales' },
@@ -61,11 +62,7 @@ export default function VariablesPage() {
     { name: 'visitQrCode', label: 'QR Code Visits', type: 'count', category: 'Engagement', icon: '📱', description: 'QR code scans' },
     { name: 'visitShortUrl', label: 'Short URL Visits', type: 'count', category: 'Engagement', icon: '🔗', description: 'Short URL clicks' },
     { name: 'visitWeb', label: 'Website Visits', type: 'count', category: 'Engagement', icon: '🌐', description: 'Direct website visits' },
-    { name: 'visitFacebook', label: 'Facebook Visits', type: 'count', category: 'Social Media', icon: '📘', description: 'Facebook page visits' },
-    { name: 'visitInstagram', label: 'Instagram Visits', type: 'count', category: 'Social Media', icon: '📷', description: 'Instagram profile visits' },
-    { name: 'visitYoutube', label: 'YouTube Visits', type: 'count', category: 'Social Media', icon: '📺', description: 'YouTube channel visits' },
-    { name: 'visitTiktok', label: 'TikTok Visits', type: 'count', category: 'Social Media', icon: '🎵', description: 'TikTok profile visits' },
-    { name: 'visitX', label: 'X (Twitter) Visits', type: 'count', category: 'Social Media', icon: '🐦', description: 'X profile visits' },
+    { name: 'socialVisit', label: 'Social Visit (Total)', type: 'count', category: 'Engagement', icon: '📣', description: 'Sum of Facebook, Instagram, YouTube, TikTok, X, Trustpilot' },
   ];
 
   useEffect(() => {
