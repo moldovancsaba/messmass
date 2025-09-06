@@ -9,6 +9,16 @@
 ---
 
 ## Session Update — v2.10.0 Style System and Page Config
+
+---
+
+## Session Update — v2.11.0 Admin Style + Saved Indicator
+Date: 2025-09-06T12:38:27.000Z
+Version: 2.11.0
+
+- Admin pages auto-apply Admin Style via app/admin/layout.tsx
+- Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
+- Docs and release notes updated
 Date: 2025-09-06T12:28:47.000Z
 Version: 2.10.0
 

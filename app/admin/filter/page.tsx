@@ -92,6 +92,7 @@ function HashtagFilterPageContent() {
   const [shareSlug, setShareSlug] = useState<string | null>(null);
   const [pageStyles, setPageStyles] = useState<{ _id: string; name: string }[]>([]);
   const [selectedStyleId, setSelectedStyleId] = useState<string>('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   // Fetch filtered statistics
   const fetchFilteredStats = useCallback(async (hashtags = selectedHashtags) => {
@@ -381,18 +382,26 @@ function HashtagFilterPageContent() {
                       onChange={async (e) => {
                         const newId = e.target.value;
                         setSelectedStyleId(newId);
+                        setSaveStatus('saving');
                         // Persist selection immediately so the UI remembers next time.
                         // We use the admin POST endpoint that upserts in filter_slugs.
                         try {
                           if (selectedHashtags.length > 0) {
-                            await fetch('/api/admin/filter-style', {
+                            const res = await fetch('/api/admin/filter-style', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ hashtags: selectedHashtags, styleId: newId || null })
                             });
+                            if (!res.ok) throw new Error('Failed to save');
+                            setSaveStatus('saved');
+                            setTimeout(() => setSaveStatus('idle'), 1200);
+                          } else {
+                            setSaveStatus('idle');
                           }
                         } catch (err) {
                           console.error('Failed to persist filter style selection', err);
+                          setSaveStatus('error');
+                          setTimeout(() => setSaveStatus('idle'), 2000);
                         }
                       }} 
                       style={{ minWidth: '200px' }}
@@ -403,6 +412,19 @@ function HashtagFilterPageContent() {
                         <option key={s._id} value={s._id}>{s.name}</option>
                       ))}
                     </select>
+
+                    {/* Inline save indicator */}
+                    <span style={{
+                      minWidth: '70px',
+                      textAlign: 'left',
+                      fontSize: '0.85rem',
+                      alignSelf: 'center',
+                      color: saveStatus === 'saved' ? '#10b981' : saveStatus === 'error' ? '#ef4444' : '#6b7280'
+                    }}>
+                      {saveStatus === 'saving' && 'Saving…'}
+                      {saveStatus === 'saved' && '✓ saved'}
+                      {saveStatus === 'error' && '⚠︎ failed'}
+                    </span>
 
                     <button 
                       onClick={async () => {

@@ -11,8 +11,8 @@ Last Updated: 2025-09-06T12:28:47.000Z
 
 | Task ID | Title | Owner | Expected Delivery | Status |
 |---------|-------|-------|-------------------|--------|
-| STY-001 | Apply global/admin style on admin headers | AI Developer | 2025-09-10T12:00:00.000Z | Planned |
-| STY-002 | Add “✓ saved” confirmation for style dropdown | AI Developer | 2025-09-10T12:00:00.000Z | Planned |
+| STY-001 | Apply global/admin style on admin headers | AI Developer | 2025-09-06T12:38:27.000Z | ✅ Complete |
+| STY-002 | Add “✓ saved” confirmation for style dropdown | AI Developer | 2025-09-06T12:38:27.000Z | ✅ Complete |
 
 ### High Priority - Foundation
 

@@ -1,5 +1,16 @@
 # MessMass Release Notes
 
+## [v2.11.0] — 2025-09-06T12:38:27.000Z
+
+### ✨ Improvements
+- Admin area now auto-applies the configured Admin Style (settings: adminStyle) via app/admin/layout.tsx to admin-container/admin-header.
+- Added inline “✓ saved” indicator for the style dropdown on /admin/filter when persisting a selection.
+
+### 🛠 Technical
+- No API changes; UI-only enhancement using existing admin-style endpoint.
+
+---
+
 ## [v2.10.0] — 2025-09-06T11:38:15.000Z
 
 ### ✨ Features
