@@ -103,6 +103,11 @@ export default function FilterPage() {
         setProject(data.project);
         setProjects(data.projects || []);
         setHashtags(data.hashtags || []);
+        if (data.styleId) {
+          fetchPageConfig({ styleId: data.styleId });
+        } else if (data.hashtags) {
+          fetchPageConfig({ hashtags: data.hashtags });
+        }
       } else {
         setError(data.error || 'Failed to load filter statistics');
       }
@@ -115,9 +120,15 @@ export default function FilterPage() {
   }, [filterSlug]);
 
   // Function to fetch page configuration
-  const fetchPageConfig = useCallback(async () => {
+  const fetchPageConfig = useCallback(async (opts?: { styleId?: string | null; hashtags?: string[] }) => {
     try {
-      const response = await fetch('/api/page-config');
+      let qs = '';
+      if (opts?.styleId) {
+        qs = `?styleId=${encodeURIComponent(opts.styleId)}`;
+      } else if (opts?.hashtags && opts.hashtags.length > 0) {
+        qs = `?hashtags=${encodeURIComponent(opts.hashtags.join(','))}`;
+      }
+      const response = await fetch(`/api/page-config${qs}`);
       const data = await response.json();
 
       if (data.success) {
@@ -153,7 +164,7 @@ export default function FilterPage() {
       // Only load data if authenticated
       if (authenticated) {
         fetchFilterData();
-        fetchPageConfig();
+        // page config will be fetched after hashtags are loaded
         loadChartConfigurations();
       }
     }
@@ -165,9 +176,16 @@ export default function FilterPage() {
     setCheckingAuth(false);
     // Load data after successful authentication
     fetchFilterData();
-    fetchPageConfig();
+    // page config will be fetched after hashtags are loaded
     loadChartConfigurations();
   };
+
+  // After hashtags are loaded, fetch page style config based on hashtag assignments
+  useEffect(() => {
+    if (hashtags && hashtags.length > 0) {
+      fetchPageConfig({ hashtags });
+    }
+  }, [hashtags, fetchPageConfig]);
 
   // Calculate chart results when project and configurations are loaded
   useEffect(() => {
@@ -239,12 +257,6 @@ export default function FilterPage() {
       <div className="loading-centered-container">
         <div className="loading-card">
           <div className="curve-spinner"></div>
-          <p style={{ 
-            color: '#6b7280', 
-            margin: 0, 
-            fontSize: '1.1rem',
-            fontWeight: '500'
-          }}>Checking access permissions...</p>
         </div>
       </div>
     );
@@ -266,12 +278,6 @@ export default function FilterPage() {
       <div className="loading-centered-container">
         <div className="loading-card">
           <div className="curve-spinner"></div>
-          <p style={{ 
-            color: '#6b7280', 
-            margin: 0, 
-            fontSize: '1.1rem',
-            fontWeight: '500'
-          }}>Loading filter statistics...</p>
         </div>
       </div>
     );

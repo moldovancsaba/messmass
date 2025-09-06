@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v2.10.0] — 2025-09-06T11:38:15.000Z
+
+### ✨ Features
+- Persist filter style selection per hashtag combination via admin endpoint (auto-save on dropdown change)
+  - New POST /api/admin/filter-style upserts styleId for a normalized hashtag combination in filter_slugs
+  - Public /filter/[slug] applies the remembered style automatically
+- Style application across pages
+  - UnifiedStatsHero now forwards pageStyle to UnifiedPageHero, enabling styles on stats and filter pages
+  - Hashtag stats page (/hashtag/[hashtag]) now fetches and applies page styles using /api/page-config?hashtags=...
+
+### 🐛 Fixes
+- page-config API no longer throws BSONError when projectId is a UUID
+  - Only constructs ObjectId when ObjectId.isValid(projectId)
+  - Guards project.styleId format before ObjectId conversion
+- generateFilterSlug now persists provided styleId when a combination already exists
+
+### 📦 Developer Notes
+- Version bump: 2.9.7 → 2.10.0 (MINOR per protocol before commit)
+- Build and type-check validated successfully
+
+---
+
 ## [v2.7.0] — 2025-01-29T15:04:30.000Z
 
 ### 🎨 UI/UX Enhancements

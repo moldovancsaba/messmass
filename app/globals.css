@@ -1070,13 +1070,7 @@ img {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Loading */
-.loading-spinner {
-  text-align: center;
-  padding: 4rem;
-  font-size: 1.25rem;
-  color: #4a5568;
-}
+/* Loading animations removed - section kept for documentation */
 
 /* Responsive Design */
 @media (max-width: 768px) {

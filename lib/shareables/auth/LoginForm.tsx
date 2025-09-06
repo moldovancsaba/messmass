@@ -396,23 +396,7 @@ export default function LoginForm({
               e.currentTarget.style.boxShadow = 'none'
             }}
           >
-            {loading ? (
-              <>
-                <div 
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    borderTopColor: 'white',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                  }}
-                />
-                {loadingText}
-              </>
-            ) : (
-              buttonText
-            )}
+            {loading ? loadingText : buttonText}
           </button>
         </form>
 
@@ -469,14 +453,6 @@ export default function LoginForm({
         </div>
       </div>
 
-      {/* CSS Animation for Spinner */}
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   )
 }

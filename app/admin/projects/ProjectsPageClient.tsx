@@ -20,6 +20,7 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] };
   viewSlug?: string;
   editSlug?: string;
+  styleId?: string | null;
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -68,6 +69,7 @@ interface ProjectsPageClientProps {
 
 export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -83,7 +85,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     eventName: '',
     eventDate: '',
     hashtags: [] as string[],
-    categorizedHashtags: {} as { [categoryName: string]: string[] }
+    categorizedHashtags: {} as { [categoryName: string]: string[] },
+    styleId: '' as string | null
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   
@@ -93,7 +96,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     eventName: '',
     eventDate: '',
     hashtags: [] as string[],
-    categorizedHashtags: {} as { [categoryName: string]: string[] }
+    categorizedHashtags: {} as { [categoryName: string]: string[] },
+    styleId: '' as string | null
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
 
@@ -104,6 +108,18 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   useEffect(() => {
     loadProjects();
+    // Load styles for selection
+    (async () => {
+      try {
+        const res = await fetch('/api/page-styles');
+        const data = await res.json();
+        if (data.success) {
+          setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
+        }
+      } catch (e) {
+        console.error('Failed to load styles', e);
+      }
+    })();
   }, []);
 
   const loadProjects = async () => {
@@ -163,7 +179,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         eventDate: newProjectData.eventDate,
         hashtags: newProjectData.hashtags,
         categorizedHashtags: newProjectData.categorizedHashtags,
-        stats: defaultStats
+        stats: defaultStats,
+        styleId: newProjectData.styleId || null
       };
       
       console.log('Sending POST request to /api/projects with:', requestBody);
@@ -180,7 +197,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       if (response.ok && result.success) {
         setProjects(prev => [result.project, ...prev]);
-        setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {} });
+        setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
         setShowNewProjectForm(false);
         
         alert(`Project "${result.project.eventName}" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nStats Link: /stats/${result.project.viewSlug}`);
@@ -201,7 +218,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       eventName: project.eventName,
       eventDate: project.eventDate,
       hashtags: project.hashtags || [],
-      categorizedHashtags: project.categorizedHashtags || {}
+      categorizedHashtags: project.categorizedHashtags || {},
+      styleId: project.styleId || ''
     });
     setShowEditProjectForm(true);
   };
@@ -223,7 +241,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         eventDate: editProjectData.eventDate,
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
-        stats: editingProject.stats
+        stats: editingProject.stats,
+        styleId: editProjectData.styleId || null
       };
       
       console.log('Sending PUT request to /api/projects with:', requestBody);
@@ -241,11 +260,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       if (response.ok && result.success) {
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
-            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags }
+            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleId: editProjectData.styleId || null }
             : p
         ));
         
-        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {} });
+        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
         setEditingProject(null);
         setShowEditProjectForm(false);
         
@@ -736,6 +755,20 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                   placeholder="Search or add hashtags..."
                 />
               </div>
+              {/* Style selection */}
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Page Style</label>
+                <select 
+                  className="form-input"
+                  value={newProjectData.styleId || ''}
+                  onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+                >
+                  <option value="">— Use Default/Global —</option>
+                  {availableStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="modal-footer" style={{
               padding: '1.5rem',
@@ -856,6 +889,20 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                   }
                   placeholder="Search or add hashtags..."
                 />
+              </div>
+              {/* Style selection */}
+              <div className="form-group">
+                <label>Page Style</label>
+                <select 
+                  className="form-input"
+                  value={editProjectData.styleId || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+                >
+                  <option value="">— Use Default/Global —</option>
+                  {availableStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="modal-footer">

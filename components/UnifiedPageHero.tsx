@@ -1,6 +1,7 @@
 import React from 'react';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
+import { PageStyle } from '@/lib/pageStyleTypes';
 
 interface UnifiedPageHeroProps {
   title: string;
@@ -12,6 +13,7 @@ interface UnifiedPageHeroProps {
     status: string;
   };
   onExportCSV?: () => void;
+  pageStyle?: PageStyle;
   children?: React.ReactNode; // For additional content like dates
 }
 
@@ -21,14 +23,35 @@ export default function UnifiedPageHero({
   categorizedHashtags = {},
   statusBadge,
   onExportCSV,
+  pageStyle,
   children
 }: UnifiedPageHeroProps) {
+  const styleCss = pageStyle ? `
+    .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
+    .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+  ` : '';
+
   return (
     <div style={{ padding: '2rem' }}>
+      {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
       <div className="admin-header glass-card" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{title}</h1>
+            {pageStyle?.name && (
+              <div style={{ marginTop: '0.5rem' }}>
+                <span style={{
+                  background: 'rgba(99, 102, 241, 0.12)',
+                  color: '#4f46e5',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600
+                }}>
+                  Using style: {pageStyle.name}
+                </span>
+              </div>
+            )}
             
             {/* Beautiful Bubble Hashtags Display with Category Prefixes */}
             {(() => {

@@ -405,21 +405,7 @@ export function AuthGuard({
 }) {
   const { user, isLoading } = useAuth()
   
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '200px',
-        color: '#6b7280',
-        fontSize: '1.1rem'
-      }}>
-        Loading...
-      </div>
-    )
-  }
+  // Skip loading state - show content immediately or fallback
   
   // Check authentication
   if (!user) {

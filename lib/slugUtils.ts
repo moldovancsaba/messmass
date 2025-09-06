@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import { CategorizedHashtagMap } from './hashtagCategoryTypes';
 
@@ -205,11 +205,12 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
   }
 }
 
-// Filter interface for saved filter combinations
-interface FilterCombination {
-  _id?: string;
+// Filter interface for saved filter combinations (DB document)
+interface FilterCombinationDoc {
+  _id?: ObjectId;
   slug: string;
   hashtags: string[];
+  styleId?: string | null; // Optional explicit style for this filter
   createdAt: string;
   lastAccessed: string;
 }
@@ -217,11 +218,11 @@ interface FilterCombination {
 /**
  * Generate and save a filter slug for a hashtag combination
  */
-export async function generateFilterSlug(hashtags: string[]): Promise<string> {
+export async function generateFilterSlug(hashtags: string[], styleId?: string | null): Promise<string> {
   try {
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('filter_slugs');
+    const collection = db.collection<FilterCombinationDoc>('filter_slugs');
 
     // Normalize hashtags (lowercase, sorted)
     const normalizedHashtags = hashtags
@@ -239,10 +240,15 @@ export async function generateFilterSlug(hashtags: string[]): Promise<string> {
     });
 
     if (existingFilter) {
-      // Update last accessed time and return existing slug
+      // Update last accessed time and (optionally) update styleId if a new one was provided
+      const updates: any = { lastAccessed: new Date().toISOString() };
+      if (typeof styleId !== 'undefined') {
+        // Persist explicit style choice for this combination so it is remembered
+        updates.styleId = styleId && styleId !== 'null' ? styleId : null;
+      }
       await collection.updateOne(
-        { _id: existingFilter._id },
-        { $set: { lastAccessed: new Date().toISOString() } }
+        { _id: (existingFilter as any)._id },
+        { $set: updates }
       );
       return existingFilter.slug;
     }
@@ -265,6 +271,7 @@ export async function generateFilterSlug(hashtags: string[]): Promise<string> {
     await collection.insertOne({
       slug,
       hashtags: normalizedHashtags,
+      styleId: styleId && styleId !== 'null' ? styleId : null,
       createdAt: now,
       lastAccessed: now
     });
@@ -279,21 +286,21 @@ export async function generateFilterSlug(hashtags: string[]): Promise<string> {
 /**
  * Find hashtags by filter slug
  */
-export async function findHashtagsByFilterSlug(filterSlug: string): Promise<string[] | null> {
+export async function findHashtagsByFilterSlug(filterSlug: string): Promise<{ hashtags: string[]; styleId?: string | null } | null> {
   try {
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('filter_slugs');
+    const collection = db.collection<FilterCombinationDoc>('filter_slugs');
 
     const filter = await collection.findOne({ slug: filterSlug });
     
     if (filter) {
       // Update last accessed time
       await collection.updateOne(
-        { _id: filter._id },
+        { _id: (filter as any)._id },
         { $set: { lastAccessed: new Date().toISOString() } }
       );
-      return filter.hashtags;
+      return { hashtags: filter.hashtags, styleId: filter.styleId };
     }
     
     return null;

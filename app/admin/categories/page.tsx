@@ -17,14 +17,11 @@ export default function CategoriesPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<HashtagCategory[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<HashtagCategory[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<HashtagCategory | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     color: '#3b82f6',
@@ -46,8 +43,6 @@ export default function CategoriesPage() {
     } catch (err) {
       console.error('Failed to fetch categories:', err);
       setError('Failed to load categories');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,7 +79,6 @@ export default function CategoriesPage() {
       return;
     }
 
-    setCreating(true);
     try {
       const response = await fetch('/api/hashtag-categories', {
         method: 'POST',
@@ -107,8 +101,6 @@ export default function CategoriesPage() {
     } catch (err) {
       console.error('Failed to create category:', err);
       alert('Failed to create category');
-    } finally {
-      setCreating(false);
     }
   };
 
@@ -119,7 +111,6 @@ export default function CategoriesPage() {
       return;
     }
 
-    setUpdating(true);
     try {
       const response = await fetch('/api/hashtag-categories', {
         method: 'PUT',
@@ -143,8 +134,6 @@ export default function CategoriesPage() {
     } catch (err) {
       console.error('Failed to update category:', err);
       alert('Failed to update category');
-    } finally {
-      setUpdating(false);
     }
   };
 
@@ -184,25 +173,7 @@ export default function CategoriesPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="admin-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{
-          padding: '2rem',
-          background: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '12px',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📂</div>
-          <div>Loading categories...</div>
-        </div>
-      </div>
-    );
-  }
+  // Loading state removed - show content immediately
 
   if (error) {
     return (
@@ -590,35 +561,33 @@ export default function CategoriesPage() {
                   setShowCreateForm(false);
                   resetForm();
                 }}
-                disabled={creating}
                 style={{
                   padding: '0.75rem 1.5rem',
                   background: '#f3f4f6',
                   color: '#374151',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: creating ? 'not-allowed' : 'pointer',
-                  fontWeight: '500',
-                  opacity: creating ? 0.5 : 1
+                  cursor: 'pointer',
+                  fontWeight: '500'
                 }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCategory}
-                disabled={creating || !formData.name.trim()}
+                disabled={!formData.name.trim()}
                 style={{
                   padding: '0.75rem 1.5rem',
-                  background: creating || !formData.name.trim() ? '#e5e7eb' : '#3b82f6',
-                  color: creating || !formData.name.trim() ? '#9ca3af' : 'white',
+                  background: !formData.name.trim() ? '#e5e7eb' : '#3b82f6',
+                  color: !formData.name.trim() ? '#9ca3af' : 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: creating || !formData.name.trim() ? 'not-allowed' : 'pointer',
+                  cursor: !formData.name.trim() ? 'not-allowed' : 'pointer',
                   fontWeight: '500',
                   transition: 'all 0.2s ease'
                 }}
               >
-                {creating ? 'Creating...' : '🆕 Create Category'}
+                🆕 Create Category
               </button>
             </div>
           </div>
@@ -815,35 +784,33 @@ export default function CategoriesPage() {
                   setShowEditForm(false);
                   resetForm();
                 }}
-                disabled={updating}
                 style={{
                   padding: '0.75rem 1.5rem',
                   background: '#f3f4f6',
                   color: '#374151',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: updating ? 'not-allowed' : 'pointer',
-                  fontWeight: '500',
-                  opacity: updating ? 0.5 : 1
+                  cursor: 'pointer',
+                  fontWeight: '500'
                 }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateCategory}
-                disabled={updating || !formData.name.trim()}
+                disabled={!formData.name.trim()}
                 style={{
                   padding: '0.75rem 1.5rem',
-                  background: updating || !formData.name.trim() ? '#e5e7eb' : '#f59e0b',
-                  color: updating || !formData.name.trim() ? '#9ca3af' : 'white',
+                  background: !formData.name.trim() ? '#e5e7eb' : '#f59e0b',
+                  color: !formData.name.trim() ? '#9ca3af' : 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: updating || !formData.name.trim() ? 'not-allowed' : 'pointer',
+                  cursor: !formData.name.trim() ? 'not-allowed' : 'pointer',
                   fontWeight: '500',
                   transition: 'all 0.2s ease'
                 }}
               >
-                {updating ? 'Updating...' : '✏️ Update Category'}
+                ✏️ Update Category
               </button>
             </div>
           </div>

@@ -14,14 +14,16 @@ interface AdminUser {
 export function useAdminAuth() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuth = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/admin/auth', {
         credentials: 'include',
@@ -61,8 +63,8 @@ export function useAdminAuth() {
 
   return {
     user,
-    loading,
     error,
+    loading,
     logout,
     isAuthenticated: !!user
   };

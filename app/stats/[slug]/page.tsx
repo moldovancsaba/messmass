@@ -77,13 +77,10 @@ export default function StatsPage() {
   const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
   const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Function to force refresh data
   const refreshData = async () => {
-    setLoading(true);
     setError(null);
     await fetchProjectData();
   };
@@ -105,15 +102,14 @@ export default function StatsPage() {
     } catch (err) {
       console.error('Failed to fetch project:', err);
       setError('Failed to load project data');
-    } finally {
-      setLoading(false);
     }
   }, [slug]);
 
   // Function to fetch page configuration
-  const fetchPageConfig = useCallback(async () => {
+  const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
     try {
-      const response = await fetch('/api/page-config');
+      const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
+      const response = await fetch(`/api/page-config${qs}`);
       const data = await response.json();
 
       if (data.success) {
@@ -135,7 +131,8 @@ export default function StatsPage() {
       // Only load data if authenticated
       if (authenticated) {
         fetchProjectData();
-        fetchPageConfig();
+        // Pass the slug as identifier; API matches id, viewSlug, or editSlug
+        fetchPageConfig(slug);
       }
     }
   }, [slug, fetchProjectData, fetchPageConfig]);
@@ -146,7 +143,7 @@ export default function StatsPage() {
     setCheckingAuth(false);
     // Load data after successful authentication
     fetchProjectData();
-    fetchPageConfig();
+    fetchPageConfig(slug);
   };
 
   // Fetch chart configurations
@@ -174,7 +171,6 @@ export default function StatsPage() {
   // Calculate chart results when project and configurations are loaded
   useEffect(() => {
     if (project && chartConfigurations.length > 0) {
-      setChartsLoading(true);
       try {
         console.log('🧮 Calculating chart results with project stats...');
         console.log('Project stats:', project.stats);
@@ -197,8 +193,6 @@ export default function StatsPage() {
         }
         // Set empty results to show the error in debug panel
         setChartResults([]);
-      } finally {
-        setChartsLoading(false);
       }
     }
   }, [project, chartConfigurations]);
@@ -277,21 +271,7 @@ export default function StatsPage() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="loading-centered-container">
-        <div className="loading-card">
-          <div className="curve-spinner"></div>
-          <p style={{ 
-            color: '#6b7280', 
-            margin: 0, 
-            fontSize: '1.1rem',
-            fontWeight: '500'
-          }}>Loading event statistics...</p>
-        </div>
-      </div>
-    );
-  }
+  // Loading state removed - show content immediately
 
   if (error || !project) {
     return (
@@ -333,7 +313,7 @@ export default function StatsPage() {
         <UnifiedDataVisualization
           blocks={dataBlocks}
           chartResults={chartResults}
-          loading={chartsLoading}
+          loading={false}
         />
       </div>
 

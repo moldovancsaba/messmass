@@ -40,6 +40,7 @@ export default function UnifiedStatsHero({
         status: '✅ Active'
       }}
       onExportCSV={onExportCSV}
+      pageStyle={pageStyle}
     >
       {/* Creation and Update Dates */}
       <div style={{

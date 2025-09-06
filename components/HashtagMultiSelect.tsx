@@ -21,7 +21,6 @@ interface HashtagMultiSelectProps {
 
 interface MatchPreview {
   count: number;
-  loading: boolean;
 }
 
 export default function HashtagMultiSelect({
@@ -33,16 +32,14 @@ export default function HashtagMultiSelect({
   showPreview = true,
   className = ''
 }: HashtagMultiSelectProps) {
-  const [matchPreview, setMatchPreview] = useState<MatchPreview>({ count: 0, loading: false });
+  const [matchPreview, setMatchPreview] = useState<MatchPreview>({ count: 0 });
 
   // Function to preview match count for selected hashtags
   const previewMatches = async (tags: string[]) => {
     if (tags.length === 0) {
-      setMatchPreview({ count: 0, loading: false });
+      setMatchPreview({ count: 0 });
       return;
     }
-
-    setMatchPreview({ count: 0, loading: true });
     
     try {
       const tagsParam = tags.join(',');
@@ -50,13 +47,13 @@ export default function HashtagMultiSelect({
       const data = await response.json();
       
       if (data.success) {
-        setMatchPreview({ count: data.filter.matchCount, loading: false });
+        setMatchPreview({ count: data.filter.matchCount });
       } else {
-        setMatchPreview({ count: 0, loading: false });
+        setMatchPreview({ count: 0 });
       }
     } catch (error) {
       console.error('Failed to preview matches:', error);
-      setMatchPreview({ count: 0, loading: false });
+      setMatchPreview({ count: 0 });
     }
   };
 
@@ -113,29 +110,19 @@ export default function HashtagMultiSelect({
         }}>
           <div style={{
             padding: '0.75rem 1rem',
-            background: matchPreview.loading 
-              ? 'rgba(107, 114, 128, 0.1)' 
-              : matchPreview.count > 0 
+            background: matchPreview.count > 0 
                 ? 'rgba(16, 185, 129, 0.1)' 
                 : 'rgba(239, 68, 68, 0.1)',
             borderRadius: '8px',
             border: `1px solid ${
-              matchPreview.loading 
-                ? 'rgba(107, 114, 128, 0.2)' 
-                : matchPreview.count > 0 
+              matchPreview.count > 0 
                   ? 'rgba(16, 185, 129, 0.2)' 
                   : 'rgba(239, 68, 68, 0.2)'
             }`,
             fontSize: '0.875rem',
             fontWeight: '500'
           }}>
-            {matchPreview.loading ? (
-              <>⏳ Checking matches...</>
-            ) : (
-              <>
-                📊 {matchPreview.count} project{matchPreview.count !== 1 ? 's' : ''} match{matchPreview.count === 1 ? 'es' : ''} your filter
-              </>
-            )}
+            📊 {matchPreview.count} project{matchPreview.count !== 1 ? 's' : ''} match{matchPreview.count === 1 ? 'es' : ''} your filter
           </div>
         </div>
       )}
@@ -475,45 +462,43 @@ export default function HashtagMultiSelect({
       }}>
         <button
           onClick={onApplyFilter}
-          disabled={disabled || selectedHashtags.length === 0 || matchPreview.loading}
+          disabled={disabled || selectedHashtags.length === 0}
           style={{
             padding: '1rem 2rem',
             fontSize: '1rem',
             fontWeight: '600',
-            background: disabled || selectedHashtags.length === 0 || matchPreview.loading
+            background: disabled || selectedHashtags.length === 0
               ? '#e5e7eb' 
               : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: disabled || selectedHashtags.length === 0 || matchPreview.loading
+            color: disabled || selectedHashtags.length === 0
               ? '#9ca3af' 
               : 'white',
             border: 'none',
             borderRadius: '12px',
-            cursor: disabled || selectedHashtags.length === 0 || matchPreview.loading
+            cursor: disabled || selectedHashtags.length === 0
               ? 'not-allowed' 
               : 'pointer',
             transition: 'all 0.3s ease',
-            boxShadow: disabled || selectedHashtags.length === 0 || matchPreview.loading
+            boxShadow: disabled || selectedHashtags.length === 0
               ? 'none'
               : '0 4px 15px rgba(102, 126, 234, 0.3)',
             transform: 'scale(1)',
             minWidth: '200px'
           }}
           onMouseEnter={(e) => {
-            if (!disabled && selectedHashtags.length > 0 && !matchPreview.loading) {
+            if (!disabled && selectedHashtags.length > 0) {
               e.currentTarget.style.transform = 'scale(1.05)';
               e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
             }
           }}
           onMouseLeave={(e) => {
-            if (!disabled && selectedHashtags.length > 0 && !matchPreview.loading) {
+            if (!disabled && selectedHashtags.length > 0) {
               e.currentTarget.style.transform = 'scale(1)';
               e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
             }
           }}
         >
-          {matchPreview.loading ? (
-            <>⏳ Checking...</>
-          ) : selectedHashtags.length === 0 ? (
+          {selectedHashtags.length === 0 ? (
             <>🔍 Select hashtags to filter</>
           ) : (
             <>🔍 Apply Filter ({selectedHashtags.length} tag{selectedHashtags.length !== 1 ? 's' : ''})</>

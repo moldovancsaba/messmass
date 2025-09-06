@@ -36,7 +36,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const collection = db.collection('projects');
 
     // First, check if this is a UUID slug in filter_slugs collection
-    let hashtags = await findHashtagsByFilterSlug(slug);
+    const filterData = await findHashtagsByFilterSlug(slug);
+    let hashtags = filterData?.hashtags || [];
+    const styleId = filterData?.styleId || null;
     
     // If no filter slug found, treat the slug as a direct hashtag name
     if (!hashtags || hashtags.length === 0) {
@@ -168,7 +170,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       success: true,
       project: aggregatedProject,
       projects: publicProjects,
-      hashtags: hashtags
+      hashtags: hashtags,
+      styleId
     });
 
   } catch (error) {

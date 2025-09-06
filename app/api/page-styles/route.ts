@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { PageStyle } from '@/lib/pageStyleTypes';
 
@@ -25,6 +26,40 @@ export async function GET() {
     console.error('❌ Failed to fetch page styles:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch page styles' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/page-styles?id=... - Delete a page style
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid style id' },
+        { status: 400 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db(MONGODB_DB);
+    const collection = db.collection('pageStyles');
+
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Style not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('❌ Failed to delete page style:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete page style' },
       { status: 500 }
     );
   }
@@ -102,8 +137,8 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
 
-    const result = await collection.updateOne(
-      { _id: { $oid: _id } },
+  const result = await collection.updateOne(
+      { _id: new ObjectId(_id) },
       { $set: updateData }
     );
 

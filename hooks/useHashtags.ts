@@ -25,12 +25,10 @@ interface UseHashtagsReturn {
   
   // Colors (from context)
   hashtagColors: any[];
-  loadingColors: boolean;
   refreshColors: () => Promise<void>;
   
   // Categories (from context)
   categories: any[];
-  loadingCategories: boolean;
   refreshCategories: () => Promise<void>;
   
   // Utility functions
@@ -44,8 +42,6 @@ export default function useHashtags(): UseHashtagsReturn {
   const {
     hashtagColors,
     categories,
-    loadingColors,
-    loadingCategories,
     getHashtagColor,
     getCategoryColor,
     refreshColors,
@@ -148,12 +144,10 @@ export default function useHashtags(): UseHashtagsReturn {
     
     // Colors (from context)
     hashtagColors,
-    loadingColors,
     refreshColors,
     
     // Categories (from context)
     categories,
-    loadingCategories,
     refreshCategories,
     
     // Utility functions

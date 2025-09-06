@@ -110,40 +110,10 @@ export default function EditPage() {
   // Show login screen if not authenticated
   if (checkingAuth) {
     return (
-      <div className="admin-container" style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center', 
-        justifyContent: 'center',
-        color: 'white',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.1)', 
-          backdropFilter: 'blur(10px)',
-          padding: '2rem',
-          borderRadius: '16px',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(255, 255, 255, 0.3)',
-            borderTop: '4px solid white',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem auto'
-          }}></div>
-          <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Checking Access</h2>
-          <p style={{ margin: 0, opacity: 0.8 }}>Verifying permissions...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }
@@ -161,40 +131,10 @@ export default function EditPage() {
 
   if (loading) {
     return (
-      <div className="admin-container" style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center', 
-        justifyContent: 'center',
-        color: 'white',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.1)', 
-          backdropFilter: 'blur(10px)',
-          padding: '2rem',
-          borderRadius: '16px',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(255, 255, 255, 0.3)',
-            borderTop: '4px solid white',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem auto'
-          }}></div>
-          <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Loading Editor</h2>
-          <p style={{ margin: 0, opacity: 0.8 }}>Preparing editing interface...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }

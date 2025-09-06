@@ -104,7 +104,7 @@ export async function GET() {
 
     console.log(`✅ Found ${projects.length} projects`);
 
-    // Enhanced project formatting to include categorized hashtags
+    // Enhanced project formatting to include categorized hashtags and styleId
     const formattedProjects = projects.map(project => ({
       _id: project._id.toString(),
       eventName: project.eventName,
@@ -114,6 +114,7 @@ export async function GET() {
       stats: project.stats,
       viewSlug: project.viewSlug,
       editSlug: project.editSlug,
+      styleId: project.styleId || null,               // Project-specific style reference
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     }));
@@ -147,8 +148,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags
-    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId
+    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId } = body;
 
     if (!eventName || !eventDate || !stats) {
       return NextResponse.json(
@@ -164,14 +165,36 @@ export async function POST(request: NextRequest) {
     const { viewSlug, editSlug } = await generateProjectSlugs();
     console.log('✅ Generated slugs:', { viewSlug: viewSlug.substring(0, 8) + '...', editSlug: editSlug.substring(0, 8) + '...' });
 
+    // Validate styleId if provided
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
+    
+    if (styleId && styleId !== null && styleId !== 'null') {
+      if (!ObjectId.isValid(styleId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid styleId format' },
+          { status: 400 }
+        );
+      }
+      
+      // Validate that the style exists
+      const pageStylesCollection = db.collection('pageStyles');
+      const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
+      
+      if (!styleExists) {
+        return NextResponse.json(
+          { success: false, error: 'Referenced style does not exist' },
+          { status: 404 }
+        );
+      }
+    }
+    
     const collection = db.collection('projects');
 
     const now = new Date().toISOString();
     
-    // Enhanced project structure to support categorized hashtags
-    const project = {
+    // Enhanced project structure to support categorized hashtags and styleId
+    const project: any = {
       eventName,
       eventDate,
       hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
@@ -182,6 +205,11 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now
     };
+    
+    // Add styleId if provided
+    if (styleId && styleId !== null && styleId !== 'null') {
+      project.styleId = styleId;
+    }
 
     // Enhanced hashtag processing to handle both traditional and categorized hashtags
     // Store both plain hashtags and category-prefixed versions for comprehensive filtering
@@ -250,8 +278,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags
-    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId
+    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId } = body;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -260,11 +288,34 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('🔄 Updating project:', projectId);
+    console.log('🔄 Updating project:', projectId, { styleId });
+
+    // Validate styleId if provided
+    if (styleId && styleId !== null && styleId !== 'null') {
+      if (!ObjectId.isValid(styleId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid styleId format' },
+          { status: 400 }
+        );
+      }
+    }
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
+    
+    // If styleId is provided, validate it exists in pageStyles collection
+    if (styleId && styleId !== null && styleId !== 'null') {
+      const pageStylesCollection = db.collection('pageStyles');
+      const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
+      
+      if (!styleExists) {
+        return NextResponse.json(
+          { success: false, error: 'Referenced style does not exist' },
+          { status: 404 }
+        );
+      }
+    }
     
     // Get the current project to compare hashtags
     const currentProject = await collection.findOne({ _id: new ObjectId(projectId) });
@@ -276,7 +327,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Enhanced update data to include categorized hashtags
-    const updateData = {
+    const setData: any = {
       eventName,
       eventDate,
       hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
@@ -284,6 +335,24 @@ export async function PUT(request: NextRequest) {
       stats,
       updatedAt: new Date().toISOString()
     };
+    
+    // Handle styleId assignment/removal strategically
+    let unsetData: any = {};
+    
+    if (styleId === null || styleId === 'null') {
+      // Remove styleId to use global/default style
+      unsetData.styleId = '';
+    } else if (styleId && styleId !== undefined) {
+      // Set specific styleId
+      setData.styleId = styleId;
+    }
+    // If styleId is not provided in the request, don't modify existing styleId
+    
+    // Build the update operation object
+    const updateOperation: any = { $set: setData };
+    if (Object.keys(unsetData).length > 0) {
+      updateOperation.$unset = unsetData;
+    }
     
     // Enhanced hashtag change handling for both traditional and categorized hashtags
     // Use all hashtag representations (including category-prefixed versions)
@@ -346,7 +415,7 @@ export async function PUT(request: NextRequest) {
 
     const result = await collection.updateOne(
       { _id: new ObjectId(projectId) },
-      { $set: updateData }
+      updateOperation
     );
 
     console.log('✅ Project updated successfully');

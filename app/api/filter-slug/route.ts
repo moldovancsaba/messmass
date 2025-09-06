@@ -5,7 +5,7 @@ import { generateFilterSlug } from '@/lib/slugUtils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { hashtags } = body;
+    const { hashtags, styleId } = body;
 
     if (!hashtags || !Array.isArray(hashtags)) {
       return NextResponse.json(
@@ -23,12 +23,13 @@ export async function POST(request: NextRequest) {
 
     console.log('🔗 Generating filter slug for hashtags:', hashtags);
 
-    const slug = await generateFilterSlug(hashtags);
+    const slug = await generateFilterSlug(hashtags, styleId);
 
     return NextResponse.json({
       success: true,
       slug,
-      hashtags: hashtags.map(tag => tag.toLowerCase().trim()).sort()
+      hashtags: hashtags.map(tag => tag.toLowerCase().trim()).sort(),
+      styleId: styleId || null
     });
 
   } catch (error) {

@@ -49,11 +49,9 @@ export default function UnifiedHashtagInput({
   const [suggestions, setSuggestions] = useState<HashtagSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const [loading, setLoading] = useState(false);
   
   // Categories state - auto-load if not provided
   const [loadedCategories, setLoadedCategories] = useState<HashtagCategory[]>(categories);
-  const [categoriesLoading, setCategoriesLoading] = useState(false);
   
   // Simple refs - no useEffect dependencies
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,7 +70,6 @@ export default function UnifiedHashtagInput({
   
   // Load categories from API
   const loadCategories = async () => {
-    setCategoriesLoading(true);
     try {
       const response = await fetch('/api/hashtag-categories');
       const data = await response.json();
@@ -87,8 +84,6 @@ export default function UnifiedHashtagInput({
       }
     } catch (error) {
       console.error('Failed to load categories:', error);
-    } finally {
-      setCategoriesLoading(false);
     }
   };
   
@@ -114,7 +109,6 @@ export default function UnifiedHashtagInput({
     }
     
     lastSearchRef.current = search;
-    setLoading(true);
     
     try {
       const response = await fetch(`/api/hashtags?search=${encodeURIComponent(search)}`);
@@ -151,8 +145,6 @@ export default function UnifiedHashtagInput({
       console.error('Failed to fetch hashtag suggestions:', error);
       setSuggestions([]);
       setShowSuggestions(false);
-    } finally {
-      setLoading(false);
     }
   };
   
@@ -344,7 +336,7 @@ export default function UnifiedHashtagInput({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            disabled={disabled || categoriesLoading}
+            disabled={disabled}
             className="category-select"
             style={{ 
               borderColor: getCurrentCategoryColor(),
@@ -352,15 +344,11 @@ export default function UnifiedHashtagInput({
             }}
           >
             <option value="general">📝 General Hashtags</option>
-            {categoriesLoading ? (
-              <option disabled>⏳ Loading categories...</option>
-            ) : (
-              loadedCategories.map((category) => (
-                <option key={category.name} value={category.name}>
-                  🏷️ {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-                </option>
-              ))
-            )}
+            {loadedCategories.map((category) => (
+              <option key={category.name} value={category.name}>
+                🏷️ {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+              </option>
+            ))}
           </select>
         </div>
         
@@ -383,9 +371,6 @@ export default function UnifiedHashtagInput({
                 boxShadow: `0 0 0 1px ${getCurrentCategoryColor()}20`
               }}
             />
-            {loading && (
-              <div className="input-loading">⏳</div>
-            )}
           </div>
           
           {showSuggestions && suggestions.length > 0 && (

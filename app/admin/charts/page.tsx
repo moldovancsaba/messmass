@@ -41,9 +41,9 @@ export default function ChartAlgorithmManagerPage() {
 
   if (loading) {
     return (
-      <div className="admin-container">
-        <div className="glass-card">
-          <div className="loading-spinner">Checking authentication...</div>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
         </div>
       </div>
     );

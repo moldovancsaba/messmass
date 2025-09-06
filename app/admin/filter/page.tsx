@@ -90,6 +90,8 @@ function HashtagFilterPageContent() {
   const [hasAppliedFilter, setHasAppliedFilter] = useState(false);
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [shareSlug, setShareSlug] = useState<string | null>(null);
+  const [pageStyles, setPageStyles] = useState<{ _id: string; name: string }[]>([]);
+  const [selectedStyleId, setSelectedStyleId] = useState<string>('');
 
   // Fetch filtered statistics
   const fetchFilteredStats = useCallback(async (hashtags = selectedHashtags) => {
@@ -127,6 +129,18 @@ function HashtagFilterPageContent() {
   // Load available hashtags on mount
   useEffect(() => {
     loadAvailableHashtags();
+    // Load page styles for selection
+    (async () => {
+      try {
+        const res = await fetch('/api/page-styles');
+        const data = await res.json();
+        if (data.success) {
+          setPageStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
+        }
+      } catch (e) {
+        console.error('Failed to load styles for filter page', e);
+      }
+    })();
   }, []);
 
   // Parse URL parameters on mount
@@ -136,6 +150,16 @@ function HashtagFilterPageContent() {
       const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
       if (tags.length > 0) {
         setSelectedHashtags(tags);
+        // Load persisted style choice for this combination
+        (async () => {
+          try {
+            const res = await fetch(`/api/admin/filter-style?hashtags=${encodeURIComponent(tags.join(','))}`);
+            const data = await res.json();
+            if (data.success) setSelectedStyleId(data.styleId || '');
+          } catch (e) {
+            console.error('Failed to load persisted style for tags', e);
+          }
+        })();
         // Auto-apply filter if tags are provided in URL
         setTimeout(() => {
           fetchFilteredStats(tags);
@@ -173,9 +197,24 @@ function HashtagFilterPageContent() {
   };
 
   // Handle hashtag selection changes
-  const handleSelectionChange = (selected: string[]) => {
+  const handleSelectionChange = async (selected: string[]) => {
     setSelectedHashtags(selected);
     updateURL(selected);
+
+    // Try to fetch persisted style for this combination
+    try {
+      if (selected.length > 0) {
+        const res = await fetch(`/api/admin/filter-style?hashtags=${encodeURIComponent(selected.join(','))}`);
+        const data = await res.json();
+        if (data.success) {
+          setSelectedStyleId(data.styleId || '');
+        }
+      } else {
+        setSelectedStyleId('');
+      }
+    } catch (e) {
+      console.error('Failed to fetch persisted filter style', e);
+    }
     
     // Clear previous results if selection changes
     if (hasAppliedFilter && selected.join(',') !== project?.hashtags?.join(',')) {
@@ -265,12 +304,6 @@ function HashtagFilterPageContent() {
       <div className="loading-centered-container">
         <div className="loading-card">
           <div className="curve-spinner"></div>
-          <p style={{ 
-            color: '#6b7280', 
-            margin: 0, 
-            fontSize: '1.1rem',
-            fontWeight: '500'
-          }}>Loading hashtag filter...</p>
         </div>
       </div>
     );
@@ -341,14 +374,44 @@ function HashtagFilterPageContent() {
                 </button>
                 {hasAppliedFilter && project && (
                   <>
+                    {/* Style selector for this filter share */}
+                    <select 
+                      className="form-input" 
+                      value={selectedStyleId} 
+                      onChange={async (e) => {
+                        const newId = e.target.value;
+                        setSelectedStyleId(newId);
+                        // Persist selection immediately so the UI remembers next time.
+                        // We use the admin POST endpoint that upserts in filter_slugs.
+                        try {
+                          if (selectedHashtags.length > 0) {
+                            await fetch('/api/admin/filter-style', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ hashtags: selectedHashtags, styleId: newId || null })
+                            });
+                          }
+                        } catch (err) {
+                          console.error('Failed to persist filter style selection', err);
+                        }
+                      }} 
+                      style={{ minWidth: '200px' }}
+                      title="Choose a style for this filter"
+                    >
+                      <option value="">— Use Default/Global —</option>
+                      {pageStyles.map(s => (
+                        <option key={s._id} value={s._id}>{s.name}</option>
+                      ))}
+                    </select>
+
                     <button 
                       onClick={async () => {
                         try {
-                          // Generate filter slug for hashtag combination
+                          // Generate filter slug for hashtag combination with style
                           const response = await fetch('/api/filter-slug', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ hashtags: selectedHashtags })
+                            body: JSON.stringify({ hashtags: selectedHashtags, styleId: selectedStyleId || null })
                           });
                           
                           const data = await response.json();
@@ -433,12 +496,6 @@ function HashtagFilterPageContent() {
       {statsLoading && (
         <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
           <div className="curve-spinner" style={{ margin: '1rem auto' }}></div>
-          <p style={{ 
-            color: '#6b7280', 
-            margin: 0, 
-            fontSize: '1.1rem',
-            fontWeight: '500'
-          }}>Loading filtered statistics...</p>
         </div>
       )}
 
@@ -767,12 +824,6 @@ function HashtagFilterLoading() {
     <div className="loading-centered-container">
       <div className="loading-card">
         <div className="curve-spinner"></div>
-        <p style={{ 
-          color: '#6b7280', 
-          margin: 0, 
-          fontSize: '1.1rem',
-          fontWeight: '500'
-        }}>Loading hashtag filter...</p>
       </div>
     </div>
   );

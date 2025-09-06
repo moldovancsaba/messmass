@@ -8,6 +8,7 @@ import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import { PageStyle } from '@/lib/pageStyleTypes';
 
 interface ProjectStats {
   remoteImages: number;
@@ -89,6 +90,7 @@ export default function HashtagStatsPage() {
   const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actualHashtag, setActualHashtag] = useState<string>('');
+  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
 
   // Function to force refresh data
   const refreshData = async () => {
@@ -129,6 +131,29 @@ export default function HashtagStatsPage() {
       fetchHashtagStatsData();
     }
   }, [hashtagParam]);
+
+  // Fetch page style configuration for this hashtag (uses hashtag -> style mapping or global)
+  useEffect(() => {
+    const resolveStyle = async (tag: string) => {
+      try {
+        const clean = tag.replace(/^#/, '').trim();
+        if (!clean) return;
+        const res = await fetch(`/api/page-config?hashtags=${encodeURIComponent(clean)}`);
+        const data = await res.json();
+        if (data.success) {
+          setPageStyle(data.config.pageStyle);
+        }
+      } catch (e) {
+        console.error('Failed to fetch page style for hashtag', tag, e);
+      }
+    };
+
+    if (actualHashtag) {
+      resolveStyle(actualHashtag);
+    } else if (hashtagParam) {
+      resolveStyle(String(hashtagParam));
+    }
+  }, [actualHashtag, hashtagParam]);
 
   // Fetch chart configurations
   useEffect(() => {
@@ -228,6 +253,18 @@ export default function HashtagStatsPage() {
 
   return (
     <div className="admin-container">
+      {/* Inject resolved page style for hashtag page */}
+      {pageStyle && (
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
+              .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+            `
+          }}
+        />
+      )}
+
       {/* Header with hashtag styling */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
