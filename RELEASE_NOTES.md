@@ -1,5 +1,12 @@
 # MessMass Release Notes
 
+## [v2.15.0] — 2025-09-06T14:21:50.000Z
+
+### 🛠 Editor UX
+- Fans (manual mode): Remote is now an input (stored as stats.remoteFans) instead of a non-editable stat card.
+
+---
+
 ## [v2.14.0] — 2025-09-06T14:10:34.000Z
 
 ### ♻️ Variable Consolidation for Charts

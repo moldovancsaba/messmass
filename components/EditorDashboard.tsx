@@ -508,15 +508,17 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             paddingBottom: '0.5rem'
           }}>👥 Fans ({totalFans})</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            {/* Remote is calculated (indoor + outdoor). We display it but do not edit directly */}
-            <StatCard label="Remote" value={remoteFansCalc} isCalculated={true} />
             {editMode === 'clicker' ? (
               <>
+                {/* Remote displayed as calculated in clicker mode */}
+                <StatCard label="Remote" value={remoteFansCalc} isCalculated={true} />
                 <StatCard label="Location" value={project.stats.stadium} statKey="stadium" />
                 <StatCard label="Total Fans" value={totalFans} isCalculated={true} />
               </>
             ) : (
               <>
+                {/* Remote is editable in manual mode (stores to stats.remoteFans) */}
+                <ManualInputCard label="Remote" value={(project.stats as any).remoteFans ?? remoteFansCalc} statKey={"remoteFans" as keyof typeof project.stats} />
                 <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />
                 <div style={{ 
                   background: 'rgba(255, 255, 255, 0.95)', 
