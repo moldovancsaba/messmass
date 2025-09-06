@@ -387,6 +387,22 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   return (
     <div className="admin-container">
+      {/* Local responsive CSS for editor layout */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            /* Age section: force 3 columns on desktop, 2 lines of 3 */
+            .age-grid {
+              display: grid;
+              gap: 1rem;
+              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+            @media (min-width: 1024px) {
+              .age-grid { grid-template-columns: repeat(3, 1fr); }
+            }
+          `
+        }}
+      />
       {/* Header with same styling as stats page */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
@@ -589,18 +605,21 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             borderBottom: '2px solid #e2e8f0',
             paddingBottom: '0.5rem'
           }}>🎂 Age ({totalAge})</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+          <div className="age-grid">
             {editMode === 'clicker' ? (
               <>
+                {/* Row 1 */}
                 <StatCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
                 <StatCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
                 <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />
+                {/* Row 2 */}
                 <StatCard label="Gen X" value={project.stats.genX} statKey="genX" />
                 <StatCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
                 <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />
               </>
             ) : (
               <>
+                {/* Row 1 */}
                 <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
                 <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
                 <div style={{ 
@@ -626,6 +645,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   }}>{totalUnder40}</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Under 40 (calculated)</div>
                 </div>
+                {/* Row 2 */}
                 <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />
                 <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
                 <div style={{ 
