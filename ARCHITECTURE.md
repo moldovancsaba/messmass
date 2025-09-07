@@ -222,6 +222,15 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ---
 
+## Visualization Grid System (Stats/Admin Parity)
+
+- Shared Component: components/UnifiedDataVisualization.tsx is the single source of truth for rendering blocks and charts across Admin Visualization, /stats, /filter, and /hashtag pages.
+- Desktop Layout: Each data visualization block uses its configured gridColumns value (1–6) for desktop. This is capped by global desktop units from page-config grid settings to prevent over-allocation.
+- Tablet/Mobile Layout: Uses global tabletUnits and mobileUnits from page-config grid settings. Chart spans are clamped at each breakpoint to available units.
+- CSS Specificity: Per-block, id-scoped grid classes (udv-grid-[blockId]) are injected to ensure layout cannot be overridden by legacy/global CSS. Important flags are applied where necessary to neutralize conflicts.
+- Pixel Constraints Removed: Chart container and legend min/max-width constraints are overridden to ensure unit-based grid math governs layout.
+- Data Flow: gridSettings are served by /api/page-config and passed to pages, then forwarded to UnifiedDataVisualization as gridUnits.
+
 ## Technology Stack
 
 ### Frontend

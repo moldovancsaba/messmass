@@ -1,11 +1,18 @@
 # TASKLIST.md
-Current Version: 2.15.0
-Last Updated: 2025-09-06T14:21:50.000Z
+Current Version: 2.16.0
+Last Updated: 2025-09-07T17:18:45.000Z
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### High Priority – Visualization Parity (2.11.x)
+
+| Task ID | Title                                             | Owner        | Expected Delivery           | Status |
+|---------|---------------------------------------------------|--------------|-----------------------------|--------|
+| UDV-001 | Verify stats/filter/hashtag match Admin grid      | AI Developer | 2025-09-07T12:00:00.000Z   | ✅ Complete |
+| UDV-002 | Remove/neutralize any residual legacy CSS conflict| AI Developer | 2025-09-07T13:00:00.000Z   | ✅ Complete |
 
 ### New – Style System Consistency (2.10.x)
 

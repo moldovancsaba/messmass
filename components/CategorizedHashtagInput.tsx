@@ -272,7 +272,7 @@ export default function CategorizedHashtagInput({
           <div className="category-sections-header">
             <h3 className="section-title">Category-Specific Hashtags</h3>
             <small className="section-description">
-              Hashtags can be added to multiple categories. Each category assignment will show the hashtag with that category's color.
+              Hashtags can be added to multiple categories. Each category assignment will show the hashtag with that category&apos;s color.
             </small>
           </div>
           

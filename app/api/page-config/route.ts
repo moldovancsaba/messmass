@@ -143,6 +143,10 @@ export async function GET(request: NextRequest) {
       .sort({ order: 1 })
       .toArray();
 
+    // Load grid settings from DB (global units per breakpoint)
+    const { getGridSettingsFromDb } = await import('@/lib/gridSettings');
+    const gridSettings = await getGridSettingsFromDb();
+
     // If no data blocks exist, create a default one with existing charts
     if (dataBlocks.length === 0) {
       // Get all existing chart configurations
@@ -178,7 +182,8 @@ export async function GET(request: NextRequest) {
         dataBlocks: dataBlocks.map(block => ({
           ...block,
           _id: block._id.toString()
-        }))
+        })),
+        gridSettings
       }
     });
 

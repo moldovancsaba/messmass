@@ -246,6 +246,22 @@ These patterns can be applied to future MessMass features:
 
 ---
 
+## Visualization Layout Learnings — 2025-09-07T17:16:38.000Z
+
+1) CSS Specificity Matters More Than Intent
+- Using per-block, id-scoped grid classes with injected CSS (and selective !important) ensured our unit-based grid could not be overridden by legacy CSS.
+
+2) Unit-Based Grid Must Own Sizing
+- Removing pixel min/max-widths on containers/legends allowed grid-template-columns and grid-column spans to be authoritative.
+
+3) Breakpoint-Aware Clamping Prevents Overflows
+- Clamping chart spans to the current breakpoint’s units (tabletUnits, mobileUnits) preserves intended proportions without forcing single-column layouts.
+
+4) Single Source of Truth Prevents Drift
+- Rendering both Admin Visualization preview and public stats via the same UnifiedDataVisualization component eliminated parity gaps.
+
+---
+
 ## Key Success Factors
 
 1. **User-Centric Design**: Prioritized backward compatibility and gradual adoption

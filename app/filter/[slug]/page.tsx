@@ -90,6 +90,7 @@ export default function FilterPage() {
   const [loading, setLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
   const [hashtags, setHashtags] = useState<string[]>([]);
 
   // Function to fetch filter data
@@ -134,6 +135,10 @@ export default function FilterPage() {
       if (data.success) {
         setPageStyle(data.config.pageStyle);
         setDataBlocks(data.config.dataBlocks);
+        if (data.config.gridSettings) {
+          const gs = data.config.gridSettings;
+          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
       }
     } catch (err) {
       console.error('Failed to fetch page config:', err);
@@ -323,6 +328,7 @@ export default function FilterPage() {
           blocks={dataBlocks}
           chartResults={chartResults}
           loading={chartsLoading}
+          gridUnits={gridUnits}
         />
       </div>
 

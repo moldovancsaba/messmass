@@ -1,5 +1,36 @@
 # MessMass Release Notes
 
+## [v2.16.0] — 2025-09-07T17:18:45.000Z
+
+### 📦 Release Finalization
+- Documentation synchronized for visualization parity across stats and admin pages.
+- Version bump to 2.16.0 per protocol (MINOR before commit).
+- Type-check, lint, and build to be validated in this commit sequence.
+
+### 🔎 Notes
+- Core visualization parity details are listed in v2.15.1 entry below; this release formalizes and documents the change set across project docs.
+
+---
+
+## [v2.15.1] — 2025-09-07T17:16:38.000Z
+
+### 📐 Visualization Parity & Chart Sizing
+- Stats pages (/stats, /filter, /hashtag) now render charts with exactly the same grid, sizing, and behavior as configured in Admin Visualization.
+- Desktop uses per-block gridColumns (as configured in admin), capped by global desktop units.
+- Tablet/Mobile use global grid units with span clamping so widths greater than available units are gracefully limited to fit.
+- Introduced per-block, id-scoped grid classes (udv-grid-[blockId]) with injected CSS to ensure specificity and avoid legacy overrides.
+- Removed pixel-based min/max-width constraints for chart containers and legends so unit-based grid math is authoritative.
+
+### 🛠 Technical
+- Updated components/UnifiedDataVisualization.tsx to:
+  - Apply per-block desktop columns (min 1, max block.gridColumns, capped by global desktop units).
+  - Respect global tablet/mobile units and clamp chart spans accordingly.
+  - Inject responsive CSS per block with !important flags where needed to neutralize legacy CSS.
+  - Clamp chart width spans based on the current breakpoint’s unit count.
+- Admin Visualization global preview continues to use the same shared component for exact parity.
+
+---
+
 ## [v2.15.0] — 2025-09-06T14:21:50.000Z
 
 ### 🛠 Editor UX

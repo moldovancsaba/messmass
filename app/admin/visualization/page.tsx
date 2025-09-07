@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminPageHero from '@/components/AdminPageHero';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
+import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
+import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
+import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { calculateActiveCharts } from '@/lib/chartCalculator';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -22,7 +26,17 @@ export default function VisualizationPage() {
   const [loading, setLoading] = useState(true);
   const [editingBlock, setEditingBlock] = useState<DataVisualizationBlock | null>(null);
   const [showCreateBlock, setShowCreateBlock] = useState(false);
-  
+
+  // Live chart preview state (calculated using the same pipeline as stats pages)
+  const [chartConfigs, setChartConfigs] = useState<ChartConfiguration[]>([]);
+  const [previewResults, setPreviewResults] = useState<Record<string, ChartCalculationResult>>({});
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Global preview that mirrors stats pages (active blocks via /api/page-config)
+  const [globalBlocks, setGlobalBlocks] = useState<DataVisualizationBlock[]>([]);
+  const [globalLoading, setGlobalLoading] = useState(true);
+  const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+
   // Form states for new data block
   const [blockForm, setBlockForm] = useState({
     name: '',
@@ -34,6 +48,8 @@ export default function VisualizationPage() {
   useEffect(() => {
     loadDataBlocks();
     loadAvailableCharts();
+    loadChartConfigs();
+    loadGlobalConfig();
   }, []);
 
   const loadDataBlocks = async () => {
@@ -59,6 +75,39 @@ export default function VisualizationPage() {
       }
     } catch (error) {
       console.error('Failed to load available charts:', error);
+    }
+  };
+
+  // Load chart configurations used by stats pages (public subset)
+  const loadChartConfigs = async () => {
+    try {
+      const response = await fetch('/api/chart-config/public');
+      const data = await response.json();
+      if (data.success) {
+        setChartConfigs(data.configurations);
+      }
+    } catch (error) {
+      console.error('Failed to load chart configurations:', error);
+    }
+  };
+
+  // Load the same active blocks used by stats pages for a WYSIWYG global preview
+  const loadGlobalConfig = async () => {
+    try {
+      setGlobalLoading(true);
+      const response = await fetch('/api/page-config');
+      const data = await response.json();
+      if (data.success) {
+        setGlobalBlocks(data.config.dataBlocks || []);
+        if (data.config.gridSettings) {
+          const gs = data.config.gridSettings;
+          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load global page config:', error);
+    } finally {
+      setGlobalLoading(false);
     }
   };
   
@@ -147,6 +196,50 @@ export default function VisualizationPage() {
     }
   };
   
+  // Calculate preview results for a given block's charts using the same pipeline as stats pages
+  const calculatePreviewForBlock = useCallback((block: DataVisualizationBlock) => {
+    if (!chartConfigs || chartConfigs.length === 0) return;
+
+    try {
+      setIsCalculating(true);
+      // Build a fake baseline stats object that covers all fields with non-zero values
+      // Why: Admin preview must render charts even without a specific project loaded
+      const baselineStats: any = {
+        remoteImages: 120, hostessImages: 80, selfies: 40,
+        indoor: 200, outdoor: 150, stadium: 50,
+        female: 180, male: 220,
+        genAlpha: 60, genYZ: 180, genX: 100, boomer: 60,
+        merched: 90, jersey: 70, scarf: 40, flags: 30, baseballCap: 25, other: 15,
+        approvedImages: 180, rejectedImages: 20,
+        visitQrCode: 120, visitShortUrl: 40, visitWeb: 300, visitFacebook: 80, visitInstagram: 120,
+        visitYoutube: 40, visitTiktok: 50, visitX: 35, visitTrustpilot: 10,
+        eventAttendees: 12000, eventTicketPurchases: 9500,
+        eventResultHome: 2, eventResultVisitor: 1,
+        eventValuePropositionVisited: 600, eventValuePropositionPurchases: 75,
+        jerseyPrice: 70, scarfPrice: 15, flagsPrice: 20, capPrice: 25, otherPrice: 10
+      };
+
+      // Calculate using the shared calculator
+      const results = calculateActiveCharts(chartConfigs, baselineStats);
+      // Normalize into a map for quick lookup by chartId
+      const map: Record<string, ChartCalculationResult> = {};
+      results.forEach(r => { map[r.chartId] = r; });
+      setPreviewResults(prev => ({ ...prev, ...map }));
+    } catch (err) {
+      console.error('Failed to calculate preview charts:', err);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [chartConfigs]);
+
+  // Auto-calculate previews when both chart configurations and blocks are available
+  // Why: The admin needs to see an immediate WYSIWYG preview without any interactions
+  useEffect(() => {
+    if (chartConfigs.length > 0 && dataBlocks.length > 0) {
+      dataBlocks.forEach(b => calculatePreviewForBlock(b));
+    }
+  }, [chartConfigs, dataBlocks, calculatePreviewForBlock]);
+
   const addChartToBlock = (block: DataVisualizationBlock, chartId: string) => {
     const chart = availableCharts.find(c => c.chartId === chartId);
     if (!chart) return;
@@ -163,6 +256,8 @@ export default function VisualizationPage() {
     };
     
     handleUpdateBlock(updatedBlock);
+    // Recalculate preview for this block so the new chart immediately appears
+    calculatePreviewForBlock(updatedBlock);
   };
   
   const removeChartFromBlock = (block: DataVisualizationBlock, chartIndex: number) => {
@@ -189,8 +284,9 @@ export default function VisualizationPage() {
     };
     
     handleUpdateBlock(updatedBlock);
+    // No need to recalc data; width change affects only layout span, preview already computed
   };
-
+  
   const resetBlockForm = () => {
     setBlockForm({
       name: '',
@@ -232,6 +328,25 @@ export default function VisualizationPage() {
         backLink="/admin"
       />
 
+      {/* Global Stats Preview (Active Blocks) */}
+      <div className="glass-card" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <h2 className="section-title" style={{ margin: 0 }}>Global Stats Preview (Active Blocks)</h2>
+          <button onClick={loadGlobalConfig} className="btn-create">🔄 Refresh</button>
+        </div>
+        <p className="info-note" style={{ marginTop: '0.75rem' }}>
+          This preview mirrors exactly what stats pages render: only active blocks in order, using the same grid rules.
+        </p>
+        <div style={{ width: '100%', marginTop: '1rem' }}>
+          <UnifiedDataVisualization
+            blocks={globalBlocks}
+            chartResults={Object.values(previewResults)}
+            loading={globalLoading || isCalculating}
+            gridUnits={gridUnits}
+          />
+        </div>
+      </div>
+
       <div className="glass-card" style={{ padding: '2rem' }}>
         <h2 className="section-title">Data Visualization Blocks</h2>
         
@@ -258,13 +373,13 @@ export default function VisualizationPage() {
             <div className="info-grid-item">
               <span className="info-grid-emoji">💻</span>
               <div>
-                <strong>PC:</strong><br />
-                4 units per row
+                <strong>Desktop (Stats Page):</strong><br />
+                Up to 6 units per row (block-configurable)
               </div>
             </div>
           </div>
           <p className="info-note">
-            Charts automatically adjust their width based on screen size. A 4-unit chart becomes 3 units on tablet and 2 units on mobile.
+            Preview below uses the same responsive grid as stats pages. A width=2 chart spans two columns within the block; columns per block are capped at 2 on tablet and up to 6 on desktop.
           </p>
         </div>
         
@@ -343,7 +458,7 @@ export default function VisualizationPage() {
         ) : (
           <div className="content-grid">
             {dataBlocks.map((block) => (
-              <div key={block._id} className="block-item">
+              <div key={block._id} className="block-item" onMouseEnter={() => calculatePreviewForBlock(block)}>
                 {/* Block Header */}
                 <div className="block-header">
                   <div>
@@ -351,6 +466,7 @@ export default function VisualizationPage() {
                     <div className="block-meta">
                       <span><strong>Charts:</strong> {block.charts?.length || 0}</span>
                       <span><strong>Order:</strong> {block.order}</span>
+                      <span><strong>Columns:</strong> {block.gridColumns}</span>
                     </div>
                   </div>
                   
@@ -383,53 +499,107 @@ export default function VisualizationPage() {
                   {!block.charts || block.charts.length === 0 ? (
                     <div className="empty-charts">
                       <p>No charts assigned to this block yet</p>
-                      <p>Use "Add Chart" to assign charts from available options</p>
+                      <p>Use &quot;Add Chart&quot; to assign charts from available options</p>
                     </div>
                   ) : (
-                    <div className="content-grid" style={{ gap: '0.75rem', marginBottom: '1rem' }}>
-                      {block.charts.map((chart, index) => {
-                        const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
-                        return (
-                          <div key={`${chart.chartId}-${index}`} className="chart-item">
-                            <div className="chart-info">
-                              <span className="chart-emoji">{chartConfig?.emoji || '📊'}</span>
-                              <div>
-                                <div className="chart-details">
-                                  {chartConfig?.title || chart.chartId}
-                                </div>
-                                <div className="chart-meta">
-                                  Width: {chart.width} unit{chart.width > 1 ? 's' : ''} • Order: {chart.order}
-                                  <br />
-                                  <span className="chart-sub-meta">
-                                    📱 Mobile: max 2 units • 📱 Tablet: max 3 units • 💻 PC: max 4 units
-                                  </span>
-                                </div>
+                    <>
+                      {/* Live Preview Grid - matches UnifiedDataVisualization */}
+                      <div className={`charts-grid charts-grid-${block._id || 'preview'}`} style={{ display: 'grid', gap: '1.5rem', width: '100%' }}>
+                        {block.charts
+                          .sort((a, b) => a.order - b.order)
+                          .map((chart) => {
+                            const result = previewResults[chart.chartId];
+                            if (!result) return null;
+                            return (
+                              <div key={`${block._id}-${chart.chartId}`} className={`chart-item chart-width-${chart.width}`} style={{ minHeight: '300px' }}>
+                                <ChartContainer
+                                  title={result.title}
+                                  subtitle={result.subtitle}
+                                  emoji={result.emoji}
+                                  className="unified-chart-item"
+                                  chartWidth={chart.width}
+                                >
+                                  <DynamicChart result={result} chartWidth={chart.width} />
+                                </ChartContainer>
                               </div>
-                            </div>
-                            
-                            <div className="chart-controls">
-                              <select
-                                value={chart.width}
-                                onChange={(e) => updateChartWidth(block, index, parseInt(e.target.value))}
-                                className="chart-select"
-                              >
-                                <option value={1}>1 unit (Portrait)</option>
-                                <option value={2}>2 units (Landscape)</option>
-                              </select>
-                              
-                              <button
-                                onClick={() => removeChartFromBlock(block, index)}
-                                className="btn-small-danger"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                            );
+                          })
+                          .filter(Boolean)
+                        }
+                      </div>
+
+                      {/* Inject the same responsive CSS rules as stats pages so preview alignment and widths are identical.
+                          Strategic: We inject per-block CSS to honor each block's gridColumns, capping at 2 on tablet and up to 6 on desktop, exactly like UnifiedDataVisualization. */}
+                      <style jsx>{`
+                        /* Force left alignment and full-width fill within grid cells */
+                        .charts-grid-${block._id || 'preview'} { grid-template-columns: 1fr; justify-items: stretch; align-items: start; grid-auto-flow: row; }
+                        /* Ensure width=2 truly spans two columns */
+                        .chart-width-1 { grid-column: span 1; }
+                        .chart-width-2 { grid-column: span 2; }
+                        /* Tablet columns cap at 2, desktop up to 6, honoring block.gridColumns */
+                        @media (min-width: 768px) and (max-width: 1023px) {
+.charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.tablet)}, minmax(0, 1fr)) !important; }
+                        }
+                        @media (min-width: 1024px) {
+.charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.desktop)}, minmax(0, 1fr)) !important; }
+                        }
+                        .unified-chart-item { background: rgba(248, 250, 252, 0.8); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.2s ease; height: 100%; box-sizing: border-box; }
+                        .unified-chart-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); border-color: rgba(99, 102, 241, 0.3); }
+                        /* Remove global 500px max-width constraint for preview items */
+                        .chart-item { display: flex; flex-direction: column; width: 100%; max-width: none; height: 100%; min-height: 350px; justify-self: stretch; min-width: 0; }
+                        .chart-item > * { width: 100%; height: 100%; flex: 1; }
+                        /* Override global chart container min/max-width so units control size, not pixels */
+                        .charts-grid-${block._id || 'preview'} :global(.chart-container) { min-width: 0 !important; max-width: none !important; width: 100% !important; }
+                        /* Override global legend constraints so 1-unit items can wrap correctly */
+                        .chart-legend { min-width: 0; width: 100%; max-width: 100%; overflow: hidden; }
+                      `}</style>
+                    </>
                   )}
                   
+                  {/* Controls */}
+                  <div className="content-grid" style={{ gap: '0.75rem', margin: '1rem 0' }}>
+                    {block.charts.map((chart, index) => {
+                      const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
+                      return (
+                        <div key={`${chart.chartId}-${index}`} className="chart-item" style={{ padding: '0.75rem', border: '1px dashed rgba(99,102,241,0.25)', borderRadius: '8px' }}>
+                          <div className="chart-info">
+                            <span className="chart-emoji">{chartConfig?.emoji || '📊'}</span>
+                            <div>
+                              <div className="chart-details">
+                                {chartConfig?.title || chart.chartId}
+                              </div>
+                              <div className="chart-meta">
+                                Width: {chart.width} unit{chart.width > 1 ? 's' : ''} • Order: {chart.order}
+                                <br />
+                                <span className="chart-sub-meta">
+                                  Preview updates instantly to reflect unit width and block columns
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="chart-controls">
+                            <select
+                              value={chart.width}
+                              onChange={(e) => updateChartWidth(block, index, parseInt(e.target.value))}
+                              className="chart-select"
+                            >
+                              <option value={1}>1 unit (Portrait)</option>
+                              <option value={2}>2 units (Landscape)</option>
+                            </select>
+                            
+                            <button
+                              onClick={() => removeChartFromBlock(block, index)}
+                              className="btn-small-danger"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
                   {/* Add Chart to Block */}
                   <div className="flex-row flex-wrap">
                     {availableCharts
@@ -488,7 +658,23 @@ export default function VisualizationPage() {
                     className="form-input"
                   />
                 </div>
+                
+                <div>
+                  <label className="form-label">Grid Columns (Desktop)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={6}
+                    value={Math.min(Math.max(editingBlock.gridColumns || 3, 1), 6)}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value) || 1;
+                      setEditingBlock({ ...editingBlock, gridColumns: Math.min(Math.max(v, 1), 6) });
+                    }}
+                    className="form-input"
+                  />
+                </div>
               </div>
+              <p className="info-note">Desktop will render {editingBlock.gridColumns} unit{(editingBlock.gridColumns||0) !== 1 ? 's' : ''} per row for this block. Tablet caps at 2; Mobile uses 1.</p>
               
               <div>
                 <label className="flex-row" style={{ cursor: 'pointer' }}>

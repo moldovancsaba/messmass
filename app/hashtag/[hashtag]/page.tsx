@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import styles from '../../stats/[slug]/stats.module.css';
-import '../../charts.css';
-import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
+import UnifiedStatsHero from '@/components/UnifiedStatsHero';
+import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
-import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
-import { PageStyle } from '@/lib/pageStyleTypes';
+import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+
+// WHAT: Removed legacy CSS imports (stats.module.css, charts.css)
+// WHY: They imposed hard-coded grid and min-width constraints (e.g., 450px min track, 500px max chart width)
+// that conflict with the admin visualization layout. Using UnifiedStatsHero + UnifiedDataVisualization
+// ensures the stats page renders exactly as configured in admin visualization blocks without baked-in layout.
 
 interface ProjectStats {
   remoteImages: number;
@@ -91,6 +94,8 @@ export default function HashtagStatsPage() {
   const [error, setError] = useState<string | null>(null);
   const [actualHashtag, setActualHashtag] = useState<string>('');
   const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
+  const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
+  const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
 
   // Function to force refresh data
   const refreshData = async () => {
@@ -132,9 +137,9 @@ export default function HashtagStatsPage() {
     }
   }, [hashtagParam]);
 
-  // Fetch page style configuration for this hashtag (uses hashtag -> style mapping or global)
+  // Fetch page configuration (style + data blocks) for this hashtag (uses hashtag -> style mapping or global)
   useEffect(() => {
-    const resolveStyle = async (tag: string) => {
+    const resolveConfig = async (tag: string) => {
       try {
         const clean = tag.replace(/^#/, '').trim();
         if (!clean) return;
@@ -142,16 +147,21 @@ export default function HashtagStatsPage() {
         const data = await res.json();
         if (data.success) {
           setPageStyle(data.config.pageStyle);
+          setDataBlocks(data.config.dataBlocks || []);
+          if (data.config.gridSettings) {
+            const gs = data.config.gridSettings;
+            setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+          }
         }
       } catch (e) {
-        console.error('Failed to fetch page style for hashtag', tag, e);
+        console.error('Failed to fetch page config for hashtag', tag, e);
       }
     };
 
     if (actualHashtag) {
-      resolveStyle(actualHashtag);
+      resolveConfig(actualHashtag);
     } else if (hashtagParam) {
-      resolveStyle(String(hashtagParam));
+      resolveConfig(String(hashtagParam));
     }
   }, [actualHashtag, hashtagParam]);
 
@@ -219,10 +229,9 @@ export default function HashtagStatsPage() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Loading hashtag statistics...</p>
+      <div className="loading-centered-container">
+        <div className="loading-card">
+          <div className="curve-spinner"></div>
         </div>
       </div>
     );
@@ -230,11 +239,18 @@ export default function HashtagStatsPage() {
 
   if (error) {
     return (
-      <div className={styles.container}>
-        <div className={styles.error}>
-          <h1>❌ Error</h1>
-          <p>{error}</p>
-          <p>The hashtag you&apos;re looking for might not exist or may have been removed.</p>
+      <div className="admin-container" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div className="glass-card" style={{
+          textAlign: 'center',
+          padding: '2rem'
+        }}>
+          <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>❌ Error</h1>
+          <p style={{ color: '#6b7280' }}>{error}</p>
+          <p style={{ color: '#6b7280' }}>The hashtag you&apos;re looking for might not exist or may have been removed.</p>
         </div>
       </div>
     );
@@ -242,10 +258,14 @@ export default function HashtagStatsPage() {
 
   if (!project) {
     return (
-      <div className={styles.container}>
-        <div className={styles.error}>
-          <h1>📊 Hashtag Not Found</h1>
-          <p>No projects found with this hashtag.</p>
+      <div className="admin-container" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div className="glass-card" style={{ textAlign: 'center', padding: '2rem' }}>
+          <h1 style={{ color: '#1f2937', marginBottom: '1rem' }}>📊 Hashtag Not Found</h1>
+          <p style={{ color: '#6b7280' }}>No projects found with this hashtag.</p>
         </div>
       </div>
     );
@@ -253,7 +273,7 @@ export default function HashtagStatsPage() {
 
   return (
     <div className="admin-container">
-      {/* Inject resolved page style for hashtag page */}
+      {/* Inject resolved page style so hashtag page uses the same gradients as configured */}
       {pageStyle && (
         <style
           dangerouslySetInnerHTML={{
@@ -265,303 +285,30 @@ export default function HashtagStatsPage() {
         />
       )}
 
-      {/* Header with hashtag styling */}
-      <div className="glass-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding">
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <ColoredHashtagBubble 
-                hashtag={actualHashtag || hashtagParam}
-                customStyle={{
-                  fontSize: '2.5rem',
-                  fontWeight: '700',
-                  padding: '1rem 2rem'
-                }}
-              />
-            </div>
-            <p className="admin-subtitle">Aggregated Statistics - {project.dateRange.formatted}</p>
-            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-              <a 
-                href="#projects-list"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('projects-list')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                style={{ 
-                  cursor: 'pointer', 
-                  color: '#6366f1',
-                  textDecoration: 'none',
-                  borderBottom: '1px dashed #6366f1'
-                }}
-                title="Click to view projects"
-              >
-                📊 {project.projectCount} project{project.projectCount !== 1 ? 's' : ''} with this hashtag
-              </a>
-            </div>
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-              <button 
-                onClick={refreshData}
-                disabled={loading}
-                style={{
-                  background: loading ? '#6b7280' : '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'background-color 0.2s ease'
-                }}
-                title="Refresh data to see latest updates"
-              >
-                {loading ? '⏳ Refreshing...' : '🔄 Refresh Data'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Unified Hero — EXACT same component used by /stats and /filter */}
+      <UnifiedStatsHero
+        title={`Aggregated Statistics — ${actualHashtag ? `#${actualHashtag}` : `#${String(hashtagParam)}`}`}
+        hashtags={[actualHashtag || String(hashtagParam)]}
+        createdDate={project.createdAt}
+        lastUpdatedDate={project.updatedAt}
+        pageStyle={pageStyle || undefined}
+        onExportCSV={refreshData}
+      />
+
+      {/* Unified Data Visualization — driven entirely by admin visualization blocks */}
+      <div style={{ width: '100%', padding: 0 }}>
+        <UnifiedDataVisualization
+          blocks={dataBlocks}
+          chartResults={chartResults}
+          loading={chartsLoading}
+          gridUnits={gridUnits}
+        />
       </div>
 
-      {/* Charts Grid Section */}
-      <div className="glass-card charts-section">
-        <h2 style={{
-          fontSize: '1.875rem',
-          fontWeight: 'bold',
-          color: '#1f2937',
-          margin: '0 0 1.5rem 0',
-          lineHeight: '1.25'
-        }}>📊 Data Visualization</h2>
-        
-        {chartsLoading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner}></div>
-            <p>Loading charts...</p>
-          </div>
-        ) : (
-          <div>
-            {chartResults.length > 0 ? (
-              <div className="dynamic-charts-grid">
-                {chartResults.map((result, index) => {
-                  console.log(`Chart ${result.chartId}:`, result);
-                  
-                  // Check if chart has any valid data (not all NA and not all zero)
-                  const validElements = result.elements.filter(element => 
-                    typeof element.value === 'number'
-                  );
-                  const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-                  
-                  console.log(`Chart ${result.chartId} - validElements: ${validElements.length}, totalValue: ${totalValue}`);
-                  
-                  // Only hide charts if ALL elements are NA or if it's a pie chart with zero total
-                  const shouldShow = validElements.length > 0 && (
-                    result.type === 'bar' || totalValue > 0
-                  );
-                  
-                  if (!shouldShow) {
-                    console.log(`Hiding chart ${result.chartId} - no valid data`);
-                    return null;
-                  }
-                  
-                  return (
-                    <ChartContainer 
-                      key={result.chartId}
-                      title={result.title}
-                      subtitle={result.subtitle}
-                      emoji={result.emoji}
-                      className="chart-item"
-                    >
-                      <DynamicChart result={result} />
-                    </ChartContainer>
-                  );
-                }).filter(Boolean)}
-              </div>
-            ) : (
-              <div className={styles.error}>
-                <p>No chart configurations available</p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* New Stats Layout */}
-      <div className="stats-layout-container">
-        {/* Row 1: Images, Fans, Gender */}
-        <div className="stats-row-3">
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">📸 Images ({totalImages})</h2>
-            <div className="stats-cards-row">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Remote Images</div>
-                <div className={styles.statValue}>{project.stats.remoteImages}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Hostess Images</div>
-                <div className={styles.statValue}>{project.stats.hostessImages}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Selfies</div>
-                <div className={styles.statValue}>{project.stats.selfies}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">👥 Fans ({totalFans})</h2>
-            <div className="stats-cards-row">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Indoor</div>
-                <div className={styles.statValue}>{project.stats.indoor}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Outdoor</div>
-                <div className={styles.statValue}>{project.stats.outdoor}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Stadium</div>
-                <div className={styles.statValue}>{project.stats.stadium}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">⚧️ Gender ({totalGender})</h2>
-            <div className="stats-cards-row">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Female</div>
-                <div className={styles.statValue}>{project.stats.female}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Male</div>
-                <div className={styles.statValue}>{project.stats.male}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2: Age Groups (2/3) and Fans with Merchandise (1/3) */}
-        <div className="stats-row-2-3-1">
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">🎂 Age Groups ({totalAge})</h2>
-            <div className="stats-cards-row-age">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Gen Alpha</div>
-                <div className={styles.statValue}>{project.stats.genAlpha}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Gen Y+Z</div>
-                <div className={styles.statValue}>{project.stats.genYZ}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Total Under 40</div>
-                <div className={styles.statValue}>{totalUnder40}</div>
-              </div>
-            </div>
-            <div className="stats-cards-row-age">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Gen X</div>
-                <div className={styles.statValue}>{project.stats.genX}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Boomer</div>
-                <div className={styles.statValue}>{project.stats.boomer}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Total Over 40</div>
-                <div className={styles.statValue}>{totalOver40}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">🛑️ Fans with Merchandise</h2>
-            <div className="stats-cards-row">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Merched Fans</div>
-                <div className={styles.statValue}>{project.stats.merched}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 3: Merchandise Types (Full Width) */}
-        <div className="stats-row-full">
-          <div className="stats-section-new">
-            <h2 className="stats-section-title">👕 Merchandise Types ({totalMerch})</h2>
-            <div className="merch-cards-grid">
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Jersey</div>
-                <div className={styles.statValue}>{project.stats.jersey}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Scarf</div>
-                <div className={styles.statValue}>{project.stats.scarf}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Flags</div>
-                <div className={styles.statValue}>{project.stats.flags}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Baseball Cap</div>
-                <div className={styles.statValue}>{project.stats.baseballCap}</div>
-              </div>
-              <div className={styles.statCard}>
-                <div className={styles.statLabel}>Other</div>
-                <div className={styles.statValue}>{project.stats.other}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Success Manager Section - if data exists */}
-        {(project.stats.approvedImages || project.stats.eventAttendees || project.stats.visitWeb) && (
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>📈 Performance Metrics</h2>
-            <div className={styles.statsRow}>
-              {project.stats.approvedImages !== undefined && (
-                <div className={styles.statCard}>
-                  <div className={styles.statLabel}>Approved Images</div>
-                  <div className={styles.statValue}>{project.stats.approvedImages}</div>
-                </div>
-              )}
-              {project.stats.eventAttendees !== undefined && (
-                <div className={styles.statCard}>
-                  <div className={styles.statLabel}>Event Attendees</div>
-                  <div className={styles.statValue}>{project.stats.eventAttendees}</div>
-                </div>
-              )}
-              {project.stats.visitWeb !== undefined && (
-                <div className={styles.statCard}>
-                  <div className={styles.statLabel}>Web Visits</div>
-                  <div className={styles.statValue}>{project.stats.visitWeb}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Projects List Section */}
       {projects.length > 0 && (
-        <div id="projects-list" className="glass-card" style={{ marginTop: '3rem' }}>
-          <h2 style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem',
-            color: '#1f2937 !important',
-            fontWeight: '600',
-            fontSize: '1.875rem',
-            marginBottom: '1.5rem'
-          }}>
-            <span style={{ color: '#1f2937' }}>📊 Projects with </span>
-            <ColoredHashtagBubble 
-              hashtag={actualHashtag || hashtagParam}
-              customStyle={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                color: 'white'
-              }}
-            />
+        <div id="projects-list" className="glass-card" style={{ marginTop: '2rem', padding: '2rem' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, color: '#1f2937' }}>
+            Projects with {actualHashtag ? `#${actualHashtag}` : `#${String(hashtagParam)}`} ({projects.length})
           </h2>
           <div style={{
             display: 'grid',
@@ -581,7 +328,7 @@ export default function HashtagStatsPage() {
                 <h3 style={{
                   margin: '0 0 0.75rem 0',
                   fontSize: '1.125rem',
-                  fontWeight: '600',
+                  fontWeight: 600,
                   color: '#1f2937'
                 }}>
                   {projectItem.viewSlug ? (
@@ -624,7 +371,7 @@ export default function HashtagStatsPage() {
                       padding: '0.25rem 0.5rem',
                       borderRadius: '6px',
                       fontSize: '0.75rem',
-                      fontWeight: '500'
+                      fontWeight: 500
                     }}>
                       📊 View Stats
                     </span>
@@ -637,8 +384,8 @@ export default function HashtagStatsPage() {
       )}
 
       {/* Footer */}
-      <div className={styles.footer}>
-        <p>Generated on {new Date().toLocaleDateString()} • MessMass Hashtag Statistics</p>
+      <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', color: '#4b5563' }}>
+        <p style={{ margin: 0 }}>Generated on {new Date().toLocaleDateString()} • MessMass Hashtag Statistics</p>
       </div>
     </div>
   );

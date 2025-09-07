@@ -188,7 +188,7 @@ export default function StatsPage() {
         <div className={styles.error}>
           <h1>❌ Error</h1>
           <p>{error}</p>
-          <p>The statistics page you're looking for might not exist or may have been removed.</p>
+          <p>The statistics page you&apos;re looking for might not exist or may have been removed.</p>
         </div>
       </div>
     );
@@ -199,7 +199,7 @@ export default function StatsPage() {
       <div className={styles.container}>
         <div className={styles.error}>
           <h1>📊 Project Not Found</h1>
-          <p>The statistics page you're looking for doesn't exist.</p>
+          <p>The statistics page you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );

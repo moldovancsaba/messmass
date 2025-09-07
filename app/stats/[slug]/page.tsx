@@ -78,6 +78,7 @@ export default function StatsPage() {
   const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
 
   // Function to force refresh data
   const refreshData = async () => {
@@ -115,6 +116,10 @@ export default function StatsPage() {
       if (data.success) {
         setPageStyle(data.config.pageStyle);
         setDataBlocks(data.config.dataBlocks);
+        if (data.config.gridSettings) {
+          const gs = data.config.gridSettings;
+          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
       }
     } catch (err) {
       console.error('Failed to fetch page config:', err);
@@ -314,6 +319,7 @@ export default function StatsPage() {
           blocks={dataBlocks}
           chartResults={chartResults}
           loading={false}
+          gridUnits={gridUnits}
         />
       </div>
 

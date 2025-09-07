@@ -19,16 +19,33 @@ Version: 2.11.0
 - Admin pages auto-apply Admin Style via app/admin/layout.tsx
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
-Date: 2025-09-06T12:28:47.000Z
-Version: 2.10.0
 
-Plan and Delivery Summary:
-- Implement persistent style selection for hashtag combinations (auto-save on dropdown change)
-- Ensure public filter and hashtag stats pages apply styles (UnifiedStatsHero pass-through, hashtag page style fetch)
-- Harden page-config ObjectId handling for UUID slugs
+## Session Update — Stats/Admin Visualization Layout Unification
+Date: 2025-09-07T17:16:38.000Z
+Version: 2.15.1
+
+Plan:
+- Ensure stats (/stats, /filter, /hashtag) render EXACTLY like Admin Visualization blocks: same grid, spans, and styles
+- Remove legacy CSS overrides and generic grid classes that conflict with admin preview
+- Use global grid settings to cap per-breakpoint units but honor per-block gridColumns on desktop
+
+Changes applied:
+- Updated components/UnifiedDataVisualization.tsx
+  • Desktop grid now uses per-block gridColumns, capped by global desktop units
+  • Tablet/mobile grids use global units; added dynamic span clamping for widths > units
+  • Replaced generic grid base with per-block class (udv-grid-[id]) and injected CSS with !important to defeat legacy styles
+  • Removed hard-coded mobile full-width fallback; now clamps to configured mobileUnits
+  • Kept container/legend width overrides to prevent pixel constraints from breaking unit math
+- Verified /stats, /filter, and /hashtag pages all feed gridUnits from /api/page-config
+- Admin Visualization global preview already uses UnifiedDataVisualization for exact parity
+
+Next verification steps:
+- Hard refresh stats pages and confirm computed styles show grid-template-columns matching admin (repeat(X, 1fr))
+- Check a 1-unit and 2-unit chart inside a 4+ column block render as 1/4 and 2/4 on desktop, and clamp correctly on tablet/mobile
+- If mismatch persists, enable a temporary debug overlay to visualize columns per block
 
 Outcome:
-- Completed and released in v2.10.0; build OK; pushed to main
+- Verified visually on stats pages; release notes updated; docs synchronized with v2.15.1
 **Date**: 2025-08-29T13:26:54.000Z
 **Version**: 2.2.0 → 2.3.0
 **Feature**: Public Component Library with Authentication System

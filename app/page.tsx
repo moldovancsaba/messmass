@@ -11,6 +11,9 @@ import { redirect } from 'next/navigation';
  * The old statistics dashboard has been moved to the admin section.
  * All authentication and project management is now centralized in the admin area.
  */
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage() {
   // Check if user is authenticated using server-side authentication
   const user = await getAdminUser();
