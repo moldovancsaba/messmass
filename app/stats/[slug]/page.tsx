@@ -214,6 +214,7 @@ export default function StatsPage() {
   // CSV export function (2-column table: Variable, Value)
   // What: Export all relevant variables as name/value rows for easy spreadsheet usage.
   // Why: User requested a clean table format without category groupings.
+  const [includeDerived, setIncludeDerived] = useState(false);
   const exportCSV = () => {
     if (!project) return;
 
@@ -233,6 +234,17 @@ export default function StatsPage() {
     rows.push(['Event Date', project.eventDate]);
     rows.push(['Created At', project.createdAt]);
     rows.push(['Updated At', project.updatedAt]);
+
+    // Derived metrics (optional)
+    if (includeDerived) {
+      rows.push(['totalImages', totalImages]);
+      rows.push(['totalFans', totalFans]);
+      rows.push(['totalGender', totalGender]);
+      rows.push(['totalUnder40', totalUnder40]);
+      rows.push(['totalOver40', totalOver40]);
+      rows.push(['totalAge', totalAge]);
+      rows.push(['totalMerch', totalMerch]);
+    }
 
     // All stats variables exactly as stored
     Object.entries(stats).forEach(([key, value]) => {
@@ -310,6 +322,16 @@ export default function StatsPage() {
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
         onExportCSV={exportCSV}
+        extraContent={(
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={includeDerived}
+              onChange={(e) => setIncludeDerived(e.target.checked)}
+            />
+            <span>Include derived metrics</span>
+          </label>
+        )}
       />
 
       {/* Unified Data Visualization */}

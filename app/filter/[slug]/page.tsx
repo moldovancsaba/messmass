@@ -209,6 +209,7 @@ export default function FilterPage() {
   }, [project, chartConfigurations]);
 
   // Export filtered results as CSV (2-column table: Variable, Value)
+  const [includeDerived, setIncludeDerived] = useState(false);
   const exportFilteredCSV = () => {
     if (!project) return;
 
@@ -228,6 +229,24 @@ export default function FilterPage() {
       rows.push(['Date Range Oldest', project.dateRange.oldest]);
       rows.push(['Date Range Newest', project.dateRange.newest]);
       rows.push(['Date Range (Formatted)', project.dateRange.formatted]);
+    }
+
+    // Derived metrics (optional)
+    if (includeDerived) {
+      const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
+      const totalFans = project.stats.indoor + project.stats.outdoor + project.stats.stadium;
+      const totalGender = project.stats.female + project.stats.male;
+      const totalUnder40 = project.stats.genAlpha + project.stats.genYZ;
+      const totalOver40 = project.stats.genX + project.stats.boomer;
+      const totalAge = totalUnder40 + totalOver40;
+      const totalMerch = project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other;
+      rows.push(['totalImages', totalImages]);
+      rows.push(['totalFans', totalFans]);
+      rows.push(['totalGender', totalGender]);
+      rows.push(['totalUnder40', totalUnder40]);
+      rows.push(['totalOver40', totalOver40]);
+      rows.push(['totalAge', totalAge]);
+      rows.push(['totalMerch', totalMerch]);
     }
 
     // Stats variables
@@ -317,6 +336,16 @@ export default function FilterPage() {
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
         onExportCSV={exportFilteredCSV}
+        extraContent={(
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={includeDerived}
+              onChange={(e) => setIncludeDerived(e.target.checked)}
+            />
+            <span>Include derived metrics</span>
+          </label>
+        )}
       />
 
       {/* Unified Data Visualization */}

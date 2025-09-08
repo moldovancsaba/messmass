@@ -10,6 +10,7 @@ interface UnifiedStatsHeroProps {
   lastUpdatedDate: string;
   pageStyle?: PageStyle;
   onExportCSV?: () => void;
+  extraContent?: React.ReactNode; // Optional controls or info injected by pages (e.g., export toggles)
 }
 
 export default function UnifiedStatsHero({
@@ -19,7 +20,8 @@ export default function UnifiedStatsHero({
   createdDate,
   lastUpdatedDate,
   pageStyle,
-  onExportCSV
+  onExportCSV,
+  extraContent
 }: UnifiedStatsHeroProps) {
   const formatDate = (dateString: string) => {
     try {
@@ -42,7 +44,7 @@ export default function UnifiedStatsHero({
       onExportCSV={onExportCSV}
       pageStyle={pageStyle}
     >
-      {/* Creation and Update Dates */}
+      {/* Creation and Update Dates + Extra Controls */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -79,6 +81,13 @@ export default function UnifiedStatsHero({
             📅 {formatDate(lastUpdatedDate)}
           </span>
         </div>
+
+        {/* Extra controls injected by pages, e.g., export toggles */}
+        {extraContent && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {extraContent}
+          </div>
+        )}
       </div>
     </UnifiedPageHero>
   );

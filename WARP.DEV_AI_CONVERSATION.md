@@ -20,6 +20,13 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — Grid Settings UI + Derived CSV Toggle
+Date: 2025-09-08T09:42:22.000Z
+Version: 3.3.0
+
+- Added Grid Settings editor under /admin/visualization
+- Added “Include derived metrics” toggle to CSV exports on stats/filter/hashtag pages
+
 ## Session Update — Admin Cleanup
 Date: 2025-09-08T09:33:04.000Z
 Version: 3.2.0

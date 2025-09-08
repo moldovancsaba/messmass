@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v3.3.0] — 2025-09-08T09:42:22.000Z
+
+### ⚙️ Admin Grid Settings UI + CSV Derived Metrics Toggle
+- Added Grid Settings editor in /admin/visualization to update desktop/tablet/mobile units via /api/grid-settings.
+- CSV exports on stats/filter/hashtag pages now support an “Include derived metrics” toggle in the header.
+
+---
+
 ## [v3.2.0] — 2025-09-08T09:33:04.000Z
 
 ### 🧼 Admin Cleanup

@@ -33,6 +33,7 @@ export default function VisualizationPage() {
 
   // Grid settings for per-block preview alignment
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+  const [gridForm, setGridForm] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
 
   // Form states for new data block
   const [blockForm, setBlockForm] = useState({
@@ -96,6 +97,7 @@ export default function VisualizationPage() {
       if (data.success && data.settings) {
         const gs = data.settings;
         setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        setGridForm({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
       }
     } catch (error) {
       console.error('Failed to load grid settings:', error);
@@ -319,6 +321,81 @@ export default function VisualizationPage() {
         backLink="/admin"
       />
 
+      {/* Grid Settings Editor */}
+      <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <h2 className="section-title" style={{ margin: 0 }}>Grid Settings</h2>
+        <p className="info-note" style={{ marginTop: '0.5rem' }}>
+          Configure the number of units per breakpoint used by stats/filter/hashtag pages.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <span>Desktop Units</span>
+            <input
+              type="number"
+              min={1}
+              max={6}
+              value={gridForm.desktop}
+              onChange={(e) => setGridForm({ ...gridForm, desktop: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 6) })}
+              className="form-input"
+              style={{ width: '120px' }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <span>Tablet Units</span>
+            <input
+              type="number"
+              min={1}
+              max={4}
+              value={gridForm.tablet}
+              onChange={(e) => setGridForm({ ...gridForm, tablet: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 4) })}
+              className="form-input"
+              style={{ width: '120px' }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <span>Mobile Units</span>
+            <input
+              type="number"
+              min={1}
+              max={2}
+              value={gridForm.mobile}
+              onChange={(e) => setGridForm({ ...gridForm, mobile: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 2) })}
+              className="form-input"
+              style={{ width: '120px' }}
+            />
+          </label>
+          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              className="btn-create"
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/grid-settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      desktopUnits: gridForm.desktop,
+                      tabletUnits: gridForm.tablet,
+                      mobileUnits: gridForm.mobile,
+                    })
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                    const gs = data.settings;
+                    setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+                    alert('Grid settings saved.');
+                  } else {
+                    alert('Failed to save grid settings');
+                  }
+                } catch (e) {
+                  alert('Failed to save grid settings');
+                }
+              }}
+            >
+              💾 Save
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="glass-card" style={{ padding: '2rem' }}>
         <h2 className="section-title">Data Visualization Blocks</h2>
