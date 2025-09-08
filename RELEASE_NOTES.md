@@ -1,5 +1,21 @@
 # MessMass Release Notes
 
+## [v3.0.0] — 2025-09-08T08:56:24.000Z
+
+### 🚀 Major Update — Visualization Parity + CSV Table Exports
+- Stats pages now render charts exactly as configured in Admin Visualization (parity across /stats, /filter, /hashtag)
+- Two-column CSV exports (Variable, Value) across stats/filter/hashtag pages
+- Centralized grid unit settings (GET/PUT /api/grid-settings), included in /api/page-config
+
+### 🧹 Cleanup
+- Removed legacy and duplicate files; unified components and styling
+- Deleted outdated legacy stats page implementation
+
+### ✅ Stability
+- Type-check, lint, and production build verified
+
+---
+
 ## [v2.18.0] — 2025-09-08T08:36:36.000Z
 
 ### 📄 CSV Export (Two-Column Table)

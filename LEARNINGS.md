@@ -246,6 +246,16 @@ These patterns can be applied to future MessMass features:
 
 ---
 
+## Major Update v3.0.0 — Learnings — 2025-09-08T08:56:24.000Z
+
+1) One Source of Truth Prevents Parity Drift
+- Rendering all pages through UnifiedDataVisualization eliminated layout inconsistencies.
+
+2) Data-Driven CSV Exports Ease Analysis
+- Exporting every variable as name/value rows removes ambiguity and is spreadsheet-friendly.
+
+---
+
 ## Visualization Layout Learnings — 2025-09-07T17:16:38.000Z
 
 1) CSS Specificity Matters More Than Intent

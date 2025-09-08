@@ -20,6 +20,14 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — Major Update Milestone
+Date: 2025-09-08T08:56:24.000Z
+Version: 3.0.0
+
+- Marked v3.0.0 as the major milestone release
+- Visualization parity enforced across all stats pages using unified component and settings
+- CSV export standardized to two-column table format across pages
+
 ## Session Update — CSV Export: Two-Column Table
 Date: 2025-09-08T08:36:36.000Z
 Version: 2.18.0
