@@ -497,7 +497,7 @@ export default function VisualizationPage() {
           </div>
         )}
         
-        {/* Existing Blocks with Full Management */}
+        {/* Existing Blocks with Full Management (Drag-and-Drop Reordering) */}
         {dataBlocks.length === 0 ? (
           <div className="empty-state">
             <h4 className="empty-state-title">📊 No Data Blocks Yet</h4>
@@ -506,9 +506,36 @@ export default function VisualizationPage() {
             </p>
           </div>
         ) : (
-          <div className="content-grid">
-            {dataBlocks.map((block) => (
-              <div key={block._id} className="block-item" onMouseEnter={() => calculatePreviewForBlock(block)}>
+          <div className="content-grid"
+            onDragOver={(e) => e.preventDefault()}
+          >
+            {dataBlocks
+              .sort((a, b) => a.order - b.order)
+              .map((block, idx) => (
+              <div 
+                key={block._id}
+                className="block-item"
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', String(idx));
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  const fromIdx = parseInt(e.dataTransfer.getData('text/plain') || '-1', 10);
+                  if (isNaN(fromIdx) || fromIdx === idx) return;
+                  const ordered = [...dataBlocks].sort((a,b)=>a.order-b.order);
+                  const [moved] = ordered.splice(fromIdx, 1);
+                  ordered.splice(idx, 0, moved);
+                  // Reassign sequential order
+                  const reindexed = ordered.map((b, i) => ({ ...b, order: i }));
+                  setDataBlocks(reindexed);
+                  // Persist sequentially
+                  for (const b of reindexed) {
+                    await handleUpdateBlock(b);
+                  }
+                }}
+                onMouseEnter={() => calculatePreviewForBlock(block)}
+              >
                 {/* Block Header */}
                 <div className="block-header">
                   <div>
@@ -538,6 +565,7 @@ export default function VisualizationPage() {
                       >
                         🗑️ Delete
                       </button>
+                      <span title="Drag to reorder" style={{ cursor: 'grab', userSelect: 'none', marginLeft: '0.5rem' }}>↕️</span>
                     </div>
                   </div>
                 </div>
@@ -578,15 +606,10 @@ export default function VisualizationPage() {
                         }
                       </div>
 
-                      {/* Inject the same responsive CSS rules as stats pages so preview alignment and widths are identical.
-                          Strategic: We inject per-block CSS to honor each block's gridColumns, capping at 2 on tablet and up to 6 on desktop, exactly like UnifiedDataVisualization. */}
                       <style jsx>{`
-                        /* Force left alignment and full-width fill within grid cells */
                         .charts-grid-${block._id || 'preview'} { grid-template-columns: 1fr; justify-items: stretch; align-items: start; grid-auto-flow: row; }
-                        /* Ensure width=2 truly spans two columns */
                         .chart-width-1 { grid-column: span 1; }
                         .chart-width-2 { grid-column: span 2; }
-                        /* Tablet columns cap at 2, desktop up to 6, honoring block.gridColumns */
                         @media (min-width: 768px) and (max-width: 1023px) {
 .charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.tablet)}, minmax(0, 1fr)) !important; }
                         }
@@ -595,12 +618,9 @@ export default function VisualizationPage() {
                         }
                         .unified-chart-item { background: rgba(248, 250, 252, 0.8); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.2s ease; height: 100%; box-sizing: border-box; }
                         .unified-chart-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); border-color: rgba(99, 102, 241, 0.3); }
-                        /* Remove global 500px max-width constraint for preview items */
                         .chart-item { display: flex; flex-direction: column; width: 100%; max-width: none; height: 100%; min-height: 350px; justify-self: stretch; min-width: 0; }
                         .chart-item > * { width: 100%; height: 100%; flex: 1; }
-                        /* Override global chart container min/max-width so units control size, not pixels */
                         .charts-grid-${block._id || 'preview'} :global(.chart-container) { min-width: 0 !important; max-width: none !important; width: 100% !important; }
-                        /* Override global legend constraints so 1-unit items can wrap correctly */
                         .chart-legend { min-width: 0; width: 100%; max-width: 100%; overflow: hidden; }
                       `}</style>
                     </>

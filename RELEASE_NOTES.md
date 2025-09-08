@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v3.4.0] — 2025-09-08T10:19:38.000Z
+
+### 📦 Admin & UX Enhancements
+- Admin Projects: Added per-row CSV export button before event name, so admins can download directly.
+- Admin Visualization: Drag-and-drop reordering for data blocks with immediate persistence.
+- Standardized loading/empty/error UX: Introduced StandardState component and applied to admin projects loading state (initial pass).
+
+---
+
 ## [v3.3.0] — 2025-09-08T09:42:22.000Z
 
 ### ⚙️ Admin Grid Settings UI + CSV Derived Metrics Toggle

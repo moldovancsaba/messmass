@@ -20,6 +20,14 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — CSV in Admin + Drag-and-Drop + State UX
+Date: 2025-09-08T10:19:38.000Z
+Version: 3.4.0
+
+- Admin Projects: CSV export button added per row
+- Admin Visualization: Drag-and-drop block reordering
+- Standardized state UX with shared component (initial rollout)
+
 ## Session Update — Grid Settings UI + Derived CSV Toggle
 Date: 2025-09-08T09:42:22.000Z
 Version: 3.3.0
