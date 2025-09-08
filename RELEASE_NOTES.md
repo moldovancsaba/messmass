@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v3.2.0] — 2025-09-08T09:33:04.000Z
+
+### 🧼 Admin Cleanup
+- Removed Global Stats Preview from /admin/visualization — no longer needed after parity was achieved.
+- Admin page still supports per-block previews for editing blocks.
+
+---
+
 ## [v3.1.0] — 2025-09-08T09:14:45.000Z
 
 ### 🎯 Chart Visibility Fine-Tune

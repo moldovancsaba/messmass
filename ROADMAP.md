@@ -1,7 +1,42 @@
 # ROADMAP.md
 
-Current Version: 3.1.0
-Last Updated: 2025-09-08T09:14:45.000Z
+Current Version: 3.2.0
+Last Updated: 2025-09-08T09:33:04.000Z
+
+## Milestones
+
+### Milestone: CSV and Visualization Parity Polish (Q3)
+Priority: High
+Dependencies: Completed v3.0.0 parity, v3.1.0 hide no-data
+- Admin Grid Settings UI (High)
+  - Build UI under /admin/visualization to edit desktop/tablet/mobile units via /api/grid-settings
+  - Dependency: grid-settings API (done)
+- Derived Metrics in CSV (Medium)
+  - Include computed totals (e.g., totalImages, totalFans) as additional rows
+  - Optional: toggle for including derived metrics
+- Chart Label Customization (Medium)
+  - Allow renaming chart titles/subtitles per block for public display
+  - Dependency: block editing model
+
+### Milestone: Data Quality and UX (Q3)
+Priority: Medium
+Dependencies: None
+- Empty-Block UX (Medium)
+  - If a block hides all charts due to no data, provide an optional friendly message toggle (admin-configurable)
+- Performance pass for stats pages (Medium)
+  - Audit inline CSS generation and ensure minimal reflows
+- Export options (Low)
+  - Download chart data as CSV (per chart) in addition to PNG
+
+### Milestone: Admin Productivity (Q4)
+Priority: Medium
+Dependencies: None
+- Bulk chart assignment tools (Medium)
+  - Multi-select charts and assign to blocks quickly
+- Reorder blocks with drag-and-drop (Medium)
+  - Improve ordering UX
+- Audit and simplify unused admin features (Low)
+  - Remove stale preview-only code paths
 
 ## Version 2.2.0 - Hashtag Categories System
 *Target Release: 2025-01-28*

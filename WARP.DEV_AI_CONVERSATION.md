@@ -20,6 +20,13 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — Admin Cleanup
+Date: 2025-09-08T09:33:04.000Z
+Version: 3.2.0
+
+- Removed Global Stats Preview from /admin/visualization
+- Kept per-block editing previews for block management
+
 ## Session Update — Chart Visibility Fine-Tune
 Date: 2025-09-08T09:14:45.000Z
 Version: 3.1.0

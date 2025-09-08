@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import AdminPageHero from '@/components/AdminPageHero';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
-import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 
@@ -32,9 +31,7 @@ export default function VisualizationPage() {
   const [previewResults, setPreviewResults] = useState<Record<string, ChartCalculationResult>>({});
   const [isCalculating, setIsCalculating] = useState(false);
 
-  // Global preview that mirrors stats pages (active blocks via /api/page-config)
-  const [globalBlocks, setGlobalBlocks] = useState<DataVisualizationBlock[]>([]);
-  const [globalLoading, setGlobalLoading] = useState(true);
+  // Grid settings for per-block preview alignment
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
 
   // Form states for new data block
@@ -49,7 +46,7 @@ export default function VisualizationPage() {
     loadDataBlocks();
     loadAvailableCharts();
     loadChartConfigs();
-    loadGlobalConfig();
+    loadGridSettings();
   }, []);
 
   const loadDataBlocks = async () => {
@@ -91,23 +88,17 @@ export default function VisualizationPage() {
     }
   };
 
-  // Load the same active blocks used by stats pages for a WYSIWYG global preview
-  const loadGlobalConfig = async () => {
+// Load grid settings for responsive previews
+  const loadGridSettings = async () => {
     try {
-      setGlobalLoading(true);
-      const response = await fetch('/api/page-config');
+      const response = await fetch('/api/grid-settings');
       const data = await response.json();
-      if (data.success) {
-        setGlobalBlocks(data.config.dataBlocks || []);
-        if (data.config.gridSettings) {
-          const gs = data.config.gridSettings;
-          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
-        }
+      if (data.success && data.settings) {
+        const gs = data.settings;
+        setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
       }
     } catch (error) {
-      console.error('Failed to load global page config:', error);
-    } finally {
-      setGlobalLoading(false);
+      console.error('Failed to load grid settings:', error);
     }
   };
   
@@ -328,24 +319,6 @@ export default function VisualizationPage() {
         backLink="/admin"
       />
 
-      {/* Global Stats Preview (Active Blocks) */}
-      <div className="glass-card" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <h2 className="section-title" style={{ margin: 0 }}>Global Stats Preview (Active Blocks)</h2>
-          <button onClick={loadGlobalConfig} className="btn-create">🔄 Refresh</button>
-        </div>
-        <p className="info-note" style={{ marginTop: '0.75rem' }}>
-          This preview mirrors exactly what stats pages render: only active blocks in order, using the same grid rules.
-        </p>
-        <div style={{ width: '100%', marginTop: '1rem' }}>
-          <UnifiedDataVisualization
-            blocks={globalBlocks}
-            chartResults={Object.values(previewResults)}
-            loading={globalLoading || isCalculating}
-            gridUnits={gridUnits}
-          />
-        </div>
-      </div>
 
       <div className="glass-card" style={{ padding: '2rem' }}>
         <h2 className="section-title">Data Visualization Blocks</h2>
