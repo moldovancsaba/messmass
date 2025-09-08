@@ -20,6 +20,13 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — Chart Visibility Fine-Tune
+Date: 2025-09-08T09:14:45.000Z
+Version: 3.1.0
+
+- Hide any chart that would render "No data available" from stats/filter/hashtag pages
+- Implemented by tightening hasValidData() to require numeric elements with sum > 0 in UnifiedDataVisualization
+
 ## Session Update — Major Update Milestone
 Date: 2025-09-08T08:56:24.000Z
 Version: 3.0.0

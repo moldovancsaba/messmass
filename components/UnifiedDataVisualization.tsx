@@ -84,12 +84,13 @@ export default function UnifiedDataVisualization({
 
   // Check if chart has valid data to display
   const hasValidData = (result: ChartCalculationResult): boolean => {
+    // Functional: A chart is considered valid only if it has numeric elements and their sum > 0.
+    // Strategic: Ensures charts that would render "No data available" are hidden on stats pages.
     const validElements = result.elements.filter(element => 
       typeof element.value === 'number'
     );
     const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-    
-    return validElements.length > 0 && (result.type === 'bar' || totalValue > 0);
+    return validElements.length > 0 && totalValue > 0;
   };
 
   if (loading) {

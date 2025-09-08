@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v3.1.0] — 2025-09-08T09:14:45.000Z
+
+### 🎯 Chart Visibility Fine-Tune
+- Charts that would render "No data available" are now hidden from stats/filter/hashtag pages for that specific page view.
+- Logic tightened in UnifiedDataVisualization: a chart is valid only if it has numeric elements and their sum > 0.
+
+---
+
 ## [v3.0.0] — 2025-09-08T08:56:24.000Z
 
 ### 🚀 Major Update — Visualization Parity + CSV Table Exports
