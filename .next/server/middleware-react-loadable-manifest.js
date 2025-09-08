@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"components/DynamicChart.tsx -> html2canvas\":{\"id\":\"components/DynamicChart.tsx -> html2canvas\",\"files\":[\"static/chunks/_app-pages-browser_node_modules_html2canvas_dist_html2canvas_js.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST='{"components/DynamicChart.tsx -> html2canvas":{"id":2699,"files":["static/chunks/ad2866b8.b4e82acbdb23aa67.js"]}}';

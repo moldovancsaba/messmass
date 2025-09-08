@@ -1,5 +1,37 @@
 # MessMass Release Notes
 
+## [v2.18.0] — 2025-09-08T08:36:36.000Z
+
+### 📄 CSV Export (Two-Column Table)
+- All CSV exports on stats, filter, and hashtag pages now produce a two-column table with headers:
+  - Variable, Value
+- Each variable is a separate row:
+  - Stats page: Event metadata (Event Name, Event Date, Created At, Updated At) + every project.stats field
+  - Filter page: Filter Tags, Projects Matched, Date Range (Oldest/Newest/Formatted) + every project.stats field
+  - Hashtag page: Hashtag, Projects Matched, Date Range (Oldest/Newest/Formatted) + every project.stats field
+- Values are safely CSV-escaped and quoted.
+
+### 🛠 Technical
+- Updated export handlers in:
+  - app/stats/[slug]/page.tsx
+  - app/filter/[slug]/page.tsx
+  - app/hashtag/[hashtag]/page.tsx
+
+---
+
+## [v2.17.0] — 2025-09-07T17:33:24.000Z
+
+### 🧹 Cleanup & API
+- Removed legacy file: app/stats/[slug]/page 2.tsx (superseded by unified stats page).
+- Introduced Grid Settings API: GET/PUT /api/grid-settings for desktop/tablet/mobile unit configuration.
+- Ensured page-config includes gridSettings (consumed by all stats pages and admin preview).
+
+### 🛠 Technical
+- Added lib/gridSettings.ts (central types/defaults/DB fetch/compute utilities).
+- API uses settings collection doc {_id: 'gridSettings'} with upsert behavior.
+
+---
+
 ## [v2.16.0] — 2025-09-07T17:18:45.000Z
 
 ### 📦 Release Finalization

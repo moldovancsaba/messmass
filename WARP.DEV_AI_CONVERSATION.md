@@ -20,6 +20,22 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — CSV Export: Two-Column Table
+Date: 2025-09-08T08:36:36.000Z
+Version: 2.18.0
+
+- Implemented two-column CSV exports across stats, filter, and hashtag pages
+- Each row includes a single Variable and its Value; headers included
+- CSV values are escaped and always quoted; timestamps use existing ISO strings where applicable
+
+## Session Update — Cleanup & Grid Settings API
+Date: 2025-09-07T17:33:24.000Z
+Version: 2.17.0
+
+- Removed legacy stats page (page 2.tsx)
+- Added /api/grid-settings (GET/PUT) and wired page-config to return gridSettings
+- Verified stats/admin parity remains intact after cleanup
+
 ## Session Update — Stats/Admin Visualization Layout Unification
 Date: 2025-09-07T17:16:38.000Z
 Version: 2.15.1

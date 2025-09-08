@@ -292,7 +292,40 @@ export default function HashtagStatsPage() {
         createdDate={project.createdAt}
         lastUpdatedDate={project.updatedAt}
         pageStyle={pageStyle || undefined}
-        onExportCSV={refreshData}
+        onExportCSV={() => {
+          // CSV export for hashtag aggregated stats (2-column table: Variable, Value)
+          const esc = (v: any) => {
+            const s = String(v ?? '');
+            return '"' + s.replace(/"/g, '""') + '"';
+          };
+          const rows: Array<[string, string | number]> = [];
+          const tag = actualHashtag || String(hashtagParam);
+          rows.push(['Hashtag', `#${tag}`]);
+          rows.push(['Projects Matched', project.projectCount]);
+          if (project.dateRange) {
+            rows.push(['Date Range Oldest', project.dateRange.oldest]);
+            rows.push(['Date Range Newest', project.dateRange.newest]);
+            rows.push(['Date Range (Formatted)', project.dateRange.formatted]);
+          }
+          Object.entries(project.stats).forEach(([key, value]) => {
+            rows.push([key, typeof value === 'number' || typeof value === 'string' ? value : '']);
+          });
+          const header = ['Variable', 'Value'];
+          const csv = [header, ...rows]
+            .map(([k, v]) => `${esc(k)},${esc(v)}`)
+            .join('\n');
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `hashtag_${tag.replace(/[^a-zA-Z0-9]/g, '_')}_variables.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }}
       />
 
       {/* Unified Data Visualization — driven entirely by admin visualization blocks */}

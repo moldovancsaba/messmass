@@ -208,47 +208,44 @@ export default function FilterPage() {
     }
   }, [project, chartConfigurations]);
 
-  // Export filtered results as CSV
+  // Export filtered results as CSV (2-column table: Variable, Value)
   const exportFilteredCSV = () => {
     if (!project) return;
 
     const stats = project.stats;
-    const csvData = [
-      ['MessMass Multi-Hashtag Filter Export'],
-      ['Filter Tags', hashtags.map(tag => `#${tag}`).join(' AND ')],
-      ['Projects Matched', project.projectCount.toString()],
-      ['Date Range', project.dateRange.formatted],
-      ['Generated', new Date().toLocaleString()],
-      [''],
-      ['Category', 'Metric', 'Count'],
-      ['Images', 'Remote Images', stats.remoteImages],
-      ['Images', 'Hostess Images', stats.hostessImages],
-      ['Images', 'Selfies', stats.selfies],
-      ['Fans', 'Indoor', stats.indoor],
-      ['Fans', 'Outdoor', stats.outdoor],
-      ['Fans', 'Stadium', stats.stadium],
-      ['Gender', 'Female', stats.female],
-      ['Gender', 'Male', stats.male],
-      ['Age', 'Gen Alpha', stats.genAlpha],
-      ['Age', 'Gen Y+Z', stats.genYZ],
-      ['Age', 'Gen X', stats.genX],
-      ['Age', 'Boomer', stats.boomer],
-      ['Merchandise', 'Merched', stats.merched],
-      ['Merchandise', 'Jersey', stats.jersey],
-      ['Merchandise', 'Scarf', stats.scarf],
-      ['Merchandise', 'Flags', stats.flags],
-      ['Merchandise', 'Baseball Cap', stats.baseballCap],
-      ['Merchandise', 'Other', stats.other],
-    ];
 
-    const csvContent = csvData.map(row => row.join(',')).join('\\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const esc = (v: any) => {
+      const s = String(v ?? '');
+      return '"' + s.replace(/"/g, '""') + '"';
+    };
+
+    const rows: Array<[string, string | number]> = [];
+
+    // Context variables
+    rows.push(['Filter Tags', hashtags.map(tag => `#${tag}`).join(' AND ')]);
+    rows.push(['Projects Matched', project.projectCount]);
+    if (project.dateRange) {
+      rows.push(['Date Range Oldest', project.dateRange.oldest]);
+      rows.push(['Date Range Newest', project.dateRange.newest]);
+      rows.push(['Date Range (Formatted)', project.dateRange.formatted]);
+    }
+
+    // Stats variables
+    Object.entries(stats).forEach(([key, value]) => {
+      rows.push([key, typeof value === 'number' || typeof value === 'string' ? value : '']);
+    });
+
+    const header = ['Variable', 'Value'];
+    const csv = [header, ...rows]
+      .map(([k, v]) => `${esc(k)},${esc(v)}`)
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `messmass_filter_${hashtags.join('_')}_export.csv`);
+      link.setAttribute('download', `messmass_filter_${hashtags.join('_')}_variables.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
