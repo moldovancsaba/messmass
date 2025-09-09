@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import StandardState from '@/components/StandardState';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
@@ -79,6 +80,7 @@ export default function StatsPage() {
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+  const [resolving, setResolving] = useState(true);
 
   // Function to force refresh data
   const refreshData = async () => {
@@ -88,6 +90,7 @@ export default function StatsPage() {
 
   // Function to fetch project data
   const fetchProjectData = useCallback(async () => {
+    setResolving(true);
     try {
       console.log('🔍 Fetching project stats for slug:', slug);
       // Add cache-busting parameter to force fresh data
@@ -97,12 +100,15 @@ export default function StatsPage() {
 
       if (data.success) {
         setProject(data.project);
+        setError(null);
       } else {
         setError(data.error || 'Failed to load project');
       }
     } catch (err) {
       console.error('Failed to fetch project:', err);
       setError('Failed to load project data');
+    } finally {
+      setResolving(false);
     }
   }, [slug]);
 
@@ -287,9 +293,20 @@ export default function StatsPage() {
     );
   }
 
-  // Loading state removed - show content immediately
+  // Searching state while resolving project by slug
+  if (resolving || (!project && !error)) {
+    return (
+      <div className="admin-container" style={{ padding: '1rem' }}>
+        <StandardState
+          variant="loading"
+          title="📊 Searching the Project page"
+          message={"We are preparing the statistics page you're looking for."}
+        />
+      </div>
+    );
+  }
 
-  if (error || !project) {
+  if (error) {
     return (
       <div className="admin-container" style={{
         display: 'flex',
@@ -300,15 +317,15 @@ export default function StatsPage() {
           textAlign: 'center',
           padding: '2rem'
         }}>
-          <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>
-            {error ? '❌ Error' : '📊 Project Not Found'}
-          </h1>
-          <p style={{ color: '#6b7280' }}>
-            {error || "The statistics page you're looking for doesn't exist."}
-          </p>
+          <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>❌ Error</h1>
+          <p style={{ color: '#6b7280' }}>{error}</p>
         </div>
       </div>
     );
+  }
+
+  if (!project) {
+    return null;
   }
 
   return (

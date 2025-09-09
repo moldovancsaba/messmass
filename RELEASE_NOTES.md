@@ -1,5 +1,15 @@
 # MessMass Release Notes
 
+## [v3.5.0] — 2025-09-08T14:12:11.000Z
+
+### 🧭 Stats Page Searching State
+- When opening a stats page, a searching state is shown while the system resolves the slug:
+  - Title: "📊 Searching the Project page"
+  - Message: "We are preparing the statistics page you're looking for."
+- Prevents the premature "Project Not Found" message before data resolves.
+
+---
+
 ## [v3.4.0] — 2025-09-08T10:19:38.000Z
 
 ### 📦 Admin & UX Enhancements

@@ -20,6 +20,13 @@ Version: 2.11.0
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated
 
+## Session Update — Stats Searching State
+Date: 2025-09-08T14:12:11.000Z
+Version: 3.5.0
+
+- Added searching state to stats page while resolving slug
+- Copy: "📊 Searching the Project page" and "We are preparing the statistics page you're looking for."
+
 ## Session Update — CSV in Admin + Drag-and-Drop + State UX
 Date: 2025-09-08T10:19:38.000Z
 Version: 3.4.0
