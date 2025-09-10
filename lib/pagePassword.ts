@@ -163,7 +163,9 @@ export async function validatePagePassword(
  * @returns boolean
  */
 export function validateAdminPassword(providedPassword: string): boolean {
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  // Use centralized config to avoid drift with other auth surfaces
+  const { default: appConfig } = require('@/lib/config')
+  const adminPassword = appConfig.adminPassword || 'admin123'
   return providedPassword === adminPassword;
 }
 

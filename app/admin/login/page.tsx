@@ -1,4 +1,4 @@
-// app/admin/login/page.tsx - Updated to use existing CSS classes
+// app/admin/login/page.tsx - Email + password login UI with existing MessMass styling
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
   const router = useRouter()
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -17,19 +18,15 @@ export default function AdminLogin() {
       try {
         const response = await fetch('/api/admin/auth')
         const data = await response.json()
-        
         if (response.ok && data.user) {
-          // Already authenticated, redirect to admin
           router.push('/admin')
           return
         }
-      } catch (error) {
-        // Not authenticated or error, stay on login page
-        console.log('Not authenticated, staying on login page')
+      } catch {
+        // ignore
       }
       setCheckingAuth(false)
     }
-    
     checkAuth()
   }, [router])
 
@@ -37,25 +34,19 @@ export default function AdminLogin() {
     e.preventDefault()
     setLoading(true)
     setError('')
-
     try {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password })
       })
-
-      const data = await response.json()
-
+      const data = await response.json().catch(() => ({}))
       if (response.ok) {
-        // Cookie is set by the server, just redirect
         router.push('/admin')
       } else {
-        setError(data.error || 'Invalid password')
+        setError(data.error || 'Invalid credentials')
       }
-    } catch (_err) {
+    } catch {
       setError('Login failed. Please try again.')
     } finally {
       setLoading(false)
@@ -64,7 +55,7 @@ export default function AdminLogin() {
 
   return (
     <div className="app-container">
-      <div className="glass-card" style={{width: '100%', maxWidth: '400px', padding: '2rem'}}>
+      <div className="glass-card" style={{width: '100%', maxWidth: '420px', padding: '2rem'}}>
         {/* Logo/Icon Section */}
         <div style={{textAlign: 'center', marginBottom: '2rem'}}>
           <div className="admin-avatar" style={{margin: '0 auto 1.5rem', width: '64px', height: '64px'}}>
@@ -76,16 +67,30 @@ export default function AdminLogin() {
             MessMass Admin
           </h1>
           <p className="subtitle" style={{marginBottom: '2rem'}}>
-            Enter admin password to access the dashboard
+            Sign in with email and password to access the dashboard
           </p>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleLogin} style={{marginBottom: '2rem'}}>
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <label htmlFor="email" className="form-label">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="text"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
+              placeholder="admin or admin@messmass.com"
+              disabled={loading}
+              style={{ textAlign: 'center', fontSize: '1.05rem' }}
+            />
+          </div>
+
           <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Admin Password
-            </label>
+            <label htmlFor="password" className="form-label">Password</label>
             <input
               id="password"
               name="password"
@@ -94,9 +99,9 @@ export default function AdminLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-input"
-              placeholder="Enter your admin password"
+              placeholder="Enter your password"
               disabled={loading}
-              style={{textAlign: 'center', fontSize: '1.1rem'}}
+              style={{textAlign: 'center', fontSize: '1.05rem'}}
             />
           </div>
 
@@ -123,7 +128,7 @@ export default function AdminLogin() {
           {/* Login Button */}
           <button
             type="submit"
-            disabled={loading || !password.trim()}
+            disabled={loading || !email.trim() || !password.trim()}
             className={`btn btn-primary ${loading ? 'btn-large' : 'btn-large'}`}
             style={{width: '100%', marginBottom: '1rem'}}
           >
@@ -140,9 +145,7 @@ export default function AdminLogin() {
                 Signing in...
               </div>
             ) : (
-              <>
-                🔐 Sign in to Admin
-              </>
+              <>🔐 Sign in to Admin</>
             )}
           </button>
         </form>
@@ -170,11 +173,7 @@ export default function AdminLogin() {
 
       {/* Add spinning animation */}
       <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   )

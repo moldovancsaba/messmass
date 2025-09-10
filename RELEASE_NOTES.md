@@ -1,5 +1,25 @@
 # MessMass Release Notes
 
+## [v3.6.0] — 2025-09-10T09:30:45.000Z
+
+### 🔐 Multi-User Admin Authentication + Admin Bypass for Page Passwords
+- Introduced email + password login at /admin/login (replaces password-only flow).
+- Added MongoDB-backed Users collection with admin UI at /admin/users to create, regenerate, and delete users.
+- Password generation uses the same MD5-style generator as page-specific passwords (one-time reveal on creation/regeneration).
+- Admin session now bypasses page-specific passwords on /stats/[slug], /edit/[slug], and /filter/[slug].
+- Legacy admin master password preserved for bootstrapping; first successful login seeds a super-admin if missing.
+- Centralized admin password source via lib/config to avoid drift.
+
+### 🛠 Technical
+- lib/auth.ts refactored to DB-backed session validation (cookie: admin-session).
+- /api/admin/login accepts { email, password } and returns a 7-day session cookie.
+- /api/admin/local-users (GET, POST), /api/admin/local-users/[id] (PUT regenerate, DELETE) implemented.
+- components/PagePasswordLogin auto-bypasses if an admin session exists.
+- /api/page-passwords PUT short-circuits when admin session is present.
+- Version bump and documentation sync per protocol.
+
+---
+
 ## [v3.5.0] — 2025-09-08T14:12:11.000Z
 
 ### 🧭 Stats Page Searching State

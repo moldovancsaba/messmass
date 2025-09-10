@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
+import { getAdminUser } from '@/lib/auth';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -82,6 +83,17 @@ export async function PUT(request: NextRequest) {
         { success: false, error: 'Invalid pageType. Must be stats, edit, or filter' },
         { status: 400 }
       );
+    }
+
+    // Admin bypass: if request has a valid admin session, accept immediately
+    const admin = await getAdminUser()
+    if (admin) {
+      return NextResponse.json({
+        success: true,
+        isValid: true,
+        isAdmin: true,
+        message: 'Admin session accepted'
+      })
     }
 
     console.log(`🔍 Validating password for ${pageType} page:`, pageId.substring(0, 8) + '...');

@@ -280,6 +280,39 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
               </div>
             </div>
           </a>
+
+          {/* Users Management */}
+          <a
+            href="/admin/users"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              padding: '1.5rem',
+              background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '12px',
+              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(16, 185, 129, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+            }}
+          >
+            <div style={{ fontSize: '2rem' }}>👤</div>
+            <div>
+              <div style={{ fontWeight: 'bold', fontSize: '1.125rem' }}>Users</div>
+              <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+                Create, regenerate, and delete admin users
+              </div>
+            </div>
+          </a>
       </div>
     </div>
   );

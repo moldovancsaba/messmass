@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageType } from '@/lib/pagePassword';
 
 interface PagePasswordLoginProps {
@@ -21,6 +21,26 @@ export default function PagePasswordLogin({
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Admin bypass: if a global admin session exists, skip this prompt entirely
+  useEffect(() => {
+    let cancelled = false
+    const checkAdmin = async () => {
+      try {
+        const res = await fetch('/api/admin/auth', { cache: 'no-store' })
+        if (res.ok) {
+          const data = await res.json()
+          if (!cancelled && data?.user) {
+            onSuccess(true)
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    checkAdmin()
+    return () => { cancelled = true }
+  }, [onSuccess])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
