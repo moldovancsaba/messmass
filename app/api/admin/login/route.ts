@@ -5,11 +5,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
-import config from '@/lib/config'
-import { findUserByEmail, createUser } from '@/lib/users'
+import { findUserByEmail } from '@/lib/users'
 
-// Legacy admin master password fallback (for compatibility and bootstrap)
-const LEGACY_ADMIN_PASSWORD = config.adminPassword
+// Legacy env-based admin password has been removed. Authentication is fully DB-backed.
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,22 +24,17 @@ export async function POST(request: NextRequest) {
 
     const email = emailRaw.toLowerCase()
 
-    // Try to find user in DB
+    // Try to find user in DB (with alias support for 'admin' -> 'admin@messmass.com')
     let user = await findUserByEmail(email)
-
-    // Validate credentials using requested storage pattern (plaintext-like MD5-style token)
-    let isValid = false
-
-    if (user && user.password === password) {
-      isValid = true
-    } else {
-      // Compatibility: allow logging in as legacy admin with master password
-      // Accept either 'admin' or 'admin@messmass.com' as identifier when using legacy admin
-      const isAdminIdentifier = email === 'admin' || email === 'admin@messmass.com'
-      if (isAdminIdentifier && password === LEGACY_ADMIN_PASSWORD) {
-        isValid = true
-      }
+    if (!user && email === 'admin') {
+      // WHAT: Allow 'admin' as a login alias for the canonical 'admin@messmass.com'.
+      // WHY: Improves UX while keeping a single stored identity in the Users collection.
+      const alias = await findUserByEmail('admin@messmass.com')
+      if (alias) user = alias
     }
+
+    // Validate credentials using stored plaintext-like MD5-style token
+    const isValid = !!(user && user.password === password)
 
     if (!isValid) {
       // Simple brute force protection delay
@@ -49,31 +42,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
-    // Bootstrap: if valid via legacy admin and user not present, upsert a super-admin
-    if (!user) {
-      const isAdminIdentifier = email === 'admin' || email === 'admin@messmass.com'
-      if (isAdminIdentifier && password === LEGACY_ADMIN_PASSWORD) {
-        const now = new Date().toISOString()
-        try {
-          const created = await createUser({
-            email: 'admin@messmass.com',
-            name: 'Admin',
-            role: 'super-admin',
-            password: LEGACY_ADMIN_PASSWORD,
-            createdAt: now,
-            updatedAt: now
-          })
-          // for session
-          user = created
-        } catch (e) {
-          // If unique constraint exists, try to read again
-          const existing = await findUserByEmail('admin@messmass.com')
-          if (existing) {
-            user = existing
-          }
-        }
-      }
-    }
+    // Note: Legacy bootstrap via env password is removed.
+    // If you need to create the initial super-admin, use the Admin → Users page
+    // (or insert directly in the Users collection), then log in with that credential.
 
     // Build session token (7 days)
     const token = crypto.randomBytes(32).toString('hex')

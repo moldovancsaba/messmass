@@ -1,5 +1,20 @@
 # MessMass Release Notes
 
+## [v3.7.0] — 2025-09-10T13:24:05.000Z
+
+### 🔐 Admin Authentication — DB-only + Regenerable Passwords
+- Removed legacy env-based admin password fallback; authentication now validates only against the Users collection.
+- "admin" email alias supported: login attempts with "admin" resolve to the canonical "admin@messmass.com" user.
+- Fixed server-side password generator to use Node.js crypto (32-char MD5-style random hex) for both admin and page passwords.
+- Admin session continues to bypass page-specific password prompts; static admin password checks were removed from page password validation.
+
+### 🛠 Technical
+- app/api/admin/login/route.ts: removed env fallback, added alias, DB-only check, comments.
+- lib/pagePassword.ts: server-safe generator via crypto.randomBytes(16).toString('hex'); removed static admin password validation; clarified comments.
+- Version bump and doc synchronization per protocol; timestamps in ISO 8601 with milliseconds.
+
+---
+
 ## [v3.6.0] — 2025-09-10T09:30:45.000Z
 
 ### 🔐 Multi-User Admin Authentication + Admin Bypass for Page Passwords

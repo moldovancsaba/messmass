@@ -1,5 +1,17 @@
 # MessMass Development Learnings
 
+## Admin Authentication and Password Generation — 2025-09-10T13:24:05.000Z
+
+- What: Removed legacy env-based admin password fallback. Admin authentication is now fully DB-backed via the Users collection. Added login alias so "admin" resolves to "admin@messmass.com".
+- Why: Eliminates secret drift and enables regenerable admin passwords from the Admin → Users UI. Aligns all auth with a single source of truth.
+- Technical Notes:
+  - app/api/admin/login/route.ts validates only DB-stored passwords; no env compare.
+  - lib/pagePassword.ts now generates server-safe 32-char MD5-style tokens using Node crypto.randomBytes(16).toString('hex').
+  - Page password validation no longer checks a static admin password; admin session bypass remains in the API route.
+- Lessons:
+  - Do not use Web Crypto APIs server-side (e.g., crypto.getRandomValues) — enforce Node runtime or use Node crypto.
+  - Centralize secrets and auth logic to avoid duplication and drift.
+
 ## Hashtag Categories System Implementation (Version 2.2.0)
 
 ### Overview

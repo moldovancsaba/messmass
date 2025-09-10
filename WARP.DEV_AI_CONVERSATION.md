@@ -16,6 +16,16 @@
 Date: 2025-09-06T12:38:27.000Z
 Version: 2.11.0
 
+## Session Update — v3.7.0 Admin Auth & Password Generation
+Date: 2025-09-10T13:24:05.000Z
+Version: 3.7.0
+
+- Removed legacy env-based admin password fallback; DB-only validation via Users collection
+- Added "admin" login alias for "admin@messmass.com"
+- Fixed server-side password generation to Node crypto (32-char MD5-style)
+- Page password validation no longer checks static admin password; admin session bypass remains
+- Docs and release notes updated; version synced to 3.7.0
+
 - Admin pages auto-apply Admin Style via app/admin/layout.tsx
 - Added inline “✓ saved” indicator on /admin/filter style dropdown (auto-save)
 - Docs and release notes updated

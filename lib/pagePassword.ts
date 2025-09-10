@@ -1,6 +1,6 @@
 // lib/pagePassword.ts - Page-specific password generation and management
 
-import { createHash } from 'crypto';
+import { randomBytes } from 'crypto';
 import clientPromise from '@/lib/mongodb';
 
 /**
@@ -34,10 +34,11 @@ export interface ShareableLink {
  * @returns 32-character hexadecimal string (like MD5 hash)
  */
 export function generateMD5StylePassword(): string {
-  // Generate random bytes and create hash-like password
-  const randomData = Date.now().toString() + Math.random().toString(36) + crypto.getRandomValues(new Uint8Array(16)).join('');
-  const hash = createHash('md5').update(randomData).digest('hex');
-  return hash;
+  // WHAT: Produce a 32-character lowercase hex string that "looks like" an MD5 hash.
+  // WHY: Consumers expect an MD5-style token for page/admin one-time passwords.
+  // Strategic choice: Use Node's crypto.randomBytes(16) -> 32 hex chars. This avoids Web Crypto
+  // on the server and is sufficient since we only need a random token, not an MD5 digest of input.
+  return randomBytes(16).toString('hex');
 }
 
 /**
@@ -162,12 +163,8 @@ export async function validatePagePassword(
  * @param providedPassword - Password provided by user
  * @returns boolean
  */
-export function validateAdminPassword(providedPassword: string): boolean {
-  // Use centralized config to avoid drift with other auth surfaces
-  const { default: appConfig } = require('@/lib/config')
-  const adminPassword = appConfig.adminPassword || 'admin123'
-  return providedPassword === adminPassword;
-}
+// NOTE: Static admin password via env has been removed.
+// Admin session bypass is handled at the API route level (see /api/page-passwords PUT).
 
 /**
  * Validate either admin or page-specific password
@@ -182,12 +179,10 @@ export async function validateAnyPassword(
   pageType: PageType,
   providedPassword: string
 ): Promise<{ isValid: boolean, isAdmin: boolean }> {
-  // First check admin password
-  if (validateAdminPassword(providedPassword)) {
-    return { isValid: true, isAdmin: true };
-  }
-
-  // Then check page-specific password
+  // WHAT: Validate provided password against the page-specific password only.
+  // WHY: Legacy static admin password has been removed. Admin access is validated via session
+  //      earlier in the API route (admin session bypass). This prevents secret drift and centralizes
+  //      admin auth in the DB-backed session system.
   const isPagePasswordValid = await validatePagePassword(pageId, pageType, providedPassword);
   return { isValid: isPagePasswordValid, isAdmin: false };
 }
