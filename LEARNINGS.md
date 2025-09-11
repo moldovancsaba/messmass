@@ -2,6 +2,12 @@
 
 ## Admin Authentication and Password Generation — 2025-09-10T13:24:05.000Z
 
+## KPI Config Expansion — 2025-09-11T08:21:15.000Z
+- What: Added 8 KPI chart configurations leveraging existing variables; inserted via script to chartConfigurations.
+- Why: Provide creative, decision-focused KPIs for marketing, operations, and sponsorship reporting without code changes to rendering components.
+- How: scripts/add-kpi-charts.js uses scripts/config.js to load env, computes next orders, inserts non-duplicate KPIs with ISO timestamps.
+- Note: API validation constraints (kpi = 1 element) were respected; all formulas are compatible with AVAILABLE_VARIABLES.
+
 - What: Removed legacy env-based admin password fallback. Admin authentication is now fully DB-backed via the Users collection. Added login alias so "admin" resolves to "admin@messmass.com".
 - Why: Eliminates secret drift and enables regenerable admin passwords from the Admin → Users UI. Aligns all auth with a single source of truth.
 - Technical Notes:

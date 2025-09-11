@@ -17,6 +17,14 @@ Date: 2025-09-06T12:38:27.000Z
 Version: 2.11.0
 
 ## Session Update — v3.7.0 Admin Auth & Password Generation
+
+## Session Update — v3.8.0 KPI Chart Configs
+Date: 2025-09-11T08:21:15.000Z
+Version: 3.8.0
+
+- Inserted 8 KPI charts into chartConfigurations with safe ordering
+- Reused scripts/config.js and adhered to ISO 8601 ms timestamps
+- Charts editable in Admin → Charts (CRUD via existing UI and APIs)
 Date: 2025-09-10T13:24:05.000Z
 Version: 3.7.0
 

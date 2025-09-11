@@ -1,5 +1,26 @@
 # MessMass Release Notes
 
+## [v3.8.0] — 2025-09-11T08:21:15.000Z
+
+### 📈 New KPI Chart Configurations (DB-inserted, editable in Admin → Charts)
+Inserted 8 new KPI charts into chartConfigurations (no duplicates; ordered after existing charts):
+- remote-fan-share — Remote Fan Share (%)
+- merch-adoption-rate — Merch Adoption Rate (%)
+- image-approval-rate — Image Approval Rate (%)
+- content-capture-rate — Content Capture Rate (images per 100 attendees)
+- youth-audience-share — Youth Audience Share (%)
+- value-prop-conversion-rate — Value Prop Conversion Rate (%)
+- social-per-image — Social Interactions per Image
+- items-per-merched-fan — Items per Merched Fan
+
+All formulas use existing variables (see lib/chartConfigTypes.ts AVAILABLE_VARIABLES). Charts appear in Admin → Charts and can be updated, reordered, edited, or deleted. Timestamps stored in ISO 8601 with milliseconds.
+
+### 🛠 Technical
+- Added script scripts/add-kpi-charts.js (uses scripts/config.js) to insert KPIs safely with proper ordering and timestamps.
+- No schema changes; reuses chartConfigurations collection.
+
+---
+
 ## [v3.7.0] — 2025-09-10T13:24:05.000Z
 
 ### 🔐 Admin Authentication — DB-only + Regenerable Passwords
