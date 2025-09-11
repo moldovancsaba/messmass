@@ -24,19 +24,44 @@
 ======================================== */
 
 .btn {
+  /* Consistent touch target and spacing */
   padding: var(--space-3) var(--space-6);
+  min-height: 40px;
+  margin: var(--space-1);
+
+  /* Corners & borders */
   border-radius: var(--radius-xl);
   border: none;
+
+  /* Typography */
   font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: all var(--transition-base);
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+
+  /* Layout */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all var(--transition-base);
   text-decoration: none;
-  font-size: var(--text-sm);
-  line-height: var(--leading-tight);
+}
+
+/* Button states */
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
 }
 
 /* Button Sizes */
@@ -133,6 +158,7 @@
 .form-input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
+  min-height: 40px;
   border: 2px solid var(--color-gray-200);
   border-radius: var(--radius-xl);
   font-size: var(--text-base);
@@ -140,6 +166,35 @@
   background: var(--color-white);
   color: var(--color-gray-900);
   font-family: inherit;
+}
+
+/* Select styling: aligns dropdowns with inputs */
+select,
+.form-select {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  min-height: 40px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
+  background: var(--color-white);
+  color: var(--color-gray-900);
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-gray-500) 50%), linear-gradient(135deg, var(--color-gray-500) 50%, transparent 50%);
+  background-position: calc(100% - 24px) calc(1em + 2px), calc(100% - 16px) calc(1em + 2px);
+  background-size: 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+}
+
+select:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-input:focus {
@@ -183,6 +238,14 @@ input[type="url"],
 textarea,
 select {
   color: var(--color-gray-900) !important;
+}
+
+/* Ensure form controls have spacing from edges in dense layouts */
+button.btn,
+input.form-input,
+select.form-select,
+select {
+  margin: var(--space-1);
 }
 
 /* Ensure placeholder text has proper contrast */

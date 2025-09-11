@@ -1,5 +1,17 @@
 # MessMass Release Notes
 
+## [v3.11.0] — 2025-09-11T13:14:27.000Z
+
+### 🎨 UI Design System Refinements
+- Buttons: standardized min-height (40px), consistent edge spacing via small default margins, unified focus and disabled states across variants.
+- Inputs & Dropdowns: added unified .form-select and generic select styling to align with .form-input; enforced min-height 40px; consistent padding, radius, and focus rings.
+- Spacing: ensured buttons and form controls don’t stick to container edges in dense layouts by adding small default margins.
+
+### 📚 Documentation
+- Added DESIGN_SYSTEM.md describing tokens, components, usage rules, recent refinements, and migration guidelines.
+
+---
+
 ## [v3.10.0] — 2025-09-11T12:25:16.000Z
 
 ### 📊 Five New Bar Charts (5 elements each)

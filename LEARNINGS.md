@@ -7,6 +7,11 @@
 ## Pie Config Expansion — 2025-09-11T08:33:40.000Z
 
 ## Bar Config Expansion — 2025-09-11T12:25:16.000Z
+
+## Design System Refinement — 2025-09-11T13:14:27.000Z
+- Learned: Small default margins on buttons and controls prevent edge collisions; a system-wide min 40px control height improves accessibility and harmony.
+- Change: Consolidated dropdown styling to match inputs; unified focus/disabled states for buttons.
+- Next: Replace inline-styled legacy components (e.g., login/shareable popups) with class-based design system utilities to reduce divergence.
 - What: Inserted 5 bar charts (5 elements each) focusing on merch mix, platform visits, fan spread, content pipeline, and activation funnel.
 - Why: Provide richer comparisons across key subsystems (merch, traffic, engagement, moderation, conversion).
 - How: scripts/add-bar-charts.js reuses scripts/config.js; assigns order after current max; timestamps in ISO 8601 with ms; prevents duplicates.

@@ -23,6 +23,14 @@ Version: 2.11.0
 ## Session Update — v3.9.0 Pie Chart Configs
 
 ## Session Update — v3.10.0 Bar Chart Configs
+
+## Session Update — v3.11.0 UI Design System
+Date: 2025-09-11T13:14:27.000Z
+Version: 3.11.0
+
+- Buttons: standardized min height and margins, unified states
+- Inputs/Dropdowns: .form-select + consistent sizing
+- Added DESIGN_SYSTEM.md and updated docs
 Date: 2025-09-11T12:25:16.000Z
 Version: 3.10.0
 
