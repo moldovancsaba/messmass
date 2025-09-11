@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v3.9.0] — 2025-09-11T08:33:40.000Z
+
+### 🥧 Ten New Pie Charts (two-segment A/B insights)
+All inserted to chartConfigurations and immediately editable in Admin → Charts. Each pie uses exactly two elements per validation rules:
+- merch-vs-nonmerch — Merch vs Non‑Merch Fans
+- hostess-vs-fan-images — Hostess vs Fan Images
+- approval-split — Approved vs Rejected Images
+- indoor-vs-outdoor — Indoor vs Outdoor Fans
+- apparel-vs-accessories — Apparel vs Accessories
+- social-vs-direct — Social vs Direct Traffic
+- vp-funnel — Value Prop: Buyers vs Browsers
+- match-result-share — Match Result Share
+- engaged-share — Engaged vs Not Engaged
+- qr-vs-short — QR vs Short URL
+
+All formulas rely on AVAILABLE_VARIABLES in lib/chartConfigTypes.ts. Ordering appended after existing charts; timestamps stored in ISO with milliseconds.
+
+### 🛠 Technical
+- Added scripts/add-pie-charts.js for safe, idempotent insertion.
+
+---
+
 ## [v3.8.0] — 2025-09-11T08:21:15.000Z
 
 ### 📈 New KPI Chart Configurations (DB-inserted, editable in Admin → Charts)

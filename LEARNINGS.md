@@ -3,6 +3,12 @@
 ## Admin Authentication and Password Generation — 2025-09-10T13:24:05.000Z
 
 ## KPI Config Expansion — 2025-09-11T08:21:15.000Z
+
+## Pie Config Expansion — 2025-09-11T08:33:40.000Z
+- What: Inserted 10 two-segment pie charts that expose clear A/B distributions on content, merch, engagement, and funnel.
+- Why: Easily digestible splits that aid quick decision-making and comparisons across events.
+- How: scripts/add-pie-charts.js uses env from scripts/config.js; ensures non-duplication, correct ordering, ISO timestamps.
+- Note: Validated against API constraints (pie=2 elements) and variable whitelist.
 - What: Added 8 KPI chart configurations leveraging existing variables; inserted via script to chartConfigurations.
 - Why: Provide creative, decision-focused KPIs for marketing, operations, and sponsorship reporting without code changes to rendering components.
 - How: scripts/add-kpi-charts.js uses scripts/config.js to load env, computes next orders, inserts non-duplicate KPIs with ISO timestamps.

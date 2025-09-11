@@ -19,6 +19,14 @@ Version: 2.11.0
 ## Session Update — v3.7.0 Admin Auth & Password Generation
 
 ## Session Update — v3.8.0 KPI Chart Configs
+
+## Session Update — v3.9.0 Pie Chart Configs
+Date: 2025-09-11T08:33:40.000Z
+Version: 3.9.0
+
+- Inserted 10 new two-segment pie charts (merch vs non-merch, approval split, funnel, sources, etc.)
+- Scripted insertion (idempotent) with proper ordering and ISO timestamps
+- Charts are visible and editable under Admin → Charts
 Date: 2025-09-11T08:21:15.000Z
 Version: 3.8.0
 
