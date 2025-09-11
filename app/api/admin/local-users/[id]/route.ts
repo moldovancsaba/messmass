@@ -7,6 +7,11 @@ import { getAdminUser } from '@/lib/auth'
 import { deleteUser, findUserById, updateUserPassword } from '@/lib/users'
 import { generateMD5StylePassword } from '@/lib/pagePassword'
 
+// WHAT: Force Node.js runtime for this route.
+// WHY: Password regeneration uses Node's crypto (randomBytes) via lib/pagePassword.ts.
+// Explicitly declaring 'nodejs' prevents Edge runtime incompatibilities.
+export const runtime = 'nodejs'
+
 interface RouteParams {
   params: Promise<{ id: string }>
 }

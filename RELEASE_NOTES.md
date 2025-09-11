@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v3.12.0] — 2025-09-11T13:39:27.000Z
+
+### 🔐 Admin Password Generation Reliability
+- Forced Node.js runtime for routes that generate/regenerate passwords to ensure Node crypto is available:
+  - app/api/page-passwords/route.ts
+  - app/api/admin/local-users/route.ts
+  - app/api/admin/local-users/[id]/route.ts
+- Outcome: Admin user creation/regeneration and page password generation now work reliably in all environments.
+
+### 🎨 Page Style Application on Public Pages
+- Stats (/stats/[slug]) and Filter (/filter/[slug]) pages now inject pageStyle gradients into `.admin-container` and `.admin-header`, matching the hashtag page behavior.
+- Outcome: Consistent design system styling across public pages when a style is configured in Design Manager.
+
+### 🔗 Share Popup UX
+- Added a "Visit" button alongside "Copy" to open the shared page in a new tab directly.
+- Outcome: Faster sharing workflow; users can verify links immediately.
+
+### 🛠 Technical
+- Type-check and production build validated.
+
+---
+
 ## [v3.11.0] — 2025-09-11T13:14:27.000Z
 
 ### 🎨 UI Design System Refinements

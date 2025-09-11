@@ -6,6 +6,12 @@ import { getAdminUser } from '@/lib/auth';
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
 
+// WHAT: Force Node.js runtime for this route.
+// WHY: This handler relies on server-side password generation using Node's crypto (randomBytes)
+// through lib/pagePassword.ts. The Edge runtime does not provide Node's crypto module;
+// explicitly opting into the Node.js runtime ensures compatibility.
+export const runtime = 'nodejs';
+
 // POST /api/page-passwords - Generate or retrieve page password and create shareable link
 export async function POST(request: NextRequest) {
   try {

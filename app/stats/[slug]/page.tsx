@@ -330,6 +330,20 @@ export default function StatsPage() {
 
   return (
     <div className="admin-container">
+      {/* Inject resolved page style so stats page uses the same gradients as configured */}
+      {pageStyle && (
+        <style
+          // WHAT: Apply background gradients from Design Manager to container and header.
+          // WHY: Some pages had hard-coded backgrounds overriding theme; this ensures consistency.
+          dangerouslySetInnerHTML={{
+            __html: `
+              .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
+              .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+            `
+          }}
+        />
+      )}
+
       {/* Unified Hero Section */}
       <UnifiedStatsHero
         title={project.eventName}

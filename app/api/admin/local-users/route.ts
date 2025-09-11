@@ -7,6 +7,11 @@ import { getAdminUser } from '@/lib/auth'
 import { createUser, listUsers } from '@/lib/users'
 import { generateMD5StylePassword } from '@/lib/pagePassword'
 
+// WHAT: Force Node.js runtime for this route.
+// WHY: Password generation uses Node's crypto (randomBytes) via lib/pagePassword.ts.
+// The Edge runtime lacks Node's crypto, so we must opt into 'nodejs' to avoid runtime errors.
+export const runtime = 'nodejs'
+
 export async function GET() {
   try {
     const admin = await getAdminUser()

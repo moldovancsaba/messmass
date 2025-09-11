@@ -328,6 +328,20 @@ export default function FilterPage() {
 
   return (
     <div className="admin-container">
+      {/* Inject resolved page style so filter page uses the same gradients as configured */}
+      {pageStyle && (
+        <style
+          // WHAT: Apply background gradients from Design Manager to container and header.
+          // WHY: Matches Hashtag page behavior and avoids hard-coded overrides.
+          dangerouslySetInnerHTML={{
+            __html: `
+              .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
+              .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+            `
+          }}
+        />
+      )}
+
       {/* Unified Hero Section */}
       <UnifiedStatsHero
         title={`Aggregated Statistics - ${project.dateRange.formatted}`}

@@ -264,6 +264,32 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                 >
                   {copiedField === 'url' ? '✅ Copied!' : '📋 Copy'}
                 </button>
+                {/* WHAT: Quick access to the shared page.
+                    WHY: Users asked for a direct Visit button alongside Copy to open in a new tab. */}
+                <button
+                  onClick={() => {
+                    try {
+                      window.open(shareableData.url, '_blank', 'noopener,noreferrer');
+                    } catch (e) {
+                      // Fallback: set location if popup blocked
+                      window.location.href = shareableData.url;
+                    }
+                  }}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    background: '#059669',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    transition: 'all 0.2s ease'
+                  }}
+                  title="Open the shared page in a new tab"
+                >
+                  🔎 Visit
+                </button>
               </div>
             </div>
 

@@ -1,5 +1,11 @@
 # MessMass Development Learnings
 
+## PageStyle Consistency and Share Popup UX — 2025-09-11T13:39:27.000Z
+- What: Applied pageStyle gradients directly on stats and filter pages; added a Visit button to the share popup.
+- Why: Ensure the Design Manager styling is clearly visible across all public pages and streamline sharing verification.
+- How: Injected inline CSS for `.admin-container` and `.admin-header` when pageStyle is present; added window.open-based Visit action with safe noopener/noreferrer fallback.
+- Lesson: When theming spans across multiple routes, inject minimal, deterministic CSS at the page level to avoid specificity issues from nested components; pair share actions with instant verification affordances.
+
 ## Admin Authentication and Password Generation — 2025-09-10T13:24:05.000Z
 
 ## KPI Config Expansion — 2025-09-11T08:21:15.000Z
