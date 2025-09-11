@@ -21,6 +21,14 @@ Version: 2.11.0
 ## Session Update — v3.8.0 KPI Chart Configs
 
 ## Session Update — v3.9.0 Pie Chart Configs
+
+## Session Update — v3.10.0 Bar Chart Configs
+Date: 2025-09-11T12:25:16.000Z
+Version: 3.10.0
+
+- Inserted 5 new bar charts (5 elements each) via scripts/add-bar-charts.js
+- Charts visible and editable under Admin → Charts; ordering appended automatically
+- Docs and release notes updated with ISO timestamps
 Date: 2025-09-11T08:33:40.000Z
 Version: 3.9.0
 

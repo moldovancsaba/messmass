@@ -1,5 +1,22 @@
 # MessMass Release Notes
 
+## [v3.10.0] — 2025-09-11T12:25:16.000Z
+
+### 📊 Five New Bar Charts (5 elements each)
+All inserted into chartConfigurations and editable in Admin → Charts:
+- merch-items-mix — Merch Items Mix (Counts): JERSEY, SCARF, FLAGS, BASEBALL_CAP, OTHER
+- social-platform-visits — Social Platform Visits: FACEBOOK, INSTAGRAM, YOUTUBE, TIKTOK, X
+- fan-distribution-extended — INDOOR, OUTDOOR, STADIUM, MERCHED, NON‑MERCHED
+- content-pipeline — REMOTE_IMAGES, HOSTESS_IMAGES, SELFIES, APPROVED_IMAGES, REJECTED_IMAGES
+- activation-funnel — Total Images, Social Interactions, Direct/QR/Web, VP Visits, Purchases
+
+Each chart strictly follows validation (bar = 5 elements). Formulas use AVAILABLE_VARIABLES or derived expressions allowed by the system.
+
+### 🛠 Technical
+- Added scripts/add-bar-charts.js to insert bars safely with ordering and ISO timestamps.
+
+---
+
 ## [v3.9.0] — 2025-09-11T08:33:40.000Z
 
 ### 🥧 Ten New Pie Charts (two-segment A/B insights)

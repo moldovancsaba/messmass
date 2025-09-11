@@ -5,6 +5,11 @@
 ## KPI Config Expansion — 2025-09-11T08:21:15.000Z
 
 ## Pie Config Expansion — 2025-09-11T08:33:40.000Z
+
+## Bar Config Expansion — 2025-09-11T12:25:16.000Z
+- What: Inserted 5 bar charts (5 elements each) focusing on merch mix, platform visits, fan spread, content pipeline, and activation funnel.
+- Why: Provide richer comparisons across key subsystems (merch, traffic, engagement, moderation, conversion).
+- How: scripts/add-bar-charts.js reuses scripts/config.js; assigns order after current max; timestamps in ISO 8601 with ms; prevents duplicates.
 - What: Inserted 10 two-segment pie charts that expose clear A/B distributions on content, merch, engagement, and funnel.
 - Why: Easily digestible splits that aid quick decision-making and comparisons across events.
 - How: scripts/add-pie-charts.js uses env from scripts/config.js; ensures non-duplication, correct ordering, ISO timestamps.
