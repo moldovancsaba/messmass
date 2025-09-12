@@ -69,6 +69,7 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   { name: 'OUTDOOR', displayName: 'Outdoor Fans', category: 'Location', description: 'Number of outdoor fans', exampleUsage: '[OUTDOOR] * 1.2' },
   { name: 'STADIUM', displayName: 'Stadium Fans', category: 'Location', description: 'Number of stadium fans', exampleUsage: '[STADIUM] / ([REMOTE_FANS] + [STADIUM])' },
   { name: 'REMOTE_FANS', displayName: 'Remote Fans', category: 'Location', description: 'Indoor + Outdoor (aggregated)', exampleUsage: '[REMOTE_FANS] + [STADIUM]' },
+  { name: 'TOTAL_FANS', displayName: 'Total Fans', category: 'Location', description: 'Remote Fans (indoor + outdoor) + Stadium', exampleUsage: '[TOTAL_FANS] - [MERCHED]' },
   
   // Demographics
   { name: 'FEMALE', displayName: 'Female Attendees', category: 'Demographics', description: 'Number of female attendees', exampleUsage: '[FEMALE] / ([FEMALE] + [MALE])' },
@@ -100,7 +101,6 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   
   // Event Metrics
   { name: 'EVENT_ATTENDEES', displayName: 'Event Attendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[EVENT_ATTENDEES] * 0.1' },
-  { name: 'EVENT_TICKET_PURCHASES', displayName: 'Ticket Purchases', category: 'Event', description: 'Number of ticket purchases', exampleUsage: '[EVENT_TICKET_PURCHASES] / [EVENT_ATTENDEES]' },
   { name: 'EVENT_RESULT_HOME', displayName: 'Home Team Result', category: 'Event', description: 'Home team result/score', exampleUsage: '[EVENT_RESULT_HOME] - [EVENT_RESULT_VISITOR]' },
   { name: 'EVENT_RESULT_VISITOR', displayName: 'Visitor Team Result', category: 'Event', description: 'Visitor team result/score', exampleUsage: '[EVENT_RESULT_VISITOR] + [EVENT_RESULT_HOME]' },
   { name: 'EVENT_VALUE_PROPOSITION_VISITED', displayName: 'Value Proposition Visited', category: 'Event', description: 'Number of value proposition page visits', exampleUsage: '[EVENT_VALUE_PROPOSITION_VISITED] * 15' },

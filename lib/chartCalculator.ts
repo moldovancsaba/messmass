@@ -109,6 +109,11 @@ export function calculateChart(
   let total: number | 'NA' | undefined;
   let kpiValue: number | 'NA' | undefined;
   
+  // Ensure synthetic fields exist for downstream logic without breaking formulas
+  const syntheticStats: any = { ...stats };
+  const remoteFansSynth = (syntheticStats.remoteFans ?? (syntheticStats.indoor + syntheticStats.outdoor));
+  syntheticStats.totalFans = remoteFansSynth + (syntheticStats.stadium || 0);
+  
   // Special handling for KPI charts
   if (configuration.type === 'kpi') {
     // KPI charts should have exactly one element with the calculation formula

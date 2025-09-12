@@ -7,6 +7,12 @@
 - Behavior: increments/decrements persist to stats.remoteFans.
 - If stats.remoteFans is undefined, the base value derives from (indoor + outdoor) so the first click initializes the stored field correctly.
 
+### 🧮 Variables — Add TOTAL_FANS and remove deprecated
+- New variable: [TOTAL_FANS] = [REMOTE_FANS] + [STADIUM]
+- Mapped in formula engine with safe fallback for [REMOTE_FANS] when unset
+- Removed deprecated: [EVENT_TICKET_PURCHASES]
+- Updated internal scripts and defaults to reference [TOTAL_FANS] where appropriate
+
 ---
 
 ## [v3.13.0] — 2025-09-12T14:22:31.000Z

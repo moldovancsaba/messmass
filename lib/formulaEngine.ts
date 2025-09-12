@@ -20,7 +20,8 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'INDOOR': 'indoor',
   'OUTDOOR': 'outdoor',
   'STADIUM': 'stadium',
-  'REMOTE_FANS': 'remoteFans', // New aggregated remote fans (indoor + outdoor)
+'REMOTE_FANS': 'remoteFans', // New aggregated remote fans (indoor + outdoor)
+  'TOTAL_FANS': 'totalFans', // Computed: remoteFans (or indoor+outdoor) + stadium
   
   // Demographics
   'FEMALE': 'female',
@@ -51,8 +52,7 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'SOCIAL_VISIT': 'socialVisit', // New aggregated social visit
   
   // Event Metrics
-  'EVENT_ATTENDEES': 'eventAttendees',
-  'EVENT_TICKET_PURCHASES': 'eventTicketPurchases',
+'EVENT_ATTENDEES': 'eventAttendees',
   'EVENT_RESULT_HOME': 'eventResultHome',
   'EVENT_RESULT_VISITOR': 'eventResultVisitor',
   'EVENT_VALUE_PROPOSITION_VISITED': 'eventValuePropositionVisited',
@@ -260,10 +260,23 @@ export function validateFormula(formula: string): FormulaValidationResult {
 function substituteVariables(formula: string, stats: ProjectStats): string {
   let processedFormula = formula;
   
+  // Pre-compute synthetic variables that aren't stored directly
+  // TOTAL_FANS = (remoteFans || indoor + outdoor) + stadium
+  const remoteFans = (stats as any).remoteFans ?? ((stats as any).indoor + (stats as any).outdoor);
+  const totalFansComputed = remoteFans + ((stats as any).stadium || 0);
+  
   // Replace all variables with their actual values
   for (const [variableName, fieldName] of Object.entries(VARIABLE_MAPPINGS)) {
     const variablePattern = new RegExp(`\\[${variableName}\\]`, 'g');
-    const value = stats[fieldName as keyof ProjectStats];
+    let value = (stats as any)[fieldName];
+
+    // Inject computed values for synthetic mappings
+    if (variableName === 'TOTAL_FANS') {
+      value = totalFansComputed;
+    } else if (variableName === 'REMOTE_FANS' && (value === undefined || value === null)) {
+      // REMOTE_FANS falls back to indoor+outdoor if not explicitly stored
+      value = (stats as any).indoor + (stats as any).outdoor;
+    }
     
     // Handle missing or undefined values
     const actualValue = (value !== undefined && value !== null) ? value : 0;

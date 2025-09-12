@@ -31,7 +31,7 @@ const ALL_CHART_CONFIGURATIONS = [
     isActive: true,
     emoji: '📍',
     elements: [
-      { id: 'remote', label: 'Remote', formula: '[INDOOR] + [OUTDOOR]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
+{ id: 'remote', label: 'Remote', formula: '[REMOTE_FANS]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
       { id: 'event', label: 'Event', formula: '[STADIUM]', color: '#f59e0b', description: 'Stadium fans' }
     ]
   },
@@ -143,11 +143,11 @@ const ALL_CHART_CONFIGURATIONS = [
     showTotal: true,
     totalLabel: 'Core Fan Team',
     elements: [
-      { id: 'engaged', label: 'Engaged', formula: '([INDOOR] + [OUTDOOR] + [STADIUM]) / [EVENT_ATTENDEES] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
+{ id: 'engaged', label: 'Engaged', formula: '([TOTAL_FANS]) / [EVENT_ATTENDEES] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
       { id: 'interactive', label: 'Interactive', formula: '([VISIT_FACEBOOK] + [VISIT_INSTAGRAM] + [VISIT_YOUTUBE] + [VISIT_TIKTOK] + [VISIT_X] + [VISIT_TRUSTPILOT] + [EVENT_VALUE_PROPOSITION_VISITED] + [EVENT_VALUE_PROPOSITION_PURCHASES]) / ([REMOTE_IMAGES] + [HOSTESS_IMAGES] + [SELFIES]) * 100', color: '#f59e0b', description: 'Fan Interaction %' },
-      { id: 'front-runners', label: 'Front-runners', formula: '[MERCHED] / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#10b981', description: 'Merched fans %' },
+{ id: 'front-runners', label: 'Front-runners', formula: '[MERCHED] / [TOTAL_FANS] * 100', color: '#10b981', description: 'Merched fans %' },
       { id: 'fanaticals', label: 'Fanaticals', formula: '([FLAGS] + [SCARF]) / [MERCHED] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %' },
-      { id: 'casuals', label: 'Casuals', formula: '(([INDOOR] + [OUTDOOR] + [STADIUM]) - [MERCHED]) / ([INDOOR] + [OUTDOOR] + [STADIUM]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
+{ id: 'casuals', label: 'Casuals', formula: '([TOTAL_FANS] - [MERCHED]) / [TOTAL_FANS] * 100', color: '#06b6d4', description: 'Non-merched fans %' }
     ]
   },
   
