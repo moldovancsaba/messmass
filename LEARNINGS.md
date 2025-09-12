@@ -1,5 +1,11 @@
 # MessMass Development Learnings
 
+## Unified Page Style Application via CSS Variables — 2025-09-12T14:22:31.000Z
+- What: Centralized page/header backgrounds through CSS variables and refactored pages + password overlay to consume them.
+- Why: Eliminate hard-coded gradients and specificity conflicts so Admin → Design styles reliably apply everywhere.
+- How: Introduced --page-bg and --header-bg with safe fallbacks; pages inject variables when pageStyle is present; PagePasswordLogin resolves style via page-config and writes variables to :root.
+- Lesson: For theming that spans multiple routes and overlays, use CSS variables with page-level injection rather than direct style overrides to avoid cascade wars and ensure predictability.
+
 ## PageStyle Consistency and Share Popup UX — 2025-09-11T13:39:27.000Z
 - What: Applied pageStyle gradients directly on stats and filter pages; added a Visit button to the share popup.
 - Why: Ensure the Design Manager styling is clearly visible across all public pages and streamline sharing verification.

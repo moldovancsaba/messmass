@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
+import { PageStyle } from '@/lib/pageStyleTypes';
 
 interface Project {
   _id: string;
@@ -63,6 +64,7 @@ export default function EditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
+  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
 
   const loadProjectForEditing = async () => {
     try {
@@ -85,6 +87,20 @@ export default function EditPage() {
     }
   };
 
+  // Fetch page configuration (style variables) for this editor page
+  const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
+    try {
+      const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
+      const response = await fetch(`/api/page-config${qs}`);
+      const data = await response.json();
+      if (data.success) {
+        setPageStyle(data.config.pageStyle);
+      }
+    } catch (err) {
+      console.error('Failed to fetch page config for edit page:', err);
+    }
+  }, []);
+
   // Check authentication on component mount
   useEffect(() => {
     if (slug) {
@@ -95,9 +111,10 @@ export default function EditPage() {
       // Only load data if authenticated
       if (authenticated) {
         loadProjectForEditing();
+        fetchPageConfig(slug);
       }
     }
-  }, [slug]);
+  }, [slug, fetchPageConfig]);
 
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
@@ -105,6 +122,7 @@ export default function EditPage() {
     setCheckingAuth(false);
     // Load data after successful authentication
     loadProjectForEditing();
+    fetchPageConfig(slug);
   };
 
   // Show login screen if not authenticated
@@ -185,7 +203,23 @@ export default function EditPage() {
   }
 
   if (project) {
-    return <EditorDashboard project={project} />;
+    return (
+      <div className="admin-container">
+        {pageStyle && (
+          <style
+            // WHAT: Set CSS variables for backgrounds instead of overriding backgrounds directly.
+            // WHY: Centralizes styling via --page-bg and --header-bg to avoid specificity conflicts.
+            dangerouslySetInnerHTML={{
+              __html: `
+                .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
+                .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+              `
+            }}
+          />
+        )}
+        <EditorDashboard project={project} />
+      </div>
+    );
   }
 
   return null;

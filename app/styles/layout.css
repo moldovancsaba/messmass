@@ -8,7 +8,9 @@
 .app-container {
   min-height: 100vh;
   padding: var(--space-8);
-  background: var(--gradient-primary);
+  /* What: Use CSS variable page background with gradient fallback.
+     Why: Ensures consistency with Admin → Design selections site-wide. */
+  background: var(--page-bg, var(--gradient-primary));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,7 +19,7 @@
 
 .admin-container {
   min-height: 100vh;
-  background: var(--gradient-primary);
+  background: var(--page-bg, var(--gradient-primary));
   padding: var(--space-8);
 }
 

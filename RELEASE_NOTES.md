@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v3.13.0] — 2025-09-12T14:22:31.000Z
+
+### 🎨 Page Style System — Unified via CSS Variables
+- Introduced CSS custom properties for page and header backgrounds:
+  - --page-bg (fallback: var(--gradient-primary))
+  - --header-bg (fallback: rgba(255, 255, 255, 0.95))
+- Replaced direct background overrides with variable injection on pages:
+  - /stats/[slug], /filter/[slug], /hashtag/[hashtag] now set --page-bg/--header-bg based on Design Manager pageStyle
+- Applied style variables to the Edit page (/edit/[slug]) by fetching /api/page-config?projectId=...
+- Refactored password overlay to respect page styles:
+  - PagePasswordLogin uses .login-container (which consumes --page-bg) and resolves pageStyle (projectId or filter slug) to set variables on :root
+
+### 🛠 Technical
+- globals.css: body, .admin-container, .admin-dashboard, .login-container now use var(--page-bg, var(--gradient-primary)); .admin-header uses var(--header-bg, rgba(255,255,255,0.95))
+- app/styles/layout.css: .app-container and .admin-container backgrounds switched to var(--page-bg, var(--gradient-primary))
+- Added page-style variable injection blocks in stats/filter/hashtag/edit pages
+- Removed hard-coded gradient from PagePasswordLogin background; overlay inherits variables
+
+Outcome: Design Manager styles now apply consistently and reliably across all public pages and the password prompt.
+
+---
+
 ## [v3.12.0] — 2025-09-11T13:39:27.000Z
 
 ### 🔐 Admin Password Generation Reliability

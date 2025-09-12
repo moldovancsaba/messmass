@@ -26,6 +26,14 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/api/admin/local-users/[id]",
+      "regex": "^/api/admin/local\\-users/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/local\\-users/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/admin/projects/[id]",
       "regex": "^/api/admin/projects/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -172,6 +180,12 @@
       "regex": "^/admin/projects(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/projects(?:/)?$"
+    },
+    {
+      "page": "/admin/users",
+      "regex": "^/admin/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/users(?:/)?$"
     },
     {
       "page": "/admin/variables",

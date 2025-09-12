@@ -279,8 +279,8 @@ export default function HashtagStatsPage() {
         <style
           dangerouslySetInnerHTML={{
             __html: `
-              .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
-              .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+              .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
+              .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
             `
           }}
         />

@@ -331,12 +331,12 @@ export default function FilterPage() {
       {/* Inject resolved page style so filter page uses the same gradients as configured */}
       {pageStyle && (
         <style
-          // WHAT: Apply background gradients from Design Manager to container and header.
-          // WHY: Matches Hashtag page behavior and avoids hard-coded overrides.
+          // WHAT: Set CSS variables for backgrounds instead of overriding backgrounds directly.
+          // WHY: Centralizes styling via --page-bg and --header-bg to avoid specificity conflicts.
           dangerouslySetInnerHTML={{
             __html: `
-              .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
-              .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+              .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
+              .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
             `
           }}
         />

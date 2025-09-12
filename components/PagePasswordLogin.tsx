@@ -22,6 +22,59 @@ export default function PagePasswordLogin({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // What: Resolve and apply page-specific background variables for the overlay.
+  // Why: Align password prompt visuals with the configured page style (Design Manager).
+  useEffect(() => {
+    let cancelled = false;
+    const applyStyle = async () => {
+      try {
+        let bg: string | null = null;
+        let header: string | null = null;
+
+        if (pageType === 'stats' || pageType === 'edit') {
+          const qs = `?projectId=${encodeURIComponent(pageId)}`;
+          const res = await fetch(`/api/page-config${qs}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.success && data?.config?.pageStyle) {
+              bg = `linear-gradient(${data.config.pageStyle.backgroundGradient})`;
+              header = `linear-gradient(${data.config.pageStyle.headerBackgroundGradient})`;
+            }
+          }
+        } else if (pageType === 'filter') {
+          // Resolve style via filter slug -> styleId or hashtags
+          const fRes = await fetch(`/api/hashtags/filter-by-slug/${encodeURIComponent(pageId)}`);
+          if (fRes.ok) {
+            const fData = await fRes.json();
+            let qs = '';
+            if (fData?.styleId) qs = `?styleId=${encodeURIComponent(fData.styleId)}`;
+            else if (Array.isArray(fData?.hashtags) && fData.hashtags.length > 0) qs = `?hashtags=${encodeURIComponent(fData.hashtags.join(','))}`;
+            if (qs) {
+              const pRes = await fetch(`/api/page-config${qs}`);
+              if (pRes.ok) {
+                const pData = await pRes.json();
+                if (pData?.success && pData?.config?.pageStyle) {
+                  bg = `linear-gradient(${pData.config.pageStyle.backgroundGradient})`;
+                  header = `linear-gradient(${pData.config.pageStyle.headerBackgroundGradient})`;
+                }
+              }
+            }
+          }
+        }
+
+        if (!cancelled) {
+          const root = document.documentElement;
+          if (bg) root.style.setProperty('--page-bg', bg);
+          if (header) root.style.setProperty('--header-bg', header);
+        }
+      } catch {
+        // graceful fallback to defaults
+      }
+    };
+    applyStyle();
+    return () => { cancelled = true; };
+  }, [pageId, pageType]);
+
   // Admin bypass: if a global admin session exists, skip this prompt entirely
   useEffect(() => {
     let cancelled = false
@@ -104,13 +157,14 @@ export default function PagePasswordLogin({
   const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} page is password protected. Please enter the admin password or the page-specific password to continue.`;
 
   return (
-    <div style={{ 
+    <div className="login-container" style={{ 
+      /* What: Use global login-container class which now respects --page-bg.
+         Why: Ensures password overlay adopts Admin → Design page styles. */
       minHeight: '100vh', 
       display: 'flex', 
       flexDirection: 'column',
       alignItems: 'center', 
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif',
       padding: '2rem'

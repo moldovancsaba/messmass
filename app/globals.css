@@ -34,7 +34,9 @@ body {
   min-height: 100vh;
   max-width: 100vw;
   overflow-x: hidden;
-  background: var(--gradient-primary);
+  /* What: Use CSS variable for page background with gradient fallback.
+     Why: Allows Admin → Design styles to apply consistently across pages, including login overlays. */
+  background: var(--page-bg, var(--gradient-primary));
   font-family: var(--font-primary);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
@@ -116,11 +118,15 @@ img {
 .admin-dashboard {
   min-height: 100vh;
   padding: 2rem;
-  background: var(--gradient-primary);
+  /* What: Respect page background variable with fallback.
+     Why: Keeps admin dashboard visually consistent when a global style is applied. */
+  background: var(--page-bg, var(--gradient-primary));
 }
 
 .admin-header {
-  background: rgba(255, 255, 255, 0.95);
+  /* What: Use CSS variable for header background with safe white/glass fallback.
+     Why: Ensures page-specific header backgrounds from Design Manager take effect without specificity wars. */
+  background: var(--header-bg, rgba(255, 255, 255, 0.95));
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--border-radius);
@@ -454,7 +460,9 @@ img {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: var(--gradient-primary);
+  /* What: Use the page background variable for login overlays as well.
+     Why: Password/login UI should reflect the configured page style. */
+  background: var(--page-bg, var(--gradient-primary));
 }
 
 .login-card {
@@ -575,7 +583,9 @@ img {
 /* Admin Container */
 .admin-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* What: Resolve background via CSS variable with gradient fallback.
+     Why: Centralizes style control; pages can set --page-bg without overriding this rule. */
+  background: var(--page-bg, var(--gradient-primary));
   padding: 2rem;
 }
 

@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 3.12.0
-Last Updated: 2025-09-11T13:39:27.000Z
+Current Version: 3.13.0
+Last Updated: 2025-09-12T14:22:31.000Z
 
 ## Milestones
 
