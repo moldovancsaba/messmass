@@ -180,11 +180,15 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   };
 
   // Clickable stat card component (for clicker mode)
-  const StatCard = ({ label, value, statKey, isCalculated = false }: { 
+  // What: Supports optional custom increment/decrement handlers.
+  // Why: Remote Fans needs to increment from a derived value (indoor+outdoor) when undefined.
+  const StatCard = ({ label, value, statKey, isCalculated = false, onIncrement, onDecrement }: { 
     label: string; 
     value: number; 
     statKey?: keyof typeof project.stats;
     isCalculated?: boolean;
+    onIncrement?: () => void;
+    onDecrement?: () => void;
   }) => (
     <div style={{ 
       background: 'rgba(255, 255, 255, 0.95)',
@@ -198,7 +202,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       cursor: isCalculated ? 'default' : 'pointer',
       opacity: isCalculated ? 0.8 : 1
     }}
-    onClick={statKey && !isCalculated ? () => incrementStat(statKey) : undefined}
+    onClick={!isCalculated ? (onIncrement ? onIncrement : (statKey ? () => incrementStat(statKey) : undefined)) : undefined}
     >
       <div style={{
         position: 'absolute',
@@ -227,11 +231,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       }}>{value}</div>
       
       {/* Decrement button for clickable stats */}
-      {statKey && !isCalculated && (
+      {!isCalculated && (statKey || onDecrement) && (
         <button
           onClick={(e) => {
             e.stopPropagation();
-            decrementStat(statKey);
+            if (onDecrement) onDecrement();
+            else if (statKey) decrementStat(statKey);
           }}
           disabled={value === 0}
           style={{
@@ -510,8 +515,25 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                {/* Remote displayed as calculated in clicker mode */}
-                <StatCard label="Remote" value={remoteFansCalc} isCalculated={true} />
+                {/* Remote: now clickable in clicker mode. We persist to stats.remoteFans.
+                    If remoteFans is undefined, we base increments/decrements on the derived value (indoor + outdoor). */}
+                <StatCard 
+                  label="Remote" 
+                  value={remoteFansCalc} 
+                  onIncrement={() => {
+                    const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                    const newStats = { ...project.stats, remoteFans: current + 1 };
+                    setProject(prev => ({ ...prev, stats: newStats }));
+                    saveProject(newStats);
+                  }}
+                  onDecrement={() => {
+                    const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                    const next = Math.max(0, current - 1);
+                    const newStats = { ...project.stats, remoteFans: next };
+                    setProject(prev => ({ ...prev, stats: newStats }));
+                    saveProject(newStats);
+                  }}
+                />
                 <StatCard label="Location" value={project.stats.stadium} statKey="stadium" />
                 <StatCard label="Total Fans" value={totalFans} isCalculated={true} />
               </>

@@ -1,5 +1,11 @@
 # MessMass Development Learnings
 
+## Editor Remote Fans Clicker Logic — 2025-09-12T14:35:00.000Z
+- What: Made Remote fans clickable in editor clicker mode and persisted into stats.remoteFans.
+- Why: Remote was previously calculated-only, preventing quick adjustment during live entry.
+- How: Extended StatCard with optional onIncrement/onDecrement; Remote now uses derived base (indoor + outdoor) when remoteFans is unset; updates saved via existing PUT /api/projects.
+- Lesson: When a displayed value can be both derived and stored, provide a consistent storage target and a sensible initial derivation for first-time edits.
+
 ## Unified Page Style Application via CSS Variables — 2025-09-12T14:22:31.000Z
 - What: Centralized page/header backgrounds through CSS variables and refactored pages + password overlay to consume them.
 - Why: Eliminate hard-coded gradients and specificity conflicts so Admin → Design styles reliably apply everywhere.

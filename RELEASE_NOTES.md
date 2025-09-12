@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v3.14.0] — 2025-09-12T14:35:00.000Z
+
+### 🖱️ Editor Clicker — Remote Fans fixed
+- Remote in 👥 Fans is now clickable in Clicker mode.
+- Behavior: increments/decrements persist to stats.remoteFans.
+- If stats.remoteFans is undefined, the base value derives from (indoor + outdoor) so the first click initializes the stored field correctly.
+
+---
+
 ## [v3.13.0] — 2025-09-12T14:22:31.000Z
 
 ### 🎨 Page Style System — Unified via CSS Variables
