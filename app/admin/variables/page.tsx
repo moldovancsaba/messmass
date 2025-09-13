@@ -74,10 +74,9 @@ export default function VariablesPage() {
           const vars: Variable[] = data.variables.map((v: any) => ({
             name: v.name,
             label: v.label,
-            type: v.type === 'text' ? 'numeric' : (v.type || 'count'),
-            // UI expects numeric-ish types; we still show text via description
+            type: v.type || 'count',
             category: v.category,
-            description: v.derived && v.formula ? `Derived: ${v.formula}` : v.description || undefined,
+            description: v.derived && v.formula ? v.formula : v.description || undefined,
             icon: v.type === 'text' ? '🏷️' : undefined,
           }))
           setVariables(vars);
@@ -161,8 +160,28 @@ export default function VariablesPage() {
     );
   }
 
+  // Simple read-only modal for variable details
+  const [activeVar, setActiveVar] = useState<Variable | null>(null);
+
   return (
     <div className="admin-container">
+      {activeVar && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+             onClick={() => setActiveVar(null)}>
+          <div className="glass-card" style={{ maxWidth: 520, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 0.5rem 0' }}>{activeVar.label}</h3>
+            <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Category: {activeVar.category}</p>
+            <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Type: {activeVar.type.toUpperCase()}</p>
+            <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Reference: {[ 'count','numeric','currency','percentage' ].includes(activeVar.type) ? `[${activeVar.name.toUpperCase()}]` : activeVar.name}</p>
+            {activeVar.description && (
+              <p style={{ marginTop: '0.75rem', color: '#374151' }}>{activeVar.description}</p>
+            )}
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button className="btn btn-secondary" onClick={() => setActiveVar(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
       <AdminPageHero
         title="Variables"
         subtitle="Manage data variables and metrics"
@@ -264,13 +283,15 @@ export default function VariablesPage() {
                           padding: '0.125rem 0.375rem',
                           borderRadius: '4px'
                         }}>
-                          {variable.name}
+                          {[ 'count','numeric','currency','percentage' ].includes(variable.type)
+                            ? `[${variable.name.toUpperCase()}]`
+                            : `${variable.name}`}
                         </code>
                       </div>
                     </div>
                     
                     <button
-                      onClick={() => handleEditVariable(variable.name)}
+                      onClick={() => setActiveVar(variable)}
                       style={{
                         padding: '0.25rem 0.5rem',
                         fontSize: '0.75rem',

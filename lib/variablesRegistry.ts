@@ -72,7 +72,8 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     type: 'count',
     category: 'Images',
     derived: true,
-    formula: 'remoteImages + hostessImages + selfies'
+    formula: 'remoteImages + hostessImages + selfies',
+    description: 'Sum of Remote, Hostess, and Selfies'
   },
   {
     name: 'totalFans',
@@ -80,7 +81,8 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     type: 'count',
     category: 'Fans',
     derived: true,
-    formula: '(remoteFans || (indoor + outdoor)) + stadium'
+    formula: 'remoteFans + stadium',
+    description: 'Total fans counted across remote and on-site (Remote + Stadium)'
   },
   {
     name: 'totalUnder40',
@@ -88,7 +90,8 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     type: 'count',
     category: 'Demographics',
     derived: true,
-    formula: 'genAlpha + genYZ'
+    formula: 'genAlpha + genYZ',
+    description: 'Gen Alpha + Gen YZ'
   },
   {
     name: 'totalOver40',
@@ -96,7 +99,8 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     type: 'count',
     category: 'Demographics',
     derived: true,
-    formula: 'genX + boomer'
+    formula: 'genX + boomer',
+    description: 'Gen X + Boomer'
   },
   {
     name: 'totalVisit',
@@ -104,7 +108,8 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     type: 'count',
     category: 'Visits',
     derived: true,
-    formula: 'socialVisit + visitQrCode + visitShortUrl + visitWeb'
+    formula: 'socialVisit + visitQrCode + visitShortUrl + visitWeb',
+    description: 'Social + QR Code + Short URL + Web'
   },
 ]
 

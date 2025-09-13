@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## Variables UI Consistency — 2025-09-13T10:50:00.000Z
+- What: Fixed variable descriptions, ensured text variables are properly typed, added bracketed code rendering for numeric variables, and provided a read-only details modal.
+- Why: Align Admin → Variables with the chart editor and current data model (no indoor/outdoor references in totals).
+- How: Updated variablesRegistry and variables page rendering logic.
+
 ## Variables Registry and Style Fetch Strategy — 2025-09-13T10:30:00.000Z
 - What: Introduced a centralized variables registry and API; enforced no-store fetching for page styles.
 - Why: Keep Admin → Variables up-to-date automatically (including hashtag categories) and ensure designs apply instantly across pages.

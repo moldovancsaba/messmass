@@ -1,5 +1,15 @@
 # MessMass Release Notes
 
+## [v3.16.0] — 2025-09-13T10:50:00.000Z
+
+### Variables Page Improvements
+- Updated derived variable descriptions to reflect current logic (e.g., Total Fans = Remote + Stadium; no references to Indoor/Outdoor).
+- Correctly display text variables (e.g., General Hashtags) as text, not numeric.
+- Variable cards now show bracketed format for numeric variables as used in /admin/charts (e.g., [JERSEY]).
+- Edit button opens a read-only details modal for clarity.
+
+---
+
 ## [v3.15.0] — 2025-09-13T10:30:00.000Z
 
 ### Variables Registry + Admin Variables
