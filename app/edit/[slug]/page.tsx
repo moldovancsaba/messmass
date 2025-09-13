@@ -69,7 +69,7 @@ export default function EditPage() {
   const loadProjectForEditing = async () => {
     try {
       console.log('🔍 Fetching project for editing with slug:', slug);
-      const response = await fetch(`/api/projects/edit/${slug}`);
+      const response = await fetch(`/api/projects/edit/${slug}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -91,7 +91,7 @@ export default function EditPage() {
   const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
     try {
       const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
-      const response = await fetch(`/api/page-config${qs}`);
+      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
         setPageStyle(data.config.pageStyle);

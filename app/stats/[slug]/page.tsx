@@ -95,7 +95,7 @@ export default function StatsPage() {
       console.log('🔍 Fetching project stats for slug:', slug);
       // Add cache-busting parameter to force fresh data
       const timestamp = new Date().getTime();
-      const response = await fetch(`/api/projects/stats/${slug}?refresh=${timestamp}`);
+      const response = await fetch(`/api/projects/stats/${slug}?refresh=${timestamp}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -116,7 +116,7 @@ export default function StatsPage() {
   const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
     try {
       const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
-      const response = await fetch(`/api/page-config${qs}`);
+      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -161,7 +161,7 @@ export default function StatsPage() {
   const fetchChartConfigurations = useCallback(async () => {
     try {
       console.log('📊 Fetching chart configurations...');
-      const response = await fetch('/api/chart-config/public');
+      const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {

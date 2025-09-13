@@ -1,5 +1,18 @@
 # MessMass Release Notes
 
+## [v3.15.0] — 2025-09-13T10:30:00.000Z
+
+### Variables Registry + Admin Variables
+- Added centralized variables registry and /api/variables to power Admin → Variables.
+- Covers base stats, derived totals (All Images, Total Fans, Total Under/Over 40, Total Visit), and dynamic text variables for each hashtag category.
+- Admin Variables UI now fetches from API and shows derived formulas.
+
+### Design Manager Enforcement
+- All public pages (stats, filter, hashtag, edit) and password overlay now fetch page style config with cache: 'no-store' to always reflect the latest Admin → Design selection.
+- Admin layout already applies admin style; this aligns public pages reliably.
+
+---
+
 ## [v3.14.0] — 2025-09-12T14:35:00.000Z
 
 ### 🖱️ Editor Clicker — Remote Fans fixed

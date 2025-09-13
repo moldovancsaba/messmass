@@ -22,7 +22,7 @@ export default function VariablesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  // Mock variables data - this would come from API
+  // Variables now come from API
   const mockVariables: Variable[] = [
     // Image-related variables
     { name: 'remoteImages', label: 'Remote Images', type: 'count', category: 'Images', icon: '📸', description: 'Images taken from remote locations' },
@@ -64,13 +64,37 @@ export default function VariablesPage() {
   ];
 
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setVariables(mockVariables);
-      setFilteredVariables(mockVariables);
-      setLoading(false);
-    }, 500);
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/variables', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.variables)) {
+          // Normalize API variables to UI Variable type
+          const vars: Variable[] = data.variables.map((v: any) => ({
+            name: v.name,
+            label: v.label,
+            type: v.type === 'text' ? 'numeric' : (v.type || 'count'),
+            // UI expects numeric-ish types; we still show text via description
+            category: v.category,
+            description: v.derived && v.formula ? `Derived: ${v.formula}` : v.description || undefined,
+            icon: v.type === 'text' ? '🏷️' : undefined,
+          }))
+          setVariables(vars);
+          setFilteredVariables(vars);
+        } else {
+          setVariables(mockVariables);
+          setFilteredVariables(mockVariables);
+        }
+      } catch (e) {
+        console.error('Failed to load variables', e);
+        setVariables(mockVariables);
+        setFilteredVariables(mockVariables);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
   }, []);
 
   // Filter variables based on search

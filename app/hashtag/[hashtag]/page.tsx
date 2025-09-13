@@ -111,7 +111,7 @@ export default function HashtagStatsPage() {
       console.log('🔍 Fetching hashtag stats for:', hashtagParam);
       // Add cache-busting parameter to force fresh data
       const timestamp = new Date().getTime();
-      const response = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}?refresh=${timestamp}`);
+      const response = await fetch(`/api/hashtags/${encodeURIComponent(hashtagParam)}?refresh=${timestamp}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -144,7 +144,7 @@ export default function HashtagStatsPage() {
       try {
         const clean = tag.replace(/^#/, '').trim();
         if (!clean) return;
-        const res = await fetch(`/api/page-config?hashtags=${encodeURIComponent(clean)}`);
+        const res = await fetch(`/api/page-config?hashtags=${encodeURIComponent(clean)}`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
           setPageStyle(data.config.pageStyle);
@@ -171,7 +171,7 @@ export default function HashtagStatsPage() {
     const fetchChartConfigurations = async () => {
       try {
         console.log('📊 Fetching chart configurations...');
-        const response = await fetch('/api/chart-config/public');
+        const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
         const data = await response.json();
 
         if (data.success) {

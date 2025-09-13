@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## Variables Registry and Style Fetch Strategy — 2025-09-13T10:30:00.000Z
+- What: Introduced a centralized variables registry and API; enforced no-store fetching for page styles.
+- Why: Keep Admin → Variables up-to-date automatically (including hashtag categories) and ensure designs apply instantly across pages.
+- How: lib/variablesRegistry + /api/variables; updated UI to consume API; adjusted fetch calls to disable caching for style config.
+
 ## Editor Remote Fans Clicker Logic — 2025-09-12T14:35:00.000Z
 - What: Made Remote fans clickable in editor clicker mode and persisted into stats.remoteFans.
 - Why: Remote was previously calculated-only, preventing quick adjustment during live entry.

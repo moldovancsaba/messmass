@@ -97,7 +97,7 @@ export default function FilterPage() {
   const fetchFilterData = useCallback(async () => {
     try {
       console.log('🔍 Fetching filter data for slug:', filterSlug);
-      const response = await fetch(`/api/hashtags/filter-by-slug/${filterSlug}`);
+      const response = await fetch(`/api/hashtags/filter-by-slug/${filterSlug}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -129,7 +129,7 @@ export default function FilterPage() {
       } else if (opts?.hashtags && opts.hashtags.length > 0) {
         qs = `?hashtags=${encodeURIComponent(opts.hashtags.join(','))}`;
       }
-      const response = await fetch(`/api/page-config${qs}`);
+      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {
@@ -148,7 +148,7 @@ export default function FilterPage() {
   // Load chart configurations
   const loadChartConfigurations = useCallback(async () => {
     try {
-      const response = await fetch('/api/chart-config/public');
+      const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success) {

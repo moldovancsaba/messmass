@@ -33,7 +33,7 @@ export default function PagePasswordLogin({
 
         if (pageType === 'stats' || pageType === 'edit') {
           const qs = `?projectId=${encodeURIComponent(pageId)}`;
-          const res = await fetch(`/api/page-config${qs}`);
+          const res = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
           if (res.ok) {
             const data = await res.json();
             if (data?.success && data?.config?.pageStyle) {
@@ -43,14 +43,14 @@ export default function PagePasswordLogin({
           }
         } else if (pageType === 'filter') {
           // Resolve style via filter slug -> styleId or hashtags
-          const fRes = await fetch(`/api/hashtags/filter-by-slug/${encodeURIComponent(pageId)}`);
+          const fRes = await fetch(`/api/hashtags/filter-by-slug/${encodeURIComponent(pageId)}`, { cache: 'no-store' });
           if (fRes.ok) {
             const fData = await fRes.json();
             let qs = '';
             if (fData?.styleId) qs = `?styleId=${encodeURIComponent(fData.styleId)}`;
             else if (Array.isArray(fData?.hashtags) && fData.hashtags.length > 0) qs = `?hashtags=${encodeURIComponent(fData.hashtags.join(','))}`;
             if (qs) {
-              const pRes = await fetch(`/api/page-config${qs}`);
+              const pRes = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
               if (pRes.ok) {
                 const pData = await pRes.json();
                 if (pData?.success && pData?.config?.pageStyle) {
