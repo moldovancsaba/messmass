@@ -27,7 +27,14 @@
         "./*"
       ]
     },
-    "target": "ES2017"
+    "target": "ES2017",
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "html2canvas",
+      "ws"
+    ]
   },
   "include": [
     "next-env.d.ts",
