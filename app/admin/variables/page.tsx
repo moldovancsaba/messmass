@@ -21,6 +21,8 @@ export default function VariablesPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  // Pagination (UI-only): show first 20, then load more by 20
+  const [visibleCount, setVisibleCount] = useState(20);
 
   // Variables now come from API
   const mockVariables: Variable[] = [
@@ -101,14 +103,17 @@ export default function VariablesPage() {
     if (!searchTerm) {
       setFilteredVariables(variables);
     } else {
+      const q = searchTerm.toLowerCase();
       const filtered = variables.filter(variable =>
-        variable.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        variable.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        variable.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        variable.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        variable.name.toLowerCase().includes(q) ||
+        variable.label.toLowerCase().includes(q) ||
+        variable.category.toLowerCase().includes(q) ||
+        (variable.description?.toLowerCase().includes(q) ?? false)
       );
       setFilteredVariables(filtered);
     }
+    // Reset visible count on new search
+    setVisibleCount(20);
   }, [searchTerm, variables]);
 
   const handleCreateVariable = () => {
@@ -232,7 +237,7 @@ export default function VariablesPage() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: '1rem'
             }}>
-              {categoryVariables.map((variable) => (
+              {categoryVariables.slice(0, visibleCount).map((variable) => (
                 <div
                   key={variable.name}
                   style={{
@@ -349,6 +354,17 @@ export default function VariablesPage() {
                 </div>
               ))}
             </div>
+            {/* Load more within this category if there are more */}
+            {categoryVariables.length > visibleCount && (
+              <div style={{ textAlign: 'center' }}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setVisibleCount(prev => prev + 20)}
+                >
+                  Load 20 more
+                </button>
+              </div>
+            )}
           </div>
         ))}
 

@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## Admin List Pagination Strategy — 2025-09-14T08:09:29.000Z
+- Hashtags: server aggregation (unwind + group + sort) with offset pagination and query filtering.
+- Projects: cursor list + offset search, consistent results and fast first paint.
+- Variables: UI-only pagination (lightweight metadata), search filters client-side dataset.
+
 ## Share Popup Refresh — 2025-09-14T07:24:39.000Z
 - What: Fixed the Share popup to refresh contents when switching targets.
 - Why: Previously retained prior URL/password until page refresh.

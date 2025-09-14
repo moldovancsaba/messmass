@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v3.18.0] — 2025-09-14T08:09:29.000Z
+
+### Admin Lists: Hashtags and Variables refinements
+- Admin → Hashtags: server-side aggregation pagination (20 per page) with global search; “Load more” appends further results.
+- Admin → Variables: UI-only pagination per page (20 visible, “Load 20 more”); search filters full variable set on the client.
+
+---
+
 ## [v3.17.0] — 2025-09-14T07:24:39.000Z
 
 ### Share Popup Refresh Fix (Project Management) and Admin Projects Pagination/Search
