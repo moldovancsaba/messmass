@@ -24,9 +24,13 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   const [copiedField, setCopiedField] = useState<'url' | 'password' | null>(null);
 
   useEffect(() => {
-    if (isOpen && !shareableData) {
+    // Always regenerate when popup opens or the target page changes.
+    if (isOpen) {
+      setShareableData(null);
+      setCopiedField(null);
       generateShareableLink();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, pageId, pageType]);
 
   const generateShareableLink = async () => {
@@ -36,6 +40,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
     try {
       const response = await fetch('/api/page-passwords', {
         method: 'POST',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pageId,

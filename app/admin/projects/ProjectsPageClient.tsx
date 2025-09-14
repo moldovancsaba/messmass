@@ -969,6 +969,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       {/* Share Popup */}
       <SharePopup
+        key={`${sharePageType}:${sharePageId}`}
         isOpen={sharePopupOpen}
         onClose={() => setSharePopupOpen(false)}
         pageId={sharePageId || ''}

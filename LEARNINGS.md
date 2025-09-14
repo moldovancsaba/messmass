@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## Share Popup Refresh — 2025-09-14T07:24:39.000Z
+- What: Fixed the Share popup to refresh contents when switching targets.
+- Why: Previously retained prior URL/password until page refresh.
+- How: Component key per target, cleared state on open/target updates, and fetch with cache: 'no-store'.
+
 ## Variables UI Consistency — 2025-09-13T10:50:00.000Z
 - What: Fixed variable descriptions, ensured text variables are properly typed, added bracketed code rendering for numeric variables, and provided a read-only details modal.
 - Why: Align Admin → Variables with the chart editor and current data model (no indoor/outdoor references in totals).

@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v3.17.0] — 2025-09-14T07:24:39.000Z
+
+### Share Popup Refresh Fix (Project Management)
+- Switching between “Share Edit Page” and “Share Statistics Page” now refreshes the popup with the correct URL and password.
+- Implementation: force remount via key, reset local state on open/target change, and disable cache for the link fetch.
+
+---
+
 ## [v3.16.0] — 2025-09-13T10:50:00.000Z
 
 ### Variables Page Improvements
