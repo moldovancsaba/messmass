@@ -36,60 +36,65 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
+    const limitParam = searchParams.get('limit');
+    const offsetParam = searchParams.get('offset');
+    const DEFAULT_LIMIT = 20;
+    const MAX_LIMIT = 100;
+    const limit = Math.min(Math.max(Number(limitParam) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+    const offset = Math.max(Number(offsetParam) || 0, 0);
     
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    
-    // Get all unique hashtags from projects (both old and new format)
-    const projects = await db.collection('projects').find({}, { 
-      projection: { hashtags: 1, categorizedHashtags: 1 } 
-    }).toArray();
-    
-    // Extract all hashtags and count usage
-    const hashtagCounts: { [key: string]: number } = {};
-    projects.forEach(project => {
-      // Handle old format hashtags (general hashtags)
-      if (project.hashtags && Array.isArray(project.hashtags)) {
-        project.hashtags.forEach((hashtag: string) => {
-          hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
-        });
-      }
-      
-      // Handle new format categorized hashtags
-      if (project.categorizedHashtags && typeof project.categorizedHashtags === 'object') {
-        Object.values(project.categorizedHashtags).forEach((categoryHashtags: any) => {
-          if (Array.isArray(categoryHashtags)) {
-            categoryHashtags.forEach((hashtag: string) => {
-              hashtagCounts[hashtag] = (hashtagCounts[hashtag] || 0) + 1;
-            });
+
+    // Pipeline to extract and count hashtags from both formats, then sort
+    const pipeline: any[] = [
+      {
+        $project: {
+          allTags: {
+            $setUnion: [
+              { $ifNull: ["$hashtags", []] },
+              {
+                $reduce: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  initialValue: [],
+                  in: { $concatArrays: ["$$value", { $ifNull: ["$$this.v", []] }] }
+                }
+              }
+            ]
           }
-        });
-      }
-    });
-    
-    // Convert to array and filter by search term
-    let hashtags = Object.keys(hashtagCounts).map(hashtag => ({
-      hashtag,
-      count: hashtagCounts[hashtag]
-    }));
-    
+        }
+      },
+      { $unwind: "$allTags" },
+      { $group: { _id: "$allTags", count: { $sum: 1 } } },
+    ];
+
     if (search) {
-      hashtags = hashtags.filter(item => 
-        item.hashtag.toLowerCase().includes(search.toLowerCase())
-      );
+      pipeline.push({ $match: { _id: { $regex: new RegExp(search, 'i') } } });
     }
-    
-    // Sort by usage count (descending) and then alphabetically
-    hashtags.sort((a, b) => {
-      if (a.count !== b.count) {
-        return b.count - a.count;
-      }
-      return a.hashtag.localeCompare(b.hashtag);
-    });
-    
+
+    pipeline.push({ $sort: { count: -1, _id: 1 } });
+
+    // Count total matched for search pagination summary
+    const totalMatchedAgg = await db.collection('projects').aggregate([...pipeline, { $count: "total" }]).toArray();
+    const totalMatched = totalMatchedAgg[0]?.total || 0;
+
+    // Page slice
+    pipeline.push({ $skip: offset });
+    pipeline.push({ $limit: limit });
+
+    const results = await db.collection('projects').aggregate(pipeline).toArray();
+    const hashtags = results.map((r: any) => r._id);
+
     return NextResponse.json({
       success: true,
-      hashtags: hashtags.map(item => item.hashtag)
+      hashtags,
+      pagination: {
+        mode: 'aggregation',
+        limit,
+        offset,
+        nextOffset: offset + results.length < totalMatched ? offset + results.length : null,
+        totalMatched
+      }
     });
     
   } catch (error) {

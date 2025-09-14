@@ -10,6 +10,94 @@ interface User {
   role: string;
 }
 
+function HashtagList() {
+  const [items, setItems] = React.useState<string[]>([]);
+  const [search, setSearch] = React.useState('');
+  const [offset, setOffset] = React.useState(0);
+  const [nextOffset, setNextOffset] = React.useState<number | null>(0);
+  const [loading, setLoading] = React.useState(true);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const PAGE_SIZE = 20;
+
+  const loadFirst = async () => {
+    setLoading(true);
+    try {
+      const qs = search ? `?search=${encodeURIComponent(search)}&offset=0&limit=${PAGE_SIZE}` : `?offset=0&limit=${PAGE_SIZE}`;
+      const res = await fetch(`/api/hashtags${qs}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success) {
+        setItems(data.hashtags || []);
+        setOffset(0);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (loadingMore || nextOffset == null) return;
+    setLoadingMore(true);
+    try {
+      const qs = search ? `?search=${encodeURIComponent(search)}&offset=${nextOffset}&limit=${PAGE_SIZE}` : `?offset=${nextOffset}&limit=${PAGE_SIZE}`;
+      const res = await fetch(`/api/hashtags${qs}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success) {
+        setItems(prev => [...prev, ...(data.hashtags || [])]);
+        setOffset(nextOffset);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+      }
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  React.useEffect(() => {
+    const h = setTimeout(() => { loadFirst(); }, 300);
+    return () => clearTimeout(h);
+  }, [search]);
+
+  return (
+    <div className="admin-container">
+      <div className="glass-card" style={{ padding: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0 }}>All Hashtags</h3>
+          <input
+            className="form-input"
+            placeholder="Search hashtags..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ maxWidth: 320 }}
+          />
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', color: '#6b7280', padding: '2rem' }}>Loading…</div>
+        ) : items.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#6b7280', padding: '2rem' }}>No hashtags found</div>
+        ) : (
+          <>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
+              {items.map(tag => (
+                <li key={tag} style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(229,231,235,1)', borderRadius: 8, padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}>#{tag}</li>
+              ))}
+            </ul>
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              {nextOffset != null ? (
+                <button className="btn btn-secondary" disabled={loadingMore} onClick={loadMore}>
+                  {loadingMore ? 'Loading…' : 'Load 20 more'}
+                </button>
+              ) : (
+                <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function HashtagManagerPage() {
   const router = useRouter();
   
@@ -89,6 +177,9 @@ export default function HashtagManagerPage() {
           <HashtagEditor />
         </div>
       </div>
+
+      {/* Hashtags List (paginated) */}
+      <HashtagList />
 
       {/* Global Styles */}
       <style jsx>{`
