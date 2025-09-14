@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## Major Update v4.0.0 — 2025-09-14T08:51:52.000Z
+- Hooks must be declared before any early returns to keep counts consistent across renders (prevents React error #310).
+- Infinite scroll/search pagination must de-duplicate by stable IDs and stop when end-of-results is reached.
+- Always validate with type-check + production build after UI pagination changes.
+
 ## React Hooks Order Stability — 2025-09-14T08:37:27.000Z
 - Ensure all useState/useEffect hooks are declared at the top of client components.
 - Do not place hook declarations below early returns; hook count must be identical across renders.

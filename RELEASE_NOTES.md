@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v4.0.0] — 2025-09-14T08:51:52.000Z
+
+### Major Update — Stability & Pagination Correctness
+- Fixed React hooks order across admin pages to eliminate error #310.
+- Admin → Projects search pagination: prevent duplicate rows by de-duplicating on append and hiding Load More at end-of-results.
+- Verified with type-check and production build.
+
+---
+
 ## [v3.19.0] — 2025-09-14T08:37:27.000Z
 
 ### Fix: React error #310 (hooks order)

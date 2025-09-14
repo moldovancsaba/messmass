@@ -24,6 +24,14 @@ Version: 2.11.0
 
 ## Session Update — v3.10.0 Bar Chart Configs
 
+## Session Update — v4.0.0 Major Update
+Date: 2025-09-14T08:51:52.000Z
+Version: 4.0.0
+
+- Stability: Fixed React error #310 by stabilizing hook order.
+- Admin → Projects: Fixed search pagination duplication; de-duplicate by _id; hide Load More at end-of-results.
+- Build and type-check verified.
+
 ## Session Update — v3.19.0 Hooks Order Fix
 Date: 2025-09-14T08:37:27.000Z
 Version: 3.19.0
