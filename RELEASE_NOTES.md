@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v4.1.0] — 2025-09-14T09:18:50.000Z
+
+### Documentation and Governance Sync
+- Version bump to comply with commit protocol.
+- Synchronized timestamps and version across WARP.md, TASKLIST.md, ROADMAP.md, ARCHITECTURE.md.
+
+---
+
 ## [v4.0.0] — 2025-09-14T08:51:52.000Z
 
 ### Major Update — Stability & Pagination Correctness

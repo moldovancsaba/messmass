@@ -1,5 +1,5 @@
 # MessMass Development Learnings
-
+ 
 ## Major Update v4.0.0 — 2025-09-14T08:51:52.000Z
 - Hooks must be declared before any early returns to keep counts consistent across renders (prevents React error #310).
 - Infinite scroll/search pagination must de-duplicate by stable IDs and stop when end-of-results is reached.
