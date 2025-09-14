@@ -74,7 +74,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   // Pagination state
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [searchOffset, setSearchOffset] = useState<number>(0);
+  const [searchOffset, setSearchOffset] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const PAGE_SIZE = 20;
@@ -136,7 +136,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       if (data.success) {
         setProjects(data.projects);
         setNextCursor(data.pagination?.nextCursor || null);
-        setSearchOffset(0);
+        setSearchOffset(null);
       } else {
         console.error('API returned error:', data.error);
       }
@@ -166,7 +166,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         const data = await res.json();
         if (data.success) {
           setProjects(data.projects);
-          setSearchOffset(data.pagination?.nextOffset || 0);
+          setSearchOffset(data.pagination?.nextOffset ?? null);
           setNextCursor(null); // not used in search mode
         }
       } catch (e) {
@@ -355,7 +355,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       const res = await fetch(`/api/projects?limit=${PAGE_SIZE}&cursor=${encodeURIComponent(nextCursor)}`, { cache: 'no-store' });
       const data = await res.json();
       if (data.success) {
-        setProjects(prev => [...prev, ...data.projects]);
+        setProjects(prev => {
+          const existing = new Set(prev.map((p: Project) => p._id));
+          const merged = [...prev];
+          for (const p of data.projects as Project[]) {
+            if (!existing.has(p._id)) merged.push(p);
+          }
+          return merged;
+        });
         setNextCursor(data.pagination?.nextCursor || null);
       }
     } catch (e) {
@@ -367,14 +374,21 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
 
   const loadMoreSearch = async () => {
-    if (!isSearching && searchQuery.trim()) {
+    if (!isSearching && searchQuery.trim() && searchOffset != null) {
       setIsLoadingMore(true);
       try {
         const res = await fetch(`/api/projects?q=${encodeURIComponent(searchQuery.trim())}&offset=${searchOffset}&limit=${PAGE_SIZE}`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
-          setProjects(prev => [...prev, ...data.projects]);
-          setSearchOffset(data.pagination?.nextOffset || searchOffset);
+          setProjects(prev => {
+            const existing = new Set(prev.map((p: Project) => p._id));
+            const merged = [...prev];
+            for (const p of data.projects as Project[]) {
+              if (!existing.has(p._id)) merged.push(p);
+            }
+            return merged;
+          });
+          setSearchOffset(data.pagination?.nextOffset ?? null);
         }
       } catch (e) {
         console.error('Load more search results failed', e);
@@ -788,9 +802,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         {/* Load More */}
         <div style={{ padding: '1rem', textAlign: 'center' }}>
           {searchQuery.trim() ? (
-            <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
-              {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
-            </button>
+            searchOffset != null ? (
+              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
+                {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
+              </button>
+            ) : (
+              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+            )
           ) : (
             nextCursor ? (
               <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMore}>
