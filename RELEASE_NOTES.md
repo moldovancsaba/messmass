@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v3.19.0] — 2025-09-14T08:37:27.000Z
+
+### Fix: React error #310 (hooks order)
+- Admin → Variables: declared modal state (activeVar) before any early returns to keep hook order stable.
+- Admin → Projects: moved search effect above the loading early return.
+- Verified with type-check and production build.
+
+---
+
 ## [v3.18.0] — 2025-09-14T08:09:29.000Z
 
 ### Admin Lists: Hashtags and Variables refinements

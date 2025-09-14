@@ -24,6 +24,13 @@ Version: 2.11.0
 
 ## Session Update — v3.10.0 Bar Chart Configs
 
+## Session Update — v3.19.0 Hooks Order Fix
+Date: 2025-09-14T08:37:27.000Z
+Version: 3.19.0
+
+- Fixed React error #310 by moving hook declarations above early returns on Admin → Variables and Admin → Projects.
+- Type-check and production build verified.
+
 ## Session Update — v3.11.0 UI Design System
 Date: 2025-09-11T13:14:27.000Z
 Version: 3.11.0

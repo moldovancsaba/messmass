@@ -23,6 +23,8 @@ export default function VariablesPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   // Pagination (UI-only): show first 20, then load more by 20
   const [visibleCount, setVisibleCount] = useState(20);
+  // Modal state (must be declared before any early returns to keep hook order stable)
+  const [activeVar, setActiveVar] = useState<Variable | null>(null);
 
   // Variables now come from API
   const mockVariables: Variable[] = [
@@ -166,7 +168,6 @@ export default function VariablesPage() {
   }
 
   // Simple read-only modal for variable details
-  const [activeVar, setActiveVar] = useState<Variable | null>(null);
 
   return (
     <div className="admin-container">

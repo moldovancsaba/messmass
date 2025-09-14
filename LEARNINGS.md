@@ -1,5 +1,10 @@
 # MessMass Development Learnings
 
+## React Hooks Order Stability — 2025-09-14T08:37:27.000Z
+- Ensure all useState/useEffect hooks are declared at the top of client components.
+- Do not place hook declarations below early returns; hook count must be identical across renders.
+- Outcome: Resolved React error #310 on Admin → Variables and Admin → Projects.
+
 ## Admin List Pagination Strategy — 2025-09-14T08:09:29.000Z
 - Hashtags: server aggregation (unwind + group + sort) with offset pagination and query filtering.
 - Projects: cursor list + offset search, consistent results and fast first paint.

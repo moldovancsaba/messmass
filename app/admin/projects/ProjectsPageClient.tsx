@@ -147,6 +147,38 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     }
   };
 
+  // Server-side search across all projects
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      const q = searchQuery.trim();
+      if (!q) {
+        // Reset to default list
+        setLoading(true);
+        setProjects([]);
+        setNextCursor(null);
+        setSearchOffset(0);
+        await loadProjects();
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/projects?q=${encodeURIComponent(q)}&offset=0&limit=${PAGE_SIZE}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success) {
+          setProjects(data.projects);
+          setSearchOffset(data.pagination?.nextOffset || 0);
+          setNextCursor(null); // not used in search mode
+        }
+      } catch (e) {
+        console.error('Search failed', e);
+      } finally {
+        setIsSearching(false);
+        setLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       if (sortOrder === 'asc') {
@@ -333,37 +365,6 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     }
   };
 
-  // Server-side search across all projects
-  useEffect(() => {
-    const handler = setTimeout(async () => {
-      const q = searchQuery.trim();
-      if (!q) {
-        // Reset to default list
-        setLoading(true);
-        setProjects([]);
-        setNextCursor(null);
-        setSearchOffset(0);
-        await loadProjects();
-        return;
-      }
-      setIsSearching(true);
-      try {
-        const res = await fetch(`/api/projects?q=${encodeURIComponent(q)}&offset=0&limit=${PAGE_SIZE}`, { cache: 'no-store' });
-        const data = await res.json();
-        if (data.success) {
-          setProjects(data.projects);
-          setSearchOffset(data.pagination?.nextOffset || 0);
-          setNextCursor(null); // not used in search mode
-        }
-      } catch (e) {
-        console.error('Search failed', e);
-      } finally {
-        setIsSearching(false);
-        setLoading(false);
-      }
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchQuery]);
 
   const loadMoreSearch = async () => {
     if (!isSearching && searchQuery.trim()) {
