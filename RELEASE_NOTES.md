@@ -2,7 +2,9 @@
 
 ## [v3.17.0] — 2025-09-14T07:24:39.000Z
 
-### Share Popup Refresh Fix (Project Management)
+### Share Popup Refresh Fix (Project Management) and Admin Projects Pagination/Search
+- Switching between “Share Edit Page” and “Share Statistics Page” now refreshes the popup with the correct URL and password.
+- Projects list now loads in pages of 20 with a Load more button; search queries the full dataset server-side and supports loading more results.
 - Switching between “Share Edit Page” and “Share Statistics Page” now refreshes the popup with the correct URL and password.
 - Implementation: force remount via key, reset local state on open/target change, and disable cache for the link fetch.
 

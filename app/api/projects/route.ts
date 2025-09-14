@@ -84,28 +84,105 @@ async function connectToDatabase() {
   }
 }
 
-// GET /api/projects - Fetch all projects
-export async function GET() {
+// GET /api/projects - Fetch projects with optional pagination and search
+export async function GET(request: NextRequest) {
   try {
-    console.log('📊 Fetching projects from database...');
-    
+    const url = new URL(request.url);
+    const limitParam = url.searchParams.get('limit');
+    const cursorParam = url.searchParams.get('cursor');
+    const q = url.searchParams.get('q');
+    const offsetParam = url.searchParams.get('offset');
+
+    // Defaults and caps
+    const DEFAULT_LIMIT = 20;
+    const MAX_LIMIT = 100;
+    const limit = Math.min(Math.max(Number(limitParam) || DEFAULT_LIMIT, 1), MAX_LIMIT);
+
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // Get collection stats for debugging
-    const stats = await collection.estimatedDocumentCount();
-    console.log(`📈 Collection has ${stats} documents`);
+    // Search mode: server-side search across full dataset (eventName; extendable later)
+    if (q && q.trim() !== '') {
+      const query = q.trim();
+      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+
+      const filter: any = {
+        $or: [
+          { eventName: { $regex: regex } },
+          { viewSlug: { $regex: regex } },
+          { editSlug: { $regex: regex } },
+        ]
+      };
+
+      const totalMatched = await collection.countDocuments(filter);
+      const offset = Math.max(Number(offsetParam) || 0, 0);
+
+      const projects = await collection
+        .find(filter)
+        .sort({ updatedAt: -1, _id: -1 })
+        .skip(offset)
+        .limit(limit)
+        .toArray();
+
+      const formatted = projects.map(project => ({
+        _id: project._id.toString(),
+        eventName: project.eventName,
+        eventDate: project.eventDate,
+        hashtags: project.hashtags || [],
+        categorizedHashtags: project.categorizedHashtags || {},
+        stats: project.stats,
+        viewSlug: project.viewSlug,
+        editSlug: project.editSlug,
+        styleId: project.styleId || null,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt
+      }));
+
+      const nextOffset = offset + projects.length;
+      const hasMore = nextOffset < totalMatched;
+
+      return NextResponse.json({
+        success: true,
+        projects: formatted,
+        pagination: {
+          mode: 'search',
+          limit,
+          offset,
+          nextOffset: hasMore ? nextOffset : null,
+          totalMatched
+        }
+      });
+    }
+
+    // Default list mode with cursor-based pagination
+    // Cursor is a base64-encoded JSON: { u: updatedAt (ISO string), id: _id string }
+    let filter: any = {};
+    let sort = { updatedAt: -1 as const, _id: -1 as const };
+    if (cursorParam) {
+      try {
+        const decoded = JSON.parse(Buffer.from(cursorParam, 'base64').toString('utf-8')) as { u: string; id: string };
+        const u = decoded.u;
+        const id = decoded.id;
+        filter = {
+          $or: [
+            { updatedAt: { $lt: u } },
+            { updatedAt: u, _id: { $lt: new ObjectId(id) } }
+          ]
+        };
+      } catch {
+        // Invalid cursor -> ignore and start from top
+        filter = {};
+      }
+    }
 
     const projects = await collection
-      .find({})
-      .sort({ updatedAt: -1 })
+      .find(filter)
+      .sort(sort)
+      .limit(limit)
       .toArray();
 
-    console.log(`✅ Found ${projects.length} projects`);
-
-    // Enhanced project formatting to include categorized hashtags and styleId
-    const formattedProjects = projects.map(project => ({
+    const formatted = projects.map(project => ({
       _id: project._id.toString(),
       eventName: project.eventName,
       eventDate: project.eventDate,
@@ -119,27 +196,27 @@ export async function GET() {
       updatedAt: project.updatedAt
     }));
 
+    let nextCursor: string | null = null;
+    if (projects.length === limit) {
+      const last = projects[projects.length - 1];
+      nextCursor = Buffer.from(JSON.stringify({ u: last.updatedAt, id: last._id.toString() }), 'utf-8').toString('base64');
+    }
+
     return NextResponse.json({
       success: true,
-      projects: formattedProjects,
-      debug: {
-        databaseName: MONGODB_DB,
-        collectionCount: stats,
-        projectsFound: projects.length
+      projects: formatted,
+      pagination: {
+        mode: 'cursor',
+        limit,
+        nextCursor
       }
     });
 
   } catch (error) {
     console.error('❌ Failed to fetch projects:', error);
-    
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch projects',
-      debug: {
-        databaseName: MONGODB_DB,
-        mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown'
-      }
+      error: error instanceof Error ? error.message : 'Failed to fetch projects'
     }, { status: 500 });
   }
 }

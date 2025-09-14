@@ -72,6 +72,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  // Pagination state
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [searchOffset, setSearchOffset] = useState<number>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const PAGE_SIZE = 20;
   
   // Sorting state
   type SortField = 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees' | null;
@@ -124,11 +130,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   const loadProjects = async () => {
     try {
-      const response = await fetch('/api/projects');
+      const response = await fetch(`/api/projects?limit=${PAGE_SIZE}`, { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success) {
         setProjects(data.projects);
+        setNextCursor(data.pagination?.nextCursor || null);
+        setSearchOffset(0);
       } else {
         console.error('API returned error:', data.error);
       }
@@ -306,6 +314,74 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       </div>
     );
   }
+
+  // Load more for default list
+  const loadMore = async () => {
+    if (!nextCursor || isLoadingMore || isSearching) return;
+    setIsLoadingMore(true);
+    try {
+      const res = await fetch(`/api/projects?limit=${PAGE_SIZE}&cursor=${encodeURIComponent(nextCursor)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success) {
+        setProjects(prev => [...prev, ...data.projects]);
+        setNextCursor(data.pagination?.nextCursor || null);
+      }
+    } catch (e) {
+      console.error('Failed to load more projects', e);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Server-side search across all projects
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      const q = searchQuery.trim();
+      if (!q) {
+        // Reset to default list
+        setLoading(true);
+        setProjects([]);
+        setNextCursor(null);
+        setSearchOffset(0);
+        await loadProjects();
+        return;
+      }
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/projects?q=${encodeURIComponent(q)}&offset=0&limit=${PAGE_SIZE}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success) {
+          setProjects(data.projects);
+          setSearchOffset(data.pagination?.nextOffset || 0);
+          setNextCursor(null); // not used in search mode
+        }
+      } catch (e) {
+        console.error('Search failed', e);
+      } finally {
+        setIsSearching(false);
+        setLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const loadMoreSearch = async () => {
+    if (!isSearching && searchQuery.trim()) {
+      setIsLoadingMore(true);
+      try {
+        const res = await fetch(`/api/projects?q=${encodeURIComponent(searchQuery.trim())}&offset=${searchOffset}&limit=${PAGE_SIZE}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success) {
+          setProjects(prev => [...prev, ...data.projects]);
+          setSearchOffset(data.pagination?.nextOffset || searchOffset);
+        }
+      } catch (e) {
+        console.error('Load more search results failed', e);
+      } finally {
+        setIsLoadingMore(false);
+      }
+    }
+  };
 
   const filteredAndSortedProjects = projects
     .filter((project) => {
@@ -707,6 +783,22 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
               )}
             </tbody>
           </table>
+        </div>
+        {/* Load More */}
+        <div style={{ padding: '1rem', textAlign: 'center' }}>
+          {searchQuery.trim() ? (
+            <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
+              {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
+            </button>
+          ) : (
+            nextCursor ? (
+              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMore}>
+                {isLoadingMore ? 'Loading…' : 'Load 20 more'}
+              </button>
+            ) : (
+              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+            )
+          )}
         </div>
       </div>
 
