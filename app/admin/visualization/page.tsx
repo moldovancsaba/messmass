@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminPageHero from '@/components/AdminPageHero';
+import AdminHero from '@/components/AdminHero';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
@@ -310,19 +310,18 @@ export default function VisualizationPage() {
 
   return (
     <div className="admin-container">
-      <AdminPageHero 
+      <AdminHero 
         title="Data Visualization Manager"
         subtitle="Manage data visualization blocks and chart layouts"
-        icon="📊"
-        showSearch={false}
         badges={[
           { text: `${dataBlocks.length} Data Blocks`, variant: 'primary' }
         ]}
         backLink="/admin"
       />
 
+      <div className="content-surface">
       {/* Grid Settings Editor */}
-      <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="glass-card section-card">
         <h2 className="section-title" style={{ margin: 0 }}>Grid Settings</h2>
         <p className="info-note" style={{ marginTop: '0.5rem' }}>
           Configure the number of units per breakpoint used by stats/filter/hashtag pages.
@@ -397,7 +396,7 @@ export default function VisualizationPage() {
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '2rem' }}>
+      <div className="glass-card section-card">
         <h2 className="section-title">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}
@@ -783,6 +782,7 @@ export default function VisualizationPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -6,10 +6,36 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 
 ## Version History
 
+- **Version 4.2.0** — Admin HERO standardization and Content Surface (Styling consolidation)
 - **Version 2.2.0** - Hashtag Categories System ✅ **COMPLETED**
 - **Version 2.3.0** - Shareables Component Library (In Progress)
 
 ---
+
+## Styling Architecture (4.2.0)
+
+### Overview
+- Introduced a design-managed content surface to unify the main content block across admin and public pages.
+- Centralized theming via CSS variables to eliminate hard-coded per-page styles.
+
+### CSS Variables
+- `--page-bg`: Page background gradient/color (fallback: `var(--gradient-primary)`).
+- `--header-bg`: Header/Hero surface background (fallback: `rgba(255, 255, 255, 0.95)`).
+- `--content-bg`: Main content surface background (new in 4.2.0), controlled by Design Manager (pageStyle.contentBackgroundColor).
+
+### Core Classes
+- `.admin-container`: Consumes `--page-bg` and provides page-level background.
+- `.admin-header`: Hero surface that consumes `--header-bg` with consistent width and spacing.
+- `.content-surface`: New reusable wrapper for main page content with background `var(--content-bg)`, blur, radius, shadow, and uniform padding.
+
+### Application
+- Admin: `app/admin/layout.tsx` injects `--page-bg`, `--header-bg`, and `--content-bg` when an admin style is active.
+- Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config` and writes variables to `:root` for stats/edit/filter pages.
+- Pages previously “not wide enough” now wrap their bodies with `.content-surface` to match the admin main content width and visual language.
+
+### Rationale
+- Single-source component (AdminHero) ensures consistent layout and visuals across admin pages.
+- CSS variables provide predictable theming and reduce specificity wars; a single content wrapper normalizes width/padding.
 
 ## Hashtag Categories System (Version 2.2.0)
 

@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v4.2.0] — 2025-09-16T19:36:46.925Z
+
+### Admin/Public Design System — AdminHero Standardization + Content Surface
+- Single-source AdminHero component applied consistently across all admin pages to ensure identical background, width, and spacing.
+- Introduced design-managed content surface:
+  - New CSS class: `.content-surface` with blur, radius, shadow, padding.
+  - Configurable via Design Manager: `contentBackgroundColor` persisted in page styles.
+  - Root CSS variable `--content-bg` injected from admin layout and public style resolver.
+- Widened previously narrow pages to match the main admin width, wrapping their bodies in `.content-surface`:
+  - /admin/visualization, /admin/variables, /admin/charts, /admin/design, /admin/categories, /admin/hashtags, and /edit/[slug].
+
+### Refactors & Fixes
+- Removed page-level hard-coded styles in chart manager; standardized to global design system classes.
+- Fixed malformed TSX fragments and closing tags in admin pages during layout normalization.
+
+### Documentation & Governance
+- Version bump to v4.2.0 and synchronized documentation:
+  - README.md (new), WARP.md, ROADMAP.md, TASKLIST.md, LEARNINGS.md, ARCHITECTURE.md, RELEASE_NOTES.md, WARP.DEV_AI_CONVERSATION.md.
+- All timestamps use ISO 8601 with milliseconds (UTC).
+
+---
+
 ## [v4.1.1] — 2025-09-15T16:24:52.000Z
 
 ### Admin → Projects: Global Server-Side Sorting

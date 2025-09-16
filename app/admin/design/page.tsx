@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminPageHero from '@/components/AdminPageHero';
+import AdminHero from '@/components/AdminHero';
 import { PageStyle } from '@/lib/pageStyleTypes';
 
 export default function AdminDesignPage() {
@@ -15,6 +15,7 @@ export default function AdminDesignPage() {
     name: 'New Style',
     backgroundGradient: '0deg, #ffffffff 0%, #ffffffff 100%',
     headerBackgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
+    contentBackgroundColor: 'rgba(255,255,255,0.95)',
     titleBubble: {
       backgroundColor: '#6366f1',
       textColor: '#ffffff'
@@ -32,6 +33,7 @@ export default function AdminDesignPage() {
     name: '',
     backgroundGradient: '',
     headerBackgroundGradient: '',
+    contentBackgroundColor: 'rgba(255,255,255,0.95)',
     titleBubble: { backgroundColor: '#6366f1', textColor: '#ffffff' }
   });
 
@@ -102,6 +104,7 @@ export default function AdminDesignPage() {
           name: 'New Style',
           backgroundGradient: '0deg, #ffffffff 0%, #ffffffff 100%',
           headerBackgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
+          contentBackgroundColor: 'rgba(255,255,255,0.95)',
           titleBubble: {
             backgroundColor: '#6366f1',
             textColor: '#ffffff'
@@ -122,6 +125,7 @@ export default function AdminDesignPage() {
       name: style.name,
       backgroundGradient: style.backgroundGradient,
       headerBackgroundGradient: style.headerBackgroundGradient,
+      contentBackgroundColor: (style as any).contentBackgroundColor || 'rgba(255,255,255,0.95)',
       titleBubble: { ...style.titleBubble }
     });
   };
@@ -267,248 +271,257 @@ export default function AdminDesignPage() {
 
   return (
     <div className="admin-container">
-      <AdminPageHero 
+      {/* WHAT: Use UnifiedAdminHero to avoid nested admin-container wrappers.
+          WHY: Standardize header across admin pages and prevent duplicate backgrounds. */}
+      <AdminHero 
         title="Design Manager"
         subtitle="Manage page styles and visual design"
-        icon="🎨"
-        showSearch={false}
         badges={[
           { text: `${pageStyles.length} Styles`, variant: 'primary' }
         ]}
         backLink="/admin"
       />
 
-      <div className="glass-card" style={{ padding: '2rem' }}>
-        <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>Page Style Configuration</h2>
+      {/* Page content */}
+      <div className="content-surface">
+            <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>Page Style Configuration</h2>
 
-        {/* Global Default Style */}
-        <div style={{ background: 'rgba(248, 250, 252, 0.8)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Default (Global) Style</h3>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-input">
-              <option value="">— Use System Default —</option>
-              {pageStyles.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
-              ))}
-            </select>
-            <button onClick={saveGlobalStyle} className="btn btn-secondary">Save Default</button>
-          </div>
-        </div>
-
-        {/* Admin Page Style */}
-        <div style={{ background: 'rgba(248, 250, 252, 0.8)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Admin Page Style</h3>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-input">
-              <option value="">— Use Default/Global —</option>
-              {pageStyles.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
-              ))}
-            </select>
-            <button onClick={saveAdminStyle} className="btn btn-secondary">Save Admin Style</button>
-          </div>
-        </div>
-        
-        {/* Per-Project Style */}
-        <div style={{ background: 'rgba(248, 250, 252, 0.8)', padding: '1.5rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Project Style</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
-            <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
-            <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-input">
-              <option value="">— Use Default/Global —</option>
-              {pageStyles.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
-              ))}
-            </select>
-            <button onClick={saveProjectStyle} className="btn btn-secondary">Apply to Project</button>
-          </div>
-        </div>
-
-        {/* Per-Hashtag Style */}
-        <div style={{ background: 'rgba(248, 250, 252, 0.8)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Hashtag Style</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
-            <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
-            <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-input">
-              <option value="">— Use Default/Global —</option>
-              {pageStyles.map(s => (
-                <option key={s._id} value={s._id}>{s.name}</option>
-              ))}
-            </select>
-            <button onClick={saveHashtagStyle} className="btn btn-secondary">Apply to Hashtag</button>
-          </div>
-
-          {/* List existing hashtag assignments */}
-          <div style={{ marginTop: '1rem' }}>
-            {hashtagAssignments.length === 0 ? (
-              <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No hashtag-specific styles set.</p>
-            ) : (
-              <div style={{ display: 'grid', gap: '0.75rem' }}>
-                {hashtagAssignments.map((a) => (
-                  <div key={a._id} style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between' }}>
-                    <span><strong>#{a._id}</strong> → {pageStyles.find(s => s._id === a.styleId)?.name || a.styleId}</span>
-                    <span style={{ color: '#6b7280', fontSize: '0.85rem' }}>{new Date(a.updatedAt).toLocaleString()}</span>
-                  </div>
-                ))}
+            {/* Global Default Style */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Default (Global) Style</h3>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-input">
+                  <option value="">— Use System Default —</option>
+                  {pageStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+                <button onClick={saveGlobalStyle} className="btn btn-secondary">Save Default</button>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Create New Style Form */}
-        <div style={{
-          background: 'rgba(248, 250, 252, 0.8)',
-          padding: '2rem',
-          borderRadius: '12px',
-          marginBottom: '2rem'
-        }}>
-          <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Create New Style</h3>
-          
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                Style Name
-              </label>
-              <input
-                type="text"
-                value={styleForm.name}
-                onChange={(e) => setStyleForm({ ...styleForm, name: e.target.value })}
-                className="form-input"
-              />
             </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                Page Background Gradient (angle, stops)
-              </label>
-              <input
-                type="text"
-                value={styleForm.backgroundGradient}
-                onChange={(e) => setStyleForm({ ...styleForm, backgroundGradient: e.target.value })}
-                placeholder="0deg, #ffffffff 0%, #ffffffff 100%"
-                className="form-input"
-              />
+            {/* Admin Page Style */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Admin Page Style</h3>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-input">
+                  <option value="">— Use Default/Global —</option>
+                  {pageStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+                <button onClick={saveAdminStyle} className="btn btn-secondary">Save Admin Style</button>
+              </div>
             </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                Header Background Gradient
-              </label>
-              <input
-                type="text"
-                value={styleForm.headerBackgroundGradient}
-                onChange={(e) => setStyleForm({ ...styleForm, headerBackgroundGradient: e.target.value })}
-                placeholder="0deg, #f8fafc 0%, #f1f5f9 100%"
-                className="form-input"
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                  Title Bubble Background
-                </label>
+            {/* Content Surface Color */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Main Content Surface Color</h3>
+              <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
+                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It’s applied via the --content-bg CSS variable.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr auto', gap: '1rem', alignItems: 'center' }}>
+                <span style={{ color: '#374151', fontWeight: 600 }}>Content Background</span>
                 <input
-                  type="color"
-                  value={styleForm.titleBubble.backgroundColor}
-                  onChange={(e) => setStyleForm({
-                    ...styleForm,
-                    titleBubble: { ...styleForm.titleBubble, backgroundColor: e.target.value }
-                  })}
-                  className="form-color-input"
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. rgba(255,255,255,0.95) or #ffffff"
+                  value={(styleForm as any)?.contentBackgroundColor || ''}
+                  onChange={(e) => setStyleForm({ ...(styleForm as any), contentBackgroundColor: e.target.value })}
                 />
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid rgba(0,0,0,0.1)', background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)' }} />
+                </span>
               </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                  Title Text Color
-                </label>
-                <input
-                  type="color"
-                  value={styleForm.titleBubble.textColor}
-                  onChange={(e) => setStyleForm({
-                    ...styleForm,
-                    titleBubble: { ...styleForm.titleBubble, textColor: e.target.value }
-                  })}
-                  className="form-color-input"
-                />
+            </div>
+            
+            {/* Per-Project Style */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Project Style</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
+                <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
+                <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-input">
+                  <option value="">— Use Default/Global —</option>
+                  {pageStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+                <button onClick={saveProjectStyle} className="btn btn-secondary">Apply to Project</button>
               </div>
             </div>
 
-            <button
-              onClick={handleCreateStyle}
-              style={{
-                background: '#10b981',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '0.75rem 2rem',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                justifySelf: 'start'
-              }}
-            >
-              Create Style
-            </button>
-          </div>
-        </div>
+            {/* Per-Hashtag Style */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Hashtag Style</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
+                <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
+                <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-input">
+                  <option value="">— Use Default/Global —</option>
+                  {pageStyles.map(s => (
+                    <option key={s._id} value={s._id}>{s.name}</option>
+                  ))}
+                </select>
+                <button onClick={saveHashtagStyle} className="btn btn-secondary">Apply to Hashtag</button>
+              </div>
 
-        {/* Existing Styles */}
-        <div>
-          <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Existing Styles ({pageStyles.length})</h3>
-          {pageStyles.length === 0 ? (
-            <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No styles created yet</p>
-          ) : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
-              {pageStyles.map((style) => (
-                <div key={style._id} className="style-item">
-                  <div className="style-item-header">
-                    <h4 style={{ margin: 0, color: '#1f2937' }}>{style.name}</h4>
-                    <div className="flex-row">
-                      <div style={{
-                        width: '30px',
-                        height: '30px',
-                        background: style.titleBubble.backgroundColor,
-                        borderRadius: '50%',
-                        border: '2px solid #e5e7eb'
-                      }}></div>
-                      <button className="btn btn-secondary btn-small" onClick={() => startEdit(style)}>Edit</button>
-                      <button className="btn btn-danger btn-small" onClick={() => deleteStyle(style._id)}>Delete</button>
-                      <button className="btn btn-primary btn-small" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
-                      <button className="btn btn-success btn-small" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
-                    </div>
+              {/* List existing hashtag assignments */}
+              <div style={{ marginTop: '1rem' }}>
+                {hashtagAssignments.length === 0 ? (
+                  <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No hashtag-specific styles set.</p>
+                ) : (
+                  <div style={{ display: 'grid', gap: '0.75rem' }}>
+                    {hashtagAssignments.map((a) => (
+                      <div key={a._id} style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between' }}>
+                        <span><strong>#{a._id}</strong> → {pageStyles.find(s => s._id === a.styleId)?.name || a.styleId}</span>
+                        <span style={{ color: '#6b7280', fontSize: '0.85rem' }}>{new Date(a.updatedAt).toLocaleString()}</span>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
+            </div>
 
-                  {editingId === style._id && (
-                    <div style={{ marginTop: '1rem', display: 'grid', gap: '1rem' }}>
-                      <input className="form-input" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
-                      <input className="form-input" value={editForm.backgroundGradient} onChange={(e) => setEditForm({ ...editForm, backgroundGradient: e.target.value })} />
-                      <input className="form-input" value={editForm.headerBackgroundGradient} onChange={(e) => setEditForm({ ...editForm, headerBackgroundGradient: e.target.value })} />
-                      <div className="grid-3">
-                        <div>
-                          <label className="form-label">Title Bubble Background</label>
-                          <input type="color" className="form-color-input" value={editForm.titleBubble.backgroundColor}
-                            onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, backgroundColor: e.target.value } })} />
-                        </div>
-                        <div>
-                          <label className="form-label">Title Text Color</label>
-                          <input type="color" className="form-color-input" value={editForm.titleBubble.textColor}
-                            onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, textColor: e.target.value } })} />
-                        </div>
-                      </div>
-                      <div className="flex-row">
-                        <button className="btn btn-success" onClick={saveEdit}>Save</button>
-                        <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
-                      </div>
-                    </div>
-                  )}
+            {/* Create New Style Form */}
+            <div className="section-card">
+              <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Create New Style</h3>
+              
+              <div style={{ display: 'grid', gap: '1.5rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    Style Name
+                  </label>
+                  <input
+                    type="text"
+                    value={styleForm.name}
+                    onChange={(e) => setStyleForm({ ...styleForm, name: e.target.value })}
+                    className="form-input"
+                  />
                 </div>
-              ))}
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    Page Background Gradient (angle, stops)
+                  </label>
+                  <input
+                    type="text"
+                    value={styleForm.backgroundGradient}
+                    onChange={(e) => setStyleForm({ ...styleForm, backgroundGradient: e.target.value })}
+                    placeholder="0deg, #ffffffff 0%, #ffffffff 100%"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    Header Background Gradient
+                  </label>
+                  <input
+                    type="text"
+                    value={styleForm.headerBackgroundGradient}
+                    onChange={(e) => setStyleForm({ ...styleForm, headerBackgroundGradient: e.target.value })}
+                    placeholder="0deg, #f8fafc 0%, #f1f5f9 100%"
+                    className="form-input"
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                      Title Bubble Background
+                    </label>
+                    <input
+                      type="color"
+                      value={styleForm.titleBubble.backgroundColor}
+                      onChange={(e) => setStyleForm({
+                        ...styleForm,
+                        titleBubble: { ...styleForm.titleBubble, backgroundColor: e.target.value }
+                      })}
+                      className="form-color-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                      Title Text Color
+                    </label>
+                    <input
+                      type="color"
+                      value={styleForm.titleBubble.textColor}
+                      onChange={(e) => setStyleForm({
+                        ...styleForm,
+                        titleBubble: { ...styleForm.titleBubble, textColor: e.target.value }
+                      })}
+                      className="form-color-input"
+                    />
+                  </div>
+                </div>
+
+                <button className="btn btn-success" onClick={handleCreateStyle}>
+                  Create Style
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+
+            {/* Existing Styles */}
+            <div>
+              <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Existing Styles ({pageStyles.length})</h3>
+              {pageStyles.length === 0 ? (
+                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No styles created yet</p>
+              ) : (
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  {pageStyles.map((style) => (
+                    <div key={style._id} className="style-item">
+                      <div className="style-item-header">
+                        <h4 style={{ margin: 0, color: '#1f2937' }}>{style.name}</h4>
+                        <div className="flex-row">
+                          <div style={{
+                            width: '30px',
+                            height: '30px',
+                            background: style.titleBubble.backgroundColor,
+                            borderRadius: '50%',
+                            border: '2px solid #e5e7eb'
+                          }}></div>
+                          <button className="btn btn-secondary btn-small" onClick={() => startEdit(style)}>Edit</button>
+                          <button className="btn btn-danger btn-small" onClick={() => deleteStyle(style._id)}>Delete</button>
+                          <button className="btn btn-primary btn-small" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
+                          <button className="btn btn-success btn-small" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
+                        </div>
+                      </div>
+
+                      {editingId === style._id && (
+                        <div style={{ marginTop: '1rem', display: 'grid', gap: '1rem' }}>
+                          <input className="form-input" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+                          <input className="form-input" value={editForm.backgroundGradient} onChange={(e) => setEditForm({ ...editForm, backgroundGradient: e.target.value })} />
+                          <input className="form-input" value={editForm.headerBackgroundGradient} onChange={(e) => setEditForm({ ...editForm, headerBackgroundGradient: e.target.value })} />
+                          <div className="grid-3">
+                            <div>
+                              <label className="form-label">Title Bubble Background</label>
+                              <input type="color" className="form-color-input" value={editForm.titleBubble.backgroundColor}
+                                onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, backgroundColor: e.target.value } })} />
+                            </div>
+                            <div>
+                              <label className="form-label">Title Text Color</label>
+                              <input type="color" className="form-color-input" value={editForm.titleBubble.textColor}
+                                onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, textColor: e.target.value } })} />
+                            </div>
+                            <div>
+                              <label className="form-label">Content Background (Color)</label>
+                              <input className="form-input" value={(editForm as any).contentBackgroundColor}
+                                onChange={(e) => setEditForm({ ...(editForm as any), contentBackgroundColor: e.target.value })} />
+                            </div>
+                          </div>
+                          <div className="flex-row">
+                            <button className="btn btn-success" onClick={saveEdit}>Save</button>
+                            <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
     </div>
   );
 }

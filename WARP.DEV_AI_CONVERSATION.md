@@ -1,5 +1,11 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-16T19:36:46.925Z — Plan & Delivery Log
+- Standardize Admin HERO across all admin pages (single source), adopt design-managed content surface, and widen narrow pages to match admin main content width.
+- Persist `contentBackgroundColor` in page styles and inject `--content-bg` for both admin and public routes.
+- Synchronize documentation (README, WARP.md, ROADMAP, TASKLIST, LEARNINGS, ARCHITECTURE, RELEASE_NOTES) and bump version to v4.2.0.
+- Stage only source/docs, exclude .next; run type-check, lint, and build; then commit and push to origin/main.
+
 ## 2025-09-15T16:24:52.000Z — Plan & Delivery Log
 - Implement global server-side sorting for Admin → Projects (EVENT NAME, DATE, IMAGES, TOTAL FANS, ATTENDEES) affecting all projects.
 - Extend /api/projects with sortField/sortOrder and offset pagination for sort/search modes; preserve default cursor pagination when unsorted.

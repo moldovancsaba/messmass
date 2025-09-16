@@ -1,11 +1,19 @@
 # TASKLIST.md
-Current Version: 4.1.1
-Last Updated: 2025-09-15T16:24:52.000Z
+Current Version: 4.2.0
+Last Updated: 2025-09-16T19:36:46.925Z
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### High Priority – Admin UI Consistency (4.2.0)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| UI-STD-001 | Standardize Admin HERO across all admin pages | AI Developer | 2025-09-16T19:36:46.925Z | In Progress |
+|| UI-STD-002 | Introduce content-surface and unify main content background/width | AI Developer | 2025-09-16T19:36:46.925Z | In Progress |
+|| DOC-REL-420 | Update version and docs for v4.2.0; clean commit to main | AI Developer | 2025-09-16T19:36:46.925Z | In Progress |
 
 ### High Priority – Visualization Parity (2.11.x)
 

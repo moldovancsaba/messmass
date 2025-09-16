@@ -255,10 +255,10 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <div className="glass-card admin-overview">
-        <div className="projects-header">
-          <h2 className="section-title">Chart Algorithm Manager</h2>
-          <div className="projects-header-buttons">
+      <div className="glass-card" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
+          <div>
             <button 
               className="btn btn-primary"
               onClick={() => startEditing()}
@@ -268,37 +268,35 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           </div>
         </div>
         
-        <div className="stats-grid-admin">
-          <div className="stat-card-admin">
-            <div className="stat-value-admin">{configurations.length}</div>
-            <div className="stat-label-admin">Total Charts</div>
+        <div className="charts-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.length}</div>
+            <div className="stat-label">Total Charts</div>
           </div>
-          <div className="stat-card-admin">
-            <div className="stat-value-admin">{configurations.filter(c => c.isActive).length}</div>
-            <div className="stat-label-admin">Active Charts</div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.isActive).length}</div>
+            <div className="stat-label">Active Charts</div>
           </div>
-          <div className="stat-card-admin">
-            <div className="stat-value-admin">{configurations.filter(c => c.type === 'pie').length}</div>
-            <div className="stat-label-admin">Pie Charts</div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.type === 'pie').length}</div>
+            <div className="stat-label">Pie Charts</div>
           </div>
-          <div className="stat-card-admin">
-            <div className="stat-value-admin">{configurations.filter(c => c.type === 'bar').length}</div>
-            <div className="stat-label-admin">Bar Charts</div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.type === 'bar').length}</div>
+            <div className="stat-label">Bar Charts</div>
           </div>
-          <div className="stat-card-admin">
-            <div className="stat-value-admin">{configurations.filter(c => c.type === 'kpi').length}</div>
-            <div className="stat-label-admin">KPI Charts</div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.type === 'kpi').length}</div>
+            <div className="stat-label">KPI Charts</div>
           </div>
         </div>
       </div>
 
 
       {/* Chart Configurations List */}
-      <div className="glass-card admin-projects">
-        <h3 className="section-title">Chart Configurations</h3>
-        
-        <div className="chart-configs-table-container">
-          <table className="projects-table">
+      <div className="glass-card">
+          <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Order</th>
@@ -312,10 +310,10 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
             <tbody>
               {configurations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="admin-empty-state">
-                    <div className="admin-empty-icon">📊</div>
-                    <div className="admin-empty-title">No Chart Configurations Found</div>
-                    <div className="admin-empty-subtitle">
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-gray-600)' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
+                    <div style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--color-gray-700)' }}>No Chart Configurations Found</div>
+                    <div style={{ fontSize: '0.875rem' }}>
                       Create your first chart configuration to get started.
                     </div>
                   </td>
@@ -327,15 +325,15 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                       <div className="order-controls">
                         {config.order}
                         <div className="order-buttons">
-                          <button 
-                            className="btn btn-xs"
+                          <button
+                            className="btn btn-small"
                             onClick={() => moveConfiguration(config._id!, 'up')}
                             disabled={index === 0}
                           >
                             ↑
                           </button>
-                          <button 
-                            className="btn btn-xs"
+                          <button
+                            className="btn btn-small"
                             onClick={() => moveConfiguration(config._id!, 'down')}
                             disabled={index === configurations.length - 1}
                           >
@@ -360,7 +358,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     <td className="stat-number">{config.elements.length}</td>
                     <td>
                       <button
-                        className={`btn btn-sm ${config.isActive ? 'btn-success' : 'btn-secondary'}`}
+                        className={`btn btn-small ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => toggleConfigurationActive(config)}
                       >
                         {config.isActive ? '✅ Active' : '❌ Inactive'}
@@ -368,13 +366,13 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                     <td className="actions-cell">
                       <button 
-                        className="btn btn-sm btn-info"
+                        className="btn btn-small btn-info"
                         onClick={() => startEditing(config)}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-sm btn-danger"
+                        className="btn btn-small btn-danger"
                         onClick={() => deleteConfiguration(config._id!, config.title)}
                       >
                         🗑️ Delete
@@ -386,7 +384,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
             </tbody>
           </table>
         </div>
-      </div>
 
       {/* Chart Configuration Editor Modal */}
       {showEditor && editingConfig && (
@@ -408,135 +405,26 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           gap: 2rem;
         }
 
-        .variable-reference-panel {
-          max-height: 70vh;
-          overflow-y: auto;
-        }
+        /* Data table scoped styles */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .data-table th { text-align: left; padding: 0.75rem 1rem; background: var(--color-gray-50); border-bottom: 2px solid var(--color-gray-200); font-weight: 600; color: var(--color-gray-700); }
+        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-gray-100); color: var(--color-gray-900); }
+        .data-table tr:hover td { background: var(--color-gray-50); }
+        .stat-number { font-weight: 600; color: var(--color-gray-900); }
 
-        .variable-filters {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-          align-items: center;
-        }
+        .order-controls { display: flex; align-items: center; gap: 0.5rem; }
+        .order-buttons { display: flex; flex-direction: column; gap: 0.125rem; }
 
-        .variables-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1rem;
-        }
+        .chart-title-cell { display: flex; flex-direction: column; gap: 0.25rem; }
+        .chart-emoji { font-size: 1.25rem; margin-right: 0.5rem; }
+        .chart-id { color: var(--color-gray-600); font-family: monospace; }
 
-        .variable-card {
-          background: rgba(255, 255, 255, 0.8);
-          border-radius: 0.5rem;
-          padding: 1rem;
-          border: 1px solid rgba(102, 126, 234, 0.1);
-        }
+        .chart-type-badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 500; }
+        .chart-type-badge.pie { background: rgba(139, 92, 246, 0.1); color: var(--color-chart-purple); }
+        .chart-type-badge.bar { background: rgba(59, 130, 246, 0.1); color: var(--color-chart-blue); }
+        .chart-type-badge.kpi { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
 
-        .variable-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        }
-
-        .variable-display-name {
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 0.25rem;
-        }
-
-        .variable-category {
-          color: #6b7280;
-          font-size: 0.75rem;
-          margin-bottom: 0.5rem;
-          text-transform: uppercase;
-          font-weight: 500;
-        }
-
-        .variable-description {
-          color: #4b5563;
-          font-size: 0.875rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .variable-example {
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-
-        .variable-example code {
-          background: #f3f4f6;
-          padding: 0.125rem 0.25rem;
-          border-radius: 0.25rem;
-          font-family: monospace;
-        }
-
-        .chart-configs-table-container {
-          overflow-x: auto;
-        }
-
-        .order-controls {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .order-buttons {
-          display: flex;
-          flex-direction: column;
-          gap: 0.125rem;
-        }
-
-        .order-buttons .btn {
-          padding: 0.125rem 0.25rem;
-          font-size: 0.625rem;
-          min-width: 20px;
-        }
-
-        .chart-title-cell {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .chart-emoji {
-          font-size: 1.25rem;
-          margin-right: 0.5rem;
-        }
-
-        .chart-id {
-          color: #6b7280;
-          font-family: monospace;
-        }
-
-        .chart-type-badge {
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.25rem;
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-
-        .chart-type-badge.pie {
-          background: rgba(139, 92, 246, 0.1);
-          color: #8b5cf6;
-        }
-
-        .chart-type-badge.bar {
-          background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
-        }
-
-        .chart-type-badge.kpi {
-          background: rgba(16, 185, 129, 0.1);
-          color: #10b981;
-        }
-        
-
-        .actions-cell {
-          display: flex;
-          gap: 0.5rem;
-        }
+        .actions-cell { display: flex; gap: 0.5rem; }
       `}</style>
     </div>
   );
@@ -838,7 +726,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
                         />
                         <button
                           type="button"
-                          className="btn btn-xs btn-secondary variable-picker-btn"
+                          className="btn btn-small btn-secondary variable-picker-btn"
                           onClick={() => setShowVariablePicker({ elementIndex: index })}
                           title="Pick variables"
                         >
@@ -902,7 +790,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
             <div className="variable-picker-header">
               <h4>Select Variable for Element {showVariablePicker.elementIndex + 1}</h4>
               <button 
-                className="btn btn-xs btn-secondary"
+                className="btn btn-small btn-secondary"
                 onClick={() => setShowVariablePicker(null)}
               >
                 ✕
@@ -1079,47 +967,9 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
           cursor: pointer;
         }
 
-        .btn {
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-          border: none;
-          font-size: 0.875rem;
-        }
 
-        .btn-primary {
-          background: #667eea;
-          color: white;
-        }
 
-        .btn-primary:hover {
-          background: #5a67d8;
-        }
 
-        .btn-secondary {
-          background: #6b7280;
-          color: white;
-        }
-
-        .btn-secondary:hover {
-          background: #4b5563;
-        }
-
-        .btn-xs {
-          padding: 0.25rem 0.5rem;
-          font-size: 0.75rem;
-        }
-
-        .btn-danger {
-          background: #ef4444;
-          color: white;
-        }
-
-        .btn-danger:hover {
-          background: #dc2626;
-        }
         
         .element-header-info {
           display: flex;

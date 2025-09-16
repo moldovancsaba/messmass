@@ -66,7 +66,7 @@ export default function EditPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
 
-  const loadProjectForEditing = async () => {
+  const loadProjectForEditing = useCallback(async () => {
     try {
       console.log('🔍 Fetching project for editing with slug:', slug);
       const response = await fetch(`/api/projects/edit/${slug}`, { cache: 'no-store' });
@@ -85,7 +85,7 @@ export default function EditPage() {
       setError('Failed to load project for editing');
       setLoading(false);
     }
-  };
+  }, [slug]);
 
   // Fetch page configuration (style variables) for this editor page
   const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
@@ -114,7 +114,7 @@ export default function EditPage() {
         fetchPageConfig(slug);
       }
     }
-  }, [slug, fetchPageConfig]);
+  }, [slug, fetchPageConfig, loadProjectForEditing]);
 
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {

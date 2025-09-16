@@ -3,7 +3,7 @@
 
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { 
   AuthContextType, 
   AuthUser, 
@@ -94,7 +94,7 @@ export function AuthProvider({
    * 
    * Centralizes state updates and triggers callbacks.
    */
-  const updateAuthState = (newUser: AuthUser | null, newError: string | null = null) => {
+  const updateAuthState = useCallback((newUser: AuthUser | null, newError: string | null = null) => {
     setUser(newUser)
     setIsAuthenticated(!!newUser)
     setError(newError)
@@ -103,7 +103,7 @@ export function AuthProvider({
     if (onAuthChange) {
       onAuthChange(newUser)
     }
-  }
+  }, [onAuthChange])
 
   /**
    * Initialize authentication state
@@ -111,7 +111,7 @@ export function AuthProvider({
    * Checks for existing session and restores authentication state.
    * Runs on component mount and handles SSR compatibility.
    */
-  const initializeAuth = async () => {
+  const initializeAuth = useCallback(async () => {
     setIsLoading(true)
     
     try {
@@ -137,7 +137,7 @@ export function AuthProvider({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [config, customUser, updateAuthState])
 
   /**
    * Login function
@@ -251,18 +251,18 @@ export function AuthProvider({
    * 
    * Called when session monitoring detects expired session.
    */
-  const handleSessionExpired = () => {
+  const handleSessionExpired = useCallback(() => {
     updateAuthState(null, 'Session expired')
     
     if (onSessionExpired) {
       onSessionExpired()
     }
-  }
+  }, [onSessionExpired, updateAuthState])
 
   // Initialize authentication on mount
   useEffect(() => {
     initializeAuth()
-  }, [])
+  }, [initializeAuth])
 
   // Set up session monitoring
   useEffect(() => {
@@ -274,7 +274,7 @@ export function AuthProvider({
     
     // Cleanup on unmount
     return cleanup
-  }, [enableSessionMonitoring, config])
+  }, [enableSessionMonitoring, config, handleSessionExpired])
 
   // Create context value
   const contextValue: AuthContextType = {

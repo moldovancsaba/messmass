@@ -66,6 +66,20 @@ export default function PagePasswordLogin({
           const root = document.documentElement;
           if (bg) root.style.setProperty('--page-bg', bg);
           if (header) root.style.setProperty('--header-bg', header);
+          // Apply content background if available
+          try {
+            // Attempt to fetch full page config to pull content background color
+            const cfgRes = await fetch('/api/page-config' + (
+              pageType === 'stats' || pageType === 'edit' ? `?projectId=${encodeURIComponent(pageId)}` : ''
+            ), { cache: 'no-store' });
+            if (cfgRes.ok) {
+              const cfgData = await cfgRes.json();
+              const cbg = cfgData?.config?.pageStyle?.contentBackgroundColor;
+              if (cbg) root.style.setProperty('--content-bg', cbg);
+            }
+          } catch {
+            // ignore, fall back to default content surface
+          }
         }
       } catch {
         // graceful fallback to defaults

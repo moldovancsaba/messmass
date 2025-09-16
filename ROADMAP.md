@@ -1,9 +1,17 @@
 # ROADMAP.md
 
-Current Version: 4.1.1
-Last Updated: 2025-09-15T16:24:52.000Z
+Current Version: 4.2.0
+Last Updated: 2025-09-16T19:36:46.925Z
 
 ## Milestones
+
+### Milestone: Admin UI Consistency (Q3)
+Priority: High
+Dependencies: None
+- Standardize Admin HERO across all admin pages (single source, consistent background/width)
+- Introduce and adopt design-managed `.content-surface` with `--content-bg` for main content areas
+- Widen narrow pages to match admin main content width
+- Documentation sync, versioning, and clean commit to main
 
 ### Milestone: CSV and Visualization Parity Polish (Q3)
 Priority: High

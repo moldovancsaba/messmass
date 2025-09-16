@@ -117,7 +117,7 @@ export default function UnifiedAdminHero({
   };
 
   return (
-    <div className="glass-card admin-header">
+    <div className="admin-header glass-card" style={{ maxWidth: '1200px', margin: '0 auto 2rem auto' }}>
       <div className="admin-header-content">
         {/* Left Side - Branding and Content */}
         <div className="admin-branding">

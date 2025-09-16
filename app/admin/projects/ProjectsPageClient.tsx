@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminUser } from '@/lib/auth';
 import UnifiedAdminHero from '@/components/UnifiedAdminHero';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
@@ -72,6 +73,8 @@ interface ProjectsPageClientProps {
 }
 
 export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,23 +122,17 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const [sharePageId, setSharePageId] = useState<string | null>(null);
   const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | null>(null);
 
+  // Hydrate sort state from URL (if present)
   useEffect(() => {
-    loadProjects();
-    // Load styles for selection
-    (async () => {
-      try {
-        const res = await fetch('/api/page-styles');
-        const data = await res.json();
-        if (data.success) {
-          setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
-        }
-      } catch (e) {
-        console.error('Failed to load styles', e);
-      }
-    })();
-  }, []);
+    const sf = searchParams?.get('sortField') as SortField | null;
+    const so = searchParams?.get('sortOrder') as SortOrder | null;
+    const allowedFields: SortField[] = ['eventName', 'eventDate', 'images', 'fans', 'attendees'];
+    const allowedOrders: SortOrder[] = ['asc', 'desc'];
+    if (sf && allowedFields.includes(sf)) setSortField(sf);
+    if (so && allowedOrders.includes(so)) setSortOrder(so);
+  }, [searchParams]);
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       // Decide mode by presence of sort/search
       const params = new URLSearchParams();
@@ -162,7 +159,24 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortField, sortOrder]);
+
+  useEffect(() => {
+    loadProjects();
+    // Load styles for selection
+    (async () => {
+      try {
+        const res = await fetch('/api/page-styles');
+        const data = await res.json();
+        if (data.success) {
+          setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
+        }
+      } catch (e) {
+        console.error('Failed to load styles', e);
+      }
+    })();
+  }, [loadProjects]);
+
 
   // Server-side search across all projects
   useEffect(() => {
@@ -194,7 +208,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       }
     }, 300);
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [searchQuery, loadProjects]);
 
   const handleSort = (field: SortField) => {
     // WHAT: Three-state cycle per column: asc → desc → clear
@@ -215,8 +229,25 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     setSearchOffset(null);
     setSortOffset(null);
     setLoading(true);
+    // Sync to URL query for shareable state
+    const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
+    const currentField = sortField;
+    const currentOrder = sortOrder;
+    let nextField: SortField = field;
+    let nextOrder: SortOrder = 'asc';
+    if (currentField === field) {
+      nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
+    }
+    if (nextOrder) {
+      params.set('sortField', nextField as string);
+      params.set('sortOrder', nextOrder);
+    } else {
+      params.delete('sortField');
+      params.delete('sortOrder');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+
     // Trigger reload with new sort
-    // Note: loadProjects uses sortField/sortOrder from state; defer to next tick
     setTimeout(loadProjects, 0);
   };
 

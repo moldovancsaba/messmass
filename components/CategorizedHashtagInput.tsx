@@ -61,13 +61,6 @@ export default function CategorizedHashtagInput({
     setLocalCategorizedHashtags(categorizedHashtags);
   }, [categorizedHashtags]);
   
-  // Load categories if showing category inputs but no categories provided
-  useEffect(() => {
-    if (showCategoryInputs && categories.length === 0) {
-      loadCategories();
-    }
-  }, [showCategoryInputs, categories.length]);
-  
   /**
    * Loads available hashtag categories from API
    */
@@ -89,6 +82,13 @@ export default function CategorizedHashtagInput({
       setCategoriesLoading(false);
     }
   }, []);
+
+  // Load categories if showing category inputs but no categories provided
+  useEffect(() => {
+    if (showCategoryInputs && categories.length === 0) {
+      loadCategories();
+    }
+  }, [showCategoryInputs, categories.length, loadCategories]);
   
   /**
    * Gets all hashtags across all categories and traditional input

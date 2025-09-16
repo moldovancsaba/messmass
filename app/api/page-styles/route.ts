@@ -69,7 +69,7 @@ export async function DELETE(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, backgroundGradient, headerBackgroundGradient, titleBubble } = body;
+    const { name, backgroundGradient, headerBackgroundGradient, contentBackgroundColor, titleBubble } = body;
 
     if (!name || !backgroundGradient || !headerBackgroundGradient || !titleBubble) {
       return NextResponse.json(
@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
       name,
       backgroundGradient,
       headerBackgroundGradient,
+      contentBackgroundColor: contentBackgroundColor || 'rgba(255, 255, 255, 0.95)',
       titleBubble,
       createdAt: now,
       updatedAt: now
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { _id, name, backgroundGradient, headerBackgroundGradient, titleBubble } = body;
+    const { _id, name, backgroundGradient, headerBackgroundGradient, contentBackgroundColor, titleBubble } = body;
 
     if (!_id || !name || !backgroundGradient || !headerBackgroundGradient || !titleBubble) {
       return NextResponse.json(
@@ -133,6 +134,7 @@ export async function PUT(request: NextRequest) {
       name,
       backgroundGradient,
       headerBackgroundGradient,
+      contentBackgroundColor: contentBackgroundColor || 'rgba(255, 255, 255, 0.95)',
       titleBubble,
       updatedAt: new Date().toISOString()
     };

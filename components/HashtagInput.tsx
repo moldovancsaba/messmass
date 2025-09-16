@@ -40,7 +40,7 @@ export default function HashtagInput({
   }, [value]);
   
   // Fetch hashtag suggestions - only when active and 3+ characters
-  const fetchSuggestions = async (search: string) => {
+  const fetchSuggestions = useCallback(async (search: string) => {
     // Only proceed if this input is active and has 3+ characters
     if (!isActive || search.length < 3) {
       setSuggestions([]);
@@ -91,7 +91,7 @@ export default function HashtagInput({
     } finally {
       setLoading(false);
     }
-  };
+  }, [isActive]);
   
   // Only trigger search when input changes and meets criteria
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function HashtagInput({
     }, 300);
     
     return () => clearTimeout(timeoutId);
-  }, [inputValue, isActive]);
+  }, [inputValue, isActive, fetchSuggestions]);
   
   const addHashtag = async (hashtag: string) => {
     // Remove the hashtag limit check

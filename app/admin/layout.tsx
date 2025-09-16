@@ -20,6 +20,7 @@ async function getAdminStyle() {
         return {
           backgroundGradient: (style as any).backgroundGradient as string,
           headerBackgroundGradient: (style as any).headerBackgroundGradient as string,
+          contentBackgroundColor: (style as any).contentBackgroundColor as string,
           titleBubbleBg: (style as any).titleBubble?.backgroundColor as string,
           titleBubbleText: (style as any).titleBubble?.textColor as string,
         };
@@ -39,8 +40,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   // Build CSS overrides for admin area if a style is set
   const css = adminStyle ? `
-    .admin-container { background: linear-gradient(${adminStyle.backgroundGradient}); }
-    .admin-header { background: linear-gradient(${adminStyle.headerBackgroundGradient}); }
+    :root {
+      --page-bg: linear-gradient(${adminStyle.backgroundGradient});
+      --header-bg: linear-gradient(${adminStyle.headerBackgroundGradient});
+      ${adminStyle.contentBackgroundColor ? `--content-bg: ${adminStyle.contentBackgroundColor};` : ''}
+    }
+    /* Strong guarantee header uses theme even if other classes set background */
+    .admin-header { background: var(--header-bg) !important; }
   ` : '';
 
   return (

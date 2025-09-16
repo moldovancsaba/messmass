@@ -93,6 +93,31 @@ export default function FilterPage() {
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
   const [hashtags, setHashtags] = useState<string[]>([]);
 
+  // Function to fetch page configuration
+  const fetchPageConfig = useCallback(async (opts?: { styleId?: string | null; hashtags?: string[] }) => {
+    try {
+      let qs = '';
+      if (opts?.styleId) {
+        qs = `?styleId=${encodeURIComponent(opts.styleId)}`;
+      } else if (opts?.hashtags && opts.hashtags.length > 0) {
+        qs = `?hashtags=${encodeURIComponent(opts.hashtags.join(','))}`;
+      }
+      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
+      const data = await response.json();
+
+      if (data.success) {
+        setPageStyle(data.config.pageStyle);
+        setDataBlocks(data.config.dataBlocks);
+        if (data.config.gridSettings) {
+          const gs = data.config.gridSettings;
+          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch page config:', err);
+    }
+  }, []);
+
   // Function to fetch filter data
   const fetchFilterData = useCallback(async () => {
     try {
@@ -118,32 +143,7 @@ export default function FilterPage() {
     } finally {
       setLoading(false);
     }
-  }, [filterSlug]);
-
-  // Function to fetch page configuration
-  const fetchPageConfig = useCallback(async (opts?: { styleId?: string | null; hashtags?: string[] }) => {
-    try {
-      let qs = '';
-      if (opts?.styleId) {
-        qs = `?styleId=${encodeURIComponent(opts.styleId)}`;
-      } else if (opts?.hashtags && opts.hashtags.length > 0) {
-        qs = `?hashtags=${encodeURIComponent(opts.hashtags.join(','))}`;
-      }
-      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
-      const data = await response.json();
-
-      if (data.success) {
-        setPageStyle(data.config.pageStyle);
-        setDataBlocks(data.config.dataBlocks);
-        if (data.config.gridSettings) {
-          const gs = data.config.gridSettings;
-          setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch page config:', err);
-    }
-  }, []);
+  }, [filterSlug, fetchPageConfig]);
 
   // Load chart configurations
   const loadChartConfigurations = useCallback(async () => {

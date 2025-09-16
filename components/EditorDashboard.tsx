@@ -473,7 +473,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
       </div>
 
-      <div style={{ display: 'grid', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="content-surface" style={{ display: 'grid', gap: '2rem' }}>
         {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>

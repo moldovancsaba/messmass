@@ -66,7 +66,7 @@ export default function UnifiedHashtagInput({
     } else {
       setLoadedCategories(categories);
     }
-  }, [categories.length]);
+  }, [categories]);
   
   // Load categories from API
   const loadCategories = async () => {

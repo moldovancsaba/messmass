@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminPageHero from '@/components/AdminPageHero';
+import AdminHero from '@/components/AdminHero';
 
 interface HashtagCategory {
   _id: string;
@@ -175,36 +175,15 @@ export default function CategoriesPage() {
 
   // Loading state removed - show content immediately
 
-  if (error) {
+if (error) {
     return (
-      <div className="admin-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{
-          padding: '2rem',
-          background: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '12px',
-          textAlign: 'center',
-          color: '#ef4444'
-        }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-          <div>{error}</div>
-          <button
-            onClick={fetchCategories}
-            style={{
-              marginTop: '1rem',
-              padding: '0.5rem 1rem',
-              background: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            Try Again
-          </button>
+      <div className="admin-container">
+        <div className="admin-content">
+          <div className="glass-card" style={{ textAlign: 'center', color: '#ef4444' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
+            <div>{error}</div>
+            <button className="btn btn-primary mt-3" onClick={fetchCategories}>Try Again</button>
+          </div>
         </div>
       </div>
     );
@@ -212,163 +191,65 @@ export default function CategoriesPage() {
 
   return (
     <div className="admin-container">
-      <AdminPageHero
+      <AdminHero
         title="Categories"
-        icon="📂"
         showSearch={true}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         searchPlaceholder="Search categories..."
-        onAction={() => setShowCreateForm(true)}
-        actionLabel="➥ New Category"
+        actionButtons={[{ label: '➥ New Category', onClick: () => setShowCreateForm(true), variant: 'primary' }]}
         backLink="/admin"
       />
 
-      {/* Categories Grid */}
-      <div style={{ padding: '0 2rem' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '1.5rem'
-        }}>
-          {filteredCategories.map((category) => (
-            <div
-              key={category._id}
-              style={{
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)';
-              }}
-            >
-              {/* Category Header */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '1rem'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem'
-                }}>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    background: category.color
-                  }} />
-                  <h3 style={{
-                    margin: 0,
-                    fontSize: '1.25rem',
-                    fontWeight: '600',
-                    color: '#1f2937'
-                  }}>
-                    {category.name}
-                  </h3>
-                </div>
-                
-                <div style={{
-                  display: 'flex',
-                  gap: '0.5rem'
-                }}>
-                  <button
-                    onClick={() => handleEditCategory(category._id)}
-                    style={{
-                      padding: '0.25rem 0.5rem',
-                      fontSize: '0.75rem',
-                      background: 'rgba(59, 130, 246, 0.1)',
-                      color: '#3b82f6',
-                      border: '1px solid rgba(59, 130, 246, 0.2)',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ✏️ Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCategory(category._id, category.name)}
-                    style={{
-                      padding: '0.25rem 0.5rem',
-                      fontSize: '0.75rem',
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      color: '#ef4444',
-                      border: '1px solid rgba(239, 68, 68, 0.2)',
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🗑️ Delete
-                  </button>
-                </div>
-              </div>
+      <div className="content-surface">
+          {/* Categories Grid */}
+          <div>
+            <div className="charts-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+              {filteredCategories.map((category) => (
+                <div key={category._id} className="glass-card">
+                  {/* Category Header */}
+                  <div className="flex-row" style={{ justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <div className="flex-row gap-3">
+                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: category.color }} />
+                      <h3 className="no-margin" style={{ fontSize: '1.25rem', fontWeight: 600 }}>{category.name}</h3>
+                    </div>
+                    <div className="flex-row gap-3">
+                      <button className="btn btn-primary btn-small" onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
+                      <button className="btn btn-danger btn-small" onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
+                    </div>
+                  </div>
 
-              {/* Category Info */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                borderTop: '1px solid rgba(107, 114, 128, 0.1)',
-                paddingTop: '0.75rem'
-              }}>
-                <span>Order: {category.order}</span>
-                <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
-              </div>
+                  {/* Category Info */}
+                  <div className="flex-row" style={{ justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', color: '#6b7280', borderTop: '1px solid rgba(107, 114, 128, 0.1)', paddingTop: '0.75rem' }}>
+                    <span>Order: {category.order}</span>
+                    <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Empty State */}
-        {filteredCategories.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '3rem',
-            color: '#6b7280'
-          }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📂</div>
-            <h3 style={{ marginBottom: '0.5rem' }}>
-              {searchTerm ? 'No categories found' : 'No categories yet'}
-            </h3>
-            <p style={{ marginBottom: '1.5rem' }}>
-              {searchTerm 
-                ? `No categories match "${searchTerm}"`
-                : 'Create your first hashtag category to get started'
-              }
-            </p>
-            {!searchTerm && (
-              <button
-                onClick={() => setShowCreateForm(true)}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  fontWeight: '500'
-                }}
-              >
-                ➕ Create First Category
-              </button>
+            {/* Empty State */}
+            {filteredCategories.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📂</div>
+                <h3 style={{ marginBottom: '0.5rem' }}>
+                  {searchTerm ? 'No categories found' : 'No categories yet'}
+                </h3>
+                <p style={{ marginBottom: '1.5rem' }}>
+                  {searchTerm 
+                    ? `No categories match "${searchTerm}"`
+                    : 'Create your first hashtag category to get started'
+                  }
+                </p>
+                {!searchTerm && (
+                  <button className="btn btn-primary" onClick={() => setShowCreateForm(true)}>
+                    ➕ Create First Category
+                  </button>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
 
       {/* Create Category Modal */}
       {showCreateForm && (

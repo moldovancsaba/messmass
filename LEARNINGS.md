@@ -1,5 +1,11 @@
 # MessMass Development Learnings
- 
+
+## Admin UI Consistency and Content Surface — 2025-09-16T19:36:46.925Z
+- Consolidate shared visuals into single-source components to prevent drift (AdminHero used across all admin pages).
+- Prefer CSS variables for theming (`--page-bg`, `--header-bg`, `--content-bg`) over per-page inline styles to avoid specificity conflicts and enable centralized control.
+- Introduce a reusable content surface wrapper (`.content-surface`) to standardize main content width, padding, and backdrop visuals across admin and public routes.
+- When staging commits, avoid build artifacts (.next) by selectively adding only source and doc paths to keep repository clean.
+
 ## Major Update v4.0.0 — 2025-09-14T08:51:52.000Z
 - Hooks must be declared before any early returns to keep counts consistent across renders (prevents React error #310).
 - Infinite scroll/search pagination must de-duplicate by stable IDs and stop when end-of-results is reached.

@@ -5,6 +5,9 @@ export interface PageStyle {
   name: string;
   backgroundGradient: string; // CSS gradient format
   headerBackgroundGradient: string;
+  // NEW: Color for the main content surface (the block behind page content)
+  // Accepts any valid CSS color (hex/rgb/rgba) — kept as color per product request
+  contentBackgroundColor?: string;
   titleBubble: {
     backgroundColor: string;
     textColor: string;
@@ -44,6 +47,7 @@ export const DEFAULT_PAGE_STYLE: Omit<PageStyle, '_id' | 'createdAt' | 'updatedA
   name: 'Default Style',
   backgroundGradient: '0deg, #ffffffff 0%, #ffffffff 100%',
   headerBackgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
+  contentBackgroundColor: 'rgba(255, 255, 255, 0.95)',
   titleBubble: {
     backgroundColor: '#6366f1',
     textColor: '#ffffff'

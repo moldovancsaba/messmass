@@ -9,6 +9,7 @@
  */
 
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found | Messmass',
@@ -61,7 +62,7 @@ export default function NotFound() {
           justifyContent: 'center',
           flexWrap: 'wrap'
         }}>
-          <a
+          <Link
             href="/"
             style={{
               display: 'inline-flex',
@@ -77,8 +78,8 @@ export default function NotFound() {
             }}
           >
             🏠 Go Home
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin"
             style={{
               display: 'inline-flex',
@@ -95,7 +96,7 @@ export default function NotFound() {
             }}
           >
             ⚙️ Admin Panel
-          </a>
+          </Link>
         </div>
       </div>
     </div>

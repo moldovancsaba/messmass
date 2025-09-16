@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
@@ -106,7 +106,7 @@ export default function HashtagStatsPage() {
   };
 
   // Function to fetch hashtag stats data
-  const fetchHashtagStatsData = async () => {
+  const fetchHashtagStatsData = useCallback(async () => {
     try {
       console.log('🔍 Fetching hashtag stats for:', hashtagParam);
       // Add cache-busting parameter to force fresh data
@@ -130,13 +130,13 @@ export default function HashtagStatsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [hashtagParam]);
 
   useEffect(() => {
     if (hashtagParam) {
       fetchHashtagStatsData();
     }
-  }, [hashtagParam]);
+  }, [hashtagParam, fetchHashtagStatsData]);
 
   // Fetch page configuration (style + data blocks) for this hashtag (uses hashtag -> style mapping or global)
   useEffect(() => {

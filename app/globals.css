@@ -48,6 +48,7 @@ body {
 /* Ensure black text on white/light backgrounds */
 .glass-card,
 .admin-header,
+.content-surface,
 .admin-stat-card,
 .admin-projects-container,
 .login-card,
@@ -115,15 +116,92 @@ img {
 }
 
 /* ADMIN DASHBOARD STYLES */
+.admin-container {
+  min-height: 100vh;
+  padding: 2rem;
+  /* Page background comes from global theme via --page-bg */
+  background: var(--page-bg, var(--gradient-primary));
+}
+
+/* AdminHero layout helpers */
+.admin-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Admin page content wrapper for consistent width under header */
+.admin-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Generic content width wrapper for public pages */
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Main content surface (design-managed background) */
+.content-surface {
+  background: var(--content-bg, rgba(255, 255, 255, 0.95));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.admin-title-center { text-align: center; }
+.admin-subtitle-center { text-align: center; }
+
+.admin-hero-search { margin-top: 1rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+.admin-hero-search-input { width: 100%; text-align: center; }
+
+.admin-hero-right { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.admin-hero-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.admin-hero-back { text-decoration: none; }
+.admin-hero-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+
+/* Simple badge styles mapped to variants */
+.badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
+.badge-primary { background: #3b82f6; color: #ffffff; }
+.badge-secondary { background: #6b7280; color: #ffffff; }
+.badge-success { background: #10b981; color: #ffffff; }
+.badge-warning { background: #f59e0b; color: #ffffff; }
+.badge-danger { background: #ef4444; color: #ffffff; }
+
+/* Utility classes for spacing/layout used by admin pages */
+.no-margin { margin: 0 !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 0.75rem !important; }
+.my-4 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.gap-4 { gap: 1rem !important; }
+.wrap { flex-wrap: wrap !important; }
+.flex-row { display: flex; align-items: center; }
+
+/* Cards and sections */
+.section-card { padding: 1.5rem; margin-bottom: 1.5rem; }
+
+/* Visualization helpers */
+.drag-hint { cursor: grab; user-select: none; margin-left: 0.5rem; }
+.charts-grid { display: grid; gap: 1.5rem; width: 100%; }
+.chart-item-min { min-height: 300px; }
+.chart-config-item { padding: 0.75rem; border: 1px dashed rgba(99,102,241,0.25); border-radius: 8px; }
+
 .admin-dashboard {
   min-height: 100vh;
   padding: 2rem;
-  /* What: Respect page background variable with fallback.
-     Why: Keeps admin dashboard visually consistent when a global style is applied. */
   background: var(--page-bg, var(--gradient-primary));
 }
 
 .admin-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
   /* What: Use CSS variable for header background with safe white/glass fallback.
      Why: Ensures page-specific header backgrounds from Design Manager take effect without specificity wars. */
   background: var(--header-bg, rgba(255, 255, 255, 0.95));

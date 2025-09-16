@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface ListedUser {
   id: string
@@ -130,12 +131,30 @@ export default function AdminUsersPage() {
   return (
     <div className="admin-container">
       <div className="glass-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding" style={{ textAlign: 'center' }}>
+        <div className="admin-header-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="admin-branding" style={{ textAlign: 'center', flex: 1 }}>
             <span className="hashtag" style={{ fontSize: '1.5rem', fontWeight: 700, padding: '1rem 2rem', borderRadius: 50, display: 'inline-block' }}>
               Users Management
             </span>
             <p className="admin-subtitle">Create and manage admin users</p>
+          </div>
+          <div className="admin-user-info" style={{ minWidth: 'auto' }}>
+            <Link
+              href="/admin"
+              className="btn btn-secondary"
+              style={{
+                background: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                textDecoration: 'none'
+              }}
+            >
+              ← Back to Admin
+            </Link>
           </div>
         </div>
       </div>
@@ -174,7 +193,7 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      <div className="glass-card">
+      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
         <h2 className="section-title">All Admin Users</h2>
         {loading ? (
           <div>Loading users…</div>

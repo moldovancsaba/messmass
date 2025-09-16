@@ -125,7 +125,7 @@ function HashtagFilterPageContent() {
     } finally {
       setStatsLoading(false);
     }
-  }, []);
+  }, [selectedHashtags]);
 
   // Load available hashtags on mount
   useEffect(() => {
@@ -168,7 +168,7 @@ function HashtagFilterPageContent() {
       }
     }
     setLoading(false);
-  }, [searchParams]);
+  }, [searchParams, fetchFilteredStats]);
 
   // Load available hashtags
   const loadAvailableHashtags = async () => {
