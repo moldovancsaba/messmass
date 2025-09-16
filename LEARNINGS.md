@@ -10,6 +10,12 @@
 - Do not place hook declarations below early returns; hook count must be identical across renders.
 - Outcome: Resolved React error #310 on Admin → Variables and Admin → Projects.
 
+## Server-Side Global Sorting for Large Datasets — 2025-09-15T16:24:52.000Z
+- What: Moved Admin → Projects sorting to the server, with offset-based pagination in sort/search modes.
+- Why: Client-only sorting only reorders the visible subset and leads to inconsistent paging; server sorting guarantees dataset-wide order.
+- How: MongoDB aggregation pipeline with computed sort keys (images, fans, attendees), case-insensitive collation for eventName, and deterministic _id tie-breaker.
+- Outcome: Correct global ordering with stable pagination; default cursor mode retained for fast first paint when unsorted.
+
 ## Admin List Pagination Strategy — 2025-09-14T08:09:29.000Z
 - Hashtags: server aggregation (unwind + group + sort) with offset pagination and query filtering.
 - Projects: cursor list + offset search, consistent results and fast first paint.

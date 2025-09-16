@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 4.1.0
-Last Updated: 2025-09-14T09:18:50.000Z
+Current Version: 4.1.1
+Last Updated: 2025-09-15T16:24:52.000Z
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
@@ -306,6 +306,14 @@ Last Updated: 2025-09-14T09:18:50.000Z
 - RELEASE_NOTES.md update with version 2.3.0
 
 ---
+
+### High Priority – Docs & Refactor (4.1.1)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| DOC-API | Update API docs for global sorting (ARCHITECTURE, WARP) | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+| REF-SSO | Centralize SSO base URL in config and update routes | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+| DOC-NOTE| Add release notes and learnings entries | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
 
 ## Notes
 - All timestamps follow ISO 8601 format: YYYY-MM-DDTHH:MM:SS.sssZ

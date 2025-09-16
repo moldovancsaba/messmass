@@ -206,7 +206,14 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/admin/visualization` - Data visualization settings
 
 ### API Endpoints
-- `/api/projects` - Project CRUD operations
+- `/api/projects` - Project CRUD operations and dataset-wide listing
+  - Listing supports two modes:
+    - Default (no sort/search): cursor pagination by updatedAt desc (nextCursor)
+    - Sort/Search mode: offset pagination with totalMatched/nextOffset
+  - Sorting query params:
+    - sortField: eventName | eventDate | images | fans | attendees
+    - sortOrder: asc | desc
+  - Numeric sorts use computed fields (images, fans, attendees) with null-safe defaults; eventName sorting uses case-insensitive collation
 - `/api/hashtags/filter-by-slug/[slug]` - Public hashtag filtering (supports both slugs and direct hashtag queries)
 - `/api/hashtags/filter` - Admin hashtag filtering
 - `/api/hashtags/slugs` - Available hashtag listing
@@ -278,5 +285,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-09-14T09:18:50.000Z*
-*Version: 4.1.0*
+*Last Updated: 2025-09-15T16:24:52.000Z*
+*Version: 4.1.1*

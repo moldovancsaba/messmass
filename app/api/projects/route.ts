@@ -93,6 +93,12 @@ export async function GET(request: NextRequest) {
     const q = url.searchParams.get('q');
     const offsetParam = url.searchParams.get('offset');
 
+    // New: server-side sorting across the entire dataset
+    // WHAT: Allow sorting by Event Name, Date, Images, Total Fans, Attendees
+    // WHY: Clicking a table header in the admin UI must reorder ALL projects, not just the visible page
+    const sortFieldParam = url.searchParams.get('sortField'); // 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees'
+    const sortOrderParam = url.searchParams.get('sortOrder'); // 'asc' | 'desc'
+
     // Defaults and caps
     const DEFAULT_LIMIT = 20;
     const MAX_LIMIT = 100;
@@ -102,30 +108,108 @@ export async function GET(request: NextRequest) {
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // Search mode: server-side search across full dataset (eventName; extendable later)
-    if (q && q.trim() !== '') {
-      const query = q.trim();
-      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    // Normalize and validate sorting inputs
+    const ALLOWED_FIELDS = new Set(['eventName', 'eventDate', 'images', 'fans', 'attendees']);
+    const sortField = sortFieldParam && ALLOWED_FIELDS.has(sortFieldParam) ? sortFieldParam as 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees' : null;
+    const sortOrder = sortOrderParam === 'asc' || sortOrderParam === 'desc' ? sortOrderParam : null;
 
-      const filter: any = {
-        $or: [
-          { eventName: { $regex: regex } },
-          { viewSlug: { $regex: regex } },
-          { editSlug: { $regex: regex } },
-        ]
-      };
+    // Decide pagination mode:
+    // - If search (q) or explicit sort present -> use OFFSET pagination for global ordering
+    // - Else -> keep existing CURSOR pagination by updatedAt desc (infinite scroll default)
+    const isSearch = !!(q && q.trim() !== '');
+    const isSorted = !!(sortField && sortOrder);
 
-      const totalMatched = await collection.countDocuments(filter);
+    if (isSearch || isSorted) {
+      // OFFSET mode with aggregation to ensure full-dataset ordering
       const offset = Math.max(Number(offsetParam) || 0, 0);
 
-      const projects = await collection
-        .find(filter)
-        .sort({ updatedAt: -1, _id: -1 })
-        .skip(offset)
-        .limit(limit)
-        .toArray();
+      // Build $match (server-side search reuses existing criteria)
+      const pipeline: any[] = [];
+      if (isSearch) {
+        const query = q!.trim();
+        const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        pipeline.push({
+          $match: {
+            $or: [
+              { eventName: { $regex: regex } },
+              { viewSlug: { $regex: regex } },
+              { editSlug: { $regex: regex } },
+            ]
+          }
+        });
+      }
 
-      const formatted = projects.map(project => ({
+      // Compute sort keys for numeric aggregations; use $convert for dates
+      pipeline.push({
+        $addFields: {
+          _sortEventDate: { $convert: { input: "$eventDate", to: "date", onError: null, onNull: null } },
+          _images: {
+            $add: [
+              { $ifNull: ["$stats.remoteImages", 0] },
+              { $ifNull: ["$stats.hostessImages", 0] },
+              { $ifNull: ["$stats.selfies", 0] }
+            ]
+          },
+          _fans: {
+            $add: [
+              { $ifNull: ["$stats.indoor", 0] },
+              { $ifNull: ["$stats.outdoor", 0] },
+              { $ifNull: ["$stats.stadium", 0] }
+            ]
+          },
+          _attendees: { $ifNull: ["$stats.eventAttendees", 0] }
+        }
+      });
+
+      // Map sort field to computed keys, with deterministic tie-breaker
+      const dir = sortOrder === 'asc' ? 1 : -1;
+      const sortSpec: Record<string, 1 | -1> = {};
+      if (sortField === 'eventName') {
+        // Use natural field with case-insensitive collation applied at aggregate call
+        sortSpec['eventName'] = dir;
+      } else if (sortField === 'eventDate') {
+        sortSpec['_sortEventDate'] = dir;
+      } else if (sortField === 'images') {
+        sortSpec['_images'] = dir;
+      } else if (sortField === 'fans') {
+        sortSpec['_fans'] = dir;
+      } else if (sortField === 'attendees') {
+        sortSpec['_attendees'] = dir;
+      } else {
+        // No explicit sort provided: fallback to updatedAt desc for search-only mode
+        sortSpec['updatedAt'] = -1;
+        sortSpec['_id'] = -1;
+      }
+      // Deterministic tie-breaker for stable pagination order
+      if (!sortSpec['_id']) sortSpec['_id'] = 1;
+      pipeline.push({ $sort: sortSpec });
+
+      // Use $facet to paginate and count in a single round-trip
+      pipeline.push({
+        $facet: {
+          results: [
+            { $skip: offset },
+            { $limit: limit },
+            {
+              $project: {
+                _sortEventDate: 0,
+                _images: 0,
+                _fans: 0,
+                _attendees: 0
+              }
+            }
+          ],
+          totalCount: [ { $count: 'count' } ]
+        }
+      });
+
+      const aggOptions = sortField === 'eventName' ? { collation: { locale: 'en', strength: 2 } } : undefined;
+      const agg = await collection.aggregate(pipeline, aggOptions as any).toArray();
+      const first = agg[0] || { results: [], totalCount: [] };
+      const results = first.results || [];
+      const totalMatched = (first.totalCount?.[0]?.count as number) || 0;
+
+      const formatted = results.map((project: any) => ({
         _id: project._id.toString(),
         eventName: project.eventName,
         eventDate: project.eventDate,
@@ -139,14 +223,14 @@ export async function GET(request: NextRequest) {
         updatedAt: project.updatedAt
       }));
 
-      const nextOffset = offset + projects.length;
+      const nextOffset = offset + formatted.length;
       const hasMore = nextOffset < totalMatched;
 
       return NextResponse.json({
         success: true,
         projects: formatted,
         pagination: {
-          mode: 'search',
+          mode: isSearch ? 'search' : 'sort',
           limit,
           offset,
           nextOffset: hasMore ? nextOffset : null,
@@ -155,7 +239,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Default list mode with cursor-based pagination
+    // Default list mode with cursor-based pagination (no search, no explicit sort)
     // Cursor is a base64-encoded JSON: { u: updatedAt (ISO string), id: _id string }
     let filter: any = {};
     let sort = { updatedAt: -1 as const, _id: -1 as const };

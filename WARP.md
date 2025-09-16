@@ -166,7 +166,10 @@ The project features a **completely unified hashtag system** with consistent com
 ## 🌐 API Endpoints
 
 ### Core APIs
-- **`GET /api/projects`** - Fetch all projects (sorted by updatedAt desc)
+- **`GET /api/projects`** - List projects. Supports:
+  - Default mode: cursor pagination by updatedAt desc (nextCursor)
+  - Sort/Search mode: offset pagination with totalMatched/nextOffset
+  - sortField: eventName | eventDate | images | fans | attendees; sortOrder: asc | desc
 - **`POST /api/projects`** - Create project (requires eventName, eventDate, stats)
 - **`PUT /api/projects`** - Update project (supports hashtags and categorizedHashtags)
 - **`DELETE /api/projects?projectId=...`** - Delete project
@@ -277,4 +280,4 @@ For detailed information, see:
 
 ---
 
-*Version: 4.1.0 | Last Updated: 2025-09-14T09:18:50.000Z | Status: Active Development*
+*Version: 4.1.1 | Last Updated: 2025-09-15T16:24:52.000Z | Status: Active Development*

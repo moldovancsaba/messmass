@@ -10,6 +10,7 @@ export type AppConfig = {
   adminPassword: string; // Note: project uses a simple password auth — value comes from env
   nextPublicWsUrl?: string; // Optional, for real-time server if configured
   nodeEnv: 'development' | 'production' | 'test' | string;
+  ssoBaseUrl: string; // Centralized SSO service base URL to avoid hard-coded strings in API routes
 };
 
 function requireEnv(name: string): string {
@@ -34,6 +35,9 @@ export const config: AppConfig = {
   adminPassword: (process.env.ADMIN_PASSWORD?.trim() || 'messmass'),
   nextPublicWsUrl: process.env.NEXT_PUBLIC_WS_URL?.trim() || undefined,
   nodeEnv: process.env.NODE_ENV || 'development',
+  // WHAT: Default SSO base URL configured here.
+  // WHY: Avoid hard-coded URLs in API routes and enable environment-based overrides in the future.
+  ssoBaseUrl: process.env.SSO_BASE_URL?.trim() || 'https://sso.doneisbetter.com',
 };
 
 export default config;

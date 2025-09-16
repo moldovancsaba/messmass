@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
+import config from '@/lib/config';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+const MONGODB_URI = config.mongodbUri;
+const MONGODB_DB = config.dbName;
 
 let cachedClient: MongoClient | null = null;
 
@@ -29,7 +30,7 @@ async function connectToDatabase() {
 // Verify SSO token with the external service
 async function verifySSO(token: string) {
   try {
-    const response = await fetch('https://sso.doneisbetter.com/api/validate', {
+    const response = await fetch(`${config.ssoBaseUrl}/api/validate`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

@@ -1,5 +1,26 @@
 # MessMass Release Notes
 
+## [v4.1.1] — 2025-09-15T16:24:52.000Z
+
+### Admin → Projects: Global Server-Side Sorting
+- Clicking EVENT NAME, DATE, IMAGES, TOTAL FANS, ATTENDEES now sorts ALL projects (not just visible rows).
+- API /api/projects supports query params:
+  - sortField: eventName | eventDate | images | fans | attendees
+  - sortOrder: asc | desc
+  - offset/limit for sort/search modes; default mode keeps cursor pagination by updatedAt desc.
+- Deterministic tie-breaker on _id to ensure stable paging; numeric sorts are null-safe.
+
+### Refactor: Remove Hard-Coded SSO URLs and DB Names
+- Centralized SSO base URL into lib/config.ts (config.ssoBaseUrl; override via SSO_BASE_URL env).
+- Updated admin SSO routes to use config.ssoBaseUrl.
+- Refactored admin projects routes to use config.mongodbUri and config.dbName.
+
+### Documentation
+- Updated ARCHITECTURE.md (API pagination modes and sort params), WARP.md, ROADMAP.md, TASKLIST.md, LEARNINGS.md.
+- Version synchronized across package.json and docs.
+
+---
+
 ## [v4.1.0] — 2025-09-14T09:18:50.000Z
 
 ### Documentation and Governance Sync

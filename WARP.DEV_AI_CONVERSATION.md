@@ -1,3 +1,12 @@
+# WARP.DEV_AI_CONVERSATION
+
+## 2025-09-15T16:24:52.000Z — Plan & Delivery Log
+- Implement global server-side sorting for Admin → Projects (EVENT NAME, DATE, IMAGES, TOTAL FANS, ATTENDEES) affecting all projects.
+- Extend /api/projects with sortField/sortOrder and offset pagination for sort/search modes; preserve default cursor pagination when unsorted.
+- Refactor: centralize SSO base URL in lib/config.ts; update admin SSO/API routes to consume config; reuse config dbName/mongodbUri in admin projects APIs.
+- Update documentation (ARCHITECTURE.md, WARP.md, RELEASE_NOTES.md, LEARNINGS.md, ROADMAP.md, TASKLIST.md) with ISO 8601 timestamps.
+- Version bump to 4.1.1 (development patch).
+
 # WARP.DEV_AI_CONVERSATION.md
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System*

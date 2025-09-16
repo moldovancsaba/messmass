@@ -12,6 +12,10 @@ import {
   expandHashtagsWithCategories 
 } from '@/lib/hashtagCategoryUtils';
 
+// WHAT: Server-driven sorting implementation for full-dataset ordering
+// WHY: Clicking table headers must sort ALL projects, not just the visible page.
+// This replaces client-only sorting with backend sort & offset pagination in search/sort modes.
+
 interface Project {
   _id: string;
   eventName: string;
@@ -84,6 +88,9 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   type SortOrder = 'asc' | 'desc' | null;
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+
+  // In sort/search modes, the API uses offset-based pagination (nextOffset) instead of cursor.
+  const [sortOffset, setSortOffset] = useState<number | null>(null);
   
   // Modal states
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
@@ -130,13 +137,23 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   const loadProjects = async () => {
     try {
-      const response = await fetch(`/api/projects?limit=${PAGE_SIZE}`, { cache: 'no-store' });
+      // Decide mode by presence of sort/search
+      const params = new URLSearchParams();
+      params.set('limit', String(PAGE_SIZE));
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+        params.set('offset', '0'); // first page in sort mode
+      }
+      const response = await fetch(`/api/projects?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success) {
         setProjects(data.projects);
-        setNextCursor(data.pagination?.nextCursor || null);
-        setSearchOffset(null);
+        // Cursor mode only when no sort/search
+        setNextCursor(data.pagination?.mode === 'cursor' ? (data.pagination?.nextCursor || null) : null);
+        setSearchOffset(data.pagination?.mode === 'search' ? (data.pagination?.nextOffset ?? null) : null);
+        setSortOffset(data.pagination?.mode === 'sort' ? (data.pagination?.nextOffset ?? null) : null);
       } else {
         console.error('API returned error:', data.error);
       }
@@ -180,6 +197,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   }, [searchQuery]);
 
   const handleSort = (field: SortField) => {
+    // WHAT: Three-state cycle per column: asc → desc → clear
+    // WHY: Matches UX expectation and toggles between server-side sort and default cursor mode
     if (sortField === field) {
       if (sortOrder === 'asc') {
         setSortOrder('desc');
@@ -191,6 +210,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       setSortField(field);
       setSortOrder('asc');
     }
+    // Reset offsets when sort changes so we start from the first page
+    setNextCursor(null);
+    setSearchOffset(null);
+    setSortOffset(null);
+    setLoading(true);
+    // Trigger reload with new sort
+    // Note: loadProjects uses sortField/sortOrder from state; defer to next tick
+    setTimeout(loadProjects, 0);
   };
 
   const createNewProject = async () => {
@@ -347,9 +374,9 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     );
   }
 
-  // Load more for default list
+  // Load more for default cursor list (no sort/no search)
   const loadMore = async () => {
-    if (!nextCursor || isLoadingMore || isSearching) return;
+    if (!nextCursor || isLoadingMore || isSearching || (sortField && sortOrder)) return;
     setIsLoadingMore(true);
     try {
       const res = await fetch(`/api/projects?limit=${PAGE_SIZE}&cursor=${encodeURIComponent(nextCursor)}`, { cache: 'no-store' });
@@ -377,7 +404,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     if (!isSearching && searchQuery.trim() && searchOffset != null) {
       setIsLoadingMore(true);
       try {
-        const res = await fetch(`/api/projects?q=${encodeURIComponent(searchQuery.trim())}&offset=${searchOffset}&limit=${PAGE_SIZE}`, { cache: 'no-store' });
+        const res = await fetch(`/api/projects?q=${encodeURIComponent(searchQuery.trim())}&offset=${searchOffset}&limit=${PAGE_SIZE}` , { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
           setProjects(prev => {
@@ -398,10 +425,43 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     }
   };
 
+  // Load more for sort mode (no search, explicit sortField/sortOrder)
+  const loadMoreSort = async () => {
+    if (!searchQuery.trim() && sortField && sortOrder && sortOffset != null && !isLoadingMore) {
+      setIsLoadingMore(true);
+      try {
+        const params = new URLSearchParams();
+        params.set('limit', String(PAGE_SIZE));
+        params.set('offset', String(sortOffset));
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+        const res = await fetch(`/api/projects?${params.toString()}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success) {
+          setProjects(prev => {
+            const existing = new Set(prev.map((p: Project) => p._id));
+            const merged = [...prev];
+            for (const p of data.projects as Project[]) {
+              if (!existing.has(p._id)) merged.push(p);
+            }
+            return merged;
+          });
+          setSortOffset(data.pagination?.nextOffset ?? null);
+        }
+      } catch (e) {
+        console.error('Load more sort results failed', e);
+      } finally {
+        setIsLoadingMore(false);
+      }
+    }
+  };
+
+  // IMPORTANT: The backend now handles sorting and (when searching) filtering order across the full dataset.
+  // We keep only a lightweight filter here to hide non-matching items in the current page when not using the server search input.
+  // Sorting is REMOVED client-side to avoid diverging from server order.
   const filteredAndSortedProjects = projects
     .filter((project) => {
       if (!searchQuery) return true;
-      
       const query = searchQuery.toLowerCase().trim();
       const matchesEventName = project.eventName.toLowerCase().includes(query);
       const dateString = new Date(project.eventDate).toLocaleDateString('en-US', {
@@ -411,7 +471,6 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       }).toLowerCase();
       const isoDateString = project.eventDate.toLowerCase();
       const matchesDate = dateString.includes(query) || isoDateString.includes(query);
-      // Search in all hashtag representations (including category-prefixed)
       const allHashtagRepresentations = getAllHashtagRepresentations({
         hashtags: project.hashtags || [],
         categorizedHashtags: project.categorizedHashtags || {}
@@ -419,41 +478,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       const matchesHashtag = allHashtagRepresentations.some(
         hashtag => hashtag.toLowerCase().includes(query)
       ) || false;
-      
       return matchesEventName || matchesDate || matchesHashtag;
-    })
-    .sort((a, b) => {
-      if (!sortField || !sortOrder) return 0;
-      
-      let aValue: number | string = 0;
-      let bValue: number | string = 0;
-      
-      switch (sortField) {
-        case 'eventName':
-          aValue = a.eventName.toLowerCase();
-          bValue = b.eventName.toLowerCase();
-          break;
-        case 'eventDate':
-          aValue = a.eventDate;
-          bValue = b.eventDate;
-          break;
-        case 'images':
-          aValue = a.stats.remoteImages + a.stats.hostessImages + a.stats.selfies;
-          bValue = b.stats.remoteImages + b.stats.hostessImages + b.stats.selfies;
-          break;
-        case 'fans':
-          aValue = a.stats.indoor + a.stats.outdoor + a.stats.stadium;
-          bValue = b.stats.indoor + b.stats.outdoor + b.stats.stadium;
-          break;
-        case 'attendees':
-          aValue = a.stats.eventAttendees || 0;
-          bValue = b.stats.eventAttendees || 0;
-          break;
-      }
-      
-      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
     });
 
   return (
@@ -805,6 +830,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             searchOffset != null ? (
               <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
                 {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
+              </button>
+            ) : (
+              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+            )
+          ) : (sortField && sortOrder) ? (
+            sortOffset != null ? (
+              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSort}>
+                {isLoadingMore ? 'Loading…' : 'Load 20 more'}
               </button>
             ) : (
               <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>

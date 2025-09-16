@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import config from '@/lib/config';
+
 // Verify SSO token with the external service
 async function verifySSO(token: string) {
   try {
-    const response = await fetch('https://sso.doneisbetter.com/api/validate', {
+    // WHAT: Use centralized SSO base URL from config to avoid hard-coded strings.
+    // WHY: Centralization eases environment changes and prevents drift across routes.
+    const response = await fetch(`${config.ssoBaseUrl}/api/validate`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -38,7 +42,7 @@ function isAdmin(user: SSOUser | null): boolean {
 // Fetch users from SSO service
 async function fetchUsers(token: string) {
   try {
-    const response = await fetch('https://sso.doneisbetter.com/api/admin/users', {
+    const response = await fetch(`${config.ssoBaseUrl}/api/admin/users`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -156,7 +160,7 @@ export async function PUT(request: NextRequest) {
     console.log(`🔐 Admin ${user.name} updating user ${userId}: ${action}`);
 
     // Update user via SSO service
-    const response = await fetch('https://sso.doneisbetter.com/api/admin/users', {
+    const response = await fetch(`${config.ssoBaseUrl}/api/admin/users`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
