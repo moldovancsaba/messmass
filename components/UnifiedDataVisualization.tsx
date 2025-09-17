@@ -8,13 +8,15 @@ interface UnifiedDataVisualizationProps {
   chartResults: ChartCalculationResult[];
   loading?: boolean;
   gridUnits?: { desktop: number; tablet: number; mobile: number };
+  useChartContainer?: boolean; // when false, render charts directly without the extra container/header
 }
 
 export default function UnifiedDataVisualization({
   blocks,
   chartResults,
   loading = false,
-  gridUnits = { desktop: 4, tablet: 2, mobile: 1 }
+  gridUnits = { desktop: 4, tablet: 2, mobile: 1 },
+  useChartContainer = true
 }: UnifiedDataVisualizationProps) {
   // Determine visible blocks once and keep a stable order
   // Why: We need a consistent ordering to generate matching dynamic CSS and class names
@@ -205,15 +207,21 @@ export default function UnifiedDataVisualization({
                         key={`${idSuffix}-${chart.chartId}`}
                         className={`chart-item chart-width-${safeWidth}`}
                       >
-                        <ChartContainer
-                          title={result.title}
-                          subtitle={result.subtitle}
-                          emoji={result.emoji}
-                          className="unified-chart-item"
-                          chartWidth={chart.width}
-                        >
-                          <DynamicChart result={result} chartWidth={chart.width} />
-                        </ChartContainer>
+                        {useChartContainer ? (
+                          <ChartContainer
+                            title={result.title}
+                            subtitle={result.subtitle}
+                            emoji={result.emoji}
+                            className="unified-chart-item"
+                            chartWidth={chart.width}
+                          >
+                            <DynamicChart result={result} chartWidth={chart.width} />
+                          </ChartContainer>
+                        ) : (
+                          <div className="unified-chart-item" style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+                            <DynamicChart result={result} chartWidth={chart.width} />
+                          </div>
+                        )}
                       </div>
                     );
                   })

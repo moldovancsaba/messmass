@@ -372,6 +372,7 @@ export default function StatsPage() {
           chartResults={chartResults}
           loading={false}
           gridUnits={gridUnits}
+          useChartContainer={false}
         />
       </div>
 
