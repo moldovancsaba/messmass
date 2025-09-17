@@ -190,7 +190,9 @@ img {
 /* Visualization helpers */
 .drag-hint { cursor: grab; user-select: none; margin-left: 0.5rem; }
 .charts-grid { display: grid; gap: 1.5rem; width: 100%; }
-.chart-item-min { min-height: 300px; }
+/* Enforce a single configurable height for all chart tiles */
+:root { --chart-tile-height: 360px; }
+.chart-item-min { min-height: var(--chart-tile-height); }
 .chart-config-item { padding: 0.75rem; border: 1px dashed rgba(99,102,241,0.25); border-radius: 8px; }
 
 .admin-dashboard {

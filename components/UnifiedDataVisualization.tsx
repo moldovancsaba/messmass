@@ -204,9 +204,6 @@ export default function UnifiedDataVisualization({
                       <div
                         key={`${idSuffix}-${chart.chartId}`}
                         className={`chart-item chart-width-${safeWidth}`}
-                        style={{
-                          minHeight: '300px'
-                        }}
                       >
                         <ChartContainer
                           title={result.title}
@@ -303,8 +300,9 @@ export default function UnifiedDataVisualization({
           display: flex;
           flex-direction: column;
           width: 100%;
-          height: 100%;
-          min-height: 350px;
+          /* Enforce a uniform chart tile height across all chart types and spans */
+          height: var(--chart-tile-height, 360px);
+          min-height: 0;
           /* Remove any global max-width and force items to fill their grid track */
           max-width: none;
           justify-self: stretch;

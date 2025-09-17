@@ -132,7 +132,7 @@ const PieChart: React.FC<{
   if (isLandscape) {
     // Landscape layout: chart on left, legend on right - COMPLETELY FILLS 2 units width
     return (
-      <div className={className} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width: '100%', height: '100%', minHeight: '300px' }}>
+      <div className={className} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width: '100%', height: '100%' }}>
         <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
           <div style={{ width: '100%', aspectRatio: '1', maxWidth: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <svg viewBox="0 0 220 220" className="pie-chart" style={{ width: '100%', height: '100%', maxWidth: 'none' }}>
@@ -173,7 +173,7 @@ const PieChart: React.FC<{
   } else {
     // Portrait layout: traditional stacked layout - COMPLETELY FILLS 1 unit width
     return (
-      <div className={className} style={{ width: '100%', height: '100%', minHeight: '300px', display: 'flex', flexDirection: 'column' }}>
+      <div className={className} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div className="pie-chart-container" style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           <div style={{ width: '80%', aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <svg viewBox="0 0 180 180" className="pie-chart" style={{ width: '100%', height: '100%' }}>
@@ -441,7 +441,6 @@ const KPIChart: React.FC<{
   const emojiSize = isLandscape ? '4.5rem' : '3.5rem';
   const valueSize = isLandscape ? '5rem' : '4rem';
   const labelSize = isLandscape ? '1.25rem' : '1.1rem';
-  const minHeight = isLandscape ? '300px' : '250px';
   const padding = isLandscape ? '3rem' : '2rem';
   
   return (
@@ -453,7 +452,6 @@ const KPIChart: React.FC<{
         borderRadius: '1rem',
         border: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
         position: 'relative',
-        minHeight,
         width: '100%',
         height: '100%',
         display: 'flex',
