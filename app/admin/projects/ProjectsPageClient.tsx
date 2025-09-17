@@ -120,7 +120,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   // SharePopup states
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [sharePageId, setSharePageId] = useState<string | null>(null);
-  const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | null>(null);
+  const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | 'filter' | null>(null);
 
   // Hydrate sort state from URL (if present)
   useEffect(() => {
@@ -404,6 +404,31 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       </div>
     );
   }
+
+  // Share a single-hashtag filter (generates slug, opens SharePopup)
+  // WHAT: Reuse the same sharing flow as /admin/filter so that clicking a hashtag here
+  //       creates a shareable URL + password and allows direct Visit from the popup.
+  // WHY: Align UX between Project Management hashtag clicks and Filter page sharing.
+  const shareSingleHashtag = async (hashtagValue: string, styleId: string | null) => {
+    try {
+      const response = await fetch('/api/filter-slug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hashtags: [hashtagValue], styleId: styleId || null })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSharePageId(data.slug);
+        setSharePageType('filter');
+        setSharePopupOpen(true);
+      } else {
+        alert('Failed to generate shareable link: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error('Error generating filter slug:', e);
+      alert('Failed to generate shareable link');
+    }
+  };
 
   // Load more for default cursor list (no sort/no search)
   const loadMore = async () => {
@@ -757,8 +782,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                   small={true}
                                   interactive={true}
                                   onClick={(hashtag) => {
-                                    // Navigate to filter page for single hashtag
-                                    window.open(`/filter/${hashtag}`, '_blank');
+                                    // Open share popup for single-hashtag filter (same flow as Admin → Filter)
+                                    shareSingleHashtag(hashtag, project.styleId || null);
                                   }}
                                   projectCategorizedHashtags={project.categorizedHashtags}
                                   autoResolveColor={true}
@@ -779,8 +804,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                     small={true}
                                     interactive={true}
                                     onClick={(hashtag) => {
-                                      // Navigate to filter page for single hashtag with category prefix
-                                      window.open(`/filter/${hashtag}`, '_blank');
+                                      // Open share popup for category-prefixed single-hashtag filter
+                                      shareSingleHashtag(hashtag, project.styleId || null);
                                     }}
                                     projectCategorizedHashtags={project.categorizedHashtags}
                                     autoResolveColor={true}
@@ -1149,7 +1174,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         onClose={() => setSharePopupOpen(false)}
         pageId={sharePageId || ''}
         pageType={sharePageType || 'stats'}
-        customTitle={sharePageType === 'stats' ? 'Share Statistics Page' : 'Share Edit Page'}
+        customTitle={
+          sharePageType === 'stats'
+            ? 'Share Statistics Page'
+            : sharePageType === 'edit'
+            ? 'Share Edit Page'
+            : 'Share Hashtag Filter'
+        }
       />
     </div>
   );
