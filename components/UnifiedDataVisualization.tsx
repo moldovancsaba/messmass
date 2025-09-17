@@ -320,10 +320,13 @@ export default function UnifiedDataVisualization({
           position: relative;
           display: flex;
           flex-direction: column;
+          isolation: isolate; /* create stacking context to avoid overlay bleeding */
         }
+        /* Prevent flex children from expanding beyond container height */
+        .unified-chart-item > * { min-height: 0; }
         
         .unified-chart-item:hover {
-          transform: translateY(-2px);
+          /* Remove translateY to prevent tiles from sliding and overlapping */
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
           border-color: rgba(99, 102, 241, 0.3);
         }
@@ -339,6 +342,8 @@ export default function UnifiedDataVisualization({
           max-width: none;
           justify-self: stretch;
           min-width: 0;
+          position: relative;
+          overflow: hidden; /* final guard */
         }
         
         /* Ensure all chart content fills the available space */
