@@ -264,12 +264,39 @@ export default function UnifiedDataVisualization({
           min-width: 0 !important;
           max-width: none !important;
           width: 100% !important;
+          height: 100% !important;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden !important; /* prevent content from overflowing tile */
         }
         /* Override global legend min-width to allow wrapping inside unit */
         .udv-grid :global(.chart-legend) {
           min-width: 0 !important;
           width: 100% !important;
           max-width: 100% !important;
+          overflow: hidden;
+        }
+        /* Crop long titles and subtitles to keep fixed height */
+        .udv-grid :global(.chart-title-for-export h3) {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .udv-grid :global(.chart-title-for-export p) {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        /* Prevent legend text from overflowing */
+        .udv-grid :global(.legend-text-row),
+        .udv-grid :global(.legend-item span) {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        /* Ensure columns clip their contents */
+        .udv-grid :global(.legends-column),
+        .udv-grid :global(.bars-column) {
           overflow: hidden;
         }
 
@@ -288,6 +315,11 @@ export default function UnifiedDataVisualization({
           height: 100%;
           /* Strategic: include border-box so padding doesn't reduce usable width */
           box-sizing: border-box;
+          /* Ensure inner content cannot overflow and overlap neighbors */
+          overflow: hidden;
+          position: relative;
+          display: flex;
+          flex-direction: column;
         }
         
         .unified-chart-item:hover {

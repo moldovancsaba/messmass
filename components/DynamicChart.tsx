@@ -490,7 +490,10 @@ const KPIChart: React.FC<{
             fontWeight: '500',
             color: '#4a5568',
             marginTop: '0.5rem',
-            maxWidth: '90%'
+            maxWidth: '90%',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           }}>
             {result.elements[0].label}
           </div>
@@ -580,7 +583,8 @@ export const ChartContainer: React.FC<{
         border: '1px solid rgba(255, 255, 255, 0.2)',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        overflow: 'hidden'
       }}>
         <div className="chart-title-for-export" style={{ marginBottom: '1.5rem' }}>
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
