@@ -32,7 +32,7 @@ Before any development work:
 - **Next.js 15.4.6** with App Router (`/app` directory)
 - **TypeScript** with strict mode for type safety
 - **React 18** with real-time WebSocket integration
-- **Tailwind CSS** for utility-first styling
+- **CSS Modules** with project-wide CSS variables (see `app/styles/theme.css`) for styling
 - **Component-based architecture** with unified hashtag system
 
 ### Backend Architecture
@@ -269,7 +269,7 @@ For detailed information, see:
 ### Database Operations
 1. **Use** existing MongoDB connection from `lib/mongodb.ts`
 2. **Follow** existing API patterns in `/app/api` directories
-3. **Maintain** timestamp consistency with ISO 8601 format
+3. **Maintain** timestamp consistency with ISO 8601 format (with milliseconds)
 4. **Update** both traditional and categorized hashtag fields when relevant
 
 ### Real-Time Features
@@ -280,4 +280,4 @@ For detailed information, see:
 
 ---
 
-*Version: 4.2.0 | Last Updated: 2025-09-16T19:36:46.925Z | Status: Active Development*
+*Version: 5.0.0 | Last Updated: 2025-09-25T09:35:43.000Z | Status: Active Development*

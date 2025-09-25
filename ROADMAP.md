@@ -1,9 +1,44 @@
 # ROADMAP.md
 
 Current Version: 4.2.0
-Last Updated: 2025-09-16T19:36:46.925Z
+Last Updated: 2025-09-25T09:35:43.000Z
 
 ## Milestones
+
+### Milestone: Config Hardening & Inline Style Migration (Q3–Q4 2025)
+
+### Milestone: Search & Paging Unification (Q4 2025)
+Priority: High
+Dependencies: Hashtags API pagination (v5.0.0)
+- Extend server-side search + 20-per-page pagination to:
+  - Admin → Hashtags
+  - Admin → Categories
+  - Admin → Charts
+  - Admin → Users
+- Evaluate public pages (/hashtag) for similar search UX without admin dependencies
+- Acceptance: Consistent HERO search, server search with offset/limit, and Load 20 more on each page; documentation updated
+Priority: High
+Dependencies: Governance kickoff; sequential steps as listed
+- P0: Settings governance and loader hardening
+  - 1) Inventory baked settings (CSV under docs/audit)
+  - 2) Define config schema and .env.example; document loader
+  - 3) Plan Atlas settings collection (non-secrets) + caching; precedence env > DB
+  - 4) Implement/extend config loader; replace direct env usages; remove baked defaults; remove hard-coded service base URLs
+- P1: Styling migration
+  - 5) Phase 1 (shared components) — extract repeated inline styles to CSS Modules with theme tokens
+  - 6) Phase 2 (pages) — migrate remaining page-level inline styles
+- Governance & Release
+  - 7) Align documentation with actual stack (CSS Modules + theme.css)
+  - 8) Versioning, build, release, deployment per DoD
+  - 9) Guardrail scripts to prevent regressions
+
+Acceptance summary
+- Zero baked settings remaining in code grep (outside config and bootstrap)
+- InlineStyles reduced to ≤ 5 (excluding computed token-driven cases)
+- .env.example present; docs updated with ISO 8601 ms timestamps
+
+Artifacts
+- Settings inventory CSV: docs/audit/settings-inventory.csv (generated 2025-09-23T12:32:28.000Z)
 
 ### Milestone: Admin UI Consistency (Q3)
 Priority: High

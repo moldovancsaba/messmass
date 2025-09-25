@@ -7,16 +7,27 @@
 export type AppConfig = {
   mongodbUri: string;
   dbName: string;
-  adminPassword: string; // Note: project uses a simple password auth — value comes from env
+  // Security policy: do NOT provide a baked default for secrets. If callers need this, they must use env.require('ADMIN_PASSWORD').
+  // Kept optional here to avoid import-time throws for modules that don’t use it at build time.
+  adminPassword?: string;
   nextPublicWsUrl?: string; // Optional, for real-time server if configured
   nodeEnv: 'development' | 'production' | 'test' | string;
-  ssoBaseUrl: string; // Centralized SSO service base URL to avoid hard-coded strings in API routes
+  // Remove hard-coded SSO default; this value must come from env or be undefined.
+  ssoBaseUrl?: string;
+  // Centralized service bases (server-only)
+  appBaseUrl?: string;
+  apiBaseUrl?: string;
 };
 
-function requireEnv(name: string): string {
+function getEnv(name: string): string | undefined {
   const v = process.env[name];
-  if (!v || v.trim() === '') {
-    // We keep throw behavior for critical secrets; callers can catch if needed.
+  return v && v.trim() !== '' ? v.trim() : undefined;
+}
+
+function requireEnv(name: string): string {
+  const v = getEnv(name);
+  if (!v) {
+    // Strategic: fail fast for truly required values at the call site.
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return v;
@@ -30,14 +41,33 @@ function requireEnv(name: string): string {
 //   production should set ADMIN_PASSWORD explicitly.
 // - nextPublicWsUrl: optional; only used if real-time is enabled
 export const config: AppConfig = {
+  // WHAT: Required to run; throws early if not provided.
   mongodbUri: requireEnv('MONGODB_URI'),
-  dbName: process.env.MONGODB_DB?.trim() || 'messmass',
-  adminPassword: (process.env.ADMIN_PASSWORD?.trim() || 'messmass'),
-  nextPublicWsUrl: process.env.NEXT_PUBLIC_WS_URL?.trim() || undefined,
-  nodeEnv: process.env.NODE_ENV || 'development',
-  // WHAT: Default SSO base URL configured here.
-  // WHY: Avoid hard-coded URLs in API routes and enable environment-based overrides in the future.
-  ssoBaseUrl: process.env.SSO_BASE_URL?.trim() || 'https://sso.doneisbetter.com',
+  // WHY: dbName is non-sensitive and historically defaulted; keep default for DX (non-secret).
+  dbName: getEnv('MONGODB_DB') || 'messmass',
+  // SECURITY: no baked default for secrets; remain optional at config object level.
+  adminPassword: getEnv('ADMIN_PASSWORD'),
+  nextPublicWsUrl: getEnv('NEXT_PUBLIC_WS_URL'),
+  nodeEnv: getEnv('NODE_ENV') || 'development',
+  // SECURITY: remove hard-coded SSO default; must be provided via env if used.
+  ssoBaseUrl: getEnv('SSO_BASE_URL'),
+  // Service bases (server-only)
+  appBaseUrl: getEnv('APP_BASE_URL'),
+  apiBaseUrl: getEnv('API_BASE_URL'),
 };
+
+// Convenience helpers to encourage centralization and avoid direct process.env usage
+export const env = {
+  get: getEnv,
+  require: requireEnv,
+};
+
+// Client-safe configuration: expose only NEXT_PUBLIC_* values
+export function clientConfig() {
+  return {
+    appUrl: getEnv('NEXT_PUBLIC_APP_URL'),
+    wsUrl: getEnv('NEXT_PUBLIC_WS_URL'),
+  } as const;
+}
 
 export default config;

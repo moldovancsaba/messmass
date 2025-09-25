@@ -1,31 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
-
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    await client.db(MONGODB_DB).admin().ping();
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
-    throw error;
-  }
-}
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
 export interface HashtagSlug {
   _id?: string;
@@ -40,8 +16,8 @@ export interface HashtagSlug {
  */
 export async function getOrCreateHashtagSlug(hashtag: string): Promise<string> {
   try {
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const collection = db.collection('hashtag_slugs');
 
     // Check if hashtag already has a UUID
@@ -75,8 +51,8 @@ export async function getOrCreateHashtagSlug(hashtag: string): Promise<string> {
  */
 export async function getHashtagFromSlug(slug: string): Promise<string | null> {
   try {
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const collection = db.collection('hashtag_slugs');
 
     const hashtagSlug = await collection.findOne({ slug });
@@ -97,8 +73,8 @@ export async function getHashtagFromSlug(slug: string): Promise<string | null> {
  */
 export async function getAllHashtagSlugs(): Promise<Array<{hashtag: string, slug: string, count: number}>> {
   try {
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     
     // Get all unique hashtags from projects
     const projects = await db.collection('projects').find({}, { 
@@ -144,8 +120,8 @@ export async function migrateExistingHashtags(): Promise<void> {
   try {
     console.log('🔄 Starting hashtag UUID migration...');
     
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     
     // Get all unique hashtags from projects
     const projects = await db.collection('projects').find({}, { 

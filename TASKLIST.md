@@ -1,11 +1,41 @@
 # TASKLIST.md
-Current Version: 4.2.0
-Last Updated: 2025-09-16T19:36:46.925Z
+Current Version: 5.0.0
+Last Updated: 2025-09-25T09:35:43.000Z
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### High Priority — Search & Paging Unification (5.x)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| SPU-001 | Extend hashtag search/paging to Admin → Hashtags | ProjectAgent-messmass | 2025-10-01T12:00:00.000Z | Planned |
+|| SPU-002 | Apply search/paging to Admin → Categories | ProjectAgent-messmass | 2025-10-02T12:00:00.000Z | Planned |
+|| SPU-003 | Apply search/paging to Admin → Charts | ProjectAgent-messmass | 2025-10-03T12:00:00.000Z | Planned |
+|| SPU-004 | Apply search/paging to Admin → Users | ProjectAgent-messmass | 2025-10-04T12:00:00.000Z | Planned |
+|| SPU-005 | Evaluate feasibility for public pages (/hashtag) | ProjectAgent-messmass | 2025-10-05T12:00:00.000Z | Planned |
+
+### High Priority — Config & Styling Hardening (4.2.x)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| CFG-000 | Governance kickoff + baseline snapshot | ProjectAgent-messmass | 2025-09-23T23:59:59.000Z | ✅ Complete |
+|| CFG-001 | Inventory baked settings (CSV) | ProjectAgent-messmass | 2025-09-30T00:00:00.000Z | Pending |
+|| CFG-002 | Define config schema and .env.example | ProjectAgent-messmass | 2025-10-01T00:00:00.000Z | ✅ Complete |
+|| CFG-003 | Plan Atlas settings collection + caching | ProjectAgent-messmass | 2025-10-02T00:00:00.000Z | ✅ Complete |
+|| CFG-004 | Implement config loader and replace usages | ProjectAgent-messmass | 2025-10-04T00:00:00.000Z | Pending |
+|| GOV-700 | Align documentation with stack reality | ProjectAgent-messmass | 2025-10-04T00:00:00.000Z | Pending |
+|| STY-101 | Inline styles migration — Phase 1 (components) | ProjectAgent-messmass | 2025-10-05T00:00:00.000Z | Pending |
+|| STY-102 | Inline styles migration — Phase 2 (pages) | ProjectAgent-messmass | 2025-10-07T00:00:00.000Z | Pending |
+|| REL-800 | DoD: versioning, build, release, deploy | ProjectAgent-messmass | 2025-10-07T23:59:59.000Z | Pending |
+|| SAFE-900 | Guardrail scripts to prevent regressions | ProjectAgent-messmass | 2025-10-08T23:59:59.000Z | Pending |
+
+Baseline snapshot (recorded 2025-09-23T12:32:28.000Z)
+- InlineStyles: 1014
+- Env usages (process.env.*): 96
+- Hard-coded service URLs (http/https in code): 6
 
 ### High Priority – Admin UI Consistency (4.2.0)
 

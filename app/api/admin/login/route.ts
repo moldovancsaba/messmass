@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
 import { findUserByEmail } from '@/lib/users'
+import { env } from '@/lib/config'
 
 // Legacy env-based admin password has been removed. Authentication is fully DB-backed.
 
@@ -63,7 +64,9 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     cookieStore.set('admin-session', signedToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      // WHAT: Derive cookie security flags from centralized env helper.
+      // WHY: Avoid direct process.env usage and ensure consistent behavior across the codebase.
+      secure: env.get('NODE_ENV') === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/'

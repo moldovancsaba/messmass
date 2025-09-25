@@ -14,6 +14,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import {
   HashtagCategory,
   HashtagCategoryInput,
@@ -28,41 +30,7 @@ import {
   isValidHexColor
 } from '@/lib/hashtagCategoryUtils';
 
-// Database connection configuration
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-/**
- * Establishes connection to MongoDB Atlas
- * Uses connection caching for improved performance
- */
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    console.log('🔗 Connecting to MongoDB Atlas for hashtag categories...');
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    
-    // Test the connection
-    await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully for categories');
-    
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas for categories:', error);
-    throw error;
-  }
-}
+// Use centralized Mongo client and config
 
 /**
  * Validates admin authentication for category management
@@ -101,8 +69,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
       );
     }
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     
     // Fetch all categories from database
     const categoriesData = await db.collection('hashtag_categories')
@@ -163,8 +131,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<HashtagCa
       );
     }
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
 
     // Normalize category name for consistency
     const normalizedName = normalizeCategoryName(name);
@@ -271,8 +239,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse<HashtagCat
       );
     }
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
 
     // Normalize category name
     const normalizedName = normalizeCategoryName(name);
@@ -375,8 +343,8 @@ export async function DELETE(request: NextRequest): Promise<NextResponse<Hashtag
       );
     }
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
 
     // Check if category exists
     const existingCategory = await db.collection('hashtag_categories')

@@ -1,8 +1,8 @@
 // app/api/projects/[id]/route.ts - Fixed for Next.js 15
 import { NextRequest, NextResponse } from 'next/server'
 import { MongoClient, ObjectId } from 'mongodb'
-
-const MONGODB_URI = process.env.MONGODB_URI!
+import clientPromise from '@/lib/mongodb'
+import config from '@/lib/config'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -12,13 +12,12 @@ export async function GET(
   request: NextRequest,
   context: RouteParams
 ) {
-  const client = new MongoClient(MONGODB_URI)
+  const client = await clientPromise
   
   try {
     const { id } = await context.params
     
-    await client.connect()
-    const db = client.db('messmass')
+    const db = client.db(config.dbName)
     const collection = db.collection('projects')
     
     const project = await collection.findOne({ _id: new ObjectId(id) })
@@ -45,7 +44,7 @@ export async function GET(
       { status: 500 }
     )
   } finally {
-    await client.close()
+    // Shared client managed by lib/mongodb; no manual close.
   }
 }
 
@@ -53,15 +52,14 @@ export async function PUT(
   request: NextRequest,
   context: RouteParams
 ) {
-  const client = new MongoClient(MONGODB_URI)
+  const client = await clientPromise
   
   try {
     const { id } = await context.params
     const updateData = await request.json()
     console.log('📝 Updating project:', id, 'with data:', updateData)
     
-    await client.connect()
-    const db = client.db('messmass')
+    const db = client.db(config.dbName)
     const collection = db.collection('projects')
     
     // Ensure stats object exists and merge with new data
@@ -115,7 +113,7 @@ export async function PUT(
       { status: 500 }
     )
   } finally {
-    await client.close()
+    // Shared client managed by lib/mongodb; no manual close.
   }
 }
 
@@ -123,14 +121,13 @@ export async function DELETE(
   request: NextRequest,
   context: RouteParams
 ) {
-  const client = new MongoClient(MONGODB_URI)
+  const client = await clientPromise
   
   try {
     const { id } = await context.params
     console.log('🗑️ Deleting project:', id)
     
-    await client.connect()
-    const db = client.db('messmass')
+    const db = client.db(config.dbName)
     const collection = db.collection('projects')
     
     const result = await collection.deleteOne({ _id: new ObjectId(id) })
@@ -159,6 +156,6 @@ export async function DELETE(
       { status: 500 }
     )
   } finally {
-    await client.close()
+    // Shared client managed by lib/mongodb; no manual close.
   }
 }

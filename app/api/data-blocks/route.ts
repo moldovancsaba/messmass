@@ -3,7 +3,8 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 // GET /api/data-blocks - Get all data visualization blocks
 export async function GET() {

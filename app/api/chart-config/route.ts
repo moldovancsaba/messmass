@@ -8,7 +8,8 @@ import clientPromise from '@/lib/mongodb';
 import { getAdminUser } from '@/lib/auth';
 import { ChartConfiguration, DEFAULT_CHART_CONFIGURATIONS } from '@/lib/chartConfigTypes';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 /**
  * Enhanced database connection function that reuses the shared MongoDB client

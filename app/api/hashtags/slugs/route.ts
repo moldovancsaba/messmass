@@ -1,45 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { v4 as uuidv4 } from 'uuid';
 import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryUtils';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    
-    // Test the connection
-    await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully');
-    
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
-    throw error;
-  }
-}
+// Use centralized Mongo client and config
 
 export async function GET(request: NextRequest) {
   try {
     console.log('📊 Fetching hashtag slugs...');
     
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     
     // Get all projects to calculate hashtag counts
     const projectsCollection = db.collection('projects');

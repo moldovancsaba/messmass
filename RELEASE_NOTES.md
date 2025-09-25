@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v5.0.0] — 2025-09-25T09:35:43.000Z
+
+### Major — Unified Search + Paging for Multi-Hashtag Filter; Config Hardening (partial)
+- Multi-Hashtag Filter (/admin/filter)
+  - Integrated UnifiedAdminHero with debounced server-side hashtag search (20 per page)
+  - Added “Load 20 more” pagination for hashtag selection (offset-based)
+  - Restored clean header (removed duplicate Back button) and preserved sharing/CSV flows
+- Hashtags API
+  - GET /api/hashtags now returns `{ hashtag, count }` with `pagination.nextOffset` for efficient search + paging
+- Config hardening (Step 4 partial)
+  - Centralized env usage across multiple API routes; removed baked defaults and hard-coded SSO URL in admin routes
+  - Shared Mongo client now used by admin routes and utilities; dbName via config
+- Documentation
+  - ARCHITECTURE.md: Added note on Hashtags API pagination and Admin Filter UX
+  - LEARNINGS.md: Atlas settings overlay plan (non-secrets only) and caching precedence
+  - WARP.md footer Last Updated; README updated to v5.0.0; roadmap/tasklist timestamps refreshed
+
+### Stability
+- Type-check and production build verified under Node v20.19.5 (.nvmrc added)
+
+---
+
 ## [v4.2.0] — 2025-09-16T19:36:46.925Z
 
 ### Admin/Public Design System — AdminHero Standardization + Content Surface

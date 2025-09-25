@@ -1,5 +1,7 @@
 # MessMass Architecture Documentation
 
+Last Updated: 2025-09-23T12:43:57.000Z
+
 ## Project Overview
 
 MessMass is a project management system built with Next.js, TypeScript, and MongoDB, designed to help users organize and track projects with advanced hashtag categorization capabilities.
@@ -36,6 +38,74 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 ### Rationale
 - Single-source component (AdminHero) ensures consistent layout and visuals across admin pages.
 - CSS variables provide predictable theming and reduce specificity wars; a single content wrapper normalizes width/padding.
+
+## Configuration Loader (4.2.x)
+
+### Admin Filter Search & Paging (v5.0.0)
+- Hashtags API now supports server-side search + pagination for efficient selection in /admin/filter
+- Endpoint: GET /api/hashtags
+  - Query params: `search?`, `offset` (number), `limit` (default 20)
+  - Response: `{ success, hashtags: Array<{hashtag:string,count:number}>, pagination: { mode: 'aggregation', limit, offset, nextOffset, totalMatched } }`
+- Rationale: Reduce page load and improve operator workflow by fetching only visible hashtag pages; consistent with Admin → Projects pagination approach
+
+### Overview
+A centralized configuration module lives at `lib/config.ts`. It provides a single, typed source of truth for server and client configuration values and prevents hard-coded settings scattered across the codebase.
+
+### Keys (minimum set)
+- Server-only:
+  - MONGODB_URI
+  - MONGODB_DB
+  - ADMIN_PASSWORD
+  - SSO_BASE_URL
+  - APP_BASE_URL
+  - API_BASE_URL
+- Client-exposed (browser):
+  - NEXT_PUBLIC_APP_URL
+  - NEXT_PUBLIC_WS_URL
+
+### Resolution order and precedence
+1) Environment variables (authoritative for secrets)
+2) Optional Atlas “settings” overlay (non-secrets only, behind a feature flag)
+- Precedence: env > DB (environment values always win when both exist)
+- No baked defaults for secrets; required secrets must be present or fail fast
+
+### Client/server boundary rules
+- Only NEXT_PUBLIC_* keys are exposed to the client. All other keys are server-only.
+- If a UI needs a value that isn’t prefixed NEXT_PUBLIC_*, inject it via server-rendered props or server APIs — do not access server-only keys on the client.
+
+### Example usage patterns
+Server (API route or server module):
+```ts path=null start=null
+import config from '@/lib/config';
+
+// MongoDB connection
+const uri = config.mongodbUri; // from MONGODB_URI
+const dbName = config.dbName;  // from MONGODB_DB (defaulting strategy removed in Step 4)
+
+// Service bases
+const apiBase = process.env.API_BASE_URL; // or expose via config.get('API_BASE_URL') once helpers are added
+```
+
+Client (browser code):
+```ts path=null start=null
+// Only NEXT_PUBLIC_* keys are safe on the client
+declare const process: { env: { NEXT_PUBLIC_APP_URL?: string; NEXT_PUBLIC_WS_URL?: string } };
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
+```
+
+### Optional Atlas overlay (non-secrets only)
+- Collection shape (proposed in Step 3): { project, env, key, value, updated_at, comment }
+- Purpose: centralize non-sensitive toggles and base URLs; never secrets
+- Caching: in-process TTL (e.g., 300000 ms) with manual bust method
+- Reference: see LEARNINGS.md entry “2025-09-24T11:07:46.000Z — Atlas settings collection plan”
+
+### Migration plan (Step 4)
+- Replace direct `process.env.*` usages with the config module
+- Remove baked defaults for secrets
+- Remove hard-coded service base URLs (replace with APP_BASE_URL, API_BASE_URL, SSO_BASE_URL, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_WS_URL)
+
+---
 
 ## Hashtag Categories System (Version 2.2.0)
 

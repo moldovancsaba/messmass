@@ -1,35 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
+import { env } from '@/lib/config';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    throw error;
-  }
-}
+// Use centralized Mongo client and config
 
 // Verify SSO token with the external service
 async function verifySSO(token: string) {
   try {
-    const response = await fetch('https://sso.doneisbetter.com/api/validate', {
+    // WHAT: Use SSO base URL from centralized configuration.
+    // WHY: Remove hard-coded service base and allow environment-specific overrides.
+    const ssoBase = env.require('SSO_BASE_URL');
+    const response = await fetch(`${ssoBase}/api/validate`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -92,8 +75,8 @@ export async function GET(request: NextRequest) {
 
     console.log(`🔐 Admin ${user.name} accessing permissions`);
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const collection = db.collection('project_permissions');
 
     // Get all permissions
@@ -192,8 +175,8 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔐 Admin ${user.name} setting permission: ${userId} -> ${role} on ${projectId}`);
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const collection = db.collection('project_permissions');
 
     // Check if permission already exists
@@ -307,8 +290,8 @@ export async function DELETE(request: NextRequest) {
 
     console.log(`🔐 Admin ${user.name} revoking permission: ${userId} from ${projectId}`);
 
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const collection = db.collection('project_permissions');
 
     // Delete the permission

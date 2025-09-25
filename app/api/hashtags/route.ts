@@ -1,36 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-  if (cachedClient) {
-    return cachedClient;
-  }
-
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-
-  try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    
-    // Test the connection
-    await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully');
-    
-    cachedClient = client;
-    return client;
-  } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
-    throw error;
-  }
-}
+// Use centralized Mongo client and config
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,8 +16,8 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(Math.max(Number(limitParam) || DEFAULT_LIMIT, 1), MAX_LIMIT);
     const offset = Math.max(Number(offsetParam) || 0, 0);
     
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
 
     // Pipeline to extract and count hashtags from both formats, then sort
     const pipeline: any[] = [
@@ -83,11 +56,14 @@ export async function GET(request: NextRequest) {
     pipeline.push({ $limit: limit });
 
     const results = await db.collection('projects').aggregate(pipeline).toArray();
-    const hashtags = results.map((r: any) => r._id);
+
+    // WHAT: Return items with counts to support admin Multi-Hashtag Filter UI without loading all slugs.
+    // WHY: Smaller payload and server-side pagination improves responsiveness.
+    const items = results.map((r: any) => ({ hashtag: r._id as string, count: r.count as number }));
 
     return NextResponse.json({
       success: true,
-      hashtags,
+      hashtags: items,
       pagination: {
         mode: 'aggregation',
         limit,
@@ -161,8 +137,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     
     // Check if hashtag is still being used in either format
     const projectsUsingHashtagOld = await db.collection('projects').countDocuments({

@@ -6,6 +6,7 @@ import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
+import UnifiedAdminHero from '@/components/UnifiedAdminHero';
 
 interface ProjectStats {
   remoteImages: number;
@@ -82,6 +83,12 @@ function HashtagFilterPageContent() {
   
   const [availableHashtags, setAvailableHashtags] = useState<HashtagItem[]>([]);
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
+  // Search + pagination for hashtags (align with Project Management UX)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOffset, setSearchOffset] = useState<number | null>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const PAGE_SIZE = 20;
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -129,7 +136,8 @@ function HashtagFilterPageContent() {
 
   // Load available hashtags on mount
   useEffect(() => {
-    loadAvailableHashtags();
+    // Initial load: first page without a search term
+    loadAvailableHashtags('');
     // Load page styles for selection
     (async () => {
       try {
@@ -144,7 +152,7 @@ function HashtagFilterPageContent() {
     })();
   }, []);
 
-  // Parse URL parameters on mount
+  // Parse URL parameters on mount & wire search
   useEffect(() => {
     const tagsParam = searchParams?.get('tags');
     if (tagsParam) {
@@ -170,14 +178,36 @@ function HashtagFilterPageContent() {
     setLoading(false);
   }, [searchParams, fetchFilteredStats]);
 
+  // Server-side search for hashtags (debounced)
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      const q = searchQuery.trim();
+      setIsSearching(true);
+      if (!q) {
+        await loadAvailableHashtags('', 0, false);
+      } else {
+        await loadAvailableHashtags(q, 0, false);
+      }
+      setIsSearching(false);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   // Load available hashtags
-  const loadAvailableHashtags = async () => {
+  // Load hashtags from server with optional search and offset (20 per page)
+  const loadAvailableHashtags = async (query: string, offset: number = 0, append = false) => {
     try {
-      const response = await fetch('/api/hashtags/slugs');
+      const params = new URLSearchParams();
+      if (query.trim()) params.set('search', query.trim());
+      params.set('offset', String(offset));
+      params.set('limit', String(PAGE_SIZE));
+      const response = await fetch(`/api/hashtags?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
-      
       if (data.success) {
-        setAvailableHashtags(data.hashtags);
+        const items: Array<{ hashtag: string; count: number }> = data.hashtags || [];
+        const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count }));
+        setAvailableHashtags(prev => append ? [...prev, ...mapped] : mapped);
+        setSearchOffset(data.pagination?.nextOffset ?? null);
       } else {
         console.error('Failed to load hashtags:', data.error);
       }
@@ -312,70 +342,50 @@ function HashtagFilterPageContent() {
 
   return (
     <div className="admin-container">
-      {/* Header - Cleaned up HERO block */}
-      <div className="glass-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding">
-            <h1 className="admin-title">🔍 Multi-Hashtag Filter</h1>
-            
-            {hasAppliedFilter && project && (
-              <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                <div style={{ marginBottom: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                  Filter Results - {project.dateRange.formatted}
-                </div>
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}>
-                  {selectedHashtags.map((hashtag) => (
-                    <ColoredHashtagBubble 
-                      key={hashtag}
-                      hashtag={hashtag}
-                      customStyle={{
-                        fontSize: '1.125rem',
-                        fontWeight: '600'
-                      }}
-                    />
-                  ))}
-                </div>
-                <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
-                  📊 {project.projectCount} project{project.projectCount !== 1 ? 's' : ''} match this filter
-                </div>
-              </div>
-            )}
+      {/* Unified HERO with search (matches Project Management UX) */}
+      <UnifiedAdminHero
+        title="Multi-Hashtag Filter"
+        icon="🔍"
+        showSearch={true}
+        searchValue={searchQuery}
+        onSearchChange={(value) => {
+          setSearchQuery(value);
+        }}
+        searchPlaceholder="Search hashtags..."
+        backLink="/admin"
+        resultsSummary={hasAppliedFilter && project ? {
+          count: project.projectCount,
+          itemType: 'project',
+          additionalInfo: project.dateRange.formatted
+        } : undefined}
+      >
+        {hasAppliedFilter && project && (
+          <div style={{ marginTop: '0.5rem' }}>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              {selectedHashtags.map((hashtag) => (
+                <ColoredHashtagBubble 
+                  key={hashtag}
+                  hashtag={hashtag}
+                  customStyle={{ fontSize: '1.125rem', fontWeight: '600' }}
+                />
+              ))}
+            </div>
           </div>
-          
-          <div className="admin-user-info">
-            <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  onClick={() => router.push('/admin')}
-                  style={{
-                    background: '#6b7280',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#4b5563';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#6b7280';
-                  }}
-                >
-                  ← Back to Admin
-                </button>
-                {hasAppliedFilter && project && (
-                  <>
-                    {/* Style selector for this filter share */}
+        )}
+      </UnifiedAdminHero>
+
+      {/* Actions row (style selector + Share/CSV) */}
+      <div className="glass-card" style={{ padding: '0.75rem 1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {hasAppliedFilter && project && (
+            <>
+              {/* Style selector for this filter share */}
                     <select 
                       className="form-input" 
                       value={selectedStyleId} 
@@ -496,14 +506,11 @@ function HashtagFilterPageContent() {
                     </button>
                   </>
                 )}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Hashtag Selection Section - No duplicate title */}
-      <div className="glass-card" style={{ padding: '2rem' }}>
+      {/* Hashtag Selection and Load More */}
+      <div className="glass-card" style={{ padding: '1rem' }}>
         <HashtagMultiSelect
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
@@ -512,6 +519,24 @@ function HashtagFilterPageContent() {
           disabled={statsLoading}
           showPreview={true}
         />
+        <div style={{ padding: '1rem 0', textAlign: 'center' }}>
+          {searchOffset != null ? (
+            <button
+              className="btn btn-secondary"
+              disabled={isLoadingMore}
+              onClick={async () => {
+                if (isLoadingMore || searchOffset == null) return;
+                setIsLoadingMore(true);
+                await loadAvailableHashtags(searchQuery.trim() ? searchQuery : '', searchOffset, true);
+                setIsLoadingMore(false);
+              }}
+            >
+              {isLoadingMore ? 'Loading…' : 'Load 20 more'}
+            </button>
+          ) : (
+            <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+          )}
+        </div>
       </div>
 
       {/* Loading State */}
@@ -847,6 +872,7 @@ function HashtagFilterLoading() {
       <div className="loading-card">
         <div className="curve-spinner"></div>
       </div>
+
     </div>
   );
 }

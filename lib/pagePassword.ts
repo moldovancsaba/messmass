@@ -2,6 +2,7 @@
 
 import { randomBytes } from 'crypto';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
 /**
  * Page password types and interfaces for MessMass authentication system
@@ -56,7 +57,7 @@ export async function getOrCreatePagePassword(
 ): Promise<PagePassword> {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('pagePasswords');
 
     // Check if password already exists
@@ -125,7 +126,7 @@ export async function validatePagePassword(
 ): Promise<boolean> {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('pagePasswords');
 
     const pagePassword = await collection.findOne({ pageId, pageType });
@@ -232,7 +233,7 @@ export async function generateShareableLink(
 export async function cleanupExpiredPasswords(): Promise<number> {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('pagePasswords');
 
     const now = new Date().toISOString();
@@ -258,7 +259,7 @@ export async function cleanupExpiredPasswords(): Promise<number> {
 export async function getPasswordStats(pageId?: string) {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('pagePasswords');
 
     const filter = pageId ? { pageId } : {};

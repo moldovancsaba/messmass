@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 // GET /api/chart-configs - Get all chart configurations
 export async function GET() {

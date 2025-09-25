@@ -1,5 +1,48 @@
 # MessMass Development Learnings
 
+## 2025-09-24T11:07:46.000Z — Atlas settings collection plan (Backend / Process)
+
+Decision: Manage only non-sensitive settings in MongoDB Atlas to centralize environment-specific toggles and base URLs. Secrets remain exclusively in environment variables.
+
+Collection: settings
+```json
+{
+  "project": "messmass",                 // scope for multi-project infra
+  "env": "development|preview|production", // environment key
+  "key": "string",                        // e.g., API_BASE_URL, FEATURE_FLAG_X
+  "value": "string",                      // non-sensitive value only
+  "updated_at": "YYYY-MM-DDTHH:MM:SS.sssZ", // ISO 8601 with ms (UTC)
+  "comment": "string"                      // rationale/notes (non-sensitive)
+}
+```
+
+Security policy
+- YES: Non-sensitive values (e.g., base URLs, feature flags)
+- NO: Secrets (passwords, tokens, private keys). These remain in env and are never persisted in plaintext in DB.
+
+Read path (server-only)
+- Optional overlay in lib/config.ts guarded by a feature flag (e.g., CONFIG_OVERLAY_FROM_DB=true)
+- Never accessed directly from the browser; only server code can read from the collection
+
+Caching strategy
+- In-process cache Map<key,value> with TTL (e.g., 300000 ms)
+- Manual bust hook to clear the cache after admin updates or deploys
+
+Precedence
+- env > DB (environment variables always override any DB value)
+
+Operational notes
+- Timestamps must be stored and logged as ISO 8601 with milliseconds (UTC)
+- Overlay should be limited to non-secrets; any attempt to load a secret from DB must be rejected unless an explicit encryption design is approved
+
+Rationale (why)
+- Central control of non-sensitive runtime configuration across environments without redeploys
+- Prevent baked settings in code; improve maintainability and auditability
+
+Follow-ups
+- Reference this design from ARCHITECTURE.md (Configuration Loader section)
+- Implement overlay and TTL in lib/config.ts during Step 4
+
 ## Admin UI Consistency and Content Surface — 2025-09-16T19:36:46.925Z
 - Consolidate shared visuals into single-source components to prevent drift (AdminHero used across all admin pages).
 - Prefer CSS variables for theming (`--page-bg`, `--header-bg`, `--content-bg`) over per-page inline styles to avoid specificity conflicts and enable centralized control.

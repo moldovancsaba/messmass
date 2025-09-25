@@ -6,7 +6,8 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { DEFAULT_CHART_CONFIGURATIONS } from '@/lib/chartConfigTypes';
 
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
+const MONGODB_DB = config.dbName;
 
 /**
  * Database connection function - reuses the shared MongoDB client

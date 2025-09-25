@@ -1,10 +1,9 @@
 import { MongoClient } from 'mongodb';
+import config from './config';
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
-}
-
-const uri = process.env.MONGODB_URI;
+// WHAT: Use centralized config to resolve required MongoDB URI.
+// WHY: Avoid scattered environment checks; single source of truth simplifies maintenance and security.
+const uri = config.mongodbUri;
 const options = {
   // MongoDB connection options optimized for Atlas
   serverSelectionTimeoutMS: 15000, // Increased timeout

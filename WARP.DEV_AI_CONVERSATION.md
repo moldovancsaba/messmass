@@ -1,5 +1,45 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-23T12:32:28.000Z — Plan & Delivery Log
+- Plan accepted: Config hardening + Inline styles migration. Owners and due dates registered in TASKLIST.md and ROADMAP.md.
+- Baseline snapshot captured:
+  - InlineStyles: 1014 matches in *.tsx/*.jsx
+  - BakedSettings: 96 direct process.env.* usages in *.ts/*.tsx/*.js/*.jsx
+  - Hard-coded service URLs: 6 occurrences in code files
+- Decisions:
+  - Store only non-sensitive settings in Atlas; secrets remain in environment variables.
+  - Precedence: environment values override DB values when both are present.
+  - Styling system: standardize on CSS Modules + theme.css tokens (no styled-components, no Tailwind).
+  - No hard-coded service base URLs in code; use config keys (APP_BASE_URL, API_BASE_URL, SSO_BASE_URL, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_WS_URL).
+- Next actions:
+  - Generate docs/audit/settings-inventory.csv from tracked code and link from ROADMAP.md
+  - Draft .env.example and update ARCHITECTURE.md with Configuration Loader section
+  - Prepare Atlas settings collection plan and caching precedence (env > DB)
+
+## 2025-09-23T12:43:57.000Z — Step 2: Config schema + .env.example
+
+## 2025-09-24T11:07:46.000Z — Step 3: Atlas plan + Step 4 (partial)
+
+## 2025-09-25T09:35:43.000Z — v5.0.0 Major Update: Multi-Hashtag Filter UX + Hashtags API
+- /admin/filter now uses HERO search with debounced server-side hashtag search and 20-per-page pagination (Load 20 more)
+- GET /api/hashtags returns {hashtag,count} items and nextOffset for paging
+- Removed duplicate Back button; sharing and CSV flows maintained
+- Config hardening (partial): centralized env usage in admin APIs; removed baked defaults/SSO literals; shared Mongo client + dbName via config across APIs
+- Build/type-check OK on Node 20; .nvmrc added
+- Next: extend same search/paging to Admin → Hashtags, Categories, Charts, Users; consider public hashtag page
+- LEARNINGS.md updated with “Atlas settings collection plan” (non-secrets only), including shape, TTL caching, and env > DB precedence.
+- ARCHITECTURE.md configuration section now references the LEARNINGS entry.
+- lib/config.ts extended: removed baked defaults (ADMIN_PASSWORD fallback, SSO URL default), added helpers and clientConfig(), added app/api base URLs.
+- lib/mongodb.ts refactored to use config; added explanatory comments.
+- lib/pagePassword.ts uses config.dbName instead of process.env fallback.
+- WARP.md aligned with stack reality: CSS Modules + theme.css; timestamps clarified to include milliseconds.
+- Build verified under Node 20.
+- Next: Proceed with broader replacement of process.env usages across APIs and components (phased), and address hard-coded http(s) bases; then prepare version bump and commit per protocol.
+- Created .env.example with keys: MONGODB_URI, MONGODB_DB, ADMIN_PASSWORD, SSO_BASE_URL, APP_BASE_URL, API_BASE_URL, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_WS_URL.
+- Updated ARCHITECTURE.md with a "Configuration Loader (4.2.x)" section: resolution order (env > DB), client/server boundary rules (only NEXT_PUBLIC_* on client), optional Atlas overlay (non-secrets), and example usage.
+- Updated TASKLIST.md: marked CFG-000 and CFG-002 as ✅ Complete; refreshed timestamp.
+- Next: Plan Atlas settings collection (LEARNINGS.md) and reference from ARCHITECTURE.md (Step 3).
+
 ## 2025-09-16T19:36:46.925Z — Plan & Delivery Log
 - Standardize Admin HERO across all admin pages (single source), adopt design-managed content surface, and widen narrow pages to match admin main content width.
 - Persist `contentBackgroundColor` in page styles and inject `--content-bg` for both admin and public routes.
