@@ -62,14 +62,20 @@ export default function HashtagInput({
       
       if (data.success) {
         const currentValue = valueRef.current;
-        const existingSuggestions: HashtagSuggestion[] = data.hashtags
+        // Normalize API to string[] (API may return {hashtag,count} items)
+        const items: any[] = Array.isArray(data.hashtags) ? data.hashtags : [];
+        const hashtagStrings: string[] = items
+          .map((h: any) => (typeof h === 'string' ? h : h?.hashtag))
+          .filter((s: any): s is string => typeof s === 'string' && s.length > 0);
+
+        const existingSuggestions: HashtagSuggestion[] = hashtagStrings
           .filter((hashtag: string) => !currentValue.includes(hashtag))
           .map((hashtag: string) => ({ hashtag, isExisting: true }));
         
         // Add the current input as a new suggestion if it's not in existing hashtags
         const cleanedInput = search.replace(/^#/, '').toLowerCase().trim();
         const isValidInput = /^[a-z0-9_]+$/.test(cleanedInput);
-        const inputNotInExisting = !data.hashtags.includes(cleanedInput);
+        const inputNotInExisting = !hashtagStrings.includes(cleanedInput);
         const inputNotInSelected = !currentValue.includes(cleanedInput);
         
         let allSuggestions = existingSuggestions;

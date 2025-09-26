@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.2.0] — 2025-09-26T12:47:48.000Z
+
+### Fixes — Hashtag Input React Error (#31)
+- UnifiedHashtagInput: Sanitized group rendering to coerce any nested objects (e.g., {hashtag, count}) into plain strings before rendering.
+- HashtagInput: Normalized /api/hashtags responses to string[] for suggestions (maps items to .hashtag when necessary).
+- Result: Prevents "Objects are not valid as a React child" on the Edit page manual hashtag editor.
+
+---
+
 ## [v5.1.0] — 2025-09-26T11:35:30.000Z
 
 ### Features — Variables Config, Clicker Visibility, and Reordering

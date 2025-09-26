@@ -115,18 +115,24 @@ export default function UnifiedHashtagInput({
       const data = await response.json();
       
       if (data.success) {
+        // Normalize API to a string[] list (API returns {hashtag,count} items)
+        const items: any[] = Array.isArray(data.hashtags) ? data.hashtags : [];
+        const hashtagStrings: string[] = items
+          .map((h: any) => (typeof h === 'string' ? h : h?.hashtag))
+          .filter((s: any): s is string => typeof s === 'string' && s.length > 0);
+        
         // Get hashtags in current category only
         const currentCategoryHashtags = selectedCategory === 'general' 
           ? generalHashtags 
           : (categorizedHashtags[selectedCategory] || []);
           
-        const existingSuggestions: HashtagSuggestion[] = data.hashtags
-          .filter((hashtag: string) => !currentCategoryHashtags.includes(hashtag))
-          .map((hashtag: string) => ({ hashtag, isExisting: true }));
+        const existingSuggestions: HashtagSuggestion[] = hashtagStrings
+          .filter((tag: string) => !currentCategoryHashtags.includes(tag))
+          .map((tag: string) => ({ hashtag: tag, isExisting: true }));
         
         const cleanedInput = search.replace(/^#/, '').toLowerCase().trim();
         const isValidInput = /^[a-z0-9_]+$/.test(cleanedInput);
-        const inputNotInExisting = !data.hashtags.includes(cleanedInput);
+        const inputNotInExisting = !hashtagStrings.includes(cleanedInput);
         const inputNotInCurrentCategory = !currentCategoryHashtags.includes(cleanedInput);
         
         let allSuggestions = existingSuggestions;
@@ -290,7 +296,13 @@ export default function UnifiedHashtagInput({
   };
   
   const renderHashtagGroup = (title: string, hashtags: string[], categoryName: string, categoryColor?: string) => {
-    if (hashtags.length === 0) return null;
+    // WHAT: Sanitize incoming hashtags to ensure they are strings only.
+    // WHY: Prevent React child errors when any downstream code accidentally injects objects like {hashtag,count}.
+    const safeHashtags = (Array.isArray(hashtags) ? hashtags : [])
+      .map((h: any) => typeof h === 'string' ? h : (h && typeof h.hashtag === 'string' ? h.hashtag : ''))
+      .filter((h: any): h is string => typeof h === 'string' && h.length > 0);
+
+    if (safeHashtags.length === 0) return null;
     
     return (
       <div className="hashtag-group" style={{ marginBottom: '1rem' }}>
@@ -303,11 +315,11 @@ export default function UnifiedHashtagInput({
               />
             )}
             <label className="group-label">{title}</label>
-            <span className="group-count">({hashtags.length})</span>
+            <span className="group-count">({safeHashtags.length})</span>
           </div>
         </div>
         <div className="hashtag-bubbles">
-              {hashtags.map((hashtag, index) => (
+              {safeHashtags.map((hashtag, index) => (
                 <ColoredHashtagBubble 
                   key={index}
                   hashtag={hashtag}
