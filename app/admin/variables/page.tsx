@@ -4,18 +4,28 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 
+interface VariableFlags {
+  visibleInClicker: boolean;
+  editableInManual: boolean;
+}
+
 interface Variable {
   name: string;
   label: string;
-  type: 'numeric' | 'percentage' | 'currency' | 'count';
+  type: 'numeric' | 'percentage' | 'currency' | 'count' | 'text';
   category: string;
   description?: string;
+  derived?: boolean;
+  formula?: string;
   defaultValue?: number;
   icon?: string;
+  flags: VariableFlags;
+  clickerOrder?: number;
+  isCustom?: boolean;
 }
 
 // Module-scope mock variables for fallback usage in UI (avoids recreating per render)
-const MOCK_VARIABLES: Variable[] = [
+const MOCK_VARIABLES: Omit<Variable, 'flags' | 'derived' | 'formula' | 'isCustom'>[] = [
   // Image-related variables
   { name: 'remoteImages', label: 'Remote Images', type: 'count', category: 'Images', icon: '📸', description: 'Images taken from remote locations' },
   { name: 'hostessImages', label: 'Hostess Images', type: 'count', category: 'Images', icon: '👥', description: 'Images featuring hostesses' },
@@ -66,14 +76,15 @@ export default function VariablesPage() {
   const [visibleCount, setVisibleCount] = useState(20);
   // Modal state (must be declared before any early returns to keep hook order stable)
   const [activeVar, setActiveVar] = useState<Variable | null>(null);
+  const [reorderOpen, setReorderOpen] = useState(false);
 
-  // Variables now come from API
+// Variables now come from API
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/variables', { cache: 'no-store' });
+        const res = await fetch('/api/variables-config', { cache: 'no-store' });
         const data = await res.json();
         if (data?.success && Array.isArray(data.variables)) {
           // Normalize API variables to UI Variable type
@@ -83,18 +94,26 @@ export default function VariablesPage() {
             type: v.type || 'count',
             category: v.category,
             description: v.derived && v.formula ? v.formula : v.description || undefined,
+            derived: !!v.derived,
+            formula: v.formula,
             icon: v.type === 'text' ? '🏷️' : undefined,
+            flags: v.flags || { visibleInClicker: false, editableInManual: false },
+            clickerOrder: typeof v.clickerOrder === 'number' ? v.clickerOrder : undefined,
+            isCustom: !!v.isCustom,
           }))
           setVariables(vars);
           setFilteredVariables(vars);
         } else {
-          setVariables(MOCK_VARIABLES);
-          setFilteredVariables(MOCK_VARIABLES);
+          // Fallback to mock with conservative flags
+          const fallback = MOCK_VARIABLES.map(v => ({ ...v, flags: { visibleInClicker: v.type !== 'text', editableInManual: true } })) as Variable[];
+          setVariables(fallback);
+          setFilteredVariables(fallback);
         }
       } catch (e) {
         console.error('Failed to load variables', e);
-        setVariables(MOCK_VARIABLES);
-        setFilteredVariables(MOCK_VARIABLES);
+        const fallback = MOCK_VARIABLES.map(v => ({ ...v, flags: { visibleInClicker: v.type !== 'text', editableInManual: true } })) as Variable[];
+        setVariables(fallback);
+        setFilteredVariables(fallback);
       } finally {
         setLoading(false);
       }
@@ -120,14 +139,48 @@ export default function VariablesPage() {
     setVisibleCount(20);
   }, [searchTerm, variables]);
 
+const [createForm, setCreateForm] = useState({
+    name: '',
+    label: '',
+    type: 'count' as Variable['type'],
+    category: '',
+    description: '',
+    visibleInClicker: true,
+    editableInManual: true,
+    error: '' as string | null,
+    saving: false,
+  });
+
   const handleCreateVariable = () => {
-    // TODO: Open create variable modal/form
-    console.log('Create new variable');
+    setCreateForm({
+      name: '', label: '', type: 'count', category: '', description: '',
+      visibleInClicker: true, editableInManual: true, error: '', saving: false
+    });
+    setShowCreateForm(true);
   };
 
   const handleEditVariable = (variableName: string) => {
-    // TODO: Open edit variable modal/form
-    console.log('Edit variable:', variableName);
+    const v = variables.find(v => v.name === variableName) || null;
+    setActiveVar(v);
+  };
+
+  const persistFlags = async (name: string, nextFlags: VariableFlags) => {
+    try {
+      const res = await fetch('/api/variables-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, flags: nextFlags }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Failed to save flags');
+      }
+      // Update state in-place
+      setVariables(prev => prev.map(v => v.name === name ? { ...v, flags: nextFlags } as Variable : v));
+      setFilteredVariables(prev => prev.map(v => v.name === name ? { ...v, flags: nextFlags } as Variable : v));
+    } catch (e) {
+      console.error('Failed to persist flags', e);
+    }
   };
 
   // Group variables by category
@@ -186,7 +239,10 @@ export default function VariablesPage() {
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         searchPlaceholder="Search variables..."
-        actionButtons={[{ label: '➕ New Variable', onClick: () => setShowCreateForm(true), variant: 'primary' }]}
+        actionButtons={[
+          { label: '↕️ Reorder Clicker', onClick: () => setReorderOpen(true), variant: 'secondary' },
+          { label: '➕ New Variable', onClick: () => setShowCreateForm(true), variant: 'primary' }
+        ]}
         backLink="/admin"
       />
       <div className="content-surface">
@@ -201,6 +257,37 @@ export default function VariablesPage() {
                 {activeVar.description && (
                   <p style={{ marginTop: '0.75rem', color: '#374151' }}>{activeVar.description}</p>
                 )}
+                {/* Flags quick view */}
+                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(107,114,128,0.08)', borderRadius: 8 }}>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (activeVar.derived || activeVar.type === 'text') ? 0.5 : 1 }}>
+                      <input
+                        type="checkbox"
+                        checked={!!activeVar.flags?.visibleInClicker}
+                        disabled={activeVar.derived || activeVar.type === 'text'}
+                        onChange={(e) => {
+                          const next = { ...activeVar.flags, visibleInClicker: e.target.checked }
+                          persistFlags(activeVar.name, next)
+                          setActiveVar({ ...activeVar, flags: next })
+                        }}
+                      />
+                      Visible in Clicker
+                    </label>
+                    <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (activeVar.derived || activeVar.type === 'text') ? 0.5 : 1 }}>
+                      <input
+                        type="checkbox"
+                        checked={!!activeVar.flags?.editableInManual}
+                        disabled={activeVar.derived || activeVar.type === 'text'}
+                        onChange={(e) => {
+                          const next = { ...activeVar.flags, editableInManual: e.target.checked }
+                          persistFlags(activeVar.name, next)
+                          setActiveVar({ ...activeVar, flags: next })
+                        }}
+                      />
+                      Editable in Manual
+                    </label>
+                  </div>
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                   <button className="btn btn-secondary" onClick={() => setActiveVar(null)}>Close</button>
                 </div>
@@ -235,9 +322,9 @@ export default function VariablesPage() {
                   </span>
                 </h2>
                 
-                <div className="charts-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                <div className="charts-grid vars-grid">
                   {categoryVariables.slice(0, visibleCount).map((variable) => (
-                    <div key={variable.name} className="glass-card">
+                    <div key={variable.name} className="glass-card section-card variable-card">
                       {/* Variable Header */}
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
@@ -254,8 +341,8 @@ export default function VariablesPage() {
                           </div>
                         </div>
                         
-                        <button className="btn btn-secondary btn-small" onClick={() => setActiveVar(variable)}>
-                          ✏️ Edit
+                        <button className="btn btn-sm btn-secondary" onClick={() => setActiveVar(variable)}>
+                          ✏️ Details
                         </button>
                       </div>
 
@@ -266,14 +353,46 @@ export default function VariablesPage() {
                         </p>
                       )}
 
-                      {/* Type Badge */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ padding: '0.25rem 0.75rem', background: `${getTypeColor(variable.type)}20`, color: getTypeColor(variable.type), fontSize: '0.75rem', borderRadius: '6px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                          {variable.type}
+                      {/* Flags Controls */}
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.25rem', marginBottom: '0.75rem' }}>
+                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                          <input
+                            type="checkbox"
+                            checked={!!variable.flags?.visibleInClicker}
+                            disabled={variable.derived || variable.type === 'text'}
+                            onChange={(e) => {
+                              const next = { ...variable.flags, visibleInClicker: e.target.checked }
+                              persistFlags(variable.name, next)
+                              setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                              setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                            }}
+                          />
+                          Visible in Clicker
+                        </label>
+                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                          <input
+                            type="checkbox"
+                            checked={!!variable.flags?.editableInManual}
+                            disabled={variable.derived || variable.type === 'text'}
+                            onChange={(e) => {
+                              const next = { ...variable.flags, editableInManual: e.target.checked }
+                              persistFlags(variable.name, next)
+                              setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                              setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                            }}
+                          />
+                          Editable in Manual
+                        </label>
+                      </div>
+
+                      {/* Footer: Type Badge / Default */}
+                      <div className="variable-card-footer">
+                        <span className="variable-type-badge" style={{ background: `${getTypeColor(variable.type)}20`, color: getTypeColor(variable.type) }}>
+                          {variable.type}{variable.derived ? ' (derived)' : ''}{variable.isCustom ? ' (custom)' : ''}
                         </span>
                         
                         {variable.defaultValue !== undefined && (
-                          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                          <span className="variable-default">
                             Default: {variable.defaultValue}
                           </span>
                         )}
@@ -313,7 +432,301 @@ export default function VariablesPage() {
               </div>
             )}
           </div>
-        </div>
       </div>
+
+      {/* Reorder Clicker Modal */}
+      {reorderOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+             onClick={() => setReorderOpen(false)}>
+          <div className="glass-card" style={{ maxWidth: 840, width: '94%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ margin: 0 }}>↕️ Reorder Clicker Buttons</h3>
+            <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Drag items to change the order of clickable stats in the Editor clicker. Per-category ordering.</p>
+            <ReorderClickerLists
+              variables={variables}
+              onClose={() => setReorderOpen(false)}
+              onSaved={(updated) => {
+                setVariables(updated);
+                setFilteredVariables(updated);
+                setReorderOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Create Variable Modal */}
+      {showCreateForm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+             onClick={() => setShowCreateForm(false)}>
+          <div className="glass-card" style={{ maxWidth: 640, width: '92%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ margin: 0 }}>➕ New Variable</h3>
+            <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div style={{ gridColumn: '1 / span 1' }}>
+                <label style={{ fontSize: 12, color: '#6b7280' }}>Name (camelCase)</label>
+                <input
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                  placeholder="e.g. vipGuests"
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                />
+              </div>
+              <div style={{ gridColumn: '2 / span 1' }}>
+                <label style={{ fontSize: 12, color: '#6b7280' }}>Label</label>
+                <input
+                  value={createForm.label}
+                  onChange={(e) => setCreateForm({ ...createForm, label: e.target.value })}
+                  placeholder="e.g. VIP Guests"
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, color: '#6b7280' }}>Type</label>
+                <select
+                  value={createForm.type}
+                  onChange={(e) => setCreateForm({ ...createForm, type: e.target.value as Variable['type'] })}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                >
+                  <option value="count">count</option>
+                  <option value="numeric">numeric</option>
+                  <option value="currency">currency</option>
+                  <option value="percentage">percentage</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 12, color: '#6b7280' }}>Category</label>
+                <input
+                  value={createForm.category}
+                  onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })}
+                  placeholder="e.g. Event"
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                />
+              </div>
+              <div style={{ gridColumn: '1 / span 2' }}>
+                <label style={{ fontSize: 12, color: '#6b7280' }}>Description (optional)</label>
+                <textarea
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                  placeholder="What does this track?"
+                  rows={3}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', gridColumn: '1 / span 2' }}>
+                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={createForm.visibleInClicker}
+                    onChange={(e) => setCreateForm({ ...createForm, visibleInClicker: e.target.checked })}
+                  />
+                  Visible in Clicker
+                </label>
+                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={createForm.editableInManual}
+                    onChange={(e) => setCreateForm({ ...createForm, editableInManual: e.target.checked })}
+                  />
+                  Editable in Manual
+                </label>
+              </div>
+            </div>
+            {createForm.error && (
+              <div style={{ color: '#b91c1c', marginTop: '0.5rem' }}>{createForm.error}</div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+              <button className="btn btn-sm btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={async () => {
+                  if (!createForm.name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(createForm.name)) {
+                    setCreateForm({ ...createForm, error: 'Provide a valid camelCase name (letters/numbers/underscore)' })
+                    return
+                  }
+                  if (!createForm.label || !createForm.category) {
+                    setCreateForm({ ...createForm, error: 'Label and Category are required' })
+                    return
+                  }
+                  try {
+                    setCreateForm(prev => ({ ...prev, saving: true, error: '' }))
+                    const res = await fetch('/api/variables-config', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name: createForm.name,
+                        label: createForm.label,
+                        type: createForm.type,
+                        category: createForm.category,
+                        description: createForm.description || undefined,
+                        flags: {
+                          visibleInClicker: createForm.visibleInClicker,
+                          editableInManual: createForm.editableInManual,
+                        }
+                      })
+                    })
+                    const data = await res.json()
+                    if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to create variable')
+                    // Refresh list
+                    const reload = await fetch('/api/variables-config', { cache: 'no-store' })
+                    const rdata = await reload.json()
+                    if (rdata?.success && Array.isArray(rdata.variables)) {
+                      const vars: Variable[] = rdata.variables.map((v: any) => ({
+                        name: v.name,
+                        label: v.label,
+                        type: v.type || 'count',
+                        category: v.category,
+                        description: v.derived && v.formula ? v.formula : v.description || undefined,
+                        derived: !!v.derived,
+                        formula: v.formula,
+                        icon: v.type === 'text' ? '🏷️' : undefined,
+                        flags: v.flags || { visibleInClicker: false, editableInManual: false },
+                        isCustom: !!v.isCustom,
+                      }))
+                      setVariables(vars)
+                      setFilteredVariables(vars)
+                    }
+                    setShowCreateForm(false)
+                  } catch (e: any) {
+                    setCreateForm(prev => ({ ...prev, error: e?.message || 'Failed to create variable' }))
+                  } finally {
+                    setCreateForm(prev => ({ ...prev, saving: false }))
+                  }
+                }}
+                disabled={createForm.saving}
+              >
+                {createForm.saving ? 'Saving…' : 'Create Variable'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        /* Ensure variable cards align and stretch uniformly */
+        .vars-grid {
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          align-items: stretch;
+        }
+        .variable-card { display: flex; flex-direction: column; height: 100%; }
+        .variable-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .variable-type-badge { padding: 0.25rem 0.75rem; font-size: 0.75rem; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .variable-default { font-size: 0.75rem; color: #6b7280; }
+      `}</style>
+    </div>
   );
+}
+
+// Drag-and-drop reorder component for clicker variables grouped by category
+function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Variable[]; onClose: () => void; onSaved: (updated: Variable[]) => void }) {
+  const [lists, setLists] = React.useState<Record<string, Variable[]>>(() => {
+    const cats = ['Images', 'Fans', 'Demographics', 'Merchandise']
+    const byCat: Record<string, Variable[]> = {}
+    cats.forEach(c => {
+      byCat[c] = variables
+        .filter(v => v.category === c && v.flags?.visibleInClicker && !v.derived && v.type !== 'text')
+        .sort((a, b) => ( (a.clickerOrder ?? 0) - (b.clickerOrder ?? 0) ) || a.label.localeCompare(b.label))
+    })
+    return byCat
+  })
+
+  const dragItem = React.useRef<{ cat: string; name: string } | null>(null)
+
+  const onDragStart = (cat: string, name: string) => {
+    dragItem.current = { cat, name }
+  }
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+  const onDrop = (cat: string, name: string) => {
+    const src = dragItem.current
+    if (!src) return
+    setLists(prev => {
+      const list = [...(prev[cat] || [])]
+      const fromIdx = list.findIndex(v => v.name === src.name)
+      const toIdx = list.findIndex(v => v.name === name)
+      if (fromIdx === -1 || toIdx === -1) return prev
+      const [moved] = list.splice(fromIdx, 1)
+      list.splice(toIdx, 0, moved)
+      return { ...prev, [cat]: list }
+    })
+    dragItem.current = null
+  }
+
+  const saveOrder = async () => {
+    // Compute updates and persist sequentially
+    const updates: { name: string; clickerOrder: number }[] = []
+    Object.entries(lists).forEach(([cat, arr]) => {
+      arr.forEach((v, idx) => {
+        if (v.clickerOrder !== idx) updates.push({ name: v.name, clickerOrder: idx })
+      })
+    })
+    for (const u of updates) {
+      try {
+        await fetch('/api/variables-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(u)
+        })
+      } catch {}
+    }
+    // Refresh variables-config
+    try {
+      const res = await fetch('/api/variables-config', { cache: 'no-store' })
+      const data = await res.json()
+      if (data?.success) {
+        const updated: Variable[] = data.variables.map((v: any) => ({
+          name: v.name,
+          label: v.label,
+          type: v.type || 'count',
+          category: v.category,
+          description: v.derived && v.formula ? v.formula : v.description || undefined,
+          derived: !!v.derived,
+          formula: v.formula,
+          icon: v.type === 'text' ? '🏷️' : undefined,
+          flags: v.flags || { visibleInClicker: false, editableInManual: false },
+          clickerOrder: typeof v.clickerOrder === 'number' ? v.clickerOrder : undefined,
+          isCustom: !!v.isCustom,
+        }))
+        onSaved(updated)
+      } else {
+        onClose()
+      }
+    } catch {
+      onClose()
+    }
+  }
+
+  const cats = Object.keys(lists)
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+        {cats.map(cat => (
+          <div key={cat} className="glass-card section-card" style={{ padding: '0.75rem' }}>
+            <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>{cat}</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {(lists[cat] || []).map(v => (
+                <li key={v.name}
+                    draggable
+                    onDragStart={() => onDragStart(cat, v.name)}
+                    onDragOver={onDragOver}
+                    onDrop={() => onDrop(cat, v.name)}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem', border: '1px dashed #e5e7eb', borderRadius: 8, marginBottom: '0.5rem', background: 'rgba(255,255,255,0.6)', cursor: 'grab' }}>
+                  <span style={{ display: 'inline-flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <span style={{ opacity: 0.6 }}>↕️</span>
+                    <span>{v.label}</span>
+                  </span>
+                  <code style={{ fontSize: '0.7rem', color: '#6b7280' }}>[{v.name}]</code>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+        <button className="btn btn-sm btn-secondary" onClick={onClose}>Cancel</button>
+        <button className="btn btn-sm btn-primary" onClick={saveOrder}>Save order</button>
+      </div>
+    </div>
+  )
 }

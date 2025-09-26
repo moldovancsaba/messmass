@@ -1,5 +1,32 @@
 # MessMass Release Notes
 
+## [v5.1.0] — 2025-09-26T11:35:30.000Z
+
+### Features — Variables Config, Clicker Visibility, and Reordering
+- New API: `GET/POST /api/variables-config`
+  - Persists per-variable flags: `visibleInClicker`, `editableInManual`
+  - Supports custom variables (with label/type/category/description)
+  - Persists `clickerOrder` for drag-and-drop ordering of clicker buttons
+  - Merges registry variables with DB overrides; defaults derived from category
+- Admin → Variables
+  - Two checkboxes per variable: “Visible in Clicker”, “Editable in Manual” (derived/text disabled)
+  - “➕ New Variable” modal for adding custom variables
+  - “↕️ Reorder Clicker” modal to drag-and-drop the order per category
+- Edit (EditorDashboard)
+  - Clicker mode renders buttons based on variables-config flags and `clickerOrder`
+  - Manual mode shows inputs only for variables with `editableInManual=true`
+  - Custom variables section supported (numeric/count), bound to project.stats
+
+### Fixes
+- Resolved upsert conflict in variables-config by avoiding duplicate fields in `$setOnInsert` and preserving flags on partial updates.
+- Addressed TS/JSX issues and ensured production build is clean.
+
+### Documentation
+- Updated version to v5.1.0 across package.json and documentation (README.md, WARP.md footer, ROADMAP.md, TASKLIST.md).
+- Logged delivery in WARP.DEV_AI_CONVERSATION.md with ISO 8601 millisecond timestamp.
+
+---
+
 ## [v5.0.0] — 2025-09-25T09:35:43.000Z
 
 ### Major — Unified Search + Paging for Multi-Hashtag Filter; Config Hardening (partial)

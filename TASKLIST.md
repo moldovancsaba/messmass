@@ -1,11 +1,20 @@
 # TASKLIST.md
-Current Version: 5.0.0
-Last Updated: 2025-09-25T09:35:43.000Z
+Current Version: 5.1.0
+Last Updated: 2025-09-26T11:35:30.000Z
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### High Priority — Variables Configuration & Edit Integration (5.x)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| VARCFG-001 | Add variables-config API (GET/POST) | ProjectAgent-messmass | 2025-09-26T12:00:00.000Z | ✅ Complete |
+|| VARCFG-002 | Admin Variables: checkboxes + create custom variable | ProjectAgent-messmass | 2025-09-26T13:00:00.000Z | ✅ Complete |
+|| VARCFG-003 | Edit page: respect flags + Custom Variables section | ProjectAgent-messmass | 2025-09-26T14:00:00.000Z | ✅ Complete |
+|| VARCFG-004 | Manual verify in dev and docs sync | ProjectAgent-messmass | 2025-09-26T17:00:00.000Z | Planned |
 
 ### High Priority — Search & Paging Unification (5.x)
 

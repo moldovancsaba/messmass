@@ -9,6 +9,19 @@ import {
   expandHashtagsWithCategories 
 } from '@/lib/hashtagCategoryUtils';
 
+// WHAT: Variable config type loaded from /api/variables-config to control Editor UI visibility.
+// WHY: Admin decides which variables appear in clicker vs. manual; we respect flags at render-time.
+interface VariableWithFlags {
+  name: string;
+  label: string;
+  type: 'count' | 'numeric' | 'currency' | 'percentage' | 'text';
+  category: string;
+  derived?: boolean;
+  flags: { visibleInClicker: boolean; editableInManual: boolean };
+  isCustom?: boolean;
+  clickerOrder?: number;
+}
+
 interface Project {
   _id: string;
   eventName: string;
@@ -71,12 +84,36 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [categorizedHashtags, setCategorizedHashtags] = useState<{ [categoryName: string]: string[] }>(initialProject.categorizedHashtags || {});
   const [editMode, setEditMode] = useState<'clicker' | 'manual'>('clicker'); // New state for edit mode
 
+  // Variables-config flags fetched from API
+  const [varsConfig, setVarsConfig] = useState<VariableWithFlags[]>([]);
+  const [varsLoading, setVarsLoading] = useState<boolean>(false);
+
   // Update project when initialProject changes
   useEffect(() => {
     setProject(initialProject);
     setHashtags(initialProject.hashtags || []);
     setCategorizedHashtags(initialProject.categorizedHashtags || {});
   }, [initialProject]);
+
+  // Load variables-config (flags and custom variables)
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setVarsLoading(true);
+        const res = await fetch('/api/variables-config', { cache: 'no-store' });
+        const data = await res.json();
+        if (mounted && data?.success && Array.isArray(data.variables)) {
+          setVarsConfig(data.variables);
+        }
+      } catch (e) {
+        console.error('Failed to load variables-config', e);
+      } finally {
+        setVarsLoading(false);
+      }
+    })();
+    return () => { mounted = false };
+  }, []);
 
   // Auto-save function
   const saveProject = async (
@@ -135,6 +172,19 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       saveProject(newStats);
     }
   };
+
+  // Dynamic accessors for custom variables (and safe access for known ones)
+  const getStat = (key: string): number => {
+    const raw = (project.stats as any)[key]
+    return typeof raw === 'number' ? raw : 0
+  }
+  const setStat = (key: string, value: number) => {
+    const newStats: any = { ...project.stats, [key]: Math.max(0, value) }
+    setProject(prev => ({ ...prev, stats: newStats }))
+    saveProject(newStats)
+  }
+  const incrementDynamic = (key: string) => setStat(key, getStat(key) + 1)
+  const decrementDynamic = (key: string) => setStat(key, Math.max(0, getStat(key) - 1))
 
   // Success Manager input field update (on blur/leave)
   const updateSuccessManagerField = (field: keyof typeof project.stats, value: number) => {
@@ -323,6 +373,64 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     );
   };
 
+  // Manual input for dynamic/custom stats
+  const ManualInputDynamic = ({ label, keyName }: { label: string; keyName: string }) => {
+    const val = getStat(keyName)
+    const [tempValue, setTempValue] = useState<number>(val)
+
+    useEffect(() => { setTempValue(val) }, [keyName, val])
+
+    const handleBlur = () => {
+      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0)
+      if (newValue !== val) {
+        setStat(keyName, newValue)
+      }
+    }
+
+    return (
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '12px',
+        padding: '1rem',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem'
+      }}>
+        <input
+          type="number"
+          value={tempValue}
+          onChange={(e) => {
+            const newValue = Math.max(0, parseInt(e.target.value) || 0)
+            setTempValue(newValue)
+          }}
+          onBlur={handleBlur}
+          style={{
+            width: '120px',
+            padding: '0.5rem',
+            border: '2px solid #e2e8f0',
+            borderRadius: '8px',
+            fontSize: '1.25rem',
+            fontWeight: 700,
+            textAlign: 'center',
+            color: '#1a202c',
+            backgroundColor: '#ffffff',
+            outline: 'none',
+            transition: 'all 0.2s ease'
+          }}
+          min="0"
+        />
+        <div style={{
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: '#4a5568',
+          flex: 1
+        }}>{label}</div>
+      </div>
+    )
+  }
+
   // Success Manager input card component
   const SuccessManagerCard = ({ label, value, statKey }: { 
     label: string; 
@@ -385,6 +493,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       </div>
     );
   };
+
+  // Helper: should show variable in clicker/manual by name
+  const canShowInClicker = (name: string) => !!varsConfig.find(v => v.name === name)?.flags?.visibleInClicker
+  const canShowInManual = (name: string) => !!varsConfig.find(v => v.name === name)?.flags?.editableInManual
 
   // Get all hashtag representations for display
   const allHashtagRepresentations = getAllHashtagRepresentations({ hashtags, categorizedHashtags });
@@ -488,15 +600,20 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />
-                <StatCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />
-                <StatCard label="Selfies" value={project.stats.selfies} statKey="selfies" />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Images' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
               </>
             ) : (
               <>
-                <ManualInputCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />
-                <ManualInputCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />
-                <ManualInputCard label="Selfies" value={project.stats.selfies} statKey="selfies" />
+                {canShowInManual('remoteImages') && <ManualInputCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />}
+                {canShowInManual('hostessImages') && <ManualInputCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />}
+                {canShowInManual('selfies') && <ManualInputCard label="Selfies" value={project.stats.selfies} statKey="selfies" />}
               </>
             )}
           </div>
@@ -515,56 +632,74 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                {/* Remote: now clickable in clicker mode. We persist to stats.remoteFans.
-                    If remoteFans is undefined, we base increments/decrements on the derived value (indoor + outdoor). */}
-                <StatCard 
-                  label="Remote" 
-                  value={remoteFansCalc} 
-                  onIncrement={() => {
-                    const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                    const newStats = { ...project.stats, remoteFans: current + 1 };
-                    setProject(prev => ({ ...prev, stats: newStats }));
-                    saveProject(newStats);
-                  }}
-                  onDecrement={() => {
-                    const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                    const next = Math.max(0, current - 1);
-                    const newStats = { ...project.stats, remoteFans: next };
-                    setProject(prev => ({ ...prev, stats: newStats }));
-                    saveProject(newStats);
-                  }}
-                />
-                <StatCard label="Location" value={project.stats.stadium} statKey="stadium" />
-                <StatCard label="Total Fans" value={totalFans} isCalculated={true} />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Fans' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => {
+                    if (v.name === 'remoteFans') {
+                      return (
+                        <StatCard key={v.name}
+                          label={v.label}
+                          value={remoteFansCalc}
+                          onIncrement={() => {
+                            const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                            const newStats = { ...project.stats, remoteFans: current + 1 };
+                            setProject(prev => ({ ...prev, stats: newStats }));
+                            saveProject(newStats);
+                          }}
+                          onDecrement={() => {
+                            const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                            const next = Math.max(0, current - 1);
+                            const newStats = { ...project.stats, remoteFans: next };
+                            setProject(prev => ({ ...prev, stats: newStats }));
+                            saveProject(newStats);
+                          }}
+                        />
+                      )
+                    }
+                    return (
+                      <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                    )
+                  })
+                })()}
+                {/* Derived total shown if any base is shown */}
+                {(() => {
+                  const anyShown = varsConfig.some(v => v.category === 'Fans' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text')
+                  return anyShown ? <StatCard label="Total Fans" value={totalFans} isCalculated={true} /> : null
+                })()}
               </>
             ) : (
               <>
-                {/* Remote is editable in manual mode (stores to stats.remoteFans) */}
-                <ManualInputCard label="Remote" value={(project.stats as any).remoteFans ?? remoteFansCalc} statKey={"remoteFans" as keyof typeof project.stats} />
-                <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.95)', 
-                  borderRadius: '12px', 
-                  padding: '1rem', 
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1rem',
-                  opacity: 0.7
-                }}>
-                  <div style={{
-                    width: '120px',
-                    padding: '0.5rem',
-                    border: '2px solid #e2e8f0',
-                    borderRadius: '8px',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    textAlign: 'center',
-                    color: '#6b7280',
-                    backgroundColor: '#f9fafb'
-                  }}>{totalFans}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Fans (calculated)</div>
-                </div>
+                {canShowInManual('remoteFans') && (
+                  <ManualInputCard label="Remote" value={(project.stats as any).remoteFans ?? remoteFansCalc} statKey={"remoteFans" as keyof typeof project.stats} />
+                )}
+                {canShowInManual('stadium') && <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />}
+                {(canShowInManual('remoteFans') || canShowInManual('stadium')) && (
+                  <div style={{ 
+                    background: 'rgba(255, 255, 255, 0.95)', 
+                    borderRadius: '12px', 
+                    padding: '1rem', 
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '1rem',
+                    opacity: 0.7
+                  }}>
+                    <div style={{
+                      width: '120px',
+                      padding: '0.5rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '8px',
+                      fontSize: '1.25rem',
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      color: '#6b7280',
+                      backgroundColor: '#f9fafb'
+                    }}>{totalFans}</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Fans (calculated)</div>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -583,14 +718,24 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="Female" value={project.stats.female} statKey="female" />
-                <StatCard label="Male" value={project.stats.male} statKey="male" />
-                <StatCard label="Total Gender" value={totalGender} isCalculated={true} />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Demographics' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text' && (v.name === 'female' || v.name === 'male'))
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
+                {(() => {
+                  const anyShown = varsConfig.some(v => (v.name === 'female' || v.name === 'male') && v.category === 'Demographics' && v.flags?.visibleInClicker)
+                  return anyShown ? <StatCard label="Total Gender" value={totalGender} isCalculated={true} /> : null
+                })()}
               </>
             ) : (
               <>
-                <ManualInputCard label="Female" value={project.stats.female} statKey="female" />
-                <ManualInputCard label="Male" value={project.stats.male} statKey="male" />
+                {canShowInManual('female') && <ManualInputCard label="Female" value={project.stats.female} statKey="female" />}
+                {canShowInManual('male') && <ManualInputCard label="Male" value={project.stats.male} statKey="male" />}
+                {(canShowInManual('female') || canShowInManual('male')) && (
                 <div style={{ 
                   background: 'rgba(255, 255, 255, 0.95)', 
                   borderRadius: '12px', 
@@ -614,6 +759,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   }}>{totalGender}</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Gender (calculated)</div>
                 </div>
+                )}
               </>
             )}
           </div>
@@ -632,20 +778,32 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div className="age-grid">
             {editMode === 'clicker' ? (
               <>
-                {/* Row 1 */}
-                <StatCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
-                <StatCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
-                <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />
-                {/* Row 2 */}
-                <StatCard label="Gen X" value={project.stats.genX} statKey="genX" />
-                <StatCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
-                <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Demographics' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text' && (v.name === 'genAlpha' || v.name === 'genYZ' || v.name === 'genX' || v.name === 'boomer'))
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
+                {/* Totals */}
+                {(() => {
+                  const anyUnder = varsConfig.some(v => (v.name === 'genAlpha' || v.name === 'genYZ') && v.flags?.visibleInClicker)
+                  const anyOver = varsConfig.some(v => (v.name === 'genX' || v.name === 'boomer') && v.flags?.visibleInClicker)
+                  return (
+                    <>
+                      {anyUnder && <StatCard label="Total Under 40" value={totalUnder40} isCalculated={true} />}
+                      {anyOver && <StatCard label="Total Over 40" value={totalOver40} isCalculated={true} />}
+                    </>
+                  )
+                })()}
               </>
             ) : (
               <>
                 {/* Row 1 */}
-                <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />
-                <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />
+                {canShowInManual('genAlpha') && <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />}
+                {canShowInManual('genYZ') && <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />}
+                {(canShowInManual('genAlpha') || canShowInManual('genYZ')) && (
                 <div style={{ 
                   background: 'rgba(255, 255, 255, 0.95)', 
                   borderRadius: '12px', 
@@ -669,9 +827,11 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   }}>{totalUnder40}</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Under 40 (calculated)</div>
                 </div>
+                )}
                 {/* Row 2 */}
-                <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />
-                <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />
+                {canShowInManual('genX') && <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />}
+                {canShowInManual('boomer') && <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />}
+                {(canShowInManual('genX') || canShowInManual('boomer')) && (
                 <div style={{ 
                   background: 'rgba(255, 255, 255, 0.95)', 
                   borderRadius: '12px', 
@@ -695,6 +855,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   }}>{totalOver40}</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Over 40 (calculated)</div>
                 </div>
+                )}
               </>
             )}
           </div>
@@ -713,30 +874,40 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="People with Merch" value={project.stats.merched} statKey="merched" />
-                <StatCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
-                <StatCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Merchandise' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text' && (['merched','jersey','scarf'].includes(v.name)))
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
               </>
             ) : (
               <>
-                <ManualInputCard label="People with Merch" value={project.stats.merched} statKey="merched" />
-                <ManualInputCard label="Jersey" value={project.stats.jersey} statKey="jersey" />
-                <ManualInputCard label="Scarf" value={project.stats.scarf} statKey="scarf" />
+                {canShowInManual('merched') && <ManualInputCard label="People with Merch" value={project.stats.merched} statKey="merched" />}
+                {canShowInManual('jersey') && <ManualInputCard label="Jersey" value={project.stats.jersey} statKey="jersey" />}
+                {canShowInManual('scarf') && <ManualInputCard label="Scarf" value={project.stats.scarf} statKey="scarf" />}
               </>
             )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             {editMode === 'clicker' ? (
               <>
-                <StatCard label="Flags" value={project.stats.flags} statKey="flags" />
-                <StatCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />
-                <StatCard label="Other" value={project.stats.other} statKey="other" />
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Merchandise' && v.flags?.visibleInClicker && !v.derived && v.type !== 'text' && (['flags','baseballCap','other'].includes(v.name)))
+                    .sort((a, b) => ((a.clickerOrder ?? 0) - (b.clickerOrder ?? 0)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
               </>
             ) : (
               <>
-                <ManualInputCard label="Flags" value={project.stats.flags} statKey="flags" />
-                <ManualInputCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />
-                <ManualInputCard label="Other" value={project.stats.other} statKey="other" />
+                {canShowInManual('flags') && <ManualInputCard label="Flags" value={project.stats.flags} statKey="flags" />}
+                {canShowInManual('baseballCap') && <ManualInputCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />}
+                {canShowInManual('other') && <ManualInputCard label="Other" value={project.stats.other} statKey="other" />}
               </>
             )}
           </div>
@@ -758,8 +929,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Image Management</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="Approved Images" value={project.stats.approvedImages || 0} statKey="approvedImages" />
-              <SuccessManagerCard label="Rejected Images" value={project.stats.rejectedImages || 0} statKey="rejectedImages" />
+              {canShowInManual('approvedImages') && <SuccessManagerCard label="Approved Images" value={project.stats.approvedImages || 0} statKey="approvedImages" />}
+              {canShowInManual('rejectedImages') && <SuccessManagerCard label="Rejected Images" value={project.stats.rejectedImages || 0} statKey="rejectedImages" />}
             </div>
           </div>
 
@@ -767,9 +938,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Visit Tracking</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="QR Code Visits" value={project.stats.visitQrCode || 0} statKey="visitQrCode" />
-              <SuccessManagerCard label="Short URL Visits" value={project.stats.visitShortUrl || 0} statKey="visitShortUrl" />
-              <SuccessManagerCard label="Web Visits" value={project.stats.visitWeb || 0} statKey="visitWeb" />
+              {canShowInManual('visitQrCode') && <SuccessManagerCard label="QR Code Visits" value={project.stats.visitQrCode || 0} statKey="visitQrCode" />}
+              {canShowInManual('visitShortUrl') && <SuccessManagerCard label="Short URL Visits" value={project.stats.visitShortUrl || 0} statKey="visitShortUrl" />}
+              {canShowInManual('visitWeb') && <SuccessManagerCard label="Web Visits" value={project.stats.visitWeb || 0} statKey="visitWeb" />}
             </div>
           </div>
 
@@ -777,8 +948,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>eDM</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />
-              <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />
+              {canShowInManual('eventValuePropositionVisited') && <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />}
+              {canShowInManual('eventValuePropositionPurchases') && <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />}
             </div>
           </div>
 
@@ -786,7 +957,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Social Visit</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              {(() => {
+              {canShowInManual('socialVisit') && (() => {
                 const sumSocial = (project.stats.visitFacebook || 0) + (project.stats.visitInstagram || 0) + (project.stats.visitYoutube || 0) + (project.stats.visitTiktok || 0) + (project.stats.visitX || 0) + (project.stats.visitTrustpilot || 0);
                 const socialVal = project.stats.socialVisit ?? sumSocial;
                 return (
@@ -800,14 +971,51 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <div style={{ marginBottom: '1.5rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Event Performance</h4>
             <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <SuccessManagerCard label="Event Attendees" value={project.stats.eventAttendees || 0} statKey="eventAttendees" />
-              <SuccessManagerCard label="Event Result Home" value={project.stats.eventResultHome || 0} statKey="eventResultHome" />
-              <SuccessManagerCard label="Event Result Visitor" value={project.stats.eventResultVisitor || 0} statKey="eventResultVisitor" />
+              {canShowInManual('eventAttendees') && <SuccessManagerCard label="Event Attendees" value={project.stats.eventAttendees || 0} statKey="eventAttendees" />}
+              {canShowInManual('eventResultHome') && <SuccessManagerCard label="Event Result Home" value={project.stats.eventResultHome || 0} statKey="eventResultHome" />}
+              {canShowInManual('eventResultVisitor') && <SuccessManagerCard label="Event Result Visitor" value={project.stats.eventResultVisitor || 0} statKey="eventResultVisitor" />}
             </div>
           </div>
           </div>
         )}
         
+        {/* Custom Variables Section (supports newly added variables) */}
+        {(() => {
+          const customVars = varsConfig.filter(v => v.isCustom && (v.type === 'count' || v.type === 'numeric'))
+          if (customVars.length === 0) return null
+          const showAny = editMode === 'clicker'
+            ? customVars.some(v => v.flags.visibleInClicker)
+            : customVars.some(v => v.flags.editableInManual)
+          if (!showAny) return null
+          return (
+            <div className="glass-card" style={{ padding: '1.5rem' }}>
+              <h2 style={{ 
+                fontSize: '1.5rem', 
+                fontWeight: 700, 
+                margin: '0 0 1.5rem 0',
+                color: '#2d3748',
+                borderBottom: '2px solid #e2e8f0',
+                paddingBottom: '0.5rem'
+              }}>🧩 Custom Variables</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                {editMode === 'clicker' ? (
+                  <>
+                    {customVars.filter(v => v.flags.visibleInClicker).map(v => (
+                      <StatCard key={v.name} label={v.label} value={getStat(v.name)} onIncrement={() => incrementDynamic(v.name)} onDecrement={() => decrementDynamic(v.name)} />
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {customVars.filter(v => v.flags.editableInManual).map(v => (
+                      <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Hashtag Management Section - Move to bottom and only show in manual mode */}
         {editMode === 'manual' && (
           <div className="glass-card" style={{ padding: '1.5rem' }}>

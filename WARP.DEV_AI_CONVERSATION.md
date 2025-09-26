@@ -1,5 +1,14 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-26T09:37:58.000Z — Plan & Delivery Log: Variables Visibility/Editability + Edit Integration
+- Plan accepted: Implement variables-config persistence with flags controlling "Visible in Clicker" and "Editable in Manual" per variable, and support custom variables.
+- Delivery steps executed:
+  - Added /api/variables-config (GET/POST) to merge registry variables with DB overrides and store custom variables; timestamps in ISO 8601 with ms.
+  - Updated Admin → Variables to fetch variables-config, show two checkboxes per variable, and persist toggles; added a modal to create custom variables.
+  - Updated Edit page (EditorDashboard) to fetch variables-config and respect flags for both clicker and manual modes; added a "Custom Variables" section bound directly to project.stats.
+- Rationale: Central, admin-driven control over which metrics appear in live (clicker) vs. post-event (manual) flows; no code changes required to add new variables.
+- Next actions: Manual verification in dev, documentation sync (ROADMAP/TASKLIST/README as needed), and minor UX polish if required.
+
 ## 2025-09-23T12:32:28.000Z — Plan & Delivery Log
 - Plan accepted: Config hardening + Inline styles migration. Owners and due dates registered in TASKLIST.md and ROADMAP.md.
 - Baseline snapshot captured:

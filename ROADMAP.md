@@ -1,9 +1,20 @@
 # ROADMAP.md
 
-Current Version: 4.2.0
-Last Updated: 2025-09-25T09:35:43.000Z
+Current Version: 5.1.0
+Last Updated: 2025-09-26T11:35:30.000Z
 
 ## Milestones
+
+### Milestone: Variable Visibility & Editability Flags + Edit Integration (Q4 2025)
+Priority: High
+Dependencies: Variables registry and EditorDashboard
+- Persist per-variable flags (visibleInClicker, editableInManual) and support custom variables
+- Admin → Variables: Toggle flags per variable; create custom variables via modal
+- Edit page: Respect flags in clicker/manual sections; show Custom Variables; bind to project.stats
+- Acceptance:
+  - Flags persist across sessions and affect Editor immediately
+  - Custom variables appear and persist values in stats
+  - No UI drift; buttons/styles follow centralized system
 
 ### Milestone: Config Hardening & Inline Style Migration (Q3–Q4 2025)
 
