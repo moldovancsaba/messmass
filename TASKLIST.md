@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 5.8.0
-Last Updated: 2025-09-27T13:10:32.000Z
+Current Version: 5.9.0
+Last Updated: 2025-09-27T20:26:36.000Z
 
 ### High Priority — Style System Hardening (Phase 2)
 
@@ -26,6 +26,16 @@ Last Updated: 2025-09-27T13:10:32.000Z
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**
 
 ## Active Tasks
+
+### High Priority — Admin Variables Refactor (5.x)
+
+||| Task ID | Title | Owner | Expected Delivery | Status |
+|||---------|-------|-------|-------------------|--------|
+||| VAR-ORG-001 | Add SEYU reference mapper with naming normalization | Agent Mode | 2025-09-27T19:30:00.000Z | ✅ Complete (2025-09-27T18:31:47.000Z) |
+||| VAR-UI-002 | Enforce card line order and equal size on /admin/variables | Agent Mode | 2025-09-27T19:45:00.000Z | ✅ Complete (2025-09-27T18:31:47.000Z) |
+||| VAR-REG-003 | Registry: All Images → Total Images | Agent Mode | 2025-09-27T19:50:00.000Z | ✅ Complete (2025-09-27T18:31:47.000Z) |
+||| VAR-DOC-004 | Roadmap/Tasklist logging with ISO timestamps | Agent Mode | 2025-09-27T19:55:00.000Z | ✅ Complete (2025-09-27T19:00:46.000Z) |
+||| VAR-CHART-005 | Enable SEYU tokens in chart formulas (back-compat) | Agent Mode | 2025-09-27T20:10:00.000Z | ✅ Complete (2025-09-27T19:00:46.000Z) |
 
 ### High Priority — Variables Configuration & Edit Integration (5.x)
 

@@ -1,5 +1,22 @@
 # MessMass Release Notes
 
+## [v5.9.0] — 2025-09-27T20:26:36.000Z
+
+### Features — Admin Variables and SEYU References
+- Admin → Variables: Cards now use a strict line order and equal heights across the grid.
+- Reference tokens are SEYU-prefixed and normalized (TOTAL, VISIT order, FANS/MERCH suffixes) via a centralized utility.
+- Registry: “All Images” label standardized to “Total Images”.
+
+### Compatibility — Chart Formula Engine
+- Formulas now accept both legacy tokens and new SEYU-prefixed/normalized tokens.
+- Added computed aliases: TOTALIMAGES, TOTALVISIT, TOTALUNDER40, TOTALOVER40, TOTALFANS, REMOTEFANS.
+
+### Migration — Chart Configs
+- Executed scripts/migrate-chart-formulas-to-seyu.js
+- Updated 34 chart configuration(s) to SEYU tokens; preserved updatedAt timestamps.
+
+---
+
 ## [v5.8.0] — 2025-09-27T12:50:33.000Z
 
 ### Chore — CSS duplication cleanup and guardrails

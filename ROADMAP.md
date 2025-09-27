@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.8.0
-Last Updated: 2025-09-27T12:50:33.000Z
+Current Version: 5.9.0
+Last Updated: 2025-09-27T20:26:36.000Z
 
 ## Operational — Style System Hardening (Q3 2025)
 Priority: High
@@ -31,6 +31,19 @@ Logged at: 2025-09-27T11:26:38.000Z
 Author: Agent Mode
 
 ## Milestones
+
+### Milestone: Admin Variables — Org-Prefixed References & Card Layout (Q4 2025)
+Priority: High
+Dependencies: variablesRegistry, /api/variables-config, Admin styles
+- Action: Introduce SEYU-prefixed reference tokens with normalization (TOTAL, VISIT order, FANS suffix, MERCH prefix) — centralized util
+- Action: Refactor /admin/variables cards to enforce exact line order and equal heights
+- Action: Standardize derived label (All Images → Total Images)
+- Acceptance:
+  - Cards show lines in the order: Label → [REF] → Details → Visible in Clicker → Editable in Manual → TYPE
+  - All cards are the same visual size within the grid
+  - Reference tokens match mappings, e.g. [EVENTVALUEPROPOSITIONVISITED] → [SEYUPROPOSITIONVISIT]
+Logged at: 2025-09-27T18:31:47.000Z
+Author: Agent Mode
 
 ### Milestone: Variable Visibility & Editability Flags + Edit Integration (Q4 2025)
 Priority: High

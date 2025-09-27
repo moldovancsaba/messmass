@@ -68,7 +68,7 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
 export const DERIVED_VARIABLES: VariableDefinition[] = [
   {
     name: 'allImages',
-    label: 'All Images',
+    label: 'Total Images',
     type: 'count',
     category: 'Images',
     derived: true,

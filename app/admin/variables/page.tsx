@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
+import { buildReferenceToken } from '@/lib/variableRefs';
 
 interface VariableFlags {
   visibleInClicker: boolean;
@@ -323,82 +324,59 @@ const [createForm, setCreateForm] = useState({
                 </h2>
                 
                 <div className="charts-grid vars-grid">
-                  {categoryVariables.slice(0, visibleCount).map((variable) => (
-                    <div key={variable.name} className="glass-card section-card variable-card">
-                      {/* Variable Header */}
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                          <span style={{ fontSize: '1.25rem' }}>{variable.icon}</span>
-                          <div>
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#1f2937' }}>
-                              {variable.label}
-                            </h3>
-                            <code style={{ fontSize: '0.75rem', color: '#6b7280', background: 'rgba(107, 114, 128, 0.1)', padding: '0.125rem 0.375rem', borderRadius: '4px' }}>
-                              {[ 'count','numeric','currency','percentage' ].includes(variable.type)
-                                ? `[${variable.name.toUpperCase()}]`
-                                : `${variable.name}`}
-                            </code>
-                          </div>
+                  {categoryVariables.slice(0, visibleCount).map((variable) => {
+                    const reference = ['count','numeric','currency','percentage'].includes(variable.type)
+                      ? buildReferenceToken({ name: variable.name, category: variable.category, derived: variable.derived, type: variable.type })
+                      : variable.name
+                    return (
+                      <div key={variable.name} className="glass-card section-card variable-card">
+                        {/* WHAT: Enforce exact line order per request; WHY: Consistent, scannable, uniform cards. */}
+                        <div className="variable-header">
+                          <h3 className="variable-title">{variable.label}</h3>
+                          <code className="variable-ref">{reference}</code>
                         </div>
-                        
-                        <button className="btn btn-sm btn-secondary" onClick={() => setActiveVar(variable)}>
-                          ✏️ Details
-                        </button>
-                      </div>
 
-                      {/* Description */}
-                      {variable.description && (
-                        <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.75rem', lineHeight: '1.4' }}>
-                          {variable.description}
-                        </p>
-                      )}
+                        <div className="variable-details">
+                          <button className="btn btn-sm btn-secondary btn-full" onClick={() => setActiveVar(variable)}>✏️ Details</button>
+                        </div>
 
-                      {/* Flags Controls */}
-                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.25rem', marginBottom: '0.75rem' }}>
-                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
-                          <input
-                            type="checkbox"
-                            checked={!!variable.flags?.visibleInClicker}
-                            disabled={variable.derived || variable.type === 'text'}
-                            onChange={(e) => {
-                              const next = { ...variable.flags, visibleInClicker: e.target.checked }
-                              persistFlags(variable.name, next)
-                              setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                              setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                            }}
-                          />
-                          Visible in Clicker
-                        </label>
-                        <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
-                          <input
-                            type="checkbox"
-                            checked={!!variable.flags?.editableInManual}
-                            disabled={variable.derived || variable.type === 'text'}
-                            onChange={(e) => {
-                              const next = { ...variable.flags, editableInManual: e.target.checked }
-                              persistFlags(variable.name, next)
-                              setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                              setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                            }}
-                          />
-                          Editable in Manual
-                        </label>
-                      </div>
+                        {/* Flags Controls (each on its own line) */}
+                        <div className="variable-flags">
+                          <label className="variable-flag" style={{ opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                            <input
+                              type="checkbox"
+                              checked={!!variable.flags?.visibleInClicker}
+                              disabled={variable.derived || variable.type === 'text'}
+                              onChange={(e) => {
+                                const next = { ...variable.flags, visibleInClicker: e.target.checked }
+                                persistFlags(variable.name, next)
+                                setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                              }}
+                            />
+                            <span>Visible in Clicker</span>
+                          </label>
+                          <label className="variable-flag" style={{ opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                            <input
+                              type="checkbox"
+                              checked={!!variable.flags?.editableInManual}
+                              disabled={variable.derived || variable.type === 'text'}
+                              onChange={(e) => {
+                                const next = { ...variable.flags, editableInManual: e.target.checked }
+                                persistFlags(variable.name, next)
+                                setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                              }}
+                            />
+                            <span>Editable in Manual</span>
+                          </label>
+                        </div>
 
-                      {/* Footer: Type Badge / Default */}
-                      <div className="variable-card-footer">
-                        <span className="variable-type-badge" style={{ background: `${getTypeColor(variable.type)}20`, color: getTypeColor(variable.type) }}>
-                          {variable.type}{variable.derived ? ' (derived)' : ''}{variable.isCustom ? ' (custom)' : ''}
-                        </span>
-                        
-                        {variable.defaultValue !== undefined && (
-                          <span className="variable-default">
-                            Default: {variable.defaultValue}
-                          </span>
-                        )}
+                        {/* Final line: TYPE */}
+                        <div className="variable-type-line">{variable.type.toUpperCase()}</div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
                 {/* Load more within this category if there are more */}
                 {categoryVariables.length > visibleCount && (

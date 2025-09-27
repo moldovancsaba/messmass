@@ -4,6 +4,21 @@
 
 import { AVAILABLE_VARIABLES, FormulaValidationResult } from './chartConfigTypes';
 
+// WHAT: Normalization helpers to accept both legacy tokens (e.g., [TOTAL_FANS]) and new org-prefixed tokens
+//       you requested (e.g., [SEYUTOTALFANS], [SEYUPROPOSITIONVISIT]).
+// WHY: This preserves backward compatibility for existing chart configs while enabling the new naming scheme.
+
+function stripOrgPrefix(token: string): string {
+  const t = token.toUpperCase()
+  return t.startsWith('SEYU') ? t.slice(4) : t
+}
+
+function normalizeTokenRaw(token: string): string {
+  // Remove org prefix and underscores; keep alphanumerics only
+  const noOrg = stripOrgPrefix(token)
+  return noOrg.replace(/_/g, '')
+}
+
 /**
  * Variable mapping from display names to project stats field names
  * Maps [INDOOR] to stats.indoor, [FEMALE] to stats.female, etc.
@@ -65,6 +80,55 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'CAP_PRICE': 'capPrice',
   'OTHER_PRICE': 'otherPrice'
 };
+
+// Build normalized mapping: keys without underscores, values are stats field names
+const NORMALIZED_VARIABLE_MAPPINGS: Record<string, string> = {}
+for (const [key, field] of Object.entries(VARIABLE_MAPPINGS)) {
+  NORMALIZED_VARIABLE_MAPPINGS[key.replace(/_/g, '')] = field
+}
+
+// Aliases to support new concise tokens (no underscores, reordered terms)
+// Map alias (normalized) → canonical variable key (normalized)
+const ALIAS_NORMALIZED_KEYS: Record<string, string> = {
+  // Fans and Images
+  STADIUMFANS: 'STADIUM',
+  TOTALIMAGES: 'TOTALIMAGES', // computed (not in VARIABLE_MAPPINGS)
+  ALLIMAGES: 'TOTALIMAGES',   // legacy -> computed
+  TOTALFANS: 'TOTALFANS',     // computed
+  REMOTEFANS: 'REMOTEFANS',   // computed
+  TOTALUNDER40: 'TOTALUNDER40', // computed
+  TOTALOVER40: 'TOTALOVER40',   // computed
+
+  // Merchandise
+  MERCHSCARF: 'SCARF',
+  MERCHJERSEY: 'JERSEY',
+  MERCHEDFANS: 'MERCHED',
+
+  // Visits (order flipped VISIT → suffix VISIT)
+  QRCODEVISIT: 'VISITQRCODE',
+  SHORTURLVISIT: 'VISITSHORTURL',
+  WEBVISIT: 'VISITWEB',
+  SOCIALVISIT: 'SOCIALVISIT',
+  TOTALVISIT: 'TOTALVISIT', // computed
+
+  // Event
+  ATTENDEES: 'EVENTATTENDEES',
+  RESULTHOME: 'EVENTRESULTHOME',
+  RESULTVISITOR: 'EVENTRESULTVISITOR',
+  PROPOSITIONVISIT: 'EVENTVALUEPROPOSITIONVISITED',
+  PROPOSITIONPURCHASE: 'EVENTVALUEPROPOSITIONPURCHASES',
+}
+
+function resolveFieldNameByNormalizedToken(normalizedToken: string): string | undefined {
+  // Computed aliases handled separately
+  const computedSet = new Set([
+    'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 'REMOTEFANS', 'TOTALVISIT', 'TOTALUNDER40', 'TOTALOVER40'
+  ])
+  if (computedSet.has(normalizedToken)) return undefined
+
+  const canonicalKey = ALIAS_NORMALIZED_KEYS[normalizedToken] ?? normalizedToken
+  return NORMALIZED_VARIABLE_MAPPINGS[canonicalKey]
+}
 
 /**
  * Safe mathematical functions that can be used in formulas
@@ -195,7 +259,13 @@ export function validateFormula(formula: string): FormulaValidationResult {
     
     // Check if all variables are valid
     const invalidVariables = usedVariables.filter(
-      variable => !VARIABLE_MAPPINGS.hasOwnProperty(variable)
+      variable => {
+        const normalized = normalizeTokenRaw(variable)
+        // If not a known field and not a supported computed alias → invalid
+        const field = resolveFieldNameByNormalizedToken(normalized)
+        const isComputed = ['TOTALIMAGES','ALLIMAGES','TOTALFANS','REMOTEFANS','TOTALVISIT','TOTALUNDER40','TOTALOVER40'].includes(normalized)
+        return !field && !isComputed
+      }
     );
     
     if (invalidVariables.length > 0) {
@@ -259,31 +329,81 @@ export function validateFormula(formula: string): FormulaValidationResult {
  */
 function substituteVariables(formula: string, stats: ProjectStats): string {
   let processedFormula = formula;
-  
-  // Pre-compute synthetic variables that aren't stored directly
-  // TOTAL_FANS = (remoteFans || indoor + outdoor) + stadium
-  const remoteFans = (stats as any).remoteFans ?? ((stats as any).indoor + (stats as any).outdoor);
-  const totalFansComputed = remoteFans + ((stats as any).stadium || 0);
-  
-  // Replace all variables with their actual values
-  for (const [variableName, fieldName] of Object.entries(VARIABLE_MAPPINGS)) {
-    const variablePattern = new RegExp(`\\[${variableName}\\]`, 'g');
-    let value = (stats as any)[fieldName];
 
-    // Inject computed values for synthetic mappings
-    if (variableName === 'TOTAL_FANS') {
-      value = totalFansComputed;
-    } else if (variableName === 'REMOTE_FANS' && (value === undefined || value === null)) {
-      // REMOTE_FANS falls back to indoor+outdoor if not explicitly stored
-      value = (stats as any).indoor + (stats as any).outdoor;
+  // Single-pass replacement function to support both legacy and SEYU tokens
+  processedFormula = processedFormula.replace(/\[([A-Z_]+)\]/g, (_match, rawToken) => {
+    const normalized = normalizeTokenRaw(rawToken)
+
+    // Pre-compute common composites
+    const indoor = (stats as any).indoor || 0
+    const outdoor = (stats as any).outdoor || 0
+    const stadium = (stats as any).stadium || 0
+
+    const approvedImages = (stats as any).approvedImages || 0
+    const rejectedImages = (stats as any).rejectedImages || 0
+
+    const remoteImages = (stats as any).remoteImages || 0
+    const hostessImages = (stats as any).hostessImages || 0
+    const selfies = (stats as any).selfies || 0
+
+    const female = (stats as any).female || 0
+    const male = (stats as any).male || 0
+    const genAlpha = (stats as any).genAlpha || 0
+    const genYZ = (stats as any).genYZ || 0
+    const genX = (stats as any).genX || 0
+    const boomer = (stats as any).boomer || 0
+
+    const visitQrCode = (stats as any).visitQrCode || 0
+    const visitShortUrl = (stats as any).visitShortUrl || 0
+    const visitWeb = (stats as any).visitWeb || 0
+    const visitFacebook = (stats as any).visitFacebook || 0
+    const visitInstagram = (stats as any).visitInstagram || 0
+    const visitYoutube = (stats as any).visitYoutube || 0
+    const visitTiktok = (stats as any).visitTiktok || 0
+    const visitX = (stats as any).visitX || 0
+    const visitTrustpilot = (stats as any).visitTrustpilot || 0
+
+    const socialVisit = (stats as any).socialVisit ?? (visitFacebook + visitInstagram + visitYoutube + visitTiktok + visitX + visitTrustpilot)
+
+    // Computed tokens
+    if (normalized === 'TOTALFANS') {
+      const remoteFansComputed = (stats as any).remoteFans ?? (indoor + outdoor)
+      const totalFansComputed = remoteFansComputed + stadium
+      return String(totalFansComputed)
     }
-    
-    // Handle missing or undefined values
-    const actualValue = (value !== undefined && value !== null) ? value : 0;
-    
-    processedFormula = processedFormula.replace(variablePattern, actualValue.toString());
-  }
-  
+    if (normalized === 'REMOTEFANS') {
+      const remoteFansComputed = (stats as any).remoteFans ?? (indoor + outdoor)
+      return String(remoteFansComputed)
+    }
+    if (normalized === 'TOTALIMAGES' || normalized === 'ALLIMAGES') {
+      return String(remoteImages + hostessImages + selfies)
+    }
+    if (normalized === 'TOTALVISIT') {
+      return String(socialVisit + visitQrCode + visitShortUrl + visitWeb)
+    }
+    if (normalized === 'TOTALUNDER40') {
+      return String(genAlpha + genYZ)
+    }
+    if (normalized === 'TOTALOVER40') {
+      return String(genX + boomer)
+    }
+
+    // Resolve aliases and direct mappings
+    const fieldName = resolveFieldNameByNormalizedToken(normalized)
+
+    if (!fieldName) {
+      // Unknown variable → treat as 0 for safety
+      return '0'
+    }
+
+    let value = (stats as any)[fieldName]
+
+    // Special fallback for STADIUMFANS alias already resolved to stadium via alias
+    if (value === undefined || value === null) value = 0
+
+    return String(value)
+  })
+
   return processedFormula;
 }
 

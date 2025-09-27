@@ -1109,6 +1109,31 @@ textarea::placeholder {
    STATS LAYOUT GRID SYSTEM
 ======================================== */
 
+/* Variables Admin Grid and Cards */
+.vars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.variable-card {
+  /* Uniform card sizing */
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.variable-header { margin-bottom: 0.5rem; }
+.variable-title { margin: 0 0 0.25rem 0; font-size: 1.125rem; font-weight: 600; }
+.variable-ref { font-size: 0.8rem; background: rgba(107,114,128,0.1); padding: 0.125rem 0.5rem; border-radius: 4px; }
+
+.variable-details { margin: 0.5rem 0; }
+
+.variable-flags { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.25rem; }
+.variable-flag { display: flex; align-items: center; gap: 0.5rem; }
+
+.variable-type-line { margin-top: auto; font-weight: 700; font-size: 0.875rem; color: #374151; }
+
 /* Full width container for stats sections */
 .stats-layout-container {
   display: flex;
