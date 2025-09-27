@@ -66,6 +66,86 @@ const MOCK_VARIABLES: Omit<Variable, 'flags' | 'derived' | 'formula' | 'isCustom
   { name: 'eventResultVisitor', label: 'Event Result Visitor', type: 'count', category: 'Success Manager', icon: '🧳', description: 'Visitor team result' },
 ];
 
+function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { variable: Variable; allCategories: string[]; onSaved: (res: { originalName: string; nextVar: Partial<Variable> }) => void; onCancel: () => void }) {
+  const [name, setName] = useState(variable.name)
+  const [label, setLabel] = useState(variable.label)
+  const [category, setCategory] = useState(variable.category)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const categories = Array.from(new Set([...allCategories])).sort()
+  const canRename = !!variable.isCustom // To safely support rename across data, restrict to custom vars for now.
+
+  const handleSave = async () => {
+    setSaving(true); setError(null)
+    try {
+      // Persist meta via variables-config; API will treat same-name registry as override (label/category)
+      const res = await fetch('/api/variables-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: canRename ? name : variable.name,
+          label,
+          type: variable.type,
+          category,
+          description: variable.description,
+          derived: !!variable.derived,
+          formula: variable.formula,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to save variable')
+      onSaved({ originalName: variable.name, nextVar: { name: canRename ? name : variable.name, label, category } })
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save variable')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+        <div>
+          <label className="form-label">Name{!canRename && ' (registry)'}</label>
+          <input className="form-input" value={name} onChange={e => setName(e.target.value)} disabled={!canRename} />
+          {!canRename && (
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+              Rename is disabled for built-in variables to avoid breaking stored data. If you want to rename it globally, I can run a DB migration to update all projects.
+            </div>
+          )}
+        </div>
+        <div>
+          <label className="form-label">Label</label>
+          <input className="form-input" value={label} onChange={e => setLabel(e.target.value)} />
+        </div>
+        <div>
+          <label className="form-label">Category</label>
+          <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
+            {categories.map(c => (<option key={c} value={c}>{c}</option>))}
+          </select>
+        </div>
+        <div>
+          <label className="form-label">Type</label>
+          <input className="form-input" value={variable.type} disabled />
+        </div>
+        <div style={{ gridColumn: '1 / span 2' }}>
+          <label className="form-label">Reference</label>
+          <code className="variable-ref">{buildReferenceToken({ name: canRename ? name : variable.name, category, derived: variable.derived, type: variable.type })}</code>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+        <button className="btn btn-secondary" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+      </div>
+      {error && (
+        <div style={{ marginTop: '0.5rem', color: '#b91c1c', fontSize: 12 }}>{error}</div>
+      )}
+    </div>
+  )
+}
+
 export default function VariablesPage() {
   const router = useRouter();
   const [variables, setVariables] = useState<Variable[]>([]);
@@ -250,48 +330,21 @@ const [createForm, setCreateForm] = useState({
           {activeVar && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
                  onClick={() => setActiveVar(null)}>
-              <div className="glass-card" style={{ maxWidth: 520, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
-                <h3 style={{ margin: '0 0 0.5rem 0' }}>{activeVar.label}</h3>
-                <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Category: {activeVar.category}</p>
-                <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Type: {activeVar.type.toUpperCase()}</p>
-                <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>Reference: {[ 'count','numeric','currency','percentage' ].includes(activeVar.type) ? `[${activeVar.name.toUpperCase()}]` : activeVar.name}</p>
-                {activeVar.description && (
-                  <p style={{ marginTop: '0.75rem', color: '#374151' }}>{activeVar.description}</p>
-                )}
-                {/* Flags quick view */}
-                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(107,114,128,0.08)', borderRadius: 8 }}>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (activeVar.derived || activeVar.type === 'text') ? 0.5 : 1 }}>
-                      <input
-                        type="checkbox"
-                        checked={!!activeVar.flags?.visibleInClicker}
-                        disabled={activeVar.derived || activeVar.type === 'text'}
-                        onChange={(e) => {
-                          const next = { ...activeVar.flags, visibleInClicker: e.target.checked }
-                          persistFlags(activeVar.name, next)
-                          setActiveVar({ ...activeVar, flags: next })
-                        }}
-                      />
-                      Visible in Clicker
-                    </label>
-                    <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', opacity: (activeVar.derived || activeVar.type === 'text') ? 0.5 : 1 }}>
-                      <input
-                        type="checkbox"
-                        checked={!!activeVar.flags?.editableInManual}
-                        disabled={activeVar.derived || activeVar.type === 'text'}
-                        onChange={(e) => {
-                          const next = { ...activeVar.flags, editableInManual: e.target.checked }
-                          persistFlags(activeVar.name, next)
-                          setActiveVar({ ...activeVar, flags: next })
-                        }}
-                      />
-                      Editable in Manual
-                    </label>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                  <button className="btn btn-secondary" onClick={() => setActiveVar(null)}>Close</button>
-                </div>
+              <div className="glass-card" style={{ maxWidth: 620, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
+                <h3 style={{ margin: '0 0 0.5rem 0' }}>Edit Variable</h3>
+
+                {/* Edit form */}
+                <EditVariableForm
+                  variable={activeVar}
+                  allCategories={Array.from(new Set(variables.map(v => v.category))).sort()}
+                  onSaved={(updated) => {
+                    // Update both arrays by identity match on name
+                    setVariables(prev => prev.map(v => v.name === updated.originalName ? { ...v, ...updated.nextVar } as Variable : v))
+                    setFilteredVariables(prev => prev.map(v => v.name === updated.originalName ? { ...v, ...updated.nextVar } as Variable : v))
+                    setActiveVar(null)
+                  }}
+                  onCancel={() => setActiveVar(null)}
+                />
               </div>
             </div>
           )}
@@ -337,7 +390,7 @@ const [createForm, setCreateForm] = useState({
                         </div>
 
                         <div className="variable-details">
-                          <button className="btn btn-sm btn-secondary btn-full" onClick={() => setActiveVar(variable)}>✏️ Details</button>
+                        <button className="btn btn-sm btn-secondary btn-full" onClick={() => setActiveVar(variable)}>edit</button>
                         </div>
 
                         {/* Flags Controls (each on its own line) */}

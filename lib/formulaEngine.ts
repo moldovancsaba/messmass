@@ -20,8 +20,8 @@ function normalizeTokenRaw(token: string): string {
 }
 
 /**
- * Variable mapping from display names to project stats field names
- * Maps [INDOOR] to stats.indoor, [FEMALE] to stats.female, etc.
+* Variable mapping from display names to project stats field names
+* Examples use SEYU tokens: [SEYUINDOOR] → stats.indoor, [SEYUFEMALE] → stats.female, etc. (Legacy tokens like [INDOOR] are still accepted for compatibility).
  */
 const VARIABLE_MAPPINGS: Record<string, string> = {
   // Image Statistics

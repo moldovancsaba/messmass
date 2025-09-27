@@ -88,6 +88,7 @@ export async function GET() {
     const flagsByName = new Map<string, Flags>()
     const orderByName = new Map<string, number>()
     const customDefs: VariableDefinition[] = []
+    const metaOverrideByName = new Map<string, Partial<VariableDefinition>>()
 
     for (const doc of configDocs) {
       if (doc.flags) flagsByName.set(doc.name, doc.flags)
@@ -102,6 +103,16 @@ export async function GET() {
           derived: !!doc.derived,
           formula: doc.formula,
         })
+      } else {
+        // Allow overriding registry meta via config doc even if not custom
+        const override: Partial<VariableDefinition> = {}
+        if (doc.label) override.label = doc.label
+        if (doc.type) override.type = doc.type
+        if (doc.category) override.category = doc.category
+        if (doc.description) override.description = doc.description
+        if (typeof doc.derived === 'boolean') override.derived = doc.derived
+        if (doc.formula) override.formula = doc.formula
+        if (Object.keys(override).length > 0) metaOverrideByName.set(doc.name, override)
       }
     }
 
@@ -113,7 +124,9 @@ export async function GET() {
     for (const v of registry) {
       const flags = flagsByName.get(v.name) || defaultFlagsForVariable(v)
       const order = orderByName.get(v.name) ?? defaultOrderByName.get(v.name)
-      merged.push({ ...v, flags, clickerOrder: order })
+      const meta = metaOverrideByName.get(v.name)
+      const withMeta = meta ? { ...v, ...meta } : v
+      merged.push({ ...withMeta, flags, clickerOrder: order })
     }
 
     // 2) Add custom variables not present in registry
@@ -145,6 +158,16 @@ export async function POST(request: NextRequest) {
   try {
     const db = await getDb()
     const body = await request.json()
+
+    // Prepare registry lookup (for isCustom inference)
+    const dbForRegistry = await getDb()
+    const categoriesForRegistry = await dbForRegistry
+      .collection('hashtagCategories')
+      .find({}, { projection: { name: 1 } })
+      .toArray()
+    const simplifiedForRegistry = categoriesForRegistry.map((c: any) => ({ name: c.name }))
+    const registryForPost = getAllVariableDefinitions(simplifiedForRegistry)
+    const registryNameSet = new Set(registryForPost.map(v => v.name))
 
     const now = new Date().toISOString() // ISO 8601 with milliseconds (UTC)
 
@@ -189,7 +212,8 @@ export async function POST(request: NextRequest) {
         description: body.description ? String(body.description) : undefined,
         derived: !!body.derived,
         formula: body.formula ? String(body.formula) : undefined,
-        isCustom: true,
+        // Only mark as custom if the name is not a known registry variable
+        isCustom: !registryNameSet.has(name),
       }
     }
 
