@@ -778,8 +778,8 @@ async redirects() {
 
 ---
 
-*Last Updated: 2025-09-27T11:08:32.000Z*
-*Version: 5.4.0*
+*Last Updated: 2025-09-27T11:26:38.000Z*
+*Version: 5.5.0*
 *Previous: Version: 2.6.0 (Hashtag Pages Migration - Complete)*
 *Previous: Version: 2.3.1 (Admin Interface Improvements - Complete)*
 *Previous: Version: 2.2.0 (Hashtag Categories System - Complete)*
