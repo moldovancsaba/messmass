@@ -1,5 +1,17 @@
 # MessMass Release Notes
 
+## [v5.3.0] — 2025-09-27T10:37:10.000Z
+
+### Fixes — Admin Hashtags Rendering and Categories UI
+- Hashtags: Global sanitizer in ColoredHashtagBubble ensures any non-string input (e.g., {hashtag, count}) is safely rendered as text. This eliminates React error #31 across inputs and editors, including /admin/hashtags.
+- Suggestions: Unified normalization in HashtagInput and UnifiedHashtagInput guarantees suggestion arrays are string[] even if API returns objects.
+- Categories UI: Applied responsive 3/2/1 grid with equal-height cards, proper internal padding, and uniform centralized button styles.
+
+### Documentation
+- Synchronized version to v5.3.0 across package.json and all project docs (README.md, WARP.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md) with ISO 8601 millisecond timestamps.
+
+---
+
 ## [v5.2.0] — 2025-09-26T12:47:48.000Z
 
 ### Fixes — Hashtag Input React Error (#31)
