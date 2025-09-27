@@ -20,35 +20,21 @@ interface UnifiedAdminHeroProps {
   subtitle?: string;
   description?: string;
   icon?: string;
-  
-  // Search functionality
   showSearch?: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
-  
-  // Dynamic content under title (like hashtag display, filter results, etc.)
   children?: React.ReactNode;
-  
-  // Hashtags display
   hashtags?: string[];
   showHashtagResults?: boolean;
-  
-  // Action buttons (flexible array of buttons)
   actionButtons?: ActionButton[];
-  
-  // Back button
   backLink?: string;
   backLabel?: string;
-  
-  // Badges for status/info display
   badges?: Badge[];
-  
-  // Results summary (like "X projects match this filter")
   resultsSummary?: {
     count: number;
-    itemType: string; // "projects", "items", etc.
-    additionalInfo?: string; // like date range
+    itemType: string;
+    additionalInfo?: string;
   };
 }
 
@@ -70,197 +56,94 @@ export default function UnifiedAdminHero({
   badges = [],
   resultsSummary
 }: UnifiedAdminHeroProps) {
-
-  // Centralized button classes are used for all buttons to ensure uniform styling.
   const variantClass = (v: ActionButton['variant'] = 'primary') => `btn-${v}`;
 
-  // Badge style generator
-  const getBadgeStyle = (variant: Badge['variant']) => {
-    const variants = {
-      primary: { bg: '#3b82f6', text: '#ffffff' },
-      secondary: { bg: '#6b7280', text: '#ffffff' },
-      success: { bg: '#10b981', text: '#ffffff' },
-      warning: { bg: '#f59e0b', text: '#ffffff' },
-      danger: { bg: '#ef4444', text: '#ffffff' }
-    };
-    
-    return {
-      background: variants[variant].bg,
-      color: variants[variant].text,
-      padding: '0.25rem 0.75rem',
-      borderRadius: '12px',
-      fontSize: '0.875rem',
-      fontWeight: '600',
-      whiteSpace: 'nowrap' as const
-    };
-  };
-
   return (
-    <div className="admin-header glass-card" style={{ maxWidth: '1200px', margin: '0 auto 2rem auto' }}>
+    <div className="admin-header glass-card">
       <div className="admin-header-content">
         {/* Left Side - Branding and Content */}
         <div className="admin-branding">
-          {/* Main Title - Always centered like hashtags filter page */}
-          <h1 className="admin-title" style={{
-            textAlign: 'center',
-            /* Override the gradient background from admin.css */
-            background: 'none',
-            WebkitBackgroundClip: 'unset',
-            WebkitTextFillColor: 'initial',
-            backgroundClip: 'unset',
-            /* Use regular color */
-            color: '#1f2937'
-          }}>
-            {icon && <span style={{ marginRight: '0.5rem' }}>{icon}</span>}
+          {/* Title and subtitle centered via helper classes */}
+          <h1 className="admin-title admin-title-center">
+            {icon && <span className="mr-2">{icon}</span>}
             {title}
           </h1>
-          
-          {/* Subtitle - Always centered */}
+
           {subtitle && (
-            <p style={{
-              color: '#6b7280',
-              fontSize: '1.1rem',
-              marginTop: '0.5rem',
-              marginBottom: '1rem',
-              textAlign: 'center'
-            }}>
-              {subtitle}
-            </p>
+            <p className="admin-subtitle admin-subtitle-center">{subtitle}</p>
           )}
-          
-          {/* Description - Always centered */}
+
           {description && (
-            <p style={{
-              color: '#6b7280',
-              fontSize: '1rem',
-              marginTop: '0.5rem',
-              marginBottom: '1rem',
-              textAlign: 'center'
-            }}>
-              {description}
-            </p>
+            <p className="admin-subtitle admin-subtitle-center">{description}</p>
           )}
-          
-          {/* Search Bar - Centered like hashtags filter page */}
+
+          {/* Search Bar */}
           {(showSearch && onSearchChange) && (
-            <div style={{
-              marginTop: '1rem',
-              maxWidth: '400px',
-              margin: '1rem auto 0 auto'
-            }}>
+            <div className="admin-hero-search">
               <input
                 type="text"
                 value={searchValue || ''}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={searchPlaceholder}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  fontSize: '1rem',
-                  border: '2px solid rgba(102, 126, 234, 0.2)',
-                  borderRadius: '25px',
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'all 0.2s ease',
-                  outline: 'none',
-                  textAlign: 'center'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#667eea';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(102, 126, 234, 0.2)';
-                  e.target.style.boxShadow = 'none';
-                }}
+                className="form-input admin-hero-search-input"
               />
             </div>
           )}
-          
+
           {/* Hashtags Display */}
           {showHashtagResults && hashtags.length > 0 && (
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
+            <div className="mt-3">
+              <div className="centered-pill-row">
                 {hashtags.map((hashtag) => (
                   <ColoredHashtagBubble 
                     key={hashtag}
                     hashtag={hashtag}
-                    customStyle={{
-                      fontSize: '1.125rem',
-                      fontWeight: '600'
-                    }}
                   />
                 ))}
               </div>
             </div>
           )}
-          
+
           {/* Results Summary */}
           {resultsSummary && (
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            <div className="mt-2 admin-subtitle-center">
               {resultsSummary.additionalInfo && (
-                <div style={{ marginBottom: '0.5rem', fontSize: '0.875rem', color: '#6b7280' }}>
+                <div className="info-note" style={{ marginBottom: '0.5rem' }}>
                   {resultsSummary.additionalInfo}
                 </div>
               )}
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                📊 {resultsSummary.count} {resultsSummary.itemType}
-                {resultsSummary.count !== 1 ? 's' : ''} 
-                {resultsSummary.count > 0 ? ' found' : ''}
-              </div>
+              <div className="info-note">📊 {resultsSummary.count} {resultsSummary.itemType}{resultsSummary.count !== 1 ? 's' : ''} {resultsSummary.count > 0 ? 'found' : ''}</div>
             </div>
           )}
-          
+
           {/* Custom Children Content */}
           {children && (
-            <div style={{ marginTop: '1rem' }}>
+            <div className="mt-3">
               {children}
             </div>
           )}
         </div>
-        
+
         {/* Right Side - Actions and Info */}
-        <div className="admin-user-info" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem',
-          flexDirection: 'column'
-        }}>
+        <div className="admin-user-info">
           {/* Badges */}
           {badges.length > 0 && (
-            <div style={{
-              display: 'flex',
-              gap: '0.5rem',
-              flexWrap: 'wrap'
-            }}>
+            <div className="admin-hero-badges">
               {badges.map((badge, index) => (
-                <span 
-                  key={index}
-                  style={getBadgeStyle(badge.variant)}
-                >
-                  {badge.text}
-                </span>
+                <span key={index} className={`badge badge-${badge.variant}`}>{badge.text}</span>
               ))}
             </div>
           )}
-          
+
           {/* Action Buttons Container */}
-          <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {/* Back Button */}
+          <div className="admin-badge">
+            <div className="admin-hero-actions">
               {backLink && (
                 <a href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
                   {backLabel}
                 </a>
               )}
-              
-              {/* Custom Action Buttons */}
+
               {actionButtons.map((button, index) => (
                 <button
                   key={index}
@@ -269,7 +152,7 @@ export default function UnifiedAdminHero({
                   title={button.title}
                   className={`btn btn-sm ${variantClass(button.variant)}`}
                 >
-                  {button.icon && <span style={{ marginRight: '0.25rem' }}>{button.icon}</span>}
+                  {button.icon && <span className="mr-2">{button.icon}</span>}
                   {button.label}
                 </button>
               ))}

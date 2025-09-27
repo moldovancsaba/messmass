@@ -1,5 +1,11 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-27T11:54:54.000Z — Plan Kickoff: Style System Hardening
+- Commit scope (phase 1): UnifiedAdminHero inline-style removal; Admin Design loading/selects
+- Version bumped for commit: 5.6.0
+- Version: 5.5.1 (dev cycle)
+- Tasks: remove inline styles (UnifiedAdminHero, Admin Design, Editor Dashboard), consolidate duplicated CSS files, enforce buttons/forms classes, prepare Atlas theme API plan.
+
 ## 2025-09-27T11:26:38.000Z — Completion Log: v5.4.0 Release and Documentation Sync
 - Completed: RLS-540 tasks (version bump + docs sync, validations, commit & push)
 - Validation: type-check, lint, and build passed

@@ -1,5 +1,21 @@
 # MessMass Release Notes
 
+## [v5.6.0] — 2025-09-27T11:54:54.000Z
+
+### Features — Inline-style removal (phase 1)
+- UnifiedAdminHero: removed inline styles; now uses tokenized classes (.admin-title, .admin-subtitle, .admin-hero-search, .badge variants, .centered-pill-row)
+- Admin Design: standardized loading UI using .spinner and .loading-spinner; switched selects to .form-select; reduced layout inline styles
+
+---
+
+## [v5.5.1] — 2025-09-27T11:54:54.000Z
+
+### Kickoff — Style System Hardening
+- Bumped PATCH for dev cycle; logged plan in ROADMAP/TASKLIST.
+- Scope: remove inline styles, unify buttons/forms, consolidate CSS files, prepare Atlas-managed theme tokens.
+
+---
+
 ## [v5.5.0] — 2025-09-27T11:26:38.000Z
 
 ### Documentation and Governance

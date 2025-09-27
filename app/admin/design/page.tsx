@@ -253,17 +253,11 @@ export default function AdminDesignPage() {
   if (loading) {
     return (
       <div className="admin-container">
-        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }}></div>
-          <p>Loading design settings...</p>
+        <div className="glass-card">
+          <div className="loading-spinner">
+            <div className="spinner" />
+            <div>Loading design settings...</div>
+          </div>
         </div>
       </div>
     );
@@ -290,7 +284,7 @@ export default function AdminDesignPage() {
             <div className="section-card">
               <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Default (Global) Style</h3>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-input">
+                <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
                   <option value="">— Use System Default —</option>
                   {pageStyles.map(s => (
                     <option key={s._id} value={s._id}>{s.name}</option>
@@ -304,7 +298,7 @@ export default function AdminDesignPage() {
             <div className="section-card">
               <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Admin Page Style</h3>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-input">
+                <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
                   <option value="">— Use Default/Global —</option>
                   {pageStyles.map(s => (
                     <option key={s._id} value={s._id}>{s.name}</option>
@@ -338,9 +332,9 @@ export default function AdminDesignPage() {
             {/* Per-Project Style */}
             <div className="section-card">
               <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Project Style</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
+              <div className="flex-row gap-4">
                 <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
-                <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-input">
+                <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-select">
                   <option value="">— Use Default/Global —</option>
                   {pageStyles.map(s => (
                     <option key={s._id} value={s._id}>{s.name}</option>
@@ -353,9 +347,9 @@ export default function AdminDesignPage() {
             {/* Per-Hashtag Style */}
             <div className="section-card">
               <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Hashtag Style</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', alignItems: 'center' }}>
+              <div className="flex-row gap-4">
                 <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
-                <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-input">
+                <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-select">
                   <option value="">— Use Default/Global —</option>
                   {pageStyles.map(s => (
                     <option key={s._id} value={s._id}>{s.name}</option>

@@ -1,7 +1,16 @@
 # ROADMAP.md
 
-Current Version: 5.5.0
-Last Updated: 2025-09-27T11:26:38.000Z
+Current Version: 5.6.0
+Last Updated: 2025-09-27T11:54:54.000Z
+
+## Operational — Style System Hardening (Q3 2025)
+Priority: High
+Dependencies: Design tokens, AdminHero, Layout utilities
+- Action: Remove inline styles from admin hero, design manager, and editor dashboard; centralize into CSS Modules using tokens
+- Action: Consolidate duplicated CSS files (components N.css, admin N.css, globals 2.css) — keep only canonical imports
+- Action: Prepare Atlas-managed theme injection plan (GET/PUT /api/admin/theme)
+Logged at: 2025-09-27T11:54:54.000Z
+Author: Agent Mode
 
 ## Operational — Version Sync & Release v5.4.0 (Q3 2025)
 Priority: High

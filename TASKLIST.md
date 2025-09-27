@@ -1,6 +1,14 @@
 # TASKLIST.md
-Current Version: 5.5.0
-Last Updated: 2025-09-27T11:26:38.000Z
+Current Version: 5.6.0
+Last Updated: 2025-09-27T11:54:54.000Z
+
+### High Priority — Style System Hardening (Start)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| STYL-001 | Remove inline styles from UnifiedAdminHero | Agent Mode | 2025-09-27T12:20:00.000Z | In Progress |
+|| STYL-002 | Standardize Admin Design loading + selects | Agent Mode | 2025-09-27T12:25:00.000Z | Planned |
+|| STYL-003 | Consolidate duplicated CSS files (no imports left) | Agent Mode | 2025-09-27T12:40:00.000Z | Planned |
 
 ### Operational — Release v5.4.0 (Immediate)
 
