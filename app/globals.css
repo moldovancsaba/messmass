@@ -161,9 +161,9 @@ img {
 .admin-hero-search { margin-top: 1rem; max-width: 400px; margin-left: auto; margin-right: auto; }
 .admin-hero-search-input { width: 100%; text-align: center; }
 
-.admin-hero-right { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.admin-hero-right { display: flex; flex-direction: row; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
 .admin-hero-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-.admin-hero-back { text-decoration: none; }
+.admin-hero-back { text-decoration: none; padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 12px; }
 .admin-hero-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
 
 /* Simple badge styles mapped to variants */
@@ -1083,8 +1083,14 @@ img {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+  min-height: 40px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-logout {
@@ -1121,6 +1127,8 @@ img {
 .btn-sm {
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
+  min-height: 36px;
+  line-height: 1;
 }
 
 .btn-info {
@@ -1149,6 +1157,17 @@ img {
 
 .btn-danger:hover {
   background: #dc2626;
+}
+
+/* Warning button variant (used by admin tools like Chart Configuration reset) */
+.btn-warning {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
 }
 
 /* Glass Card */

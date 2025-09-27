@@ -47,14 +47,25 @@ export async function GET(request: NextRequest) {
       const { category, hashtag } = parseHashtagQuery(hashtagQuery);
       
       if (category === null) {
-        // Plain hashtag - search in traditional hashtags and all categorized hashtags
+        // Plain hashtag - search in traditional hashtags or any category list
         mongoQueries.push({
           $or: [
-            // Search in traditional hashtags field
             { hashtags: hashtag },
-            // Search in any category within categorizedHashtags
-            { [`categorizedHashtags.${category}`]: hashtag }
-            // Note: We need to build this dynamically since we don't know category names
+            {
+              $expr: {
+                $gt: [
+                  {
+                    $size: {
+                      $filter: {
+                        input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                        cond: { $in: [hashtag, "$$this.v"] }
+                      }
+                    }
+                  },
+                  0
+                ]
+              }
+            }
           ]
         });
       } else {

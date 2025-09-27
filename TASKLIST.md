@@ -1,6 +1,14 @@
 # TASKLIST.md
-Current Version: 5.3.0
-Last Updated: 2025-09-27T10:37:10.000Z
+Current Version: 5.4.0
+Last Updated: 2025-09-27T11:08:32.000Z
+
+### Operational — Release v5.4.0 (Immediate)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| RLS-540-001 | Version bump + docs sync to v5.4.0 | Agent Mode | 2025-09-27T11:18:00.000Z | In Progress |
+|| RLS-540-002 | Validate lint, type-check, and build | Agent Mode | 2025-09-27T11:25:00.000Z | Planned |
+|| RLS-540-003 | Commit and push to origin/main | Agent Mode | 2025-09-27T11:28:00.000Z | Planned |
 
 *Active: Version 2.3.0 - Shareables Component Library*
 *Previous: Version 2.2.0 - Hashtag Categories System* **COMPLETED ✅**

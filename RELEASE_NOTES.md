@@ -1,5 +1,12 @@
 # MessMass Release Notes
 
+## [v5.4.0] — 2025-09-27T11:08:32.000Z
+
+### Documentation and Governance
+- Version bump to v5.4.0 (MINOR) per protocol; synchronized version across package.json and project docs (README.md, WARP.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md, DESIGN_SYSTEM.md) with ISO 8601 millisecond timestamps.
+
+---
+
 ## [v5.3.0] — 2025-09-27T10:37:10.000Z
 
 ### Fixes — Admin Hashtags Rendering and Categories UI

@@ -33,16 +33,21 @@ export default function ColoredHashtagBubble({
   projectCategorizedHashtags,
   autoResolveColor = false
 }: ColoredHashtagBubbleProps) {
+  // WHAT: Defensive normalization to avoid React error #31 when a non-string sneaks in.
+  // WHY: Some upstream code may accidentally pass objects like {hashtag,count}.
+  const hObj: any = (hashtag as unknown) as any;
+  const hStr: string = typeof hObj === 'string' ? hObj : (hObj && typeof hObj.hashtag === 'string' ? hObj.hashtag : '');
+
   // Use the intelligent color resolver for all color determination
   const { getHashtagColorInfo, resolveHashtagColor, findHashtagCategory } = useHashtagColorResolver();
 
   // Find which category this hashtag belongs to (if any)
   const hashtagCategory = useMemo(() => {
     if (projectCategorizedHashtags) {
-      return findHashtagCategory(hashtag, projectCategorizedHashtags);
+      return findHashtagCategory(hStr, projectCategorizedHashtags);
     }
     return undefined;
-  }, [hashtag, projectCategorizedHashtags, findHashtagCategory]);
+  }, [hStr, projectCategorizedHashtags, findHashtagCategory]);
 
   // Determine the background color using the intelligent resolver or explicit color
   const backgroundColor = useMemo(() => {
@@ -53,32 +58,32 @@ export default function ColoredHashtagBubble({
     
     // If auto-resolve is enabled and we have project context, use intelligent resolution
     if (autoResolveColor && projectCategorizedHashtags) {
-      return resolveHashtagColor(hashtag, projectCategorizedHashtags);
+      return resolveHashtagColor(hStr, projectCategorizedHashtags);
     }
     
     // Legacy fallback: use individual hashtag color or default
-    const colorInfo = getHashtagColorInfo(hashtag, projectCategorizedHashtags);
+    const colorInfo = getHashtagColorInfo(hStr, projectCategorizedHashtags);
     return colorInfo.effectiveColor;
-  }, [categoryColor, autoResolveColor, projectCategorizedHashtags, resolveHashtagColor, hashtag, getHashtagColorInfo]);
+  }, [categoryColor, autoResolveColor, projectCategorizedHashtags, resolveHashtagColor, hStr, getHashtagColorInfo]);
 
   // Determine the display text
   const displayText = useMemo(() => {
     if (showCategoryPrefix && hashtagCategory) {
-      return `${hashtagCategory}:${hashtag}`;
+      return `${hashtagCategory}:${hStr}`;
     }
-    return hashtag;
-  }, [showCategoryPrefix, hashtagCategory, hashtag]);
+    return hStr;
+  }, [showCategoryPrefix, hashtagCategory, hStr]);
   const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${removable ? 'hashtag-removable' : ''} ${className}`.trim();
 
   // Handle empty hashtag gracefully
-  if (!hashtag || !hashtag.trim()) {
+  if (!hStr || !hStr.trim()) {
     return null;
   }
 
   // Handle click functionality
   const handleClick = () => {
     if (interactive && onClick) {
-      onClick(hashtag);
+      onClick(hStr);
     }
   };
 

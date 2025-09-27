@@ -364,35 +364,7 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
           margin-bottom: 2rem;
         }
 
-        .btn {
-          padding: 0.75rem 1.5rem;
-          border: none;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-        }
-
-        .btn-warning {
-          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-          color: white;
-        }
-
-        .btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none;
-        }
+        /* Buttons use global .btn variants from globals.css for uniformity across admin */
 
         .error-message {
           background: rgba(239, 68, 68, 0.1);

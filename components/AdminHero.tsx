@@ -81,7 +81,7 @@ export default function AdminHero({
 
           {/* Back link (when provided) */}
           {backLink && (
-            <Link href={backLink} className="btn btn-secondary admin-hero-back">
+            <Link href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
               ← Back to Admin
             </Link>
           )}
@@ -95,7 +95,7 @@ export default function AdminHero({
                   onClick={btn.onClick}
                   disabled={!!btn.disabled}
                   title={btn.title}
-                  className={`btn ${btn.variant === 'secondary' ? 'btn-secondary' : 'btn-primary'}`}
+                  className={`btn btn-sm ${btn.variant ? `btn-${btn.variant}` : 'btn-primary'}`}
                 >
                   {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
                 </button>

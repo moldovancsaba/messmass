@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
 
 interface HashtagColor {
@@ -12,22 +12,33 @@ interface HashtagColor {
   updatedAt: string;
 }
 
+// WHAT: Minimal item model for Project Hashtags list.
+// WHY: UI actions operate on hashtag names; slugs are not needed for color edit/delete.
 interface ProjectHashtag {
   hashtag: string;
-  slug: string;
   count: number;
 }
 
 interface HashtagEditorProps {
   className?: string;
+  // WHAT: External search term (from HERO) to drive server-side pagination & filtering.
+  // WHY: Centralizes filtering behavior and reuses existing /api/hashtags logic.
+  searchTerm?: string;
 }
 
-export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
+export default function HashtagEditor({ className = '', searchTerm = '' }: HashtagEditorProps) {
   // Use context for hashtag colors instead of local state
   const { hashtagColors, loadingColors, refreshColors } = useHashtagData();
   
+  // Server-driven, paginated items
   const [projectHashtags, setProjectHashtags] = useState<ProjectHashtag[]>([]);
+  const [totalMatched, setTotalMatched] = useState<number>(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 20;
+
+  // UI state for the edit form
   const [showForm, setShowForm] = useState(false);
   const [editingHashtag, setEditingHashtag] = useState<{ name: string; color: string; hasColorRecord: boolean } | null>(null);
   const [formData, setFormData] = useState({
@@ -36,25 +47,79 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadProjectHashtags();
-    // hashtagColors are already loaded via context
-  }, []);
+  // Debounce & cancellation for in-flight search requests
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
 
-  const loadProjectHashtags = async () => {
-    try {
-      const response = await fetch('/api/hashtags/slugs');
-      const data = await response.json();
-      
-      if (data.success) {
-        setProjectHashtags(data.hashtags);
-      } else {
-        console.error('Failed to load project hashtags:', data.error);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    // WHAT: Load first page whenever the debounced search changes.
+    // WHY: Keeps UX responsive and consistent with existing /api/hashtags pagination.
+    const loadFirst = async () => {
+      setLoading(true);
+      abortRef.current?.abort();
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      try {
+        const qs = debouncedTerm
+          ? `?search=${encodeURIComponent(debouncedTerm)}&offset=0&limit=${PAGE_SIZE}`
+          : `?offset=0&limit=${PAGE_SIZE}`;
+        const res = await fetch(`/api/hashtags${qs}`, { cache: 'no-store', signal: ctrl.signal });
+        const data = await res.json();
+        if (data.success) {
+          const items: ProjectHashtag[] = Array.isArray(data.hashtags)
+            ? data.hashtags.map((h: any) => ({ hashtag: typeof h === 'string' ? h : h?.hashtag, count: (typeof h === 'string' ? 0 : h?.count) ?? 0 }))
+                .filter((x: any) => !!x.hashtag)
+            : [];
+          setProjectHashtags(items);
+          setNextOffset(data.pagination?.nextOffset ?? null);
+          setTotalMatched(data.pagination?.totalMatched ?? items.length);
+        }
+      } catch (err) {
+        // Swallow abort errors silently; log others
+        if ((err as any)?.name !== 'AbortError') {
+          console.error('Failed to load project hashtags:', err);
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to load project hashtags:', error);
+    };
+
+    loadFirst();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm]);
+
+  const loadMore = async () => {
+    if (loadingMore || nextOffset == null) return;
+    setLoadingMore(true);
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    try {
+      const qs = debouncedTerm
+        ? `?search=${encodeURIComponent(debouncedTerm)}&offset=${nextOffset}&limit=${PAGE_SIZE}`
+        : `?offset=${nextOffset}&limit=${PAGE_SIZE}`;
+      const res = await fetch(`/api/hashtags${qs}`, { cache: 'no-store', signal: ctrl.signal });
+      const data = await res.json();
+      if (data.success) {
+        const items: ProjectHashtag[] = Array.isArray(data.hashtags)
+          ? data.hashtags.map((h: any) => ({ hashtag: typeof h === 'string' ? h : h?.hashtag, count: (typeof h === 'string' ? 0 : h?.count) ?? 0 }))
+              .filter((x: any) => !!x.hashtag)
+          : [];
+        setProjectHashtags(prev => [...prev, ...items]);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setTotalMatched(data.pagination?.totalMatched ?? totalMatched);
+      }
+    } catch (err) {
+      if ((err as any)?.name !== 'AbortError') {
+        console.error('Failed to load more project hashtags:', err);
+      }
     } finally {
-      setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -259,64 +324,82 @@ export default function HashtagEditor({ className = '' }: HashtagEditorProps) {
 
       {/* Project Hashtags List */}
       <div className="hashtags-list">
-        <h4>Project Hashtags ({projectHashtags.length})</h4>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <h4 style={{ margin: 0 }}>Project Hashtags ({totalMatched})</h4>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {projectHashtags.length} of {totalMatched}
+          </div>
+        </div>
         
-        {projectHashtags.length === 0 ? (
+        {loading ? (
+          <div className="loading">Loading hashtags...</div>
+        ) : projectHashtags.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🏷️</div>
             <div className="empty-title">No Hashtags Found</div>
             <div className="empty-subtitle">Create projects with hashtags to manage their colors here</div>
           </div>
         ) : (
-          <div className="hashtags-grid">
-            {projectHashtags.map((projectHashtag) => {
-              const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
-              const displayColor = colorRecord?.color || '#667eea';
-              const hasCustomColor = !!colorRecord;
-              
-              return (
-                <div key={projectHashtag.hashtag} className="hashtag-card">
-                  <div className="hashtag-card-header">
-                    <span 
-                      className="hashtag-bubble"
-                      style={{ backgroundColor: displayColor }}
-                    >
-                      #{projectHashtag.hashtag}
-                    </span>
-                    {!hasCustomColor && (
-                      <span className="default-badge">Default Color</span>
-                    )}
-                  </div>
-                  
-                  <div className="hashtag-card-details">
-                    <div className="hashtag-color-preview" style={{ backgroundColor: displayColor }}>
-                      <span className="color-value">{displayColor}</span>
-                    </div>
-                    <div className="hashtag-stats">
-                      <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
-                    </div>
-                  </div>
-                  
-                  <div className="hashtag-card-actions">
-                    <button
-                      className="btn btn-sm btn-info"
-                      onClick={() => handleEdit(projectHashtag.hashtag)}
-                    >
-                      ✏️ Edit Hashtag
-                    </button>
-                    {hasCustomColor && (
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDelete(projectHashtag.hashtag)}
+          <>
+            <div className="hashtags-grid">
+              {projectHashtags.map((projectHashtag) => {
+                const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
+                const displayColor = colorRecord?.color || '#667eea';
+                const hasCustomColor = !!colorRecord;
+                
+                return (
+                  <div key={projectHashtag.hashtag} className="hashtag-card">
+                    <div className="hashtag-card-header">
+                      <span 
+                        className="hashtag-bubble"
+                        style={{ backgroundColor: displayColor }}
                       >
-                        🗑️ Delete
+                        #{projectHashtag.hashtag}
+                      </span>
+                      {!hasCustomColor && (
+                        <span className="default-badge">Default Color</span>
+                      )}
+                    </div>
+                    
+                    <div className="hashtag-card-details">
+                      <div className="hashtag-color-preview" style={{ backgroundColor: displayColor }}>
+                        <span className="color-value">{displayColor}</span>
+                      </div>
+                      <div className="hashtag-stats">
+                        <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
+                      </div>
+                    </div>
+                    
+                    <div className="hashtag-card-actions">
+                      <button
+                        className="btn btn-sm btn-info"
+                        onClick={() => handleEdit(projectHashtag.hashtag)}
+                      >
+                        ✏️ Edit Hashtag
                       </button>
-                    )}
+                      {hasCustomColor && (
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(projectHashtag.hashtag)}
+                        >
+                          🗑️ Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              {nextOffset != null ? (
+                <button className="btn btn-secondary" disabled={loadingMore} onClick={loadMore}>
+                  {loadingMore ? 'Loading…' : `Load ${PAGE_SIZE} more`}
+                </button>
+              ) : (
+                <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              )}
+            </div>
+          </>
         )}
       </div>
 

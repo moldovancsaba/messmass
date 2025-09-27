@@ -201,54 +201,14 @@ export default function HashtagMultiSelect({
             <button
               onClick={handleSelectAll}
               disabled={disabled || hashtags.length === 0}
-              style={{
-                padding: '0.375rem 0.75rem',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                background: disabled ? '#e5e7eb' : '#f3f4f6',
-                color: disabled ? '#9ca3af' : '#374151',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.background = '#e5e7eb';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.background = '#f3f4f6';
-                }
-              }}
+              className="btn btn-sm btn-secondary"
             >
               Select All
             </button>
             <button
               onClick={handleClearAll}
               disabled={disabled || selectedHashtags.length === 0}
-              style={{
-                padding: '0.375rem 0.75rem',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                background: disabled ? '#e5e7eb' : '#ef4444',
-                color: disabled ? '#9ca3af' : 'white',
-                border: '1px solid transparent',
-                borderRadius: '6px',
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.background = '#dc2626';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.background = '#ef4444';
-                }
-              }}
+              className="btn btn-sm btn-danger"
             >
               Clear All
             </button>

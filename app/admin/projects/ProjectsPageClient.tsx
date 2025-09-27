@@ -700,7 +700,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="project-name">
                         {/* CSV export button placed before event name */}
                         <button
-                          className="btn btn-xs btn-secondary"
+                          className="btn btn-sm btn-secondary"
                           title={`Download CSV for ${project.eventName}`}
                           onClick={async () => {
                             try {
@@ -1024,33 +1024,18 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
               gap: '1rem'
             }}>
               <button 
-                className="btn btn-secondary" 
+                className="btn btn-sm btn-secondary" 
                 onClick={() => setShowNewProjectForm(false)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: '1px solid #d1d5db',
-                  background: 'white',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
               >
                 Cancel
               </button>
               <button 
-                className="btn btn-primary" 
+                className="btn btn-sm btn-primary" 
                 onClick={() => {
                   console.log('Create Project button clicked');
                   createNewProject();
                 }}
                 disabled={isCreatingProject}
-                style={{
-                  padding: '0.5rem 1rem',
-                  border: 'none',
-                  background: isCreatingProject ? '#9ca3af' : '#3b82f6',
-                  color: 'white',
-                  borderRadius: '6px',
-                  cursor: isCreatingProject ? 'not-allowed' : 'pointer'
-                }}
               >
                 {isCreatingProject ? 'Creating...' : 'Create Project'}
               </button>
@@ -1152,11 +1137,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowEditProjectForm(false)}>
+              <button className="btn btn-sm btn-secondary" onClick={() => setShowEditProjectForm(false)}>
                 Cancel
               </button>
               <button 
-                className="btn btn-primary" 
+                className="btn btn-sm btn-primary" 
                 onClick={updateProject}
                 disabled={isUpdatingProject}
               >

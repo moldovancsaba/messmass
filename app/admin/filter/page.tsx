@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
@@ -101,16 +101,26 @@ function HashtagFilterPageContent() {
   const [selectedStyleId, setSelectedStyleId] = useState<string>('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
-  // Fetch filtered statistics
+  // Track last-applied and last-style tags to prevent duplicate requests/loops
+  const lastAppliedTagsRef = useRef<string>('');
+  const lastStyleTagsRef = useRef<string>('');
+
+  // Fetch filtered statistics (guarded against duplicate tag sets)
   const fetchFilteredStats = useCallback(async (hashtags = selectedHashtags) => {
     if (hashtags.length === 0) return;
+
+    const tagsParam = hashtags.join(',');
+    if (tagsParam === lastAppliedTagsRef.current) {
+      // Prevent re-fetch loop on same tag set
+      return;
+    }
+    lastAppliedTagsRef.current = tagsParam;
 
     setStatsLoading(true);
     setError(null);
     
     try {
-      const tagsParam = hashtags.join(',');
-      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}&refresh=${new Date().getTime()}`);
+      const response = await fetch(`/api/hashtags/filter?tags=${encodeURIComponent(tagsParam)}`);
       const data = await response.json();
 
       if (data.success) {
@@ -152,31 +162,37 @@ function HashtagFilterPageContent() {
     })();
   }, []);
 
-  // Parse URL parameters on mount & wire search
+  // Parse URL parameters and sync selection (no auto-apply to avoid loops)
   useEffect(() => {
     const tagsParam = searchParams?.get('tags');
     if (tagsParam) {
       const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
       if (tags.length > 0) {
-        setSelectedHashtags(tags);
-        // Load persisted style choice for this combination
-        (async () => {
-          try {
-            const res = await fetch(`/api/admin/filter-style?hashtags=${encodeURIComponent(tags.join(','))}`);
-            const data = await res.json();
-            if (data.success) setSelectedStyleId(data.styleId || '');
-          } catch (e) {
-            console.error('Failed to load persisted style for tags', e);
-          }
-        })();
-        // Auto-apply filter if tags are provided in URL
-        setTimeout(() => {
-          fetchFilteredStats(tags);
-        }, 100);
+        const current = selectedHashtags.join(',');
+        const incoming = tags.join(',');
+        if (incoming !== current) {
+          setSelectedHashtags(tags);
+        }
+        // Fetch persisted style only when tag set changes
+        if (incoming !== lastStyleTagsRef.current) {
+          lastStyleTagsRef.current = incoming;
+          (async () => {
+            try {
+              const res = await fetch(`/api/admin/filter-style?hashtags=${encodeURIComponent(incoming)}`);
+              const data = await res.json();
+              if (data.success) setSelectedStyleId(data.styleId || '');
+            } catch (e) {
+              console.error('Failed to load persisted style for tags', e);
+            }
+          })();
+        }
+      } else {
+        // Clear selection if no tags present
+        if (selectedHashtags.length > 0) setSelectedHashtags([]);
       }
     }
     setLoading(false);
-  }, [searchParams, fetchFilteredStats]);
+  }, [searchParams, selectedHashtags]);
 
   // Server-side search for hashtags (debounced)
   useEffect(() => {
@@ -232,21 +248,6 @@ function HashtagFilterPageContent() {
     setSelectedHashtags(selected);
     updateURL(selected);
 
-    // Try to fetch persisted style for this combination
-    try {
-      if (selected.length > 0) {
-        const res = await fetch(`/api/admin/filter-style?hashtags=${encodeURIComponent(selected.join(','))}`);
-        const data = await res.json();
-        if (data.success) {
-          setSelectedStyleId(data.styleId || '');
-        }
-      } else {
-        setSelectedStyleId('');
-      }
-    } catch (e) {
-      console.error('Failed to fetch persisted filter style', e);
-    }
-    
     // Clear previous results if selection changes
     if (hasAppliedFilter && selected.join(',') !== project?.hashtags?.join(',')) {
       setProject(null);
@@ -459,47 +460,14 @@ function HashtagFilterPageContent() {
                           alert('Failed to generate shareable link');
                         }
                       }}
-                      style={{
-                        background: '#6366f1',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s ease',
-                        marginRight: '0.5rem'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#4f46e5';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#6366f1';
-                      }}
+                      className="btn btn-sm btn-info"
                       title="Share filter with password protection"
                     >
                       🔗 Share Filter
                     </button>
                     <button 
                       onClick={exportFilteredCSV}
-                      style={{
-                        background: '#10b981',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#059669';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#10b981';
-                      }}
+                      className="btn btn-sm btn-success"
                       title="Export filtered results to CSV"
                     >
                       📄 Export CSV
@@ -522,7 +490,7 @@ function HashtagFilterPageContent() {
         <div style={{ padding: '1rem 0', textAlign: 'center' }}>
           {searchOffset != null ? (
             <button
-              className="btn btn-secondary"
+              className="btn btn-sm btn-secondary"
               disabled={isLoadingMore}
               onClick={async () => {
                 if (isLoadingMore || searchOffset == null) return;
@@ -554,15 +522,8 @@ function HashtagFilterPageContent() {
             <p>{error}</p>
             <button 
               onClick={() => fetchFilteredStats()}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                background: '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer'
-              }}
+              className="btn btn-sm btn-primary"
+              style={{ marginTop: '1rem' }}
             >
               🔄 Try Again
             </button>

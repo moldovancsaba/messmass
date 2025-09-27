@@ -440,7 +440,7 @@ export default function VisualizationPage() {
               setShowCreateBlock(true);
               resetBlockForm();
             }}
-            className="btn-create"
+            className="btn btn-sm btn-primary"
           >
             ➕ New Block
           </button>
@@ -478,7 +478,7 @@ export default function VisualizationPage() {
               <div className="flex-row">
                 <button
                   onClick={handleCreateBlock}
-                  className="btn-form-primary"
+                  className="btn btn-sm btn-primary"
                 >
                   Create Block
                 </button>
@@ -487,7 +487,7 @@ export default function VisualizationPage() {
                     setShowCreateBlock(false);
                     resetBlockForm();
                   }}
-                  className="btn-form-secondary"
+                  className="btn btn-sm btn-secondary"
                 >
                   Cancel
                 </button>
@@ -554,13 +554,13 @@ export default function VisualizationPage() {
                     <div className="flex-row">
                       <button
                         onClick={() => setEditingBlock(block)}
-                        className="btn-edit"
+                        className="btn btn-sm btn-info"
                       >
                         ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDeleteBlock(block._id!)}
-                        className="btn-delete"
+                        className="btn btn-sm btn-danger"
                       >
                         🗑️ Delete
                       </button>
@@ -659,7 +659,7 @@ export default function VisualizationPage() {
                             
                             <button
                               onClick={() => removeChartFromBlock(block, index)}
-                              className="btn-small-danger"
+                              className="btn btn-sm btn-danger"
                             >
                               ✕
                             </button>
@@ -677,7 +677,7 @@ export default function VisualizationPage() {
                         <button
                           key={chart.chartId}
                           onClick={() => addChartToBlock(block, chart.chartId)}
-                          className="btn-add-chart"
+                          className="btn btn-sm btn-secondary"
                         >
                           {chart.emoji || '📊'} {chart.title}
                         </button>
@@ -768,13 +768,13 @@ export default function VisualizationPage() {
             <div className="form-actions">
               <button
                 onClick={() => setEditingBlock(null)}
-                className="btn-modal-cancel"
+                className="btn btn-sm btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleUpdateBlock(editingBlock)}
-                className="btn-modal-primary"
+                className="btn btn-sm btn-primary"
               >
                 Update Block
               </button>

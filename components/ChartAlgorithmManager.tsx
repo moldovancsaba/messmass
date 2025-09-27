@@ -255,12 +255,12 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="glass-card section-card" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
           <div>
             <button 
-              className="btn btn-primary"
+              className="btn btn-sm btn-primary"
               onClick={() => startEditing()}
             >
               ➕ Add New Chart
@@ -294,7 +294,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
 
       {/* Chart Configurations List */}
-      <div className="glass-card">
+      <div className="glass-card section-card">
           <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
           <table className="data-table">
             <thead>
@@ -326,14 +326,14 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                         {config.order}
                         <div className="order-buttons">
                           <button
-                            className="btn btn-small"
+                            className="btn btn-sm btn-secondary"
                             onClick={() => moveConfiguration(config._id!, 'up')}
                             disabled={index === 0}
                           >
                             ↑
                           </button>
                           <button
-                            className="btn btn-small"
+                            className="btn btn-sm btn-secondary"
                             onClick={() => moveConfiguration(config._id!, 'down')}
                             disabled={index === configurations.length - 1}
                           >
@@ -356,9 +356,9 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                       </span>
                     </td>
                     <td className="stat-number">{config.elements.length}</td>
-                    <td>
+                    <td className="actions-cell">
                       <button
-                        className={`btn btn-small ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn btn-sm ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => toggleConfigurationActive(config)}
                       >
                         {config.isActive ? '✅ Active' : '❌ Inactive'}
@@ -366,13 +366,13 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                     <td className="actions-cell">
                       <button 
-                        className="btn btn-small btn-info"
+                        className="btn btn-sm btn-info"
                         onClick={() => startEditing(config)}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-small btn-danger"
+                        className="btn btn-sm btn-danger"
                         onClick={() => deleteConfiguration(config._id!, config.title)}
                       >
                         🗑️ Delete
@@ -407,9 +407,10 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
         /* Data table scoped styles */
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .data-table th { text-align: left; padding: 0.75rem 1rem; background: var(--color-gray-50); border-bottom: 2px solid var(--color-gray-200); font-weight: 600; color: var(--color-gray-700); }
-        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-gray-100); color: var(--color-gray-900); }
-        .data-table tr:hover td { background: var(--color-gray-50); }
+        .data-table th { text-align: left; padding: 0.75rem 1rem; background: var(--color-gray-50); border-bottom: 2px solid var(--color-gray-200); font-weight: 600; color: var(--color-gray-700); vertical-align: middle; }
+        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-gray-100); color: var(--color-gray-900); vertical-align: middle; }
+.data-table tr:hover td { background: var(--color-gray-50); }
+        .data-table td .btn { display: inline-flex; align-items: center; }
         .stat-number { font-weight: 600; color: var(--color-gray-900); }
 
         .order-controls { display: flex; align-items: center; gap: 0.5rem; }
@@ -424,7 +425,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
         .chart-type-badge.bar { background: rgba(59, 130, 246, 0.1); color: var(--color-chart-blue); }
         .chart-type-badge.kpi { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
 
-        .actions-cell { display: flex; gap: 0.5rem; }
+        .actions-cell { display: flex; gap: 0.5rem; align-items: center; }
       `}</style>
     </div>
   );
@@ -726,7 +727,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
                         />
                         <button
                           type="button"
-                          className="btn btn-small btn-secondary variable-picker-btn"
+                  className="btn btn-sm btn-secondary variable-picker-btn"
                           onClick={() => setShowVariablePicker({ elementIndex: index })}
                           title="Pick variables"
                         >
@@ -790,7 +791,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
             <div className="variable-picker-header">
               <h4>Select Variable for Element {showVariablePicker.elementIndex + 1}</h4>
               <button 
-                className="btn btn-small btn-secondary"
+                className="btn btn-sm btn-secondary"
                 onClick={() => setShowVariablePicker(null)}
               >
                 ✕

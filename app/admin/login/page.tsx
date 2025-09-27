@@ -129,8 +129,8 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading || !email.trim() || !password.trim()}
-            className={`btn btn-primary ${loading ? 'btn-large' : 'btn-large'}`}
-            style={{width: '100%', marginBottom: '1rem'}}
+            className="btn btn-primary w-full"
+            style={{ marginBottom: '1rem' }}
           >
             {loading ? (
               <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
@@ -155,8 +155,7 @@ export default function AdminLogin() {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="btn btn-secondary btn-small"
-            style={{fontSize: '0.875rem'}}
+            className="btn btn-sm btn-secondary"
           >
             ← Back to MessMass
           </button>

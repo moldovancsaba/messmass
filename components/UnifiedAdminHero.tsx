@@ -71,29 +71,8 @@ export default function UnifiedAdminHero({
   resultsSummary
 }: UnifiedAdminHeroProps) {
 
-  // Button style generator
-  const getButtonStyle = (variant: ActionButton['variant'] = 'primary', disabled = false) => {
-    const baseStyle = {
-      border: 'none',
-      borderRadius: '6px',
-      padding: '0.5rem 1rem',
-      fontSize: '0.875rem',
-      fontWeight: '500' as const,
-      cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.2s ease',
-      opacity: disabled ? 0.6 : 1
-    };
-
-    const variants = {
-      primary: { background: '#3b82f6', color: 'white', hoverBg: '#2563eb' },
-      secondary: { background: '#6b7280', color: 'white', hoverBg: '#4b5563' },
-      success: { background: '#10b981', color: 'white', hoverBg: '#059669' },
-      danger: { background: '#ef4444', color: 'white', hoverBg: '#dc2626' },
-      info: { background: '#6366f1', color: 'white', hoverBg: '#4f46e5' }
-    };
-
-    return { ...baseStyle, ...variants[variant] };
-  };
+  // Centralized button classes are used for all buttons to ensure uniform styling.
+  const variantClass = (v: ActionButton['variant'] = 'primary') => `btn-${v}`;
 
   // Badge style generator
   const getBadgeStyle = (variant: Badge['variant']) => {
@@ -276,10 +255,7 @@ export default function UnifiedAdminHero({
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {/* Back Button */}
               {backLink && (
-                <a
-                  href={backLink}
-                  style={getButtonStyle('secondary')}
-                >
+                <a href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
                   {backLabel}
                 </a>
               )}
@@ -291,19 +267,7 @@ export default function UnifiedAdminHero({
                   onClick={button.disabled ? undefined : button.onClick}
                   disabled={button.disabled}
                   title={button.title}
-                  style={getButtonStyle(button.variant, button.disabled)}
-                  onMouseEnter={(e) => {
-                    if (!button.disabled) {
-                      const style = getButtonStyle(button.variant);
-                      e.currentTarget.style.background = (style as any).hoverBg;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!button.disabled) {
-                      const style = getButtonStyle(button.variant);
-                      e.currentTarget.style.background = style.background;
-                    }
-                  }}
+                  className={`btn btn-sm ${variantClass(button.variant)}`}
                 >
                   {button.icon && <span style={{ marginRight: '0.25rem' }}>{button.icon}</span>}
                   {button.label}

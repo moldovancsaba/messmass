@@ -139,27 +139,14 @@ export default function AdminUsersPage() {
             <p className="admin-subtitle">Create and manage admin users</p>
           </div>
           <div className="admin-user-info" style={{ minWidth: 'auto' }}>
-            <Link
-              href="/admin"
-              className="btn btn-secondary"
-              style={{
-                background: '#6b7280',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.5rem 1rem',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textDecoration: 'none'
-              }}
-            >
+            <Link href="/admin" className="btn btn-sm btn-secondary admin-hero-back">
               ← Back to Admin
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="glass-card">
+      <div className="glass-card section-card">
         <h2 className="section-title">Create New Admin</h2>
         <form onSubmit={onCreateUser} style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: '1fr 1fr auto' }}>
           <input
@@ -193,7 +180,7 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
+      <div className="glass-card section-card" style={{ marginTop: '1.5rem' }}>
         <h2 className="section-title">All Admin Users</h2>
         {loading ? (
           <div>Loading users…</div>
@@ -204,12 +191,12 @@ export default function AdminUsersPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left', padding: '0.5rem' }}>Email</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem' }}>Name</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem' }}>Role</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem' }}>Created</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem' }}>Updated</th>
-                  <th style={{ textAlign: 'right', padding: '0.5rem' }}>Actions</th>
+                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Email</th>
+                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Name</th>
+                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Role</th>
+                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Created</th>
+                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Updated</th>
+                  <th style={{ textAlign: 'right', padding: '0.5rem', verticalAlign: 'middle' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -220,9 +207,9 @@ export default function AdminUsersPage() {
                     <td style={{ padding: '0.5rem' }}>{u.role}</td>
                     <td style={{ padding: '0.5rem', fontFamily: 'monospace' }}>{u.createdAt}</td>
                     <td style={{ padding: '0.5rem', fontFamily: 'monospace' }}>{u.updatedAt}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right' }}>
-                      <button className="btn btn-secondary" onClick={() => onRegenerate(u.id)} style={{ marginRight: '0.5rem' }}>Regenerate</button>
-                      <button className="btn btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
+                    <td className="actions-cell" style={{ padding: '0.5rem', justifyContent: 'flex-end' }}>
+                      <button className="btn btn-sm btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
                     </td>
                   </tr>
                 ))}

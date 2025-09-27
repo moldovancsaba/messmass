@@ -481,10 +481,10 @@ export default function AdminDesignPage() {
                             borderRadius: '50%',
                             border: '2px solid #e5e7eb'
                           }}></div>
-                          <button className="btn btn-secondary btn-small" onClick={() => startEdit(style)}>Edit</button>
-                          <button className="btn btn-danger btn-small" onClick={() => deleteStyle(style._id)}>Delete</button>
-                          <button className="btn btn-primary btn-small" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
-                          <button className="btn btn-success btn-small" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
+                          <button className="btn btn-sm btn-secondary" onClick={() => startEdit(style)}>Edit</button>
+                          <button className="btn btn-sm btn-danger" onClick={() => deleteStyle(style._id)}>Delete</button>
+                          <button className="btn btn-sm btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
+                          <button className="btn btn-sm btn-success" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
                         </div>
                       </div>
 

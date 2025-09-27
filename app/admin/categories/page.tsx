@@ -204,23 +204,23 @@ if (error) {
       <div className="content-surface">
           {/* Categories Grid */}
           <div>
-            <div className="charts-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+            <div className="charts-grid category-grid">
               {filteredCategories.map((category) => (
-                <div key={category._id} className="glass-card">
+                <div key={category._id} className="glass-card section-card category-card">
                   {/* Category Header */}
-                  <div className="flex-row" style={{ justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <div className="flex-row gap-3">
-                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: category.color }} />
-                      <h3 className="no-margin" style={{ fontSize: '1.25rem', fontWeight: 600 }}>{category.name}</h3>
+                  <div className="category-header">
+                    <div className="category-title">
+                      <div className="category-dot" style={{ background: category.color }} />
+                      <h3 className="category-name">{category.name}</h3>
                     </div>
-                    <div className="flex-row gap-3">
-                      <button className="btn btn-primary btn-small" onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
-                      <button className="btn btn-danger btn-small" onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
+                    <div className="category-actions">
+                      <button className="btn btn-sm btn-primary" onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
                     </div>
                   </div>
 
                   {/* Category Info */}
-                  <div className="flex-row" style={{ justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', color: '#6b7280', borderTop: '1px solid rgba(107, 114, 128, 0.1)', paddingTop: '0.75rem' }}>
+                  <div className="category-footer">
                     <span>Order: {category.order}</span>
                     <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
                   </div>
@@ -700,3 +700,45 @@ if (error) {
     </div>
   );
 }
+
+<style jsx>{`
+  .category-grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) { /* tablet */
+    .category-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) { /* desktop */
+    .category-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem; /* ensure padding between box and content */
+  }
+  .category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .category-title { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .category-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .category-name { margin: 0; font-size: 1.125rem; font-weight: 600; }
+  .category-actions { display: inline-flex; gap: 0.5rem; }
+
+  .category-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto; /* push footer to bottom for equal height cards */
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(107,114,128,0.12);
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+`}</style>

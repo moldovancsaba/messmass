@@ -170,19 +170,7 @@ export default function AdminPageHero({
             )}
             
             {backLink && (
-              <a
-                href={backLink}
-                style={{
-                  background: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  fontWeight: '500'
-                }}
-              >
+              <a href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
                 ← Back to Admin
               </a>
             )}

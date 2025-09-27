@@ -36,13 +36,16 @@
   /* Typography */
   font-weight: var(--font-medium);
   font-size: var(--text-sm);
-  line-height: var(--leading-tight);
+  line-height: 1;
 
   /* Layout */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   /* Interaction */
   cursor: pointer;
@@ -934,106 +937,7 @@ textarea::placeholder {
   font-size: 0.875rem;
 }
 
-/* Buttons with consistent spacing */
-.btn-create {
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-edit {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.btn-delete {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.btn-add-chart {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #374151;
-}
-
-.btn-small-danger {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
-.btn-form-primary {
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-form-secondary {
-  background: #6b7280;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-modal-cancel {
-  padding: 0.75rem 1.5rem;
-  background: #6b7280;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn-modal-primary {
-  padding: 0.75rem 1.5rem;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-}
+/* Buttons migrated to centralized .btn system. Local button classes removed to enforce uniformity. */
 
 /* Select controls */
 .chart-select {
