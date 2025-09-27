@@ -280,4 +280,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.7.0 | Last Updated: 2025-09-27T12:32:04.000Z | Status: Active Development*
+*Version: 5.8.0 | Last Updated: 2025-09-27T12:50:33.000Z | Status: Active Development*

@@ -1,5 +1,9 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-27T12:50:33.000Z — Delivery: STYL-003 + Guardrails
+- Delivered: Removed duplicate CSS files across app/styles, app/admin, and app/stats. Added ESLint guardrail (warn-level) forbidding DOM style prop and a style audit script (npm run style:audit).
+- Validation: lint (warnings only), type-check, and build will run before commit.
+
 ## 2025-09-27T12:32:04.000Z — Delivery: Style System Hardening (Phase 2)
 - Delivered: EditorDashboard inline-style removal across major sections; added CSS utilities (.stat-card-accent, .calc-row, .value-pill, .input-card, .age-grid, .btn-full) and layout utilities (.w-120, .flex-1).
 - Validation: type-check, lint, and production build passed.

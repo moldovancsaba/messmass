@@ -1,5 +1,11 @@
 # MessMass Development Learnings
 
+## 2025-09-27T12:50:33.000Z — Guardrails: ESLint and Style Audit (Frontend / Process)
+- What: Introduced a warn-level ESLint rule (react/forbid-dom-props: style) and a style audit script.
+- Why: Prevent reintroduction of inline styles and highlight hardcoded colors outside canonical token files.
+- How: .eslintrc.js extends "next" and adds the rule; scripts/audit-styles.js scans .tsx/.jsx/.css and exits non-zero if inline style props are found.
+- Outcome: Lint highlights usage without blocking builds; audit script available via npm run style:audit.
+
 ## 2025-09-24T11:07:46.000Z — Atlas settings collection plan (Backend / Process)
 
 Decision: Manage only non-sensitive settings in MongoDB Atlas to centralize environment-specific toggles and base URLs. Secrets remain exclusively in environment variables.

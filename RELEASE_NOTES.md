@@ -1,5 +1,17 @@
 # MessMass Release Notes
 
+## [v5.8.0] — 2025-09-27T12:50:33.000Z
+
+### Chore — CSS duplication cleanup and guardrails
+- Removed unused duplicate CSS files:
+  - app/styles: admin 2–5.css, components 2–5.css, layout 2–5.css, theme 2–4.css
+  - app/stats/[slug]: stats.module 2–3.css
+  - app/admin: admin.module 2–14.css
+- Added ESLint guardrail (warn-level) to forbid DOM style props: react/forbid-dom-props with { forbid: ["style"] }
+- Added style audit script: npm run style:audit — reports inline style props and hardcoded hex colors outside token files
+
+---
+
 ## [v5.7.0] — 2025-09-27T12:32:04.000Z
 
 ### Features — Style System Hardening (phase 2)
