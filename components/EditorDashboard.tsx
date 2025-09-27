@@ -240,45 +240,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     onIncrement?: () => void;
     onDecrement?: () => void;
   }) => (
-    <div style={{ 
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '12px',
-      padding: '1.25rem',
-      textAlign: 'center',
-      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      position: 'relative',
-      cursor: isCalculated ? 'default' : 'pointer',
-      opacity: isCalculated ? 0.8 : 1
-    }}
-    onClick={!isCalculated ? (onIncrement ? onIncrement : (statKey ? () => incrementStat(statKey) : undefined)) : undefined}
+    <div
+      className={`stat-card stat-card-accent ${isCalculated ? 'stat-card-readonly' : 'stat-card-clickable'}`}
+      onClick={!isCalculated ? (onIncrement ? onIncrement : (statKey ? () => incrementStat(statKey) : undefined)) : undefined}
     >
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '3px',
-        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '12px 12px 0 0'
-      }}></div>
-      
-      <div style={{
-        fontSize: '0.875rem',
-        fontWeight: 600,
-        color: '#4a5568',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px',
-        marginBottom: '0.5rem'
-      }}>{label}</div>
-      
-      <div style={{
-        fontSize: '2.5rem',
-        fontWeight: 800,
-        color: '#1a202c',
-        lineHeight: 1
-      }}>{value}</div>
+      <div className="stat-label">{label}</div>
+      <div className="stat-value">{value}</div>
       
       {/* Decrement button for clickable stats */}
       {!isCalculated && (statKey || onDecrement) && (
@@ -289,20 +256,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             else if (statKey) decrementStat(statKey);
           }}
           disabled={value === 0}
-          style={{
-            position: 'absolute',
-            bottom: '8px',
-            right: '8px',
-            background: value === 0 ? '#e2e8f0' : '#ef4444',
-            color: value === 0 ? '#9ca3af' : 'white',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '4px 8px',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            cursor: value === 0 ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s ease'
-          }}
+          className="btn btn-sm btn-danger stat-decrement"
         >
           -1
         </button>
@@ -330,16 +284,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     };
 
     return (
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '12px',
-        padding: '1rem',
-        border: '1px solid rgba(255, 255, 255, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem'
-      }}>
+      <div className="input-card flex-row gap-4">
         <input
           type="number"
           value={tempValue}
@@ -348,27 +293,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             setTempValue(newValue);
           }}
           onBlur={handleBlur}
-          style={{
-            width: '120px',
-            padding: '0.5rem',
-            border: '2px solid #e2e8f0',
-            borderRadius: '8px',
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            textAlign: 'center',
-            color: '#1a202c',
-            backgroundColor: '#ffffff',
-            outline: 'none',
-            transition: 'all 0.2s ease'
-          }}
+          className="form-input w-120"
           min="0"
         />
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          color: '#4a5568',
-          flex: 1
-        }}>{label}</div>
+        <div className="form-label flex-1">{label}</div>
       </div>
     );
   };
@@ -388,16 +316,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     }
 
     return (
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '12px',
-        padding: '1rem',
-        border: '1px solid rgba(255, 255, 255, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem'
-      }}>
+      <div className="input-card flex-row gap-4">
         <input
           type="number"
           value={tempValue}
@@ -406,27 +325,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             setTempValue(newValue)
           }}
           onBlur={handleBlur}
-          style={{
-            width: '120px',
-            padding: '0.5rem',
-            border: '2px solid #e2e8f0',
-            borderRadius: '8px',
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            textAlign: 'center',
-            color: '#1a202c',
-            backgroundColor: '#ffffff',
-            outline: 'none',
-            transition: 'all 0.2s ease'
-          }}
+          className="form-input w-120"
           min="0"
         />
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          color: '#4a5568',
-          flex: 1
-        }}>{label}</div>
+        <div className="form-label flex-1">{label}</div>
       </div>
     )
   }
@@ -451,45 +353,19 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     };
 
     return (
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '12px',
-        padding: '1rem',
-        border: '1px solid rgba(255, 255, 255, 0.3)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1rem'
-      }}>
+      <div className="input-card flex-row gap-4">
         <input
           type="number"
           value={tempValue}
           onChange={(e) => {
-            const newValue = Math.max(0, parseInt(e.target.value) || 0);
+            const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
             setTempValue(newValue);
           }}
           onBlur={handleBlur}
-          style={{
-            width: '120px',
-            padding: '0.5rem',
-            border: '2px solid #e2e8f0',
-            borderRadius: '8px',
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            textAlign: 'center',
-            color: '#1a202c',
-            backgroundColor: '#ffffff',
-            outline: 'none',
-            transition: 'all 0.2s ease'
-          }}
+          className="form-input w-120"
           min="0"
         />
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          color: '#4a5568',
-          flex: 1
-        }}>{label}</div>
+        <div className="form-label flex-1">{label}</div>
       </div>
     );
   };
@@ -504,22 +380,6 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   return (
     <div className="admin-container">
-      {/* Local responsive CSS for editor layout */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            /* Age section: force 3 columns on desktop, 2 lines of 3 */
-            .age-grid {
-              display: grid;
-              gap: 1rem;
-              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            }
-            @media (min-width: 1024px) {
-              .age-grid { grid-template-columns: repeat(3, 1fr); }
-            }
-          `
-        }}
-      />
       {/* Header with same styling as stats page */}
       <div className="glass-card admin-header">
         <div className="admin-header-content">
@@ -529,14 +389,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             
             {/* Beautiful hashtag display - showing all hashtags including categorized ones */}
             {allHashtagRepresentations.length > 0 && (
-              <div style={{ 
-                marginTop: '1rem',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.75rem',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
+              <div className="centered-pill-row mt-2">
                 {allHashtagRepresentations.map((hashtagDisplay, index) => (
                   <ColoredHashtagBubble 
                     key={index}
@@ -552,7 +405,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             )}
           </div>
           <div className="admin-user-info">
-            <div className="admin-badge" style={{ padding: '0.75rem 1rem' }}>
+            <div className="admin-badge p-3">
               <p className="admin-role">📅 {new Date(project.eventDate).toLocaleDateString()}</p>
               <p className="admin-level">🎯 Editor Mode</p>
               <p className="admin-status">
@@ -564,19 +417,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               {/* Mode Toggle Button */}
               <button
                 onClick={() => setEditMode(editMode === 'clicker' ? 'manual' : 'clicker')}
-                style={{
-                  background: editMode === 'clicker' ? '#667eea' : '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  marginTop: '0.5rem',
-                  transition: 'all 0.2s ease',
-                  width: '100%'
-                }}
+                className={`btn btn-sm ${editMode === 'clicker' ? 'btn-primary' : 'btn-success'} btn-full mt-2`}
               >
                 {editMode === 'clicker' ? '🖱️ Clicker' : '✏️ Manual'}
               </button>
@@ -585,19 +426,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
       </div>
 
-      <div className="content-surface" style={{ display: 'grid', gap: '2rem' }}>
+      <div className="content-surface content-grid">
         {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>📸 Images ({totalImages})</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="glass-card section-card">
+          <h2 className="section-title">📸 Images ({totalImages})</h2>
+          <div className="stats-cards-row">
             {editMode === 'clicker' ? (
               <>
                 {(() => {
@@ -620,16 +454,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
 
         {/* Fans Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>👥 Fans ({totalFans})</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="glass-card section-card">
+          <h2 className="section-title">👥 Fans ({totalFans})</h2>
+          <div className="stats-cards-row">
             {editMode === 'clicker' ? (
               <>
                 {(() => {
@@ -676,28 +503,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 )}
                 {canShowInManual('stadium') && <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />}
                 {(canShowInManual('remoteFans') || canShowInManual('stadium')) && (
-                  <div style={{ 
-                    background: 'rgba(255, 255, 255, 0.95)', 
-                    borderRadius: '12px', 
-                    padding: '1rem', 
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '1rem',
-                    opacity: 0.7
-                  }}>
-                    <div style={{
-                      width: '120px',
-                      padding: '0.5rem',
-                      border: '2px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '1.25rem',
-                      fontWeight: 700,
-                      textAlign: 'center',
-                      color: '#6b7280',
-                      backgroundColor: '#f9fafb'
-                    }}>{totalFans}</div>
-                    <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Fans (calculated)</div>
+                  <div className="calc-row">
+                    <div className="value-pill">{totalFans}</div>
+                    <div className="form-label flex-1">Total Fans (calculated)</div>
                   </div>
                 )}
               </>
@@ -706,16 +514,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
 
         {/* Gender Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>⚧️ Gender ({totalGender})</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="glass-card section-card">
+          <h2 className="section-title">⚧️ Gender ({totalGender})</h2>
+          <div className="stats-cards-row">
             {editMode === 'clicker' ? (
               <>
                 {(() => {
@@ -736,28 +537,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 {canShowInManual('female') && <ManualInputCard label="Female" value={project.stats.female} statKey="female" />}
                 {canShowInManual('male') && <ManualInputCard label="Male" value={project.stats.male} statKey="male" />}
                 {(canShowInManual('female') || canShowInManual('male')) && (
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.95)', 
-                  borderRadius: '12px', 
-                  padding: '1rem', 
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1rem',
-                  opacity: 0.7
-                }}>
-                  <div style={{
-                    width: '120px',
-                    padding: '0.5rem',
-                    border: '2px solid #e2e8f0',
-                    borderRadius: '8px',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    textAlign: 'center',
-                    color: '#6b7280',
-                    backgroundColor: '#f9fafb'
-                  }}>{totalGender}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Gender (calculated)</div>
+                <div className="calc-row">
+                  <div className="value-pill">{totalGender}</div>
+                  <div className="form-label flex-1">Total Gender (calculated)</div>
                 </div>
                 )}
               </>
@@ -766,15 +548,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
 
         {/* Age Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>🎂 Age ({totalAge})</h2>
+        <div className="glass-card section-card">
+          <h2 className="section-title">🎂 Age ({totalAge})</h2>
           <div className="age-grid">
             {editMode === 'clicker' ? (
               <>
@@ -804,56 +579,18 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 {canShowInManual('genAlpha') && <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />}
                 {canShowInManual('genYZ') && <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />}
                 {(canShowInManual('genAlpha') || canShowInManual('genYZ')) && (
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.95)', 
-                  borderRadius: '12px', 
-                  padding: '1rem', 
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1rem',
-                  opacity: 0.7
-                }}>
-                  <div style={{
-                    width: '120px',
-                    padding: '0.5rem',
-                    border: '2px solid #e2e8f0',
-                    borderRadius: '8px',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    textAlign: 'center',
-                    color: '#6b7280',
-                    backgroundColor: '#f9fafb'
-                  }}>{totalUnder40}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Under 40 (calculated)</div>
+                <div className="calc-row">
+                  <div className="value-pill">{totalUnder40}</div>
+                  <div className="form-label flex-1">Total Under 40 (calculated)</div>
                 </div>
                 )}
                 {/* Row 2 */}
                 {canShowInManual('genX') && <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />}
                 {canShowInManual('boomer') && <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />}
                 {(canShowInManual('genX') || canShowInManual('boomer')) && (
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.95)', 
-                  borderRadius: '12px', 
-                  padding: '1rem', 
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '1rem',
-                  opacity: 0.7
-                }}>
-                  <div style={{
-                    width: '120px',
-                    padding: '0.5rem',
-                    border: '2px solid #e2e8f0',
-                    borderRadius: '8px',
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    textAlign: 'center',
-                    color: '#6b7280',
-                    backgroundColor: '#f9fafb'
-                  }}>{totalOver40}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', flex: 1 }}>Total Over 40 (calculated)</div>
+                <div className="calc-row">
+                  <div className="value-pill">{totalOver40}</div>
+                  <div className="form-label flex-1">Total Over 40 (calculated)</div>
                 </div>
                 )}
               </>
@@ -862,16 +599,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
 
         {/* Merch Section */}
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <h2 style={{ 
-            fontSize: '1.5rem', 
-            fontWeight: 700, 
-            margin: '0 0 1.5rem 0',
-            color: '#2d3748',
-            borderBottom: '2px solid #e2e8f0',
-            paddingBottom: '0.5rem'
-          }}>🛍️ Merch ({totalMerch})</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+        <div className="glass-card section-card">
+          <h2 className="section-title">🛍️ Merch ({totalMerch})</h2>
+          <div className="merch-cards-grid mb-4">
             {editMode === 'clicker' ? (
               <>
                 {(() => {
@@ -891,7 +621,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               </>
             )}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div className="merch-cards-grid">
             {editMode === 'clicker' ? (
               <>
                 {(() => {
@@ -915,29 +645,22 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
         {/* Success Manager Section - Only show in manual mode */}
         {editMode === 'manual' && (
-          <div className="glass-card" style={{ padding: '1.5rem' }}>
-            <h2 style={{ 
-              fontSize: '1.5rem', 
-              fontWeight: 700, 
-              margin: '0 0 1.5rem 0',
-              color: '#2d3748',
-              borderBottom: '2px solid #e2e8f0',
-              paddingBottom: '0.5rem'
-            }}>📈 Success Manager</h2>
+          <div className="glass-card section-card">
+            <h2 className="section-title">📈 Success Manager</h2>
           
           {/* Image Management */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Image Management</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
+          <div className="mb-6">
+            <h4 className="section-subtitle">Image Management</h4>
+            <div className="style-grid">
               {canShowInManual('approvedImages') && <SuccessManagerCard label="Approved Images" value={project.stats.approvedImages || 0} statKey="approvedImages" />}
               {canShowInManual('rejectedImages') && <SuccessManagerCard label="Rejected Images" value={project.stats.rejectedImages || 0} statKey="rejectedImages" />}
             </div>
           </div>
 
           {/* Visit Tracking */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Visit Tracking</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
+          <div className="mb-6">
+            <h4 className="section-subtitle">Visit Tracking</h4>
+            <div className="style-grid">
               {canShowInManual('visitQrCode') && <SuccessManagerCard label="QR Code Visits" value={project.stats.visitQrCode || 0} statKey="visitQrCode" />}
               {canShowInManual('visitShortUrl') && <SuccessManagerCard label="Short URL Visits" value={project.stats.visitShortUrl || 0} statKey="visitShortUrl" />}
               {canShowInManual('visitWeb') && <SuccessManagerCard label="Web Visits" value={project.stats.visitWeb || 0} statKey="visitWeb" />}
@@ -945,18 +668,18 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           </div>
 
           {/* eDM (Value Proposition) */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>eDM</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
+          <div className="mb-6">
+            <h4 className="section-subtitle">eDM</h4>
+            <div className="style-grid">
               {canShowInManual('eventValuePropositionVisited') && <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />}
               {canShowInManual('eventValuePropositionPurchases') && <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />}
             </div>
           </div>
 
           {/* Social Visit (aggregated) */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Social Visit</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
+          <div className="mb-6">
+            <h4 className="section-subtitle">Social Visit</h4>
+            <div className="style-grid">
               {canShowInManual('socialVisit') && (() => {
                 const sumSocial = (project.stats.visitFacebook || 0) + (project.stats.visitInstagram || 0) + (project.stats.visitYoutube || 0) + (project.stats.visitTiktok || 0) + (project.stats.visitX || 0) + (project.stats.visitTrustpilot || 0);
                 const socialVal = project.stats.socialVisit ?? sumSocial;
@@ -968,9 +691,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           </div>
 
           {/* Event Performance */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: '#4a5568', fontSize: '1.125rem' }}>Event Performance</h4>
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
+          <div className="mb-6">
+            <h4 className="section-subtitle">Event Performance</h4>
+            <div className="style-grid">
               {canShowInManual('eventAttendees') && <SuccessManagerCard label="Event Attendees" value={project.stats.eventAttendees || 0} statKey="eventAttendees" />}
               {canShowInManual('eventResultHome') && <SuccessManagerCard label="Event Result Home" value={project.stats.eventResultHome || 0} statKey="eventResultHome" />}
               {canShowInManual('eventResultVisitor') && <SuccessManagerCard label="Event Result Visitor" value={project.stats.eventResultVisitor || 0} statKey="eventResultVisitor" />}
@@ -988,16 +711,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             : customVars.some(v => v.flags.editableInManual)
           if (!showAny) return null
           return (
-            <div className="glass-card" style={{ padding: '1.5rem' }}>
-              <h2 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 700, 
-                margin: '0 0 1.5rem 0',
-                color: '#2d3748',
-                borderBottom: '2px solid #e2e8f0',
-                paddingBottom: '0.5rem'
-              }}>🧩 Custom Variables</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div className="glass-card section-card">
+              <h2 className="section-title">🧩 Custom Variables</h2>
+              <div className="stats-cards-row">
                 {editMode === 'clicker' ? (
                   <>
                     {customVars.filter(v => v.flags.visibleInClicker).map(v => (
@@ -1018,17 +734,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
         {/* Hashtag Management Section - Move to bottom and only show in manual mode */}
         {editMode === 'manual' && (
-          <div className="glass-card" style={{ padding: '1.5rem' }}>
-            <h2 style={{ 
-              fontSize: '1.5rem', 
-              fontWeight: 700, 
-              margin: '0 0 1.5rem 0',
-              color: '#2d3748',
-              borderBottom: '2px solid #e2e8f0',
-              paddingBottom: '0.5rem'
-            }}>🏷️ Hashtags ({totalHashtagCount}/∞)</h2>
+          <div className="glass-card section-card">
+            <h2 className="section-title">🏷️ Hashtags ({totalHashtagCount})</h2>
             
-            <div style={{ marginBottom: '1rem' }}>
+            <div className="mb-4">
               <UnifiedHashtagInput
                 generalHashtags={hashtags}
                 onGeneralChange={handleGeneralHashtagsChange}
@@ -1039,17 +748,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             </div>
             
             {totalHashtagCount === 0 && (
-              <p style={{
-                color: '#6b7280',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                margin: '1rem 0',
-                padding: '1rem',
-                background: 'rgba(107, 114, 128, 0.1)',
-                borderRadius: '8px'
-              }}>
-                💡 Add hashtags to categorize your project and enable aggregated statistics!
-              </p>
+              <div className="empty-state">
+                <p className="empty-state-text">💡 Add hashtags to categorize your project and enable aggregated statistics!</p>
+              </div>
             )}
           </div>
         )}

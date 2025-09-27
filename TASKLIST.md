@@ -1,14 +1,18 @@
 # TASKLIST.md
-Current Version: 5.6.0
-Last Updated: 2025-09-27T11:54:54.000Z
+Current Version: 5.7.0
+Last Updated: 2025-09-27T12:32:04.000Z
 
-### High Priority — Style System Hardening (Start)
+### High Priority — Style System Hardening (Phase 2)
 
-|| Task ID | Title | Owner | Expected Delivery | Status |
-||---------|-------|-------|-------------------|--------|
-|| STYL-001 | Remove inline styles from UnifiedAdminHero | Agent Mode | 2025-09-27T12:20:00.000Z | In Progress |
-|| STYL-002 | Standardize Admin Design loading + selects | Agent Mode | 2025-09-27T12:25:00.000Z | Planned |
-|| STYL-003 | Consolidate duplicated CSS files (no imports left) | Agent Mode | 2025-09-27T12:40:00.000Z | Planned |
+||| Task ID | Title | Owner | Expected Delivery | Status |
+|||---------|-------|-------|-------------------|--------|
+||| STYL-001 | Remove inline styles from UnifiedAdminHero | Agent Mode | 2025-09-27T12:20:00.000Z | ✅ Complete (2025-09-27T11:54:54.000Z) |
+||| STYL-002 | Standardize Admin Design loading + selects | Agent Mode | 2025-09-27T12:25:00.000Z | ✅ Complete (2025-09-27T11:54:54.000Z) |
+||| STYL-003 | Consolidate duplicated CSS files (no imports left) | Agent Mode | 2025-09-28T10:00:00.000Z | Planned |
+||| STYL-004 | Remove inline styles from EditorDashboard (Age, Fans, Merch, Success Manager) | Agent Mode | 2025-09-27T12:32:04.000Z | ✅ Complete (2025-09-27T12:32:04.000Z) |
+||| STYL-005 | Add CSS utilities (stat-card-accent, calc-row, value-pill, input-card, age-grid, btn-full) | Agent Mode | 2025-09-27T12:32:04.000Z | ✅ Complete (2025-09-27T12:32:04.000Z) |
+||| STYL-006 | Guardrail: ESLint forbid DOM style prop (with documented exceptions) | Agent Mode | 2025-09-28T12:00:00.000Z | Planned |
+||| STYL-007 | Style audit script for inline styles and hardcoded colors | Agent Mode | 2025-09-28T12:30:00.000Z | Planned |
 
 ### Operational — Release v5.4.0 (Immediate)
 

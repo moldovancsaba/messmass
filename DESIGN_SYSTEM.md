@@ -1,7 +1,7 @@
 # DESIGN_SYSTEM.md
 
-Design System — MessMass (v5.5.0)
-Last Updated: 2025-09-27T11:26:38.000Z
+Design System — MessMass (v5.7.0)
+Last Updated: 2025-09-27T12:32:04.000Z
 
 Overview
 - Purpose: Provide a unified, reusable styling system for consistent UI across admin and public-facing pages.
@@ -53,6 +53,14 @@ Components
 - Containers: .app-container, .admin-container, .page-container
 - Grids: .stats-grid, .stats-grid-admin, .counter-grid, .dynamic-charts-grid, .charts-grid
 - Utilities: spacing (.m-*, .p-*, .mt-*, .mb-*), flex/grid helpers
+
+6) Editor Dashboard Utilities (v5.7.0)
+- Stat card accent bar: .stat-card-accent (pseudo-element top gradient)
+- Card modifiers: .stat-card-clickable, .stat-card-readonly; anchored decrement button: .stat-decrement
+- Input card wrapper: .input-card for numeric inputs + labels
+- Calculated rows: .calc-row with .value-pill for totals
+- Content grids: .age-grid for age section; .content-grid for content areas
+- Utilities: .btn-full (full-width button), .w-120 (fixed width), .flex-1 (flex grow)
 
 Recent Refinements (v3.11.0)
 - Buttons: Ensured consistent min-height (40px), added small margin so buttons never stick to container edges in dense stacks, unified focus and disabled states.

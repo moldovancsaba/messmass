@@ -1,5 +1,16 @@
 # MessMass Release Notes
 
+## [v5.7.0] — 2025-09-27T12:32:04.000Z
+
+### Features — Style System Hardening (phase 2)
+- EditorDashboard: removed all remaining inline styles (sections: Fans, Gender, Age, Merch, Success Manager, Hashtags empty state)
+- Added CSS utilities/classes: .stat-card-accent, .stat-card-clickable/.stat-card-readonly, .stat-decrement, .input-card, .calc-row, .value-pill, .age-grid, .btn-full; utilities .w-120, .flex-1
+- Fixed section titles to include total counts and proper closing tags
+- Reused theme tokens and canonical CSS files (components.css, layout.css, globals.css)
+- Type-check, lint, and production build passed
+
+---
+
 ## [v5.6.0] — 2025-09-27T11:54:54.000Z
 
 ### Features — Inline-style removal (phase 1)
