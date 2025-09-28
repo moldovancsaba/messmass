@@ -67,6 +67,134 @@ const MOCK_VARIABLES: Omit<Variable, 'flags' | 'derived' | 'formula' | 'isCustom
   { name: 'eventResultVisitor', label: 'Event Result Visitor', type: 'count', category: 'Success Manager', icon: '🧳', description: 'Visitor team result' },
 ];
 
+function GroupsManager({ variables }: { variables: Variable[] }) {
+  const [groups, setGroups] = useState<{ _id?: string; groupOrder: number; chartId?: string; titleOverride?: string; variables: string[] }[]>([])
+  const [charts, setCharts] = useState<{ chartId: string; title: string }[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const availableVariables = variables.filter(v => !v.derived && v.type !== 'text').map(v => ({ name: v.name, label: v.label }))
+
+  const reload = async () => {
+    try {
+      setLoading(true); setError(null)
+      const res = await fetch('/api/variables-groups', { cache: 'no-store' })
+      const data = await res.json()
+      if (data?.success && Array.isArray(data.groups)) setGroups(data.groups)
+      const res2 = await fetch('/api/chart-config', { cache: 'no-store' })
+      const data2 = await res2.json()
+      if (data2?.success && Array.isArray(data2.configurations)) {
+        setCharts(data2.configurations.map((c: any) => ({ chartId: c.chartId, title: c.title })))
+      }
+    } catch (e: any) {
+      setError('Failed to load groups')
+    } finally { setLoading(false) }
+  }
+
+  useEffect(() => { reload() }, [])
+
+  const addGroup = () => {
+    const maxOrder = groups.reduce((m, g) => Math.max(m, g.groupOrder), 0)
+    setGroups([...groups, { groupOrder: maxOrder + 1, variables: [] }])
+  }
+
+  const saveGroup = async (g: any) => {
+    try {
+      setLoading(true); setError(null)
+      const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ group: g }) })
+      const data = await res.json()
+      if (!data?.success) throw new Error('Save failed')
+      await reload()
+    } catch (e:any) { setError(e?.message || 'Failed to save') } finally { setLoading(false) }
+  }
+
+  const seedDefaults = async () => {
+    try { setLoading(true); setError(null)
+      const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
+      const data = await res.json()
+      if (!data?.success) throw new Error('Seed failed')
+      await reload()
+    } catch (e:any) { setError(e?.message || 'Failed to seed') } finally { setLoading(false) }
+  }
+
+  const addVarToGroup = (idx: number, name: string) => {
+    setGroups(prev => prev.map((g,i) => i===idx ? { ...g, variables: g.variables.includes(name) ? g.variables : [...g.variables, name] } : g))
+  }
+  const removeVarFromGroup = (idx: number, name: string) => {
+    setGroups(prev => prev.map((g,i) => i===idx ? { ...g, variables: g.variables.filter(v => v!==name) } : g))
+  }
+  const moveVar = (idx:number, name:string, dir:-1|1) => {
+    setGroups(prev => prev.map((g,i) => {
+      if (i!==idx) return g
+      const list = [...g.variables]
+      const pos = list.indexOf(name)
+      if (pos===-1) return g
+      const np = pos+dir
+      if (np<0 || np>=list.length) return g
+      const tmp = list[np]; list[np]=list[pos]; list[pos]=tmp
+      return { ...g, variables: list }
+    }))
+  }
+
+  return (
+    <div className="glass-card section-card" style={{ marginBottom: '1rem' }}>
+      <h3 className="no-margin">Groups</h3>
+      <p className="no-margin" style={{ color: '#6b7280', marginTop: '0.25rem' }}>Use groups to control the Editor (clicker/manual) layout directly from here.</p>
+      <div className="wrap" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+        <button className="btn btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
+        <button className="btn btn-primary" onClick={addGroup} disabled={loading}>Add Group</button>
+      </div>
+      {error && <div style={{ color: '#b91c1c', marginTop: 8, fontSize: 12 }}>{error}</div>}
+
+      <div style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
+        {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => (
+          <div key={idx} className="glass-card" style={{ padding: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '0.5rem', alignItems: 'center' }}>
+              <div>
+                <label className="form-label">Group Order</label>
+                <input className="form-input" type="number" value={g.groupOrder} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, groupOrder: Number(e.target.value) } : x))} />
+              </div>
+              <div>
+                <label className="form-label">Chart ID (KPI)</label>
+                <input list="chartIds" className="form-input" value={g.chartId || ''} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, chartId: e.target.value || undefined } : x))} placeholder="Optional: e.g., all-images-taken" />
+                <datalist id="chartIds">
+                  {charts.map(c => (<option key={c.chartId} value={c.chartId}>{c.title}</option>))}
+                </datalist>
+              </div>
+              <div>
+                <label className="form-label">Title (override)</label>
+                <input className="form-input" value={g.titleOverride || ''} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, titleOverride: e.target.value || undefined } : x))} placeholder="Leave blank to hide" />
+              </div>
+            </div>
+            <div style={{ marginTop: '0.5rem' }}>
+              <label className="form-label">Variables in this group</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {g.variables.map(name => (
+                  <div key={name} className="badge badge-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <span>{availableVariables.find(v=>v.name===name)?.label || name}</span>
+                    <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, -1)}>↑</button>
+                    <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, +1)}>↓</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => removeVarFromGroup(idx, name)}>✕</button>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                <select className="form-select" onChange={e => { const v=e.target.value; if (v) { addVarToGroup(idx, v); e.currentTarget.selectedIndex = 0 } }}>
+                  <option value="">Add variable…</option>
+                  {availableVariables.filter(v => !g.variables.includes(v.name)).map(v => (
+                    <option key={v.name} value={v.name}>{v.label}</option>
+                  ))}
+                </select>
+                <button className="btn btn-primary" onClick={() => saveGroup(groups[idx])} disabled={loading}>Save Group</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { variable: Variable; allCategories: string[]; onSaved: (res: { originalName: string; nextVar: Partial<Variable> }) => void; onCancel: () => void }) {
   const [name, setName] = useState(variable.name)
   const [label, setLabel] = useState(variable.label)
@@ -206,11 +334,12 @@ export default function VariablesPage() {
 
   // Filter variables based on search
   useEffect(() => {
+    const baseList = variables.filter(v => !v.derived && v.type !== 'text')
     if (!searchTerm) {
-      setFilteredVariables(variables);
+      setFilteredVariables(baseList);
     } else {
       const q = searchTerm.toLowerCase();
-      const filtered = variables.filter(variable =>
+      const filtered = baseList.filter(variable =>
         variable.name.toLowerCase().includes(q) ||
         variable.label.toLowerCase().includes(q) ||
         variable.category.toLowerCase().includes(q) ||
@@ -329,23 +458,7 @@ const [createForm, setCreateForm] = useState({
         backLink="/admin"
       />
       <div className="content-surface">
-          {/* Groups manager (seed only for now) */}
-          <div className="glass-card section-card" style={{ marginBottom: '1rem' }}>
-            <h3 className="no-margin">Groups</h3>
-            <p className="no-margin" style={{ color: '#6b7280', marginTop: '0.25rem' }}>Use groups to control the Editor (clicker/manual) layout directly from here.</p>
-            <div style={{ marginTop: '0.75rem' }}>
-              <button className="btn btn-secondary" onClick={async () => {
-                try {
-                  const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
-                  const data = await res.json()
-                  if (!data?.success) throw new Error('Seed failed')
-                  alert('Groups initialized')
-                } catch (e) {
-                  alert('Failed to initialize groups')
-                }
-              }}>Initialize default groups</button>
-            </div>
-          </div>
+          <GroupsManager variables={variables} />
           {activeVar && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
                  onClick={() => setActiveVar(null)}>
