@@ -22,6 +22,7 @@ interface Variable {
   icon?: string;
   flags: VariableFlags;
   clickerOrder?: number;
+  manualOrder?: number;
   isCustom?: boolean;
 }
 
@@ -180,6 +181,7 @@ export default function VariablesPage() {
             icon: v.type === 'text' ? '🏷️' : undefined,
             flags: v.flags || { visibleInClicker: false, editableInManual: false },
             clickerOrder: typeof v.clickerOrder === 'number' ? v.clickerOrder : undefined,
+            manualOrder: typeof v.manualOrder === 'number' ? v.manualOrder : undefined,
             isCustom: !!v.isCustom,
           }))
           setVariables(vars);
@@ -423,10 +425,34 @@ const [createForm, setCreateForm] = useState({
                             />
                             <span>Editable in Manual</span>
                           </label>
-                        </div>
+        </div>
 
-                        {/* Final line: TYPE */}
-                        <div className="variable-type-line">{variable.type.toUpperCase()}</div>
+        {/* Manual Order (Editor → Manual) */}
+        <div className="variable-flags">
+          <label className="variable-flag">
+            <span>Manual order (Editor)</span>
+            <input
+              type="number"
+              defaultValue={variable.manualOrder ?? ''}
+              style={{ width: 80, marginLeft: 8 }}
+              onBlur={async (e) => {
+                const val = e.target.value === '' ? undefined : Number(e.target.value)
+                try {
+                  await fetch('/api/variables-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: variable.name, manualOrder: typeof val === 'number' && !Number.isNaN(val) ? val : undefined })
+                  })
+                  setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, manualOrder: (typeof val === 'number' && !Number.isNaN(val)) ? val : undefined } as Variable : v))
+                  setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, manualOrder: (typeof val === 'number' && !Number.isNaN(val)) ? val : undefined } as Variable : v))
+                } catch {}
+              }}
+            />
+          </label>
+        </div>
+
+        {/* Final line: TYPE */}
+        <div className="variable-type-line">{variable.type.toUpperCase()}</div>
                       </div>
                     )
                   })}

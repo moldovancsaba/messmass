@@ -20,6 +20,7 @@ interface VariableWithFlags {
   flags: { visibleInClicker: boolean; editableInManual: boolean };
   isCustom?: boolean;
   clickerOrder?: number;
+  manualOrder?: number;
 }
 
 interface Project {
@@ -443,11 +444,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   ))
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {canShowInManual('remoteImages') && <ManualInputCard label="Remote Images" value={project.stats.remoteImages} statKey="remoteImages" />}
-                {canShowInManual('hostessImages') && <ManualInputCard label="Hostess Images" value={project.stats.hostessImages} statKey="hostessImages" />}
-                {canShowInManual('selfies') && <ManualInputCard label="Selfies" value={project.stats.selfies} statKey="selfies" />}
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Images' && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
+                  ))
+                })()}
               </>
             )}
           </div>
@@ -496,18 +502,35 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   return anyShown ? <StatCard label="Total Fans" value={totalFans} isCalculated={true} /> : null
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {canShowInManual('remoteFans') && (
-                  <ManualInputCard label="Remote" value={(project.stats as any).remoteFans ?? remoteFansCalc} statKey={"remoteFans" as keyof typeof project.stats} />
-                )}
-                {canShowInManual('stadium') && <ManualInputCard label="Location" value={project.stats.stadium} statKey="stadium" />}
-                {(canShowInManual('remoteFans') || canShowInManual('stadium')) && (
-                  <div className="calc-row">
-                    <div className="value-pill">{totalFans}</div>
-                    <div className="form-label flex-1">Total Fans (calculated)</div>
-                  </div>
-                )}
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Fans' && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => {
+                    if (v.name === 'remoteFans') {
+                      return (
+                        <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? remoteFansCalc} statKey={"remoteFans" as keyof typeof project.stats} />
+                      )
+                    }
+                    if (v.name === 'stadium') {
+                      return (
+                        <ManualInputCard key={v.name} label={v.label} value={project.stats.stadium} statKey={"stadium" as keyof typeof project.stats} />
+                      )
+                    }
+                    return <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
+                  })
+                })()}
+                {(() => {
+                  const anyShown = varsConfig.some(v => v.category === 'Fans' && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                  return anyShown ? (
+                    <div className="calc-row">
+                      <div className="value-pill">{totalFans}</div>
+                      <div className="form-label flex-1">Total Fans (calculated)</div>
+                    </div>
+                  ) : null
+                })()}
               </>
             )}
           </div>
@@ -532,16 +555,25 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   return anyShown ? <StatCard label="Total Gender" value={totalGender} isCalculated={true} /> : null
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {canShowInManual('female') && <ManualInputCard label="Female" value={project.stats.female} statKey="female" />}
-                {canShowInManual('male') && <ManualInputCard label="Male" value={project.stats.male} statKey="male" />}
-                {(canShowInManual('female') || canShowInManual('male')) && (
-                <div className="calc-row">
-                  <div className="value-pill">{totalGender}</div>
-                  <div className="form-label flex-1">Total Gender (calculated)</div>
-                </div>
-                )}
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Demographics' && (v.name === 'female' || v.name === 'male') && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
+                {(() => {
+                const any = varsConfig.some(v => (v.name === 'female' || v.name === 'male') && v.flags?.editableInManual)
+                return any ? (
+                  <div className="calc-row">
+                    <div className="value-pill">{totalGender}</div>
+                    <div className="form-label flex-1">Total Gender (calculated)</div>
+                  </div>
+                ) : null
+                })()}
               </>
             )}
           </div>
@@ -573,26 +605,25 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   )
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {/* Row 1 */}
-                {canShowInManual('genAlpha') && <ManualInputCard label="Gen Alpha" value={project.stats.genAlpha} statKey="genAlpha" />}
-                {canShowInManual('genYZ') && <ManualInputCard label="Gen Y+Z" value={project.stats.genYZ} statKey="genYZ" />}
-                {(canShowInManual('genAlpha') || canShowInManual('genYZ')) && (
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Demographics' && (v.name === 'genAlpha' || v.name === 'genYZ' || v.name === 'genX' || v.name === 'boomer') && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
+                {/* Totals remain */}
                 <div className="calc-row">
                   <div className="value-pill">{totalUnder40}</div>
                   <div className="form-label flex-1">Total Under 40 (calculated)</div>
                 </div>
-                )}
-                {/* Row 2 */}
-                {canShowInManual('genX') && <ManualInputCard label="Gen X" value={project.stats.genX} statKey="genX" />}
-                {canShowInManual('boomer') && <ManualInputCard label="Boomer" value={project.stats.boomer} statKey="boomer" />}
-                {(canShowInManual('genX') || canShowInManual('boomer')) && (
                 <div className="calc-row">
                   <div className="value-pill">{totalOver40}</div>
                   <div className="form-label flex-1">Total Over 40 (calculated)</div>
                 </div>
-                )}
               </>
             )}
           </div>
@@ -613,11 +644,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   ))
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {canShowInManual('merched') && <ManualInputCard label="People with Merch" value={project.stats.merched} statKey="merched" />}
-                {canShowInManual('jersey') && <ManualInputCard label="Jersey" value={project.stats.jersey} statKey="jersey" />}
-                {canShowInManual('scarf') && <ManualInputCard label="Scarf" value={project.stats.scarf} statKey="scarf" />}
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Merchandise' && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
               </>
             )}
           </div>
@@ -633,11 +669,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   ))
                 })()}
               </>
-            ) : (
+) : (
               <>
-                {canShowInManual('flags') && <ManualInputCard label="Flags" value={project.stats.flags} statKey="flags" />}
-                {canShowInManual('baseballCap') && <ManualInputCard label="Baseball Cap" value={project.stats.baseballCap} statKey="baseballCap" />}
-                {canShowInManual('other') && <ManualInputCard label="Other" value={project.stats.other} statKey="other" />}
+                {(() => {
+                  const items = varsConfig
+                    .filter(v => v.category === 'Merchandise' && v.flags?.editableInManual && !v.derived && v.type !== 'text')
+                    .sort((a, b) => ((a.manualOrder ?? Number.MAX_SAFE_INTEGER) - (b.manualOrder ?? Number.MAX_SAFE_INTEGER)) || a.label.localeCompare(b.label))
+                  return items.map(v => (
+                    <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                  ))
+                })()}
               </>
             )}
           </div>

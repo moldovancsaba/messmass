@@ -34,6 +34,7 @@ interface VariableConfigDoc {
   // Flags and ordering
   flags: Flags
   clickerOrder?: number
+  manualOrder?: number
   createdAt?: string
   updatedAt?: string
 }
@@ -87,12 +88,14 @@ export async function GET() {
       .toArray()
     const flagsByName = new Map<string, Flags>()
     const orderByName = new Map<string, number>()
+    const manualOrderByName = new Map<string, number>()
     const customDefs: VariableDefinition[] = []
     const metaOverrideByName = new Map<string, Partial<VariableDefinition>>()
 
     for (const doc of configDocs) {
       if (doc.flags) flagsByName.set(doc.name, doc.flags)
       if (typeof doc.clickerOrder === 'number') orderByName.set(doc.name, doc.clickerOrder)
+      if (typeof doc.manualOrder === 'number') manualOrderByName.set(doc.name, doc.manualOrder)
       if (doc.isCustom && doc.label && doc.type && doc.category) {
         customDefs.push({
           name: doc.name,
@@ -117,16 +120,17 @@ export async function GET() {
     }
 
     // Merge registry + custom (custom can shadow by unique name if not colliding)
-    type MergedVar = VariableDefinition & { flags: Flags; isCustom?: boolean; clickerOrder?: number }
+    type MergedVar = VariableDefinition & { flags: Flags; isCustom?: boolean; clickerOrder?: number; manualOrder?: number }
     const merged: MergedVar[] = []
 
     // 1) Add all registry variables with flags/overrides
     for (const v of registry) {
       const flags = flagsByName.get(v.name) || defaultFlagsForVariable(v)
       const order = orderByName.get(v.name) ?? defaultOrderByName.get(v.name)
+      const manualOrder = manualOrderByName.get(v.name)
       const meta = metaOverrideByName.get(v.name)
       const withMeta = meta ? { ...v, ...meta } : v
-      merged.push({ ...withMeta, flags, clickerOrder: order })
+      merged.push({ ...withMeta, flags, clickerOrder: order, manualOrder })
     }
 
     // 2) Add custom variables not present in registry
@@ -173,6 +177,7 @@ export async function POST(request: NextRequest) {
 
     const name: string | undefined = body?.name
     const incomingOrder: number | undefined = typeof body?.clickerOrder === 'number' ? body.clickerOrder : undefined
+    const incomingManualOrder: number | undefined = typeof body?.manualOrder === 'number' ? body.manualOrder : undefined
     if (!name || typeof name !== 'string' || name.length < 2) {
       return NextResponse.json({ success: false, error: 'Invalid name' }, { status: 400 })
     }
@@ -201,6 +206,9 @@ export async function POST(request: NextRequest) {
     }
     if (typeof incomingOrder === 'number') {
       setDoc.clickerOrder = incomingOrder
+    }
+    if (typeof incomingManualOrder === 'number') {
+      setDoc.manualOrder = incomingManualOrder
     }
 
     if (hasMeta) {
