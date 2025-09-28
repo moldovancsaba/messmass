@@ -515,6 +515,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             })}
           </>
         )}
+        {!hasGroups && (
+          <>
         {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
         <div className="glass-card section-card">
@@ -880,6 +882,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               </div>
             )}
           </div>
+          </>
+        )}
       </div>
     </div>
   );
