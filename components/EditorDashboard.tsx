@@ -457,66 +457,67 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       </div>
 
       <div className="content-surface content-grid">
-        {hasGroups && (
-          <>
-            {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => {
-              const chart = chartById(g.chartId)
-              const kpi = computeKpiValue(chart)
-              const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)
-              const items = g.variables
-                .map(name => varsConfig.find(v => v.name === name))
-                .filter((v): v is VariableWithFlags => !!v && !v.derived && v.type !== 'text')
-              const filtered = editMode === 'clicker'
-                ? items.filter(v => v.flags.visibleInClicker)
-                : items.filter(v => v.flags.editableInManual)
-              if (filtered.length === 0 && !title) return null
-              return (
-                <div key={idx} className="glass-card section-card">
-                  {title && (
-                    <h2 className="section-title">
-                      {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
-                    </h2>
-                  )}
-                  <div className="stats-cards-row">
-                    {filtered.map(v => (
-                      editMode === 'clicker' ? (
-                        v.name === 'remoteFans' ? (
-                          <StatCard key={v.name}
-                            label={v.label}
-                            value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)}
-                            onIncrement={() => {
-                              const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                              const newStats = { ...project.stats, remoteFans: current + 1 };
-                              setProject(prev => ({ ...prev, stats: newStats }));
-                              saveProject(newStats);
-                            }}
-                            onDecrement={() => {
-                              const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
-                              const next = Math.max(0, current - 1);
-                              const newStats = { ...project.stats, remoteFans: next };
-                              setProject(prev => ({ ...prev, stats: newStats }));
-                              saveProject(newStats);
-                            }}
-                          />
-                        ) : (
-                          <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
-                        )
-                      ) : (
-                        v.name === 'remoteFans' ? (
-                          <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} />
-                        ) : (
-                          <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
-                        )
-                      )
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
-          </>
+        {/* Groups-driven rendering only (no legacy sections) */}
+        {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => {
+          const chart = chartById(g.chartId)
+          const kpi = computeKpiValue(chart)
+          const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)
+          const items = g.variables
+            .map(name => varsConfig.find(v => v.name === name))
+            .filter((v): v is VariableWithFlags => !!v && !v.derived && v.type !== 'text')
+          const filtered = editMode === 'clicker'
+            ? items.filter(v => v.flags.visibleInClicker)
+            : items.filter(v => v.flags.editableInManual)
+          if (filtered.length === 0 && !title) return null
+          return (
+            <div key={idx} className="glass-card section-card">
+              {title && (
+                <h2 className="section-title">
+                  {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
+                </h2>
+              )}
+              <div className="stats-cards-row">
+                {filtered.map(v => (
+                  editMode === 'clicker' ? (
+                    v.name === 'remoteFans' ? (
+                      <StatCard key={v.name}
+                        label={v.label}
+                        value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)}
+                        onIncrement={() => {
+                          const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                          const newStats = { ...project.stats, remoteFans: current + 1 };
+                          setProject(prev => ({ ...prev, stats: newStats }));
+                          saveProject(newStats);
+                        }}
+                        onDecrement={() => {
+                          const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                          const next = Math.max(0, current - 1);
+                          const newStats = { ...project.stats, remoteFans: next };
+                          setProject(prev => ({ ...prev, stats: newStats }));
+                          saveProject(newStats);
+                        }}
+                      />
+                    ) : (
+                      <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                    )
+                  ) : (
+                    v.name === 'remoteFans' ? (
+                      <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} />
+                    ) : (
+                      <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                    )
+                  )
+                ))}
+              </div>
+            </div>
+          )
+        })}
+        {groups.length === 0 && (
+          <div className="glass-card section-card">
+            <h2 className="section-title">No groups configured</h2>
+            <p style={{ color: '#6b7280' }}>Go to Admin → Variables → Groups to initialize default groups.</p>
+          </div>
         )}
-        {!hasGroups && (
-          <>
         {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
         <div className="glass-card section-card">
@@ -882,8 +883,6 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               </div>
             )}
           </div>
-          </>
-        )}
       </div>
     </div>
   );
