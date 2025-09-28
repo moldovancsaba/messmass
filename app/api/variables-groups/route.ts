@@ -86,3 +86,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Failed to save variable group' }, { status: 500 })
   }
 }
+
+export async function DELETE() {
+  try {
+    const db = await getDb()
+    await db.collection(COLLECTION).deleteMany({})
+    return NextResponse.json({ success: true })
+  } catch (e) {
+    console.error('❌ variables-groups DELETE failed', e)
+    return NextResponse.json({ success: false, error: 'Failed to delete variable groups' }, { status: 500 })
+  }
+}

@@ -142,6 +142,13 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
       <p className="no-margin" style={{ color: '#6b7280', marginTop: '0.25rem' }}>Use groups to control the Editor (clicker/manual) layout directly from here.</p>
       <div className="wrap" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
         <button className="btn btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
+        <button className="btn btn-warning" onClick={async () => {
+          try { setLoading(true); setError(null)
+            await fetch('/api/variables-groups', { method: 'DELETE' })
+            await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
+            await reload()
+          } catch (e:any) { setError(e?.message || 'Failed to replace groups') } finally { setLoading(false) }
+        }} disabled={loading}>Replace with default groups</button>
         <button className="btn btn-primary" onClick={addGroup} disabled={loading}>Add Group</button>
       </div>
       {error && <div style={{ color: '#b91c1c', marginTop: 8, fontSize: 12 }}>{error}</div>}
