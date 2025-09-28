@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
 import { 
@@ -212,6 +213,24 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   // Calculate totals
   const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
+  // Groups
+  const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables: string[] }[]>([])
+  const [charts, setCharts] = useState<any[]>([])
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/variables-groups', { cache: 'no-store' })
+        const data = await res.json()
+        if (data?.success && Array.isArray(data.groups)) setGroups(data.groups)
+      } catch {}
+      try {
+        const res2 = await fetch('/api/chart-config', { cache: 'no-store' })
+        const data2 = await res2.json()
+        if (data2?.success && Array.isArray(data2.configurations)) setCharts(data2.configurations)
+      } catch {}
+    })()
+  }, [])
   const remoteFansCalc = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
   const totalFans = remoteFansCalc + project.stats.stadium;
   const totalGender = project.stats.female + project.stats.male;
@@ -379,6 +398,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const allHashtagRepresentations = getAllHashtagRepresentations({ hashtags, categorizedHashtags });
   const totalHashtagCount = allHashtagRepresentations.length;
 
+  const chartById = (id?: string) => charts.find((c: any) => c.chartId === id)
+  const computeKpiValue = (cfg: any): number | 'NA' => {
+    if (!cfg || cfg.type !== 'kpi' || !cfg.elements?.[0]) return 'NA'
+    const formula = cfg.elements[0].formula as string
+    return evaluateFormula(formula, project.stats as any)
+  }
+
+  // If groups exist, render from groups (both modes)
+  const hasGroups = groups && groups.length > 0
+
   return (
     <div className="admin-container">
       {/* Header with same styling as stats page */}
@@ -428,6 +457,64 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       </div>
 
       <div className="content-surface content-grid">
+        {hasGroups && (
+          <>
+            {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => {
+              const chart = chartById(g.chartId)
+              const kpi = computeKpiValue(chart)
+              const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)
+              const items = g.variables
+                .map(name => varsConfig.find(v => v.name === name))
+                .filter((v): v is VariableWithFlags => !!v && !v.derived && v.type !== 'text')
+              const filtered = editMode === 'clicker'
+                ? items.filter(v => v.flags.visibleInClicker)
+                : items.filter(v => v.flags.editableInManual)
+              if (filtered.length === 0 && !title) return null
+              return (
+                <div key={idx} className="glass-card section-card">
+                  {title && (
+                    <h2 className="section-title">
+                      {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
+                    </h2>
+                  )}
+                  <div className="stats-cards-row">
+                    {filtered.map(v => (
+                      editMode === 'clicker' ? (
+                        v.name === 'remoteFans' ? (
+                          <StatCard key={v.name}
+                            label={v.label}
+                            value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)}
+                            onIncrement={() => {
+                              const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                              const newStats = { ...project.stats, remoteFans: current + 1 };
+                              setProject(prev => ({ ...prev, stats: newStats }));
+                              saveProject(newStats);
+                            }}
+                            onDecrement={() => {
+                              const current = (project.stats.remoteFans ?? (project.stats.indoor + project.stats.outdoor));
+                              const next = Math.max(0, current - 1);
+                              const newStats = { ...project.stats, remoteFans: next };
+                              setProject(prev => ({ ...prev, stats: newStats }));
+                              saveProject(newStats);
+                            }}
+                          />
+                        ) : (
+                          <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                        )
+                      ) : (
+                        v.name === 'remoteFans' ? (
+                          <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} />
+                        ) : (
+                          <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                        )
+                      )
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        )}
         {/* Hashtag Management Section - Only show in manual mode */}
         {/* Images Section */}
         <div className="glass-card section-card">
@@ -772,9 +859,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             </div>
           )
         })()}
-
+        
         {/* Hashtag Management Section - Move to bottom and only show in manual mode */}
-        {editMode === 'manual' && (
           <div className="glass-card section-card">
             <h2 className="section-title">🏷️ Hashtags ({totalHashtagCount})</h2>
             
@@ -794,7 +880,6 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               </div>
             )}
           </div>
-        )}
       </div>
     </div>
   );

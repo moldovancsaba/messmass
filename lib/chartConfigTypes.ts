@@ -83,9 +83,9 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
 { name: 'MERCHED', displayName: 'Merched Fans', category: 'Merchandise', description: 'Number of fans with merchandise', exampleUsage: '[SEYUMERCHEDFANS] / ([SEYUINDOOR] + [SEYUOUTDOOR] + [SEYUSTADIUMFANS])' },
 { name: 'JERSEY', displayName: 'Jersey Sales', category: 'Merchandise', description: 'Number of jersey merchandise items', exampleUsage: '[SEYUMERCHJERSEY] * 25' },
 { name: 'SCARF', displayName: 'Scarf Sales', category: 'Merchandise', description: 'Number of scarf merchandise items', exampleUsage: '[SEYUMERCHSCARF] + [SEYUFLAGS]' },
-{ name: 'FLAGS', displayName: 'Flag Sales', category: 'Merchandise', description: 'Number of flag merchandise items', exampleUsage: '[SEYUFLAGS] * 15' },
-{ name: 'BASEBALL_CAP', displayName: 'Baseball Cap Sales', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[SEYUBASEBALLCAP] * 20' },
-{ name: 'OTHER', displayName: 'Other Merchandise', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[SEYUOTHER] * 10' },
+{ name: 'FLAGS', displayName: 'Flag Sales', category: 'Merchandise', description: 'Number of flag merchandise items', exampleUsage: '[SEYUMERCHFLAGS] * 15' },
+{ name: 'BASEBALL_CAP', displayName: 'Baseball Cap Sales', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[SEYUMERCHBASEBALLCAP] * 20' },
+{ name: 'OTHER', displayName: 'Other Merchandise', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[SEYUMERCHOTHER] * 10' },
   
   // Visits & Engagement
 { name: 'VISIT_QR_CODE', displayName: 'QR Code Visits', category: 'Engagement', description: 'Number of QR code visits', exampleUsage: '[SEYUQRCODEVISIT] + [SEYUSHORTURLVISIT]' },
@@ -221,9 +221,9 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     elements: [
 { id: 'jersey-sales', label: 'Jersey', formula: '[SEYUMERCHJERSEY] * [SEYUJERSEYPRICE]', color: '#7b68ee', description: 'Jersey sales in EUR' },
 { id: 'scarf-sales', label: 'Scarf', formula: '[SEYUMERCHSCARF] * [SEYUSCARFPRICE]', color: '#ff6b9d', description: 'Scarf sales in EUR' },
-{ id: 'flags-sales', label: 'Flags', formula: '[SEYUFLAGS] * [SEYUFLAGSPRICE]', color: '#ffa726', description: 'Flag sales in EUR' },
-{ id: 'cap-sales', label: 'Baseball Cap', formula: '[SEYUBASEBALLCAP] * [SEYUCAPPRICE]', color: '#66bb6a', description: 'Baseball cap sales in EUR' },
-{ id: 'other-sales', label: 'Other', formula: '[SEYUOTHER] * [SEYUOTHERPRICE]', color: '#ef5350', description: 'Other merchandise sales in EUR' }
+{ id: 'flags-sales', label: 'Flags', formula: '[SEYUMERCHFLAGS] * [SEYUFLAGSPRICE]', color: '#ffa726', description: 'Flag sales in EUR' },
+{ id: 'cap-sales', label: 'Baseball Cap', formula: '[SEYUMERCHBASEBALLCAP] * [SEYUCAPPRICE]', color: '#66bb6a', description: 'Baseball cap sales in EUR' },
+{ id: 'other-sales', label: 'Other', formula: '[SEYUMERCHOTHER] * [SEYUOTHERPRICE]', color: '#ef5350', description: 'Other merchandise sales in EUR' }
     ]
   },
   

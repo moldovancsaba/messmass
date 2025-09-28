@@ -37,6 +37,9 @@ const EXPLICIT_SUFFIX_MAP: Record<string, string> = {
   merched: 'MERCHEDFANS',
   scarf: 'MERCHSCARF',
   jersey: 'MERCHJERSEY',
+  flags: 'MERCHFLAGS',
+  baseballCap: 'MERCHBASEBALLCAP',
+  other: 'MERCHOTHER',
 
   // Visits
   totalVisit: 'TOTALVISIT',
@@ -82,6 +85,9 @@ function normalizeSuffixGuess(nameUpper: string, source?: ReferenceSourceLike): 
   if (source?.category === 'Merchandise') {
     if (suffix === 'SCARF') suffix = 'MERCHSCARF'
     if (suffix === 'JERSEY') suffix = 'MERCHJERSEY'
+    if (suffix === 'FLAGS') suffix = 'MERCHFLAGS'
+    if (suffix === 'BASEBALLCAP') suffix = 'MERCHBASEBALLCAP'
+    if (suffix === 'OTHER') suffix = 'MERCHOTHER'
   }
 
   return suffix

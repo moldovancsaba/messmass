@@ -1,0 +1,88 @@
+// app/api/variables-groups/route.ts
+// WHAT: Manage Editor variable groups used to render clicker/manual from a single source.
+// WHY: Decouple Editor UI from hard-coded categories; allow admin-defined grouping, ordering, and optional KPI headers.
+
+import { NextRequest, NextResponse } from 'next/server'
+import { getDb } from '@/lib/db'
+
+export const runtime = 'nodejs'
+
+interface VariableGroupDoc {
+  _id?: string
+  groupOrder: number
+  chartId?: string
+  titleOverride?: string
+  variables: string[] // variable names in order
+  createdAt?: string
+  updatedAt?: string
+}
+
+const COLLECTION = 'variablesGroups'
+
+export async function GET() {
+  try {
+    const db = await getDb()
+    const groups = await db.collection<VariableGroupDoc>(COLLECTION)
+      .find({})
+      .sort({ groupOrder: 1 })
+      .toArray()
+
+    return NextResponse.json({ success: true, groups })
+  } catch (e) {
+    console.error('❌ variables-groups GET failed', e)
+    return NextResponse.json({ success: false, error: 'Failed to fetch variable groups' }, { status: 500 })
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const db = await getDb()
+    const body = await req.json()
+    const now = new Date().toISOString()
+
+    if (body?.seedDefault) {
+      // Seed per your specification
+      const existingCount = await db.collection(COLLECTION).countDocuments({})
+      if (existingCount === 0) {
+        const seed: VariableGroupDoc[] = [
+          { groupOrder: 1, chartId: 'all-images-taken', titleOverride: undefined, variables: ['remoteImages','hostessImages','selfies'], createdAt: now, updatedAt: now },
+          { groupOrder: 2, chartId: undefined, titleOverride: undefined, variables: ['remoteFans','stadium'], createdAt: now, updatedAt: now },
+          { groupOrder: 3, chartId: undefined, titleOverride: undefined, variables: ['female','male'], createdAt: now, updatedAt: now },
+          { groupOrder: 4, chartId: undefined, titleOverride: undefined, variables: ['genAlpha','genYZ','genX','boomer'], createdAt: now, updatedAt: now },
+          { groupOrder: 5, chartId: undefined, titleOverride: undefined, variables: ['merched','jersey','scarf','flags','baseballCap','other'], createdAt: now, updatedAt: now },
+          { groupOrder: 6, chartId: undefined, titleOverride: undefined, variables: ['approvedImages','rejectedImages'], createdAt: now, updatedAt: now },
+          { groupOrder: 7, chartId: undefined, titleOverride: undefined, variables: ['visitQrCode','visitShortUrl','socialVisit','visitWeb','eventValuePropositionVisited','eventValuePropositionPurchases'], createdAt: now, updatedAt: now },
+          { groupOrder: 8, chartId: undefined, titleOverride: undefined, variables: ['eventAttendees','eventResultHome','eventResultVisitor'], createdAt: now, updatedAt: now },
+        ]
+        await db.collection(COLLECTION).insertMany(seed as any)
+      }
+      const groups = await db.collection(COLLECTION).find({}).sort({ groupOrder: 1 }).toArray()
+      return NextResponse.json({ success: true, groups })
+    }
+
+    // Upsert a single group
+    const group = body?.group as VariableGroupDoc
+    if (!group || typeof group.groupOrder !== 'number' || !Array.isArray(group.variables)) {
+      return NextResponse.json({ success: false, error: 'Invalid group payload' }, { status: 400 })
+    }
+
+    const filter = { groupOrder: group.groupOrder } as any
+    const setDoc: Partial<VariableGroupDoc> = {
+      groupOrder: group.groupOrder,
+      chartId: group.chartId || undefined,
+      titleOverride: group.titleOverride || undefined,
+      variables: group.variables,
+      updatedAt: now,
+    }
+    const result = await db.collection(COLLECTION).updateOne(
+      filter,
+      { $set: setDoc, $setOnInsert: { createdAt: now } },
+      { upsert: true }
+    )
+    const saved = await db.collection(COLLECTION).findOne(filter)
+    return NextResponse.json({ success: true, group: saved })
+  } catch (e) {
+    console.error('❌ variables-groups POST failed', e)
+    return NextResponse.json({ success: false, error: 'Failed to save variable group' }, { status: 500 })
+  }
+}

@@ -28,7 +28,7 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
 
   // Fans (Location)
   { name: 'remoteFans', label: 'Remote', type: 'count', category: 'Fans', description: 'Indoor + Outdoor (aggregated)' },
-  { name: 'stadium', label: 'Location', type: 'count', category: 'Fans', description: 'On-site (stadium) fans' },
+  { name: 'stadium', label: 'Location Fans', type: 'count', category: 'Fans', description: 'On-site (stadium) fans' },
 
   // Demographics
   { name: 'female', label: 'Female', type: 'count', category: 'Demographics' },

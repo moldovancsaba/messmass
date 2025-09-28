@@ -329,6 +329,23 @@ const [createForm, setCreateForm] = useState({
         backLink="/admin"
       />
       <div className="content-surface">
+          {/* Groups manager (seed only for now) */}
+          <div className="glass-card section-card" style={{ marginBottom: '1rem' }}>
+            <h3 className="no-margin">Groups</h3>
+            <p className="no-margin" style={{ color: '#6b7280', marginTop: '0.25rem' }}>Use groups to control the Editor (clicker/manual) layout directly from here.</p>
+            <div style={{ marginTop: '0.75rem' }}>
+              <button className="btn btn-secondary" onClick={async () => {
+                try {
+                  const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
+                  const data = await res.json()
+                  if (!data?.success) throw new Error('Seed failed')
+                  alert('Groups initialized')
+                } catch (e) {
+                  alert('Failed to initialize groups')
+                }
+              }}>Initialize default groups</button>
+            </div>
+          </div>
           {activeVar && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
                  onClick={() => setActiveVar(null)}>
@@ -425,30 +442,6 @@ const [createForm, setCreateForm] = useState({
                             />
                             <span>Editable in Manual</span>
                           </label>
-        </div>
-
-        {/* Manual Order (Editor → Manual) */}
-        <div className="variable-flags">
-          <label className="variable-flag">
-            <span>Manual order (Editor)</span>
-            <input
-              type="number"
-              defaultValue={variable.manualOrder ?? ''}
-              style={{ width: 80, marginLeft: 8 }}
-              onBlur={async (e) => {
-                const val = e.target.value === '' ? undefined : Number(e.target.value)
-                try {
-                  await fetch('/api/variables-config', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: variable.name, manualOrder: typeof val === 'number' && !Number.isNaN(val) ? val : undefined })
-                  })
-                  setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, manualOrder: (typeof val === 'number' && !Number.isNaN(val)) ? val : undefined } as Variable : v))
-                  setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, manualOrder: (typeof val === 'number' && !Number.isNaN(val)) ? val : undefined } as Variable : v))
-                } catch {}
-              }}
-            />
-          </label>
         </div>
 
         {/* Final line: TYPE */}
