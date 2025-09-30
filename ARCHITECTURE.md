@@ -1,6 +1,6 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-09-30T11:47:48.000Z
+Last Updated: 2025-09-30T13:34:56.000Z
 
 ## Project Overview
 
@@ -19,6 +19,7 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 ### Overview
 - Introduced a design-managed content surface to unify the main content block across admin and public pages.
 - Centralized theming via CSS variables to eliminate hard-coded per-page styles.
+- Enforced board-level card width consistency: boards use equal-width columns (repeat(N, 1fr)); avoid per-card width overrides.
 
 ### CSS Variables
 - `--page-bg`: Page background gradient/color (fallback: `var(--gradient-primary)`).
@@ -381,5 +382,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-09-30T11:47:48.000Z*
-*Version: 5.11.0*
+*Last Updated: 2025-09-30T13:34:56.000Z*
+*Version: 5.12.0*

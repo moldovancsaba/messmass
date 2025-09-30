@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.12.0] — 2025-09-30T13:34:56.000Z
+
+### Documentation — Board Card Width Rule
+- Added explicit design rule: all cards on any board/grid must have equal width within that board.
+- Updated DESIGN_SYSTEM.md (Cards & Stats) with do/don’t guidance and rationale.
+- Added rule summary to WARP.md Mandatory Protocols and ARCHITECTURE.md Styling Architecture.
+
+---
+
 ## [v5.11.0] — 2025-09-30T11:47:48.000Z
 
 ### Documentation — Workspace migration and governance sync

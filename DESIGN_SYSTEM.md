@@ -1,7 +1,7 @@
 # DESIGN_SYSTEM.md
 
-Design System — MessMass (v5.7.0)
-Last Updated: 2025-09-27T12:32:04.000Z
+Design System — MessMass (v5.12.0)
+Last Updated: 2025-09-30T13:34:56.000Z
 
 Overview
 - Purpose: Provide a unified, reusable styling system for consistent UI across admin and public-facing pages.
@@ -48,6 +48,20 @@ Components
 4) Cards & Stats
 - .glass-card — glassmorphism container
 - .stat-card / .stat-card-admin — stat blocks with hover elevation and typography
+
+Board Card Width Consistency (Rule)
+- All cards displayed within any board/grid must have equal width within that board.
+- Why: Ensures visual rhythm, predictable scan patterns, and prevents layout jitter when content length varies.
+- How (do):
+  - Use grid containers that define uniform columns, e.g., grid-template-columns: repeat(N, 1fr).
+  - Prefer existing grid utilities (see Layout section: .stats-grid, .stats-grid-admin, .counter-grid, .dynamic-charts-grid, .charts-grid) that already establish equal-width columns.
+  - When adding a new board, mirror an existing grid utility or extend layout.css with a named grid class that uses repeat(N, 1fr).
+- How (don’t):
+  - Don’t set per-card inline widths or percentage widths on individual cards.
+  - Don’t mix cards with custom width utilities inside the same board; keep column definitions at the container.
+- Notes:
+  - Equal width does not imply equal height; use min-height utilities or flex helpers if equal height is also desired for a given board.
+  - On responsive breakpoints, maintain equal-width behavior by adapting the column count (e.g., desktop 4, tablet 2, mobile 1) rather than card-level widths.
 
 5) Layout
 - Containers: .app-container, .admin-container, .page-container

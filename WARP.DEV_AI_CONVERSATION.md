@@ -1,5 +1,9 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-09-30T13:34:56.000Z — Plan & Delivery Log: v5.12.0 — Card Width Rule Documentation
+- Plan: Document the rule “all cards on any board/grid must have equal width within that board” across DESIGN_SYSTEM.md (detailed guidance), WARP.md (protocol summary), and ARCHITECTURE.md (styling architecture).
+- Also synchronize versions and timestamps across docs and release notes; then commit and push to origin/main.
+- Validation: type-check, lint (warn-level), and production build will run prior to commit.
 ## 2025-09-30T11:47:48.000Z — Plan & Delivery Log: v5.11.0 Docs Sync (New Workspace)
 - Context: Workspace migrated from iCloud to /Users/moldovancsaba/Projects/messmass using a clean Git clone. Secrets (.env.local) copied; build validated.
 - Plan: Bump MINOR version to 5.11.0; synchronize version and timestamps across package.json and documentation (README.md, WARP.md footer, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md); add release notes; commit and push to origin/main.

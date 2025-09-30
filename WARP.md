@@ -241,6 +241,7 @@ ADMIN_PASSWORD=your_secure_password
 - **Version consistency**: Version must match across package.json and all documentation  
 - **Comment requirements**: All code needs functional + strategic comments
 - **Timestamp standards**: ISO 8601 with milliseconds everywhere
+- **Board Card Width Rule**: All cards on any board/grid must have equal width within that board (set widths at the grid container, not per-card).
 
 ### Prohibited Patterns
 - **No breadcrumb navigation** - Use clear top-level navigation
@@ -280,4 +281,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.11.0 | Last Updated: 2025-09-30T11:47:48.000Z | Status: Active Development*
+*Version: 5.12.0 | Last Updated: 2025-09-30T13:34:56.000Z | Status: Active Development*
