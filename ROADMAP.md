@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.12.0
-Last Updated: 2025-09-30T13:34:56.000Z
+Current Version: 5.13.0
+Last Updated: 2025-09-30T14:13:03.000Z
 
 ## Operational — Style System Hardening (Q3 2025)
 Priority: High
@@ -10,6 +10,15 @@ Dependencies: Design tokens, AdminHero, Layout utilities
 - Action: Consolidate duplicated CSS files (components N.css, admin N.css, globals 2.css) — keep only canonical imports
 - Action: Prepare Atlas-managed theme injection plan (GET/PUT /api/admin/theme)
 Logged at: 2025-09-27T12:32:04.000Z
+Author: Agent Mode
+
+## Operational — Auth & Zero-Trust Docs v5.13.0 (Q3 2025)
+Priority: High
+Dependencies: Auth codebase (lib/auth.ts, lib/users.ts, lib/pagePassword.ts), API routes (/app/api/admin/login, /app/api/auth/check, /app/api/page-passwords)
+- Action: Author comprehensive documentation `AUTHENTICATION_AND_ACCESS.md` with code snippets and flows
+- Action: Link from README.md and WARP.md; synchronize versions and timestamps across docs
+- Action: Add release notes entry and push to main after validations
+Logged at: 2025-09-30T14:13:03.000Z
 Author: Agent Mode
 
 ## Operational — Version Sync & Release v5.4.0 (Q3 2025)

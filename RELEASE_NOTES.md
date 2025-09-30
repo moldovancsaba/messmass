@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.13.0] — 2025-09-30T14:13:03.000Z
+
+### Documentation — Authentication & Zero-Trust Page Access
+- Added `AUTHENTICATION_AND_ACCESS.md` with complete guide, code snippets, and flows for admin sessions and page-specific passwords.
+- Linked from README.md and WARP.md; synchronized versions and timestamps across docs.
+- Validated type-check, lint (warn-level), and production build prior to commit.
+
+---
+
 ## [v5.12.0] — 2025-09-30T13:34:56.000Z
 
 ### Documentation — Board Card Width Rule

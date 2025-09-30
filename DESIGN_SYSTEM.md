@@ -1,7 +1,7 @@
 # DESIGN_SYSTEM.md
 
-Design System — MessMass (v5.12.0)
-Last Updated: 2025-09-30T13:34:56.000Z
+Design System — MessMass (v5.13.0)
+Last Updated: 2025-09-30T14:13:03.000Z
 
 Overview
 - Purpose: Provide a unified, reusable styling system for consistent UI across admin and public-facing pages.

@@ -1,6 +1,14 @@
 # TASKLIST.md
-Current Version: 5.12.0
-Last Updated: 2025-09-30T13:34:56.000Z
+Current Version: 5.13.0
+Last Updated: 2025-09-30T14:13:03.000Z
+
+### High Priority — Documentation — Auth & Zero-Trust (v5.13.0)
+
+||| Task ID | Title | Owner | Expected Delivery | Status |
+|||---------|-------|-------|-------------------|--------|
+||| AUTHDOC-001 | Create AUTHENTICATION_AND_ACCESS.md with code snippets | Agent Mode | 2025-09-30T14:00:00.000Z | ✅ Complete (2025-09-30T14:13:03.000Z) |
+||| AUTHDOC-002 | Link doc from README.md and WARP.md; sync versions | Agent Mode | 2025-09-30T14:05:00.000Z | ✅ Complete (2025-09-30T14:13:03.000Z) |
+||| AUTHDOC-003 | Release notes entry; build, commit, and push | Agent Mode | 2025-09-30T14:20:00.000Z | In Progress |
 
 ### High Priority — Style System Hardening (Phase 2)
 
