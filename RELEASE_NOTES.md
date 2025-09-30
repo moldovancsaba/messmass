@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v5.11.0] — 2025-09-30T11:47:48.000Z
+
+### Documentation — Workspace migration and governance sync
+- Bumped MINOR version to v5.11.0 per Versioning Protocol.
+- Confirmed new working directory: /Users/moldovancsaba/Projects/messmass (migrated from iCloud); iCloud folder archived safely.
+- Synchronized version and timestamps across package.json, README.md, WARP.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md.
+
+---
 ## [v5.10.0] — 2025-09-30T09:47:10.000Z
 
 ### Chore — Version bump and documentation sync
