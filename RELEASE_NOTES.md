@@ -1,5 +1,13 @@
 # MessMass Release Notes
 
+## [v5.10.0] — 2025-09-30T09:47:10.000Z
+
+### Chore — Version bump and documentation sync
+- Bumped MINOR version to v5.10.0 per protocol.
+- Synchronized version and timestamps across package.json, README.md, WARP.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md.
+- Staged only source and documentation files (excluded .next build artifacts) per governance.
+
+---
 ## [v5.9.0] — 2025-09-27T20:26:36.000Z
 
 ### Features — Admin Variables and SEYU References
