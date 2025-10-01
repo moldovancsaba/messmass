@@ -2,8 +2,8 @@
 
 Zero-Trust Authentication and Page Access for MessMass
 
-Last Updated: 2025-10-01T09:03:05.000Z
-Version: 5.15.0
+Last Updated: 2025-10-01T09:11:20.000Z
+Version: 5.16.0
 
 Quick Start (1-page)
 
@@ -527,6 +527,49 @@ flowchart TD
   B -- no --> C
   C -- true --> D[Allow]
   C -- false --> E[Reject]
+```
+
+Server-side Gate Helpers
+
+API Route Helper (admin or page password)
+```ts path=null start=null
+import { NextRequest, NextResponse } from 'next/server'
+import { getAdminUser } from '@/lib/auth'
+import { validateAnyPassword } from '@/lib/pagePassword'
+
+export async function POST(request: NextRequest) {
+  const admin = await getAdminUser()
+  if (admin) return NextResponse.json({ success: true, message: 'Admin session accepted' })
+
+  const { pageId, pageType, password } = await request.json()
+  const { isValid } = await validateAnyPassword(pageId, pageType, password)
+  if (!isValid) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+
+  return NextResponse.json({ success: true })
+}
+```
+
+SSR Page Example (server component)
+```ts path=null start=null
+// app/protected/[slug]/page.tsx (server component)
+import PasswordGate from '@/components/PasswordGate'
+
+export default async function ProtectedPage({ params }: { params: { slug: string } }) {
+  // Server-side data fetching can be guarded by admin session in APIs.
+  // The UI layer uses PasswordGate to prompt non-admin viewers.
+  const pageId = params.slug
+  const pageType = 'stats' as const
+
+  return (
+    <div className="page-container content-surface">
+      <h1>Protected {pageId}</h1>
+      <PasswordGate pageId={pageId} pageType={pageType}>
+        {/* Sensitive content goes here */}
+        <div className="glass-card content-surface">Unlocked content for {pageId}</div>
+      </PasswordGate>
+    </div>
+  )
+}
 ```
 
 Appendix: Quick References

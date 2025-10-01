@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.16.0] — 2025-10-01T09:11:20.000Z
+
+### Docs & UX — Public Docs link; Demo page lint cleanup; SSR/API helpers
+- README: Examples section and Public Docs link to GitHub for sharing
+- Demo: Replaced inline styles with design classes (content-surface/glass-card)
+- Auth guide: Added server-side gate helper snippets for API routes and SSR pages
+
+---
+
 ## [v5.15.0] — 2025-10-01T09:03:05.000Z
 
 ### Features — Reusable PasswordGate and Demo; Handoff Checklist

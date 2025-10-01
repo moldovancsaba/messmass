@@ -1,5 +1,10 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-10-01T09:11:20.000Z — Plan & Delivery Log: v5.16.0 — Public Docs Link, Demo Cleanup, SSR/API Helpers
+- Plan: Add README Examples + Public Docs (GitHub share link), convert demo inline styles to design classes, and add server-side gate helper snippets; sync versions/timestamps; validate; commit and push.
+- Delivery: README updated; demo cleaned; auth doc extended; versions synchronized; release notes prepared.
+- Validation: Will run type-check, lint, and production build prior to commit.
+
 ## 2025-10-01T09:03:05.000Z — Plan & Delivery Log: v5.15.0 — PasswordGate, Demo, and Handoff Checklist
 - Plan: Create reusable PasswordGate, add an example page, update auth doc with a teammate handoff checklist; sync versions/timestamps; validate; commit and push.
 - Delivery: PasswordGate added; example page added; doc updated with checklist; versions/timestamps synchronized; release notes prepared.

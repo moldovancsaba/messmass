@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.15.0
-Last Updated: 2025-10-01T09:03:05.000Z
+Current Version: 5.16.0
+Last Updated: 2025-10-01T09:11:20.000Z
 
 ## Operational — Style System Hardening (Q3 2025)
 Priority: High
@@ -12,12 +12,13 @@ Dependencies: Design tokens, AdminHero, Layout utilities
 Logged at: 2025-09-27T12:32:04.000Z
 Author: Agent Mode
 
-## Operational — PasswordGate Component & Demo v5.15.0 (Q4 2025)
+## Operational — Public Docs & Demo Link v5.16.0 (Q4 2025)
 Priority: High
-Dependencies: components/PasswordGate.tsx, /app/examples/password-gate-demo
-- Action: Create reusable PasswordGate and demo page; update docs with handoff checklist
-- Action: Sync versions/timestamps; release notes; push to main after validations
-Logged at: 2025-10-01T09:03:05.000Z
+Dependencies: README.md, AUTHENTICATION_AND_ACCESS.md
+- Action: Add README Examples + Public Docs section with GitHub share link
+- Action: Convert demo inline styles to design classes; add server-side gate helper snippets
+- Action: Sync versions/timestamps; push to main after validations
+Logged at: 2025-10-01T09:11:20.000Z
 Author: Agent Mode
 
 ## Operational — Version Sync & Release v5.4.0 (Q3 2025)

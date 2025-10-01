@@ -41,27 +41,27 @@ export default function PasswordGateDemoPage() {
   }
 
   return (
-    <div className="page-container" style={{ padding: 24 }}>
-      <h1 style={{ marginBottom: 12 }}>PasswordGate Demo</h1>
-      <p style={{ marginBottom: 12 }}>
+    <div className="page-container content-surface">
+      <h1>PasswordGate Demo</h1>
+      <p>
         This page demonstrates creating a page password and gating sensitive content for pageId=<code>{pageId}</code> (type: <code>{pageType}</code>).
       </p>
 
-      <div style={{ marginBottom: 20 }}>
+      <div>
         <button className="btn btn-info" onClick={generate} disabled={generating}>
           {generating ? "Generating…" : "Generate demo password"}
         </button>
         {generated && (
-          <div className="glass-card" style={{ padding: 12, marginTop: 12 }}>
+          <div className="glass-card content-surface">
             <div><strong>Shareable URL:</strong> {generated.url}</div>
             <div><strong>Password:</strong> {generated.password}</div>
           </div>
         )}
       </div>
 
-      <h2 style={{ marginBottom: 8 }}>Protected Section</h2>
+      <h2>Protected Section</h2>
       <PasswordGate pageId={pageId} pageType={pageType}>
-        <div className="glass-card" style={{ padding: 12 }}>
+        <div className="glass-card content-surface">
           <strong>Unlocked:</strong> You are now viewing protected content gated by PasswordGate.
         </div>
       </PasswordGate>

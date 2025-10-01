@@ -1,15 +1,18 @@
 # TASKLIST.md
-Current Version: 5.15.0
-Last Updated: 2025-10-01T09:03:05.000Z
+Current Version: 5.16.0
+Last Updated: 2025-10-01T09:11:20.000Z
 
-### High Priority — PasswordGate Component & Demo (v5.15.0)
+### High Priority — Public Docs & Demo Link (v5.16.0)
 
 ||||| Task ID | Title | Owner | Expected Delivery | Status |
 |||||---------|-------|-------|-------------------|--------|
 ||||| PASSGATE-001 | Create reusable PasswordGate component | Agent Mode | 2025-10-01T09:10:00.000Z | ✅ Complete (2025-10-01T09:03:05.000Z) |
 ||||| PASSGATE-002 | Add demo page wiring PasswordGate | Agent Mode | 2025-10-01T09:15:00.000Z | ✅ Complete (2025-10-01T09:03:05.000Z) |
 ||||| PASSGATE-003 | Add teammate handoff checklist to Quick Start | Agent Mode | 2025-10-01T09:08:00.000Z | ✅ Complete (2025-10-01T09:03:05.000Z) |
-||||| PASSGATE-004 | Sync versions, release notes; commit and push | Agent Mode | 2025-10-01T09:20:00.000Z | In Progress |
+|||||| DOCS-001 | Add README Examples + Public Docs | Agent Mode | 2025-10-01T09:12:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
+|||||| DOCS-002 | Convert demo inline styles to classes | Agent Mode | 2025-10-01T09:13:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
+|||||| DOCS-003 | Add server-side gate helper snippets | Agent Mode | 2025-10-01T09:14:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
+|||||| DOCS-004 | Sync versions, release notes; commit and push | Agent Mode | 2025-10-01T09:20:00.000Z | In Progress |
 
 ### High Priority — Style System Hardening (Phase 2)
 

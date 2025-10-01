@@ -2,8 +2,8 @@
 
 A real-time collaborative event statistics dashboard with an admin panel, unified hashtag system, and configurable design system.
 
-- Version: v5.15.0
-- Last Updated: 2025-10-01T09:03:05.000Z
+- Version: v5.16.0
+- Last Updated: 2025-10-01T09:11:20.000Z
 - Website: https://messmass.doneisbetter.com
 
 Quickstart
@@ -25,6 +25,12 @@ Docs
 - LEARNINGS.md — Practical insights and resolved issues
 - WARP.md — Rules and protocols for development in this repo
 - AUTHENTICATION_AND_ACCESS.md — Admin sessions, page passwords, and zero-trust page access
+
+Examples
+- /examples/password-gate-demo — Demo for PasswordGate (generate password and unlock a gated section)
+
+Public Docs
+- Authentication & Zero-Trust Guide (GitHub): https://github.com/moldovancsaba/messmass/blob/main/AUTHENTICATION_AND_ACCESS.md
 
 Key Features
 
