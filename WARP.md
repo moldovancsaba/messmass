@@ -283,4 +283,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.13.0 | Last Updated: 2025-09-30T14:13:03.000Z | Status: Active Development*
+*Version: 5.14.0 | Last Updated: 2025-10-01T08:52:11.000Z | Status: Active Development*

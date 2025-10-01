@@ -2,8 +2,8 @@
 
 A real-time collaborative event statistics dashboard with an admin panel, unified hashtag system, and configurable design system.
 
-- Version: v5.13.0
-- Last Updated: 2025-09-30T14:13:03.000Z
+- Version: v5.14.0
+- Last Updated: 2025-10-01T08:52:11.000Z
 - Website: https://messmass.doneisbetter.com
 
 Quickstart

@@ -2,8 +2,66 @@
 
 Zero-Trust Authentication and Page Access for MessMass
 
-Last Updated: 2025-09-30T14:13:03.000Z
-Version: 5.13.0
+Last Updated: 2025-10-01T08:52:11.000Z
+Version: 5.14.0
+
+Quick Start (1-page)
+
+Follow this minimal flow to enable zero-trust access on a single page in minutes:
+
+1) Admin login (optional, bypasses page passwords)
+- POST /api/admin/login with { email, password }.
+- On success, an HttpOnly cookie admin-session is issued and used automatically.
+
+2) Generate or retrieve the page password
+- POST /api/page-passwords with { pageId, pageType } to receive { shareableLink, pagePassword }.
+- Share shareableLink.url + pagePassword.password with the intended viewers.
+
+3) Prompt the viewer for the password (if not an admin)
+- Show a lightweight prompt. On submit, call PUT /api/page-passwords with { pageId, pageType, password }.
+- If success: true and isValid: true, proceed to fetch page data.
+
+```ts path=null start=null
+// Minimal client prompt example
+import { useState } from 'react'
+
+export default function PasswordGate({ pageId, pageType }: { pageId: string, pageType: 'stats'|'edit'|'filter' }) {
+  const [pwd, setPwd] = useState('')
+  const [ok, setOk] = useState<boolean | null>(null)
+  const [error, setError] = useState('')
+
+  async function validate() {
+    setError('')
+    const res = await fetch('/api/page-passwords', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pageId, pageType, password: pwd })
+    })
+    const data = await res.json()
+    if (res.ok && data.success && data.isValid) setOk(true)
+    else setError(data?.error || 'Invalid password')
+  }
+
+  if (ok) return null // allow content to render when ok === true
+
+  return (
+    <div>
+<input placeholder="Enter page password" value={pwd} onChange={(e) => setPwd(e.target.value)} />
+      <button onClick={validate}>Unlock</button>
+      {error && <p>{error}</p>}
+    </div>
+  )
+}
+```
+
+4) Gate your content
+- Server-first: check admin session via getAdminUser(). If present, allow immediately.
+- If not admin, require a prior successful PUT /api/page-passwords call from the viewer UI to proceed (common pattern: render the prompt component until it returns ok=true).
+
+5) Security considerations
+- Use only server-side checks to decide access. Client code triggers validation but the server must enforce.
+- HttpOnly cookie for admin-session ensures it’s not readable by JS.
+- All timestamps must use ISO 8601 with milliseconds Z format.
 
 Overview
 - Goal: Document the complete MessMass authentication model so fellow developers can implement, extend, and debug access control with confidence.
@@ -284,6 +342,87 @@ export async function updateUserPassword(id: string, password: string): Promise<
 }
 ```
 
+Implementation Scenarios
+
+Scenario A — Gate an entire page (client prompt + server enforcement)
+- Client: Render PasswordGate until it resolves ok=true. In parallel, the server loads the page shell normally.
+- Server: API endpoints that serve sensitive data must call getAdminUser(); if null, reject unless validated via the password endpoint first.
+
+```ts path=null start=null
+// Example: page component
+// 1) Render gate UI above content
+// 2) Fetch actual data after gate resolution
+function StatsPage({ slug }: { slug: string }) {
+  // show admin banner by checking /api/auth/check (optional)
+  // and gate content with PasswordGate until ok === true
+  return (
+    <div>
+      <PasswordGate pageId={slug} pageType="stats" />
+      {/* Once gate resolves on client, fetch stats normally via /api/projects/stats/[slug] */}
+      {/* Server must still enforce admin-or-password validation in the API route. */}
+    </div>
+  )
+}
+```
+
+Scenario B — Gate a section within a page
+- Show non-sensitive elements freely.
+- Wrap sensitive sub-sections with PasswordGate and render them only when ok === true.
+
+```ts path=null start=null
+function MixedContent({ slug }: { slug: string }) {
+  return (
+    <div>
+      <h2>Public Summary</h2>
+      <p>High-level info that is safe to show.</p>
+
+      <PasswordGate pageId={slug} pageType="stats" />
+      {/* Sensitive charts below appear only after gate validation */}
+      <div>
+        <h3>Detailed Charts</h3>
+        {/* charts */}
+      </div>
+    </div>
+  )
+}
+```
+
+Scenario C — Gate an API route (server-only)
+- First check admin session.
+- If not admin, require a valid page password accompanying the request (e.g., in JSON body), then validate via validateAnyPassword().
+
+```ts path=null start=null
+// Pseudocode for an API route handler
+import { getAdminUser } from '@/lib/auth'
+import { validateAnyPassword } from '@/lib/pagePassword'
+
+export async function POST(request) {
+  const admin = await getAdminUser()
+  if (admin) return ok()
+
+  const { pageId, pageType, password } = await request.json()
+  const { isValid } = await validateAnyPassword(pageId, pageType, password)
+  if (!isValid) return unauthorized()
+
+  return ok()
+}
+```
+
+Scenario D — Generate a shareable link for a teammate
+- Use POST /api/page-passwords to receive { shareableLink, pagePassword }.
+- Send both values out-of-band. Receivers use the password on first access via the prompt.
+
+```ts path=null start=null
+async function createShare(slug) {
+  const res = await fetch('/api/page-passwords', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pageId: slug, pageType: 'stats' })
+  })
+  const { shareableLink, pagePassword } = await res.json()
+  // shareableLink.url and pagePassword.password
+}
+```
+
 Access Control Flows (Zero-Trust)
 1) Admin Access Flow
    - Client: POST /api/admin/login { email, password }
@@ -335,6 +474,51 @@ Operational Policies and Security Notes
 - Admin Passwords: Store as MD5-style random tokens (project policy); re-generate via randomBytes(16) when needed
 - Page Passwords: May set optional expiresAt and track usageCount/lastUsedAt for operational oversight
 - Auditing: Use getPasswordStats() for quick insight into usage
+
+Diagrams
+
+Admin Login Flow
+```mermaid path=null start=null
+sequenceDiagram
+  participant U as User (Admin)
+  participant B as Browser
+  participant A as App (Next.js)
+  participant DB as MongoDB
+
+  U->>B: Enter email + password
+  B->>A: POST /api/admin/login { email, password }
+  A->>DB: findUserByEmail(email)
+  DB-->>A: user
+  A-->>B: Set-Cookie: admin-session=...; HttpOnly; SameSite=Lax; Secure
+```
+
+Page Password Validation Flow
+```mermaid path=null start=null
+sequenceDiagram
+  participant V as Viewer
+  participant B as Browser
+  participant A as App (Next.js)
+  participant DB as MongoDB
+
+  V->>B: Enter page password
+  B->>A: PUT /api/page-passwords { pageId, pageType, password }
+  A->>DB: validatePagePassword(pageId, pageType, password)
+  DB-->>A: isValid
+  A-->>B: 200 { success: true, isValid: true }
+```
+
+Zero-Trust Combined (Admin or Password)
+```mermaid path=null start=null
+flowchart TD
+  A[Request to Protected Resource]
+  B{getAdminUser()?}
+  C{validateAnyPassword()?}
+  A --> B
+  B -- yes --> D[Allow]
+  B -- no --> C
+  C -- true --> D[Allow]
+  C -- false --> E[Reject]
+```
 
 Appendix: Quick References
 - Check admin session in server code

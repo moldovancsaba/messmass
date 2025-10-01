@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.14.0] — 2025-10-01T08:52:11.000Z
+
+### Documentation — Auth Quick Start, Scenarios, and Diagrams
+- Added a 1-page Quick Start to AUTHENTICATION_AND_ACCESS.md.
+- Added step-by-step implementation scenarios (client prompt, gating a section/page/API/SSR).
+- Added sequence diagrams for Admin Login, Page Password Validation, and the combined Zero-Trust flow.
+
+---
+
 ## [v5.13.0] — 2025-09-30T14:13:03.000Z
 
 ### Documentation — Authentication & Zero-Trust Page Access

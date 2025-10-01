@@ -1,14 +1,14 @@
 # TASKLIST.md
-Current Version: 5.13.0
-Last Updated: 2025-09-30T14:13:03.000Z
+Current Version: 5.14.0
+Last Updated: 2025-10-01T08:52:11.000Z
 
-### High Priority — Documentation — Auth & Zero-Trust (v5.13.0)
+### High Priority — Documentation — Auth & Zero-Trust Quick Start & Diagrams (v5.14.0)
 
-||| Task ID | Title | Owner | Expected Delivery | Status |
-|||---------|-------|-------|-------------------|--------|
-||| AUTHDOC-001 | Create AUTHENTICATION_AND_ACCESS.md with code snippets | Agent Mode | 2025-09-30T14:00:00.000Z | ✅ Complete (2025-09-30T14:13:03.000Z) |
-||| AUTHDOC-002 | Link doc from README.md and WARP.md; sync versions | Agent Mode | 2025-09-30T14:05:00.000Z | ✅ Complete (2025-09-30T14:13:03.000Z) |
-||| AUTHDOC-003 | Release notes entry; build, commit, and push | Agent Mode | 2025-09-30T14:20:00.000Z | In Progress |
+|||| Task ID | Title | Owner | Expected Delivery | Status |
+||||---------|-------|-------|-------------------|--------|
+|||| AUTHDOC-004 | Add Quick Start to AUTHENTICATION_AND_ACCESS.md | Agent Mode | 2025-10-01T08:40:00.000Z | ✅ Complete (2025-10-01T08:52:11.000Z) |
+|||| AUTHDOC-005 | Add implementation scenarios and diagrams | Agent Mode | 2025-10-01T08:45:00.000Z | ✅ Complete (2025-10-01T08:52:11.000Z) |
+|||| AUTHDOC-006 | Sync versions, release notes; commit and push | Agent Mode | 2025-10-01T09:00:00.000Z | In Progress |
 
 ### High Priority — Style System Hardening (Phase 2)
 
