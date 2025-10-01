@@ -2,8 +2,8 @@
 
 Zero-Trust Authentication and Page Access for MessMass
 
-Last Updated: 2025-10-01T08:52:11.000Z
-Version: 5.14.0
+Last Updated: 2025-10-01T09:03:05.000Z
+Version: 5.15.0
 
 Quick Start (1-page)
 
@@ -62,6 +62,15 @@ export default function PasswordGate({ pageId, pageType }: { pageId: string, pag
 - Use only server-side checks to decide access. Client code triggers validation but the server must enforce.
 - HttpOnly cookie for admin-session ensures it’s not readable by JS.
 - All timestamps must use ISO 8601 with milliseconds Z format.
+
+Teammate Handoff Checklist
+- Ensure .env.local contains required keys (MONGODB_URI, MONGODB_DB, NEXT_PUBLIC_WS_URL) and app builds (npm run build)
+- Verify at least one admin user exists (email/password) in Users collection; confirm login via POST /api/admin/login
+- For each protected page, generate a page password via POST /api/page-passwords { pageId, pageType }
+- Share both the shareableLink.url and the password securely (do not paste secrets into chat tools without policy approval)
+- In the UI, render the PasswordGate component at the top of protected content (components/PasswordGate.tsx)
+- Confirm non-admin flow: prompt appears, password validates, content unlocks; confirm admin flow: content unlocks without the prompt
+- Record operational notes and timestamps in ROADMAP/TASKLIST as needed; keep RELEASE_NOTES current with ISO timestamps
 
 Overview
 - Goal: Document the complete MessMass authentication model so fellow developers can implement, extend, and debug access control with confidence.

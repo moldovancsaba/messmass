@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.14.0
-Last Updated: 2025-10-01T08:52:11.000Z
+Current Version: 5.15.0
+Last Updated: 2025-10-01T09:03:05.000Z
 
 ## Operational — Style System Hardening (Q3 2025)
 Priority: High
@@ -12,13 +12,12 @@ Dependencies: Design tokens, AdminHero, Layout utilities
 Logged at: 2025-09-27T12:32:04.000Z
 Author: Agent Mode
 
-## Operational — Auth Quick Start & Diagrams v5.14.0 (Q4 2025)
+## Operational — PasswordGate Component & Demo v5.15.0 (Q4 2025)
 Priority: High
-Dependencies: Auth codebase (lib/auth.ts, lib/users.ts, lib/pagePassword.ts), API routes (/app/api/admin/login, /app/api/auth/check, /app/api/page-passwords)
-- Action: Add 1-page Quick Start to AUTHENTICATION_AND_ACCESS.md
-- Action: Add implementation scenarios and diagrams
+Dependencies: components/PasswordGate.tsx, /app/examples/password-gate-demo
+- Action: Create reusable PasswordGate and demo page; update docs with handoff checklist
 - Action: Sync versions/timestamps; release notes; push to main after validations
-Logged at: 2025-10-01T08:52:11.000Z
+Logged at: 2025-10-01T09:03:05.000Z
 Author: Agent Mode
 
 ## Operational — Version Sync & Release v5.4.0 (Q3 2025)

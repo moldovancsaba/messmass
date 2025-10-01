@@ -1,5 +1,14 @@
 # MessMass Release Notes
 
+## [v5.15.0] — 2025-10-01T09:03:05.000Z
+
+### Features — Reusable PasswordGate and Demo; Handoff Checklist
+- Added components/PasswordGate.tsx for gating any section/page using page-specific passwords (admin bypass preserved).
+- Added demo: /examples/password-gate-demo to generate a password and unlock gated content for pageId=demo-event.
+- Extended AUTHENTICATION_AND_ACCESS.md with a “Teammate Handoff Checklist”.
+
+---
+
 ## [v5.14.0] — 2025-10-01T08:52:11.000Z
 
 ### Documentation — Auth Quick Start, Scenarios, and Diagrams
