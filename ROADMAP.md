@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.17.0
-Last Updated: 2025-10-02T11:00:00.000Z
+Current Version: 5.18.0
+Last Updated: 2025-10-02T11:30:00.000Z
 
 ## Operational — Style System Hardening (Q3 2025)
 Priority: High

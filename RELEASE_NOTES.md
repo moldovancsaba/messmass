@@ -1,5 +1,46 @@
 # MessMass Release Notes
 
+## [v5.18.0] — 2025-10-02T11:30:00.000Z
+
+### Architecture — Phase 2: API Standards & Type Safety
+
+**API Response Infrastructure**
+- Created `lib/types/api.ts` with comprehensive type definitions
+  - Standardized `APIResponse<T>` envelope interface
+  - 11 error codes via `APIErrorCode` enum
+  - DTOs for all major entities (Project, Hashtag, Category, Auth)
+  - Pagination types with offset/cursor support
+  - Type guards for runtime validation
+- Created `lib/api/response.ts` with response builder utilities
+  - `successResponse()`, `paginatedResponse()`, `errorResponse()`
+  - `withErrorHandling()` wrapper for automatic error handling
+  - `validateRequiredFields()` for input validation
+  - Convenience helpers: `notFoundResponse()`, `unauthorizedResponse()`, `forbiddenResponse()`
+
+**Documentation**
+- Created comprehensive `API_STANDARDS.md` (495 lines)
+  - Response format specifications with JSON examples
+  - HTTP status code mapping table
+  - Error code reference guide
+  - Implementation guide with code samples
+  - Pagination standards (offset & cursor)
+  - Best practices (DO/DON'T sections)
+  - Migration checklist
+
+**Bugfix**
+- Fixed duplicate hashtag display in editor dashboard
+  - Modified `getAllHashtagRepresentations()` to only show category-prefixed versions
+  - Eliminated visual duplication (e.g., showing both `#budapest` and `#location:budapest`)
+
+**Implementation Strategy**
+- Standards are ready for immediate use in new/refactored routes
+- Incremental migration approach - no breaking changes
+- Full TypeScript support with compile-time and runtime safety
+
+**Reference**: See `API_STANDARDS.md` for complete usage guide.
+
+---
+
 ## [v5.17.0] — 2025-10-02T11:00:00.000Z
 
 ### Chore — Phase 1 Foundation Cleanup: Technical Debt Reduction
