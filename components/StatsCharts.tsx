@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
+import { compareChartProps } from '../lib/performanceUtils';
 
 // Interface for project statistics - matches the structure used across the app
 interface ProjectStats {
@@ -52,8 +53,10 @@ interface ChartProps {
  * Gender Distribution Circle/Pie Chart
  * Renders a pie chart showing the distribution between female and male attendees
  * Uses SVG for precise control and MessMass color scheme
+ * 
+ * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
-export const GenderCircleChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+const GenderCircleChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const genderData = [
     { label: 'Female', value: stats.female, color: '#ff6b9d' },
     { label: 'Male', value: stats.male, color: '#4a90e2' }
@@ -150,8 +153,10 @@ export const GenderCircleChart: React.FC<ChartProps> = ({ stats, eventName }) =>
  * Location Distribution Pie Chart
  * Shows where fans are located: Remote (Indoor + Outdoor), Event (Stadium)
  * Uses MessMass location-based color scheme
+ * 
+ * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
-export const FansLocationPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+const FansLocationPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const remoteTotal = stats.indoor + stats.outdoor;
   const fansData = [
     { label: 'Remote', value: remoteTotal, color: '#3b82f6' },
@@ -248,7 +253,7 @@ export const FansLocationPieChart: React.FC<ChartProps> = ({ stats, eventName })
  * Displays age breakdown: Under 40 (Alpha + Y+Z), Over 40 (X + Boomer)
  * Uses simplified age-based color scheme
  */
-export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+const AgeGroupsPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const under40Total = stats.genAlpha + stats.genYZ;
   const over40Total = stats.genX + stats.boomer;
   
@@ -349,7 +354,7 @@ export const AgeGroupsPieChart: React.FC<ChartProps> = ({ stats, eventName }) =>
  * Uses horizontal bars with MessMass color scheme and interactive effects
  * Note: Merched is excluded as it represents people who have merch, not merchandise types
  */
-export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+const MerchandiseHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const totalFans = stats.indoor + stats.outdoor + stats.stadium;
   const merched = stats.merched;
   
@@ -421,7 +426,7 @@ export const MerchandiseHorizontalBars: React.FC<ChartProps> = ({ stats, eventNa
  * Shows where visitors come from: QR Code, Short URL, and Web visits only
  * Only renders if visitor data exists, otherwise shows no data message
  */
-export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName }) => {
+const VisitorSourcesPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const qrAndShortUrl = (stats.visitQrCode || 0) + (stats.visitShortUrl || 0);
   const otherVisits = (stats.visitWeb || 0);
   
@@ -520,7 +525,7 @@ export const VisitorSourcesPieChart: React.FC<ChartProps> = ({ stats, eventName 
  * Shows 5 different value calculations with total advertisement value
  * Uses horizontal bars with MessMass color scheme and shows EUR total above
  */
-export const ValueHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+const ValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
   const totalFans = stats.indoor + stats.outdoor + stats.stadium;
   const under40Fans = stats.genAlpha + stats.genYZ;
@@ -631,7 +636,7 @@ export const ValueHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) 
 };
 
 // Keep the old ValuePropositionHorizontalBars for backward compatibility (deprecated)
-export const ValuePropositionHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+const ValuePropositionHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const valuePropViewed = stats.eventValuePropositionVisited || 0;
   const valuePropPurchases = stats.eventValuePropositionPurchases || 0;
   
@@ -684,7 +689,7 @@ export const ValuePropositionHorizontalBars: React.FC<ChartProps> = ({ stats, ev
  * Shows Fan Engagement % (Fans / Event Attendees) and Fan Interaction % (Social Media Visits + Value Prop / Images)
  * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
  */
-export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+const EngagementHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const totalFans = stats.indoor + stats.outdoor + stats.stadium;
   const eventAttendees = stats.eventAttendees || 0;
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
@@ -808,7 +813,7 @@ export const EngagementHorizontalBars: React.FC<ChartProps> = ({ stats, eventNam
  * Shows advertising value calculations with cost per type
  * Uses horizontal bars with MessMass color scheme (same beautiful style as Merchandise)
  */
-export const AdvertisementValueHorizontalBars: React.FC<ChartProps> = ({ stats, eventName }) => {
+const AdvertisementValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
   const totalFans = stats.indoor + stats.outdoor + stats.stadium;
   const totalVisitors = (
@@ -924,3 +929,18 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
     </div>
   );
 };
+
+// WHAT: Memoized chart exports to prevent unnecessary re-renders
+// WHY: Charts are computationally expensive; memoization improves dashboard performance
+// Each chart is wrapped with React.memo() using custom comparison to skip re-renders
+// when stats haven't changed, significantly improving performance in dashboards with
+// multiple charts that update independently.
+export const GenderCircleChart = memo(GenderCircleChartComponent, compareChartProps);
+export const FansLocationPieChart = memo(FansLocationPieChartComponent, compareChartProps);
+export const AgeGroupsPieChart = memo(AgeGroupsPieChartComponent, compareChartProps);
+export const MerchandiseHorizontalBars = memo(MerchandiseHorizontalBarsComponent, compareChartProps);
+export const VisitorSourcesPieChart = memo(VisitorSourcesPieChartComponent, compareChartProps);
+export const ValueHorizontalBars = memo(ValueHorizontalBarsComponent, compareChartProps);
+export const ValuePropositionHorizontalBars = memo(ValuePropositionHorizontalBarsComponent, compareChartProps);
+export const EngagementHorizontalBars = memo(EngagementHorizontalBarsComponent, compareChartProps);
+export const AdvertisementValueHorizontalBars = memo(AdvertisementValueHorizontalBarsComponent, compareChartProps);

@@ -1,6 +1,6 @@
 # TASKLIST.md
 Current Version: 5.18.0
-Last Updated: 2025-10-02T12:00:00.000Z
+Last Updated: 2025-10-02T12:30:00.000Z
 
 ### High Priority — Public Docs & Demo Link (v5.16.0)
 
@@ -63,7 +63,7 @@ Last Updated: 2025-10-02T12:00:00.000Z
 || Task ID | Title | Owner | Expected Delivery | Status |
 ||---------|-------|-------|-------------------|--------|
 || SPU-001 | Extend hashtag search/paging to Admin → Hashtags | ProjectAgent-messmass | 2025-10-01T12:00:00.000Z | Planned |
-|| SPU-002 | Apply search/paging to Admin → Categories | ProjectAgent-messmass | 2025-10-02T12:00:00.000Z | Planned |
+|| SPU-002 | Apply search/paging to Admin → Categories | ProjectAgent-messmass | 2025-10-02T12:30:00.000Z | Planned |
 || SPU-003 | Apply search/paging to Admin → Charts | ProjectAgent-messmass | 2025-10-03T12:00:00.000Z | Planned |
 || SPU-004 | Apply search/paging to Admin → Users | ProjectAgent-messmass | 2025-10-04T12:00:00.000Z | Planned |
 || SPU-005 | Evaluate feasibility for public pages (/hashtag) | ProjectAgent-messmass | 2025-10-05T12:00:00.000Z | Planned |

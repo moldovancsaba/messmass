@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import useHashtagColorResolver from '../hooks/useHashtagColorResolver';
+import { compareHashtagBubbleProps } from '../lib/performanceUtils';
 
 interface ColoredHashtagBubbleProps {
   hashtag: string;
@@ -19,7 +20,9 @@ interface ColoredHashtagBubbleProps {
   autoResolveColor?: boolean;
 }
 
-export default function ColoredHashtagBubble({ 
+// WHAT: Memoized hashtag bubble component to prevent unnecessary re-renders
+// WHY: Hashtags are rendered in large lists; memoization reduces render overhead
+function ColoredHashtagBubbleComponent({ 
   hashtag, 
   className = '', 
   small = false, 
@@ -153,3 +156,7 @@ export default function ColoredHashtagBubble({
     </span>
   );
 }
+
+// WHAT: Export memoized version with custom comparison function
+// WHY: Prevents re-renders when props haven't meaningfully changed
+export default memo(ColoredHashtagBubbleComponent, compareHashtagBubbleProps);

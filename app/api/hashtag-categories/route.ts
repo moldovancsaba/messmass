@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
 import {
   HashtagCategory,
   HashtagCategoryInput,
@@ -90,10 +91,27 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
 
     console.log(`✅ Retrieved ${categories.length} hashtag categories`);
 
-    return NextResponse.json({
+    // WHAT: Apply caching with ETag support for static category data
+    // WHY: Categories rarely change; caching reduces database load
+    const responseData = {
       success: true,
       categories
-    });
+    };
+    
+    const etag = generateETag(categories);
+    
+    // Check if client has fresh data
+    if (checkIfNoneMatch(request, etag)) {
+      return notModifiedResponse(etag) as any;
+    }
+    
+    return cachedResponse(
+      responseData,
+      {
+        ...CACHE_PRESETS.STATIC,
+        etag
+      }
+    ) as any;
 
   } catch (error) {
     console.error('❌ Failed to fetch hashtag categories:', error);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
 
 // Use centralized Mongo client and config
 
@@ -61,7 +62,9 @@ export async function GET(request: NextRequest) {
     // WHY: Smaller payload and server-side pagination improves responsiveness.
     const items = results.map((r: any) => ({ hashtag: r._id as string, count: r.count as number }));
 
-    return NextResponse.json({
+    // WHAT: Apply caching with ETag for frequently updated hashtag list
+    // WHY: Reduces database aggregation load for repeated queries
+    const responseData = {
       success: true,
       hashtags: items,
       pagination: {
@@ -71,7 +74,22 @@ export async function GET(request: NextRequest) {
         nextOffset: offset + results.length < totalMatched ? offset + results.length : null,
         totalMatched
       }
-    });
+    };
+    
+    const etag = generateETag(items);
+    
+    // Check if client has fresh data
+    if (checkIfNoneMatch(request, etag)) {
+      return notModifiedResponse(etag) as any;
+    }
+    
+    return cachedResponse(
+      responseData,
+      {
+        ...CACHE_PRESETS.DYNAMIC,
+        etag
+      }
+    ) as any;
     
   } catch (error) {
     console.error('Hashtags API error:', error);
