@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/moldovancsaba/Library/Mobile Documents/com~apple~CloudDocs/Projects/messmass/app/layout":["static/media/e4af272ccee01ff0-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';
+self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/moldovancsaba/Projects/messmass/app/layout":["static/media/e4af272ccee01ff0-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';

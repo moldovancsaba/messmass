@@ -509,8 +509,12 @@ export function matchHashtagInProject(
 
 /**
  * Generates all possible hashtag representations for a project
- * Returns both traditional hashtags and category-prefixed hashtags
- * Used for search indexing and filtering
+ * Returns traditional hashtags and category-prefixed hashtags
+ * 
+ * WHAT: Display-oriented hashtag list generator
+ * WHY: Shows categorized hashtags with their category prefix to avoid duplication
+ * 
+ * Used for display purposes (not search indexing)
  */
 export function getAllHashtagRepresentations(
   project: {
@@ -520,21 +524,21 @@ export function getAllHashtagRepresentations(
 ): string[] {
   const allRepresentations = new Set<string>();
   
-  // Add traditional hashtags (as-is)
+  // Add traditional hashtags (general/uncategorized only)
   if (project.hashtags) {
     project.hashtags.forEach(hashtag => {
       allRepresentations.add(hashtag.toLowerCase());
     });
   }
   
-  // Add categorized hashtags (both plain and prefixed)
+  // Add categorized hashtags (ONLY with category prefix, no plain duplicates)
+  // WHAT: Only add the prefixed version to prevent duplication
+  // WHY: If a hashtag is in a category, show it as "category:hashtag" not both forms
   if (project.categorizedHashtags) {
     for (const [category, hashtags] of Object.entries(project.categorizedHashtags)) {
       hashtags.forEach(hashtag => {
         const lowerHashtag = hashtag.toLowerCase();
-        // Add plain hashtag (accessible without prefix)
-        allRepresentations.add(lowerHashtag);
-        // Add category-prefixed hashtag
+        // Add ONLY the category-prefixed version
         allRepresentations.add(`${category.toLowerCase()}:${lowerHashtag}`);
       });
     }
