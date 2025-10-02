@@ -1,17 +1,47 @@
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
-// Use Railway's PORT or fallback to 7654
+// WHAT: Configuration for WebSocket server performance and limits
+// WHY: Prevent resource exhaustion and optimize memory usage
 const port = process.env.PORT || 7654;
+const MAX_CONNECTIONS = parseInt(process.env.MAX_WS_CONNECTIONS || '1000', 10);
+const HEARTBEAT_INTERVAL = 30000; // 30 seconds
+const STALE_CONNECTION_TIMEOUT = 60000; // 1 minute
+const MEMORY_CHECK_INTERVAL = 60000; // 1 minute
 
+// WHAT: WebSocket server with perMessageDeflate compression
+// WHY: Reduces bandwidth usage for real-time updates
 const wss = new WebSocket.Server({ 
   port: port,
+  perMessageDeflate: {
+    zlibDeflateOptions: {
+      chunkSize: 1024,
+      memLevel: 7,
+      level: 3
+    },
+    zlibInflateOptions: {
+      chunkSize: 10 * 1024
+    },
+    clientNoContextTakeover: true,
+    serverNoContextTakeover: true,
+    serverMaxWindowBits: 10,
+    concurrencyLimit: 10,
+    threshold: 1024
+  },
+  maxPayload: 100 * 1024, // 100KB max message size
   verifyClient: (info) => {
-    // Allow all origins in production (you can restrict this)
+    // WHAT: Connection limit enforcement
+    // WHY: Prevent DoS attacks and resource exhaustion
+    if (clients.size >= MAX_CONNECTIONS) {
+      console.warn(`⚠️  Connection limit reached (${MAX_CONNECTIONS}), rejecting new connection`);
+      return false;
+    }
     return true;
   }
 });
 
+// WHAT: Optimized data structures for client and room management
+// WHY: Fast lookup and memory-efficient storage
 const clients = new Map();
 const projectRooms = new Map();
 
@@ -169,22 +199,53 @@ function handleClientDisconnect(clientId) {
   }
 }
 
-// Clean up stale connections every 30 seconds
+// WHAT: Periodic cleanup of stale connections
+// WHY: Prevent memory leaks from zombie connections
 setInterval(() => {
   const now = Date.now();
-  const staleTimeout = 60000; // 1 minute
+  let staleCount = 0;
 
   clients.forEach((client, clientId) => {
-    if (now - client.lastHeartbeat > staleTimeout) {
+    if (now - client.lastHeartbeat > STALE_CONNECTION_TIMEOUT) {
       console.log(`Removing stale client: ${clientId}`);
       client.ws.terminate();
       handleClientDisconnect(clientId);
+      staleCount++;
     }
   });
-}, 30000);
+  
+  if (staleCount > 0) {
+    console.log(`🧪 Cleaned up ${staleCount} stale connection(s)`);
+  }
+}, HEARTBEAT_INTERVAL);
+
+// WHAT: Memory usage monitoring and statistics
+// WHY: Track resource consumption and detect potential memory leaks
+setInterval(() => {
+  const memUsage = process.memoryUsage();
+  const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
+  const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(2);
+  const externalMB = (memUsage.external / 1024 / 1024).toFixed(2);
+  
+  console.log(`📊 Server Stats:`);
+  console.log(`   Clients: ${clients.size} / ${MAX_CONNECTIONS}`);
+  console.log(`   Rooms: ${projectRooms.size}`);
+  console.log(`   Memory: ${heapUsedMB}MB / ${heapTotalMB}MB (heap), ${externalMB}MB (external)`);
+  
+  // WHAT: Warning when memory usage is high
+  // WHY: Alert for potential memory leaks or need for optimization
+  const heapUsagePercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+  if (heapUsagePercent > 85) {
+    console.warn(`⚠️  High memory usage: ${heapUsagePercent.toFixed(1)}%`);
+  }
+}, MEMORY_CHECK_INTERVAL);
 
 console.log(`🚀 WebSocket server running on port ${port}`);
 console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`🔒 Max connections: ${MAX_CONNECTIONS}`);
+console.log(`💓 Heartbeat interval: ${HEARTBEAT_INTERVAL}ms`);
+console.log(`⏱️  Stale timeout: ${STALE_CONNECTION_TIMEOUT}ms`);
+console.log(`💾 Compression enabled: perMessageDeflate`);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

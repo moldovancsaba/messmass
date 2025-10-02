@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "5.18.0",
+  "version": "5.19.0",
   "description": "Real-time collaborative event statistics dashboard with admin panel, hashtag color management, enhanced chart exports, and aggregated analytics for tracking audience demographics at live events",
   "keywords": [
     "event-statistics",
