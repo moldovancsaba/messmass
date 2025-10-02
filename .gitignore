@@ -35,3 +35,24 @@ build/
 # Temporary files
 .tmp/
 *.tmp
+
+# Duplicate/backup files (prevent accidental commits)
+*2.tsx
+*2.ts
+*2.js
+*2.jsx
+*2.css
+*2.md
+*2.json
+* 2.*
+page 3.tsx
+page 4.tsx
+page 5.tsx
+page 6.tsx
+page 7.tsx
+page 8.tsx
+page 9.tsx
+route 2.ts
+route 3.ts
+layout 2.tsx
+layout 3.tsx

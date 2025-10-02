@@ -5,19 +5,14 @@
  * 
  * Provides centralized management of hashtag colors and categories to prevent
  * duplicate API requests when multiple components need the same data.
+ * 
+ * WHAT: Centralized context for hashtag colors and categories with proper TypeScript types
+ * WHY: Prevents duplicate API calls and eliminates `any` types across the application
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { HashtagCategory } from '@/lib/hashtagCategoryTypes';
-
-interface HashtagColor {
-  _id: string;
-  uuid: string;
-  name: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
+import type { HashtagColor } from '@/lib/types/hashtags';
 
 interface HashtagDataContextType {
   // Data

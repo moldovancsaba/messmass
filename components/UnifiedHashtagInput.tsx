@@ -11,13 +11,10 @@
  */
 
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
-import { HashtagCategory } from '@/lib/hashtagCategoryTypes';
+import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
+import type { HashtagSuggestion, HashtagWithCount } from '@/lib/types/hashtags';
+import { normalizeHashtagResponse } from '@/lib/types/hashtags';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
-
-interface HashtagSuggestion {
-  hashtag: string;
-  isExisting: boolean;
-}
 
 interface UnifiedHashtagInputProps {
   // Traditional hashtags (General section)
@@ -115,11 +112,9 @@ export default function UnifiedHashtagInput({
       const data = await response.json();
       
       if (data.success) {
-        // Normalize API to a string[] list (API returns {hashtag,count} items)
-        const items: any[] = Array.isArray(data.hashtags) ? data.hashtags : [];
-        const hashtagStrings: string[] = items
-          .map((h: any) => (typeof h === 'string' ? h : h?.hashtag))
-          .filter((s: any): s is string => typeof s === 'string' && s.length > 0);
+        // WHAT: Normalize API response to handle both string[] and HashtagWithCount[] formats
+        // WHY: Different endpoints return different shapes; normalization ensures consistency
+        const hashtagStrings = normalizeHashtagResponse(data.hashtags);
         
         // Get hashtags in current category only
         const currentCategoryHashtags = selectedCategory === 'general' 
@@ -298,9 +293,7 @@ export default function UnifiedHashtagInput({
   const renderHashtagGroup = (title: string, hashtags: string[], categoryName: string, categoryColor?: string) => {
     // WHAT: Sanitize incoming hashtags to ensure they are strings only.
     // WHY: Prevent React child errors when any downstream code accidentally injects objects like {hashtag,count}.
-    const safeHashtags = (Array.isArray(hashtags) ? hashtags : [])
-      .map((h: any) => typeof h === 'string' ? h : (h && typeof h.hashtag === 'string' ? h.hashtag : ''))
-      .filter((h: any): h is string => typeof h === 'string' && h.length > 0);
+    const safeHashtags = normalizeHashtagResponse(hashtags);
 
     if (safeHashtags.length === 0) return null;
     

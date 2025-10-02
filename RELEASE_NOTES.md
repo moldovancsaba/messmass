@@ -1,5 +1,42 @@
 # MessMass Release Notes
 
+## [v5.17.0] — 2025-10-02T11:00:00.000Z
+
+### Chore — Phase 1 Foundation Cleanup: Technical Debt Reduction
+
+**Duplicate File Cleanup**
+- Removed 69 duplicate/backup files (`*2.tsx`, `*2.ts`, `*2.js`, `page 3-7.tsx`, etc.)
+- Added .gitignore rules to prevent future duplicate commits
+- Updated WARP.md with file naming conventions and prevention guidelines
+
+**Security & Dependencies**
+- Fixed Next.js SSRF vulnerability (GHSA-4342-x723-ch2f) by upgrading 15.4.6 → 15.5.4
+- Updated `@types/node`, `dotenv`, `eslint-config-next` to latest minor versions
+- Achieved zero security vulnerabilities status
+
+**TypeScript Type Safety**
+- Created centralized type definitions in `lib/types/hashtags.ts`
+- Replaced all `any[]` types with proper interfaces in:
+  - `hooks/useHashtags.ts` (hashtagColors, categories)
+  - `contexts/HashtagDataProvider.tsx`
+  - `components/UnifiedHashtagInput.tsx`
+- Added type guards and normalization helpers for runtime safety
+- Defined interfaces: `HashtagColor`, `HashtagSuggestion`, `HashtagValidationResult`, `HashtagWithCount`
+
+**Documentation**
+- Added comprehensive entry in LEARNINGS.md documenting Phase 1 cleanup
+- Created IMPROVEMENT_PLAN.md with full audit and 5-phase roadmap (~103 hours)
+- Updated all documentation timestamps to 2025-10-02T11:00:00.000Z
+
+**Build Validation**
+- TypeScript type-check: ✅ Passing
+- ESLint: ✅ Warnings only (inline style guardrails)
+- Production build: ✅ Passing
+
+**Reference**: See `IMPROVEMENT_PLAN.md` for complete audit findings and strategic roadmap.
+
+---
+
 ## [v5.16.0] — 2025-10-01T09:11:20.000Z
 
 ### Docs & UX — Public Docs link; Demo page lint cleanup; SSR/API helpers

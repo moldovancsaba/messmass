@@ -250,6 +250,15 @@ ADMIN_PASSWORD=your_secure_password
 - **No test files** - MVP factory approach, tests are prohibited
 - **No manual timestamps** - Must use ISO 8601 with milliseconds format
 - **No component duplication** - Search and reuse before creating
+- **No backup file suffixes** - Never commit files like `*2.tsx`, `*2.ts`, `page 3.tsx`, etc.
+
+### File Naming and Version Control
+- **Use git branches** for experimental work, not file copies
+- **Prohibited file patterns**: `*2.tsx`, `*2.ts`, `*2.js`, `* 2.*`, `page N.tsx` (N > 2)
+- **Version control over file copies**: Use branches, commits, tags for history
+- **Clean working directory**: No backup files should exist in the repository
+- **.gitignore enforcement**: Duplicate patterns are blocked to prevent accidental commits
+- **Rationale**: Duplicate files confuse developers, bloat the repo, and create maintenance burden
 
 ## 📚 Documentation Ecosystem
 
@@ -283,4 +292,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.16.0 | Last Updated: 2025-10-01T09:11:20.000Z | Status: Active Development*
+*Version: 5.17.0 | Last Updated: 2025-10-02T11:00:00.000Z | Status: Active Development*

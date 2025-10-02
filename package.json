@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "5.16.0",
+  "version": "5.17.0",
   "description": "Real-time collaborative event statistics dashboard with admin panel, hashtag color management, enhanced chart exports, and aggregated analytics for tracking audience demographics at live events",
   "keywords": [
     "event-statistics",
@@ -44,7 +44,7 @@
     "js-cookie": "^3.0.5",
     "jspdf": "^3.0.1",
     "mongodb": "^6.8.0",
-    "next": "15.4.6",
+    "next": "^15.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.6.3",
@@ -61,7 +61,7 @@
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.12",
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.4.6",
+    "eslint-config-next": "^15.5.4",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",

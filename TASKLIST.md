@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 5.16.0
-Last Updated: 2025-10-01T09:11:20.000Z
+Current Version: 5.17.0
+Last Updated: 2025-10-02T11:00:00.000Z
 
 ### High Priority — Public Docs & Demo Link (v5.16.0)
 

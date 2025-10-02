@@ -5,15 +5,19 @@
  * 
  * Provides consistent hashtag API integration across all components
  * Now uses HashtagDataProvider context for colors and categories to prevent duplicate API calls
+ * 
+ * WHAT: Centralized hook for all hashtag operations with full type safety
+ * WHY: Eliminates `any` types and provides compile-time safety for hashtag operations
  */
 
 import { useCallback } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
-
-interface HashtagSuggestion {
-  hashtag: string;
-  isExisting: boolean;
-}
+import type {
+  HashtagColor,
+  HashtagCategory,
+  HashtagSuggestion,
+  HashtagValidationResult
+} from '@/lib/types/hashtags';
 
 interface UseHashtagsReturn {
   // Search and suggestions
@@ -21,14 +25,14 @@ interface UseHashtagsReturn {
   getSuggestions: (query: string, existingHashtags: string[]) => Promise<HashtagSuggestion[]>;
   
   // Validation
-  validateHashtag: (hashtag: string) => Promise<{ success: boolean; hashtag?: string; error?: string }>;
+  validateHashtag: (hashtag: string) => Promise<HashtagValidationResult>;
   
-  // Colors (from context)
-  hashtagColors: any[];
+  // Colors (from context) - now properly typed
+  hashtagColors: HashtagColor[];
   refreshColors: () => Promise<void>;
   
-  // Categories (from context)
-  categories: any[];
+  // Categories (from context) - now properly typed
+  categories: HashtagCategory[];
   refreshCategories: () => Promise<void>;
   
   // Utility functions
