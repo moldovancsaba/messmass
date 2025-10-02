@@ -468,7 +468,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           const filtered = editMode === 'clicker'
             ? items.filter(v => v.flags.visibleInClicker)
             : items.filter(v => v.flags.editableInManual)
-          if (filtered.length === 0 && !title) return null
+          // WHAT: Hide group block if no variables are visible in current mode
+          // WHY: Prevents empty "Success Manager" or other titled blocks from appearing
+          if (filtered.length === 0) return null
           return (
             <div key={idx} className="glass-card section-card">
               {title && (
