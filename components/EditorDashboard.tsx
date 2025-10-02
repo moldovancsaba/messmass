@@ -519,69 +519,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           </div>
         )}
         
-        {/* REMOVED LEGACY HARDCODED SECTIONS - Now handled by groups system above */}
-        {/* Legacy sections (Images, Fans, Gender, Age, Merch) have been removed to prevent duplicates */}
+        {/* REMOVED LEGACY SECTIONS */}
+        {/* Legacy sections (Images, Fans, Gender, Age, Merch, Success Manager, Hashtags) removed */}
         {/* All variables are now rendered through the groups-driven system configured at /admin/variables */}
-        
-        {/* Success Manager Section - Only show in manual mode */}
-        {/* TODO: Move this into groups system as well for full consistency */}
-        {editMode === 'manual' && (
-          <div className="glass-card section-card">
-            <h2 className="section-title">📈 Success Manager</h2>
-          
-          {/* Image Management */}
-          <div className="mb-6">
-            <h4 className="section-subtitle">Image Management</h4>
-            <div className="style-grid">
-              {canShowInManual('approvedImages') && <SuccessManagerCard label="Approved Images" value={project.stats.approvedImages || 0} statKey="approvedImages" />}
-              {canShowInManual('rejectedImages') && <SuccessManagerCard label="Rejected Images" value={project.stats.rejectedImages || 0} statKey="rejectedImages" />}
-            </div>
-          </div>
-
-          {/* Visit Tracking */}
-          <div className="mb-6">
-            <h4 className="section-subtitle">Visit Tracking</h4>
-            <div className="style-grid">
-              {canShowInManual('visitQrCode') && <SuccessManagerCard label="QR Code Visits" value={project.stats.visitQrCode || 0} statKey="visitQrCode" />}
-              {canShowInManual('visitShortUrl') && <SuccessManagerCard label="Short URL Visits" value={project.stats.visitShortUrl || 0} statKey="visitShortUrl" />}
-              {canShowInManual('visitWeb') && <SuccessManagerCard label="Web Visits" value={project.stats.visitWeb || 0} statKey="visitWeb" />}
-            </div>
-          </div>
-
-          {/* eDM (Value Proposition) */}
-          <div className="mb-6">
-            <h4 className="section-subtitle">eDM</h4>
-            <div className="style-grid">
-              {canShowInManual('eventValuePropositionVisited') && <SuccessManagerCard label="Value Prop Visited" value={project.stats.eventValuePropositionVisited || 0} statKey="eventValuePropositionVisited" />}
-              {canShowInManual('eventValuePropositionPurchases') && <SuccessManagerCard label="Value Prop Purchases" value={project.stats.eventValuePropositionPurchases || 0} statKey="eventValuePropositionPurchases" />}
-            </div>
-          </div>
-
-          {/* Social Visit (aggregated) */}
-          <div className="mb-6">
-            <h4 className="section-subtitle">Social Visit</h4>
-            <div className="style-grid">
-              {canShowInManual('socialVisit') && (() => {
-                const sumSocial = (project.stats.visitFacebook || 0) + (project.stats.visitInstagram || 0) + (project.stats.visitYoutube || 0) + (project.stats.visitTiktok || 0) + (project.stats.visitX || 0) + (project.stats.visitTrustpilot || 0);
-                const socialVal = project.stats.socialVisit ?? sumSocial;
-                return (
-                  <SuccessManagerCard label="Total Social Visit" value={socialVal} statKey={"socialVisit" as keyof typeof project.stats} />
-                );
-              })()}
-            </div>
-          </div>
-
-          {/* Event Performance */}
-          <div className="mb-6">
-            <h4 className="section-subtitle">Event Performance</h4>
-            <div className="style-grid">
-              {canShowInManual('eventAttendees') && <SuccessManagerCard label="Event Attendees" value={project.stats.eventAttendees || 0} statKey="eventAttendees" />}
-              {canShowInManual('eventResultHome') && <SuccessManagerCard label="Event Result Home" value={project.stats.eventResultHome || 0} statKey="eventResultHome" />}
-              {canShowInManual('eventResultVisitor') && <SuccessManagerCard label="Event Result Visitor" value={project.stats.eventResultVisitor || 0} statKey="eventResultVisitor" />}
-            </div>
-          </div>
-          </div>
-        )}
         
         {/* Custom Variables Section (supports newly added variables) */}
         {(() => {
@@ -613,26 +553,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           )
         })()}
         
-        {/* Hashtag Management Section - Move to bottom and only show in manual mode */}
-          <div className="glass-card section-card">
-            <h2 className="section-title">🏷️ Hashtags ({totalHashtagCount})</h2>
-            
-            <div className="mb-4">
-              <UnifiedHashtagInput
-                generalHashtags={hashtags}
-                onGeneralChange={handleGeneralHashtagsChange}
-                categorizedHashtags={categorizedHashtags}
-                onCategorizedChange={handleCategorizedHashtagsChange}
-                placeholder="Add hashtags to categorize this project..."
-              />
-            </div>
-            
-            {totalHashtagCount === 0 && (
-              <div className="empty-state">
-                <p className="empty-state-text">💡 Add hashtags to categorize your project and enable aggregated statistics!</p>
-              </div>
-            )}
-          </div>
+        {/* Hashtag Management Section - REMOVED per user request */}
+        {/* Hashtags are now managed elsewhere in the system */}
       </div>
     </div>
   );
