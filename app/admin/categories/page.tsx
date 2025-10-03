@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
+import styles from './Categories.module.css';
 
 interface HashtagCategory {
   _id: string;
@@ -177,20 +178,18 @@ export default function CategoriesPage() {
 
 if (error) {
     return (
-      <div className="admin-container">
-        <div className="admin-content">
-          <div className="glass-card" style={{ textAlign: 'center', color: '#ef4444' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-            <div>{error}</div>
-            <button className="btn btn-primary mt-3" onClick={fetchCategories}>Try Again</button>
-          </div>
+      <div className={styles.errorContainer}>
+        <div className={styles.errorCard}>
+          <div className={styles.errorIcon}>⚠️</div>
+          <div className={styles.errorText}>{error}</div>
+          <button className={styles.retryButton} onClick={fetchCategories}>Try Again</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="admin-container">
+    <div>
       <AdminHero
         title="Categories"
         showSearch={true}
@@ -201,26 +200,26 @@ if (error) {
         backLink="/admin"
       />
 
-      <div className="content-surface">
+      <div>
           {/* Categories Grid */}
           <div>
-            <div className="charts-grid category-grid">
+            <div className={styles.categoryGrid}>
               {filteredCategories.map((category) => (
-                <div key={category._id} className="glass-card section-card category-card">
+                <div key={category._id} className={styles.categoryCard}>
                   {/* Category Header */}
-                  <div className="category-header">
-                    <div className="category-title">
-                      <div className="category-dot" style={{ background: category.color }} />
-                      <h3 className="category-name">{category.name}</h3>
+                  <div className={styles.categoryHeader}>
+                    <div className={styles.categoryTitle}>
+                      <div className={styles.categoryDot} style={{ background: category.color }} />
+                      <h3 className={styles.categoryName}>{category.name}</h3>
                     </div>
-                    <div className="category-actions">
-                      <button className="btn btn-sm btn-primary" onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
+                    <div className={styles.categoryActions}>
+                      <button className={styles.editButton} onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
+                      <button className={styles.deleteButton} onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
                     </div>
                   </div>
 
                   {/* Category Info */}
-                  <div className="category-footer">
+                  <div className={styles.categoryFooter}>
                     <span>Order: {category.order}</span>
                     <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
                   </div>
@@ -230,19 +229,19 @@ if (error) {
 
             {/* Empty State */}
             {filteredCategories.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📂</div>
-                <h3 style={{ marginBottom: '0.5rem' }}>
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>📂</div>
+                <h3 className={styles.emptyTitle}>
                   {searchTerm ? 'No categories found' : 'No categories yet'}
                 </h3>
-                <p style={{ marginBottom: '1.5rem' }}>
+                <p className={styles.emptyText}>
                   {searchTerm 
                     ? `No categories match "${searchTerm}"`
                     : 'Create your first hashtag category to get started'
                   }
                 </p>
                 {!searchTerm && (
-                  <button className="btn btn-primary" onClick={() => setShowCreateForm(true)}>
+                  <button className={styles.createFirstButton} onClick={() => setShowCreateForm(true)}>
                     ➕ Create First Category
                   </button>
                 )}
@@ -700,45 +699,3 @@ if (error) {
     </div>
   );
 }
-
-<style jsx>{`
-  .category-grid {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  @media (min-width: 640px) { /* tablet */
-    .category-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (min-width: 1024px) { /* desktop */
-    .category-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  .category-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 1rem; /* ensure padding between box and content */
-  }
-  .category-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-  }
-  .category-title { display: inline-flex; align-items: center; gap: 0.5rem; }
-  .category-dot { width: 12px; height: 12px; border-radius: 50%; }
-  .category-name { margin: 0; font-size: 1.125rem; font-weight: 600; }
-  .category-actions { display: inline-flex; gap: 0.5rem; }
-
-  .category-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: auto; /* push footer to bottom for equal height cards */
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(107,114,128,0.12);
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-`}</style>

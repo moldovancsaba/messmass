@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import styles from './AdminHero.module.css';
 
 type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
 
@@ -31,9 +32,9 @@ interface AdminHeroProps {
   actionButtons?: ActionButton[];
 }
 
-// WHAT: Single-source robust ADMIN HERO used across all admin pages.
-// WHY: Prevents per-page divergence in styles/structure and guarantees the Admin Design theme applies.
-// HOW: Purely uses CSS classes (admin-header, glass-card, admin-title, etc.). No inline background overrides.
+// WHAT: Single-source robust ADMIN HERO used across all admin pages with TailAdmin V2 flat design.
+// WHY: Prevents per-page divergence and guarantees consistent modern flat aesthetic.
+// HOW: Uses CSS Modules with design tokens from theme.css for consistent TailAdmin V2 styling.
 export default function AdminHero({
   title,
   subtitle,
@@ -45,61 +46,67 @@ export default function AdminHero({
   searchPlaceholder = 'Search...',
   actionButtons = []
 }: AdminHeroProps) {
-  // Helper: button styles for actionButtons
   return (
-    <div className="admin-header glass-card">
-      <div className="admin-header-content">
+    <div className={styles.heroContainer}>
+      <div className={styles.heroContent}>
         {/* Left: Title/Subtitle/Search */}
-        <div className="admin-branding">
-          <h1 className="admin-title admin-title-center">{title}</h1>
-          {subtitle && (
-            <p className="admin-subtitle admin-subtitle-center">{subtitle}</p>
-          )}
+        <div className={styles.heroLeft}>
+          <div className={styles.heroTitleGroup}>
+            <h1 className={styles.heroTitle}>{title}</h1>
+            {subtitle && (
+              <p className={styles.heroSubtitle}>{subtitle}</p>
+            )}
+          </div>
 
           {showSearch && onSearchChange && (
-            <div className="admin-hero-search">
+            <div className={styles.searchContainer}>
               <input
                 type="text"
                 value={searchValue || ''}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="form-input admin-hero-search-input"
+                className={styles.searchInput}
               />
             </div>
           )}
         </div>
 
         {/* Right: Badges / Back link / Actions */}
-        <div className="admin-hero-right">
+        <div className={styles.heroRight}>
           {badges.length > 0 && (
-            <div className="admin-hero-badges">
+            <div className={styles.badgeContainer}>
               {badges.map((badge, idx) => (
-                <span key={idx} className={`badge badge-${badge.variant}`}>{badge.text}</span>
+                <span key={idx} className={`${styles.badge} ${styles[`badge${badge.variant.charAt(0).toUpperCase() + badge.variant.slice(1)}`]}`}>
+                  {badge.text}
+                </span>
               ))}
             </div>
           )}
 
           {/* Back link (when provided) */}
           {backLink && (
-            <Link href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
+            <Link href={backLink} className={styles.backLink}>
               ← Back to Admin
             </Link>
           )}
 
           {/* Action buttons */}
           {actionButtons.length > 0 && (
-            <div className="admin-hero-actions">
-              {actionButtons.map((btn, idx) => (
-                <button
-                  key={idx}
-                  onClick={btn.onClick}
-                  disabled={!!btn.disabled}
-                  title={btn.title}
-                  className={`btn btn-sm ${btn.variant ? `btn-${btn.variant}` : 'btn-primary'}`}
-                >
-                  {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
-                </button>
-              ))}
+            <div className={styles.actionButtons}>
+              {actionButtons.map((btn, idx) => {
+                const variantClass = btn.variant ? styles[`btn${btn.variant.charAt(0).toUpperCase() + btn.variant.slice(1)}`] : styles.btnPrimary;
+                return (
+                  <button
+                    key={idx}
+                    onClick={btn.onClick}
+                    disabled={!!btn.disabled}
+                    title={btn.title}
+                    className={`${styles.actionButton} ${variantClass} ${btn.disabled ? styles.btnDisabled : ''}`}
+                  >
+                    {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

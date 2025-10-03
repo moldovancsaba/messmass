@@ -1,0 +1,305 @@
+/* AdminHero.module.css - TailAdmin V2 Flat Design */
+
+/* WHAT: Modern flat header component for all admin pages
+ * WHY: Provides consistent, clean TailAdmin V2 aesthetic without glass effects
+ * HOW: Uses design tokens from theme.css with responsive layout and subtle elevations
+ */
+
+.heroContainer {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-light);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.heroContent {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  flex-wrap: wrap;
+}
+
+.heroLeft {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.heroTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.heroTitle {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.heroSubtitle {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+  line-height: var(--mm-line-height-md);
+}
+
+/* Search Input */
+.searchContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-900);
+  background: var(--mm-white);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--mm-color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+  color: var(--mm-gray-400);
+}
+
+/* Right Side Actions */
+.heroRight {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  flex-wrap: wrap;
+}
+
+/* Badges */
+.badgeContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--mm-space-1) var(--mm-space-3);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  border-radius: var(--mm-radius-full);
+  white-space: nowrap;
+}
+
+.badgePrimary {
+  background: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
+}
+
+.badgeSecondary {
+  background: var(--mm-color-secondary-100);
+  color: var(--mm-color-secondary-700);
+}
+
+.badgeSuccess {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--mm-success);
+}
+
+.badgeWarning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--mm-warning);
+}
+
+.badgeDanger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--mm-error);
+}
+
+/* Back Link */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+  background: var(--mm-gray-100);
+  border: 1px solid var(--mm-border-color-light);
+  border-radius: var(--mm-radius-md);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.backLink:hover {
+  background: var(--mm-gray-200);
+  border-color: var(--mm-border-color-default);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  border: 1px solid transparent;
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  outline: none;
+}
+
+.actionButton:focus-visible {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.btnPrimary {
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border-color: var(--mm-color-primary-500);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.btnSecondary {
+  background: var(--mm-color-secondary-500);
+  color: var(--mm-white);
+  border-color: var(--mm-color-secondary-500);
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: var(--mm-color-secondary-600);
+  border-color: var(--mm-color-secondary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.btnSuccess {
+  background: var(--mm-success);
+  color: var(--mm-white);
+  border-color: var(--mm-success);
+}
+
+.btnSuccess:hover:not(:disabled) {
+  background: #0e9f6d;
+  border-color: #0e9f6d;
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.btnDanger {
+  background: var(--mm-error);
+  color: var(--mm-white);
+  border-color: var(--mm-error);
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.btnInfo {
+  background: var(--mm-info);
+  color: var(--mm-white);
+  border-color: var(--mm-info);
+}
+
+.btnInfo:hover:not(:disabled) {
+  background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.btnDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .heroContainer {
+    padding: var(--mm-space-4);
+  }
+
+  .heroContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .heroLeft {
+    min-width: 100%;
+  }
+
+  .searchContainer {
+    max-width: 100%;
+  }
+
+  .heroRight {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .backLink,
+  .actionButton {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .badgeContainer {
+    justify-content: flex-start;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .heroContainer {
+    box-shadow: none;
+    border: 1px solid var(--mm-border-color-light);
+  }
+
+  .actionButtons,
+  .backLink {
+    display: none;
+  }
+}

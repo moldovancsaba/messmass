@@ -1,0 +1,251 @@
+/* Categories.module.css - TailAdmin V2 Flat Design */
+
+/* WHAT: Category management page styling with flat design
+ * WHY: Provides modern, clean aesthetic for category cards and management
+ * HOW: Uses design tokens from theme.css with responsive grid layout
+ */
+
+/* Error State */
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--mm-space-6);
+}
+
+.errorCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-light);
+  border-top: 4px solid var(--mm-error);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-8);
+  text-align: center;
+  box-shadow: var(--mm-shadow-sm);
+  max-width: 400px;
+  width: 100%;
+}
+
+.errorIcon {
+  font-size: 3rem;
+  margin-bottom: var(--mm-space-4);
+}
+
+.errorText {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-error);
+  margin-bottom: var(--mm-space-4);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.retryButton {
+  display: inline-block;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-weight: var(--mm-font-weight-medium);
+  font-size: var(--mm-font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* Category Grid */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mm-space-4);
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .categoryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .categoryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Category Card */
+.categoryCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-light);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: var(--mm-shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.categoryCard:hover {
+  box-shadow: var(--mm-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--mm-border-color-default);
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mm-space-3);
+  gap: var(--mm-space-2);
+}
+
+.categoryTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.categoryDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.categoryName {
+  margin: 0;
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryActions {
+  display: inline-flex;
+  gap: var(--mm-space-2);
+  flex-shrink: 0;
+}
+
+.editButton,
+.deleteButton {
+  padding: var(--mm-space-1) var(--mm-space-3);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  border: 1px solid transparent;
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.editButton {
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border-color: var(--mm-color-primary-500);
+}
+
+.editButton:hover {
+  background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.deleteButton {
+  background: var(--mm-error);
+  color: var(--mm-white);
+  border-color: var(--mm-error);
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.categoryFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--mm-space-3);
+  border-top: 1px solid var(--mm-border-color-light);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: var(--mm-space-8) var(--mm-space-4);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-light);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--mm-space-4);
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.emptyText {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  margin: 0 0 var(--mm-space-6) 0;
+}
+
+.createFirstButton {
+  display: inline-block;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-weight: var(--mm-font-weight-medium);
+  font-size: var(--mm-font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.createFirstButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .categoryActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .categoryFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mm-space-1);
+  }
+}
