@@ -1,35 +1,235 @@
 # DESIGN_SYSTEM.md
 
-Design System — MessMass (v5.16.0)
-Last Updated: 2025-10-01T09:11:20.000Z
+**Version**: 5.20.1 (Phase 1 Complete - TailAdmin V2 Foundation)  
+**Last Updated**: 2025-10-02T14:30:00.000Z  
+**Status**: Flat Design System - Glass-morphism Removed
 
-Overview
-- Purpose: Provide a unified, reusable styling system for consistent UI across admin and public-facing pages.
-- Location:
-  - app/styles/theme.css — Design tokens (colors, spacing, typography, radii, shadows, transitions)
-  - app/styles/components.css — UI elements (glass cards, buttons, forms, inputs, dropdowns)
-  - app/styles/layout.css — Containers, grids, utilities, admin layout helpers
-  - app/globals.css — Global resets and imports
+---
 
-Core Tokens
-- Colors: --color-*, primary/secondary/neutral, semantic (success/warning/error/info)
-- Gradients: --gradient-*
-- Typography: --font-*, --text-*, --leading-*, weights
-- Spacing: --space-* based on 4px grid
-- Radii: --radius-*, MessMass card radii: --border-radius, --border-radius-lg
-- Shadows: --shadow*, MessMass: --shadow, --shadow-lg
-- Transitions: --transition-*
-- Breakpoints: --breakpoint-*
+## Overview
 
-Components
-1) Buttons (.btn)
-- Base: inline-flex, centered, gap, medium weight, sm font
-- Size: padding var(--space-3 var(--space-6)); min-height 40px
-- Corners: border-radius var(--radius-xl)
-- Edges: margin var(--space-1) (prevents edge-sticking in dense layouts)
-- States: :focus-visible outline, :disabled opacity+no-transform
-- Variants: .btn-primary, .btn-secondary, .btn-success, .btn-info, .btn-danger
-- Sizes: .btn-small, .btn-large
+MessMass uses a **modern, flat design system** inspired by TailAdmin V2 with professional 2025-2026 aesthetics. This document outlines the design tokens, usage guidelines, and migration from the previous glass-morphism style.
+
+### Design Philosophy
+
+- **Flat, Clean, Professional**: No glass-morphism or heavy blur effects
+- **Subtle Elevations**: Light shadows for depth, not dramatic 3D effects
+- **Accessible Colors**: Minimum 4.5:1 contrast ratios for text
+- **Consistent Spacing**: 4px/8px grid system for predictable rhythm
+- **Modern Typography**: Clean, readable type scale with semantic weights
+
+### File Structure
+
+- **app/styles/theme.css** — Design tokens (colors, spacing, typography, borders, shadows)
+- **app/styles/components.css** — UI components (buttons, forms, cards)
+- **app/styles/layout.css** — Layout utilities, grids, containers
+- **app/globals.css** — Global styles, imports, component-level overrides
+
+---
+
+## Color System
+
+### Primary Colors (Blue Palette)
+
+Professional blue for trust and authority:
+
+```css
+--mm-color-primary-50:  #eff6ff;  /* Lightest tint */
+--mm-color-primary-100: #dbeafe;
+--mm-color-primary-500: #3b82f6;  /* Base primary */
+--mm-color-primary-600: #2563eb;  /* Default buttons */
+--mm-color-primary-700: #1d4ed8;  /* Hover states */
+--mm-color-primary-900: #1e3a8a;  /* Darkest shade */
+```
+
+**Usage**: `--mm-color-primary-600` for buttons, `--mm-color-primary-500` for focus rings.
+
+### Secondary Colors (Green Palette)
+
+```css
+--mm-color-secondary-500: #22c55e;  /* Base secondary */
+--mm-color-secondary-600: #16a34a;  /* Success states */
+```
+
+### Grayscale (Neutral Palette)
+
+```css
+--mm-gray-50:  #f9fafb;  /* Page backgrounds */
+--mm-gray-200: #e5e7eb;  /* Borders */
+--mm-gray-600: #4b5563;  /* Body text (7.0:1 contrast) */
+--mm-gray-900: #111827;  /* Headings (16.1:1 contrast) */
+--mm-white: #ffffff;
+```
+
+### Semantic Colors
+
+```css
+--mm-success: #10b981;  /* Green - success states */
+--mm-warning: #f59e0b;  /* Amber - warnings */
+--mm-error:   #ef4444;  /* Red - errors, delete actions */
+--mm-info:    #3b82f6;  /* Blue - informational */
+```
+
+### Chart Colors (10 distinct colors)
+
+```css
+--mm-chart-blue:   #3b82f6;
+--mm-chart-green:  #10b981;
+--mm-chart-purple: #8b5cf6;
+--mm-chart-orange: #f97316;
+--mm-chart-pink:   #ec4899;
+/* ... 5 more colors for multi-series charts */
+```
+
+---
+
+## Typography
+
+### Font Sizes (Modern Type Scale)
+
+```css
+--mm-font-size-xs:   0.75rem;   /* 12px - Tiny labels */
+--mm-font-size-sm:   0.875rem;  /* 14px - Small UI text */
+--mm-font-size-base: 1rem;      /* 16px - Body text */
+--mm-font-size-2xl:  1.5rem;    /* 24px - Section headings */
+--mm-font-size-3xl:  1.875rem;  /* 30px - Page headings */
+```
+
+### Font Weights
+
+```css
+--mm-font-weight-normal:    400;  /* Body text */
+--mm-font-weight-medium:    500;  /* Subtle emphasis */
+--mm-font-weight-semibold:  600;  /* Headings */
+--mm-font-weight-bold:      700;  /* Strong emphasis */
+```
+
+---
+
+## Spacing (4px/8px Grid System)
+
+```css
+--mm-space-1:  0.25rem;  /* 4px - Tight spacing */
+--mm-space-2:  0.5rem;   /* 8px - Base grid unit */
+--mm-space-4:  1rem;     /* 16px - Standard spacing */
+--mm-space-6:  1.5rem;   /* 24px - Large spacing */
+--mm-space-12: 3rem;     /* 48px - Section spacing */
+```
+
+**Usage**: Component padding uses `--mm-space-4` or `--mm-space-6`; gaps use `--mm-space-3` or `--mm-space-4`.
+
+---
+
+## Borders & Radius
+
+### Border Widths & Colors
+
+```css
+--mm-border-width-sm: 1px;  /* Default borders */
+--mm-border-color-default: var(--mm-gray-200);
+--mm-border-color-hover:   var(--mm-gray-300);
+--mm-border-color-focus:   var(--mm-color-primary-500);
+```
+
+### Border Radius (Flatter Design)
+
+```css
+--mm-radius-sm: 0.25rem;  /* 4px - Subtle rounding */
+--mm-radius-md: 0.5rem;   /* 8px - Standard cards (was 20px) */
+--mm-radius-lg: 0.75rem;  /* 12px - Large components (was 25px) */
+--mm-radius-xl: 1rem;     /* 16px - Modals, panels */
+```
+
+**Key Change**: Standard cards now use 8px radius instead of 20px for a flatter aesthetic.
+
+---
+
+## Shadows (Subtle Elevations)
+
+```css
+--mm-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);   /* Default cards */
+--mm-shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.08); /* Hover state */
+--mm-shadow-lg: 0 4px 12px -2px rgba(0, 0, 0, 0.08); /* Modals */
+```
+
+**Usage**: Resting cards use `--mm-shadow-sm`, hover uses `--mm-shadow-md`.
+
+**⚠️ Deprecated**: `--blur-*` tokens are deprecated. The design system has removed all `backdrop-filter: blur()` effects.
+
+---
+
+## Migration Guide
+
+### From Glass-Morphism to Flat Design
+
+**Previous (Glass-Morphism)**:
+```css
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+```
+
+**Now (Flat Design)**:
+```css
+.card {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md); /* 8px */
+  box-shadow: var(--mm-shadow-sm);
+}
+```
+
+### Key Changes
+
+1. **Backgrounds**: Solid white (`var(--mm-white)`) instead of transparent rgba()
+2. **No backdrop-filter**: All blur effects removed
+3. **Flatter radius**: 8px instead of 20px for standard cards
+4. **Lighter shadows**: Subtle depth instead of dramatic elevation
+5. **Neutral page backgrounds**: `var(--mm-gray-50)` instead of gradients
+
+---
+
+## Component Patterns
+
+### 1) Buttons (.btn)
+
+**Base Structure**:
+```css
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-6);
+  min-height: 40px;
+  border-radius: var(--mm-radius-md);
+  font-weight: var(--mm-font-weight-medium);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+```
+
+**Variants**: `.btn-primary`, `.btn-secondary`, `.btn-success`, `.btn-danger`
+**Sizes**: `.btn-small`, `.btn-large`
+
+**Primary Button Example**:
+```css
+.btn-primary {
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--mm-color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+```
 
 2) Forms (labels, inputs)
 - Labels: .form-label — medium weight, sm size

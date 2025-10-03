@@ -1,0 +1,252 @@
+/* What: KPI Card component styles with TailAdmin V2 design
+   Why: Consistent, professional metric display cards
+   
+   Design principles:
+   - Flat design with subtle shadows
+   - Clean borders and rounded corners
+   - Color-coded accents for visual hierarchy
+   - Responsive sizing (sm/md/lg)
+   - Accessible contrast ratios */
+
+/* Base Card Styles */
+.kpiCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+  padding: var(--mm-space-6);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpiCard:hover {
+  box-shadow: var(--mm-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* What: Color accent bar on left edge
+   Why: Visual category differentiation */
+.kpiCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--mm-color-primary-500);
+  transition: all 0.2s ease;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: var(--mm-space-4);
+}
+
+.title {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-600);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.subtitle {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  margin: var(--mm-space-1) 0 0 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+/* Content Section */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.valueSection {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mm-space-3);
+  flex-wrap: wrap;
+}
+
+/* What: Large, prominent value display
+   Why: Primary focus of the card */
+.value {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Trend Indicator */
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+  padding: var(--mm-space-1) var(--mm-space-2);
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  line-height: 1;
+}
+
+.trendIcon {
+  font-size: var(--mm-font-size-base);
+  line-height: 1;
+}
+
+.trendValue {
+  line-height: 1;
+}
+
+/* Sparkline Chart */
+.sparkline {
+  height: 60px;
+  width: 100%;
+  margin-top: var(--mm-space-2);
+}
+
+/* Size Variants */
+.sizeSmall {
+  padding: var(--mm-space-4);
+}
+
+.sizeSmall .value {
+  font-size: var(--mm-font-size-2xl);
+}
+
+.sizeSmall .title {
+  font-size: var(--mm-font-size-xs);
+}
+
+.sizeSmall .sparkline {
+  height: 40px;
+}
+
+.sizeMedium {
+  padding: var(--mm-space-6);
+}
+
+.sizeMedium .value {
+  font-size: var(--mm-font-size-3xl);
+}
+
+.sizeMedium .sparkline {
+  height: 60px;
+}
+
+.sizeLarge {
+  padding: var(--mm-space-8);
+}
+
+.sizeLarge .value {
+  font-size: var(--mm-font-size-4xl);
+}
+
+.sizeLarge .title {
+  font-size: var(--mm-font-size-base);
+}
+
+.sizeLarge .sparkline {
+  height: 80px;
+}
+
+/* Color Variants - Accent Bar */
+.colorPrimary::before {
+  background: var(--mm-color-primary-500);
+}
+
+.colorSecondary::before {
+  background: var(--mm-color-secondary-500);
+}
+
+.colorSuccess::before {
+  background: var(--mm-success);
+}
+
+.colorWarning::before {
+  background: var(--mm-warning);
+}
+
+.colorError::before {
+  background: var(--mm-error);
+}
+
+.colorInfo::before {
+  background: var(--mm-info);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .kpiCard {
+    padding: var(--mm-space-5);
+  }
+
+  .value {
+    font-size: var(--mm-font-size-2xl);
+  }
+
+  .sizeLarge .value {
+    font-size: var(--mm-font-size-3xl);
+  }
+
+  .sparkline {
+    height: 50px;
+  }
+
+  .sizeLarge .sparkline {
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpiCard {
+    padding: var(--mm-space-4);
+  }
+
+  .value {
+    font-size: var(--mm-font-size-xl);
+  }
+
+  .title {
+    font-size: var(--mm-font-size-xs);
+  }
+
+  .trend {
+    font-size: var(--mm-font-size-xs);
+    padding: var(--mm-space-1);
+  }
+
+  .sparkline {
+    height: 40px;
+  }
+}
+
+/* What: Focus and accessibility
+   Why: Keyboard navigation support */
+.kpiCard:focus-visible {
+  outline: 2px solid var(--mm-color-primary-500);
+  outline-offset: 2px;
+}
+
+/* What: Print styles
+   Why: Ensure cards print well */
+@media print {
+  .kpiCard {
+    box-shadow: none;
+    border: 1px solid var(--mm-gray-300);
+    page-break-inside: avoid;
+  }
+
+  .kpiCard:hover {
+    transform: none;
+  }
+}

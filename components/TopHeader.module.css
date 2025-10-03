@@ -1,0 +1,229 @@
+/* What: TopHeader component styles with flat design
+   Why: Clean, professional header without gradients or heavy shadows */
+
+.topHeader {
+  /* What: Fixed top header with flat design
+     Why: TailAdmin V2 aesthetic - white background, subtle border */
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: var(--mm-white);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  z-index: calc(var(--z-sticky) + 1);
+  display: flex;
+  align-items: center;
+}
+
+.headerContent {
+  /* What: Inner content container with padding
+     Why: Consistent spacing and flex layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 var(--mm-space-6);
+  gap: var(--mm-space-4);
+}
+
+/* ===== Left Section ===== */
+.headerLeft {
+  /* What: Left section for search or quick actions
+     Why: Flex grow to push right section to the right */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+}
+
+.welcomeText {
+  /* What: Welcome message text
+     Why: Friendly greeting for the user */
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-700);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* ===== Right Section ===== */
+.headerRight {
+  /* What: Right section with user info and actions
+     Why: Grouped user-related controls */
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+}
+
+.notificationsPlaceholder {
+  /* What: Notifications icon placeholder
+     Why: Future feature, currently just visual */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mm-radius-md);
+  background: transparent;
+  border: 1px solid var(--mm-border-color-default);
+  cursor: not-allowed;
+  opacity: 0.6;
+  transition: all var(--transition-base);
+}
+
+.notificationsPlaceholder:hover {
+  background: var(--mm-gray-50);
+}
+
+.notificationIcon {
+  font-size: var(--mm-font-size-lg);
+}
+
+/* ===== User Info ===== */
+.userInfo {
+  /* What: User information display
+     Why: Show avatar, name, and role */
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-border-color-default);
+}
+
+.userAvatar {
+  /* What: User avatar with initial
+     Why: Visual identifier for the user */
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mm-radius-full);
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  flex-shrink: 0;
+}
+
+.userDetails {
+  /* What: User name and role container
+     Why: Stacked layout for text info */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  /* What: User's full name
+     Why: Primary user identifier */
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  line-height: 1.2;
+}
+
+.userRole {
+  /* What: User's role/permission level
+     Why: Quick reference for access level */
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+/* ===== Logout Button ===== */
+.logoutButton {
+  /* What: Logout button with flat design
+     Why: Clear, accessible logout action */
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.logoutButton:hover {
+  background: var(--mm-error);
+  color: var(--mm-white);
+  border-color: var(--mm-error);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.logoutButton:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
+}
+
+.logoutButton:active {
+  transform: translateY(0);
+}
+
+.logoutIcon {
+  font-size: var(--mm-font-size-base);
+}
+
+.logoutText {
+  white-space: nowrap;
+}
+
+/* ===== Responsive Behavior ===== */
+
+/* What: Hide text labels on small screens
+   Why: Save space while maintaining functionality */
+@media (max-width: 640px) {
+  .welcomeText {
+    display: none;
+  }
+  
+  .userDetails {
+    display: none;
+  }
+  
+  .logoutText {
+    display: none;
+  }
+  
+  .logoutButton {
+    padding: var(--mm-space-2);
+    min-width: 40px;
+    justify-content: center;
+  }
+  
+  .headerContent {
+    padding: 0 var(--mm-space-4);
+  }
+}
+
+/* What: Add left margin for sidebar on desktop
+   Why: Account for fixed sidebar width */
+@media (min-width: 768px) {
+  .topHeader {
+    margin-left: 280px; /* Full sidebar width */
+  }
+}
+
+/* What: Adjust for collapsed sidebar on tablet
+   Why: Match collapsed sidebar width */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .topHeader {
+    margin-left: 80px; /* Collapsed sidebar width */
+  }
+}
+
+/* What: No left margin on mobile
+   Why: Sidebar is overlay, not shifting content */
+@media (max-width: 767px) {
+  .topHeader {
+    margin-left: 0;
+  }
+}

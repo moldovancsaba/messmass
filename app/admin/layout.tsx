@@ -1,6 +1,7 @@
 import React from 'react';
-import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import AdminLayout from '@/components/AdminLayout';
+import { getAdminUser } from '@/lib/auth';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -35,10 +36,17 @@ async function getAdminStyle() {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
+  /* What: Fetch admin user for TopHeader display
+     Why: Show current user name, email, and role in header */
+  const user = await getAdminUser();
+  
+  /* What: Fetch admin style for page background customization
+     Why: Maintain existing design manager functionality */
   const adminStyle = await getAdminStyle();
 
-  // Build CSS overrides for admin area if a style is set
+  /* What: Build CSS overrides for admin area if a style is set
+     Why: Allow design manager to customize admin appearance */
   const css = adminStyle ? `
     :root {
       --page-bg: linear-gradient(${adminStyle.backgroundGradient});
@@ -49,10 +57,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .admin-header { background: var(--header-bg) !important; }
   ` : '';
 
+  /* What: Render new AdminLayout with sidebar, header, and content
+     Why: Consistent TailAdmin V2 layout across all admin pages */
   return (
     <>
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-      {children}
+      <AdminLayout user={user ? {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      } : undefined}>
+        {children}
+      </AdminLayout>
     </>
   );
 }

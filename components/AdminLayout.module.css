@@ -1,0 +1,136 @@
+/* What: AdminLayout component styles
+   Why: Proper spacing and responsive layout for sidebar + content structure */
+
+.adminLayout {
+  /* What: Root layout container
+     Why: Full viewport height with proper overflow handling */
+  min-height: 100vh;
+  display: flex;
+  background: var(--mm-gray-50);
+}
+
+.mainWrapper {
+  /* What: Content wrapper that accounts for sidebar
+     Why: Flexbox layout for header, content, footer */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* What: Left margin accounts for fixed sidebar
+     Why: Content doesn't hide behind sidebar on desktop */
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+}
+
+.mainContent {
+  /* What: Main content area
+     Why: Grows to fill space, proper spacing */
+  flex: 1;
+  padding: var(--mm-space-8);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* What: Responsive max-widths for better readability
+   Why: Prevent content from becoming too wide on large screens */
+@media (min-width: 1920px) {
+  .mainContent {
+    max-width: 1800px;
+  }
+}
+
+.footer {
+  /* What: Footer at bottom of content
+     Why: Consistent footer across all admin pages */
+  border-top: 1px solid var(--mm-border-color-default);
+  background: var(--mm-white);
+  padding: var(--mm-space-6) var(--mm-space-8);
+  margin-top: auto;
+}
+
+.footerContent {
+  /* What: Footer content layout
+     Why: Flex layout for text and version */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: var(--mm-space-4);
+  flex-wrap: wrap;
+}
+
+.footerText {
+  /* What: Copyright text
+     Why: Subtle, small text */
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.footerVersion {
+  /* What: Version number in footer
+     Why: Quick reference with monospace font */
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  font-family: var(--font-mono);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* ===== Responsive Behavior ===== */
+
+/* What: Desktop with collapsed sidebar
+   Why: Adjust margin when sidebar is collapsed */
+@media (min-width: 1280px) {
+  .mainWrapper {
+    margin-left: 280px; /* Full sidebar width */
+  }
+  
+  /* Note: Collapsed state is handled by JavaScript adding class to sidebar */
+}
+
+/* What: Tablet behavior (768-1279px)
+   Why: Sidebar auto-collapses to 80px width */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .mainWrapper {
+    margin-left: 80px; /* Collapsed sidebar width */
+  }
+  
+  .mainContent {
+    padding: var(--mm-space-6);
+  }
+}
+
+/* What: Mobile behavior (<768px)
+   Why: No margin for overlay sidebar, adjust padding */
+@media (max-width: 767px) {
+  .mainWrapper {
+    margin-left: 0; /* Sidebar is overlay, not pushing content */
+  }
+  
+  .mainContent {
+    padding: var(--mm-space-4);
+    /* What: Account for mobile hamburger button
+       Why: Prevent content from hiding behind button */
+    padding-top: calc(var(--mm-space-16) + var(--mm-space-4));
+  }
+  
+  .footer {
+    padding: var(--mm-space-4);
+  }
+  
+  .footerContent {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--mm-space-2);
+  }
+}
+
+/* What: Small mobile (<480px)
+   Why: Even more compact spacing */
+@media (max-width: 479px) {
+  .mainContent {
+    padding: var(--mm-space-3);
+    padding-top: calc(var(--mm-space-16) + var(--mm-space-3));
+  }
+}

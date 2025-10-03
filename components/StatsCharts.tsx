@@ -2,6 +2,18 @@
 
 import React, { memo } from 'react';
 import { compareChartProps } from '../lib/performanceUtils';
+import { PieChart, VerticalBarChart, KPICard } from './charts';
+import type { PieChartData, VerticalBarChartData, KPICardProps } from './charts';
+
+/* What: Modernized chart components using Chart.js
+   Why: Replace legacy SVG charts with professional Chart.js components
+   
+   Migration strategy:
+   - Use new PieChart for all pie/donut charts
+   - Use new VerticalBarChart for horizontal bar charts
+   - Use new KPICard for large number displays
+   - Maintain backward compatibility with existing props
+   - Keep performance optimizations (memoization) */
 
 // Interface for project statistics - matches the structure used across the app
 interface ProjectStats {
@@ -51,101 +63,30 @@ interface ChartProps {
 
 /**
  * Gender Distribution Circle/Pie Chart
- * Renders a pie chart showing the distribution between female and male attendees
- * Uses SVG for precise control and MessMass color scheme
+ * Modernized with Chart.js donut chart
  * 
+ * WHAT: Displays gender distribution with interactive donut chart
+ * WHY: Chart.js provides better interactivity, export, and consistent styling
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const GenderCircleChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  const genderData = [
+  /* What: Prepare data for PieChart component
+     Why: Transform stats into PieChartData format with original colors */
+  const genderData: PieChartData[] = [
     { label: 'Female', value: stats.female, color: '#ff6b9d' },
     { label: 'Male', value: stats.male, color: '#4a90e2' }
   ];
   
-  const total = genderData.reduce((sum, item) => sum + item.value, 0);
-  if (total === 0) return <div className="no-data-message">No gender data available</div>;
-  
-  let currentAngle = 0;
-  const segments = genderData.filter(item => item.value > 0).map((item, index) => {
-    const percentage = (item.value / total) * 100;
-    const angle = (item.value / total) * 360;
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + angle;
-    currentAngle += angle;
-    
-    const radius = 80;
-    const centerX = 90;
-    const centerY = 90;
-    
-    // Calculate arc coordinates using trigonometry
-    const x1 = centerX + radius * Math.cos((startAngle - 90) * Math.PI / 180);
-    const y1 = centerY + radius * Math.sin((startAngle - 90) * Math.PI / 180);
-    const x2 = centerX + radius * Math.cos((endAngle - 90) * Math.PI / 180);
-    const y2 = centerY + radius * Math.sin((endAngle - 90) * Math.PI / 180);
-    
-    const largeArc = angle > 180 ? 1 : 0;
-    
-    // SVG path for the pie segment
-    const pathData = [
-      `M ${centerX} ${centerY}`,
-      `L ${x1} ${y1}`,
-      `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
-      'Z'
-    ].join(' ');
-    
-    return (
-      <g key={item.label}>
-        <path
-          d={pathData}
-          fill={item.color}
-          stroke="white"
-          strokeWidth="2"
-        >
-          <title>{`${item.label}: ${item.value} (${percentage.toFixed(1)}%)`}</title>
-        </path>
-      </g>
-    );
-  });
-  
-  const legend = genderData.filter(item => item.value > 0).map((item, index) => {
-    const percentage = ((item.value / total) * 100).toFixed(1);
-    return (
-      <div key={item.label} className="legend-item">
-        <div className="legend-color" style={{ backgroundColor: item.color }}></div>
-        <span>{item.label}: {item.value} ({percentage}%)</span>
-      </div>
-    );
-  });
-  
   return (
-    <>
-      <div className="pie-chart-container">
-        <svg width="180" height="180" className="pie-chart">
-          {segments}
-          <circle
-            cx="90"
-            cy="90"
-            r="35"
-            fill="white"
-            stroke="#e5e7eb"
-            strokeWidth="2"
-          />
-          <text
-            x="90"
-            y="98"
-            textAnchor="middle"
-            className="chart-emoji"
-            fontSize="36"
-            fill="#1a202c"
-          >
-            👥
-          </text>
-        </svg>
-      </div>
-      <div className="chart-legend">
-        {legend}
-      </div>
-    </>
+    <PieChart
+      title="Gender Distribution"
+      subtitle="👥 Fan demographics"
+      data={genderData}
+      filename={eventName ? `${eventName}-gender` : 'gender-distribution'}
+      cutout="50%"
+      legendPosition="bottom"
+      height={350}
+    />
   );
 };
 

@@ -10,6 +10,11 @@ export default function AdminDesignPage() {
   const [pageStyles, setPageStyles] = useState<PageStyle[]>([]);
   const [loading, setLoading] = useState(true);
   
+  /* What: Font selection state for Typography section
+     Why: Allow admin to switch between Inter, Roboto, and Poppins */
+  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins'>('inter');
+  const [fontLoading, setFontLoading] = useState(false);
+  
   // Global, Admin, Project, Hashtag forms
   const [styleForm, setStyleForm] = useState({
     name: 'New Style',
@@ -42,7 +47,54 @@ export default function AdminDesignPage() {
     loadGlobalStyle();
     loadAdminStyle();
     loadHashtagAssignments();
+    loadTypographySettings();
   }, []);
+  
+  /* What: Load current typography settings from database
+     Why: Display currently selected font on page load */
+  const loadTypographySettings = async () => {
+    try {
+      const response = await fetch('/api/admin/ui-settings');
+      const data = await response.json();
+      if (data.fontFamily) {
+        setSelectedFont(data.fontFamily);
+      }
+    } catch (error) {
+      console.error('Failed to load typography settings:', error);
+    }
+  };
+  
+  /* What: Save font selection to database and set cookie
+     Why: Persist font choice across sessions and apply immediately */
+  const saveFont = async (font: 'inter' | 'roboto' | 'poppins') => {
+    setFontLoading(true);
+    try {
+      const response = await fetch('/api/admin/ui-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fontFamily: font }),
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setSelectedFont(font);
+        
+        /* What: Apply font immediately without reload by updating HTML data attribute
+           Why: Better UX - instant visual feedback */
+        document.documentElement.setAttribute('data-font', font);
+        document.documentElement.style.fontFamily = `var(--font-${font})`;
+        
+        alert(`Font changed to ${font.charAt(0).toUpperCase() + font.slice(1)}! ✨`);
+      } else {
+        alert('Failed to save font: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Failed to save font:', error);
+      alert('Failed to save font');
+    } finally {
+      setFontLoading(false);
+    }
+  };
 
   const loadPageStyles = async () => {
     try {
@@ -278,6 +330,70 @@ export default function AdminDesignPage() {
 
       {/* Page content */}
       <div className="content-surface">
+            {/* What: Typography/Font Selection Section
+                Why: Allow admin to choose and preview Google Fonts system-wide */}
+            <div className="section-card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderLeft: '4px solid var(--mm-color-primary-600)' }}>
+              <h2 style={{ marginBottom: '1rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>🔤</span>
+                Typography & Fonts
+              </h2>
+              <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>
+                Select a Google Font for the entire application. Changes apply immediately and persist across sessions.
+              </p>
+              
+              {/* Font Selection Buttons */}
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                {(['inter', 'roboto', 'poppins'] as const).map((font) => (
+                  <button
+                    key={font}
+                    onClick={() => saveFont(font)}
+                    disabled={fontLoading}
+                    className="btn"
+                    style={{
+                      background: selectedFont === font ? 'var(--mm-color-primary-600)' : 'var(--mm-white)',
+                      color: selectedFont === font ? 'var(--mm-white)' : 'var(--mm-gray-700)',
+                      border: selectedFont === font ? 'none' : '2px solid var(--mm-border-color-default)',
+                      fontFamily: `var(--font-${font})`,
+                      minWidth: '120px',
+                      fontWeight: selectedFont === font ? 600 : 500,
+                      opacity: fontLoading ? 0.6 : 1,
+                      cursor: fontLoading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {font.charAt(0).toUpperCase() + font.slice(1)}
+                    {selectedFont === font && ' ✓'}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Font Preview */}
+              <div style={{ 
+                background: 'var(--mm-white)', 
+                borderRadius: 'var(--mm-radius-lg)', 
+                padding: '1.5rem',
+                border: '1px solid var(--mm-border-color-default)',
+                fontFamily: `var(--font-${selectedFont})`,
+              }}>
+                <h3 style={{ fontSize: 'var(--mm-font-size-3xl)', fontWeight: 'var(--mm-font-weight-bold)', marginBottom: '0.5rem', color: 'var(--mm-gray-900)' }}>
+                  The Quick Brown Fox
+                </h3>
+                <h4 style={{ fontSize: 'var(--mm-font-size-2xl)', fontWeight: 'var(--mm-font-weight-semibold)', marginBottom: '0.5rem', color: 'var(--mm-gray-800)' }}>
+                  Section Heading (24px)
+                </h4>
+                <p style={{ fontSize: 'var(--mm-font-size-base)', lineHeight: 'var(--mm-line-height-md)', marginBottom: '0.5rem', color: 'var(--mm-gray-600)' }}>
+                  This is body text at 16px. It demonstrates how paragraphs will appear throughout the application with normal line height and readable spacing.
+                </p>
+                <p style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-500)' }}>
+                  Small caption text (14px) - used for labels and secondary information.
+                </p>
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <span style={{ fontSize: 'var(--mm-font-size-xs)', color: 'var(--mm-gray-400)', fontWeight: 'var(--mm-font-weight-medium)' }}>UPPERCASE LABEL (12PX)</span>
+                  <span style={{ fontSize: 'var(--mm-font-size-4xl)', fontWeight: 'var(--mm-font-weight-bold)', color: 'var(--mm-color-primary-600)' }}>42</span>
+                  <span style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-500)' }}>← Large number display</span>
+                </div>
+              </div>
+            </div>
+            
             <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>Page Style Configuration</h2>
 
             {/* Global Default Style */}

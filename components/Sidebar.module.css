@@ -1,0 +1,379 @@
+/* What: Sidebar component styles with responsive behavior
+   Why: TailAdmin V2-inspired sidebar with flat design, no gradients or heavy shadows */
+
+/* ===== Mobile Toggle Button ===== */
+.mobileToggle {
+  /* What: Hamburger button for mobile
+     Why: Only visible on mobile, positioned in top-left corner */
+  position: fixed;
+  top: var(--mm-space-4);
+  left: var(--mm-space-4);
+  z-index: var(--z-fixed);
+  display: none; /* Hidden on desktop */
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2);
+  cursor: pointer;
+  box-shadow: var(--mm-shadow-md);
+  transition: all var(--transition-base);
+}
+
+.mobileToggle:hover {
+  box-shadow: var(--mm-shadow-lg);
+  transform: translateY(-1px);
+}
+
+.mobileToggle:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
+}
+
+/* What: Hamburger icon animation
+   Why: Classic three-line menu icon */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 24px;
+  height: 20px;
+}
+
+.hamburger span {
+  display: block;
+  height: 2px;
+  background: var(--mm-gray-700);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* ===== Mobile Scrim/Overlay ===== */
+.mobileScrim {
+  /* What: Dark overlay behind mobile drawer
+     Why: Focus attention on drawer, click to close */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-modal-backdrop) - 10);
+  display: none; /* Hidden on desktop */
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== Main Sidebar ===== */
+.sidebar {
+  /* What: Fixed sidebar with flat design
+     Why: TailAdmin V2 aesthetic - clean white background, subtle border */
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--mm-white);
+  border-right: 1px solid var(--mm-border-color-default);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-fixed);
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* What: Collapsed state for tablet/desktop
+   Why: Maximize content area, show only icons */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* ===== Sidebar Header ===== */
+.sidebarHeader {
+  /* What: Logo and collapse toggle container
+     Why: Branding and responsive control */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mm-space-6) var(--mm-space-4);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  min-height: 72px;
+}
+
+.logo {
+  /* What: Logo link with clean typography
+     Why: Flat design, no gradients */
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  text-decoration: none;
+  color: var(--mm-color-primary-600);
+  font-weight: var(--mm-font-weight-bold);
+  font-size: var(--mm-font-size-xl);
+  transition: color var(--transition-base);
+}
+
+.logo:hover {
+  color: var(--mm-color-primary-700);
+}
+
+.logoText {
+  white-space: nowrap;
+}
+
+.logoIcon {
+  /* What: Abbreviated logo for collapsed state
+     Why: MM instead of full MessMass */
+  font-size: var(--mm-font-size-2xl);
+}
+
+.collapseToggle {
+  /* What: Collapse/expand button
+     Why: Toggle sidebar width on desktop/tablet */
+  background: transparent;
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-sm);
+  padding: var(--mm-space-1) var(--mm-space-2);
+  color: var(--mm-gray-600);
+  cursor: pointer;
+  font-size: var(--mm-font-size-lg);
+  line-height: 1;
+  transition: all var(--transition-base);
+}
+
+.collapseToggle:hover {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+  border-color: var(--mm-border-color-hover);
+}
+
+.collapseToggle:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
+}
+
+/* ===== Navigation ===== */
+.sidebarNav {
+  /* What: Scrollable navigation container
+     Why: Handle many nav items without overflow */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--mm-space-4) 0;
+}
+
+/* What: Hide scrollbar for cleaner look
+   Why: Still scrollable, just visually cleaner */
+.sidebarNav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebarNav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebarNav::-webkit-scrollbar-thumb {
+  background: var(--mm-gray-300);
+  border-radius: 2px;
+}
+
+.sidebarNav::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-gray-400);
+}
+
+.navSection {
+  /* What: Navigation section grouping
+     Why: Logical organization of nav items */
+  margin-bottom: var(--mm-space-6);
+}
+
+.sectionTitle {
+  /* What: Section heading
+     Why: Uppercase label for section groups */
+  padding: 0 var(--mm-space-4);
+  margin-bottom: var(--mm-space-2);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--mm-gray-500);
+}
+
+.navList {
+  /* What: Nav items list
+     Why: Reset list styles */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  /* What: Navigation link with flat design
+     Why: Clean, professional appearance without gradients */
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-3) var(--mm-space-4);
+  margin: 0 var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  text-decoration: none;
+  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.navLink:hover {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+}
+
+.navLink:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: -2px;
+}
+
+/* What: Active navigation item styling
+   Why: Clear indication of current page */
+.navLink.active {
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.navIcon {
+  /* What: Icon/emoji container
+     Why: Consistent sizing and spacing */
+  font-size: var(--mm-font-size-lg);
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navLabel {
+  /* What: Nav item label text
+     Why: Hidden when collapsed */
+  flex: 1;
+  white-space: nowrap;
+}
+
+.activeIndicator {
+  /* What: Active page indicator dot
+     Why: Visual accent for current page */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mm-color-primary-600);
+  flex-shrink: 0;
+}
+
+/* What: Collapsed sidebar nav link centering
+   Why: Icons centered when labels hidden */
+.collapsed .navLink {
+  justify-content: center;
+  padding: var(--mm-space-3);
+}
+
+.collapsed .navSection {
+  margin-bottom: var(--mm-space-4);
+}
+
+/* ===== Sidebar Footer ===== */
+.sidebarFooter {
+  /* What: Footer with version info
+     Why: Quick reference without taking up main content area */
+  border-top: 1px solid var(--mm-border-color-default);
+  padding: var(--mm-space-4);
+}
+
+.versionInfo {
+  /* What: Version number display
+     Why: Small, subtle info display */
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.versionLabel {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.versionNumber {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  font-weight: var(--mm-font-weight-semibold);
+  font-family: var(--font-mono);
+}
+
+/* ===== Responsive Behavior ===== */
+
+/* What: Tablet behavior (768-1279px) - auto-collapse sidebar
+   Why: Save horizontal space on medium screens */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .sidebar {
+    width: 80px;
+  }
+  
+  .sidebar .sectionTitle,
+  .sidebar .navLabel,
+  .sidebar .activeIndicator,
+  .sidebar .logoText,
+  .sidebar .versionInfo {
+    display: none;
+  }
+  
+  .sidebar .navLink {
+    justify-content: center;
+    padding: var(--mm-space-3);
+  }
+  
+  .sidebar .logoIcon {
+    display: block;
+  }
+}
+
+/* What: Mobile behavior (<768px) - drawer overlay
+   Why: Maximize screen space on small devices */
+@media (max-width: 767px) {
+  .mobileToggle {
+    display: block;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: none;
+  }
+  
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+    box-shadow: var(--mm-shadow-2xl);
+  }
+  
+  .mobileScrim {
+    display: block;
+  }
+  
+  .collapseToggle {
+    display: none; /* No collapse toggle on mobile */
+  }
+}
+
+/* What: Desktop behavior (≥1280px) - full sidebar
+   Why: Plenty of horizontal space for full navigation */
+@media (min-width: 1280px) {
+  .sidebar {
+    width: 280px;
+  }
+  
+  .sidebar.collapsed {
+    width: 80px;
+  }
+}

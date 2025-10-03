@@ -1,0 +1,166 @@
+/* What: ChartBase component styles
+   Why: Consistent chart container styling with flat TailAdmin V2 design */
+
+.chartBase {
+  /* What: Chart container with flat card design
+     Why: Clean, professional appearance without glass effects */
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  box-shadow: var(--mm-shadow-sm);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.chartBase:hover {
+  /* What: Subtle hover elevation
+     Why: Interactive feedback without being dramatic */
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* ===== Header Section ===== */
+.chartHeader {
+  /* What: Header with title and actions
+     Why: Flex layout for title on left, buttons on right */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--mm-space-4);
+  padding-bottom: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-border-color-default);
+}
+
+.chartTitleSection {
+  /* What: Title and subtitle container
+     Why: Stacked layout for text */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.chartTitle {
+  /* What: Chart title
+     Why: Clear, prominent heading */
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.chartSubtitle {
+  /* What: Optional subtitle
+     Why: Additional context or date range */
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+/* ===== Actions Section ===== */
+.chartActions {
+  /* What: Export buttons container
+     Why: Horizontal button group */
+  display: flex;
+  gap: var(--mm-space-2);
+  flex-shrink: 0;
+}
+
+.actionButton {
+  /* What: Export action button
+     Why: Clean icon button with flat design */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-sm);
+  cursor: pointer;
+  font-size: var(--mm-font-size-base);
+  transition: all var(--transition-base);
+}
+
+.actionButton:hover {
+  background: var(--mm-color-primary-50);
+  border-color: var(--mm-color-primary-300);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
+}
+
+/* ===== Content Section ===== */
+.chartContent {
+  /* What: Chart rendering area
+     Why: Flex grow to fill available space */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  position: relative;
+}
+
+/* What: Ensure canvas fills container
+   Why: Responsive chart sizing */
+.chartContent canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* ===== Responsive Behavior ===== */
+
+/* What: Tablet adjustments
+   Why: Reduce padding on medium screens */
+@media (max-width: 1024px) {
+  .chartBase {
+    padding: var(--mm-space-5);
+  }
+  
+  .chartContent {
+    min-height: 250px;
+  }
+}
+
+/* What: Mobile adjustments
+   Why: Compact layout for small screens */
+@media (max-width: 640px) {
+  .chartBase {
+    padding: var(--mm-space-4);
+  }
+  
+  .chartHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .chartActions {
+    justify-content: flex-end;
+  }
+  
+  .chartTitle {
+    font-size: var(--mm-font-size-base);
+  }
+  
+  .chartSubtitle {
+    font-size: var(--mm-font-size-xs);
+  }
+  
+  .chartContent {
+    min-height: 200px;
+  }
+}

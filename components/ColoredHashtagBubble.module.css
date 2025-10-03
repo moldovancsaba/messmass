@@ -1,0 +1,167 @@
+/* What: Modern hashtag bubble styling with TailAdmin V2 design
+   Why: Clean, professional pill design for hashtags
+   
+   Design principles:
+   - Clean rounded pills with proper spacing
+   - Hover and focus states for interactive mode
+   - Remove button with smooth interaction
+   - Responsive sizing (normal and small variants)
+   - High contrast for accessibility */
+
+.hashtag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+  padding: var(--mm-space-1) var(--mm-space-3);
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  line-height: var(--mm-line-height-sm);
+  color: white;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* What: Small size variant
+   Why: Compact display for dense layouts */
+.hashtagSmall {
+  padding: 2px var(--mm-space-2);
+  font-size: var(--mm-font-size-xs);
+  gap: 2px;
+}
+
+/* What: Interactive state
+   Why: Visual feedback for clickable hashtags */
+.hashtagInteractive {
+  cursor: pointer;
+}
+
+.hashtagInteractive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.hashtagInteractive:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* What: Removable state
+   Why: Extra padding for remove button */
+.hashtagRemovable {
+  padding-right: var(--mm-space-2);
+}
+
+.hashtagRemovable.hashtagSmall {
+  padding-right: var(--mm-space-1);
+}
+
+/* What: Remove button styling
+   Why: Clear, accessible remove action */
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  border-radius: var(--mm-radius-full);
+  color: white;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  font-weight: var(--mm-font-weight-bold);
+  line-height: 1;
+  padding: 0;
+  margin-left: var(--mm-space-1);
+  transition: all 0.15s ease;
+}
+
+.removeButton:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.removeButton:active {
+  transform: scale(0.95);
+}
+
+.removeButton:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 1px;
+}
+
+/* What: Small remove button
+   Why: Proportional sizing for small hashtags */
+.removeButtonSmall {
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+}
+
+/* What: Focus state for accessibility
+   Why: Keyboard navigation support */
+.hashtag:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* What: Disabled state
+   Why: Visual feedback for non-interactive hashtags */
+.hashtagDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hashtagDisabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* What: Animation for adding/removing
+   Why: Smooth transitions when hashtags change */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hashtagAnimated {
+  animation: fadeIn 0.2s ease;
+}
+
+/* What: Responsive adjustments
+   Why: Better touch targets on mobile */
+@media (max-width: 768px) {
+  .hashtag {
+    padding: var(--mm-space-2) var(--mm-space-3);
+    font-size: var(--mm-font-size-sm);
+  }
+
+  .removeButton {
+    width: 18px;
+    height: 18px;
+    font-size: 13px;
+  }
+}
+
+/* What: Print styles
+   Why: Clean hashtag display when printed */
+@media print {
+  .hashtag {
+    border: 1px solid currentColor;
+    box-shadow: none;
+  }
+
+  .removeButton {
+    display: none;
+  }
+}

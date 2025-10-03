@@ -1,164 +1,300 @@
 /* MessMass Design System - Theme Variables & Design Tokens */
-/* This file contains all design system variables used across the application */
+/* TailAdmin V2-Inspired Modern Flat Design System */
+/* What: Complete design token system for 2025-2026 aesthetics */
+/* Why: Replace glass-morphism with clean, professional flat design comparable to TailAdmin */
 
 :root {
   /* ========================================
-     COLOR SYSTEM
+     COLOR SYSTEM - TailAdmin V2 Inspired
   ======================================== */
   
-  /* Primary Brand Colors */
-  --color-primary-50: #f0f4ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #8b8cf6;
-  --color-primary-500: #667eea;
-  --color-primary-600: #5b21b6;
-  --color-primary-700: #4c1d95;
-  --color-primary-800: #3c1361;
-  --color-primary-900: #2e1065;
+  /* What: Professional blue primary palette for modern admin dashboards
+     Why: TailAdmin uses blue as primary; provides trust, professionalism, and accessibility */
+  --mm-color-primary-50: #eff6ff;
+  --mm-color-primary-100: #dbeafe;
+  --mm-color-primary-200: #bfdbfe;
+  --mm-color-primary-300: #93c5fd;
+  --mm-color-primary-400: #60a5fa;
+  --mm-color-primary-500: #3b82f6;  /* Base primary - TailAdmin standard */
+  --mm-color-primary-600: #2563eb;
+  --mm-color-primary-700: #1d4ed8;
+  --mm-color-primary-800: #1e40af;
+  --mm-color-primary-900: #1e3a8a;
   
-  /* Secondary Colors */
-  --color-secondary-50: #fdf2f8;
-  --color-secondary-100: #fce7f3;
-  --color-secondary-200: #fbcfe8;
-  --color-secondary-300: #f9a8d4;
-  --color-secondary-400: #f472b6;
-  --color-secondary-500: #f093fb;
-  --color-secondary-600: #ec4899;
-  --color-secondary-700: #be185d;
-  --color-secondary-800: #9d174d;
-  --color-secondary-900: #831843;
+  /* What: Green accent for success states and CTAs
+     Why: Modern dashboards use green for positive actions and growth metrics */
+  --mm-color-secondary-50: #f0fdf4;
+  --mm-color-secondary-100: #dcfce7;
+  --mm-color-secondary-200: #bbf7d0;
+  --mm-color-secondary-300: #86efac;
+  --mm-color-secondary-400: #4ade80;
+  --mm-color-secondary-500: #10b981;  /* Base secondary */
+  --mm-color-secondary-600: #059669;
+  --mm-color-secondary-700: #047857;
+  --mm-color-secondary-800: #065f46;
+  --mm-color-secondary-900: #064e3b;
 
-  /* Neutral Colors */
-  --color-white: #ffffff;
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
+  /* What: Professional grayscale for text, borders, and backgrounds
+     Why: Clean neutrals ensure readability and provide modern minimalist aesthetic */
+  --mm-gray-50: #f9fafb;
+  --mm-gray-100: #f3f4f6;
+  --mm-gray-200: #e5e7eb;
+  --mm-gray-300: #d1d5db;
+  --mm-gray-400: #9ca3af;
+  --mm-gray-500: #6b7280;
+  --mm-gray-600: #4b5563;
+  --mm-gray-700: #374151;
+  --mm-gray-800: #1f2937;
+  --mm-gray-900: #111827;
+  --mm-white: #ffffff;
+  --mm-black: #000000;
   
-  /* Semantic Colors */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
+  /* What: Semantic state colors for feedback and status
+     Why: Consistent color language for success/warning/error improves UX */
+  --mm-success: #10b981;
+  --mm-success-light: #d1fae5;
+  --mm-warning: #f59e0b;
+  --mm-warning-light: #fef3c7;
+  --mm-error: #ef4444;
+  --mm-error-light: #fee2e2;
+  --mm-info: #3b82f6;
+  --mm-info-light: #dbeafe;
   
-  /* Chart Colors */
-  --color-chart-blue: #3b82f6;
-  --color-chart-green: #10b981;
-  --color-chart-yellow: #f59e0b;
-  --color-chart-purple: #8b5cf6;
-  --color-chart-red: #ef4444;
-  --color-chart-pink: #ff6b9d;
-  --color-chart-cyan: #06b6d4;
-  --color-chart-orange: #f97316;
+  /* What: Chart color palette for data visualization
+     Why: Distinct, accessible colors for charts; maintains consistency with design system */
+  --mm-chart-blue: #3b82f6;
+  --mm-chart-green: #10b981;
+  --mm-chart-yellow: #f59e0b;
+  --mm-chart-purple: #8b5cf6;
+  --mm-chart-red: #ef4444;
+  --mm-chart-pink: #ec4899;
+  --mm-chart-cyan: #06b6d4;
+  --mm-chart-orange: #f97316;
+  --mm-chart-indigo: #6366f1;
+  --mm-chart-teal: #14b8a6;
 
   /* ========================================
-     GRADIENTS
+     LEGACY GRADIENTS (Deprecated for TailAdmin V2)
   ======================================== */
-  
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  /* What: Legacy gradient tokens maintained for backward compatibility during migration
+     Why: Prevents breaking changes; will be phased out as components are refactored */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-info: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  
+  /* Backwards compatibility aliases */
+  --color-primary-50: var(--mm-color-primary-50);
+  --color-primary-100: var(--mm-color-primary-100);
+  --color-primary-200: var(--mm-color-primary-200);
+  --color-primary-300: var(--mm-color-primary-300);
+  --color-primary-400: var(--mm-color-primary-400);
+  --color-primary-500: var(--mm-color-primary-500);
+  --color-primary-600: var(--mm-color-primary-600);
+  --color-primary-700: var(--mm-color-primary-700);
+  --color-primary-800: var(--mm-color-primary-800);
+  --color-primary-900: var(--mm-color-primary-900);
+  --color-gray-50: var(--mm-gray-50);
+  --color-gray-100: var(--mm-gray-100);
+  --color-gray-200: var(--mm-gray-200);
+  --color-gray-300: var(--mm-gray-300);
+  --color-gray-400: var(--mm-gray-400);
+  --color-gray-500: var(--mm-gray-500);
+  --color-gray-600: var(--mm-gray-600);
+  --color-gray-700: var(--mm-gray-700);
+  --color-gray-800: var(--mm-gray-800);
+  --color-gray-900: var(--mm-gray-900);
+  --color-white: var(--mm-white);
+  --color-success: var(--mm-success);
+  --color-warning: var(--mm-warning);
+  --color-error: var(--mm-error);
+  --color-info: var(--mm-info);
 
   /* ========================================
-     TYPOGRAPHY
+     TYPOGRAPHY - Modern Scale
   ======================================== */
   
-  /* Font Families */
+  /* What: System font stack for best performance and native feel
+     Why: Native fonts load instantly and feel familiar to users on each platform */
   --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
   
-  /* Font Sizes */
-  --text-xs: 0.75rem;      /* 12px */
-  --text-sm: 0.875rem;     /* 14px */
-  --text-base: 1rem;       /* 16px */
-  --text-lg: 1.125rem;     /* 18px */
-  --text-xl: 1.25rem;      /* 20px */
-  --text-2xl: 1.5rem;      /* 24px */
-  --text-3xl: 1.875rem;    /* 30px */
-  --text-4xl: 2.25rem;     /* 36px */
-  --text-5xl: 3rem;        /* 48px */
+  /* What: Google Fonts loaded via next/font with CSS variables
+     Why: Allow dynamic font switching for admin customization */
+  --mm-font-family-inter: var(--font-inter, var(--font-primary));
+  --mm-font-family-roboto: var(--font-roboto, var(--font-primary));
+  --mm-font-family-poppins: var(--font-poppins, var(--font-primary));
+  --mm-font-family-sans: var(--font-inter, var(--font-primary));  /* Default active font */
   
-  /* Font Weights */
+  /* What: Modern type scale for 2025-2026 design
+     Why: Clear hierarchy from tiny UI text to large display headings */
+  --mm-font-size-xs: 0.75rem;      /* 12px - Tiny labels, captions */
+  --mm-font-size-sm: 0.875rem;     /* 14px - Small UI text */
+  --mm-font-size-base: 1rem;       /* 16px - Body text */
+  --mm-font-size-lg: 1.125rem;     /* 18px - Large body */
+  --mm-font-size-xl: 1.25rem;      /* 20px - Small headings */
+  --mm-font-size-2xl: 1.5rem;      /* 24px - Section headings */
+  --mm-font-size-3xl: 1.875rem;    /* 30px - Page headings */
+  --mm-font-size-4xl: 2.25rem;     /* 36px - Large headings */
+  
+  /* Legacy aliases for backward compatibility */
+  --text-xs: var(--mm-font-size-xs);
+  --text-sm: var(--mm-font-size-sm);
+  --text-base: var(--mm-font-size-base);
+  --text-lg: var(--mm-font-size-lg);
+  --text-xl: var(--mm-font-size-xl);
+  --text-2xl: var(--mm-font-size-2xl);
+  --text-3xl: var(--mm-font-size-3xl);
+  --text-4xl: var(--mm-font-size-4xl);
+  --text-5xl: 3rem;
+  
+  /* What: Modern font weights for precise typography control
+     Why: TailAdmin uses 400-700 range for clean, professional text */
+  --mm-font-weight-normal: 400;
+  --mm-font-weight-medium: 500;
+  --mm-font-weight-semibold: 600;
+  --mm-font-weight-bold: 700;
+  
+  /* Legacy aliases */
   --font-light: 300;
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
+  --font-normal: var(--mm-font-weight-normal);
+  --font-medium: var(--mm-font-weight-medium);
+  --font-semibold: var(--mm-font-weight-semibold);
+  --font-bold: var(--mm-font-weight-bold);
   
-  /* Line Heights */
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.75;
+  /* What: Line height scale for readability
+     Why: Tighter for headings, normal for body, relaxed for long-form */
+  --mm-line-height-sm: 1.25;
+  --mm-line-height-md: 1.5;
+  --mm-line-height-lg: 1.75;
+  
+  /* Legacy aliases */
+  --leading-tight: var(--mm-line-height-sm);
+  --leading-normal: var(--mm-line-height-md);
+  --leading-relaxed: var(--mm-line-height-lg);
+  
+  /* What: Letter spacing for refined typography
+     Why: Tight for headings, normal for body, wide for small caps/labels */
+  --mm-letter-spacing-tight: -0.025em;
+  --mm-letter-spacing-normal: 0;
+  --mm-letter-spacing-wide: 0.05em;
 
   /* ========================================
-     SPACING SYSTEM
+     SPACING - Modern 8px Grid System
   ======================================== */
   
-  /* Based on 4px grid system */
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
-  --space-20: 5rem;     /* 80px */
-  --space-24: 6rem;     /* 96px */
+  /* What: Modern spacing scale based on 4px/8px grid
+     Why: Consistent rhythm, aligns with TailAdmin spacing philosophy */
+  --mm-space-0: 0;
+  --mm-space-1: 0.25rem;   /* 4px - Tight spacing */
+  --mm-space-2: 0.5rem;    /* 8px - Base grid unit */
+  --mm-space-3: 0.75rem;   /* 12px - Compact padding */
+  --mm-space-4: 1rem;      /* 16px - Standard spacing */
+  --mm-space-5: 1.25rem;   /* 20px - Medium spacing */
+  --mm-space-6: 1.5rem;    /* 24px - Large spacing */
+  --mm-space-8: 2rem;      /* 32px - XL spacing */
+  --mm-space-10: 2.5rem;   /* 40px - 2XL spacing */
+  --mm-space-12: 3rem;     /* 48px - 3XL spacing */
+  --mm-space-16: 4rem;     /* 64px - Page sections */
+  --mm-space-20: 5rem;     /* 80px - Large sections */
+  --mm-space-24: 6rem;     /* 96px - Hero sections */
+  
+  /* Legacy aliases for backward compatibility */
+  --space-1: var(--mm-space-1);
+  --space-2: var(--mm-space-2);
+  --space-3: var(--mm-space-3);
+  --space-4: var(--mm-space-4);
+  --space-5: var(--mm-space-5);
+  --space-6: var(--mm-space-6);
+  --space-8: var(--mm-space-8);
+  --space-10: var(--mm-space-10);
+  --space-12: var(--mm-space-12);
+  --space-16: var(--mm-space-16);
+  --space-20: var(--mm-space-20);
+  --space-24: var(--mm-space-24);
 
   /* ========================================
-     BORDER RADIUS
+     BORDERS & RADIUS - Flat Design
   ======================================== */
   
-  --radius-none: 0;
-  --radius-sm: 0.125rem;   /* 2px */
-  --radius-base: 0.25rem;  /* 4px */
-  --radius-md: 0.375rem;   /* 6px */
-  --radius-lg: 0.5rem;     /* 8px */
-  --radius-xl: 0.75rem;    /* 12px */
-  --radius-2xl: 1rem;      /* 16px */
-  --radius-3xl: 1.5rem;    /* 24px */
-  --radius-full: 9999px;
+  /* What: Modern border width scale
+     Why: Clear visual hierarchy with subtle borders */
+  --mm-border-width-none: 0;
+  --mm-border-width-sm: 1px;     /* Default borders */
+  --mm-border-width-md: 2px;     /* Emphasis */
+  --mm-border-width-lg: 3px;     /* Strong emphasis */
   
-  /* MessMass Specific Radii */
-  --border-radius: 20px;     /* Main card radius */
-  --border-radius-lg: 25px;  /* Large card radius */
+  /* What: Border styles for different contexts
+     Why: Consistent visual language across UI */
+  --mm-border-style-solid: solid;
+  --mm-border-style-dashed: dashed;
+  
+  /* What: Border colors using new gray scale
+     Why: Semantic border colors for states */
+  --mm-border-color-default: var(--mm-gray-200);
+  --mm-border-color-hover: var(--mm-gray-300);
+  --mm-border-color-focus: var(--mm-color-primary-500);
+  --mm-border-color-error: var(--mm-error);
+  
+  /* What: Modern radius scale - flatter than previous design
+     Why: TailAdmin uses subtle rounded corners, not heavy curves */
+  --mm-radius-none: 0;
+  --mm-radius-sm: 0.25rem;       /* 4px - Subtle rounding */
+  --mm-radius-md: 0.5rem;        /* 8px - Standard cards */
+  --mm-radius-lg: 0.75rem;       /* 12px - Large components */
+  --mm-radius-xl: 1rem;          /* 16px - Modal, panels */
+  --mm-radius-2xl: 1.5rem;       /* 24px - Special components */
+  --mm-radius-full: 9999px;      /* Pills, avatars */
+  
+  /* Legacy aliases - now point to flatter radii */
+  --radius-none: var(--mm-radius-none);
+  --radius-sm: 0.125rem;         /* Keep existing 2px */
+  --radius-base: var(--mm-radius-sm);
+  --radius-md: 0.375rem;         /* Keep existing 6px */
+  --radius-lg: var(--mm-radius-md);
+  --radius-xl: var(--mm-radius-lg);
+  --radius-2xl: var(--mm-radius-xl);
+  --radius-3xl: var(--mm-radius-2xl);
+  --radius-full: var(--mm-radius-full);
+  
+  /* MessMass Specific Radii - significantly flatter now */
+  --border-radius: var(--mm-radius-md);      /* Was 20px, now 8px */
+  --border-radius-lg: var(--mm-radius-lg);   /* Was 25px, now 12px */
 
   /* ========================================
-     SHADOWS & EFFECTS
+     SHADOWS & EFFECTS - Subtle Elevations
   ======================================== */
   
-  /* Box Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  /* What: Modern shadow scale for flat design
+     Why: TailAdmin uses lighter shadows for subtle depth, not dramatic elevation */
+  --mm-shadow-none: none;
+  --mm-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --mm-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --mm-shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.08), 0 1px 3px -1px rgba(0, 0, 0, 0.03);
+  --mm-shadow-lg: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
+  --mm-shadow-xl: 0 8px 24px -4px rgba(0, 0, 0, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+  --mm-shadow-2xl: 0 16px 48px -8px rgba(0, 0, 0, 0.12);
   
-  /* MessMass Custom Shadows */
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.15);
+  /* Legacy aliases - now using lighter shadows */
+  --shadow-sm: var(--mm-shadow-sm);
+  --shadow-base: var(--mm-shadow-md);
+  --shadow-md: var(--mm-shadow-md);
+  --shadow-lg: var(--mm-shadow-lg);
+  --shadow-xl: var(--mm-shadow-xl);
+  --shadow-2xl: var(--mm-shadow-2xl);
   
-  /* Blur Effects */
-  --blur-sm: 4px;
-  --blur-base: 8px;
-  --blur-md: 12px;
-  --blur-lg: 16px;
-  --blur-xl: 24px;
+  /* MessMass Custom Shadows - updated to be lighter */
+  --shadow: var(--mm-shadow-md);      /* Was dramatic 0 8px 32px, now subtle */
+  
+  /* What: Blur effects - DEPRECATED for flat design
+     Why: Removing backdrop-filter blur from design system (glass-morphism removal) */
+  --blur-sm: 4px;    /* DEPRECATED - for glass-morphism only */
+  --blur-base: 8px;  /* DEPRECATED - for glass-morphism only */
+  --blur-md: 12px;   /* DEPRECATED - for glass-morphism only */
+  --blur-lg: 16px;   /* DEPRECATED - for glass-morphism only */
+  --blur-xl: 24px;   /* DEPRECATED - for glass-morphism only */
 
   /* ========================================
      TRANSITIONS & ANIMATIONS

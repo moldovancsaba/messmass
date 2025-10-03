@@ -3,6 +3,16 @@
 import { useMemo, memo } from 'react';
 import useHashtagColorResolver from '../hooks/useHashtagColorResolver';
 import { compareHashtagBubbleProps } from '../lib/performanceUtils';
+import styles from './ColoredHashtagBubble.module.css';
+
+/* What: Modernized hashtag bubble component with TailAdmin V2 styling
+   Why: Professional pill design with proper interaction states
+   
+   Changes:
+   - CSS Modules for better styling encapsulation
+   - Improved accessibility with proper focus states
+   - Smooth animations and transitions
+   - Better touch targets for mobile */
 
 interface ColoredHashtagBubbleProps {
   hashtag: string;
@@ -76,7 +86,15 @@ function ColoredHashtagBubbleComponent({
     }
     return hStr;
   }, [showCategoryPrefix, hashtagCategory, hStr]);
-  const bubbleClasses = `hashtag ${small ? 'hashtag-small' : ''} ${interactive ? 'hashtag-interactive' : ''} ${removable ? 'hashtag-removable' : ''} ${className}`.trim();
+  /* What: Build CSS Module classes dynamically
+     Why: Combine base styles with variant modifiers */
+  const bubbleClasses = [
+    styles.hashtag,
+    small && styles.hashtagSmall,
+    interactive && styles.hashtagInteractive,
+    removable && styles.hashtagRemovable,
+    className
+  ].filter(Boolean).join(' ');
 
   // Handle empty hashtag gracefully
   if (!hStr || !hStr.trim()) {
@@ -132,23 +150,9 @@ function ColoredHashtagBubbleComponent({
       {removable && (
         <button
           onClick={handleRemove}
-          style={{
-            background: 'rgba(255, 255, 255, 0.3)',
-            border: 'none',
-            borderRadius: '50%',
-            color: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: small ? '14px' : '16px',
-            height: small ? '14px' : '16px',
-            fontSize: small ? '8px' : '10px',
-            marginLeft: '0.25rem',
-            padding: '0',
-            lineHeight: '1'
-          }}
+          className={`${styles.removeButton} ${small ? styles.removeButtonSmall : ''}`}
           title="Remove hashtag"
+          aria-label="Remove hashtag"
         >
           ×
         </button>

@@ -620,3 +620,66 @@ The user identified several critical enhancements needed for the hashtag system:
 
 ---
 *This conversation record serves as the definitive implementation guide for Version 2.2.0 hashtag categories system.*
+
+---
+
+## 2025-10-02T13:26:46.000Z — Plan & Delivery Log: v5.21.0 — Complete Design System Overhaul: TailAdmin V2 Integration
+
+**What**: Major design overhaul to transform MessMass from glass-morphism aesthetic to TailAdmin V2-inspired modern admin dashboard with sidebar navigation, enhanced charts, Google Fonts, and 2025-2026 professional styling.
+
+**Why**: Current design feels dated and needs modernization. User requested "complete plastic surgery" to achieve:
+- 2025-2026 contemporary aesthetics
+- Beautiful, exportable charts (vertical bars, pie/donut, KPI cards)
+- Centralized admin UI with better navigation
+- Better typography with Google Fonts customization
+- Professional admin dashboard comparable to industry standards (TailAdmin)
+
+**User Requirements**:
+1. **Design Direction**: TailAdmin V2 as reference; move from glass-morphism to flat/clean modern design
+2. **Admin UI**: Sidebar navigation replacing card-based dashboard
+3. **Charts**: 3 types (vertical bars, pie, KPI) - "good enough" quality, static with PNG/PDF export capability
+4. **Typography**: Google Fonts (Inter suggested) with per-style customization in Admin → Design
+5. **Scope**: Complete redesign touching ALL pages and components; UI patterns reconsidered
+6. **Chart Library**: Must support PNG export; considered Recharts, Chart.js, Tremor — recommended Chart.js + react-chartjs-2 for canvas-based export reliability
+
+**Implementation Plan**: 20-phase execution across 9 days (2025-10-02 → 2025-10-11)
+- Phase 0: Pre-flight compliance, versioning, audit, tracking setup
+- Phase 1-1.1: Design system foundation + Google Fonts integration
+- Phase 2: Sidebar layout + top header + responsive shell
+- Phase 3-3.5: Chart library evaluation, infrastructure, and 3 chart types
+- Phase 4-4.1: Admin pages refactor + component modernization
+- Phase 5-5.1: Public pages styling + responsive/accessibility QA
+- Phase 6: Versioning automation scripts
+- Documentation, stability gate, compatibility safeguards, risk management
+
+**Version Strategy**:
+- Starting version: 5.20.0
+- Development cycles: 5.20.1 (PATCH increments during dev per protocol)
+- Release version: 5.21.0 (MINOR increment for major UI changes)
+
+**Key Technical Decisions**:
+- Chart library: Chart.js + react-chartjs-2 (canvas-based for reliable export)
+- PDF export: html2canvas + jsPDF for full stats pages
+- Fonts: next/font with Inter/Roboto/Poppins options
+- Admin settings: New API endpoint + MongoDB settings collection for persistence
+- Layout: Sidebar (desktop full, tablet mini, mobile overlay drawer)
+- No breaking changes to URLs, APIs, or data structures
+- No breadcrumbs (prohibited by policy)
+- No tests (MVP factory approach)
+
+**Deliverables**:
+- Updated design system (theme.css, globals.css, tokens)
+- Sidebar + TopHeader + AdminLayout with responsive behavior
+- Modernized charts (VerticalBarChart, PieChart, KPICard) with PNG export
+- Stats page PDF export
+- Google Fonts integration with admin selection UI and persistence
+- Refactored admin pages using new layout
+- Styled public pages consistent with admin
+- Documentation fully updated (all required files)
+- Versioning compliance: 5.21.0 on commit, timestamps ISO 8601 with milliseconds
+- Build and type-check green
+
+**Branch**: feat/tailadmin-v2-overhaul
+
+---
+*Logged per TPQmUfuBjLHeecjG6WB2Zu rule: Task Delivery Logging requirement*
