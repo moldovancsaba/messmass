@@ -125,12 +125,30 @@ export default function EditPage() {
     fetchPageConfig(slug);
   };
 
-  // Show login screen if not authenticated
+  /* What: Loading state while checking authentication
+     Why: Show user-friendly loading indicator during auth check */
   if (checkingAuth) {
     return (
-      <div className="loading-centered-container">
-        <div className="loading-card">
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: 'var(--mm-gray-50)'
+      }}>
+        <div style={{
+          background: 'var(--mm-white)',
+          borderRadius: 'var(--mm-radius-lg)',
+          boxShadow: 'var(--mm-shadow-lg)',
+          padding: 'var(--mm-space-8)',
+          textAlign: 'center'
+        }}>
           <div className="curve-spinner"></div>
+          <p style={{ 
+            marginTop: 'var(--mm-space-4)',
+            color: 'var(--mm-gray-600)',
+            fontSize: 'var(--mm-font-size-sm)'
+          }}>Checking authentication...</p>
         </div>
       </div>
     );
@@ -147,52 +165,100 @@ export default function EditPage() {
     );
   }
 
+  /* What: Loading state while fetching project data
+     Why: Show user-friendly loading indicator with context */
   if (loading) {
     return (
-      <div className="loading-centered-container">
-        <div className="loading-card">
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: 'var(--mm-gray-50)'
+      }}>
+        <div style={{
+          background: 'var(--mm-white)',
+          borderRadius: 'var(--mm-radius-lg)',
+          boxShadow: 'var(--mm-shadow-lg)',
+          padding: 'var(--mm-space-8)',
+          textAlign: 'center'
+        }}>
           <div className="curve-spinner"></div>
+          <p style={{ 
+            marginTop: 'var(--mm-space-4)',
+            color: 'var(--mm-gray-600)',
+            fontSize: 'var(--mm-font-size-sm)'
+          }}>Loading project editor...</p>
         </div>
       </div>
     );
   }
 
+  /* What: Error state with flat TailAdmin V2 design
+     Why: Modern, clean error card without glass-morphism effects */
   if (error) {
     return (
-      <div className="admin-container" style={{ 
+      <div style={{ 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        color: 'white',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        minHeight: '100vh',
+        padding: 'var(--mm-space-6)',
+        backgroundColor: 'var(--mm-gray-50)'
       }}>
         <div style={{ 
-          background: 'rgba(220, 38, 38, 0.1)', 
-          backdropFilter: 'blur(10px)',
-          padding: '2rem',
-          borderRadius: '16px',
+          background: 'var(--mm-white)',
+          borderRadius: 'var(--mm-radius-lg)',
+          boxShadow: 'var(--mm-shadow-lg)',
+          padding: 'var(--mm-space-8)',
           textAlign: 'center',
-          border: '1px solid rgba(220, 38, 38, 0.2)',
-          maxWidth: '600px'
+          maxWidth: '40rem',
+          width: '100%',
+          borderTop: '4px solid var(--mm-error)'
         }}>
-          <h1 style={{ margin: '0 0 1rem 0', fontSize: '2rem' }}>❌ Access Error</h1>
-          <p style={{ margin: '0.5rem 0', fontSize: '1.125rem', opacity: 0.9 }}>{error}</p>
-          <p style={{ margin: '0.5rem 0', opacity: 0.8 }}>
+          <h1 style={{ 
+            margin: '0 0 var(--mm-space-4) 0', 
+            fontSize: 'var(--mm-font-size-2xl)',
+            fontWeight: 'var(--mm-font-weight-bold)',
+            color: 'var(--mm-error)'
+          }}>❌ Access Error</h1>
+          <p style={{ 
+            margin: 'var(--mm-space-2) 0', 
+            fontSize: 'var(--mm-font-size-lg)',
+            color: 'var(--mm-gray-700)',
+            lineHeight: 'var(--mm-line-height-md)'
+          }}>{error}</p>
+          <p style={{ 
+            margin: 'var(--mm-space-2) 0',
+            fontSize: 'var(--mm-font-size-base)',
+            color: 'var(--mm-gray-600)',
+            lineHeight: 'var(--mm-line-height-md)'
+          }}>
             The editing link you&apos;re trying to access might not exist or may have been removed.
           </p>
           <button 
             onClick={() => window.close()}
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
+              background: 'var(--mm-error)',
+              border: 'none',
+              color: 'var(--mm-white)',
+              padding: 'var(--mm-space-3) var(--mm-space-6)',
+              borderRadius: 'var(--mm-radius-md)',
               cursor: 'pointer',
-              fontSize: '1rem',
-              marginTop: '1rem',
-              backdropFilter: 'blur(10px)'
+              fontSize: 'var(--mm-font-size-base)',
+              fontWeight: 'var(--mm-font-weight-medium)',
+              marginTop: 'var(--mm-space-6)',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--mm-shadow-sm)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--mm-shadow-md)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'var(--mm-shadow-sm)';
             }}
           >
             ✕ Close Editor
@@ -202,17 +268,28 @@ export default function EditPage() {
     );
   }
 
+  /* What: Main editor container with flat TailAdmin V2 design
+     Why: Modern, clean layout with optional custom page style support
+     
+     Features:
+     - Flat gray background for better contrast
+     - Optional project-specific gradient support
+     - Full viewport height for immersive editing experience
+     - Proper integration with EditorDashboard component */
   if (project) {
     return (
-      <div className="admin-container">
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--mm-gray-50)'
+      }}>
+        {/* What: Optional custom page style injection
+            Why: Allow project-specific branding while maintaining base design */}
         {pageStyle && (
           <style
-            // WHAT: Set CSS variables for backgrounds instead of overriding backgrounds directly.
-            // WHY: Centralizes styling via --page-bg and --header-bg to avoid specificity conflicts.
             dangerouslySetInnerHTML={{
               __html: `
-                .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
-                .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+                .edit-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
+                .edit-header-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
               `
             }}
           />

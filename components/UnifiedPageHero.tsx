@@ -13,6 +13,7 @@ interface UnifiedPageHeroProps {
     status: string;
   };
   onExportCSV?: () => void;
+  onExportPDF?: () => void; // PDF export callback
   pageStyle?: PageStyle;
   children?: React.ReactNode; // For additional content like dates
 }
@@ -23,6 +24,7 @@ export default function UnifiedPageHero({
   categorizedHashtags = {},
   statusBadge,
   onExportCSV,
+  onExportPDF,
   pageStyle,
   children
 }: UnifiedPageHeroProps) {
@@ -149,21 +151,42 @@ export default function UnifiedPageHero({
           </div>
         )}
         
-        {/* Export Button */}
-        {onExportCSV && (
+        {/* Export Buttons */}
+        {(onExportCSV || onExportPDF) && (
           <div style={{
             display: 'flex',
             justifyContent: 'flex-end',
-            marginTop: '1rem',
-            paddingTop: '1rem',
+            gap: 'var(--mm-space-3)',
+            marginTop: 'var(--mm-space-4)',
+            paddingTop: 'var(--mm-space-4)',
             borderTop: '1px solid rgba(68, 68, 68, 0.2)'
           }}>
-            <button 
-              onClick={onExportCSV}
-              className="btn btn-primary btn-sm"
-            >
-              📊 Export CSV
-            </button>
+            {onExportCSV && (
+              <button 
+                onClick={onExportCSV}
+                className="btn btn-primary btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--mm-space-2)'
+                }}
+              >
+                📊 Export CSV
+              </button>
+            )}
+            {onExportPDF && (
+              <button 
+                onClick={onExportPDF}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--mm-space-2)'
+                }}
+              >
+                📄 Export PDF
+              </button>
+            )}
           </div>
         )}
       </div>

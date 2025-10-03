@@ -9,6 +9,7 @@ import StandardState from '@/components/StandardState';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { exportPageToPDF } from '@/lib/export/pdf';
 
 interface ProjectStats {
   remoteImages: number;
@@ -217,9 +218,22 @@ export default function StatsPage() {
   const totalAge = totalUnder40 + totalOver40;
   const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
 
-  // CSV export function (2-column table: Variable, Value)
-  // What: Export all relevant variables as name/value rows for easy spreadsheet usage.
-  // Why: User requested a clean table format without category groupings.
+  /* What: PDF export function for full page
+     Why: Allow users to save complete stats page as PDF document */
+  const handleExportPDF = useCallback(async () => {
+    try {
+      await exportPageToPDF('stats-page-content', {
+        filename: project ? `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_stats` : 'messmass-stats',
+        orientation: 'portrait',
+        quality: 0.95
+      });
+    } catch (error) {
+      console.error('PDF export failed:', error);
+    }
+  }, [project]);
+
+  /* What: CSV export function (2-column table: Variable, Value)
+     Why: Export all relevant variables as name/value rows for easy spreadsheet usage */
   const [includeDerived, setIncludeDerived] = useState(false);
   const exportCSV = () => {
     if (!project) return;
@@ -306,19 +320,38 @@ export default function StatsPage() {
     );
   }
 
+  /* What: Error state with flat TailAdmin V2 design
+     Why: Modern card styling without glass-morphism effects */
   if (error) {
     return (
-      <div className="admin-container" style={{
+      <div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: 'var(--mm-space-6)',
+        backgroundColor: 'var(--mm-gray-50)'
       }}>
-        <div className="glass-card" style={{
+        <div style={{
+          background: 'var(--mm-white)',
+          borderRadius: 'var(--mm-radius-lg)',
+          boxShadow: 'var(--mm-shadow-lg)',
           textAlign: 'center',
-          padding: '2rem'
+          padding: 'var(--mm-space-8)',
+          maxWidth: '32rem',
+          width: '100%'
         }}>
-          <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>❌ Error</h1>
-          <p style={{ color: '#6b7280' }}>{error}</p>
+          <h1 style={{ 
+            color: 'var(--mm-error)', 
+            marginBottom: 'var(--mm-space-4)',
+            fontSize: 'var(--mm-font-size-2xl)',
+            fontWeight: 'var(--mm-font-weight-bold)'
+          }}>❌ Error</h1>
+          <p style={{ 
+            color: 'var(--mm-gray-600)',
+            fontSize: 'var(--mm-font-size-base)',
+            lineHeight: 'var(--mm-line-height-md)'
+          }}>{error}</p>
         </div>
       </div>
     );
@@ -328,54 +361,93 @@ export default function StatsPage() {
     return null;
   }
 
+  /* What: Main stats page container with flat TailAdmin V2 design
+     Why: Modern, clean layout with proper spacing and typography
+     
+     Features:
+     - Flat white background with subtle gray page background
+     - Proper spacing using design system tokens
+     - Optional custom page style gradients
+     - Responsive padding for different screen sizes */
   return (
-    <div className="admin-container">
-      {/* Inject resolved page style so stats page uses the same gradients as configured */}
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: 'var(--mm-gray-50)',
+      padding: 'var(--mm-space-4)'
+    }}>
+      {/* Inject resolved page style for custom gradients (optional) */}
       {pageStyle && (
         <style
-          // WHAT: Set CSS variables for backgrounds instead of overriding backgrounds directly.
-          // WHY: Centralizes styling via --page-bg and --header-bg to avoid specificity conflicts.
+          // WHAT: Set CSS variables for custom backgrounds if configured
+          // WHY: Allow project-specific branding while maintaining base TailAdmin V2 design
           dangerouslySetInnerHTML={{
             __html: `
-              .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
-              .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+              .stats-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
+              .stats-hero-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
             `
           }}
         />
       )}
 
-      {/* Unified Hero Section */}
-      <UnifiedStatsHero
-        title={project.eventName}
-        hashtags={project.hashtags || []}
-        categorizedHashtags={project.categorizedHashtags || {}}
-        createdDate={project.createdAt}
-        lastUpdatedDate={project.updatedAt}
-        pageStyle={pageStyle || undefined}
-        onExportCSV={exportCSV}
-        extraContent={(
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              checked={includeDerived}
-              onChange={(e) => setIncludeDerived(e.target.checked)}
-            />
-            <span>Include derived metrics</span>
-          </label>
-        )}
-      />
-
-      {/* Unified Data Visualization */}
-      <div style={{ width: '100%', padding: '0' }}>
-        <UnifiedDataVisualization
-          blocks={dataBlocks}
-          chartResults={chartResults}
-          loading={false}
-          gridUnits={gridUnits}
-          useChartContainer={false}
+      {/* What: Main content container with id for PDF export
+          Why: Constrain content width on large screens, enable PDF export of entire page */}
+      <div 
+        id="stats-page-content"
+        style={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          width: '100%'
+        }}
+      >
+        {/* Unified Hero Section with CSV and PDF export */}
+        <UnifiedStatsHero
+          title={project.eventName}
+          hashtags={project.hashtags || []}
+          categorizedHashtags={project.categorizedHashtags || {}}
+          createdDate={project.createdAt}
+          lastUpdatedDate={project.updatedAt}
+          pageStyle={pageStyle || undefined}
+          onExportCSV={exportCSV}
+          onExportPDF={handleExportPDF}
+          extraContent={(
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 'var(--mm-space-2)', 
+              cursor: 'pointer',
+              fontSize: 'var(--mm-font-size-sm)',
+              color: 'var(--mm-gray-700)'
+            }}>
+              <input
+                type="checkbox"
+                checked={includeDerived}
+                onChange={(e) => setIncludeDerived(e.target.checked)}
+                style={{
+                  cursor: 'pointer',
+                  width: '16px',
+                  height: '16px'
+                }}
+              />
+              <span>Include derived metrics</span>
+            </label>
+          )}
         />
-      </div>
 
+        {/* What: Data visualization section with modern spacing
+            Why: Unified component handles all chart rendering with proper grid layout */}
+        <div style={{ 
+          width: '100%', 
+          marginTop: 'var(--mm-space-6)'
+        }}>
+          <UnifiedDataVisualization
+            blocks={dataBlocks}
+            chartResults={chartResults}
+            loading={false}
+            gridUnits={gridUnits}
+            useChartContainer={false}
+          />
+        </div>
+      </div>
     </div>
   );
 }

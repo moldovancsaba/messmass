@@ -10,6 +10,7 @@ interface UnifiedStatsHeroProps {
   lastUpdatedDate: string;
   pageStyle?: PageStyle;
   onExportCSV?: () => void;
+  onExportPDF?: () => void; // PDF export callback
   extraContent?: React.ReactNode; // Optional controls or info injected by pages (e.g., export toggles)
 }
 
@@ -21,6 +22,7 @@ export default function UnifiedStatsHero({
   lastUpdatedDate,
   pageStyle,
   onExportCSV,
+  onExportPDF,
   extraContent
 }: UnifiedStatsHeroProps) {
   const formatDate = (dateString: string) => {
@@ -42,6 +44,7 @@ export default function UnifiedStatsHero({
         status: '✅ Active'
       }}
       onExportCSV={onExportCSV}
+      onExportPDF={onExportPDF}
       pageStyle={pageStyle}
     >
       {/* Creation and Update Dates + Extra Controls */}
