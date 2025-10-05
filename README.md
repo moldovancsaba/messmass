@@ -5,6 +5,7 @@ A real-time collaborative event statistics dashboard with an admin panel, unifie
 - Version: v5.21.0
 - Last Updated: 2025-10-03T07:45:00.000Z
 - Website: https://messmass.doneisbetter.com
+- Deployment: Production deployment triggered to restore working authentication (commit 055c357)
 
 Quickstart
 
