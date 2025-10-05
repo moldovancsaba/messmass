@@ -1074,6 +1074,112 @@ textarea::placeholder {
 /* Loading animations removed - section kept for documentation */
 
 /* ========================================
+   LOGIN PAGE STYLES
+======================================== */
+
+/* WHAT: Login page layout and styling using centralized design system
+   WHY: Remove all inline styles and ensure maintainable, consistent UI */
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-icon {
+  margin: 0 auto 1.5rem;
+  width: 64px;
+  height: 64px;
+}
+
+.login-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  margin-bottom: 2rem;
+}
+
+.login-form {
+  margin-bottom: 2rem;
+}
+
+.login-input {
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.login-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+}
+
+.login-error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.login-error-icon {
+  color: #ef4444;
+}
+
+.login-error-text {
+  color: #ef4444;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.login-button {
+  margin-bottom: 1rem;
+}
+
+.login-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.login-back {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.login-footer-text {
+  color: var(--color-gray-500);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* ========================================
    RESPONSIVE UTILITIES
 ======================================== */
 

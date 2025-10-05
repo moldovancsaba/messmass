@@ -55,25 +55,25 @@ export default function AdminLogin() {
 
   return (
     <div className="app-container">
-      <div className="glass-card" style={{width: '100%', maxWidth: '420px', padding: '2rem'}}>
+      <div className="glass-card login-card">
         {/* Logo/Icon Section */}
-        <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-          <div className="admin-avatar" style={{margin: '0 auto 1.5rem', width: '64px', height: '64px'}}>
+        <div className="login-header">
+          <div className="admin-avatar login-icon">
             <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 className="title" style={{fontSize: '2.5rem', marginBottom: '0.5rem'}}>
+          <h1 className="title login-title">
             MessMass Admin
           </h1>
-          <p className="subtitle" style={{marginBottom: '2rem'}}>
+          <p className="subtitle login-subtitle">
             Sign in with email and password to access the dashboard
           </p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleLogin} style={{marginBottom: '2rem'}}>
-          <div className="form-group" style={{ marginBottom: '1rem' }}>
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
             <label htmlFor="email" className="form-label">Email</label>
             <input
               id="email"
@@ -82,10 +82,9 @@ export default function AdminLogin() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
+              className="form-input login-input"
               placeholder="admin or admin@messmass.com"
               disabled={loading}
-              style={{ textAlign: 'center', fontSize: '1.05rem' }}
             />
           </div>
 
@@ -98,27 +97,20 @@ export default function AdminLogin() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
+              className="form-input login-input"
               placeholder="Enter your password"
               disabled={loading}
-              style={{textAlign: 'center', fontSize: '1.05rem'}}
             />
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="glass-card" style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              padding: '1rem',
-              marginBottom: '1.5rem',
-              borderRadius: '12px'
-            }}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style={{color: '#ef4444'}}>
+            <div className="login-error">
+              <div className="login-error-content">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20" className="login-error-icon">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
-                <span style={{color: '#ef4444', fontWeight: '500', fontSize: '0.875rem'}}>
+                <span className="login-error-text">
                   {error}
                 </span>
               </div>
@@ -129,19 +121,11 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading || !email.trim() || !password.trim()}
-            className="btn btn-primary w-full"
-            style={{ marginBottom: '1rem' }}
+            className="btn btn-primary w-full login-button"
           >
             {loading ? (
-              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTopColor: 'white',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }}></div>
+              <div className="login-loading">
+                <div className="login-spinner"></div>
                 Signing in...
               </div>
             ) : (
@@ -151,7 +135,7 @@ export default function AdminLogin() {
         </form>
 
         {/* Back to Main App */}
-        <div style={{textAlign: 'center', marginBottom: '2rem'}}>
+        <div className="login-back">
           <button
             type="button"
             onClick={() => router.push('/')}
@@ -162,18 +146,13 @@ export default function AdminLogin() {
         </div>
 
         {/* Footer */}
-        <div style={{textAlign: 'center', paddingTop: '1.5rem', borderTop: '1px solid rgba(107, 114, 128, 0.2)'}}>
-          <p style={{color: 'var(--color-gray-500)', fontSize: '0.75rem', lineHeight: 1.5}}>
+        <div className="login-footer">
+          <p className="login-footer-text">
             MessMass Admin Panel<br />
             Secure Access Required
           </p>
         </div>
       </div>
-
-      {/* Add spinning animation */}
-      <style jsx>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   )
 }
