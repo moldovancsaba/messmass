@@ -4,14 +4,24 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
-import { getDb } from '@/lib/mongodb'
+import clientPromise from '@/lib/mongodb'
+import config from '@/lib/config'
 import { ObjectId } from 'mongodb'
 import crypto from 'crypto'
 
+// WHAT: Force Node.js runtime for crypto operations
+// WHY: Edge runtime doesn't support crypto.randomBytes
+export const runtime = 'nodejs'
+
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
+  const params = await context.params
   try {
     // Check authentication
     const admin = await getAdminUser()
@@ -32,7 +42,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
-    const db = await getDb()
+    const client = await clientPromise
+    const db = client.db(config.mongodbDb)
     const usersCollection = db.collection('users')
 
     // Check if user exists
@@ -73,8 +84,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
+  const params = await context.params
   try {
     // Check authentication
     const admin = await getAdminUser()
@@ -99,7 +111,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 })
     }
 
-    const db = await getDb()
+    const client = await clientPromise
+    const db = client.db(config.mongodbDb)
     const usersCollection = db.collection('users')
 
     // Check if user exists
