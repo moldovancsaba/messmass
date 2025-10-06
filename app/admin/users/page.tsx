@@ -130,15 +130,15 @@ export default function AdminUsersPage() {
 
   return (
     <div className="admin-container">
-      <div className="glass-card admin-header">
-        <div className="admin-header-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="admin-branding" style={{ textAlign: 'center', flex: 1 }}>
-            <span className="hashtag" style={{ fontSize: '1.5rem', fontWeight: 700, padding: '1rem 2rem', borderRadius: 50, display: 'inline-block' }}>
+      <div className="admin-card admin-header">
+        <div className="admin-header-content">
+          <div className="admin-branding">
+            <span className="hashtag">
               Users Management
             </span>
             <p className="admin-subtitle">Create and manage admin users</p>
           </div>
-          <div className="admin-user-info" style={{ minWidth: 'auto' }}>
+          <div className="admin-user-info">
             <Link href="/admin" className="btn btn-sm btn-secondary admin-hero-back">
               ← Back to Admin
             </Link>
@@ -146,9 +146,9 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="glass-card section-card">
+      <div className="admin-card section-card">
         <h2 className="section-title">Create New Admin</h2>
-        <form onSubmit={onCreateUser} style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: '1fr 1fr auto' }}>
+        <form onSubmit={onCreateUser} className="user-create-form">
           <input
             className="form-input"
             placeholder="Email"
@@ -168,11 +168,11 @@ export default function AdminUsersPage() {
           </button>
         </form>
         {generatedPassword && (
-          <div className="glass-card" style={{ marginTop: '1rem', padding: '1rem', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="admin-card password-generated">
+            <div className="password-generated-content">
               <div>
-                <div style={{ fontWeight: 600, color: '#059669' }}>One-time password (copy and share securely)</div>
-                <code style={{ fontFamily: 'monospace' }}>{generatedPassword}</code>
+                <div className="password-label">One-time password (copy and share securely)</div>
+                <code className="password-code">{generatedPassword}</code>
               </div>
               <button className="btn btn-secondary" onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button>
             </div>
@@ -180,34 +180,34 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      <div className="glass-card section-card" style={{ marginTop: '1.5rem' }}>
+      <div className="admin-card section-card mt-6">
         <h2 className="section-title">All Admin Users</h2>
         {loading ? (
           <div>Loading users…</div>
         ) : error ? (
-          <div style={{ color: '#ef4444' }}>{error}</div>
+          <div className="error-text">{error}</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="table-wrapper">
+            <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Email</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Name</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Role</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Created</th>
-                  <th style={{ textAlign: 'left', padding: '0.5rem', verticalAlign: 'middle' }}>Updated</th>
-                  <th style={{ textAlign: 'right', padding: '0.5rem', verticalAlign: 'middle' }}>Actions</th>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Created</th>
+                  <th>Updated</th>
+                  <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedUsers.map(u => (
                   <tr key={u.id}>
-                    <td style={{ padding: '0.5rem' }}>{u.email}</td>
-                    <td style={{ padding: '0.5rem' }}>{u.name}</td>
-                    <td style={{ padding: '0.5rem' }}>{u.role}</td>
-                    <td style={{ padding: '0.5rem', fontFamily: 'monospace' }}>{u.createdAt}</td>
-                    <td style={{ padding: '0.5rem', fontFamily: 'monospace' }}>{u.updatedAt}</td>
-                    <td className="actions-cell" style={{ padding: '0.5rem', justifyContent: 'flex-end' }}>
+                    <td>{u.email}</td>
+                    <td>{u.name}</td>
+                    <td>{u.role}</td>
+                    <td className="font-mono">{u.createdAt}</td>
+                    <td className="font-mono">{u.updatedAt}</td>
+                    <td className="actions-cell">
                       <button className="btn btn-sm btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
                       <button className="btn btn-sm btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
                     </td>
