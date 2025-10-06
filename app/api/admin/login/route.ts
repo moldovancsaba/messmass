@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Set cookie with environment-aware configuration  
     // WHY: Each domain gets its own cookie - this is correct behavior
-    //      The issue is likely in how the cookie is being read after redirect
+    //      CRITICAL: Must delete old cookie first to prevent stale sessions
     const cookieStore = await cookies()
     const isProduction = env.get('NODE_ENV') === 'production'
     
@@ -71,6 +71,16 @@ export async function POST(request: NextRequest) {
     console.log('🍪 Setting cookie for domain:', request.headers.get('host'))
     console.log('🌍 Environment:', isProduction ? 'production' : 'development')
     
+    // CRITICAL: Delete any existing cookie first to prevent stale cookie issues
+    // WHY: Browsers may keep old cookies that reference deleted users
+    try {
+      cookieStore.delete('admin-session')
+      console.log('🗑️  Deleted old cookie (if any)')
+    } catch (e) {
+      console.log('ℹ️  No old cookie to delete')
+    }
+    
+    // Now set the new cookie
     cookieStore.set('admin-session', signedToken, {
       httpOnly: true,
       secure: isProduction,
