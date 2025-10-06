@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     const isProduction = env.get('NODE_ENV') === 'production'
     
-    // Log for debugging
-    console.log('🔐 Login successful for:', user.email)
+    // Log for debugging (user is guaranteed to exist at this point)
+    console.log('🔐 Login successful for:', user?.email || 'unknown')
     console.log('🍪 Setting cookie for domain:', request.headers.get('host'))
     console.log('🌍 Environment:', isProduction ? 'production' : 'development')
     
