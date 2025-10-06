@@ -60,17 +60,26 @@ export async function POST(request: NextRequest) {
 
     const signedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
 
-    // Set secure cookie
+    // WHAT: Set cookie with environment-aware configuration  
+    // WHY: Each domain gets its own cookie - this is correct behavior
+    //      The issue is likely in how the cookie is being read after redirect
     const cookieStore = await cookies()
+    const isProduction = env.get('NODE_ENV') === 'production'
+    
+    // Log for debugging
+    console.log('🔐 Login successful for:', user.email)
+    console.log('🍪 Setting cookie for domain:', request.headers.get('host'))
+    console.log('🌍 Environment:', isProduction ? 'production' : 'development')
+    
     cookieStore.set('admin-session', signedToken, {
       httpOnly: true,
-      // WHAT: Derive cookie security flags from centralized env helper.
-      // WHY: Avoid direct process.env usage and ensure consistent behavior across the codebase.
-      secure: env.get('NODE_ENV') === 'production',
+      secure: isProduction,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/'
     })
+    
+    console.log('✅ Cookie set successfully')
 
     return NextResponse.json({ success: true, token: signedToken, message: 'Login successful' })
   } catch (error) {

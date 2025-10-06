@@ -40,13 +40,30 @@ function decodeSessionToken(sessionToken: string): { token: string; expiresAt: s
 export async function getAdminUser(): Promise<AdminUser | null> {
   const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin-session')
-  if (!adminSession?.value) return null
+  
+  // Debug logging
+  console.log('🔍 getAdminUser called')
+  console.log('🍪 Cookie found:', !!adminSession)
+  
+  if (!adminSession?.value) {
+    console.log('❌ No admin-session cookie found')
+    return null
+  }
 
   const tokenData = decodeSessionToken(adminSession.value)
-  if (!tokenData) return null
+  if (!tokenData) {
+    console.log('❌ Token decode failed or expired')
+    return null
+  }
 
+  console.log('✅ Token valid, fetching user:', tokenData.userId)
   const user = await findUserById(tokenData.userId)
-  if (!user) return null
+  if (!user) {
+    console.log('❌ User not found in database:', tokenData.userId)
+    return null
+  }
+  
+  console.log('✅ User authenticated:', user.email)
 
   // Map DB user to AdminUser view model; permissions derived from role
   const basePermissions = ['read', 'write', 'delete', 'manage-users']
