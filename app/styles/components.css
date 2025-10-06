@@ -2,21 +2,39 @@
 /* Reusable component styles used across the application */
 
 /* ========================================
-   GLASS CARD SYSTEM
+   CARD SYSTEM (FLAT DESIGN)
 ======================================== */
 
+/* WHAT: Modern flat card design following TailAdmin V2 principles
+   WHY: Glass-morphism is deprecated - using solid backgrounds with subtle shadows */
+
+.admin-card {
+  background: var(--mm-white);
+  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md); /* 8px - flat design */
+  box-shadow: var(--mm-shadow-sm);
+  padding: var(--mm-space-6); /* 24px */
+  transition: all 0.2s ease;
+}
+
+.admin-card:hover {
+  box-shadow: var(--mm-shadow-md);
+  border-color: var(--mm-border-color-hover);
+}
+
+/* Legacy glass-card class - DEPRECATED, maps to admin-card for compatibility */
 .glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(var(--blur-base));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  transition: all var(--transition-slow);
+  background: var(--mm-white);
+  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-sm);
+  padding: var(--mm-space-6);
+  transition: all 0.2s ease;
 }
 
 .glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--mm-shadow-md);
+  border-color: var(--mm-border-color-hover);
 }
 
 /* ========================================
