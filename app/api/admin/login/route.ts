@@ -73,12 +73,15 @@ export async function POST(request: NextRequest) {
     
     // CRITICAL: Delete any existing cookie first to prevent stale cookie issues
     // WHY: Browsers may keep old cookies that reference deleted users
-    try {
-      cookieStore.delete('admin-session')
-      console.log('🗑️  Deleted old cookie (if any)')
-    } catch (e) {
-      console.log('ℹ️  No old cookie to delete')
-    }
+    //      Must set maxAge=0 to tell browser to delete the cookie
+    cookieStore.set('admin-session', '', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 0, // Tell browser to delete the cookie
+      path: '/'
+    })
+    console.log('🗑️  Cleared old cookie')
     
     // Now set the new cookie
     cookieStore.set('admin-session', signedToken, {
