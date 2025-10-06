@@ -43,7 +43,7 @@ export async function PUT(
     }
 
     const client = await clientPromise
-    const db = client.db(config.mongodbDb)
+    const db = client.db(config.dbName)
     const usersCollection = db.collection('users')
 
     // Check if user exists
@@ -112,7 +112,7 @@ export async function DELETE(
     }
 
     const client = await clientPromise
-    const db = client.db(config.mongodbDb)
+    const db = client.db(config.dbName)
     const usersCollection = db.collection('users')
 
     // Check if user exists
