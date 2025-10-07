@@ -109,12 +109,12 @@ function parseSheetRow(rawData: string) {
   // Create event name
   const eventName = `${sportEmoji} ${homeTeam} - ${visitorTeam} @ ${league}`;
   
-  // Combine all hashtags
+  // Combine all hashtags with category prefixes
   const hashtags = [
-    sportHashtag,
-    homeHashtag,
-    visitorHashtag,
-    locationHashtag,
+    `sport:${sportHashtag}`,
+    `home:${homeHashtag}`,
+    `visitor:${visitorHashtag}`,
+    `location:${locationHashtag}`,
   ].filter(Boolean);
   
   return {
