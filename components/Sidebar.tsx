@@ -40,6 +40,7 @@ export default function Sidebar() {
       items: [
         { label: 'Dashboard', path: '/admin', icon: '📊' },
         { label: 'Projects', path: '/admin/projects', icon: '📁' },
+        { label: 'Quick Add', path: '/admin/quick-add', icon: '⚡' },
       ],
     },
     {
