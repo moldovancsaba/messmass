@@ -407,6 +407,66 @@
    UTILITY CLASSES
 ======================================== */
 
+/* Border Utilities */
+.border-left-accent {
+  border-left: 4px solid var(--mm-color-primary-600);
+}
+
+.border-bottom-default {
+  border-bottom: 1px solid var(--mm-border-color-default);
+}
+
+.border-top-default {
+  border-top: 2px solid var(--mm-border-color-default);
+}
+
+/* Code/Monospace */
+.font-mono {
+  font-family: Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Color Utilities */
+.text-gray-600 { color: var(--mm-gray-600); }
+.text-gray-700 { color: var(--mm-gray-700); }
+.text-gray-900 { color: var(--mm-gray-900); }
+
+.bg-gray-900 { background: var(--mm-gray-900); }
+.bg-primary-100 { background: var(--mm-color-primary-100); }
+
+.text-white { color: var(--mm-white); }
+.text-primary-700 { color: var(--mm-color-primary-700); }
+
+/* Font Weight Utilities */
+.font-medium { font-weight: var(--mm-font-weight-medium); }
+.font-semibold { font-weight: var(--mm-font-weight-semibold); }
+.font-bold { font-weight: var(--mm-font-weight-bold); }
+
+/* Font Size Utilities */
+.text-xs { font-size: var(--mm-font-size-xs); }
+.text-sm { font-size: var(--mm-font-size-sm); }
+.text-base { font-size: var(--mm-font-size-base); }
+
+/* Gap Utilities */
+.gap-2 { gap: var(--mm-space-2); }
+.gap-3 { gap: var(--mm-space-3); }
+.gap-4 { gap: var(--mm-space-4); }
+
+/* Padding Utilities */
+.px-3 { padding-left: var(--mm-space-3); padding-right: var(--mm-space-3); }
+.py-1 { padding-top: var(--mm-space-1); padding-bottom: var(--mm-space-1); }
+
+/* Width Utilities */
+.min-w-30 { min-width: 120px; }
+
+/* List Utilities */
+.list-none { list-style: none; }
+
+/* Overflow Utilities */
+.overflow-auto { overflow: auto; }
+
+/* Whitespace Utilities */
+.whitespace-nowrap { white-space: nowrap; }
+
 /* Spacing Utilities */
 .m-0 { margin: 0; }
 .m-1 { margin: var(--space-1); }
