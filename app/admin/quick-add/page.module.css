@@ -28,6 +28,7 @@
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   margin: 0 0 var(--mm-space-2) 0;
+  text-align: left;
 }
 
 .subtitle {
