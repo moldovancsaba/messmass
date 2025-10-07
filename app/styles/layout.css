@@ -796,6 +796,22 @@
   position: absolute;
 }
 
+/* Modal Utilities */
+.modal-h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.modal-body-padding {
+  padding: 1.5rem;
+}
+
+.form-label-block {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
 /* Spacing Utilities */
 .m-0 { margin: 0; }
 .m-1 { margin: var(--space-1); }

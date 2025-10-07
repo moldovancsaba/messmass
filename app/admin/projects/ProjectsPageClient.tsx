@@ -689,17 +689,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               setSharePageType('stats');
                               setSharePopupOpen(true);
                             }}
-                            className="project-title-link text-primary-700 no-underline"
+                            className="btn-link text-primary-700"
                             title={`Share statistics page for ${project.eventName}`}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              textDecoration: 'underline',
-                              cursor: 'pointer',
-                              fontSize: 'inherit',
-                              fontFamily: 'inherit',
-                              padding: 0
-                            }}
                           >
                             {project.eventName}
                           </button>
@@ -769,18 +760,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                 setSharePageType('edit');
                                 setSharePopupOpen(true);
                               }}
-                              className="project-edit-link"
+                              className="btn-link btn-link-success"
                               title={`Share edit page for ${project.eventName} statistics`}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#059669',
-                                textDecoration: 'underline',
-                                cursor: 'pointer',
-                                fontSize: 'inherit',
-                                fontFamily: 'inherit',
-                                padding: 0
-                              }}
                             >
                               📝 Edit Statistics
                             </button>
@@ -819,14 +800,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
           </table>
         </div>
         {/* Load More */}
-        <div style={{ padding: '1rem', textAlign: 'center' }}>
+        <div className="p-4 text-center">
           {searchQuery.trim() ? (
             searchOffset != null ? (
               <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
                 {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
               </button>
             ) : (
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              <span className="text-gray-500 text-sm">No more items</span>
             )
           ) : (sortField && sortOrder) ? (
             sortOffset != null ? (
@@ -834,7 +815,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 {isLoadingMore ? 'Loading…' : 'Load 20 more'}
               </button>
             ) : (
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              <span className="text-gray-500 text-sm">No more items</span>
             )
           ) : (
             nextCursor ? (
@@ -842,7 +823,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 {isLoadingMore ? 'Loading…' : 'Load 20 more'}
               </button>
             ) : (
-              <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              <span className="text-gray-500 text-sm">No more items</span>
             )
           )}
         </div>
@@ -850,83 +831,36 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       {/* New Project Modal */}
       {showNewProjectForm && (
-        <div className="modal-overlay" onClick={() => setShowNewProjectForm(false)} style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '0',
-            maxWidth: '600px',
-            width: '90%',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div className="modal-header" style={{
-              padding: '1.5rem',
-              borderBottom: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h2 style={{ margin: 0, color: '#1f2937' }}>➕ Create New Project</h2>
-              <button className="modal-close" onClick={() => setShowNewProjectForm(false)} style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '0.5rem'
-              }}>✕</button>
+        <div className="modal-overlay" onClick={() => setShowNewProjectForm(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">➕ Create New Project</h2>
+              <button className="modal-close" onClick={() => setShowNewProjectForm(false)}>✕</button>
             </div>
-            <div className="modal-body" style={{ padding: '1.5rem' }}>
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Event Name *</label>
+            <div className="modal-body">
+              <div className="form-group mb-4">
+                <label className="form-label-block">Event Name *</label>
                 <input
                   type="text"
                   className="form-input"
                   value={newProjectData.eventName}
                   onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
                   placeholder="Enter event name..."
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    fontSize: '1rem'
-                  }}
                 />
               </div>
               
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Event Date *</label>
+              <div className="form-group mb-4">
+                <label className="form-label-block">Event Date *</label>
                 <input
                   type="date"
                   className="form-input"
                   value={newProjectData.eventDate}
                   onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    fontSize: '1rem'
-                  }}
                 />
               </div>
               
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Hashtags</label>
+              <div className="form-group mb-4">
+                <label className="form-label-block">Hashtags</label>
                 <UnifiedHashtagInput
                   generalHashtags={newProjectData.hashtags}
                   onGeneralChange={(hashtags) => 
@@ -940,8 +874,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 />
               </div>
               {/* Style selection */}
-              <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Page Style</label>
+              <div className="form-group mb-4">
+                <label className="form-label-block">Page Style</label>
                 <select 
                   className="form-input"
                   value={newProjectData.styleId || ''}
@@ -954,13 +888,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                 </select>
               </div>
             </div>
-            <div className="modal-footer" style={{
-              padding: '1.5rem',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '1rem'
-            }}>
+            <div className="modal-footer">
               <button 
                 className="btn btn-sm btn-secondary" 
                 onClick={() => setShowNewProjectForm(false)}
@@ -984,46 +912,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
       {/* Edit Project Modal */}
       {showEditProjectForm && editingProject && (
-        <div className="modal-overlay" onClick={() => setShowEditProjectForm(false)} style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '0',
-            maxWidth: '600px',
-            width: '90%',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div className="modal-header" style={{
-              padding: '1.5rem',
-              borderBottom: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h2 style={{ margin: 0, color: '#1f2937' }}>✏️ Edit Project</h2>
-              <button className="modal-close" onClick={() => setShowEditProjectForm(false)} style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '0.5rem'
-              }}>✕</button>
+        <div className="modal-overlay" onClick={() => setShowEditProjectForm(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">✏️ Edit Project</h2>
+              <button className="modal-close" onClick={() => setShowEditProjectForm(false)}>✕</button>
             </div>
-            <div className="modal-body" style={{ padding: '1.5rem' }}>
+            <div className="modal-body">
               <div className="form-group">
                 <label>Event Name *</label>
                 <input
