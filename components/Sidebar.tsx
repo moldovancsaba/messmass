@@ -65,6 +65,12 @@ export default function Sidebar() {
         { label: 'Users', path: '/admin/users', icon: '👥' },
       ],
     },
+    {
+      title: 'Help',
+      items: [
+        { label: 'User Guide', path: '/admin/help', icon: '📖' },
+      ],
+    },
   ];
   
   /* What: Check if current path matches nav item
@@ -203,7 +209,7 @@ export default function Sidebar() {
           {!isCollapsed && (
             <div className={styles.versionInfo}>
               <span className={styles.versionLabel}>Version</span>
-              <span className={styles.versionNumber}>5.20.1</span>
+              <span className={styles.versionNumber}>5.21.2</span>
             </div>
           )}
         </div>

@@ -1,0 +1,203 @@
+/* What: Styles for the admin help/user guide page
+   Why: Clean, readable documentation layout using design tokens */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--mm-space-6);
+  background: var(--mm-gray-50);
+  min-height: 100vh;
+}
+
+.content {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-sm);
+  padding: var(--mm-space-8);
+}
+
+/* Header section with title and subtitle */
+.header {
+  margin-bottom: var(--mm-space-8);
+  padding-bottom: var(--mm-space-6);
+  border-bottom: 2px solid var(--mm-gray-200);
+}
+
+.header h1 {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-3);
+}
+
+.subtitle {
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+/* Table of contents navigation */
+.toc {
+  background: var(--mm-gray-50);
+  border-left: 4px solid var(--mm-color-primary-600);
+  padding: var(--mm-space-4);
+  margin-bottom: var(--mm-space-8);
+  border-radius: var(--mm-radius-md);
+}
+
+.toc h2 {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-top: 0;
+  margin-bottom: var(--mm-space-4);
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc li {
+  margin-bottom: var(--mm-space-2);
+}
+
+.toc a {
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+  font-weight: var(--mm-font-weight-medium);
+  transition: color 0.2s ease;
+}
+
+.toc a:hover {
+  color: var(--mm-color-primary-700);
+  text-decoration: underline;
+}
+
+/* Content sections */
+.section {
+  margin-bottom: var(--mm-space-10);
+  scroll-margin-top: var(--mm-space-6);
+}
+
+.section h2 {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin-top: 0;
+  margin-bottom: var(--mm-space-4);
+  padding-bottom: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.section h3 {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-800);
+  margin-top: var(--mm-space-6);
+  margin-bottom: var(--mm-space-3);
+}
+
+.section h4 {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+  margin-top: var(--mm-space-4);
+  margin-bottom: var(--mm-space-2);
+}
+
+.section p {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  line-height: 1.7;
+  margin-bottom: var(--mm-space-4);
+}
+
+.section ul {
+  list-style: disc;
+  padding-left: var(--mm-space-6);
+  margin-bottom: var(--mm-space-4);
+}
+
+.section li {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  line-height: 1.7;
+  margin-bottom: var(--mm-space-2);
+}
+
+.section strong {
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.section code {
+  background: var(--mm-gray-100);
+  color: var(--mm-color-primary-700);
+  padding: 2px 6px;
+  border-radius: var(--mm-radius-sm);
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* Code block for multi-line examples */
+.codeBlock {
+  background: var(--mm-gray-900);
+  color: var(--mm-white);
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-md);
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: var(--mm-font-size-sm);
+  line-height: 1.6;
+  overflow-x: auto;
+  margin-bottom: var(--mm-space-4);
+}
+
+/* Footer section */
+.footer {
+  margin-top: var(--mm-space-10);
+  padding-top: var(--mm-space-6);
+  border-top: 2px solid var(--mm-gray-200);
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+.footer p {
+  margin-bottom: var(--mm-space-3);
+}
+
+.footer a {
+  color: var(--mm-color-primary-600);
+  text-decoration: none;
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.footer a:hover {
+  color: var(--mm-color-primary-700);
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--mm-space-4);
+  }
+
+  .content {
+    padding: var(--mm-space-4);
+  }
+
+  .header h1 {
+    font-size: var(--mm-font-size-2xl);
+  }
+
+  .section h2 {
+    font-size: var(--mm-font-size-xl);
+  }
+
+  .section h3 {
+    font-size: var(--mm-font-size-lg);
+  }
+}
