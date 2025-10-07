@@ -396,10 +396,10 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   if (loading) {
     return (
-      <div className="page-container" style={{ padding: '1rem' }}>
-        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className="page-container">
+        <div className="admin-card text-center">
           <div className="curve-spinner"></div>
-          <p style={{ color: '#6b7280', marginTop: '0.75rem' }}>Loading projects...</p>
+          <p className="text-gray-500 mt-3">Loading projects...</p>
         </div>
       </div>
     );
@@ -568,112 +568,52 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       />
 
       {/* Projects Table */}
-      <div className="admin-card" style={{ overflow: 'hidden' }}>
-        <div className="projects-table-container" style={{ borderRadius: 'inherit' }}>
-          <table className="projects-table" style={{ 
-            width: '100%', 
-            borderCollapse: 'collapse',
-            borderRadius: 'inherit'
-          }}>
-            <thead style={{
-              backgroundColor: 'rgba(102, 126, 234, 0.05)',
-              borderRadius: '1rem 1rem 0 0'
-            }}>
-              <tr style={{
-                borderRadius: '1rem 1rem 0 0'
-              }}>
-                <th onClick={() => handleSort('eventName')} style={{ 
-                  cursor: 'pointer', 
-                  position: 'relative', 
-                  paddingRight: '1.5rem',
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>
+      <div className="admin-card table-overflow-hidden">
+        <div className="projects-table-container table-inherit-radius">
+          <table className="projects-table table-full-width table-inherit-radius">
+            <thead>
+              <tr>
+                <th onClick={() => handleSort('eventName')} className="sortable-th">
                   Event Name
                   {sortField === 'eventName' && (
-                    <span style={{ position: 'absolute', right: '0.5rem', fontSize: '0.8rem' }}>
+                    <span className="sort-indicator">
                       {sortOrder === 'asc' ? '▲' : '▼'}
                     </span>
                   )}
                 </th>
-                <th onClick={() => handleSort('eventDate')} style={{ 
-                  cursor: 'pointer', 
-                  position: 'relative', 
-                  paddingRight: '1.5rem',
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>
+                <th onClick={() => handleSort('eventDate')} className="sortable-th">
                   Date
                   {sortField === 'eventDate' && (
-                    <span style={{ position: 'absolute', right: '0.5rem', fontSize: '0.8rem' }}>
+                    <span className="sort-indicator">
                       {sortOrder === 'asc' ? '▲' : '▼'}
                     </span>
                   )}
                 </th>
-                <th onClick={() => handleSort('images')} style={{ 
-                  cursor: 'pointer', 
-                  position: 'relative', 
-                  paddingRight: '1.5rem',
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>
+                <th onClick={() => handleSort('images')} className="sortable-th">
                   Images
                   {sortField === 'images' && (
-                    <span style={{ position: 'absolute', right: '0.5rem', fontSize: '0.8rem' }}>
+                    <span className="sort-indicator">
                       {sortOrder === 'asc' ? '▲' : '▼'}
                     </span>
                   )}
                 </th>
-                <th onClick={() => handleSort('fans')} style={{ 
-                  cursor: 'pointer', 
-                  position: 'relative', 
-                  paddingRight: '1.5rem',
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>
+                <th onClick={() => handleSort('fans')} className="sortable-th">
                   Total Fans
                   {sortField === 'fans' && (
-                    <span style={{ position: 'absolute', right: '0.5rem', fontSize: '0.8rem' }}>
+                    <span className="sort-indicator">
                       {sortOrder === 'asc' ? '▲' : '▼'}
                     </span>
                   )}
                 </th>
-                <th onClick={() => handleSort('attendees')} style={{ 
-                  cursor: 'pointer', 
-                  position: 'relative', 
-                  paddingRight: '1.5rem',
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>
+                <th onClick={() => handleSort('attendees')} className="sortable-th">
                   Attendees
                   {sortField === 'attendees' && (
-                    <span style={{ position: 'absolute', right: '0.5rem', fontSize: '0.8rem' }}>
+                    <span className="sort-indicator">
                       {sortOrder === 'asc' ? '▲' : '▼'}
                     </span>
                   )}
                 </th>
-                <th style={{
-                  padding: '1rem',
-                  borderTop: 'none',
-                  fontWeight: '600',
-                  color: '#374151',
-                  backgroundColor: 'inherit'
-                }}>Actions</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -700,7 +640,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="project-name">
                         {/* CSV export button placed before event name */}
                         <button
-                          className="btn btn-sm btn-secondary"
+                          className="btn btn-sm btn-secondary mr-2"
                           title={`Download CSV for ${project.eventName}`}
                           onClick={async () => {
                             try {
@@ -738,7 +678,6 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               alert('Export failed');
                             }
                           }}
-                          style={{ marginRight: '0.5rem' }}
                         >
                           ⬇️ CSV
                         </button>
@@ -750,12 +689,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               setSharePageType('stats');
                               setSharePopupOpen(true);
                             }}
-                            className="project-title-link"
+                            className="project-title-link text-primary-700 no-underline"
                             title={`Share statistics page for ${project.eventName}`}
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#6366f1',
                               textDecoration: 'underline',
                               cursor: 'pointer',
                               fontSize: 'inherit',
@@ -816,7 +754,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           }
                           
                           return displayHashtags.length > 0 ? (
-                            <div className="project-hashtags" style={{ marginTop: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                            <div className="project-hashtags mt-05 flex flex-wrap gap-025">
                               {displayHashtags}
                             </div>
                           ) : null;
