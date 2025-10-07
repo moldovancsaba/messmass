@@ -428,6 +428,7 @@ img {
 .admin-table-cell {
   padding: 1.5rem;
   vertical-align: top;
+  text-align: left;
 }
 
 .admin-event-name {
