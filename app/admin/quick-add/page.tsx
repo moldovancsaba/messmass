@@ -261,12 +261,12 @@ export default function QuickAddPage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="admin-card mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="section-title m-0">⚡ Quick Add from Sheet</h1>
-          <a href="/admin/projects" className="btn btn-secondary">← Back to Projects</a>
+      <div className="admin-card">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="section-title">⚡ Quick Add from Sheet</h1>
+          <a href="/admin/projects" className="btn btn-secondary no-underline">← Back to Projects</a>
         </div>
-        <p className="section-subtitle mb-0">
+        <p className="section-subtitle">
           Paste event data from Google Sheets to quickly create projects
         </p>
       </div>
