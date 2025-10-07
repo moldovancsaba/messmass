@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
   const sortedUsers = useMemo(() => users.slice().sort((a, b) => a.email.localeCompare(b.email)), [users])
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       <div className="admin-card admin-header">
         <div className="admin-header-content">
           <div className="admin-branding">

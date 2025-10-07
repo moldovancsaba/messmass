@@ -155,7 +155,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
 
       <div style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
         {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => (
-          <div key={idx} className="glass-card" style={{ padding: '0.75rem' }}>
+          <div key={idx} className="admin-card" style={{ padding: '0.75rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '0.5rem', alignItems: 'center' }}>
               <div>
                 <label className="form-label">Group Order</label>
@@ -423,7 +423,7 @@ const [createForm, setCreateForm] = useState({
 
   if (loading) {
     return (
-      <div className="admin-container" style={{
+      <div className="page-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -444,7 +444,7 @@ const [createForm, setCreateForm] = useState({
   // Simple read-only modal for variable details
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* WHAT: Standardize on UnifiedAdminHero to avoid nested containers and keep consistent header UX. */}
       <AdminHero
         title="Variables"
@@ -469,7 +469,7 @@ const [createForm, setCreateForm] = useState({
           {activeVar && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
                  onClick={() => setActiveVar(null)}>
-              <div className="glass-card" style={{ maxWidth: 620, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
+              <div className="admin-card" style={{ maxWidth: 620, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
                 <h3 style={{ margin: '0 0 0.5rem 0' }}>Edit Variable</h3>
 
                 {/* Edit form */}
@@ -608,7 +608,7 @@ const [createForm, setCreateForm] = useState({
       {reorderOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
              onClick={() => setReorderOpen(false)}>
-          <div className="glass-card" style={{ maxWidth: 840, width: '94%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-card" style={{ maxWidth: 840, width: '94%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ margin: 0 }}>↕️ Reorder Clicker Buttons</h3>
             <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Drag items to change the order of clickable stats in the Editor clicker. Per-category ordering.</p>
             <ReorderClickerLists
@@ -628,7 +628,7 @@ const [createForm, setCreateForm] = useState({
       {showCreateForm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
              onClick={() => setShowCreateForm(false)}>
-          <div className="glass-card" style={{ maxWidth: 640, width: '92%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-card" style={{ maxWidth: 640, width: '92%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ margin: 0 }}>➕ New Variable</h3>
             <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>

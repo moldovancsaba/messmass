@@ -40,9 +40,9 @@ export default function ChartAlgorithmManagerPage() {
 
 if (loading) {
     return (
-      <div className="admin-container">
+      <div className="page-container">
         <div className="admin-content">
-          <div className="glass-card" style={{ textAlign: 'center' }}>
+          <div className="admin-card" style={{ textAlign: 'center' }}>
             Loading…
           </div>
         </div>
@@ -52,9 +52,9 @@ if (loading) {
 
 if (!hasAccess) {
     return (
-      <div className="admin-container">
+      <div className="page-container">
         <div className="admin-content">
-          <div className="glass-card" style={{ textAlign: 'center' }}>
+          <div className="admin-card" style={{ textAlign: 'center' }}>
             <h2 className="no-margin">Access Denied</h2>
             <p className="mt-2">You don&apos;t have permission to access the Chart Algorithm Manager.</p>
             <p className="mt-2">Only administrators can manage chart configurations.</p>
@@ -66,7 +66,7 @@ if (!hasAccess) {
   }
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       <AdminHero 
         title="Chart Algorithm Manager"
         subtitle="Configure chart algorithms, data processing & visualization settings"

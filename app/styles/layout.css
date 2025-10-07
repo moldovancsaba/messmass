@@ -17,6 +17,9 @@
   justify-content: center;
 }
 
+/* DEPRECATED: Use .page-container instead
+   WHY: Inconsistent padding (32px vs 24px standard)
+   MIGRATION: Replace with .page-container in all admin pages */
 .admin-container {
   min-height: 100vh;
   background: var(--page-bg, var(--gradient-primary));

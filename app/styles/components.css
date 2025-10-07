@@ -22,20 +22,6 @@
   border-color: var(--mm-border-color-hover);
 }
 
-/* Legacy glass-card class - DEPRECATED, maps to admin-card for compatibility */
-.glass-card {
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md);
-  box-shadow: var(--mm-shadow-sm);
-  padding: var(--mm-space-6);
-  transition: all 0.2s ease;
-}
-
-.glass-card:hover {
-  box-shadow: var(--mm-shadow-md);
-  border-color: var(--mm-border-color-hover);
-}
 
 /* ========================================
    BUTTON SYSTEM
@@ -322,25 +308,6 @@ textarea::placeholder {
    TYPOGRAPHY COMPONENTS
 ======================================== */
 
-.title {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: var(--text-5xl);
-  font-weight: var(--font-bold);
-  text-align: center;
-  margin-bottom: var(--space-2);
-  line-height: var(--leading-tight);
-}
-
-.subtitle {
-  color: var(--color-gray-600);
-  text-align: center;
-  font-size: var(--text-lg);
-  margin-bottom: var(--space-8);
-  line-height: var(--leading-normal);
-}
 
 .section-title {
   font-size: var(--text-3xl);

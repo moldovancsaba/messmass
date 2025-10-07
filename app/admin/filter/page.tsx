@@ -342,7 +342,7 @@ function HashtagFilterPageContent() {
   }
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* Unified HERO with search (matches Project Management UX) */}
       <UnifiedAdminHero
         title="Multi-Hashtag Filter"
@@ -382,7 +382,7 @@ function HashtagFilterPageContent() {
       </UnifiedAdminHero>
 
       {/* Actions row (style selector + Share/CSV) */}
-      <div className="glass-card" style={{ padding: '0.75rem 1rem', marginBottom: '1rem' }}>
+      <div className="admin-card" style={{ padding: '0.75rem 1rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           {hasAppliedFilter && project && (
             <>
@@ -478,7 +478,7 @@ function HashtagFilterPageContent() {
       </div>
 
       {/* Hashtag Selection and Load More */}
-      <div className="glass-card" style={{ padding: '1rem' }}>
+      <div className="admin-card" style={{ padding: '1rem' }}>
         <HashtagMultiSelect
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
@@ -509,14 +509,14 @@ function HashtagFilterPageContent() {
 
       {/* Loading State */}
       {statsLoading && (
-        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
           <div className="curve-spinner" style={{ margin: '1rem auto' }}></div>
         </div>
       )}
 
       {/* Error State */}
       {error && !statsLoading && (
-        <div className="glass-card" style={{ padding: '2rem' }}>
+        <div className="admin-card" style={{ padding: '2rem' }}>
           <div className={styles.error}>
             <h2>❌ Error</h2>
             <p>{error}</p>
@@ -693,7 +693,7 @@ function HashtagFilterPageContent() {
 
           {/* Projects List Section */}
           {projects.length > 0 && (
-            <div className="glass-card" style={{ marginTop: '3rem' }}>
+            <div className="admin-card" style={{ marginTop: '3rem' }}>
               <h2 style={{ 
                 display: 'flex', 
                 alignItems: 'center', 

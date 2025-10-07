@@ -304,8 +304,8 @@ export default function AdminDesignPage() {
 
   if (loading) {
     return (
-      <div className="admin-container">
-        <div className="glass-card">
+      <div className="page-container">
+        <div className="admin-card">
           <div className="loading-spinner">
             <div className="spinner" />
             <div>Loading design settings...</div>
@@ -316,7 +316,7 @@ export default function AdminDesignPage() {
   }
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* WHAT: Use UnifiedAdminHero to avoid nested admin-container wrappers.
           WHY: Standardize header across admin pages and prevent duplicate backgrounds. */}
       <AdminHero 

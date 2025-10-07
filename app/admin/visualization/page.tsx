@@ -291,8 +291,8 @@ export default function VisualizationPage() {
 
   if (loading) {
     return (
-      <div className="admin-container">
-        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className="page-container">
+        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
           <div style={{
             width: '50px',
             height: '50px',
@@ -309,7 +309,7 @@ export default function VisualizationPage() {
   }
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       <AdminHero 
         title="Data Visualization Manager"
         subtitle="Manage data visualization blocks and chart layouts"

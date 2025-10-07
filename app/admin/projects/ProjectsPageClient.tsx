@@ -396,8 +396,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   if (loading) {
     return (
-      <div className="admin-container" style={{ padding: '1rem' }}>
-        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className="page-container" style={{ padding: '1rem' }}>
+        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
           <div className="curve-spinner"></div>
           <p style={{ color: '#6b7280', marginTop: '0.75rem' }}>Loading projects...</p>
         </div>
@@ -538,7 +538,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     });
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* Use UnifiedAdminHero component matching hashtags filter page design exactly */}
       <UnifiedAdminHero
         title="Project Management"
@@ -568,7 +568,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       />
 
       {/* Projects Table */}
-      <div className="glass-card" style={{ overflow: 'hidden' }}>
+      <div className="admin-card" style={{ overflow: 'hidden' }}>
         <div className="projects-table-container" style={{ borderRadius: 'inherit' }}>
           <table className="projects-table" style={{ 
             width: '100%', 

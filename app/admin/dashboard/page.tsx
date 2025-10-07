@@ -183,8 +183,8 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="admin-container">
-        <div className="glass-card">
+      <div className="page-container">
+        <div className="admin-card">
           <div className="loading-spinner">Loading dashboard...</div>
         </div>
       </div>
@@ -194,23 +194,23 @@ export default function DashboardPage() {
   const aggregatedStats = calculateAggregatedStats();
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* Header */}
-      <div className="glass-card">
+      <div className="admin-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 className="title">📊 Dashboard</h1>
+          <h1 className="section-title">📊 Dashboard</h1>
           <a href="/admin" className="btn btn-secondary" style={{
             textDecoration: 'none',
             transition: 'all 0.2s ease'
           }}>← Back to Admin</a>
         </div>
-        <p className="subtitle">
+        <p className="section-subtitle">
           Comprehensive dashboard with overview, success metrics, statistics, and filtering
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
+      <div className="admin-card" style={{ marginBottom: '2rem' }}>
         <div style={{
           display: 'flex',
           borderBottom: '1px solid rgba(99, 102, 241, 0.2)',
@@ -245,7 +245,7 @@ export default function DashboardPage() {
 
       {/* Dashboard Overview Tab */}
       {activeTab === 'overview' && (
-        <div className="glass-card">
+        <div className="admin-card">
           <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>📊 Dashboard Overview</h2>
           
           {/* Key Metrics Cards */}
@@ -346,7 +346,7 @@ export default function DashboardPage() {
 
       {/* Success Manager Overview Tab */}
       {activeTab === 'success' && (
-        <div className="glass-card">
+        <div className="admin-card">
           <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>🎯 Success Manager Overview</h2>
           
           {/* Success Metrics */}
@@ -433,7 +433,7 @@ export default function DashboardPage() {
 
       {/* Aggregated Statistics Tab */}
       {activeTab === 'stats' && (
-        <div className="glass-card">
+        <div className="admin-card">
           <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>📈 Aggregated Statistics</h2>
           
           {/* Demographics */}
@@ -493,7 +493,7 @@ export default function DashboardPage() {
 
       {/* Multi-Hashtag Filter Tab */}
       {activeTab === 'filter' && (
-        <div className="glass-card">
+        <div className="admin-card">
           <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>🔍 Multi-Hashtag Filter</h2>
           
           {/* Filter Input */}
