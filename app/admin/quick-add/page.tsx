@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
 
 /* What: Quick Add from Sheet page for bulk event import
    Why: Streamline creating projects from Google Sheets data */
@@ -260,133 +259,177 @@ export default function QuickAddPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <header className={styles.header}>
-          <h1>⚡ Quick Add from Sheet</h1>
-          <p className={styles.subtitle}>
-            Paste event data from Google Sheets to quickly create projects
-          </p>
-        </header>
-
-        <div className={styles.instructions}>
-          <h3>📋 Expected Format:</h3>
-          <div className={styles.exampleBox}>
-            <code>
-              ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
-            </code>
-          </div>
-          <ul className={styles.formatList}>
-            <li><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
-            <li><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
-            <li><strong>Home Team | Visitor Team | Location | League</strong></li>
-          </ul>
+    <div className="admin-container">
+      {/* Header */}
+      <div className="glass-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h1 className="title">⚡ Quick Add from Sheet</h1>
+          <a href="/admin/projects" className="btn btn-secondary">← Back to Projects</a>
         </div>
+        <p className="subtitle">
+          Paste event data from Google Sheets to quickly create projects
+        </p>
+      </div>
 
-        <div className={styles.inputSection}>
-          <label htmlFor="rawInput" className={styles.label}>
+      {/* Instructions */}
+      <div className="glass-card" style={{ borderLeft: '4px solid #6366f1' }}>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+          📋 Expected Format:
+        </h3>
+        <div style={{ 
+          background: '#1f2937', 
+          color: 'white', 
+          padding: '1rem', 
+          borderRadius: '8px', 
+          marginBottom: '1rem',
+          overflow: 'auto'
+        }}>
+          <code style={{ fontFamily: 'Monaco, monospace', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+            ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
+          </code>
+        </div>
+        <ul style={{ paddingLeft: '1.5rem', color: '#6b7280', fontSize: '0.875rem' }}>
+          <li style={{ marginBottom: '0.5rem' }}><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
+          <li style={{ marginBottom: '0.5rem' }}><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
+          <li><strong>Home Team | Visitor Team | Location | League</strong></li>
+        </ul>
+      </div>
+
+      {/* Input Section */}
+      <div className="glass-card">
+        <div className="form-group">
+          <label htmlFor="rawInput" className="form-label">
             Paste Sheet Data:
           </label>
           <textarea
             id="rawInput"
-            className={styles.textarea}
+            className="form-input"
             value={rawInput}
             onChange={(e) => setRawInput(e.target.value)}
             placeholder="⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga"
             rows={5}
+            style={{ fontFamily: 'Monaco, monospace', fontSize: '0.875rem' }}
           />
-          
-          <div className={styles.buttonGroup}>
-            <button 
-              onClick={handlePreview}
-              className={styles.btnPrimary}
-              disabled={!rawInput.trim()}
-            >
-              Preview
-            </button>
-            {preview && (
-              <button 
-                onClick={handleReset}
-                className={styles.btnSecondary}
-              >
-                Clear
-              </button>
-            )}
-          </div>
         </div>
-
-        {error && (
-          <div className={styles.errorBox}>
-            ❌ {error}
-          </div>
-        )}
-
-        {success && (
-          <div className={styles.successBox}>
-            ✅ {success}
-          </div>
-        )}
-
-        {preview && (
-          <div className={styles.previewSection}>
-            <h3>👀 Preview:</h3>
-            
-            <div className={styles.previewCard}>
-              <div className={styles.previewRow}>
-                <strong>Event Name:</strong>
-                <span>{preview.eventName}</span>
-              </div>
-              
-              <div className={styles.previewRow}>
-                <strong>Event Date:</strong>
-                <span>{preview.eventDate}</span>
-              </div>
-              
-              <div className={styles.previewRow}>
-                <strong>Hashtags:</strong>
-                <div className={styles.hashtagList}>
-                  {preview.hashtags.map((tag: string) => (
-                    <span key={tag} className={styles.hashtag}>
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.previewDetails}>
-                <h4>Parsed Data:</h4>
-                <ul>
-                  <li><strong>Sport:</strong> {preview.rawData.sport} ({preview.rawData.sportHashtag})</li>
-                  <li><strong>Home Team:</strong> {preview.rawData.homeTeam}</li>
-                  <li><strong>Visitor Team:</strong> {preview.rawData.visitorTeam}</li>
-                  <li><strong>Location:</strong> {preview.rawData.location}</li>
-                  <li><strong>League:</strong> {preview.rawData.league}</li>
-                  <li><strong>Original Date:</strong> {preview.rawData.dateStr}</li>
-                  <li><strong>Year:</strong> {preview.rawData.year}</li>
-                  <li><strong>Month:</strong> {preview.rawData.month}</li>
-                  <li><strong>Season:</strong> {preview.rawData.season}</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className={styles.buttonGroup}>
-              <button 
-                onClick={handleCreate}
-                className={styles.btnSuccess}
-                disabled={isCreating}
-              >
-                {isCreating ? 'Creating...' : '✅ Create Project'}
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className={styles.footer}>
-          <a href="/admin/projects" className={styles.backLink}>
-            ← Back to Projects
-          </a>
+        
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+          <button 
+            onClick={handlePreview}
+            className="btn btn-primary"
+            disabled={!rawInput.trim()}
+          >
+            Preview
+          </button>
+          {preview && (
+            <button 
+              onClick={handleReset}
+              className="btn btn-secondary"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="glass-card" style={{ background: '#fee2e2', border: '1px solid #fca5a5' }}>
+          <p style={{ color: '#991b1b', margin: 0, fontWeight: '500' }}>❌ {error}</p>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {success && (
+        <div className="glass-card" style={{ background: '#d1fae5', border: '1px solid #6ee7b7' }}>
+          <p style={{ color: '#065f46', margin: 0, fontWeight: '500' }}>✅ {success}</p>
+        </div>
+      )}
+
+      {/* Preview Section */}
+      {preview && (
+        <div className="glass-card" style={{ borderLeft: '4px solid #6366f1' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1f2937', marginBottom: '1.5rem' }}>
+            👀 Preview:
+          </h3>
+          
+          <div className="admin-card" style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+              <strong style={{ display: 'inline-block', minWidth: '120px', color: '#6b7280' }}>Event Name:</strong>
+              <span style={{ color: '#1f2937' }}>{preview.eventName}</span>
+            </div>
+            
+            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+              <strong style={{ display: 'inline-block', minWidth: '120px', color: '#6b7280' }}>Event Date:</strong>
+              <span style={{ color: '#1f2937' }}>{preview.eventDate}</span>
+            </div>
+            
+            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+              <strong style={{ display: 'block', marginBottom: '0.5rem', color: '#6b7280' }}>Hashtags:</strong>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {preview.hashtags.map((tag: string) => (
+                  <span 
+                    key={tag} 
+                    style={{
+                      display: 'inline-block',
+                      background: '#e0e7ff',
+                      color: '#4338ca',
+                      padding: '4px 12px',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ paddingTop: '1rem', borderTop: '2px solid #e5e7eb' }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.75rem' }}>
+                Parsed Data:
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Sport:</strong> {preview.rawData.sport} ({preview.rawData.sportHashtag})
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Home Team:</strong> {preview.rawData.homeTeam}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Visitor Team:</strong> {preview.rawData.visitorTeam}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Location:</strong> {preview.rawData.location}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>League:</strong> {preview.rawData.league}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Original Date:</strong> {preview.rawData.dateStr}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Year:</strong> {preview.rawData.year}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  <strong>Month:</strong> {preview.rawData.month}
+                </li>
+                <li style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                  <strong>Season:</strong> {preview.rawData.season}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleCreate}
+            className="btn btn-success"
+            disabled={isCreating}
+          >
+            {isCreating ? 'Creating...' : '✅ Create Project'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
