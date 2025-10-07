@@ -52,9 +52,19 @@ function toHashtag(text: string): string {
     .replace(/^_+|_+$/g, '');
 }
 
-/* What: Parse Hungarian date to ISO format
-   Why: Convert "péntek, 17 október 2025   kezdés:  18:00" to YYYY-MM-DD */
-function parseHungarianDate(dateStr: string): string {
+/* What: Get season from month number
+   Why: Categorize events by season for filtering */
+function getSeason(month: number): string {
+  // Month is 0-indexed (0 = January, 11 = December)
+  if (month === 11 || month === 0 || month === 1) return 'winter';
+  if (month >= 2 && month <= 4) return 'spring';
+  if (month >= 5 && month <= 7) return 'summer';
+  return 'autumn'; // months 8, 9, 10 (September, October, November)
+}
+
+/* What: Parse Hungarian date to ISO format and extract time components
+   Why: Convert "péntek, 17 október 2025   kezdés:  18:00" to YYYY-MM-DD and extract year, month, season */
+function parseHungarianDate(dateStr: string): { isoDate: string; year: string; month: string; season: string } {
   try {
     // Extract day, month, year from format like "péntek, 17 október 2025"
     const parts = dateStr.split(',')[1]?.trim().split(/\s+/) || [];
@@ -72,10 +82,20 @@ function parseHungarianDate(dateStr: string): string {
       throw new Error('Invalid date');
     }
     
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const isoDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const monthName = monthEn.toLowerCase();
+    const season = getSeason(date.getMonth());
+    
+    return { isoDate, year, month: monthName, season };
   } catch (error) {
     console.error('Date parsing error:', error);
-    return new Date().toISOString().split('T')[0]; // fallback to today
+    const today = new Date();
+    return {
+      isoDate: today.toISOString().split('T')[0],
+      year: today.getFullYear().toString(),
+      month: today.toLocaleString('en', { month: 'long' }).toLowerCase(),
+      season: getSeason(today.getMonth()),
+    };
   }
 }
 
@@ -88,9 +108,10 @@ function parseSheetRow(rawData: string) {
   const sportEmoji = parts[0] || '';
   const sportHashtag = SPORT_MAP[sportEmoji] || 'other';
   
-  // Extract date (second part)
+  // Extract date (second part) and time components
   const dateStr = parts[1] || '';
-  const eventDate = parseHungarianDate(dateStr);
+  const dateInfo = parseHungarianDate(dateStr);
+  const eventDate = dateInfo.isoDate;
   
   // Extract teams and location (split by |)
   const remainder = parts.slice(2).join('\t');
@@ -115,6 +136,9 @@ function parseSheetRow(rawData: string) {
     `home:${homeHashtag}`,
     `visitor:${visitorHashtag}`,
     `location:${locationHashtag}`,
+    `time:${dateInfo.year}`,
+    `time:${dateInfo.month}`,
+    `time:${dateInfo.season}`,
   ].filter(Boolean);
   
   return {
@@ -129,6 +153,9 @@ function parseSheetRow(rawData: string) {
       location,
       league,
       dateStr,
+      year: dateInfo.year,
+      month: dateInfo.month,
+      season: dateInfo.season,
     },
   };
 }
@@ -335,6 +362,9 @@ export default function QuickAddPage() {
                   <li><strong>Location:</strong> {preview.rawData.location}</li>
                   <li><strong>League:</strong> {preview.rawData.league}</li>
                   <li><strong>Original Date:</strong> {preview.rawData.dateStr}</li>
+                  <li><strong>Year:</strong> {preview.rawData.year}</li>
+                  <li><strong>Month:</strong> {preview.rawData.month}</li>
+                  <li><strong>Season:</strong> {preview.rawData.season}</li>
                 </ul>
               </div>
             </div>
