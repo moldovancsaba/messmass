@@ -1,6 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-02T12:30:00.000Z
+Version: 5.21.2
+Last Updated: 2025-10-06T19:57:45.000Z
 
 ## Project Overview
 
@@ -63,6 +64,8 @@ A centralized configuration module lives at `lib/config.ts`. It provides a singl
 - Client-exposed (browser):
   - NEXT_PUBLIC_APP_URL
   - NEXT_PUBLIC_WS_URL
+
+**Important**: Always use `config.dbName` (not `config.mongodbDb`). The config module provides strongly-typed access to prevent property name errors.
 
 ### Resolution order and precedence
 1) Environment variables (authoritative for secrets)
@@ -303,6 +306,8 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/admin/visualization` - Data visualization settings
 
 ### API Endpoints
+
+**Projects**
 - `/api/projects` - Project CRUD operations and dataset-wide listing
   - Listing supports two modes:
     - Default (no sort/search): cursor pagination by updatedAt desc (nextCursor)
@@ -311,11 +316,32 @@ The system supports sophisticated filtering with both traditional and categorize
     - sortField: eventName | eventDate | images | fans | attendees
     - sortOrder: asc | desc
   - Numeric sorts use computed fields (images, fans, attendees) with null-safe defaults; eventName sorting uses case-insensitive collation
+
+**Hashtags**
 - `/api/hashtags/filter-by-slug/[slug]` - Public hashtag filtering (supports both slugs and direct hashtag queries)
 - `/api/hashtags/filter` - Admin hashtag filtering
 - `/api/hashtags/slugs` - Available hashtag listing
 - `/api/hashtag-categories` - Category management
 - `/api/hashtag-colors` - Hashtag color management
+
+**Admin User Management**
+- `PUT /api/admin/local-users/[id]` - Regenerate user password (super-admin only)
+  - Returns new 32-char hex password
+  - Old password invalidated immediately
+- `DELETE /api/admin/local-users/[id]` - Delete user (super-admin only)
+  - Prevents self-deletion
+  - Projects created by user remain in system
+
+**Authentication Recovery**
+- `POST /api/admin/clear-cookies` - Clear stale auth cookies programmatically
+  - Returns success confirmation
+  - Used for debugging cookie issues
+- `/admin/clear-session` (page) - User-friendly cookie reset
+  - Clears all admin cookies
+  - Auto-redirects to login
+  - Self-service recovery tool
+
+**Configuration**
 - `/api/page-config` - Page styling configuration
 - `/api/chart-config` - Chart configuration management
 
@@ -338,20 +364,46 @@ The system supports sophisticated filtering with both traditional and categorize
 ## Technology Stack
 
 ### Frontend
-- **Next.js 15.4.6** - React framework with App Router
+- **Next.js 15.5.4** - React framework with App Router
 - **TypeScript** - Type safety and developer experience
-- **Tailwind CSS** - Utility-first styling
+- **CSS Modules + Design Tokens** - Centralized styling with `--mm-*` variables
 - **Lucide React** - Icon library
+- **Chart.js + react-chartjs-2** - Canvas-based charts with PNG export
 
 ### Backend
 - **Next.js API Routes** - Serverless API endpoints
-- **MongoDB** - NoSQL database with flexible schema
-- **NextAuth.js** - Authentication system
+- **MongoDB Atlas** - NoSQL database with flexible schema
+- **Custom Auth** - DB-backed sessions with HttpOnly cookies
 
 ### Development
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
+- **ESLint** - Code linting (warn-level for style props)
+- **TypeScript Strict Mode** - Enforced type safety
 - **Vercel** - Deployment platform
+
+### Key Next.js 15 Patterns
+
+**Async Route Segments** (Breaking Change):
+```typescript
+// Route params are now Promise-wrapped
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params  // Must await
+  // ...
+}
+```
+
+**Async Helpers**:
+- `cookies()` - Must await: `const cookieStore = await cookies()`
+- `headers()` - Must await: `const headersList = await headers()`
+- `params` - Must await in route handlers
+
+**Runtime Declaration**:
+```typescript
+// Required for routes using Node.js APIs (crypto, fs, etc.)
+export const runtime = 'nodejs'
+```
 
 ---
 
@@ -382,5 +434,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-01T09:11:20.000Z*
-*Version: 5.16.0*
+*Last Updated: 2025-10-06T19:57:45.000Z*
+*Version: 5.21.2*

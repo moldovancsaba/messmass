@@ -1,7 +1,7 @@
 # DESIGN_SYSTEM.md
 
-**Version**: 5.20.1 (Phase 1 Complete - TailAdmin V2 Foundation)  
-**Last Updated**: 2025-10-02T14:30:00.000Z  
+**Version**: 5.21.2  
+**Last Updated**: 2025-10-06T19:57:45.000Z  
 **Status**: Flat Design System - Glass-morphism Removed
 
 ---
@@ -246,8 +246,35 @@ Professional blue for trust and authority:
 - Focus: same ring as inputs
 
 4) Cards & Stats
-- .glass-card — glassmorphism container
-- .stat-card / .stat-card-admin — stat blocks with hover elevation and typography
+
+**Admin Card (.admin-card)**
+
+The `.admin-card` class is the standardized container for all admin dashboard cards, replacing previous inline styles and glass-morphism effects.
+
+```css
+.admin-card {
+  background: var(--mm-white);           /* Solid white background */
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);    /* 8px (was 20px) */
+  padding: var(--mm-space-6);            /* 24px */
+  box-shadow: var(--mm-shadow-sm);       /* Subtle elevation */
+  transition: box-shadow 0.2s ease;      /* Smooth hover effect */
+}
+
+.admin-card:hover {
+  box-shadow: var(--mm-shadow-md);       /* Elevated on hover */
+}
+```
+
+**Usage**: Apply `.admin-card` to all admin navigation cards, dashboard panels, and form containers. **Never use inline styles** for background, border, radius, or padding on admin cards.
+
+**Location**: Defined in `app/styles/components.css` alongside other centralized component styles.
+
+**Migration**: All 20+ admin components previously using inline styles have been migrated to `.admin-card` for consistency and maintainability.
+
+**Other Card Classes**:
+- `.glass-card` — (deprecated) legacy glassmorphism container
+- `.stat-card` / `.stat-card-admin` — stat blocks with hover elevation and typography
 
 Board Card Width Consistency (Rule)
 - All cards displayed within any board/grid must have equal width within that board.
@@ -281,12 +308,15 @@ Recent Refinements (v3.11.0)
 - Inputs & Dropdowns: Enforced min-height 40px for inputs and selects; added unified .form-select and generic select styling so dropdowns match input sizing; added caret with background image for cross-browser consistency.
 - Edge Spacing: Added small default margin to .btn, .form-input, and .form-select to avoid edge collisions.
 
-Dos & Don’ts
+Dos & Don'ts
 - Do: Apply .btn classes (variant + size) instead of inline styles.
 - Do: Use .form-input for text inputs and .form-select for selects for consistent sizing.
+- Do: Use .admin-card for all admin dashboard cards and panels.
 - Do: Use spacing utilities (.m-*, .p-*, .gap via container) to control layout spacing.
-- Don’t: Hardcode inline styles for shared properties (padding, border, radius, colors). Prefer classes.
-- Don’t: Apply fixed pixel heights to buttons/selects — the system standardizes minimum 40px height via classes.
+- Do: Use design tokens (--mm-* variables) from theme.css for all custom styling.
+- Don't: Hardcode inline styles for shared properties (padding, border, radius, colors). Prefer classes.
+- Don't: Apply fixed pixel heights to buttons/selects — the system standardizes minimum 40px height via classes.
+- **Don't: Use inline styles on any component** — Inline styles are explicitly prohibited per project policy.
 
 Refactor Targets (Hardcoded Styles to Replace)
 - Inline-styled buttons in auth and shareable components (e.g., lib/shareables/auth/LoginForm.tsx, components/SharePopup.tsx)

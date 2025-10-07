@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 5.18.0
-Last Updated: 2025-10-02T12:30:00.000Z
+Current Version: 5.21.2
+Last Updated: 2025-10-06T19:57:45.000Z
 
 ### High Priority — Public Docs & Demo Link (v5.16.0)
 
@@ -12,7 +12,7 @@ Last Updated: 2025-10-02T12:30:00.000Z
 |||||| DOCS-001 | Add README Examples + Public Docs | Agent Mode | 2025-10-01T09:12:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
 |||||| DOCS-002 | Convert demo inline styles to classes | Agent Mode | 2025-10-01T09:13:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
 |||||| DOCS-003 | Add server-side gate helper snippets | Agent Mode | 2025-10-01T09:14:00.000Z | ✅ Complete (2025-10-01T09:11:20.000Z) |
-|||||| DOCS-004 | Sync versions, release notes; commit and push | Agent Mode | 2025-10-01T09:20:00.000Z | In Progress |
+|||||| DOCS-004 | Sync versions, release notes; commit and push | Agent Mode | 2025-10-01T09:20:00.000Z | ✅ Complete (2025-10-01T09:20:00.000Z) |
 
 ### High Priority — Style System Hardening (Phase 2)
 
@@ -398,11 +398,25 @@ Baseline snapshot (recorded 2025-09-23T12:32:28.000Z)
 
 ### High Priority – Docs & Refactor (4.1.1)
 
+|| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+|| DOC-API | Update API docs for global sorting (ARCHITECTURE, WARP) | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+|| REF-SSO | Centralize SSO base URL in config and update routes | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+|| DOC-NOTE| Add release notes and learnings entries | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+
+### High Priority – Comprehensive Documentation Update (v5.21.2)
+
 | Task ID | Title | Owner | Expected Delivery | Status |
 |---------|-------|-------|-------------------|--------|
-| DOC-API | Update API docs for global sorting (ARCHITECTURE, WARP) | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
-| REF-SSO | Centralize SSO base URL in config and update routes | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
-| DOC-NOTE| Add release notes and learnings entries | AI Developer | 2025-09-15T16:24:52.000Z | ✅ Complete |
+| DOC-521-001 | Update LEARNINGS.md with 5 recent failure entries | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-002 | Create END_USER_GUIDE.md (event organizers) | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-003 | Create DEVELOPER_ONBOARDING.md (new developers) | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-004 | Create ADMIN_GUIDE.md (admin users) | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-005 | Update ARCHITECTURE.md with Next.js 15 patterns and new API endpoints | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-006 | Refresh ROADMAP.md to forward-looking only | Agent Mode | 2025-10-06T19:57:45.000Z | ✅ Complete (2025-10-06T19:57:45.000Z) |
+| DOC-521-007 | Synchronize versions and timestamps across all documentation | Agent Mode | 2025-10-06T19:57:45.000Z | In Progress |
+| DOC-521-008 | Build validation (type-check, lint, build) | Agent Mode | 2025-10-06T19:57:45.000Z | Pending |
+| DOC-521-009 | Commit and push to docs/v5.21.2 branch | Agent Mode | 2025-10-06T19:57:45.000Z | Pending |
 
 ## Notes
 - All timestamps follow ISO 8601 format: YYYY-MM-DDTHH:MM:SS.sssZ

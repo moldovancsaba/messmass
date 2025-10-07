@@ -292,4 +292,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.20.0 | Last Updated: 2025-10-02T12:30:00.000Z | Status: Active Development*
+*Version: 5.21.2 | Last Updated: 2025-10-06T19:57:45.000Z | Status: Active Development*

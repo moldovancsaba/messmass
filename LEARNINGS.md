@@ -1,5 +1,231 @@
 # MessMass Development Learnings
 
+Last Updated: 2025-10-06T19:57:45.000Z
+Version: 5.21.2
+
+---
+
+## 2025-10-06T19:57:45.000Z — Authentication & Cookie Management Issues (Backend / Security)
+
+**What**: Resolved critical authentication failures caused by stale cookies persisting across domains and referencing deleted user IDs.
+
+**Why**: Users (including admin) were unable to log in despite correct credentials. Browser cached `admin-session` cookies referencing non-existent user IDs (e.g., `6b04126e-fbde-499b-a164-f3c557ef0b69`) were taking precedence over new login attempts.
+
+**How**:
+1. **Root Cause Analysis**
+   - `cookieStore.delete()` removes cookie server-side but doesn't send browser removal header
+   - Browsers kept sending old cookies with every request
+   - New login created correct session but old cookie took precedence
+   - Issue affected localhost, production domain, and all environments
+
+2. **Solution Implemented**
+   - Force delete stale cookies by setting `maxAge=0` before setting new cookie
+   - Added `/api/admin/clear-cookies` endpoint for programmatic cleanup
+   - Created `/admin/clear-session` user-friendly page with auto-redirect to login
+   - Modified login route to clear old cookies before authentication
+
+3. **Recovery Tools Created**
+   ```typescript
+   // Login route now clears stale cookies first
+   cookieStore.set('admin-session', '', { maxAge: 0, path: '/' })
+   // Then sets new cookie with fresh session
+   ```
+
+**Outcome**:
+- ✅ Login works across all domains (localhost, production)
+- ✅ Stale cookie cleanup automated in login flow
+- ✅ Manual recovery tools available for users
+- ✅ Zero recurring auth failures after fix
+
+**Lessons Learned**:
+1. **Cookie Lifecycle**: `cookieStore.delete()` is insufficient for cross-request cleanup; must use `maxAge=0` to force browser removal
+2. **Domain-Agnostic Issues**: Cookie problems manifest identically across all domains; fix must address browser behavior, not domain config
+3. **User Recovery**: Provide self-service tools (`/admin/clear-session`) for users to recover without developer intervention
+4. **Defensive Login**: Always clear old cookies before authentication to prevent stale session conflicts
+
+---
+
+## 2025-10-06T19:57:45.000Z — Next.js 15 API Route Type Changes (Frontend / TypeScript)
+
+**What**: TypeScript compilation errors in API routes due to Next.js 15 params type changes.
+
+**Why**: Next.js 15 changed route segment params from synchronous `{ id: string }` to `Promise<{ id: string }>`, breaking existing route handlers.
+
+**How**:
+1. **Type Error**
+   ```typescript
+   // Before (Next.js 14)
+   export async function PUT(
+     request: NextRequest,
+     { params }: { params: { id: string } }
+   )
+   
+   // Next.js 15 - params is now Promise
+   export async function PUT(
+     request: NextRequest,
+     context: { params: Promise<{ id: string }> }
+   )
+   ```
+
+2. **Solution Pattern**
+   - Use `RouteContext` type with Promise-wrapped params
+   - Always `await params` before accessing properties
+   - Add `runtime = 'nodejs'` for routes using Node APIs (crypto)
+
+3. **Implementation**
+   ```typescript
+   export const runtime = 'nodejs'
+   
+   export async function PUT(
+     request: NextRequest,
+     context: { params: Promise<{ id: string }> }
+   ) {
+     const { id } = await context.params
+     // Now safe to use id
+   }
+   ```
+
+**Outcome**:
+- ✅ All API routes updated to Next.js 15 patterns
+- ✅ TypeScript compilation passing
+- ✅ Zero runtime errors from param access
+
+**Lessons Learned**:
+1. **Breaking Changes**: Always review Next.js upgrade guides for type system changes
+2. **Async Patterns**: Modern Next.js embraces async everywhere; params, searchParams, cookies, headers are all async
+3. **Runtime Declaration**: Explicitly declare `runtime = 'nodejs'` for Node-specific APIs to avoid edge runtime conflicts
+
+---
+
+## 2025-10-06T19:57:45.000Z — Missing API Endpoints in Production (Backend / Process)
+
+**What**: Password regeneration and user deletion features failed in production due to missing API endpoints.
+
+**Why**: UI implemented features before backend endpoints existed; `/api/admin/local-users/[id]` route was missing PUT and DELETE methods.
+
+**How**:
+1. **Discovery**
+   - Admin clicked "Regenerate Password" → "Failed to regenerate password"
+   - DELETE user button → silent failure
+   - Network tab showed 404 for `/api/admin/local-users/[id]`
+
+2. **Implementation**
+   - Created `/api/admin/local-users/[id]/route.ts` with:
+     - `PUT` endpoint: Password regeneration (super-admin only)
+     - `DELETE` endpoint: User deletion (super-admin only, prevents self-delete)
+   - Added proper auth guards using `getAdminUser()`
+   - Generates secure 32-char hex passwords using Node crypto
+   - Returns consistent response schemas
+
+3. **Validation Script**
+   - Created `scripts/test-cookie-flow.sh` to test full auth lifecycle
+   - Added `scripts/reset-password-simple.js` for password recovery
+
+**Outcome**:
+- ✅ Password regeneration working in admin UI
+- ✅ User deletion working with proper guards
+- ✅ Consistent error handling and responses
+- ✅ Testing scripts for future validation
+
+**Lessons Learned**:
+1. **UI-API Parity**: Validate all UI features have corresponding backend endpoints before production deploy
+2. **Production-Like Testing**: Test in environment with prod-like authentication and data to catch missing endpoints early
+3. **Auth Guards**: Always check user role before destructive operations; prevent self-deletion patterns
+4. **Recovery Scripts**: Maintain CLI tools for password reset and user management when UI fails
+
+---
+
+## 2025-10-06T19:57:45.000Z — Config Property Naming Inconsistency (Dev / Process)
+
+**What**: Runtime errors due to incorrect config property name (`config.mongodbDb` instead of `config.dbName`).
+
+**Why**: Centralized config module uses `dbName` but some code incorrectly referenced `mongodbDb`, causing undefined database name errors.
+
+**How**:
+1. **Error Pattern**
+   ```typescript
+   // Incorrect (caused undefined)
+   const dbName = config.mongodbDb
+   
+   // Correct
+   const dbName = config.dbName
+   ```
+
+2. **Root Cause**
+   - Config module defined as `dbName` from start
+   - Developer assumed property name matched env var (`MONGODB_DB` → `mongodbDb`)
+   - TypeScript didn't catch error due to dynamic property access patterns
+
+3. **Solution**
+   - Standardized on `config.dbName` across all files
+   - Added TypeScript strict property access to config module
+   - Grep'd codebase for all `mongodbDb` references and replaced
+
+**Outcome**:
+- ✅ All config references use correct `dbName` property
+- ✅ TypeScript now enforces correct property names
+- ✅ Zero undefined database name errors
+
+**Lessons Learned**:
+1. **Type Safety Matters**: Strongly typed config objects prevent property name typos
+2. **Consistent Naming**: Config property names don't need to match env var names; prioritize clarity
+3. **Centralized Source**: Single config module prevents scattered `process.env` access and naming drift
+4. **Grep Your Fixes**: When fixing naming issues, search entire codebase for all variations
+
+---
+
+## 2025-10-06T19:57:45.000Z — Glass-morphism to Flat Design Migration (Design / Frontend)
+
+**What**: Refactored inline styles to centralized CSS classes as part of TailAdmin V2 design system migration.
+
+**Why**: Inline styles across 20+ components made refactoring slow, prevented consistent theming, and created maintenance burden.
+
+**How**:
+1. **Problem Pattern**
+   ```tsx
+   // Before - inline styles scattered everywhere
+   <div style={{
+     background: 'rgba(255, 255, 255, 0.95)',
+     backdropFilter: 'blur(10px)',
+     borderRadius: '20px',
+     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+     padding: '24px'
+   }}>
+   ```
+
+2. **Solution - Centralized Classes**
+   - Created `admin-card` class in `components.css`
+   - Uses design tokens: `var(--mm-white)`, `var(--mm-shadow-sm)`, `var(--mm-radius-md)`
+   - Flat design: solid backgrounds, 8px radius (was 20px), subtle shadows
+   - Removed all `backdrop-filter: blur()` effects
+
+3. **Migration Pattern**
+   ```tsx
+   // After - centralized, token-driven classes
+   <div className="admin-card">
+   ```
+
+4. **Component-Specific Classes**
+   - `.user-create-form`, `.password-generated`, `.admin-table`
+   - `.error-text`, `.table-wrapper`
+   - All styled using design tokens for consistency
+
+**Outcome**:
+- ✅ 20+ components refactored to use centralized classes
+- ✅ Zero inline styles in Admin Users page
+- ✅ Consistent flat design across admin interface
+- ✅ 8px border radius replaces 20px for modern aesthetic
+- ✅ Easy theme updates via token changes
+
+**Lessons Learned**:
+1. **Inline Styles Are Tech Debt**: Every inline style = future refactor burden; use classes from day one
+2. **Design Tokens Win**: Centralized `--mm-*` CSS variables enable instant theme changes across entire app
+3. **Component-Specific Classes**: Balance between utility classes and semantic component classes
+4. **Migration Strategy**: Refactor one page at a time; validate visually before moving to next
+5. **ESLint Guards**: Add `react/forbid-dom-props: style` (warn level) to prevent regression
+
+---
+
 ## 2025-10-02T12:00:00.000Z — Phase 3 Performance Optimization: Database, WebSocket, Caching & Component Performance (Performance / Infrastructure / React)
 
 **What**: Comprehensive performance optimization across all layers: MongoDB indexing, WebSocket server optimization, React component memoization, API caching infrastructure, and performance monitoring utilities.

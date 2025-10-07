@@ -1,5 +1,77 @@
 # MessMass Release Notes
 
+## [v5.21.2] — 2025-10-06T19:57:45.000Z
+
+### Documentation — Comprehensive Documentation Update
+
+**Scope**: Documentation-only release with no runtime behavior changes
+
+**New Documentation**
+- Created `END_USER_GUIDE.md` (418 lines) - Complete guide for event organizers
+  - Stats page navigation and interpretation
+  - Live event tracking (Clicker and Manual modes)
+  - Data export (CSV and PDF)
+  - Sharing and collaboration features
+  - Metrics definitions and hashtag system
+  - Troubleshooting common issues
+- Created `DEVELOPER_ONBOARDING.md` (881 lines) - Complete developer onboarding guide
+  - Project architecture and system overview
+  - Development environment setup
+  - Database schema deep dive
+  - Authentication system documentation
+  - Hashtag and WebSocket integration
+  - API patterns and code quality standards
+  - Common pitfalls and solutions (Next.js 15 patterns)
+- Created `ADMIN_GUIDE.md` (850 lines) - Complete administrator guide
+  - Admin dashboard navigation
+  - Project, hashtag, and category management
+  - Design customization with tokens
+  - Chart configuration and variables system
+  - User management and password regeneration
+  - Security best practices and recovery tools
+
+**Updated LEARNINGS.md**
+- Added 5 categorized failure entries (2025-10-06):
+  - Backend: Authentication & Cookie Issues (stale cookies, maxAge=0 solution)
+  - Frontend: Next.js 15 API Route Type Changes (async params pattern)
+  - Backend: Missing API Endpoints (/api/admin/local-users/[id] PUT/DELETE)
+  - Dev/Process: Config Property Naming (config.dbName standardization)
+  - Design: Glass-morphism to Flat Design Migration (admin-card class)
+
+**Updated ARCHITECTURE.md**
+- Documented Next.js 15 breaking changes and patterns
+  - Async RouteContext params (Promise-wrapped)
+  - Required runtime declarations for Node.js APIs
+- Added new API endpoints:
+  - PUT/DELETE /api/admin/local-users/[id] (password regen, user deletion)
+  - POST /api/admin/clear-cookies (stale cookie recovery)
+  - /admin/clear-session page (user-friendly session reset)
+- Standardized config.dbName usage
+- Updated technology stack (Next.js 15.5.4, CSS Modules + Design Tokens)
+
+**Updated ROADMAP.md**
+- Removed completed operational tasks
+- Added forward-looking Q4 2025 priorities:
+  - Documentation automation (version/timestamp sync)
+  - Authentication & cookie lifecycle hardening
+  - Admin UX polish with design tokens
+  - Real-time performance under high concurrency
+
+**Version Synchronization**
+- Synchronized version 5.21.2 and timestamp 2025-10-06T19:57:45.000Z across:
+  - package.json
+  - README.md
+  - ARCHITECTURE.md
+  - ROADMAP.md
+  - TASKLIST.md
+  - All new documentation files
+
+**Total New Content**: ~2,150 lines of comprehensive documentation
+
+**Build Status**: ✅ Documentation-only, no code changes
+
+---
+
 ## [v5.21.0] — 2025-10-03T07:45:00.000Z
 
 ### Design — Complete TailAdmin V2 Overhaul (Release)

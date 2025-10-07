@@ -2,8 +2,8 @@
 
 A real-time collaborative event statistics dashboard with an admin panel, unified hashtag system, and modern TailAdmin V2 design system.
 
-- Version: v5.21.0
-- Last Updated: 2025-10-03T07:45:00.000Z
+- Version: v5.21.2
+- Last Updated: 2025-10-06T19:57:45.000Z
 - Website: https://messmass.doneisbetter.com
 - Deployment: Production deployment triggered to restore working authentication (commit 055c357)
 
@@ -19,14 +19,22 @@ Quickstart
 
 Docs
 
+### User Guides
+- END_USER_GUIDE.md — For event organizers using MessMass
+- ADMIN_GUIDE.md — For system administrators and power users
+- DEVELOPER_ONBOARDING.md — For new developers joining the project
+
+### Technical Documentation
 - ARCHITECTURE.md — System overview, components, and styling architecture
 - DESIGN_SYSTEM.md — Complete TailAdmin V2 token reference and usage guide
+- AUTHENTICATION_AND_ACCESS.md — Admin sessions, page passwords, and zero-trust page access
+- LEARNINGS.md — Practical insights and resolved issues
+- WARP.md — Rules and protocols for development in this repo
+
+### Project Management
 - ROADMAP.md — Forward-looking milestones
 - TASKLIST.md — Active and upcoming tasks (with owners and dates)
 - RELEASE_NOTES.md — Versioned log of changes
-- LEARNINGS.md — Practical insights and resolved issues
-- WARP.md — Rules and protocols for development in this repo
-- AUTHENTICATION_AND_ACCESS.md — Admin sessions, page passwords, and zero-trust page access
 
 Examples
 - /examples/password-gate-demo — Demo for PasswordGate (generate password and unlock a gated section)

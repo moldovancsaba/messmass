@@ -1,42 +1,42 @@
 # ROADMAP.md
 
-Current Version: 5.18.0
-Last Updated: 2025-10-02T12:30:00.000Z
+Current Version: 5.21.2
+Last Updated: 2025-10-06T19:57:45.000Z
 
-## Operational — Style System Hardening (Q3 2025)
+## Operational — Documentation Automation (Q4 2025)
 Priority: High
-Dependencies: Design tokens, AdminHero, Layout utilities
-- Action: Remove inline styles from admin hero, design manager, and editor dashboard; centralize into CSS Modules using tokens
-- Action: Consolidate duplicated CSS files (components N.css, admin N.css, globals 2.css) — keep only canonical imports
-- Action: Prepare Atlas-managed theme injection plan (GET/PUT /api/admin/theme)
-Logged at: 2025-09-27T12:32:04.000Z
+Dependencies: package.json, all .md files
+- Action: Automate doc version/timestamp sync across all documentation files
+- Action: Create pre-commit hook or npm script to validate version consistency
+- Action: Document automation script in DEVELOPER_ONBOARDING.md
+Logged at: 2025-10-06T19:57:45.000Z
 Author: Agent Mode
 
-## Operational — Public Docs & Demo Link v5.16.0 (Q4 2025)
+## Operational — Authentication & Cookie Lifecycle Hardening (Q4 2025)
 Priority: High
-Dependencies: README.md, AUTHENTICATION_AND_ACCESS.md
-- Action: Add README Examples + Public Docs section with GitHub share link
-- Action: Convert demo inline styles to design classes; add server-side gate helper snippets
-- Action: Sync versions/timestamps; push to main after validations
-Logged at: 2025-10-01T09:11:20.000Z
+Dependencies: /api/admin/clear-cookies, cookie management utilities
+- Action: Implement proactive cookie cleanup on login to prevent stale session issues
+- Action: Add cookie expiration monitoring and automatic refresh flow
+- Action: Document cookie lifecycle and recovery tools in ADMIN_GUIDE.md
+Logged at: 2025-10-06T19:57:45.000Z
 Author: Agent Mode
 
-## Operational — Version Sync & Release v5.4.0 (Q3 2025)
-Priority: High
-Dependencies: Lint, Type-Check, Build
-- Action: Bump MINOR to 5.4.0 and synchronize documentation (README.md, WARP.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md, DESIGN_SYSTEM.md, RELEASE_NOTES.md)
-- Action: Validate lint, type-check, and production build before commit
-- Action: Commit and push to origin/main
-Logged at: 2025-09-27T11:08:32.000Z
+## Operational — Admin UX Polish with Design Tokens (Q4 2025)
+Priority: Medium
+Dependencies: Design tokens (--mm-* variables), components.css
+- Action: Audit remaining inline style instances and migrate to token-based classes
+- Action: Create additional utility classes for common admin patterns (spacing, layout)
+- Action: Document design token usage patterns in DESIGN_SYSTEM.md
+Logged at: 2025-10-06T19:57:45.000Z
 Author: Agent Mode
 
-## Operational — Documentation Sync & Governance v5.5.0 (Q3 2025)
-Priority: High
-Dependencies: Lint, Type-Check, Build
-- Action: Mark v5.4.0 release tasks complete in TASKLIST.md and log completion
-- Action: Bump MINOR to 5.5.0 and synchronize documentation timestamps
-- Action: Commit and push to origin/main after validations
-Logged at: 2025-09-27T11:26:38.000Z
+## Operational — Real-Time Performance Under High Concurrency (Q4 2025)
+Priority: Medium
+Dependencies: WebSocket server, Chart.js rendering
+- Action: Performance testing for charts with 100+ concurrent updates
+- Action: Implement debouncing/throttling for high-frequency WebSocket events
+- Action: Optimize Chart.js render pipeline for large datasets
+Logged at: 2025-10-06T19:57:45.000Z
 Author: Agent Mode
 
 ## Milestones
