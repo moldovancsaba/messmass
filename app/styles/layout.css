@@ -429,6 +429,9 @@
 .text-gray-600 { color: var(--mm-gray-600); }
 .text-gray-700 { color: var(--mm-gray-700); }
 .text-gray-900 { color: var(--mm-gray-900); }
+.text-gray-800 { color: #1f2937; }
+.text-gray-500 { color: #6b7280; }
+.text-gray-400 { color: #374151; }
 .text-error { color: #ef4444; }
 .text-success { color: #065f46; }
 
@@ -449,6 +452,8 @@
 .text-base { font-size: var(--mm-font-size-base); }
 
 /* Gap Utilities */
+.gap-05 { gap: 0.5rem; }
+.gap-1 { gap: var(--mm-space-1); }
 .gap-2 { gap: var(--mm-space-2); }
 .gap-3 { gap: var(--mm-space-3); }
 .gap-4 { gap: var(--mm-space-4); }
@@ -497,6 +502,258 @@
   font-weight: var(--mm-font-weight-medium);
 }
 
+/* Dashboard Metric Cards */
+.metric-card {
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.metric-card-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.metric-card-pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.metric-card-blue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.metric-card-green {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Dashboard Grid Layouts */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.success-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tab Navigation */
+.tab-container {
+  display: flex;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 0;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  background: transparent;
+  color: var(--mm-gray-600);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.tab-button-active {
+  background: #6366f1;
+  color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Success Manager Metric Boxes */
+.success-metric-box {
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.success-metric-box-green {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.success-metric-box-blue {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.success-metric-box-purple {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.success-metric-title {
+  margin: 0 0 1rem 0;
+}
+
+.success-metric-title-green {
+  color: #059669;
+}
+
+.success-metric-title-blue {
+  color: #2563eb;
+}
+
+.success-metric-title-purple {
+  color: #7c3aed;
+}
+
+.metric-grid-small {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Project List Item */
+.project-list-item {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.project-meta {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.project-stats {
+  text-align: right;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Statistics White Box */
+.stats-white-box {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+/* Progress Bar Container */
+.progress-bar-container {
+  display: flex;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.progress-bar-male {
+  background: #3b82f6;
+}
+
+.progress-bar-female {
+  background: #ec4899;
+}
+
+/* Mini Metric Cards (Filter Tab) */
+.mini-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mini-metric-card {
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.mini-metric-card-primary {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.mini-metric-card-success {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.mini-metric-card-pink {
+  background: rgba(245, 87, 108, 0.1);
+}
+
+.mini-metric-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.mini-metric-value-primary {
+  color: #6366f1;
+}
+
+.mini-metric-value-success {
+  color: #10b981;
+}
+
+.mini-metric-value-pink {
+  color: #f5576c;
+}
+
+.mini-metric-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Hashtag Quick Add Button */
+.hashtag-quick-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.hashtag-quick-btn:disabled {
+  background: #e5e7eb;
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Project Detail */
+.project-detail-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.project-detail-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
 /* Spacing Utilities */
 .m-0 { margin: 0; }
 .m-1 { margin: var(--space-1); }
@@ -524,6 +781,8 @@
 
 /* Margin Bottom */
 .mb-0 { margin-bottom: 0; }
+.mb-025 { margin-bottom: 0.25rem; }
+.mb-05 { margin-bottom: 0.5rem; }
 .mb-1 { margin-bottom: var(--space-1); }
 .mb-2 { margin-bottom: var(--space-2); }
 .mb-3 { margin-bottom: var(--space-3); }
@@ -531,10 +790,21 @@
 .mb-6 { margin-bottom: var(--space-6); }
 .mb-8 { margin-bottom: var(--space-8); }
 
+/* Margin Top */
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+
 /* Text Alignment */
 .text-left { text-align: left; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
+
+/* Text Decoration */
+.no-underline { text-decoration: none; }
+
+/* Opacity */
+.opacity-90 { opacity: 0.9; }
 
 /* Display */
 .hidden { display: none; }
@@ -543,6 +813,15 @@
 .inline-block { display: inline-block; }
 .flex { display: flex; }
 .grid { display: grid; }
+
+/* Grid Utilities */
+.grid-gap-1 { gap: 1rem; }
+.grid-gap-2 { gap: 2rem; }
+.grid-2col-300 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
 
 /* Flex Utilities */
 .flex-col { flex-direction: column; }
