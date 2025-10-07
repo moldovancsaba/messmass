@@ -429,6 +429,8 @@
 .text-gray-600 { color: var(--mm-gray-600); }
 .text-gray-700 { color: var(--mm-gray-700); }
 .text-gray-900 { color: var(--mm-gray-900); }
+.text-error { color: #ef4444; }
+.text-success { color: #065f46; }
 
 .bg-gray-900 { background: var(--mm-gray-900); }
 .bg-primary-100 { background: var(--mm-color-primary-100); }
@@ -454,18 +456,46 @@
 /* Padding Utilities */
 .px-3 { padding-left: var(--mm-space-3); padding-right: var(--mm-space-3); }
 .py-1 { padding-top: var(--mm-space-1); padding-bottom: var(--mm-space-1); }
+.pb-4 { padding-bottom: var(--space-4); }
+.pt-4 { padding-top: var(--space-4); }
 
 /* Width Utilities */
 .min-w-30 { min-width: 120px; }
 
 /* List Utilities */
 .list-none { list-style: none; }
+.list-disc-padded {
+  padding-left: 1.5rem;
+  list-style: disc;
+}
 
 /* Overflow Utilities */
 .overflow-auto { overflow: auto; }
 
 /* Whitespace Utilities */
 .whitespace-nowrap { white-space: nowrap; }
+
+/* Message Box Utilities */
+.error-box {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+}
+
+.success-box {
+  background: #d1fae5;
+  border: 1px solid #10b981;
+}
+
+/* Hashtag Badge */
+.hashtag-badge {
+  display: inline-block;
+  background: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
+  padding: 4px 12px;
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+}
 
 /* Spacing Utilities */
 .m-0 { margin: 0; }
@@ -496,6 +526,7 @@
 .mb-0 { margin-bottom: 0; }
 .mb-1 { margin-bottom: var(--space-1); }
 .mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
 .mb-4 { margin-bottom: var(--space-4); }
 .mb-6 { margin-bottom: var(--space-6); }
 .mb-8 { margin-bottom: var(--space-8); }
@@ -516,6 +547,7 @@
 /* Flex Utilities */
 .flex-col { flex-direction: column; }
 .flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
 .items-start { align-items: flex-start; }
 .items-end { align-items: flex-end; }
@@ -528,6 +560,7 @@
 .h-full { height: 100%; }
 .min-h-screen { min-height: 100vh; }
 .w-120 { width: 120px; }
+.min-w-120 { min-width: 120px; }
 
 /* Flex grow utility */
 .flex-1 { flex: 1 1 0%; }

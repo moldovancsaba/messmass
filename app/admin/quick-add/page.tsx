@@ -272,20 +272,16 @@ export default function QuickAddPage() {
       </div>
 
       {/* Instructions */}
-      <div className="admin-card mb-6" style={{ borderLeft: '4px solid var(--mm-color-primary-600)' }}>
+      <div className="admin-card mb-6 border-left-accent">
         <h3 className="section-subtitle mb-4">
           📋 Expected Format:
         </h3>
-        <div className="admin-card mb-4" style={{ 
-          background: 'var(--mm-gray-900)', 
-          color: 'var(--mm-white)',
-          overflow: 'auto'
-        }}>
-          <code style={{ fontFamily: 'Monaco, monospace', fontSize: 'var(--mm-font-size-sm)', whiteSpace: 'nowrap' }}>
+        <div className="admin-card mb-4 bg-gray-900 text-white overflow-auto">
+          <code className="font-mono text-sm whitespace-nowrap">
             ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
           </code>
         </div>
-        <ul style={{ paddingLeft: '1.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)', listStyle: 'disc' }}>
+        <ul className="text-sm text-gray-600 list-disc-padded">
           <li className="mb-2"><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
           <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
           <li><strong>Home Team | Visitor Team | Location | League</strong></li>
@@ -300,16 +296,15 @@ export default function QuickAddPage() {
           </label>
           <textarea
             id="rawInput"
-            className="form-input"
+            className="form-input font-mono text-sm"
             value={rawInput}
             onChange={(e) => setRawInput(e.target.value)}
             placeholder="⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga"
             rows={5}
-            style={{ fontFamily: 'Monaco, monospace', fontSize: 'var(--mm-font-size-sm)' }}
           />
         </div>
         
-        <div className="flex" style={{ gap: 'var(--mm-space-3)' }}>
+        <div className="flex gap-3">
           <button 
             onClick={handlePreview}
             className="btn btn-primary"
@@ -330,88 +325,77 @@ export default function QuickAddPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="admin-card mb-6" style={{ background: 'var(--mm-error-bg)', border: '1px solid var(--mm-error)' }}>
-          <p className="m-0" style={{ color: 'var(--mm-error)', fontWeight: 'var(--mm-font-weight-medium)' }}>❌ {error}</p>
+        <div className="admin-card mb-6 error-box">
+          <p className="m-0 font-medium text-error">❌ {error}</p>
         </div>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="admin-card mb-6" style={{ background: 'var(--mm-success-bg)', border: '1px solid var(--mm-success)' }}>
-          <p className="m-0" style={{ color: 'var(--mm-success)', fontWeight: 'var(--mm-font-weight-medium)' }}>✅ {success}</p>
+        <div className="admin-card mb-6 success-box">
+          <p className="m-0 font-medium text-success">✅ {success}</p>
         </div>
       )}
 
       {/* Preview Section */}
       {preview && (
-        <div className="admin-card mb-6" style={{ borderLeft: '4px solid var(--mm-color-primary-600)' }}>
+        <div className="admin-card mb-6 border-left-accent">
           <h3 className="section-subtitle mb-4">
             👀 Preview:
           </h3>
           
           <div className="admin-card mb-6">
-            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
-              <strong className="inline-block" style={{ minWidth: '120px', color: 'var(--mm-gray-700)' }}>Event Name:</strong>
-              <span style={{ color: 'var(--mm-gray-900)' }}>{preview.eventName}</span>
+            <div className="mb-4 pb-4 border-bottom-default">
+              <strong className="inline-block min-w-120 text-gray-700">Event Name:</strong>
+              <span className="text-gray-900">{preview.eventName}</span>
             </div>
             
-            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
-              <strong className="inline-block" style={{ minWidth: '120px', color: 'var(--mm-gray-700)' }}>Event Date:</strong>
-              <span style={{ color: 'var(--mm-gray-900)' }}>{preview.eventDate}</span>
+            <div className="mb-4 pb-4 border-bottom-default">
+              <strong className="inline-block min-w-120 text-gray-700">Event Date:</strong>
+              <span className="text-gray-900">{preview.eventDate}</span>
             </div>
             
-            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
-              <strong className="block mb-2" style={{ color: 'var(--mm-gray-700)' }}>Hashtags:</strong>
-              <div className="flex flex-wrap" style={{ gap: 'var(--mm-space-2)' }}>
+            <div className="mb-4 pb-4 border-bottom-default">
+              <strong className="block mb-2 text-gray-700">Hashtags:</strong>
+              <div className="flex flex-wrap gap-2">
                 {preview.hashtags.map((tag: string) => (
-                  <span 
-                    key={tag} 
-                    style={{
-                      display: 'inline-block',
-                      background: 'var(--mm-color-primary-100)',
-                      color: 'var(--mm-color-primary-700)',
-                      padding: '4px 12px',
-                      borderRadius: 'var(--mm-radius-md)',
-                      fontSize: 'var(--mm-font-size-sm)',
-                      fontWeight: 'var(--mm-font-weight-medium)'
-                    }}
-                  >
+                  <span key={tag} className="hashtag-badge">
                     #{tag}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="pt-4" style={{ borderTop: '2px solid var(--mm-border-color-default)' }}>
-              <h4 className="mb-3" style={{ fontSize: 'var(--mm-font-size-base)', fontWeight: 'var(--mm-font-weight-semibold)', color: 'var(--mm-gray-900)' }}>
+            <div className="pt-4 border-top-default">
+              <h4 className="mb-3 text-base font-semibold text-gray-900">
                 Parsed Data:
               </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+              <ul className="list-none p-0 m-0">
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Sport:</strong> {preview.rawData.sport} ({preview.rawData.sportHashtag})
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Home Team:</strong> {preview.rawData.homeTeam}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Visitor Team:</strong> {preview.rawData.visitorTeam}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Location:</strong> {preview.rawData.location}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>League:</strong> {preview.rawData.league}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Original Date:</strong> {preview.rawData.dateStr}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Year:</strong> {preview.rawData.year}
                 </li>
-                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="mb-2 text-sm text-gray-600">
                   <strong>Month:</strong> {preview.rawData.month}
                 </li>
-                <li style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+                <li className="text-sm text-gray-600">
                   <strong>Season:</strong> {preview.rawData.season}
                 </li>
               </ul>
