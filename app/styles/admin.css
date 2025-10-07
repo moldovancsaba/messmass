@@ -157,6 +157,7 @@
 .project-name {
   font-weight: var(--font-semibold);
   color: var(--color-gray-900);
+  text-align: left;
 }
 
 .project-link {
