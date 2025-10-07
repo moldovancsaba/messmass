@@ -259,44 +259,41 @@ export default function QuickAddPage() {
   };
 
   return (
-    <div className="admin-container">
+    <div className="page-container">
       {/* Header */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 className="title">⚡ Quick Add from Sheet</h1>
+      <div className="admin-card mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="section-title m-0">⚡ Quick Add from Sheet</h1>
           <a href="/admin/projects" className="btn btn-secondary">← Back to Projects</a>
         </div>
-        <p className="subtitle">
+        <p className="section-subtitle mb-0">
           Paste event data from Google Sheets to quickly create projects
         </p>
       </div>
 
       {/* Instructions */}
-      <div className="glass-card" style={{ borderLeft: '4px solid #6366f1' }}>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+      <div className="admin-card mb-6" style={{ borderLeft: '4px solid var(--mm-color-primary-600)' }}>
+        <h3 className="section-subtitle mb-4">
           📋 Expected Format:
         </h3>
-        <div style={{ 
-          background: '#1f2937', 
-          color: 'white', 
-          padding: '1rem', 
-          borderRadius: '8px', 
-          marginBottom: '1rem',
+        <div className="admin-card mb-4" style={{ 
+          background: 'var(--mm-gray-900)', 
+          color: 'var(--mm-white)',
           overflow: 'auto'
         }}>
-          <code style={{ fontFamily: 'Monaco, monospace', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+          <code style={{ fontFamily: 'Monaco, monospace', fontSize: 'var(--mm-font-size-sm)', whiteSpace: 'nowrap' }}>
             ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
           </code>
         </div>
-        <ul style={{ paddingLeft: '1.5rem', color: '#6b7280', fontSize: '0.875rem' }}>
-          <li style={{ marginBottom: '0.5rem' }}><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
-          <li style={{ marginBottom: '0.5rem' }}><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
+        <ul style={{ paddingLeft: '1.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)', listStyle: 'disc' }}>
+          <li className="mb-2"><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
+          <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
           <li><strong>Home Team | Visitor Team | Location | League</strong></li>
         </ul>
       </div>
 
       {/* Input Section */}
-      <div className="glass-card">
+      <div className="admin-card mb-6">
         <div className="form-group">
           <label htmlFor="rawInput" className="form-label">
             Paste Sheet Data:
@@ -308,11 +305,11 @@ export default function QuickAddPage() {
             onChange={(e) => setRawInput(e.target.value)}
             placeholder="⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga"
             rows={5}
-            style={{ fontFamily: 'Monaco, monospace', fontSize: '0.875rem' }}
+            style={{ fontFamily: 'Monaco, monospace', fontSize: 'var(--mm-font-size-sm)' }}
           />
         </div>
         
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+        <div className="flex" style={{ gap: 'var(--mm-space-3)' }}>
           <button 
             onClick={handlePreview}
             className="btn btn-primary"
@@ -333,50 +330,50 @@ export default function QuickAddPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="glass-card" style={{ background: '#fee2e2', border: '1px solid #fca5a5' }}>
-          <p style={{ color: '#991b1b', margin: 0, fontWeight: '500' }}>❌ {error}</p>
+        <div className="admin-card mb-6" style={{ background: 'var(--mm-error-bg)', border: '1px solid var(--mm-error)' }}>
+          <p className="m-0" style={{ color: 'var(--mm-error)', fontWeight: 'var(--mm-font-weight-medium)' }}>❌ {error}</p>
         </div>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="glass-card" style={{ background: '#d1fae5', border: '1px solid #6ee7b7' }}>
-          <p style={{ color: '#065f46', margin: 0, fontWeight: '500' }}>✅ {success}</p>
+        <div className="admin-card mb-6" style={{ background: 'var(--mm-success-bg)', border: '1px solid var(--mm-success)' }}>
+          <p className="m-0" style={{ color: 'var(--mm-success)', fontWeight: 'var(--mm-font-weight-medium)' }}>✅ {success}</p>
         </div>
       )}
 
       {/* Preview Section */}
       {preview && (
-        <div className="glass-card" style={{ borderLeft: '4px solid #6366f1' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1f2937', marginBottom: '1.5rem' }}>
+        <div className="admin-card mb-6" style={{ borderLeft: '4px solid var(--mm-color-primary-600)' }}>
+          <h3 className="section-subtitle mb-4">
             👀 Preview:
           </h3>
           
-          <div className="admin-card" style={{ marginBottom: '1.5rem' }}>
-            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-              <strong style={{ display: 'inline-block', minWidth: '120px', color: '#6b7280' }}>Event Name:</strong>
-              <span style={{ color: '#1f2937' }}>{preview.eventName}</span>
+          <div className="admin-card mb-6">
+            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
+              <strong className="inline-block" style={{ minWidth: '120px', color: 'var(--mm-gray-700)' }}>Event Name:</strong>
+              <span style={{ color: 'var(--mm-gray-900)' }}>{preview.eventName}</span>
             </div>
             
-            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-              <strong style={{ display: 'inline-block', minWidth: '120px', color: '#6b7280' }}>Event Date:</strong>
-              <span style={{ color: '#1f2937' }}>{preview.eventDate}</span>
+            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
+              <strong className="inline-block" style={{ minWidth: '120px', color: 'var(--mm-gray-700)' }}>Event Date:</strong>
+              <span style={{ color: 'var(--mm-gray-900)' }}>{preview.eventDate}</span>
             </div>
             
-            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-              <strong style={{ display: 'block', marginBottom: '0.5rem', color: '#6b7280' }}>Hashtags:</strong>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--mm-border-color-default)' }}>
+              <strong className="block mb-2" style={{ color: 'var(--mm-gray-700)' }}>Hashtags:</strong>
+              <div className="flex flex-wrap" style={{ gap: 'var(--mm-space-2)' }}>
                 {preview.hashtags.map((tag: string) => (
                   <span 
                     key={tag} 
                     style={{
                       display: 'inline-block',
-                      background: '#e0e7ff',
-                      color: '#4338ca',
+                      background: 'var(--mm-color-primary-100)',
+                      color: 'var(--mm-color-primary-700)',
                       padding: '4px 12px',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      fontWeight: '500'
+                      borderRadius: 'var(--mm-radius-md)',
+                      fontSize: 'var(--mm-font-size-sm)',
+                      fontWeight: 'var(--mm-font-weight-medium)'
                     }}
                   >
                     #{tag}
@@ -385,36 +382,36 @@ export default function QuickAddPage() {
               </div>
             </div>
 
-            <div style={{ paddingTop: '1rem', borderTop: '2px solid #e5e7eb' }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.75rem' }}>
+            <div className="pt-4" style={{ borderTop: '2px solid var(--mm-border-color-default)' }}>
+              <h4 className="mb-3" style={{ fontSize: 'var(--mm-font-size-base)', fontWeight: 'var(--mm-font-weight-semibold)', color: 'var(--mm-gray-900)' }}>
                 Parsed Data:
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Sport:</strong> {preview.rawData.sport} ({preview.rawData.sportHashtag})
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Home Team:</strong> {preview.rawData.homeTeam}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Visitor Team:</strong> {preview.rawData.visitorTeam}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Location:</strong> {preview.rawData.location}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>League:</strong> {preview.rawData.league}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Original Date:</strong> {preview.rawData.dateStr}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Year:</strong> {preview.rawData.year}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                <li className="mb-2" style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Month:</strong> {preview.rawData.month}
                 </li>
-                <li style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                <li style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
                   <strong>Season:</strong> {preview.rawData.season}
                 </li>
               </ul>
