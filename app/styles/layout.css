@@ -192,9 +192,10 @@
 }
 
 .counter-btn {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(var(--blur-base));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* What: Flat white counter button
+     Why: Removed glass-morphism effect */
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
   border-radius: var(--radius-2xl);
   padding: var(--space-4);
   cursor: pointer;
@@ -207,6 +208,7 @@
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--color-gray-700);
+  box-shadow: var(--mm-shadow-sm);
 }
 
 .counter-btn:hover {
@@ -246,7 +248,7 @@
 
 .decrement-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: var(--mm-shadow-md);
 }
 
 .decrement-btn:disabled {
@@ -259,10 +261,13 @@
 ======================================== */
 
 .projects-table-container {
+  /* What: Flat white table container
+     Why: Removed glass-morphism */
   overflow-x: auto;
   border-radius: var(--radius-xl);
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(var(--blur-base));
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  box-shadow: var(--mm-shadow-sm);
 }
 
 .projects-table {

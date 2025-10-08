@@ -119,15 +119,17 @@
 
 /* No Data Message - Universal */
 .no-data-message {
+  /* What: Flat message box for empty charts
+     Why: TailAdmin V2 flat design - no transparency effects */
   text-align: center;
-  color: #6b7280;
+  color: var(--mm-gray-600);
   font-style: italic;
-  padding: 3rem 2rem;
-  background: rgba(243, 244, 246, 0.5);
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  border: 2px dashed rgba(107, 114, 128, 0.3);
-  font-size: 1rem;
+  padding: var(--mm-space-8) var(--mm-space-6);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+  margin: var(--mm-space-4) 0;
+  border: 2px dashed var(--mm-gray-300);
+  font-size: var(--mm-font-size-base);
 }
 
 /* SVG Text Styling - Universal */
@@ -178,20 +180,23 @@
 }
 
 .stacked-bar {
+  /* What: Flat bar container for stacked column charts
+     Why: TailAdmin V2 - replaced inset shadow with flat border */
   width: 60px;
   height: 180px;
-  background: #f3f4f6;
-  border-radius: 6px;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-sm);
   position: relative;
   display: flex;
   flex-direction: column-reverse;
   overflow: hidden;
-  margin-bottom: 1rem;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(229, 231, 235, 0.5);
+  margin-bottom: var(--mm-space-4);
+  border: 1px solid var(--mm-border-color-default);
 }
 
 .bar-segment {
+  /* What: Flat bar segment
+     Why: Removed text-shadow and rgba borders */
   width: 100%;
   position: relative;
   display: flex;
@@ -200,9 +205,8 @@
   color: white;
   font-weight: 600;
   font-size: 0.7rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .bar-segment:hover {
@@ -211,37 +215,40 @@
 }
 
 .bar-label {
+  /* What: Flat bar label
+     Why: Removed text-shadow */
   position: absolute;
   color: white;
   font-weight: 700;
   font-size: 0.7rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
-/* Bar Segment Colors - Fans Distribution */
+/* Bar Segment Colors - Fans Distribution - Flat Design */
+/* What: Solid colors for bar segments
+   Why: TailAdmin V2 - removed all gradients */
 .indoor-segment { 
-  background: linear-gradient(180deg, #3b82f6, #1e40af); 
+  background: #3b82f6;
 }
 .outdoor-segment { 
-  background: linear-gradient(180deg, #10b981, #047857); 
+  background: #10b981;
 }
 .stadium-segment { 
-  background: linear-gradient(180deg, #f59e0b, #d97706); 
+  background: #f59e0b;
 }
 
-/* Bar Segment Colors - Age Distribution */
+/* Bar Segment Colors - Age Distribution - Flat Design */
 .gen-alpha-segment { 
-  background: linear-gradient(180deg, #8b5cf6, #7c3aed); 
+  background: #8b5cf6;
 }
 .gen-yz-segment { 
-  background: linear-gradient(180deg, #06b6d4, #0891b2); 
+  background: #06b6d4;
 }
 .gen-x-segment { 
-  background: linear-gradient(180deg, #f97316, #ea580c); 
+  background: #f97316;
 }
 .boomer-segment { 
-  background: linear-gradient(180deg, #ef4444, #dc2626); 
+  background: #ef4444;
 }
 
 /* Bar Legend */
@@ -254,13 +261,15 @@
 }
 
 .legend-small {
+  /* What: Flat legend label
+     Why: Using tokens for sizing */
   font-size: 0.7rem;
-  color: #6b7280;
+  color: var(--mm-gray-600);
   font-weight: 500;
-  padding: 0.3rem 0.5rem;
-  border-radius: 0.25rem;
+  padding: var(--mm-space-1) var(--mm-space-2);
+  border-radius: var(--mm-radius-sm);
   text-align: center;
-  border: 1px solid rgba(107, 114, 128, 0.2);
+  border: 1px solid var(--mm-border-color-default);
 }
 
 /* Legend Color Variants */
@@ -329,60 +338,44 @@
 }
 
 .horizontal-bar-container {
+  /* What: Flat bar container
+     Why: Removed inset shadow, using flat border */
   flex: 1;
   height: 28px;
-  background: #f3f4f6;
-  border-radius: 14px;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-lg);
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(229, 231, 235, 0.5);
+  border: 1px solid var(--mm-border-color-default);
 }
 
 .horizontal-bar-fill {
+  /* What: Flat bar fill (removed shimmer animation)
+     Why: TailAdmin V2 flat design - no gradient animations */
   height: 100%;
-  border-radius: 12px;
+  border-radius: var(--mm-radius-md);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 0.5rem;
+  padding-right: var(--mm-space-2);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   min-width: 2px;
 }
 
-.horizontal-bar-fill::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.2) 50%, 
-    transparent 100%
-  );
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
 .horizontal-bar-fill:hover {
+  /* What: Subtle hover effect
+     Why: Replaced shadow with simple brightness */
   filter: brightness(1.1);
-  transform: scaleY(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .horizontal-bar-value {
+  /* What: Flat value label
+     Why: Removed text-shadow for flat design */
   color: white;
   font-weight: 700;
   font-size: 0.75rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   z-index: 1;
   position: relative;
   min-width: 20px;

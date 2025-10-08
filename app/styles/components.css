@@ -98,7 +98,7 @@
 .btn-primary:hover {
   background: var(--mm-color-primary-700);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 .btn-secondary {
@@ -109,7 +109,7 @@
 .btn-secondary:hover {
   background: var(--mm-color-secondary-700);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 .btn-success {
@@ -120,7 +120,7 @@
 .btn-success:hover {
   background: #059669;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 .btn-danger {
@@ -131,7 +131,7 @@
 .btn-danger:hover {
   background: #dc2626;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 .btn-info {
@@ -142,7 +142,7 @@
 .btn-info:hover {
   background: #2563eb;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 .btn-logout {
@@ -153,7 +153,7 @@
 .btn-logout:hover {
   background: #dc2626;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 /* ========================================
@@ -212,15 +212,19 @@ select,
 
 select:focus,
 .form-select:focus {
+  /* What: Flat focus ring
+     Why: Using design tokens */
   outline: none;
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px var(--mm-color-primary-100);
 }
 
 .form-input:focus {
+  /* What: Flat focus ring
+     Why: Using design tokens */
   outline: none;
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px var(--mm-color-primary-100);
 }
 
 .form-input::placeholder {
@@ -236,8 +240,10 @@ select:focus,
 
 /* Form Input Variants */
 .form-input-error {
+  /* What: Flat error state
+     Why: Using design tokens */
   border-color: var(--color-error);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px var(--mm-error-light, rgba(239, 68, 68, 0.1));
 }
 
 /* Input card wrapper: used for numeric inputs with labels - Flat Design */
@@ -253,14 +259,16 @@ select:focus,
 
 /* Calculated value row with muted styling */
 .calc-row {
-  background: rgba(255, 255, 255, 0.95);
+  /* What: Flat calculated value row
+     Why: Removed transparency */
+  background: var(--mm-gray-50);
   border-radius: var(--border-radius);
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--mm-border-color-default);
   display: flex;
   align-items: center;
   gap: 1rem;
-  opacity: 0.7;
+  opacity: 0.9;
 }
 
 /* Fixed-width numeric pill for totals */
@@ -277,8 +285,10 @@ select:focus,
 }
 
 .form-input-success {
+  /* What: Flat success state
+     Why: Using design tokens */
   border-color: var(--color-success);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 0 3px var(--mm-success-light, rgba(16, 185, 129, 0.1));
 }
 
 /* Global input text color fix to prevent white text on white backgrounds */
