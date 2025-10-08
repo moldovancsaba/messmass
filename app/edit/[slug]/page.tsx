@@ -276,12 +276,10 @@ export default function EditPage() {
      - Optional project-specific gradient support
      - Full viewport height for immersive editing experience
      - Proper integration with EditorDashboard component */
+  /* WHAT: Main editor container with flat design */
   if (project) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
+      <div className="page-bg-gray">
         {/* What: Optional custom page style injection
             Why: Allow project-specific branding while maintaining base design */}
         {pageStyle && (

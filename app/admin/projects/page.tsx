@@ -8,10 +8,12 @@ import ProjectsPageClient from './ProjectsPageClient';
 export default function ProjectsPage() {
   const { user, loading } = useAdminAuth();
 
+  /* WHAT: Loading state without inline styles
+     WHY: Use loading-container utility class for consistency */
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div className="admin-card text-center">
+      <div className="loading-container">
+        <div className="loading-card">
           <div className="text-4xl mb-4">📁</div>
           <div className="text-gray-600">Loading projects...</div>
         </div>

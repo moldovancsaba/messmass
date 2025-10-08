@@ -1831,3 +1831,218 @@ img {
   );
   animation: shimmer 3s infinite;
 }
+
+/* ========================================
+   DESIGN SYSTEM REFACTOR - UTILITY CLASSES
+   WHAT: Centralized utilities for consistent flat design across all pages
+   WHY: Eliminate inline styles and CSS module inconsistencies
+======================================== */
+
+/* WHAT: Loading state utilities
+   WHY: Consistent loading UX across all pages without inline styles */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  padding: var(--mm-space-6);
+  background: var(--mm-gray-50);
+}
+
+.loading-card {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-md);
+  padding: var(--mm-space-8);
+  text-align: center;
+}
+
+/* WHAT: Error state utilities
+   WHY: Consistent error display with flat design principles */
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  padding: var(--mm-space-6);
+  background: var(--mm-gray-50);
+}
+
+.error-card {
+  background: var(--mm-white);
+  border-top: 4px solid var(--mm-error);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-md);
+  padding: var(--mm-space-8);
+  text-align: center;
+  max-width: 40rem;
+  width: 100%;
+}
+
+/* WHAT: Page background utilities
+   WHY: Consistent neutral backgrounds for flat design */
+.page-bg-gray {
+  background: var(--mm-gray-50);
+  min-height: 100vh;
+}
+
+.page-bg-white {
+  background: var(--mm-white);
+  min-height: 100vh;
+}
+
+/* WHAT: Centered flex utility
+   WHY: Common pattern for centering content */
+.centered-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mm-space-4);
+}
+
+/* WHAT: Card system primitives for unified box decoration
+   WHY: Replace all inconsistent card/panel/box patterns with token-based styles */
+.card {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-sm);
+  border: 1px solid var(--mm-border-color-default);
+}
+
+.card-md {
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.card-lg {
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* WHAT: Card structural components
+   WHY: Consistent internal spacing and borders */
+.card-header {
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-bottom: 1px solid var(--mm-border-color-default);
+}
+
+.card-body {
+  padding: var(--mm-space-6);
+}
+
+.card-footer {
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-top: 1px solid var(--mm-border-color-default);
+}
+
+/* WHAT: Minimal spacing helpers
+   WHY: Avoid tailwind-like explosion but provide essential spacing utilities */
+.p-sm {
+  padding: var(--mm-space-3);
+}
+
+.p-md {
+  padding: var(--mm-space-4);
+}
+
+.p-lg {
+  padding: var(--mm-space-6);
+}
+
+.p-xl {
+  padding: var(--mm-space-8);
+}
+
+.gap-sm {
+  gap: var(--mm-space-3);
+}
+
+.gap-md {
+  gap: var(--mm-space-4);
+}
+
+.gap-lg {
+  gap: var(--mm-space-6);
+}
+
+.mt-sm {
+  margin-top: var(--mm-space-3);
+}
+
+.mt-md {
+  margin-top: var(--mm-space-4);
+}
+
+.mt-lg {
+  margin-top: var(--mm-space-6);
+}
+
+.mb-sm {
+  margin-bottom: var(--mm-space-3);
+}
+
+.mb-md {
+  margin-bottom: var(--mm-space-4);
+}
+
+.mb-lg {
+  margin-bottom: var(--mm-space-6);
+}
+
+/* WHAT: Flex utilities
+   WHY: Common layout patterns */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* WHAT: Width utilities
+   WHY: Common width patterns */
+.w-full {
+  width: 100%;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.max-w-lg {
+  max-width: 32rem;
+}
+
+.max-w-xl {
+  max-width: 36rem;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
+}
+
+/* WHAT: Text utilities
+   WHY: Common text patterns */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}

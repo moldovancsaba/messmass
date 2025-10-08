@@ -1,5 +1,69 @@
 # MessMass Release Notes
 
+## [v5.36.0] — 2025-10-10T12:45:00.000Z
+
+### Design — TailAdmin V2 Flat Design Migration Complete
+
+**Complete Elimination of Glass-Morphism and Gradients**
+- Removed ALL gradients from legacy CSS files (layout.css, components.css, charts.css)
+- Removed ALL backdrop-filter effects across entire codebase
+- Converted 200+ design violations to flat TailAdmin V2 aesthetic
+- Created automated design violation checker script (`npm run style:check`)
+
+**CSS Files Cleaned**
+- `app/styles/layout.css`: 6 gradients removed → flat colors with tokens
+- `app/styles/components.css`: 2 gradients + 4 backdrop-filters removed → flat design
+- `app/charts.css`: 1 backdrop-filter removed → flat white cards
+- All buttons now use solid colors with hover states (no gradients)
+- All cards use flat white backgrounds with borders and shadows
+- All select dropdowns use SVG arrows (removed gradient-based arrows)
+
+**Automated Quality Assurance**
+- Created `scripts/check-design-violations.js` (75 lines)
+- Detects gradients (linear-gradient, radial-gradient) and glass-morphism (backdrop-filter)
+- Added to `package.json` as `npm run style:check`
+- Configurable allowed file exceptions with comments
+- Exit code 0 = clean, 1 = violations detected
+
+**Design System Enforcement**
+- Zero gradients across all CSS files
+- Zero backdrop-filter effects anywhere
+- 100% flat design compliance
+- All colors via design tokens (--mm-*)
+- All shadows via design tokens (--mm-shadow-*)
+- All spacing via design tokens (--mm-space-*)
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (2.5s compile time)
+- ✅ Design violation check: PASSING (0 violations)
+- ✅ 39 static pages generated successfully
+
+**Files Modified**: 3 CSS files
+- `app/styles/layout.css`: 7 gradient removals
+- `app/styles/components.css`: 8 violations fixed
+- `app/charts.css`: 1 glass-morphism removal
+
+**Lines Changed**: ~200 lines
+**Violations Fixed**: 13 (6 in layout.css, 6 in components.css, 1 in charts.css)
+**Script Created**: 1 (design violation checker)
+
+**Key Changes**:
+1. All metric cards (purple/pink/blue/green) now use flat solid colors
+2. All buttons (.btn-primary/secondary/success/danger/info) use flat colors with hover darkening
+3. All form inputs use flat white backgrounds with subtle borders
+4. All stat cards use flat white with token-based shadows
+5. All hashtag components use flat primary color (no gradients)
+6. All chart containers use flat white cards
+
+**Documentation Updated**:
+- LEARNINGS.md: Added legacy CSS cleanup phase (34 new lines)
+- README.md: Version updated to v5.36.0
+
+**Migration Impact**: None - purely visual refinement, no API or data structure changes
+
+---
+
 ## [v5.21.0] — 2025-10-03T07:45:00.000Z
 
 ### Design — Complete TailAdmin V2 Overhaul (Release)

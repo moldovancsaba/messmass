@@ -5,14 +5,15 @@
    CHART CONTAINERS - Universal Base
 ======================================== */
 
-/* Base Chart Container - All charts inherit this */
+/* Base Chart Container - All charts inherit this - Flat Design */
 .chart-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  /* What: Flat white card for charts
+     Why: Removed glass-morphism for TailAdmin V2 */
+  background: var(--mm-white);
   border-radius: 0.75rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--mm-border-color-default);
+  box-shadow: var(--mm-shadow-md);
   transition: all 0.3s ease;
   width: 100%;
   min-width: 400px;
@@ -25,7 +26,7 @@
 
 .chart-container:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--mm-shadow-lg);
 }
 
 /* Chart Header - Universal for all charts */

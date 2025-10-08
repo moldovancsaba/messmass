@@ -366,16 +366,16 @@ export default function HashtagStatsPage() {
         />
       </div>
 
+      {/* WHAT: Project list without inline styles */}
       {projects.length > 0 && (
-        <div id="projects-list" className="glass-card" style={{ marginTop: '2rem', padding: '2rem' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, color: '#1f2937' }}>
+        <div id="projects-list" className="card mt-lg p-lg">
+          <h2 style={{ fontSize: 'var(--mm-font-size-2xl)', fontWeight: 'var(--mm-font-weight-bold)', margin: 0, color: 'var(--mm-gray-900)' }}>
             Projects with {actualHashtag ? `#${actualHashtag}` : `#${String(hashtagParam)}`} ({projects.length})
           </h2>
-          <div style={{
+          <div className="mt-md" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '1rem',
-            marginTop: '1rem'
+            gap: 'var(--mm-space-4)'
           }}>
             {projects.map((projectItem) => (
               <div key={projectItem._id} style={{

@@ -474,10 +474,8 @@ export default function FilterPage() {
 
         {/* What: Data visualization section with modern spacing
             Why: Unified component handles all chart rendering with proper grid layout */}
-        <div style={{ 
-          width: '100%', 
-          marginTop: 'var(--mm-space-6)'
-        }}>
+        {/* WHAT: Chart section wrapper using utility classes */}
+        <div className="w-full mt-lg">
           <UnifiedDataVisualization
             blocks={dataBlocks}
             chartResults={chartResults}

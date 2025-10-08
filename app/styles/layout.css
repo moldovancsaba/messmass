@@ -8,9 +8,9 @@
 .app-container {
   min-height: 100vh;
   padding: var(--space-8);
-  /* What: Use CSS variable page background with gradient fallback.
+  /* What: Use CSS variable page background with flat fallback.
      Why: Ensures consistency with Admin → Design selections site-wide. */
-  background: var(--page-bg, var(--gradient-primary));
+  background: var(--page-bg, var(--mm-gray-50));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,7 +22,7 @@
    MIGRATION: Replace with .page-container in all admin pages */
 .admin-container {
   min-height: 100vh;
-  background: var(--page-bg, var(--gradient-primary));
+  background: var(--page-bg, var(--mm-gray-50));
   padding: var(--space-8);
 }
 
@@ -226,7 +226,9 @@
 }
 
 .decrement-btn {
-  background: var(--gradient-error);
+  /* What: Flat red button for decrement actions
+     Why: TailAdmin V2 flat design - no gradients */
+  background: var(--mm-error);
   color: var(--color-white);
   border: none;
   border-radius: var(--radius-lg);
@@ -269,7 +271,9 @@
 }
 
 .projects-table th {
-  background: var(--gradient-primary);
+  /* What: Flat primary color for table headers
+     Why: TailAdmin V2 flat design - replaces gradient-primary */
+  background: var(--mm-color-primary-600);
   color: var(--color-white);
   padding: var(--space-4);
   text-align: left;
@@ -503,8 +507,10 @@
   font-weight: var(--mm-font-weight-medium);
 }
 
-/* Dashboard Metric Cards */
+/* Dashboard Metric Cards - Flat Design */
 .metric-card {
+  /* What: Flat card with solid colors
+     Why: TailAdmin V2 migration - removed gradients */
   color: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -512,19 +518,19 @@
 }
 
 .metric-card-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--mm-color-primary-600);
 }
 
 .metric-card-pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #ec4899;
 }
 
 .metric-card-blue {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: #3b82f6;
 }
 
 .metric-card-green {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: #10b981;
 }
 
 .metric-value {
@@ -944,9 +950,11 @@
 .gap-4 { gap: 1rem; }
 .gap-3 { gap: 0.75rem; }
 
-/* Category Badge (for Variables page) */
+/* Category Badge (for Variables page) - Flat Design */
 .category-badge {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  /* What: Flat primary badge
+     Why: TailAdmin V2 - removed gradient */
+  background: var(--mm-color-primary-600);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -1030,10 +1038,12 @@
 /* Text sizes */
 .text-3xl { font-size: 1.875rem; }
 
-/* Design Page Specific Utilities */
+/* Design Page Specific Utilities - Flat Design */
 .typography-section {
+  /* What: Flat light blue background
+     Why: TailAdmin V2 - removed gradient */
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  background: var(--mm-color-primary-100);
   border-left: 4px solid var(--mm-color-primary-600);
 }
 

@@ -17,10 +17,12 @@ export default function AdminPage() {
 
   /* What: Loading state
      Why: Show feedback while checking authentication */
+  /* WHAT: Loading state without inline styles
+     WHY: Use utility classes from globals.css for consistent styling */
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div className="admin-card text-center">
+      <div className="loading-container">
+        <div className="loading-card">
           <div className="text-4xl mb-4">📊</div>
           <div className="text-gray-600">Loading admin dashboard...</div>
         </div>

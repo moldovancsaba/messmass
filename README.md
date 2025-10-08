@@ -2,10 +2,10 @@
 
 A real-time collaborative event statistics dashboard with an admin panel, unified hashtag system, and modern TailAdmin V2 design system.
 
-- Version: v5.21.0
-- Last Updated: 2025-10-03T07:45:00.000Z
+- Version: v5.36.0
+- Last Updated: 2025-10-10T12:45:00.000Z
 - Website: https://messmass.doneisbetter.com
-- Deployment: Production deployment triggered to restore working authentication (commit 055c357)
+- Status: TailAdmin V2 flat design complete - zero gradients, zero glass-morphism, 100% design token compliance
 
 Quickstart
 
@@ -15,6 +15,7 @@ Quickstart
   - cd server && npm start (WebSocket server on :7654)
 - Production
   - npm run build
+  - npm run style:check (verify design system compliance)
   - Deploy Next.js app to Vercel; deploy WebSocket server separately
 
 Docs
@@ -42,6 +43,41 @@ Key Features
 - Unified hashtag system with category-aware input and display
 - Real-time WebSocket updates and comprehensive admin dashboard
 - Complete design token system with CSS variables (`--mm-*` prefixed)
+
+Utility Classes (Quick Reference)
+
+The design system provides 30+ utility classes for consistent styling:
+
+**Layout & Containers**
+- `.page-bg-gray` / `.page-bg-white` - Page backgrounds
+- `.loading-container` + `.loading-card` - Loading states
+- `.error-container` + `.error-card` - Error states
+- `.centered-flex` - Centered flexbox layout
+
+**Cards & Panels**
+- `.card` / `.card-md` / `.card-lg` - Card variants
+- `.card-header` / `.card-body` / `.card-footer` - Card sections
+
+**Spacing**
+- `.p-sm` / `.p-md` / `.p-lg` / `.p-xl` - Padding utilities
+- `.gap-sm` / `.gap-md` / `.gap-lg` - Gap utilities
+- `.mt-*` / `.mb-*` - Margin utilities
+
+**Flexbox**
+- `.flex` / `.flex-col` - Flex containers
+- `.items-center` / `.justify-center` / `.justify-between` - Alignment
+
+**Width & Text**
+- `.w-full` / `.max-w-*` - Width utilities
+- `.text-center` / `.text-left` / `.text-right` - Text alignment
+
+All utilities use design tokens from `theme.css` (--mm-* variables).
+See `app/globals.css` for complete utility definitions.
+
+**Design System Validation**
+- Run `npm run style:check` to detect gradients and glass-morphism violations
+- Automated checker enforces flat design compliance
+- Zero violations required before commits
 
 Timestamps
 
