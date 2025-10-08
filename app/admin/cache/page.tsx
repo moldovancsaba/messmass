@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import AdminHero from '@/components/AdminHero';
 
 /* WHAT: Cache Management Page
    WHY: Allow admins to clear server and browser caches to force fresh content
@@ -95,24 +96,15 @@ Then select "Cached images and files" and click Clear.`);
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="section-title">🗑️ Cache Management</h1>
-            <p className="section-subtitle">
-              Clear server and browser caches to force fresh content
-            </p>
-          </div>
-          <a href="/admin" className="btn btn-secondary">
-            ← Back to Admin
-          </a>
-        </div>
-
-        <div className="flex gap-2">
-          <span className="badge badge-primary">System Tools</span>
-          <span className="badge badge-secondary">Cache Control</span>
-        </div>
-      </div>
+      <AdminHero
+        title="🗑️ Cache Management"
+        subtitle="Clear server and browser caches to force fresh content"
+        backLink="/admin"
+        badges={[
+          { text: 'System Tools', variant: 'primary' },
+          { text: 'Cache Control', variant: 'secondary' }
+        ]}
+      />
 
       {/* Cache Types */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

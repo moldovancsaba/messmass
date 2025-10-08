@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import AdminHero from '@/components/AdminHero'
 
 interface ListedUser {
   id: string
@@ -130,17 +131,11 @@ export default function AdminUsersPage() {
 
   return (
     <div className="page-container">
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="section-title">Users Management</h1>
-            <p className="section-subtitle">Create and manage admin users</p>
-          </div>
-          <Link href="/admin" className="btn btn-sm btn-secondary">
-            ← Back to Admin
-          </Link>
-        </div>
-      </div>
+      <AdminHero
+        title="Users Management"
+        subtitle="Create and manage admin users"
+        backLink="/admin"
+      />
 
       <div className="admin-card">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Admin</h2>
