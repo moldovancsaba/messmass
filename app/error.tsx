@@ -25,108 +25,40 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="admin-container" style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '16px',
-        padding: '3rem',
-        textAlign: 'center',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-        maxWidth: '500px',
-        width: '100%'
-      }}>
-        <div style={{
-          fontSize: '4rem',
-          marginBottom: '1rem'
-        }}>
+    <div className="error-container">
+      <div className="error-card max-w-lg">
+        <div className="text-5xl mb-md">
           ⚠️
         </div>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: '#1f2937',
-          margin: '0 0 1rem 0'
-        }}>
+        <h1 className="text-2xl font-bold text-gray-900 mb-md">
           Something went wrong!
         </h1>
-        <p style={{
-          color: '#6b7280',
-          fontSize: '1.125rem',
-          lineHeight: '1.6',
-          marginBottom: '2rem'
-        }}>
+        <p className="text-gray-600 text-lg mb-lg" style={{lineHeight: '1.6'}}>
           We encountered an unexpected error. Please try again or contact support if the problem persists.
         </p>
         
         {/* Error details for development */}
         {process.env.NODE_ENV === 'development' && (
-          <div style={{
-            background: '#f3f4f6',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            padding: '1rem',
-            marginBottom: '2rem',
-            textAlign: 'left',
-            fontSize: '0.875rem',
-            color: '#374151',
-            fontFamily: 'monospace',
-            whiteSpace: 'pre-wrap',
-            overflowWrap: 'break-word'
-          }}>
+          <div className="bg-gray-50 border border-gray-300 p-md mb-lg text-left text-sm text-gray-700 font-mono" style={{borderRadius: 'var(--mm-radius-md)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
             {error.message}
             {error.digest && (
-              <div style={{ marginTop: '0.5rem', color: '#6b7280' }}>
+              <div className="mt-sm text-gray-600">
                 Digest: {error.digest}
               </div>
             )}
           </div>
         )}
 
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
-        }}>
+        <div className="flex gap-md justify-center flex-wrap">
           <button
             onClick={reset}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+            className="btn btn-primary"
           >
             🔄 Try Again
           </button>
           <Link
             href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(107, 114, 128, 0.1)',
-              color: '#374151',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '500',
-              border: '1px solid rgba(107, 114, 128, 0.2)',
-              transition: 'all 0.2s ease'
-            }}
+            className="btn btn-secondary"
           >
             🏠 Go Home
           </Link>

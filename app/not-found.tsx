@@ -18,85 +18,32 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="admin-container" style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '16px',
-        padding: '3rem',
-        textAlign: 'center',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-        maxWidth: '500px',
-        width: '100%'
-      }}>
-        <div style={{
-          fontSize: '4rem',
-          marginBottom: '1rem'
-        }}>
-          🔍
-        </div>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: '#1f2937',
-          margin: '0 0 1rem 0'
-        }}>
-          Page Not Found
-        </h1>
-        <p style={{
-          color: '#6b7280',
-          fontSize: '1.125rem',
-          lineHeight: '1.6',
-          marginBottom: '2rem'
-        }}>
-          The page you are looking for could not be found. It might have been moved, deleted, or you entered the wrong URL.
-        </p>
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
-        }}>
-          <Link
-            href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: '#3b82f6',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '500',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            🏠 Go Home
-          </Link>
-          <Link
-            href="/admin"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.75rem 1.5rem',
-              background: 'rgba(107, 114, 128, 0.1)',
-              color: '#374151',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '500',
-              border: '1px solid rgba(107, 114, 128, 0.2)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            ⚙️ Admin Panel
-          </Link>
+    <div className="error-container">
+      <div className="card card-lg max-w-lg text-center">
+        <div className="card-body">
+          <div className="text-5xl mb-md">
+            🔍
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-md">
+            Page Not Found
+          </h1>
+          <p className="text-gray-600 text-lg mb-lg" style={{lineHeight: '1.6'}}>
+            The page you are looking for could not be found. It might have been moved, deleted, or you entered the wrong URL.
+          </p>
+          <div className="flex gap-md justify-center flex-wrap">
+            <Link
+              href="/"
+              className="btn btn-primary"
+            >
+              🏠 Go Home
+            </Link>
+            <Link
+              href="/admin"
+              className="btn btn-secondary"
+            >
+              ⚙️ Admin Panel
+            </Link>
+          </div>
         </div>
       </div>
     </div>
