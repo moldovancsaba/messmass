@@ -7,6 +7,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 interface ProjectStats {
   remoteImages: number;
@@ -689,7 +690,7 @@ function HashtagFilterPageContent() {
               </h2>
               <div className="projects-list-grid">
                 {projects.map((projectItem) => (
-                  <div key={projectItem._id} className="project-list-item">
+                  <ColoredCard key={projectItem._id} accentColor="#6366f1" hoverable={false}>
                     <h3 className="project-item-title">
                       {projectItem.viewSlug ? (
                         <a 
@@ -727,7 +728,7 @@ function HashtagFilterPageContent() {
                         </span>
                       )}
                     </div>
-                  </div>
+                  </ColoredCard>
                 ))}
               </div>
             </div>

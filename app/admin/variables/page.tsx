@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { buildReferenceToken } from '@/lib/variableRefs';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 interface VariableFlags {
   visibleInClicker: boolean;
@@ -137,7 +138,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
   }
 
   return (
-    <div className="admin-card mb-4">
+    <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-4">
       <h3 className="mt-0 mb-0">Groups</h3>
       <p className="text-gray-600 mt-025 mb-0">Use groups to control the Editor (clicker/manual) layout directly from here.</p>
       <div className="flex gap-2 mt-3">
@@ -155,7 +156,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
 
       <div className="grid gap-3 mt-4">
         {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => (
-          <div key={idx} className="admin-card p-3">
+          <ColoredCard key={idx} accentColor="#8b5cf6" hoverable={false} className="p-3">
             <div className="grid gap-2 items-center grid-120-1fr-1fr">
               <div>
                 <label className="form-label">Group Order</label>
@@ -195,10 +196,10 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
                 <button className="btn btn-primary" onClick={() => saveGroup(groups[idx])} disabled={loading}>Save Group</button>
               </div>
             </div>
-          </div>
+          </ColoredCard>
         ))}
       </div>
-    </div>
+    </ColoredCard>
   )
 }
 
@@ -424,10 +425,10 @@ const [createForm, setCreateForm] = useState({
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center">
-        <div className="admin-card text-center">
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📊</div>
           <div>Loading variables...</div>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -506,7 +507,7 @@ const [createForm, setCreateForm] = useState({
                       ? buildReferenceToken({ name: variable.name, category: variable.category, derived: variable.derived, type: variable.type })
                       : variable.name
                     return (
-                      <div key={variable.name} className="admin-card">
+                      <ColoredCard key={variable.name} accentColor={getTypeColor(variable.type)} hoverable={false}>
                         {/* WHAT: Enforce exact line order per request; WHY: Consistent, scannable, uniform cards. */}
                         <div className="variable-header">
                           <h3 className="variable-title">{variable.label}</h3>
@@ -551,7 +552,7 @@ const [createForm, setCreateForm] = useState({
 
         {/* Final line: TYPE */}
         <div className="variable-type-line">{variable.type.toUpperCase()}</div>
-                      </div>
+                      </ColoredCard>
                     )
                   })}
                 </div>
