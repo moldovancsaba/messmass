@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
+import ColoredCard from '@/components/ColoredCard';
 
 interface HashtagColor {
   _id: string;
@@ -341,6 +342,9 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
           </div>
         ) : (
           <>
+            {/* WHAT: Hashtags grid using centralized ColoredCard component
+             * WHY: Same implementation as dashboard and categories - single source of truth
+             *      ColoredCard handles all card styling (border, padding, shadow, hover) */}
             <div className="hashtags-grid">
               {projectHashtags.map((projectHashtag) => {
                 const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
@@ -348,7 +352,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                 const hasCustomColor = !!colorRecord;
                 
                 return (
-                  <div key={projectHashtag.hashtag} className="hashtag-card" style={{ borderLeftColor: displayColor }}>
+                  <ColoredCard key={projectHashtag.hashtag} accentColor={displayColor} className="hashtag-card-content">
                     <div className="hashtag-card-header">
                       <span 
                         className="hashtag-bubble"
@@ -383,7 +387,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                         </button>
                       )}
                     </div>
-                  </div>
+                  </ColoredCard>
                 );
               })}
             </div>
@@ -550,18 +554,15 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
           gap: 1rem;
         }
 
-        .hashtag-card {
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 0.75rem;
-          padding: 1.25rem;
-          border: 1px solid rgba(102, 126, 234, 0.1);
-          border-left: 4px solid; /* WHAT: Colored left border using hashtag color, WHY: Visual hierarchy like dashboard cards */
-          transition: all 0.2s ease;
-        }
+        /* WHAT: Removed .hashtag-card styling - now handled by ColoredCard component
+         * WHY: Single source of truth - ColoredCard owns all card design (background, border, padding, hover)
+         *      This ensures identical implementation across dashboard, categories, and hashtags pages */
 
-        .hashtag-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        .hashtag-card-content {
+          /* WHAT: Only content-specific layout, no card styling
+           * WHY: ColoredCard handles the card itself, we only style the internal structure */
+          display: flex;
+          flex-direction: column;
         }
 
         .hashtag-card-header {
