@@ -332,34 +332,24 @@ export default function AdminDesignPage() {
       <div className="content-surface">
             {/* What: Typography/Font Selection Section
                 Why: Allow admin to choose and preview Google Fonts system-wide */}
-            <div className="section-card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderLeft: '4px solid var(--mm-color-primary-600)' }}>
-              <h2 style={{ marginBottom: '1rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>🔤</span>
+            <div className="typography-section section-card">
+              <h2 className="typography-heading">
+                <span className="typography-icon">🔤</span>
                 Typography & Fonts
               </h2>
-              <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>
+              <p className="typography-description">
                 Select a Google Font for the entire application. Changes apply immediately and persist across sessions.
               </p>
               
               {/* Font Selection Buttons */}
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+              <div className="flex gap-4 mb-8 flex-wrap">
                 {(['inter', 'roboto', 'poppins'] as const).map((font) => (
                   <button
                     key={font}
                     onClick={() => saveFont(font)}
                     disabled={fontLoading}
-                    className="btn"
-                    style={{
-                      background: selectedFont === font ? 'var(--mm-color-primary-600)' : 'var(--mm-white)',
-                      color: selectedFont === font ? 'var(--mm-white)' : 'var(--mm-gray-700)',
-                      border: selectedFont === font ? 'none' : '2px solid var(--mm-border-color-default)',
-                      fontFamily: `var(--font-${font})`,
-                      minWidth: '120px',
-                      fontWeight: selectedFont === font ? 600 : 500,
-                      opacity: fontLoading ? 0.6 : 1,
-                      cursor: fontLoading ? 'not-allowed' : 'pointer',
-                    }}
-                  >
+                    className={`btn font-selector ${selectedFont === font ? 'active' : ''}`}
+                    style={{fontFamily: `var(--font-${font})`, opacity: fontLoading ? 0.6 : 1}}>
                     {font.charAt(0).toUpperCase() + font.slice(1)}
                     {selectedFont === font && ' ✓'}
                   </button>
@@ -367,39 +357,33 @@ export default function AdminDesignPage() {
               </div>
               
               {/* Font Preview */}
-              <div style={{ 
-                background: 'var(--mm-white)', 
-                borderRadius: 'var(--mm-radius-lg)', 
-                padding: '1.5rem',
-                border: '1px solid var(--mm-border-color-default)',
-                fontFamily: `var(--font-${selectedFont})`,
-              }}>
-                <h3 style={{ fontSize: 'var(--mm-font-size-3xl)', fontWeight: 'var(--mm-font-weight-bold)', marginBottom: '0.5rem', color: 'var(--mm-gray-900)' }}>
+              <div className="font-preview" style={{fontFamily: `var(--font-${selectedFont})`}}>
+                <h3 className="preview-h3">
                   The Quick Brown Fox
                 </h3>
-                <h4 style={{ fontSize: 'var(--mm-font-size-2xl)', fontWeight: 'var(--mm-font-weight-semibold)', marginBottom: '0.5rem', color: 'var(--mm-gray-800)' }}>
+                <h4 className="preview-h4">
                   Section Heading (24px)
                 </h4>
-                <p style={{ fontSize: 'var(--mm-font-size-base)', lineHeight: 'var(--mm-line-height-md)', marginBottom: '0.5rem', color: 'var(--mm-gray-600)' }}>
+                <p className="preview-body">
                   This is body text at 16px. It demonstrates how paragraphs will appear throughout the application with normal line height and readable spacing.
                 </p>
-                <p style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-500)' }}>
+                <p className="preview-caption">
                   Small caption text (14px) - used for labels and secondary information.
                 </p>
-                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <span style={{ fontSize: 'var(--mm-font-size-xs)', color: 'var(--mm-gray-400)', fontWeight: 'var(--mm-font-weight-medium)' }}>UPPERCASE LABEL (12PX)</span>
-                  <span style={{ fontSize: 'var(--mm-font-size-4xl)', fontWeight: 'var(--mm-font-weight-bold)', color: 'var(--mm-color-primary-600)' }}>42</span>
-                  <span style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-500)' }}>← Large number display</span>
+                <div className="flex gap-2 items-center mt-4">
+                  <span className="preview-label">UPPERCASE LABEL (12PX)</span>
+                  <span className="preview-number">42</span>
+                  <span className="preview-note">← Large number display</span>
                 </div>
               </div>
             </div>
             
-            <h2 style={{ marginBottom: '2rem', color: '#1f2937' }}>Page Style Configuration</h2>
+            <h2 className="section-heading">Page Style Configuration</h2>
 
             {/* Global Default Style */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Default (Global) Style</h3>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <h3 className="subsection-heading">Default (Global) Style</h3>
+              <div className="flex gap-4 items-center">
                 <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
                   <option value="">— Use System Default —</option>
                   {pageStyles.map(s => (
@@ -412,8 +396,8 @@ export default function AdminDesignPage() {
 
             {/* Admin Page Style */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Admin Page Style</h3>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <h3 className="subsection-heading">Admin Page Style</h3>
+              <div className="flex gap-4 items-center">
                 <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
                   <option value="">— Use Default/Global —</option>
                   {pageStyles.map(s => (
@@ -426,12 +410,12 @@ export default function AdminDesignPage() {
 
             {/* Content Surface Color */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Main Content Surface Color</h3>
-              <p style={{ marginBottom: '0.75rem', color: '#6b7280' }}>
-                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It’s applied via the --content-bg CSS variable.
+              <h3 className="subsection-heading">Main Content Surface Color</h3>
+              <p className="subsection-description">
+                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It's applied via the --content-bg CSS variable.
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr auto', gap: '1rem', alignItems: 'center' }}>
-                <span style={{ color: '#374151', fontWeight: 600 }}>Content Background</span>
+              <div className="content-bg-grid">
+                <span className="content-bg-label">Content Background</span>
                 <input
                   type="text"
                   className="form-input"
@@ -439,15 +423,15 @@ export default function AdminDesignPage() {
                   value={(styleForm as any)?.contentBackgroundColor || ''}
                   onChange={(e) => setStyleForm({ ...(styleForm as any), contentBackgroundColor: e.target.value })}
                 />
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid rgba(0,0,0,0.1)', background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)' }} />
+                <span className="inline-flex items-center gap-2">
+                  <span className="color-preview" style={{background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)'}} />
                 </span>
               </div>
             </div>
             
             {/* Per-Project Style */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Project Style</h3>
+              <h3 className="subsection-heading">Project Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
                 <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-select">
@@ -462,7 +446,7 @@ export default function AdminDesignPage() {
 
             {/* Per-Hashtag Style */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1rem', color: '#374151' }}>Hashtag Style</h3>
+              <h3 className="subsection-heading">Hashtag Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
                 <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-select">
@@ -475,15 +459,15 @@ export default function AdminDesignPage() {
               </div>
 
               {/* List existing hashtag assignments */}
-              <div style={{ marginTop: '1rem' }}>
+              <div className="mt-4">
                 {hashtagAssignments.length === 0 ? (
-                  <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No hashtag-specific styles set.</p>
+                  <p className="text-gray-600 italic">No hashtag-specific styles set.</p>
                 ) : (
-                  <div style={{ display: 'grid', gap: '0.75rem' }}>
+                  <div className="grid gap-3">
                     {hashtagAssignments.map((a) => (
-                      <div key={a._id} style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between' }}>
+                      <div key={a._id} className="hashtag-assignment-item">
                         <span><strong>#{a._id}</strong> → {pageStyles.find(s => s._id === a.styleId)?.name || a.styleId}</span>
-                        <span style={{ color: '#6b7280', fontSize: '0.85rem' }}>{new Date(a.updatedAt).toLocaleString()}</span>
+                        <span className="assignment-date">{new Date(a.updatedAt).toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
@@ -493,11 +477,11 @@ export default function AdminDesignPage() {
 
             {/* Create New Style Form */}
             <div className="section-card">
-              <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Create New Style</h3>
+              <h3 className="subsection-heading mb-6">Create New Style</h3>
               
-              <div style={{ display: 'grid', gap: '1.5rem' }}>
+              <div className="grid gap-6">
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                  <label className="form-label-block font-semibold">
                     Style Name
                   </label>
                   <input
@@ -509,7 +493,7 @@ export default function AdminDesignPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                  <label className="form-label-block font-semibold">
                     Page Background Gradient (angle, stops)
                   </label>
                   <input
@@ -522,7 +506,7 @@ export default function AdminDesignPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                  <label className="form-label-block font-semibold">
                     Header Background Gradient
                   </label>
                   <input
@@ -534,9 +518,9 @@ export default function AdminDesignPage() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="grid gap-4" style={{gridTemplateColumns: '1fr 1fr'}}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    <label className="form-label-block font-semibold">
                       Title Bubble Background
                     </label>
                     <input
@@ -551,7 +535,7 @@ export default function AdminDesignPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+                    <label className="form-label-block font-semibold">
                       Title Text Color
                     </label>
                     <input
@@ -574,23 +558,17 @@ export default function AdminDesignPage() {
 
             {/* Existing Styles */}
             <div>
-              <h3 style={{ marginBottom: '1.5rem', color: '#374151' }}>Existing Styles ({pageStyles.length})</h3>
+              <h3 className="subsection-heading mb-6">Existing Styles ({pageStyles.length})</h3>
               {pageStyles.length === 0 ? (
-                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No styles created yet</p>
+                <p className="text-gray-600 italic">No styles created yet</p>
               ) : (
-                <div style={{ display: 'grid', gap: '1rem' }}>
+                <div className="grid gap-4">
                   {pageStyles.map((style) => (
                     <div key={style._id} className="style-item">
                       <div className="style-item-header">
-                        <h4 style={{ margin: 0, color: '#1f2937' }}>{style.name}</h4>
+                        <h4 className="style-item-title">{style.name}</h4>
                         <div className="flex-row">
-                          <div style={{
-                            width: '30px',
-                            height: '30px',
-                            background: style.titleBubble.backgroundColor,
-                            borderRadius: '50%',
-                            border: '2px solid #e5e7eb'
-                          }}></div>
+                          <div className="style-color-circle" style={{background: style.titleBubble.backgroundColor}}></div>
                           <button className="btn btn-sm btn-secondary" onClick={() => startEdit(style)}>Edit</button>
                           <button className="btn btn-sm btn-danger" onClick={() => deleteStyle(style._id)}>Delete</button>
                           <button className="btn btn-sm btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
@@ -599,7 +577,7 @@ export default function AdminDesignPage() {
                       </div>
 
                       {editingId === style._id && (
-                        <div style={{ marginTop: '1rem', display: 'grid', gap: '1rem' }}>
+                        <div className="edit-form">
                           <input className="form-input" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
                           <input className="form-input" value={editForm.backgroundGradient} onChange={(e) => setEditForm({ ...editForm, backgroundGradient: e.target.value })} />
                           <input className="form-input" value={editForm.headerBackgroundGradient} onChange={(e) => setEditForm({ ...editForm, headerBackgroundGradient: e.target.value })} />
