@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { buildReferenceToken } from '@/lib/variableRefs';
+import AdminHero from '@/components/AdminHero';
 
 interface VariableFlags {
   visibleInClicker: boolean;
@@ -435,47 +436,34 @@ const [createForm, setCreateForm] = useState({
 
   return (
     <div className="page-container">
-      {/* WHAT: Dashboard-pattern header with inline search and actions
-          WHY: Standardize all admin pages to identical visual structure */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">📊 Variables</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Manage data variables and metrics
-        </p>
-        
-        {/* Search and Action Bar */}
-        <div className="flex gap-4 items-center mt-6">
-          <input
-            type="text"
-            className="form-input flex-1"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search variables..."
-          />
-          <button
-            onClick={() => setReorderOpen(true)}
-            className="btn btn-secondary"
-          >
-            ↕️ Reorder Clicker
-          </button>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="btn btn-primary"
-          >
-            ➕ New Variable
-          </button>
-        </div>
-        
-        {/* Results Summary */}
-        <div className="flex gap-2 mt-4">
-          <span className="badge badge-primary">Data Manager</span>
-          <span className="badge badge-secondary">Variables</span>
-          <span className="badge badge-success">{filteredVariables.length} Variables</span>
-        </div>
-      </div>
+      <AdminHero
+        title="📊 Variables"
+        subtitle="Manage data variables and metrics"
+        backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search variables..."
+        actionButtons={[
+          {
+            label: 'Reorder Clicker',
+            icon: '↕️',
+            onClick: () => setReorderOpen(true),
+            variant: 'secondary'
+          },
+          {
+            label: 'New Variable',
+            icon: '➕',
+            onClick: () => setShowCreateForm(true),
+            variant: 'primary'
+          }
+        ]}
+        badges={[
+          { text: 'Data Manager', variant: 'primary' },
+          { text: 'Variables', variant: 'secondary' },
+          { text: `${filteredVariables.length} Variables`, variant: 'success' }
+        ]}
+      />
           <GroupsManager variables={variables} />
           {activeVar && (
             <div className="modal-overlay"

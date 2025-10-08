@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageStyle } from '@/lib/pageStyleTypes';
+import AdminHero from '@/components/AdminHero';
 
 export default function AdminDesignPage() {
   const router = useRouter();
@@ -316,20 +317,14 @@ export default function AdminDesignPage() {
 
   return (
     <div className="page-container">
-      {/* WHAT: Dashboard-pattern header
-          WHY: Standardize all admin pages to identical visual structure */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">🎨 Design Manager</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Manage page styles and visual design
-        </p>
-        <div className="mt-4">
-          <span className="badge badge-primary">{pageStyles.length} Styles</span>
-        </div>
-      </div>
+      <AdminHero
+        title="🎨 Design Manager"
+        subtitle="Manage page styles and visual design"
+        backLink="/admin"
+        badges={[
+          { text: `${pageStyles.length} Styles`, variant: 'primary' }
+        ]}
+      />
             {/* What: Typography/Font Selection Section
                 Why: Allow admin to choose and preview Google Fonts system-wide */}
             <div className="typography-section admin-card mb-8">

@@ -6,6 +6,7 @@ import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
+import AdminHero from '@/components/AdminHero';
 
 interface ProjectStats {
   remoteImages: number;
@@ -342,47 +343,34 @@ function HashtagFilterPageContent() {
 
   return (
     <div className="page-container">
-      {/* WHAT: Dashboard-pattern header with inline search
-          WHY: Standardize all admin pages to identical visual structure */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">🔍 Multi-Hashtag Filter</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Filter projects by multiple hashtags and generate shareable URLs
-        </p>
-        
-        {/* Search Bar */}
-        <div className="flex gap-4 items-center mt-6">
-          <input
-            type="text"
-            className="form-input flex-1"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search hashtags..."
-          />
-        </div>
-        
-        {/* Results Summary */}
-        {hasAppliedFilter && project && (
-          <div className="mt-4">
-            <div className="text-sm text-gray-600 mb-2">
-              <strong>{project.projectCount}</strong> {project.projectCount === 1 ? 'project' : 'projects'}
-              {' '}• {project.dateRange.formatted}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedHashtags.map((hashtag) => (
-                <ColoredHashtagBubble 
-                  key={hashtag}
-                  hashtag={hashtag}
-                  customStyle={{ fontSize: '1.125rem', fontWeight: '600' }}
-                />
-              ))}
-            </div>
+      <AdminHero
+        title="🔍 Multi-Hashtag Filter"
+        subtitle="Filter projects by multiple hashtags and generate shareable URLs"
+        backLink="/admin"
+        showSearch
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search hashtags..."
+      />
+      
+      {/* Results Summary */}
+      {hasAppliedFilter && project && (
+        <div className="mb-4">
+          <div className="text-sm text-gray-600 mb-2">
+            <strong>{project.projectCount}</strong> {project.projectCount === 1 ? 'project' : 'projects'}
+            {' '}• {project.dateRange.formatted}
           </div>
-        )}
-      </div>
+          <div className="flex flex-wrap gap-2">
+            {selectedHashtags.map((hashtag) => (
+              <ColoredHashtagBubble 
+                key={hashtag}
+                hashtag={hashtag}
+                customStyle={{ fontSize: '1.125rem', fontWeight: '600' }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Actions row (style selector + Share/CSV) */}
       <div className="admin-card p-3 mb-4">

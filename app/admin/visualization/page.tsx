@@ -6,6 +6,7 @@ import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
+import AdminHero from '@/components/AdminHero';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -301,20 +302,14 @@ export default function VisualizationPage() {
 
   return (
     <div className="page-container">
-      {/* WHAT: Dashboard-pattern header
-          WHY: Standardize all admin pages to identical visual structure */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">📊 Data Visualization Manager</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Manage data visualization blocks and chart layouts
-        </p>
-        <div className="mt-4">
-          <span className="badge badge-primary">{dataBlocks.length} Data Blocks</span>
-        </div>
-      </div>
+      <AdminHero
+        title="📊 Data Visualization Manager"
+        subtitle="Manage data visualization blocks and chart layouts"
+        backLink="/admin"
+        badges={[
+          { text: `${dataBlocks.length} Data Blocks`, variant: 'primary' }
+        ]}
+      />
       {/* Grid Settings Editor */}
       <div className="admin-card mb-8">
         <h2 className="text-2xl font-bold text-gray-900 m-0">Grid Settings</h2>

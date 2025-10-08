@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminHero from '@/components/AdminHero';
 
 /* What: Quick Add from Sheet page for bulk event import
    Why: Streamline creating projects from Google Sheets data */
@@ -260,16 +261,11 @@ export default function QuickAddPage() {
 
   return (
     <div className="page-container">
-      {/* Header */}
-      <div className="admin-card">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">⚡ Quick Add from Sheet</h1>
-          <a href="/admin/projects" className="btn btn-secondary no-underline">← Back to Projects</a>
-        </div>
-        <p className="section-subtitle">
-          Paste event data from Google Sheets to quickly create projects
-        </p>
-      </div>
+      <AdminHero
+        title="⚡ Quick Add from Sheet"
+        subtitle="Paste event data from Google Sheets to quickly create projects"
+        backLink="/admin/projects"
+      />
 
       {/* Instructions */}
       <div className="admin-card mb-6 border-left-accent">
