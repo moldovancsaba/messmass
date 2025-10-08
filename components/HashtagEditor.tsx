@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
 import ColoredCard from '@/components/ColoredCard';
+import styles from './HashtagEditor.module.css';
 
 interface HashtagColor {
   _id: string;
@@ -243,35 +244,35 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
   }
 
   return (
-    <div className={`hashtag-editor ${className}`}>
+    <div className={`${styles.hashtagEditor} ${className}`}>
 
       {/* Form */}
       {showForm && (
-        <div className="hashtag-form-container">
-          <form onSubmit={handleSubmit} className="hashtag-form">
+        <div className={styles.hashtagFormContainer}>
+          <form onSubmit={handleSubmit} className={styles.hashtagForm}>
             <h4>Edit Hashtag Color</h4>
             
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Hashtag Name</label>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Hashtag Name</label>
                 <input
                   type="text"
-                  className="form-input"
+                  className={styles.formInput}
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g. hungary, soccer, mlsz"
                   disabled={isSubmitting}
                   autoFocus
                 />
-                <small className="form-hint">Enter without # symbol</small>
+                <small className={styles.formHint}>Enter without # symbol</small>
               </div>
               
-              <div className="form-group">
-                <label className="form-label">Bubble Color</label>
-                <div className="color-picker-container">
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Bubble Color</label>
+                <div className={styles.colorPickerContainer}>
                   <input
                     type="color"
-                    className="color-input"
+                    className={styles.colorInput}
                     value={formData.color}
                     onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
                     disabled={isSubmitting}
@@ -289,17 +290,17 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
             </div>
 
             {/* Preview */}
-            <div className="hashtag-preview">
-              <label className="form-label">Preview:</label>
+            <div className={styles.hashtagPreview}>
+              <label className={styles.formLabel}>Preview:</label>
               <span 
-                className="hashtag-bubble preview"
+                className={`${styles.hashtagBubble} preview`}
                 style={{ backgroundColor: formData.color }}
               >
                 #{formData.name || 'example'}
               </span>
             </div>
 
-            <div className="form-actions">
+            <div className={styles.formActions}>
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -324,7 +325,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
       )}
 
       {/* Project Hashtags List */}
-      <div className="hashtags-list">
+      <div className={styles.hashtagsList}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
           <h4 style={{ margin: 0 }}>Project Hashtags ({totalMatched})</h4>
           <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
@@ -333,45 +334,45 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
         </div>
         
         {loading ? (
-          <div className="loading">Loading hashtags...</div>
+          <div className={styles.loading}>Loading hashtags...</div>
         ) : projectHashtags.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🏷️</div>
-            <div className="empty-title">No Hashtags Found</div>
-            <div className="empty-subtitle">Create projects with hashtags to manage their colors here</div>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>🏷️</div>
+            <div className={styles.emptyTitle}>No Hashtags Found</div>
+            <div className={styles.emptySubtitle}>Create projects with hashtags to manage their colors here</div>
           </div>
         ) : (
           <>
             {/* WHAT: Hashtags grid using centralized ColoredCard component
              * WHY: Same implementation as dashboard and categories - single source of truth
              *      ColoredCard handles all card styling (border, padding, shadow, hover) */}
-            <div className="hashtags-grid">
+            <div className={styles.hashtagsGrid}>
               {projectHashtags.map((projectHashtag) => {
                 const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
                 const displayColor = colorRecord?.color || '#667eea';
                 const hasCustomColor = !!colorRecord;
                 
                 return (
-                  <ColoredCard key={projectHashtag.hashtag} accentColor={displayColor} className="hashtag-card-content">
-                    <div className="hashtag-card-header">
+                  <ColoredCard key={projectHashtag.hashtag} accentColor={displayColor} className={styles.hashtagCardContent}>
+                    <div className={styles.hashtagCardHeader}>
                       <span 
-                        className="hashtag-bubble"
+                        className={styles.hashtagBubble}
                         style={{ backgroundColor: displayColor }}
                       >
                         #{projectHashtag.hashtag}
                       </span>
                       {!hasCustomColor && (
-                        <span className="default-badge">Default Color</span>
+                        <span className={styles.defaultBadge}>Default Color</span>
                       )}
                     </div>
                     
-                    <div className="hashtag-card-details">
-                      <div className="hashtag-stats">
+                    <div className={styles.hashtagCardDetails}>
+                      <div className={styles.hashtagStats}>
                         <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
                       </div>
                     </div>
                     
-                    <div className="hashtag-card-actions">
+                    <div className={styles.hashtagCardActions}>
                       <button
                         className="btn btn-sm btn-info"
                         onClick={() => handleEdit(projectHashtag.hashtag)}
@@ -403,258 +404,6 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
           </>
         )}
       </div>
-
-      <style jsx>{`
-        .hashtag-editor {
-          margin-bottom: 2rem;
-        }
-
-        .hashtag-editor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
-        }
-
-        .hashtag-editor-header h3 {
-          margin: 0;
-          color: #1f2937;
-          font-size: 1.25rem;
-          font-weight: 600;
-        }
-
-        .hashtag-form-container {
-          background: rgba(255, 255, 255, 0.8);
-          border-radius: 0.75rem;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-          border: 1px solid rgba(102, 126, 234, 0.1);
-        }
-
-        .hashtag-form h4 {
-          margin: 0 0 1.5rem 0;
-          color: #374151;
-          font-size: 1.125rem;
-          font-weight: 600;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-label {
-          color: #374151;
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-          font-size: 0.875rem;
-        }
-
-        .form-input {
-          padding: 0.75rem;
-          border: 1px solid #d1d5db;
-          border-radius: 0.5rem;
-          background: white;
-          color: #1f2937;
-          font-size: 0.875rem;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-hint {
-          color: #6b7280;
-          font-size: 0.75rem;
-          margin-top: 0.25rem;
-        }
-
-        .color-picker-container {
-          display: flex;
-          gap: 0.5rem;
-          align-items: center;
-        }
-
-        .color-input {
-          width: 60px;
-          height: 38px;
-          border: 1px solid #d1d5db;
-          border-radius: 0.25rem;
-          cursor: pointer;
-          padding: 0;
-        }
-
-        .hashtag-preview {
-          margin-bottom: 1.5rem;
-        }
-
-        .hashtag-bubble {
-          display: inline-block;
-          padding: 0.5rem 1rem;
-          border-radius: 50px;
-          color: white;
-          font-weight: 500;
-          font-size: 0.875rem;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .hashtag-bubble.preview {
-          font-size: 1rem;
-          padding: 0.75rem 1.5rem;
-        }
-
-        .form-actions {
-          display: flex;
-          gap: 1rem;
-          justify-content: flex-end;
-        }
-
-        .hashtags-list h4 {
-          color: #374151;
-          font-size: 1.125rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-        }
-
-        .empty-state {
-          text-align: center;
-          padding: 3rem;
-          color: #6b7280;
-        }
-
-        .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .empty-title {
-          font-size: 1.125rem;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-        }
-
-        .empty-subtitle {
-          font-size: 0.875rem;
-        }
-
-        .hashtags-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 1rem;
-        }
-
-        /* WHAT: Removed .hashtag-card styling - now handled by ColoredCard component
-         * WHY: Single source of truth - ColoredCard owns all card design (background, border, padding, hover)
-         *      This ensures identical implementation across dashboard, categories, and hashtags pages */
-
-        .hashtag-card-content {
-          /* WHAT: Only content-specific layout, no card styling
-           * WHY: ColoredCard handles the card itself, we only style the internal structure */
-          display: flex;
-          flex-direction: column;
-        }
-
-        .hashtag-card-header {
-          margin-bottom: 1rem;
-        }
-
-        .hashtag-card-details {
-          margin-bottom: 1rem;
-        }
-
-        .hashtag-stats small {
-          color: #6b7280;
-          font-size: 0.875rem;
-        }
-
-        .hashtag-dates {
-          color: #6b7280;
-          font-size: 0.75rem;
-        }
-
-        .hashtag-card-actions {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .btn {
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s;
-          border: none;
-          font-size: 0.875rem;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: #667eea;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #5a67d8;
-        }
-
-        .btn-secondary {
-          background: #6b7280;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #4b5563;
-        }
-
-        .btn-info {
-          background: #06b6d4;
-          color: white;
-        }
-
-        .btn-info:hover:not(:disabled) {
-          background: #0891b2;
-        }
-
-        .btn-danger {
-          background: #ef4444;
-          color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-          background: #dc2626;
-        }
-
-        .btn-sm {
-          padding: 0.375rem 0.75rem;
-          font-size: 0.75rem;
-        }
-
-        .loading {
-          text-align: center;
-          padding: 2rem;
-          color: #6b7280;
-          font-size: 1rem;
-        }
-      `}</style>
     </div>
   );
 }

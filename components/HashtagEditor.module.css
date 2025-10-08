@@ -1,0 +1,228 @@
+/* HashtagEditor.module.css - Centralized styling for hashtag editor component */
+
+/* WHAT: Centralized CSS module for HashtagEditor component
+ * WHY: NO inline JSX styles allowed - all styles must be in modules or global CSS
+ * HOW: Uses design tokens from theme.css for consistency */
+
+.hashtagEditor {
+  margin-bottom: var(--mm-space-8);
+}
+
+.hashtagEditorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-6);
+}
+
+.hashtagEditorHeader h3 {
+  margin: 0;
+  color: var(--mm-gray-900);
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+/* Form Container */
+.hashtagFormContainer {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  margin-bottom: var(--mm-space-8);
+  border: 1px solid var(--mm-border-color-light);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.hashtagForm h4 {
+  margin: 0 0 var(--mm-space-6) 0;
+  color: var(--mm-gray-800);
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formLabel {
+  color: var(--mm-gray-800);
+  font-weight: var(--mm-font-weight-medium);
+  margin-bottom: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+}
+
+.formInput {
+  padding: var(--mm-space-3);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  font-size: var(--mm-font-size-sm);
+  transition: all var(--transition-base);
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--mm-border-color-focus);
+  box-shadow: 0 0 0 3px var(--mm-color-primary-100);
+}
+
+.formHint {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-xs);
+  margin-top: var(--mm-space-1);
+}
+
+.colorPickerContainer {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.colorInput {
+  width: 60px;
+  height: 38px;
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-sm);
+  cursor: pointer;
+  padding: 0;
+}
+
+.hashtagPreview {
+  margin-bottom: var(--mm-space-6);
+}
+
+.hashtagBubble {
+  display: inline-block;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border-radius: 50px;
+  color: white;
+  font-weight: var(--mm-font-weight-medium);
+  font-size: var(--mm-font-size-sm);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--mm-shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hashtagBubble.preview {
+  font-size: var(--mm-font-size-base);
+  padding: var(--mm-space-3) var(--mm-space-6);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--mm-space-4);
+  justify-content: flex-end;
+}
+
+/* Hashtags List */
+.hashtagsList h4 {
+  color: var(--mm-gray-800);
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-4);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--mm-space-12);
+  color: var(--mm-gray-600);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--mm-space-4);
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-2);
+  color: var(--mm-gray-900);
+}
+
+.emptySubtitle {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.hashtagsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+/* Card Content (ColoredCard handles the wrapper) */
+.hashtagCardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.hashtagCardHeader {
+  margin-bottom: var(--mm-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+}
+
+.hashtagCardDetails {
+  margin-bottom: var(--mm-space-4);
+}
+
+.hashtagStats small {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+.hashtagDates {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-xs);
+}
+
+.hashtagCardActions {
+  display: flex;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+}
+
+.defaultBadge {
+  display: inline-block;
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  padding: var(--mm-space-1) var(--mm-space-2);
+  border-radius: var(--mm-radius-sm);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.loading {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-base);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .hashtagsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hashtagCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
