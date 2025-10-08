@@ -958,3 +958,74 @@
 
 /* Justify End */
 .justify-end { justify-content: flex-end; }
+
+/* Filter Page Specific Utilities */
+.min-w-200 { min-width: 200px; }
+
+.save-status-indicator {
+  min-width: 70px;
+  text-align: left;
+  font-size: 0.85rem;
+  align-self: center;
+}
+
+.project-count-badge {
+  font-size: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.projects-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.project-list-item {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.project-item-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.project-link {
+  color: #6366f1;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.project-link:hover {
+  border-bottom-color: #6366f1;
+}
+
+.view-stats-badge {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Additional spacing utilities */
+.mt-12 { margin-top: 3rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.p-8 { padding: 2rem; }
+.m-auto { margin: auto; }
+
+/* Text sizes */
+.text-3xl { font-size: 1.875rem; }

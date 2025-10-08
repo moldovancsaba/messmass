@@ -361,14 +361,8 @@ function HashtagFilterPageContent() {
         } : undefined}
       >
         {hasAppliedFilter && project && (
-          <div style={{ marginTop: '0.5rem' }}>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
+          <div className="mt-2">
+            <div className="flex flex-wrap gap-2 justify-center items-center">
               {selectedHashtags.map((hashtag) => (
                 <ColoredHashtagBubble 
                   key={hashtag}
@@ -382,13 +376,13 @@ function HashtagFilterPageContent() {
       </UnifiedAdminHero>
 
       {/* Actions row (style selector + Share/CSV) */}
-      <div className="admin-card" style={{ padding: '0.75rem 1rem', marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div className="admin-card p-3 mb-4">
+        <div className="flex gap-2 flex-wrap justify-center">
           {hasAppliedFilter && project && (
             <>
               {/* Style selector for this filter share */}
                     <select 
-                      className="form-input" 
+                      className="form-input min-w-200" 
                       value={selectedStyleId} 
                       onChange={async (e) => {
                         const newId = e.target.value;
@@ -415,7 +409,6 @@ function HashtagFilterPageContent() {
                           setTimeout(() => setSaveStatus('idle'), 2000);
                         }
                       }} 
-                      style={{ minWidth: '200px' }}
                       title="Choose a style for this filter"
                     >
                       <option value="">— Use Default/Global —</option>
@@ -425,13 +418,7 @@ function HashtagFilterPageContent() {
                     </select>
 
                     {/* Inline save indicator */}
-                    <span style={{
-                      minWidth: '70px',
-                      textAlign: 'left',
-                      fontSize: '0.85rem',
-                      alignSelf: 'center',
-                      color: saveStatus === 'saved' ? '#10b981' : saveStatus === 'error' ? '#ef4444' : '#6b7280'
-                    }}>
+                    <span className="save-status-indicator" style={{color: saveStatus === 'saved' ? '#10b981' : saveStatus === 'error' ? '#ef4444' : '#6b7280'}}>
                       {saveStatus === 'saving' && 'Saving…'}
                       {saveStatus === 'saved' && '✓ saved'}
                       {saveStatus === 'error' && '⚠︎ failed'}
@@ -478,7 +465,7 @@ function HashtagFilterPageContent() {
       </div>
 
       {/* Hashtag Selection and Load More */}
-      <div className="admin-card" style={{ padding: '1rem' }}>
+      <div className="admin-card p-4">
         <HashtagMultiSelect
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
@@ -487,7 +474,7 @@ function HashtagFilterPageContent() {
           disabled={statsLoading}
           showPreview={true}
         />
-        <div style={{ padding: '1rem 0', textAlign: 'center' }}>
+        <div className="text-center" style={{padding: '1rem 0'}}>
           {searchOffset != null ? (
             <button
               className="btn btn-sm btn-secondary"
@@ -502,28 +489,27 @@ function HashtagFilterPageContent() {
               {isLoadingMore ? 'Loading…' : 'Load 20 more'}
             </button>
           ) : (
-            <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+            <span className="text-gray-600 text-sm">No more items</span>
           )}
         </div>
       </div>
 
       {/* Loading State */}
       {statsLoading && (
-        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div className="curve-spinner" style={{ margin: '1rem auto' }}></div>
+        <div className="admin-card p-8 text-center">
+          <div className="curve-spinner m-auto mt-4"></div>
         </div>
       )}
 
       {/* Error State */}
       {error && !statsLoading && (
-        <div className="admin-card" style={{ padding: '2rem' }}>
+        <div className="admin-card p-8">
           <div className={styles.error}>
             <h2>❌ Error</h2>
             <p>{error}</p>
             <button 
               onClick={() => fetchFilteredStats()}
-              className="btn btn-sm btn-primary"
-              style={{ marginTop: '1rem' }}
+              className="btn btn-sm btn-primary mt-4"
             >
               🔄 Try Again
             </button>
@@ -693,64 +679,21 @@ function HashtagFilterPageContent() {
 
           {/* Projects List Section */}
           {projects.length > 0 && (
-            <div className="admin-card" style={{ marginTop: '3rem' }}>
-              <h2 style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem',
-                color: '#1f2937 !important',
-                fontWeight: '600',
-                fontSize: '1.875rem',
-                marginBottom: '1.5rem'
-              }}>
-                <span style={{ color: '#1f2937' }}>📊 Matching Projects </span>
-                <span style={{
-                  fontSize: '1rem',
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  color: '#059669',
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '12px',
-                  fontWeight: 'bold'
-                }}>
+            <div className="admin-card mt-12">
+              <h2 className="flex items-center gap-2 text-gray-900 font-semibold text-3xl mb-6">
+                <span className="text-gray-900">📊 Matching Projects </span>
+                <span className="project-count-badge">
                   ({projects.length})
                 </span>
               </h2>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-                gap: '1rem',
-                marginTop: '1rem'
-              }}>
+              <div className="projects-list-grid">
                 {projects.map((projectItem) => (
-                  <div key={projectItem._id} style={{
-                    padding: '1.5rem',
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(99, 102, 241, 0.1)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    transition: 'all 0.2s ease'
-                  }}>
-                    <h3 style={{
-                      margin: '0 0 0.75rem 0',
-                      fontSize: '1.125rem',
-                      fontWeight: '600',
-                      color: '#1f2937'
-                    }}>
+                  <div key={projectItem._id} className="project-list-item">
+                    <h3 className="project-item-title">
                       {projectItem.viewSlug ? (
                         <a 
                           href={`/stats/${projectItem.viewSlug}`}
-                          style={{
-                            color: '#6366f1',
-                            textDecoration: 'none',
-                            borderBottom: '1px solid transparent',
-                            transition: 'border-color 0.2s ease'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.borderBottomColor = '#6366f1';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderBottomColor = 'transparent';
-                          }}
+                          className="project-link"
                           target="_blank"
                           rel="noopener noreferrer"
                           title={`View statistics for ${projectItem.eventName}`}
@@ -764,12 +707,7 @@ function HashtagFilterPageContent() {
                     
                     {/* Hashtags */}
                     {projectItem.hashtags && projectItem.hashtags.length > 0 && (
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '0.5rem',
-                        marginBottom: '0.75rem'
-                      }}>
+                      <div className="flex flex-wrap gap-2 mb-3">
                         {projectItem.hashtags.map((hashtag, index) => (
                           <ColoredHashtagBubble 
                             key={index}
@@ -780,23 +718,10 @@ function HashtagFilterPageContent() {
                       </div>
                     )}
                     
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '0.875rem',
-                      color: '#6b7280'
-                    }}>
+                    <div className="flex justify-between items-center text-sm text-gray-600">
                       <span>📅 {new Date(projectItem.eventDate).toLocaleDateString()}</span>
                       {projectItem.viewSlug && (
-                        <span style={{
-                          background: 'rgba(99, 102, 241, 0.1)',
-                          color: '#6366f1',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          fontWeight: '500'
-                        }}>
+                        <span className="view-stats-badge">
                           📊 View Stats
                         </span>
                       )}
