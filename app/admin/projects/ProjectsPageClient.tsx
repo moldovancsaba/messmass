@@ -6,6 +6,7 @@ import { AdminUser } from '@/lib/auth';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import SharePopup from '@/components/SharePopup';
+import AdminHero from '@/components/AdminHero';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -538,46 +539,37 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   return (
     <div className="page-container">
-      {/* WHAT: Dashboard-pattern header with inline search and actions
-          WHY: Standardize all admin pages to identical visual structure */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">📊 Project Management</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Manage all event projects, statistics, and sharing options
-        </p>
-        
-        {/* Search and Action Bar */}
-        <div className="flex gap-4 items-center mt-6">
-          <input
-            type="text"
-            className="form-input flex-1"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search projects..."
-          />
-          <button
-            onClick={() => {
+      {/* WHAT: AdminHero standardization for consistent header
+          WHY: Unified design system across all admin pages */}
+      <AdminHero
+        title="📊 Project Management"
+        subtitle="Manage all event projects, statistics, and sharing options"
+        backLink="/admin"
+        showSearch
+        searchValue={searchQuery}
+        onSearchChange={(value) => setSearchQuery(value)}
+        searchPlaceholder="Search projects..."
+        actionButtons={[
+          {
+            label: 'Add New Project',
+            icon: '➕',
+            onClick: () => {
               console.log('Add New Project button clicked');
               setShowNewProjectForm(true);
-            }}
-            className="btn btn-primary"
-            title="Create a new project"
-          >
-            ➕ Add New Project
-          </button>
+            },
+            variant: 'primary',
+            title: 'Create a new project'
+          }
+        ]}
+      />
+      
+      {/* Results Summary */}
+      {(filteredAndSortedProjects.length > 0 || searchQuery) && (
+        <div className="mb-4 text-sm text-gray-600">
+          <strong>{filteredAndSortedProjects.length}</strong> {filteredAndSortedProjects.length === 1 ? 'project' : 'projects'}
+          {searchQuery && ' (filtered results)'}
         </div>
-        
-        {/* Results Summary */}
-        {(filteredAndSortedProjects.length > 0 || searchQuery) && (
-          <div className="mt-4 text-sm text-gray-600">
-            <strong>{filteredAndSortedProjects.length}</strong> {filteredAndSortedProjects.length === 1 ? 'project' : 'projects'}
-            {searchQuery && ' (filtered results)'}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Projects Table */}
       <div className="projects-table-container">

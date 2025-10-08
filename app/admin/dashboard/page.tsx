@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import { AdminUser } from '@/lib/auth';
 import HashtagInput from '@/components/HashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import AdminHero from '@/components/AdminHero';
 
 interface Project {
   _id: string;
@@ -196,15 +197,11 @@ export default function DashboardPage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="admin-card">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">📊 Dashboard</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Comprehensive dashboard with overview, success metrics, statistics, and filtering
-        </p>
-      </div>
+      <AdminHero
+        title="📊 Dashboard"
+        subtitle="Comprehensive dashboard with overview, success metrics, statistics, and filtering"
+        backLink="/admin"
+      />
 
       {/* Tab Navigation */}
       <div className="admin-card mb-8">

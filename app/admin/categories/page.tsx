@@ -191,38 +191,26 @@ if (error) {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="admin-card mb-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="section-title">📁 Categories</h1>
-          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
-        </div>
-        <p className="section-subtitle">
-          Manage hashtag categories with colors and display order
-        </p>
-        
-        {/* Search and Action Bar */}
-        <div className="flex gap-4 items-center mt-6">
-          <input
-            type="text"
-            className="form-input flex-1"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search categories..."
-          />
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="btn btn-primary"
-          >
-            ➕ New Category
-          </button>
-        </div>
-      </div>
+      <AdminHero
+        title="📁 Categories"
+        subtitle="Manage hashtag categories with colors and display order"
+        backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search categories..."
+        actionButtons={[
+          {
+            label: 'New Category',
+            icon: '➕',
+            onClick: () => setShowCreateForm(true),
+            variant: 'primary'
+          }
+        ]}
+      />
 
-      {/* Content */}
-      <div className="admin-card">
-          {/* Categories Grid */}
-          <div>
-            <div className={styles.categoryGrid}>
+      {/* Categories Grid - direct content, no extra wrapper */}
+      <div className={styles.categoryGrid}>
               {filteredCategories.map((category) => (
                 <div key={category._id} className={styles.categoryCard}>
                   {/* Category Header */}
@@ -244,30 +232,28 @@ if (error) {
                   </div>
                 </div>
               ))}
-            </div>
+      </div>
 
-            {/* Empty State */}
-            {filteredCategories.length === 0 && (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>📂</div>
-                <h3 className={styles.emptyTitle}>
-                  {searchTerm ? 'No categories found' : 'No categories yet'}
-                </h3>
-                <p className={styles.emptyText}>
-                  {searchTerm 
-                    ? `No categories match "${searchTerm}"`
-                    : 'Create your first hashtag category to get started'
-                  }
-                </p>
-                {!searchTerm && (
-                  <button className={styles.createFirstButton} onClick={() => setShowCreateForm(true)}>
-                    ➕ Create First Category
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+      {/* Empty State */}
+      {filteredCategories.length === 0 && (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>📂</div>
+          <h3 className={styles.emptyTitle}>
+            {searchTerm ? 'No categories found' : 'No categories yet'}
+          </h3>
+          <p className={styles.emptyText}>
+            {searchTerm 
+              ? `No categories match "${searchTerm}"`
+              : 'Create your first hashtag category to get started'
+          }
+          </p>
+          {!searchTerm && (
+            <button className={styles.createFirstButton} onClick={() => setShowCreateForm(true)}>
+              ➕ Create First Category
+            </button>
+          )}
         </div>
+      )}
 
       {/* Create Category Modal */}
       {showCreateForm && (
