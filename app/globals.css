@@ -8,10 +8,13 @@
 /* 1. Theme & Design Tokens (must be first) */
 @import './styles/theme.css';
 
-/* 2. Base Components */
+/* 2. Utility Classes (reusable atomic styles) */
+@import './styles/utilities.css';
+
+/* 3. Base Components */
 @import './styles/components.css';
 
-/* 3. Layout System */
+/* 4. Layout System */
 @import './styles/layout.css';
 
 /* ========================================
