@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
 import { PageStyle } from '@/lib/pageStyleTypes';
 
 export default function AdminDesignPage() {
@@ -317,22 +316,23 @@ export default function AdminDesignPage() {
 
   return (
     <div className="page-container">
-      {/* WHAT: Use UnifiedAdminHero to avoid nested admin-container wrappers.
-          WHY: Standardize header across admin pages and prevent duplicate backgrounds. */}
-      <AdminHero 
-        title="Design Manager"
-        subtitle="Manage page styles and visual design"
-        badges={[
-          { text: `${pageStyles.length} Styles`, variant: 'primary' }
-        ]}
-        backLink="/admin"
-      />
-
-      {/* Page content */}
-      <div className="content-surface">
+      {/* WHAT: Dashboard-pattern header
+          WHY: Standardize all admin pages to identical visual structure */}
+      <div className="admin-card mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="section-title">🎨 Design Manager</h1>
+          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
+        </div>
+        <p className="section-subtitle">
+          Manage page styles and visual design
+        </p>
+        <div className="mt-4">
+          <span className="badge badge-primary">{pageStyles.length} Styles</span>
+        </div>
+      </div>
             {/* What: Typography/Font Selection Section
                 Why: Allow admin to choose and preview Google Fonts system-wide */}
-            <div className="typography-section admin-card">
+            <div className="typography-section admin-card mb-8">
               <h2 className="typography-heading">
                 <span className="typography-icon">🔤</span>
                 Typography & Fonts
@@ -378,10 +378,10 @@ export default function AdminDesignPage() {
               </div>
             </div>
             
-            <h2 className="section-heading">Page Style Configuration</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Page Style Configuration</h2>
 
             {/* Global Default Style */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading">Default (Global) Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
@@ -395,7 +395,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Admin Page Style */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading">Admin Page Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
@@ -409,7 +409,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Content Surface Color */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading">Main Content Surface Color</h3>
               <p className="subsection-description">
                 This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It's applied via the --content-bg CSS variable.
@@ -430,7 +430,7 @@ export default function AdminDesignPage() {
             </div>
             
             {/* Per-Project Style */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading">Project Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
@@ -445,7 +445,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Per-Hashtag Style */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading">Hashtag Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
@@ -476,7 +476,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Create New Style Form */}
-            <div className="admin-card">
+            <div className="admin-card mb-8">
               <h3 className="subsection-heading mb-6">Create New Style</h3>
               
               <div className="grid gap-6">
@@ -556,8 +556,8 @@ export default function AdminDesignPage() {
               </div>
             </div>
 
-            {/* Existing Styles */}
-            <div>
+            {/* Existing Styles - WHAT: Last card on page, no mb-8 */}
+            <div className="admin-card">
               <h3 className="subsection-heading mb-6">Existing Styles ({pageStyles.length})</h3>
               {pageStyles.length === 0 ? (
                 <p className="text-gray-600 italic">No styles created yet</p>
@@ -609,7 +609,6 @@ export default function AdminDesignPage() {
                 </div>
               )}
             </div>
-          </div>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
@@ -302,18 +301,22 @@ export default function VisualizationPage() {
 
   return (
     <div className="page-container">
-      <AdminHero 
-        title="Data Visualization Manager"
-        subtitle="Manage data visualization blocks and chart layouts"
-        badges={[
-          { text: `${dataBlocks.length} Data Blocks`, variant: 'primary' }
-        ]}
-        backLink="/admin"
-      />
-
-      <div className="content-surface">
+      {/* WHAT: Dashboard-pattern header
+          WHY: Standardize all admin pages to identical visual structure */}
+      <div className="admin-card mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="section-title">📊 Data Visualization Manager</h1>
+          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
+        </div>
+        <p className="section-subtitle">
+          Manage data visualization blocks and chart layouts
+        </p>
+        <div className="mt-4">
+          <span className="badge badge-primary">{dataBlocks.length} Data Blocks</span>
+        </div>
+      </div>
       {/* Grid Settings Editor */}
-      <div className="admin-card">
+      <div className="admin-card mb-8">
         <h2 className="text-2xl font-bold text-gray-900 m-0">Grid Settings</h2>
         <p className="info-note mt-2">
           Configure the number of units per breakpoint used by stats/filter/hashtag pages.
@@ -385,8 +388,10 @@ export default function VisualizationPage() {
         </div>
       </div>
 
+      {/* WHAT: Last major card section on page (blocks within this may exist but this is the last main section)
+          WHY: No mb-8 on last section */}
       <div className="admin-card">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Data Visualization Blocks</h2>
+        <h2 className="section-title mb-6">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}
         <div className="info-box">
@@ -767,7 +772,6 @@ export default function VisualizationPage() {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }

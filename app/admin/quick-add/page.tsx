@@ -276,7 +276,7 @@ export default function QuickAddPage() {
         <h3 className="section-subtitle mb-4">
           📋 Expected Format:
         </h3>
-        <div className="admin-card mb-4 bg-gray-900 text-white overflow-auto">
+        <div className="bg-gray-900 text-white overflow-auto p-4 rounded-lg mb-4">
           <code className="font-mono text-sm whitespace-nowrap">
             ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
           </code>
@@ -344,7 +344,7 @@ export default function QuickAddPage() {
             👀 Preview:
           </h3>
           
-          <div className="admin-card mb-6">
+          <div className="bg-gray-50 p-6 rounded-lg mb-6">
             <div className="mb-4 pb-4 border-bottom-default">
               <strong className="inline-block min-w-120 text-gray-700">Event Name:</strong>
               <span className="text-gray-900">{preview.eventName}</span>

@@ -6,7 +6,6 @@ import styles from '../../stats/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
-import UnifiedAdminHero from '@/components/UnifiedAdminHero';
 
 interface ProjectStats {
   remoteImages: number;
@@ -343,26 +342,36 @@ function HashtagFilterPageContent() {
 
   return (
     <div className="page-container">
-      {/* Unified HERO with search (matches Project Management UX) */}
-      <UnifiedAdminHero
-        title="Multi-Hashtag Filter"
-        icon="🔍"
-        showSearch={true}
-        searchValue={searchQuery}
-        onSearchChange={(value) => {
-          setSearchQuery(value);
-        }}
-        searchPlaceholder="Search hashtags..."
-        backLink="/admin"
-        resultsSummary={hasAppliedFilter && project ? {
-          count: project.projectCount,
-          itemType: 'project',
-          additionalInfo: project.dateRange.formatted
-        } : undefined}
-      >
+      {/* WHAT: Dashboard-pattern header with inline search
+          WHY: Standardize all admin pages to identical visual structure */}
+      <div className="admin-card mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="section-title">🔍 Multi-Hashtag Filter</h1>
+          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
+        </div>
+        <p className="section-subtitle">
+          Filter projects by multiple hashtags and generate shareable URLs
+        </p>
+        
+        {/* Search Bar */}
+        <div className="flex gap-4 items-center mt-6">
+          <input
+            type="text"
+            className="form-input flex-1"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search hashtags..."
+          />
+        </div>
+        
+        {/* Results Summary */}
         {hasAppliedFilter && project && (
-          <div className="mt-2">
-            <div className="flex flex-wrap gap-2 justify-center items-center">
+          <div className="mt-4">
+            <div className="text-sm text-gray-600 mb-2">
+              <strong>{project.projectCount}</strong> {project.projectCount === 1 ? 'project' : 'projects'}
+              {' '}• {project.dateRange.formatted}
+            </div>
+            <div className="flex flex-wrap gap-2">
               {selectedHashtags.map((hashtag) => (
                 <ColoredHashtagBubble 
                   key={hashtag}
@@ -373,7 +382,7 @@ function HashtagFilterPageContent() {
             </div>
           </div>
         )}
-      </UnifiedAdminHero>
+      </div>
 
       {/* Actions row (style selector + Share/CSV) */}
       <div className="admin-card p-3 mb-4">

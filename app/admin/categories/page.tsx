@@ -189,18 +189,37 @@ if (error) {
   }
 
   return (
-    <div>
-      <AdminHero
-        title="Categories"
-        showSearch={true}
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Search categories..."
-        actionButtons={[{ label: '➥ New Category', onClick: () => setShowCreateForm(true), variant: 'primary' }]}
-        backLink="/admin"
-      />
+    <div className="page-container">
+      {/* Header */}
+      <div className="admin-card mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="section-title">📁 Categories</h1>
+          <a href="/admin" className="btn btn-secondary no-underline">← Back to Admin</a>
+        </div>
+        <p className="section-subtitle">
+          Manage hashtag categories with colors and display order
+        </p>
+        
+        {/* Search and Action Bar */}
+        <div className="flex gap-4 items-center mt-6">
+          <input
+            type="text"
+            className="form-input flex-1"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search categories..."
+          />
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="btn btn-primary"
+          >
+            ➕ New Category
+          </button>
+        </div>
+      </div>
 
-      <div>
+      {/* Content */}
+      <div className="admin-card">
           {/* Categories Grid */}
           <div>
             <div className={styles.categoryGrid}>
