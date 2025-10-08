@@ -46,9 +46,7 @@ body {
 }
 
 /* Ensure black text on white/light backgrounds */
-.glass-card,
 .admin-header,
-.content-surface,
 .admin-stat-card,
 .admin-projects-container,
 .login-card,
@@ -60,7 +58,6 @@ body {
 }
 
 /* Specific text elements that should always be black on light backgrounds */
-.glass-card *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
 .admin-header *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
 .admin-stat-card *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
 .admin-projects-container *:not(.btn):not(.admin-logout-btn):not([style*="color:"]),
@@ -146,15 +143,6 @@ img {
   margin: 0 auto;
 }
 
-/* What: Main content surface (design-managed background) - flat design
-   Why: Removed backdrop-filter blur for flat aesthetic, solid white background */
-.content-surface {
-  background: var(--content-bg, var(--mm-white));
-  border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--border-radius);
-  box-shadow: var(--mm-shadow-md);
-  padding: 2rem;
-}
 
 .admin-title-center { text-align: center; }
 .admin-subtitle-center { text-align: center; }
@@ -185,8 +173,6 @@ img {
 .wrap { flex-wrap: wrap !important; }
 .flex-row { display: flex; align-items: center; }
 
-/* Cards and sections */
-.section-card { padding: 1.5rem; margin-bottom: 1.5rem; }
 
 /* Visualization helpers */
 .drag-hint { cursor: grab; user-select: none; margin-left: 0.5rem; }
@@ -1184,14 +1170,6 @@ img {
   box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
 }
 
-/* What: Glass Card - now flat card design
-   Why: Removing all glass-morphism for professional flat aesthetic */
-.glass-card {
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-xl);
-  box-shadow: var(--mm-shadow-md);
-}
 
 /* Loading animations removed - section kept for documentation */
 

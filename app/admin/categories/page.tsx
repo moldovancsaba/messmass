@@ -228,7 +228,7 @@ if (error) {
                   {/* Category Header */}
                   <div className={styles.categoryHeader}>
                     <div className={styles.categoryTitle}>
-                      <div className={styles.categoryDot} style={{ background: category.color }} />
+                      <div className={styles.categoryDot} style={{background: category.color}} />
                       <h3 className={styles.categoryName}>{category.name}</h3>
                     </div>
                     <div className={styles.categoryActions}>

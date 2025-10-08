@@ -348,8 +348,7 @@ export default function AdminDesignPage() {
                     key={font}
                     onClick={() => saveFont(font)}
                     disabled={fontLoading}
-                    className={`btn font-selector ${selectedFont === font ? 'active' : ''}`}
-                    style={{fontFamily: `var(--font-${font})`, opacity: fontLoading ? 0.6 : 1}}>
+                    className={`btn font-selector ${selectedFont === font ? 'active' : ''} font-${font} ${fontLoading ? 'opacity-60' : 'opacity-100'}`}>
                     {font.charAt(0).toUpperCase() + font.slice(1)}
                     {selectedFont === font && ' ✓'}
                   </button>
@@ -357,7 +356,7 @@ export default function AdminDesignPage() {
               </div>
               
               {/* Font Preview */}
-              <div className="font-preview" style={{fontFamily: `var(--font-${selectedFont})`}}>
+              <div className={`font-preview font-${selectedFont}`}>
                 <h3 className="preview-h3">
                   The Quick Brown Fox
                 </h3>
@@ -424,7 +423,10 @@ export default function AdminDesignPage() {
                   onChange={(e) => setStyleForm({ ...(styleForm as any), contentBackgroundColor: e.target.value })}
                 />
                 <span className="inline-flex items-center gap-2">
-                  <span className="color-preview" style={{background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)'}} />
+                  <span 
+                    className="color-preview" 
+                    style={{background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)'}} 
+                  />
                 </span>
               </div>
             </div>
@@ -518,7 +520,7 @@ export default function AdminDesignPage() {
                   />
                 </div>
 
-                <div className="grid gap-4" style={{gridTemplateColumns: '1fr 1fr'}}>
+                <div className="grid gap-4 grid-1fr-1fr">
                   <div>
                     <label className="form-label-block font-semibold">
                       Title Bubble Background
@@ -568,7 +570,10 @@ export default function AdminDesignPage() {
                       <div className="style-item-header">
                         <h4 className="style-item-title">{style.name}</h4>
                         <div className="flex-row">
-                          <div className="style-color-circle" style={{background: style.titleBubble.backgroundColor}}></div>
+                          <div 
+                            className="style-color-circle" 
+                            style={{background: style.titleBubble.backgroundColor}}
+                          ></div>
                           <button className="btn btn-sm btn-secondary" onClick={() => startEdit(style)}>Edit</button>
                           <button className="btn btn-sm btn-danger" onClick={() => deleteStyle(style._id)}>Delete</button>
                           <button className="btn btn-sm btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>

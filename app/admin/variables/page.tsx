@@ -155,7 +155,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
       <div className="grid gap-3 mt-4">
         {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => (
           <div key={idx} className="admin-card p-3">
-            <div className="grid gap-2 items-center" style={{gridTemplateColumns: '120px 1fr 1fr'}}>
+            <div className="grid gap-2 items-center grid-120-1fr-1fr">
               <div>
                 <label className="form-label">Group Order</label>
                 <input className="form-input" type="number" value={g.groupOrder} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, groupOrder: Number(e.target.value) } : x))} />
@@ -240,7 +240,7 @@ function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { vari
 
   return (
     <div>
-      <div className="grid gap-3" style={{gridTemplateColumns: '1fr 1fr'}}>
+      <div className="grid gap-3 grid-1fr-1fr">
         <div>
           <label className="form-label">Name{!canRename && ' (registry)'}</label>
           <input className="form-input" value={name} onChange={e => setName(e.target.value)} disabled={!canRename} />
@@ -480,7 +480,7 @@ const [createForm, setCreateForm] = useState({
           {activeVar && (
             <div className="modal-overlay"
                  onClick={() => setActiveVar(null)}>
-              <div className="modal-content" style={{maxWidth: 620}} onClick={(e) => e.stopPropagation()}>
+              <div className="modal-content max-w-620" onClick={(e) => e.stopPropagation()}>
                 <h3 className="modal-title">Edit Variable</h3>
 
                 {/* Edit form */}
@@ -531,7 +531,7 @@ const [createForm, setCreateForm] = useState({
 
                         {/* Flags Controls (each on its own line) */}
                         <div className="variable-flags">
-                          <label className="variable-flag" style={{opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1}}>
+                          <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
                             <input
                               type="checkbox"
                               checked={!!variable.flags?.visibleInClicker}
@@ -545,7 +545,7 @@ const [createForm, setCreateForm] = useState({
                             />
                             <span>Visible in Clicker</span>
                           </label>
-                          <label className="variable-flag" style={{opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1}}>
+                          <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
                             <input
                               type="checkbox"
                               checked={!!variable.flags?.editableInManual}
@@ -604,7 +604,7 @@ const [createForm, setCreateForm] = useState({
       {reorderOpen && (
         <div className="modal-overlay"
              onClick={() => setReorderOpen(false)}>
-          <div className="modal-content" style={{maxWidth: 840}} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content max-w-840" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">⇕️ Reorder Clicker Buttons</h3>
             <p className="text-gray-600 mt-1 mb-4">Drag items to change the order of clickable stats in the Editor clicker. Per-category ordering.</p>
             <ReorderClickerLists
@@ -624,10 +624,10 @@ const [createForm, setCreateForm] = useState({
       {showCreateForm && (
         <div className="modal-overlay"
              onClick={() => setShowCreateForm(false)}>
-          <div className="modal-content" style={{maxWidth: 640}} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content max-w-640" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">➕ New Variable</h3>
             <p className="text-gray-600 mt-1 mb-4">Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
-            <div className="grid gap-3" style={{gridTemplateColumns: '1fr 1fr'}}>
+            <div className="grid gap-3 grid-1fr-1fr">
               <div>
                 <label className="form-label-block">Name (camelCase)</label>
                 <input
@@ -866,7 +866,7 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
 
   return (
     <div>
-      <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))'}}>
+      <div className="grid gap-4 grid-auto-260">
         {cats.map(cat => (
           <div key={cat} className="admin-card p-3">
             <h4 className="mt-0 mb-2">{cat}</h4>
@@ -877,7 +877,7 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
                     onDragStart={() => onDragStart(cat, v.name)}
                     onDragOver={onDragOver}
                     onDrop={() => onDrop(cat, v.name)}
-                    className="flex items-center justify-between p-2 border-dashed mb-2 bg-white-60 cursor-grab" style={{border: '1px dashed var(--mm-border)', borderRadius: 8}}>
+                    className="flex items-center justify-between p-2 border-dashed mb-2 bg-white-60 cursor-grab rounded-8">
                   <span className="inline-flex gap-2 items-center">
                     <span className="opacity-60">⇕️</span>
                     <span>{v.label}</span>

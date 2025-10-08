@@ -427,7 +427,11 @@ function HashtagFilterPageContent() {
                     </select>
 
                     {/* Inline save indicator */}
-                    <span className="save-status-indicator" style={{color: saveStatus === 'saved' ? '#10b981' : saveStatus === 'error' ? '#ef4444' : '#6b7280'}}>
+                    <span className={`save-status-indicator ${
+                      saveStatus === 'saved' ? 'text-status-saved' : 
+                      saveStatus === 'error' ? 'text-status-error' : 
+                      'text-status-default'
+                    }`}>
                       {saveStatus === 'saving' && 'Saving…'}
                       {saveStatus === 'saved' && '✓ saved'}
                       {saveStatus === 'error' && '⚠︎ failed'}
@@ -483,7 +487,7 @@ function HashtagFilterPageContent() {
           disabled={statsLoading}
           showPreview={true}
         />
-        <div className="text-center" style={{padding: '1rem 0'}}>
+        <div className="text-center py-4">
           {searchOffset != null ? (
             <button
               className="btn btn-sm btn-secondary"
