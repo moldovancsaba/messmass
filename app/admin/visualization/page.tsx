@@ -292,16 +292,8 @@ export default function VisualizationPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="admin-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }}></div>
+        <div className="admin-card p-8 text-center">
+          <div className="loading-spinner-viz"></div>
           <p>Loading data visualization blocks...</p>
         </div>
       </div>
@@ -322,12 +314,12 @@ export default function VisualizationPage() {
       <div className="content-surface">
       {/* Grid Settings Editor */}
       <div className="glass-card section-card">
-        <h2 className="section-title" style={{ margin: 0 }}>Grid Settings</h2>
-        <p className="info-note" style={{ marginTop: '0.5rem' }}>
+        <h2 className="section-title m-0">Grid Settings</h2>
+        <p className="info-note mt-2">
           Configure the number of units per breakpoint used by stats/filter/hashtag pages.
         </p>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <div className="flex gap-4 flex-wrap mt-3">
+          <label className="grid-input-label">
             <span>Desktop Units</span>
             <input
               type="number"
@@ -335,11 +327,10 @@ export default function VisualizationPage() {
               max={6}
               value={gridForm.desktop}
               onChange={(e) => setGridForm({ ...gridForm, desktop: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 6) })}
-              className="form-input"
-              style={{ width: '120px' }}
+              className="form-input grid-input-field"
             />
           </label>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <label className="grid-input-label">
             <span>Tablet Units</span>
             <input
               type="number"
@@ -347,11 +338,10 @@ export default function VisualizationPage() {
               max={4}
               value={gridForm.tablet}
               onChange={(e) => setGridForm({ ...gridForm, tablet: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 4) })}
-              className="form-input"
-              style={{ width: '120px' }}
+              className="form-input grid-input-field"
             />
           </label>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <label className="grid-input-label">
             <span>Mobile Units</span>
             <input
               type="number"
@@ -359,11 +349,10 @@ export default function VisualizationPage() {
               max={2}
               value={gridForm.mobile}
               onChange={(e) => setGridForm({ ...gridForm, mobile: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 2) })}
-              className="form-input"
-              style={{ width: '120px' }}
+              className="form-input grid-input-field"
             />
           </label>
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <div className="flex items-end">
             <button
               className="btn-create"
               onClick={async () => {
@@ -564,7 +553,7 @@ export default function VisualizationPage() {
                       >
                         🗑️ Delete
                       </button>
-                      <span title="Drag to reorder" style={{ cursor: 'grab', userSelect: 'none', marginLeft: '0.5rem' }}>↕️</span>
+                      <span className="drag-handle" title="Drag to reorder">⇕️</span>
                     </div>
                   </div>
                 </div>
@@ -581,14 +570,14 @@ export default function VisualizationPage() {
                   ) : (
                     <>
                       {/* Live Preview Grid - matches UnifiedDataVisualization */}
-                      <div className={`charts-grid charts-grid-${block._id || 'preview'}`} style={{ display: 'grid', gap: '1.5rem', width: '100%' }}>
+                      <div className={`charts-grid charts-grid-${block._id || 'preview'} viz-preview-grid`}>
                         {block.charts
                           .sort((a, b) => a.order - b.order)
                           .map((chart) => {
                             const result = previewResults[chart.chartId];
                             if (!result) return null;
                             return (
-                              <div key={`${block._id}-${chart.chartId}`} className={`chart-item chart-width-${chart.width}`} style={{ minHeight: '300px' }}>
+                              <div key={`${block._id}-${chart.chartId}`} className={`chart-item chart-width-${chart.width} chart-min-height`}>
                                 <ChartContainer
                                   title={result.title}
                                   subtitle={result.subtitle}
@@ -626,11 +615,11 @@ export default function VisualizationPage() {
                   )}
                   
                   {/* Controls */}
-                  <div className="content-grid" style={{ gap: '0.75rem', margin: '1rem 0' }}>
+                  <div className="chart-controls-grid">
                     {block.charts.map((chart, index) => {
                       const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
                       return (
-                        <div key={`${chart.chartId}-${index}`} className="chart-item" style={{ padding: '0.75rem', border: '1px dashed rgba(99,102,241,0.25)', borderRadius: '8px' }}>
+                        <div key={`${chart.chartId}-${index}`} className="chart-control-item">
                           <div className="chart-info">
                             <span className="chart-emoji">{chartConfig?.emoji || '📊'}</span>
                             <div>
@@ -746,16 +735,12 @@ export default function VisualizationPage() {
               <p className="info-note">Desktop will render {editingBlock.gridColumns} unit{(editingBlock.gridColumns||0) !== 1 ? 's' : ''} per row for this block. Tablet caps at 2; Mobile uses 1.</p>
               
               <div>
-                <label className="flex-row" style={{ cursor: 'pointer' }}>
+                <label className="flex-row checkbox-label">
                   <input
                     type="checkbox"
                     checked={editingBlock.isActive}
                     onChange={(e) => setEditingBlock({ ...editingBlock, isActive: e.target.checked })}
-                    style={{
-                      width: '1.25rem',
-                      height: '1.25rem',
-                      cursor: 'pointer'
-                    }}
+                    className="checkbox-input"
                   />
                   <span className="form-label">Active</span>
                 </label>
