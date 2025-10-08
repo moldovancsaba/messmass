@@ -92,6 +92,13 @@ const navCards: NavCard[] = [
     description: 'Control chart display and ordering',
     colorClass: styles.colorTeal,
   },
+  {
+    href: '/admin/cache',
+    icon: '🗑️',
+    title: 'Cache Management',
+    description: 'Clear server and browser caches for fresh content',
+    colorClass: styles.colorRed,
+  },
 ];
 
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
