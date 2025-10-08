@@ -911,3 +911,50 @@
 
 /* Flex grow utility */
 .flex-1 { flex: 1 1 0%; }
+
+/* Additional Spacing Utilities */
+.mt-025 { margin-top: 0.25rem; }
+.mt-3 { margin-top: 0.75rem; }
+.p-12 { padding: 3rem; }
+
+/* List Utilities */
+.list-none { list-style: none; }
+
+/* Opacity Utilities */
+.opacity-60 { opacity: 0.6; }
+
+/* Cursor Utilities */
+.cursor-grab { cursor: grab; }
+
+/* Background Utilities */
+.bg-white-60 { background: rgba(255, 255, 255, 0.6); }
+
+/* Grid Column Span */
+.grid-col-span-2 { grid-column: 1 / span 2; }
+
+/* Text Size Utilities */
+.text-4xl { font-size: 2rem; }
+.text-5xl { font-size: 3rem; }
+.text-2xl { font-size: 1.5rem; }
+
+/* Border Utilities */
+.border-dashed { border-style: dashed; }
+
+/* Gap Utilities */
+.gap-4 { gap: 1rem; }
+.gap-3 { gap: 0.75rem; }
+
+/* Category Badge (for Variables page) */
+.category-badge {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Inline Flex */
+.inline-flex { display: inline-flex; }
+
+/* Justify End */
+.justify-end { justify-content: flex-end; }

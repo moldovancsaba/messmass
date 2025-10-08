@@ -137,10 +137,10 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
   }
 
   return (
-    <div className="glass-card section-card" style={{ marginBottom: '1rem' }}>
-      <h3 className="no-margin">Groups</h3>
-      <p className="no-margin" style={{ color: '#6b7280', marginTop: '0.25rem' }}>Use groups to control the Editor (clicker/manual) layout directly from here.</p>
-      <div className="wrap" style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+    <div className="admin-card mb-4">
+      <h3 className="mt-0 mb-0">Groups</h3>
+      <p className="text-gray-600 mt-025 mb-0">Use groups to control the Editor (clicker/manual) layout directly from here.</p>
+      <div className="flex gap-2 mt-3">
         <button className="btn btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
         <button className="btn btn-warning" onClick={async () => {
           try { setLoading(true); setError(null)
@@ -151,12 +151,12 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
         }} disabled={loading}>Replace with default groups</button>
         <button className="btn btn-primary" onClick={addGroup} disabled={loading}>Add Group</button>
       </div>
-      {error && <div style={{ color: '#b91c1c', marginTop: 8, fontSize: 12 }}>{error}</div>}
+      {error && <div className="text-error text-sm mt-2">{error}</div>}
 
-      <div style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem' }}>
+      <div className="grid gap-3 mt-4">
         {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => (
-          <div key={idx} className="admin-card" style={{ padding: '0.75rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '0.5rem', alignItems: 'center' }}>
+          <div key={idx} className="admin-card p-3">
+            <div className="grid gap-2 items-center" style={{gridTemplateColumns: '120px 1fr 1fr'}}>
               <div>
                 <label className="form-label">Group Order</label>
                 <input className="form-input" type="number" value={g.groupOrder} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, groupOrder: Number(e.target.value) } : x))} />
@@ -173,11 +173,11 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
                 <input className="form-input" value={g.titleOverride || ''} onChange={e => setGroups(prev => prev.map((x,i)=> i===idx? { ...x, titleOverride: e.target.value || undefined } : x))} placeholder="Leave blank to hide" />
               </div>
             </div>
-            <div style={{ marginTop: '0.5rem' }}>
+            <div className="mt-2">
               <label className="form-label">Variables in this group</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div className="flex flex-wrap gap-2">
                 {g.variables.map(name => (
-                  <div key={name} className="badge badge-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <div key={name} className="badge badge-secondary inline-flex items-center gap-2">
                     <span>{availableVariables.find(v=>v.name===name)?.label || name}</span>
                     <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, -1)}>↑</button>
                     <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, +1)}>↓</button>
@@ -185,7 +185,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
                   </div>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+              <div className="flex gap-2 items-center mt-2">
                 <select className="form-select" onChange={e => { const v=e.target.value; if (v) { addVarToGroup(idx, v); e.currentTarget.selectedIndex = 0 } }}>
                   <option value="">Add variable…</option>
                   {availableVariables.filter(v => !g.variables.includes(v.name)).map(v => (
@@ -241,12 +241,12 @@ function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { vari
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+      <div className="grid gap-3" style={{gridTemplateColumns: '1fr 1fr'}}>
         <div>
           <label className="form-label">Name{!canRename && ' (registry)'}</label>
           <input className="form-input" value={name} onChange={e => setName(e.target.value)} disabled={!canRename} />
           {!canRename && (
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+            <div className="text-xs text-gray-600 mt-1">
               Rename is disabled for built-in variables to avoid breaking stored data. If you want to rename it globally, I can run a DB migration to update all projects.
             </div>
           )}
@@ -265,18 +265,18 @@ function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { vari
           <label className="form-label">Type</label>
           <input className="form-input" value={variable.type} disabled />
         </div>
-        <div style={{ gridColumn: '1 / span 2' }}>
+        <div className="grid-col-span-2">
           <label className="form-label">Reference</label>
           <code className="variable-ref">{buildReferenceToken({ name: canRename ? name : variable.name, category, derived: variable.derived, type: variable.type })}</code>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+      <div className="flex gap-2 justify-end mt-4">
         <button className="btn btn-secondary" onClick={onCancel} disabled={saving}>Cancel</button>
         <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
       </div>
       {error && (
-        <div style={{ marginTop: '0.5rem', color: '#b91c1c', fontSize: 12 }}>{error}</div>
+        <div className="text-error text-xs mt-2">{error}</div>
       )}
     </div>
   )
@@ -423,18 +423,9 @@ const [createForm, setCreateForm] = useState({
 
   if (loading) {
     return (
-      <div className="page-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{
-          padding: '2rem',
-          background: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '12px',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📊</div>
+      <div className="page-container flex items-center justify-center">
+        <div className="admin-card text-center">
+          <div className="text-4xl mb-4">📊</div>
           <div>Loading variables...</div>
         </div>
       </div>
@@ -467,10 +458,10 @@ const [createForm, setCreateForm] = useState({
       <div className="content-surface">
           <GroupsManager variables={variables} />
           {activeVar && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+            <div className="modal-overlay"
                  onClick={() => setActiveVar(null)}>
-              <div className="admin-card" style={{ maxWidth: 620, width: '90%', padding: '1.5rem' }} onClick={(e) => e.stopPropagation()}>
-                <h3 style={{ margin: '0 0 0.5rem 0' }}>Edit Variable</h3>
+              <div className="modal-content" style={{maxWidth: 620}} onClick={(e) => e.stopPropagation()}>
+                <h3 className="modal-title">Edit Variable</h3>
 
                 {/* Edit form */}
                 <EditVariableForm
@@ -491,26 +482,12 @@ const [createForm, setCreateForm] = useState({
           {/* Variables by Category */}
           <div>
             {Object.entries(variablesByCategory).map(([category, categoryVariables]) => (
-              <div key={category} style={{ marginBottom: '2rem' }}>
-                <h2 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: '#1f2937',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem'
-                }}>
-                  <span style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    color: 'white',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '8px',
-                    fontSize: '1rem'
-                  }}>
+              <div key={category} className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                  <span className="category-badge">
                     {category}
                   </span>
-                  <span style={{ color: '#6b7280', fontSize: '1rem', fontWeight: '400' }}>
+                  <span className="text-gray-600 text-base font-normal">
                     ({categoryVariables.length} variables)
                   </span>
                 </h2>
@@ -534,7 +511,7 @@ const [createForm, setCreateForm] = useState({
 
                         {/* Flags Controls (each on its own line) */}
                         <div className="variable-flags">
-                          <label className="variable-flag" style={{ opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                          <label className="variable-flag" style={{opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1}}>
                             <input
                               type="checkbox"
                               checked={!!variable.flags?.visibleInClicker}
@@ -548,7 +525,7 @@ const [createForm, setCreateForm] = useState({
                             />
                             <span>Visible in Clicker</span>
                           </label>
-                          <label className="variable-flag" style={{ opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1 }}>
+                          <label className="variable-flag" style={{opacity: (variable.derived || variable.type === 'text') ? 0.5 : 1}}>
                             <input
                               type="checkbox"
                               checked={!!variable.flags?.editableInManual}
@@ -572,7 +549,7 @@ const [createForm, setCreateForm] = useState({
                 </div>
                 {/* Load more within this category if there are more */}
                 {categoryVariables.length > visibleCount && (
-                  <div style={{ textAlign: 'center' }}>
+                  <div className="text-center">
                     <button className="btn btn-secondary" onClick={() => setVisibleCount(prev => prev + 20)}>
                       Load 20 more
                     </button>
@@ -583,12 +560,12 @@ const [createForm, setCreateForm] = useState({
 
             {/* Empty State */}
             {filteredVariables.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-                <h3 style={{ marginBottom: '0.5rem' }}>
+              <div className="text-center p-12 text-gray-600">
+                <div className="text-5xl mb-4">📊</div>
+                <h3 className="mb-2">
                   {searchTerm ? 'No variables found' : 'No variables yet'}
                 </h3>
-                <p style={{ marginBottom: '1.5rem' }}>
+                <p className="mb-6">
                   {searchTerm 
                     ? `No variables match "${searchTerm}"`
                     : 'Create your first data variable to get started'
@@ -606,11 +583,11 @@ const [createForm, setCreateForm] = useState({
 
       {/* Reorder Clicker Modal */}
       {reorderOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+        <div className="modal-overlay"
              onClick={() => setReorderOpen(false)}>
-          <div className="admin-card" style={{ maxWidth: 840, width: '94%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: 0 }}>↕️ Reorder Clicker Buttons</h3>
-            <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Drag items to change the order of clickable stats in the Editor clicker. Per-category ordering.</p>
+          <div className="modal-content" style={{maxWidth: 840}} onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">⇕️ Reorder Clicker Buttons</h3>
+            <p className="text-gray-600 mt-1 mb-4">Drag items to change the order of clickable stats in the Editor clicker. Per-category ordering.</p>
             <ReorderClickerLists
               variables={variables}
               onClose={() => setReorderOpen(false)}
@@ -626,36 +603,36 @@ const [createForm, setCreateForm] = useState({
 
       {/* Create Variable Modal */}
       {showCreateForm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+        <div className="modal-overlay"
              onClick={() => setShowCreateForm(false)}>
-          <div className="admin-card" style={{ maxWidth: 640, width: '92%', padding: '1.25rem' }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: 0 }}>➕ New Variable</h3>
-            <p style={{ margin: '0.25rem 0 1rem 0', color: '#6b7280' }}>Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              <div style={{ gridColumn: '1 / span 1' }}>
-                <label style={{ fontSize: 12, color: '#6b7280' }}>Name (camelCase)</label>
+          <div className="modal-content" style={{maxWidth: 640}} onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">➕ New Variable</h3>
+            <p className="text-gray-600 mt-1 mb-4">Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
+            <div className="grid gap-3" style={{gridTemplateColumns: '1fr 1fr'}}>
+              <div>
+                <label className="form-label-block">Name (camelCase)</label>
                 <input
+                  className="form-input"
                   value={createForm.name}
                   onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
                   placeholder="e.g. vipGuests"
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
-                />
-              </div>
-              <div style={{ gridColumn: '2 / span 1' }}>
-                <label style={{ fontSize: 12, color: '#6b7280' }}>Label</label>
-                <input
-                  value={createForm.label}
-                  onChange={(e) => setCreateForm({ ...createForm, label: e.target.value })}
-                  placeholder="e.g. VIP Guests"
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, color: '#6b7280' }}>Type</label>
+                <label className="form-label-block">Label</label>
+                <input
+                  className="form-input"
+                  value={createForm.label}
+                  onChange={(e) => setCreateForm({ ...createForm, label: e.target.value })}
+                  placeholder="e.g. VIP Guests"
+                />
+              </div>
+              <div>
+                <label className="form-label-block">Type</label>
                 <select
+                  className="form-select"
                   value={createForm.type}
                   onChange={(e) => setCreateForm({ ...createForm, type: e.target.value as Variable['type'] })}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
                 >
                   <option value="count">count</option>
                   <option value="numeric">numeric</option>
@@ -664,26 +641,26 @@ const [createForm, setCreateForm] = useState({
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: 12, color: '#6b7280' }}>Category</label>
+                <label className="form-label-block">Category</label>
                 <input
+                  className="form-input"
                   value={createForm.category}
                   onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })}
                   placeholder="e.g. Event"
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
                 />
               </div>
-              <div style={{ gridColumn: '1 / span 2' }}>
-                <label style={{ fontSize: 12, color: '#6b7280' }}>Description (optional)</label>
+              <div className="grid-col-span-2">
+                <label className="form-label-block">Description (optional)</label>
                 <textarea
+                  className="form-input"
                   value={createForm.description}
                   onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
                   placeholder="What does this track?"
                   rows={3}
-                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: 8 }}
                 />
               </div>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', gridColumn: '1 / span 2' }}>
-                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div className="flex gap-4 items-center grid-col-span-2">
+                <label className="flex gap-2 items-center">
                   <input
                     type="checkbox"
                     checked={createForm.visibleInClicker}
@@ -691,7 +668,7 @@ const [createForm, setCreateForm] = useState({
                   />
                   Visible in Clicker
                 </label>
-                <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <label className="flex gap-2 items-center">
                   <input
                     type="checkbox"
                     checked={createForm.editableInManual}
@@ -702,9 +679,9 @@ const [createForm, setCreateForm] = useState({
               </div>
             </div>
             {createForm.error && (
-              <div style={{ color: '#b91c1c', marginTop: '0.5rem' }}>{createForm.error}</div>
+              <div className="text-error mt-2">{createForm.error}</div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+            <div className="flex justify-end gap-2 mt-4">
               <button className="btn btn-sm btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
               <button
                 className="btn btn-sm btn-primary"
@@ -870,30 +847,30 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+      <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))'}}>
         {cats.map(cat => (
-          <div key={cat} className="glass-card section-card" style={{ padding: '0.75rem' }}>
-            <h4 style={{ margin: 0, marginBottom: '0.5rem' }}>{cat}</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          <div key={cat} className="admin-card p-3">
+            <h4 className="mt-0 mb-2">{cat}</h4>
+            <ul className="list-none p-0 m-0">
               {(lists[cat] || []).map(v => (
                 <li key={v.name}
                     draggable
                     onDragStart={() => onDragStart(cat, v.name)}
                     onDragOver={onDragOver}
                     onDrop={() => onDrop(cat, v.name)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem', border: '1px dashed #e5e7eb', borderRadius: 8, marginBottom: '0.5rem', background: 'rgba(255,255,255,0.6)', cursor: 'grab' }}>
-                  <span style={{ display: 'inline-flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{ opacity: 0.6 }}>↕️</span>
+                    className="flex items-center justify-between p-2 border-dashed mb-2 bg-white-60 cursor-grab" style={{border: '1px dashed var(--mm-border)', borderRadius: 8}}>
+                  <span className="inline-flex gap-2 items-center">
+                    <span className="opacity-60">⇕️</span>
                     <span>{v.label}</span>
                   </span>
-                  <code style={{ fontSize: '0.7rem', color: '#6b7280' }}>[{v.name}]</code>
+                  <code className="text-xs text-gray-600">[{v.name}]</code>
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+      <div className="flex justify-end gap-2 mt-4">
         <button className="btn btn-sm btn-secondary" onClick={onClose}>Cancel</button>
         <button className="btn btn-sm btn-primary" onClick={saveOrder}>Save order</button>
       </div>
