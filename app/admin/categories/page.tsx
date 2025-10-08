@@ -252,41 +252,10 @@ if (error) {
 
       {/* Create Category Modal */}
       {showCreateForm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '16px',
-            padding: '2rem',
-            maxWidth: '500px',
-            width: '100%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '2rem'
-            }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                color: '#1f2937',
-                margin: 0
-              }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="modal-title">
                 🆕 Create New Category
               </h2>
               <button
@@ -294,178 +263,79 @@ if (error) {
                   setShowCreateForm(false);
                   resetForm();
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  padding: '0.25rem'
-                }}
+                className="modal-close"
               >
                 ×
               </button>
             </div>
 
+            <div className="modal-body">
             {/* Category Name */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Category Name *
               </label>
               <input
                 type="text"
+                className="form-input"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Sport, Team, Location"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s ease',
-                  background: 'white',
-                  color: '#000000'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#3b82f6';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
               />
             </div>
 
             {/* Order */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Display Order
               </label>
               <input
                 type="number"
+                className="form-input"
                 value={formData.order}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s ease',
-                  background: 'white',
-                  color: '#000000'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#3b82f6';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
               />
             </div>
 
             {/* Color Picker */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Category Color
               </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="flex items-center gap-4">
                 <input
                   type="color"
+                  className="form-input color-picker"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  style={{
-                    width: '3rem',
-                    height: '3rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    cursor: 'pointer'
-                  }}
                 />
                 <input
                   type="text"
+                  className="form-input flex-1"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
                   placeholder="#3b82f6"
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    background: 'white',
-                    color: '#000000'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#3b82f6';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
                 />
               </div>
             </div>
-
+            </div>
 
             {/* Form Actions */}
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              justifyContent: 'flex-end'
-            }}>
+            <div className="modal-footer">
               <button
                 onClick={() => {
                   setShowCreateForm(false);
                   resetForm();
                 }}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#f3f4f6',
-                  color: '#374151',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '500'
-                }}
+                className="btn btn-sm btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCategory}
                 disabled={!formData.name.trim()}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: !formData.name.trim() ? '#e5e7eb' : '#3b82f6',
-                  color: !formData.name.trim() ? '#9ca3af' : 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: !formData.name.trim() ? 'not-allowed' : 'pointer',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease'
-                }}
+                className="btn btn-sm btn-primary"
               >
                 🆕 Create Category
               </button>
@@ -476,41 +346,10 @@ if (error) {
 
       {/* Edit Category Modal */}
       {showEditForm && editingCategory && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '16px',
-            padding: '2rem',
-            maxWidth: '500px',
-            width: '100%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '2rem'
-            }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                color: '#1f2937',
-                margin: 0
-              }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="modal-title">
                 ✏️ Edit Category
               </h2>
               <button
@@ -518,179 +357,81 @@ if (error) {
                   setShowEditForm(false);
                   resetForm();
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  padding: '0.25rem'
-                }}
+                className="modal-close"
               >
                 ×
               </button>
             </div>
 
+            <div className="modal-body">
             {/* Category Name */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Category Name *
               </label>
               <input
                 type="text"
+                className="form-input"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Sport, Team, Location"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s ease',
-                  background: 'white',
-                  color: '#000000'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#3b82f6';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
               />
             </div>
 
             {/* Order */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Display Order
               </label>
               <input
                 type="number"
+                className="form-input"
                 value={formData.order}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s ease',
-                  background: 'white',
-                  color: '#000000'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#3b82f6';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
               />
             </div>
 
             {/* Color Picker */}
-            <div style={{ marginBottom: '2rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className="form-group mb-6">
+              <label className="form-label-block text-sm text-gray-700">
                 Category Color
               </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="flex items-center gap-4">
                 <input
                   type="color"
+                  className="form-input color-picker"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  style={{
-                    width: '3rem',
-                    height: '3rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    cursor: 'pointer'
-                  }}
                 />
                 <input
                   type="text"
+                  className="form-input flex-1"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
                   placeholder="#3b82f6"
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'border-color 0.2s ease',
-                    background: 'white',
-                    color: '#000000'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#3b82f6';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
                 />
               </div>
             </div>
+            </div>
 
             {/* Form Actions */}
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              justifyContent: 'flex-end'
-            }}>
+            <div className="modal-footer">
               <button
                 onClick={() => {
                   setShowEditForm(false);
                   resetForm();
                 }}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#f3f4f6',
-                  color: '#374151',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '500'
-                }}
+                className="btn btn-sm btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateCategory}
                 disabled={!formData.name.trim()}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: !formData.name.trim() ? '#e5e7eb' : '#f59e0b',
-                  color: !formData.name.trim() ? '#9ca3af' : 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: !formData.name.trim() ? 'not-allowed' : 'pointer',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease'
-                }}
+                className="btn btn-sm btn-primary"
               >
-                ✏️ Update Category
+                ✔️ Update Category
               </button>
             </div>
           </div>

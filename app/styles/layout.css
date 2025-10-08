@@ -812,6 +812,12 @@
   font-weight: 500;
 }
 
+/* Color Picker */
+.color-picker {
+  width: 3rem;
+  height: 3rem;
+}
+
 /* Spacing Utilities */
 .m-0 { margin: 0; }
 .m-1 { margin: var(--space-1); }
