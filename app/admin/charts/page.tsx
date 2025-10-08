@@ -75,10 +75,8 @@ if (!hasAccess) {
         backLink="/admin"
       />
 
-      <div className="admin-card">
-        {/* Chart Algorithm Manager Component */}
-        <ChartAlgorithmManager />
-      </div>
+      {/* Chart Algorithm Manager Component */}
+      <ChartAlgorithmManager />
     </div>
   );
 }

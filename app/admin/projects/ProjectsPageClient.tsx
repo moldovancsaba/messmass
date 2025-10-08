@@ -580,8 +580,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       </div>
 
       {/* Projects Table */}
-      <div className="admin-card table-overflow-hidden">
-        <div className="projects-table-container table-inherit-radius">
+      <div className="projects-table-container">
+        <div className="table-overflow-hidden">
           <table className="projects-table table-full-width table-inherit-radius">
             <thead>
               <tr>
@@ -811,8 +811,9 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             </tbody>
           </table>
         </div>
-        {/* Load More */}
-        <div className="p-4 text-center">
+      </div>
+      {/* Load More */}
+      <div className="p-4 text-center">
           {searchQuery.trim() ? (
             searchOffset != null ? (
               <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
@@ -838,7 +839,6 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
               <span className="text-gray-500 text-sm">No more items</span>
             )
           )}
-        </div>
       </div>
 
       {/* New Project Modal */}

@@ -293,26 +293,10 @@ export default function FilterPage() {
      Why: Show user-friendly loading indicator during auth check */
   if (checkingAuth) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center'
-        }}>
+      <div className="loading-container">
+        <div className="loading-card">
           <div className="curve-spinner"></div>
-          <p style={{ 
-            marginTop: 'var(--mm-space-4)',
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-sm)'
-          }}>Checking authentication...</p>
+          <p className="mt-md text-gray-600 text-sm">Checking authentication...</p>
         </div>
       </div>
     );
@@ -333,26 +317,10 @@ export default function FilterPage() {
      Why: Show user-friendly loading indicator with context */
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center'
-        }}>
+      <div className="loading-container">
+        <div className="loading-card">
           <div className="curve-spinner"></div>
-          <p style={{ 
-            marginTop: 'var(--mm-space-4)',
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-sm)'
-          }}>Loading filter statistics...</p>
+          <p className="mt-md text-gray-600 text-sm">Loading filter statistics...</p>
         </div>
       </div>
     );
@@ -362,37 +330,12 @@ export default function FilterPage() {
      Why: Modern card styling without glass-morphism effects */
   if (error || !project) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: 'var(--mm-space-6)',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          textAlign: 'center',
-          padding: 'var(--mm-space-8)',
-          maxWidth: '32rem',
-          width: '100%',
-          borderTop: `4px solid ${error ? 'var(--mm-error)' : 'var(--mm-warning)'}`
-        }}>
-          <h1 style={{ 
-            color: error ? 'var(--mm-error)' : 'var(--mm-warning)', 
-            marginBottom: 'var(--mm-space-4)',
-            fontSize: 'var(--mm-font-size-2xl)',
-            fontWeight: 'var(--mm-font-weight-bold)'
-          }}>
+      <div className="error-container">
+        <div className="error-card max-w-2xl">
+          <h1 className={`${error ? 'text-error' : 'text-warning'} mb-md text-2xl font-bold`}>
             {error ? '❌ Error' : '📊 Filter Not Found'}
           </h1>
-          <p style={{ 
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-base)',
-            lineHeight: 'var(--mm-line-height-md)'
-          }}>
+          <p className="text-gray-600 text-base" style={{ lineHeight: 'var(--mm-line-height-md)' }}>
             {error || "The filter you're looking for might not exist or may have been removed."}
           </p>
         </div>
@@ -410,11 +353,7 @@ export default function FilterPage() {
      - Responsive padding for different screen sizes
      - Aggregated statistics display with project list */
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: 'var(--mm-gray-50)',
-      padding: 'var(--mm-space-4)'
-    }}>
+    <div className="page-bg-gray" style={{ padding: 'var(--mm-space-4)' }}>
       {/* Inject resolved page style for custom gradients (optional) */}
       {pageStyle && (
         <style
@@ -433,11 +372,8 @@ export default function FilterPage() {
           Why: Constrain content width on large screens, enable PDF export of entire page */}
       <div 
         id="filter-page-content"
-        style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          width: '100%'
-        }}
+        className="w-full"
+        style={{ maxWidth: '1400px', margin: '0 auto' }}
       >
         {/* Unified Hero Section with CSV and PDF export */}
         <UnifiedStatsHero
@@ -449,23 +385,12 @@ export default function FilterPage() {
           onExportCSV={exportFilteredCSV}
           onExportPDF={handleExportPDF}
           extraContent={(
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 'var(--mm-space-2)', 
-              cursor: 'pointer',
-              fontSize: 'var(--mm-font-size-sm)',
-              color: 'var(--mm-gray-700)'
-            }}>
+            <label className="flex items-center gap-sm text-sm text-gray-700" style={{ cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={includeDerived}
                 onChange={(e) => setIncludeDerived(e.target.checked)}
-                style={{
-                  cursor: 'pointer',
-                  width: '16px',
-                  height: '16px'
-                }}
+                style={{ cursor: 'pointer', width: '16px', height: '16px' }}
               />
               <span>Include derived metrics</span>
             </label>
@@ -487,7 +412,7 @@ export default function FilterPage() {
         {/* What: Projects list section showing all matched projects
             Why: Allow users to see which projects were aggregated */}
         {projects.length > 0 && (
-          <div style={{ marginTop: 'var(--mm-space-6)' }}>
+          <div className="mt-lg">
             <UnifiedProjectsSection
               projects={projects}
               title={`Projects with ${hashtags.map(h => `#${h}`).join(' + ')} (${projects.length})`}
