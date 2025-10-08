@@ -348,7 +348,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                 const hasCustomColor = !!colorRecord;
                 
                 return (
-                  <div key={projectHashtag.hashtag} className="hashtag-card">
+                  <div key={projectHashtag.hashtag} className="hashtag-card" style={{ borderLeftColor: displayColor }}>
                     <div className="hashtag-card-header">
                       <span 
                         className="hashtag-bubble"
@@ -362,9 +362,6 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                     </div>
                     
                     <div className="hashtag-card-details">
-                      <div className="hashtag-color-preview" style={{ backgroundColor: displayColor }}>
-                        <span className="color-value">{displayColor}</span>
-                      </div>
                       <div className="hashtag-stats">
                         <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
                       </div>
@@ -558,6 +555,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
           border-radius: 0.75rem;
           padding: 1.25rem;
           border: 1px solid rgba(102, 126, 234, 0.1);
+          border-left: 4px solid; /* WHAT: Colored left border using hashtag color, WHY: Visual hierarchy like dashboard cards */
           transition: all 0.2s ease;
         }
 
@@ -574,16 +572,9 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
           margin-bottom: 1rem;
         }
 
-        .hashtag-color-preview {
-          display: inline-block;
-          padding: 0.5rem 0.75rem;
-          border-radius: 0.5rem;
-          color: white;
-          font-family: monospace;
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-          margin-bottom: 0.5rem;
+        .hashtag-stats small {
+          color: #6b7280;
+          font-size: 0.875rem;
         }
 
         .hashtag-dates {

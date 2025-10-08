@@ -212,11 +212,10 @@ if (error) {
       {/* Categories Grid - direct content, no extra wrapper */}
       <div className={styles.categoryGrid}>
               {filteredCategories.map((category) => (
-                <div key={category._id} className={styles.categoryCard}>
+                <div key={category._id} className={styles.categoryCard} style={{ borderLeftColor: category.color }}>
                   {/* Category Header */}
                   <div className={styles.categoryHeader}>
                     <div className={styles.categoryTitle}>
-                      <div className={styles.categoryDot} style={{background: category.color}} />
                       <h3 className={styles.categoryName}>{category.name}</h3>
                     </div>
                     <div className={styles.categoryActions}>
