@@ -130,19 +130,15 @@ export default function AdminUsersPage() {
 
   return (
     <div className="page-container">
-      <div className="admin-card admin-header">
-        <div className="admin-header-content">
-          <div className="admin-branding">
-            <span className="hashtag">
-              Users Management
-            </span>
-            <p className="admin-subtitle">Create and manage admin users</p>
+      <div className="admin-card mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="section-title">Users Management</h1>
+            <p className="section-subtitle">Create and manage admin users</p>
           </div>
-          <div className="admin-user-info">
-            <Link href="/admin" className="btn btn-sm btn-secondary admin-hero-back">
-              ← Back to Admin
-            </Link>
-          </div>
+          <Link href="/admin" className="btn btn-sm btn-secondary">
+            ← Back to Admin
+          </Link>
         </div>
       </div>
 
