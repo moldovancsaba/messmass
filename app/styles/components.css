@@ -5,26 +5,10 @@
    CARD SYSTEM (FLAT DESIGN)
 ======================================== */
 
-/* WHAT: Modern flat card design following TailAdmin V2 principles
-   WHY: Glass-morphism is deprecated - using solid backgrounds with subtle shadows */
-
-/* DEPRECATED: .admin-card will be removed - use <ColoredCard> component instead
- * WHY: Centralized component-based styling, not global CSS classes
- * MIGRATION: Replace all className="admin-card" with <ColoredCard> component */
-.admin-card {
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md); /* 8px - flat design */
-  box-shadow: var(--mm-shadow-sm);
-  padding: var(--mm-space-6); /* 24px */
-  transition: all 0.2s ease;
-}
-
-.admin-card:hover {
-  box-shadow: var(--mm-shadow-md);
-  border-color: var(--mm-border-color-hover);
-}
-
+/* WHAT: Card system fully migrated to ColoredCard component
+   WHY: Component-based styling is maintainable, single source of truth
+   LOCATION: /components/ColoredCard.tsx and ColoredCard.module.css
+   MIGRATION COMPLETED: All .admin-card usage replaced with <ColoredCard> component */
 
 /* ========================================
    BUTTON SYSTEM

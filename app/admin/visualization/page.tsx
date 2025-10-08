@@ -7,6 +7,7 @@ import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -292,10 +293,10 @@ export default function VisualizationPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="admin-card p-8 text-center">
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="p-8 text-center">
           <div className="loading-spinner-viz"></div>
           <p>Loading data visualization blocks...</p>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -311,7 +312,7 @@ export default function VisualizationPage() {
         ]}
       />
       {/* Grid Settings Editor */}
-      <div className="admin-card mb-8">
+      <ColoredCard accentColor="#10b981" hoverable={false} className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 m-0">Grid Settings</h2>
         <p className="info-note mt-2">
           Configure the number of units per breakpoint used by stats/filter/hashtag pages.
@@ -381,11 +382,11 @@ export default function VisualizationPage() {
             </button>
           </div>
         </div>
-      </div>
+      </ColoredCard>
 
       {/* WHAT: Last major card section on page (blocks within this may exist but this is the last main section)
           WHY: No mb-8 on last section */}
-      <div className="admin-card">
+      <ColoredCard accentColor="#6366f1" hoverable={false}>
         <h2 className="section-title mb-6">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}
@@ -684,12 +685,12 @@ export default function VisualizationPage() {
             ))}
           </div>
         )}
-      </div>
+      </ColoredCard>
 
       {/* Edit Block Modal */}
       {editingBlock && (
         <div className="modal-overlay">
-          <div className="admin-card modal-content">
+          <ColoredCard accentColor="#6366f1" hoverable={false} className="modal-content">
             <h2 className="modal-title">
               Edit Data Block: {editingBlock.name}
             </h2>
@@ -764,7 +765,7 @@ export default function VisualizationPage() {
                 Update Block
               </button>
             </div>
-          </div>
+          </ColoredCard>
         </div>
       )}
     </div>

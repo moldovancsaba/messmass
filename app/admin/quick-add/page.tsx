@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 /* What: Quick Add from Sheet page for bulk event import
    Why: Streamline creating projects from Google Sheets data */
@@ -268,7 +269,7 @@ export default function QuickAddPage() {
       />
 
       {/* Instructions */}
-      <div className="admin-card mb-6 border-left-accent">
+      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6 border-left-accent">
         <h3 className="section-subtitle mb-4">
           📋 Expected Format:
         </h3>
@@ -282,10 +283,10 @@ export default function QuickAddPage() {
           <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
           <li><strong>Home Team | Visitor Team | Location | League</strong></li>
         </ul>
-      </div>
+      </ColoredCard>
 
       {/* Input Section */}
-      <div className="admin-card mb-6">
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
         <div className="form-group">
           <label htmlFor="rawInput" className="form-label">
             Paste Sheet Data:
@@ -317,25 +318,25 @@ export default function QuickAddPage() {
             </button>
           )}
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Error Message */}
       {error && (
-        <div className="admin-card mb-6 error-box">
+        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="mb-6 error-box">
           <p className="m-0 font-medium text-error">❌ {error}</p>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="admin-card mb-6 success-box">
+        <ColoredCard accentColor="var(--mm-color-success-500)" hoverable={false} className="mb-6 success-box">
           <p className="m-0 font-medium text-success">✅ {success}</p>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Preview Section */}
       {preview && (
-        <div className="admin-card mb-6 border-left-accent">
+        <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
           <h3 className="section-subtitle mb-4">
             👀 Preview:
           </h3>
@@ -405,7 +406,7 @@ export default function QuickAddPage() {
           >
             {isCreating ? 'Creating...' : '✅ Create Project'}
           </button>
-        </div>
+        </ColoredCard>
       )}
     </div>
   );

@@ -374,7 +374,7 @@ function HashtagFilterPageContent() {
       )}
 
       {/* Actions row (style selector + Share/CSV) */}
-      <div className="admin-card p-3 mb-4">
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="p-3 mb-4">
         <div className="flex gap-2 flex-wrap justify-center">
           {hasAppliedFilter && project && (
             <>
@@ -464,10 +464,10 @@ function HashtagFilterPageContent() {
                   </>
                 )}
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Hashtag Selection and Load More */}
-      <div className="admin-card p-4">
+      <ColoredCard accentColor="#8b5cf6" hoverable={false} className="p-4">
         <HashtagMultiSelect
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
@@ -494,18 +494,18 @@ function HashtagFilterPageContent() {
             <span className="text-gray-600 text-sm">No more items</span>
           )}
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Loading State */}
       {statsLoading && (
-        <div className="admin-card p-8 text-center">
+        <ColoredCard accentColor="#3b82f6" hoverable={false} className="p-8 text-center">
           <div className="curve-spinner m-auto mt-4"></div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Error State */}
       {error && !statsLoading && (
-        <div className="admin-card p-8">
+        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="p-8">
           <div className={styles.error}>
             <h2>❌ Error</h2>
             <p>{error}</p>
@@ -516,7 +516,7 @@ function HashtagFilterPageContent() {
               🔄 Try Again
             </button>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Results Section */}
@@ -681,7 +681,7 @@ function HashtagFilterPageContent() {
 
           {/* Projects List Section */}
           {projects.length > 0 && (
-            <div className="admin-card mt-12">
+            <ColoredCard accentColor="#8b5cf6" hoverable={false} className="mt-12">
               <h2 className="flex items-center gap-2 text-gray-900 font-semibold text-3xl mb-6">
                 <span className="text-gray-900">📊 Matching Projects </span>
                 <span className="project-count-badge">
@@ -731,7 +731,7 @@ function HashtagFilterPageContent() {
                   </ColoredCard>
                 ))}
               </div>
-            </div>
+            </ColoredCard>
           )}
         </>
       )}

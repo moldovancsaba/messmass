@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageStyle } from '@/lib/pageStyleTypes';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 export default function AdminDesignPage() {
   const router = useRouter();
@@ -305,12 +306,12 @@ export default function AdminDesignPage() {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <div className="loading-spinner">
             <div className="spinner" />
             <div>Loading design settings...</div>
           </div>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -327,7 +328,7 @@ export default function AdminDesignPage() {
       />
             {/* What: Typography/Font Selection Section
                 Why: Allow admin to choose and preview Google Fonts system-wide */}
-            <div className="typography-section admin-card mb-8">
+            <ColoredCard accentColor="#8b5cf6" hoverable={false} className="typography-section mb-8">
               <h2 className="typography-heading">
                 <span className="typography-icon">🔤</span>
                 Typography & Fonts
@@ -370,12 +371,12 @@ export default function AdminDesignPage() {
                   <span className="preview-note">← Large number display</span>
                 </div>
               </div>
-            </div>
+            </ColoredCard>
             
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Page Style Configuration</h2>
 
             {/* Global Default Style */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Default (Global) Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
@@ -386,10 +387,10 @@ export default function AdminDesignPage() {
                 </select>
                 <button onClick={saveGlobalStyle} className="btn btn-secondary">Save Default</button>
               </div>
-            </div>
+            </ColoredCard>
 
             {/* Admin Page Style */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Admin Page Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
@@ -400,10 +401,10 @@ export default function AdminDesignPage() {
                 </select>
                 <button onClick={saveAdminStyle} className="btn btn-secondary">Save Admin Style</button>
               </div>
-            </div>
+            </ColoredCard>
 
             {/* Content Surface Color */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#f5576c" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Main Content Surface Color</h3>
               <p className="subsection-description">
                 This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It's applied via the --content-bg CSS variable.
@@ -424,10 +425,10 @@ export default function AdminDesignPage() {
                   />
                 </span>
               </div>
-            </div>
+            </ColoredCard>
             
             {/* Per-Project Style */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Project Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
@@ -439,10 +440,10 @@ export default function AdminDesignPage() {
                 </select>
                 <button onClick={saveProjectStyle} className="btn btn-secondary">Apply to Project</button>
               </div>
-            </div>
+            </ColoredCard>
 
             {/* Per-Hashtag Style */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#ec4899" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Hashtag Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
@@ -470,10 +471,10 @@ export default function AdminDesignPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </ColoredCard>
 
             {/* Create New Style Form */}
-            <div className="admin-card mb-8">
+            <ColoredCard accentColor="#06b6d4" hoverable={false} className="mb-8">
               <h3 className="subsection-heading mb-6">Create New Style</h3>
               
               <div className="grid gap-6">
@@ -551,10 +552,10 @@ export default function AdminDesignPage() {
                   Create Style
                 </button>
               </div>
-            </div>
+            </ColoredCard>
 
             {/* Existing Styles - WHAT: Last card on page, no mb-8 */}
-            <div className="admin-card">
+            <ColoredCard accentColor="#6366f1" hoverable={false}>
               <h3 className="subsection-heading mb-6">Existing Styles ({pageStyles.length})</h3>
               {pageStyles.length === 0 ? (
                 <p className="text-gray-600 italic">No styles created yet</p>
@@ -608,7 +609,7 @@ export default function AdminDesignPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </ColoredCard>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 /* WHAT: Cache Management Page
    WHY: Allow admins to clear server and browser caches to force fresh content
@@ -17,10 +18,10 @@ export default function CacheManagementPage() {
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div className="admin-card text-center">
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">🗑️</div>
           <div className="text-gray-600">Loading...</div>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -109,7 +110,7 @@ Then select "Cached images and files" and click Clear.`);
       {/* Cache Types */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Server Build Cache */}
-        <div className="admin-card">
+        <ColoredCard accentColor="#3b82f6" hoverable={false}>
           <div className="text-4xl mb-4">🏭️</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Server Cache Revalidation
@@ -127,10 +128,10 @@ Then select "Cached images and files" and click Clear.`);
           >
             {clearing ? '🔄 Revalidating...' : '♻️ Revalidate Server Cache'}
           </button>
-        </div>
+        </ColoredCard>
 
         {/* Server Routes Cache */}
-        <div className="admin-card">
+        <ColoredCard accentColor="#10b981" hoverable={false}>
           <div className="text-4xl mb-4">🔄</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Routes Cache
@@ -145,10 +146,10 @@ Then select "Cached images and files" and click Clear.`);
           >
             {clearing ? '🔄 Revalidating...' : '♻️ Revalidate Routes'}
           </button>
-        </div>
+        </ColoredCard>
 
         {/* Browser Cache */}
-        <div className="admin-card">
+        <ColoredCard accentColor="#8b5cf6" hoverable={false}>
           <div className="text-4xl mb-4">🌐</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Browser Cache
@@ -163,10 +164,10 @@ Then select "Cached images and files" and click Clear.`);
           >
             {clearing ? '🔄 Clearing...' : '🌐 Clear Browser Cache'}
           </button>
-        </div>
+        </ColoredCard>
 
         {/* Clear All */}
-        <div className="admin-card" style={{borderLeft: '4px solid var(--mm-color-error-500)'}}>
+        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false}>
           <div className="text-4xl mb-4">💥</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Clear Everything
@@ -185,12 +186,12 @@ Then select "Cached images and files" and click Clear.`);
           >
             {clearing ? '🔄 Clearing...' : '💥 Clear All Server Caches'}
           </button>
-        </div>
+        </ColoredCard>
       </div>
 
       {/* Result Display */}
       {result && (
-        <div className="admin-card mb-6" style={{borderLeft: '4px solid var(--mm-color-success-500)'}}>
+        <ColoredCard accentColor="var(--mm-color-success-500)" hoverable={false} className="mb-6">
           <div className="flex items-start gap-4">
             <div className="text-4xl">✅</div>
             <div className="flex-1">
@@ -203,12 +204,12 @@ Then select "Cached images and files" and click Clear.`);
               )}
             </div>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Error Display */}
       {error && (
-        <div className="admin-card mb-6" style={{borderLeft: '4px solid var(--mm-color-error-500)'}}>
+        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="mb-6">
           <div className="flex items-start gap-4">
             <div className="text-4xl">❌</div>
             <div className="flex-1">
@@ -216,11 +217,11 @@ Then select "Cached images and files" and click Clear.`);
               <p className="text-error">{error}</p>
             </div>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Manual Instructions */}
-      <div className="admin-card">
+      <ColoredCard accentColor="#6366f1" hoverable={false}>
         <h3 className="text-xl font-bold text-gray-900 mb-4">📚 Manual Cache Clearing</h3>
         <div className="space-y-4">
           <div>
@@ -254,7 +255,7 @@ Then select "Cached images and files" and click Clear.`);
             📋 Show Instructions
           </button>
         </div>
-      </div>
+      </ColoredCard>
     </div>
   );
 }

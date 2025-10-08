@@ -7,6 +7,7 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import SharePopup from '@/components/SharePopup';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -397,10 +398,10 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   if (loading) {
     return (
       <div className="page-container">
-        <div className="admin-card text-center">
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
           <div className="curve-spinner"></div>
           <p className="text-gray-500 mt-3">Loading projects...</p>
-        </div>
+        </ColoredCard>
       </div>
     );
   }

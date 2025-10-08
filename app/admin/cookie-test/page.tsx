@@ -5,6 +5,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import ColoredCard from '@/components/ColoredCard'
 
 export default function CookieTest() {
   const [authStatus, setAuthStatus] = useState<any>(null)
@@ -35,32 +36,32 @@ export default function CookieTest() {
 
   if (loading) return (
     <div className="page-container">
-      <div className="admin-card text-center">Loading...</div>
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">Loading...</ColoredCard>
     </div>
   )
 
   return (
     <div className="page-container font-mono">
-      <div className="admin-card mb-8">
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-8">
         <h1 className="text-3xl font-bold mb-4">🍪 Cookie Test Page</h1>
         <p className="mb-4">Domain: {typeof window !== 'undefined' ? window.location.hostname : 'unknown'}</p>
-      </div>
+      </ColoredCard>
       
-      <div className="admin-card mb-4">
+      <ColoredCard accentColor="#10b981" hoverable={false} className="mb-4">
         <h2 className="text-xl font-bold mb-2">Auth API Response:</h2>
         <pre className="bg-gray-100 p-4 rounded overflow-auto">{JSON.stringify(authStatus, null, 2)}</pre>
-      </div>
+      </ColoredCard>
 
-      <div className="admin-card mb-4">
+      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-4">
         <h2 className="text-xl font-bold mb-2">Browser Cookies:</h2>
         <pre className="bg-gray-100 p-4 rounded overflow-auto">{document.cookie || '(no cookies)'}</pre>
-      </div>
+      </ColoredCard>
 
-      <div className="admin-card">
+      <ColoredCard accentColor="#8b5cf6" hoverable={false}>
         <a href="/admin/login" className="btn btn-primary">
           ← Back to Login
         </a>
-      </div>
+      </ColoredCard>
     </div>
   )
 }

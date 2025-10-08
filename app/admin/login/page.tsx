@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import ColoredCard from '@/components/ColoredCard'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -55,7 +56,7 @@ export default function AdminLogin() {
 
   return (
     <div className="app-container">
-      <div className="admin-card login-card">
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="login-card">
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="admin-avatar login-icon">
@@ -152,7 +153,7 @@ export default function AdminLogin() {
             Secure Access Required
           </p>
         </div>
-      </div>
+      </ColoredCard>
     </div>
   )
 }

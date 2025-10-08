@@ -186,9 +186,9 @@ export default function DashboardPage() {
   if (loading || !user) {
     return (
       <div className="page-container">
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <div className="loading-spinner">Loading dashboard...</div>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -205,7 +205,7 @@ export default function DashboardPage() {
       />
 
       {/* Tab Navigation */}
-      <div className="admin-card mb-8">
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-8">
         <div className="tab-container">
           {[
             { key: 'overview', label: '📊 Dashboard Overview', icon: '📊' },
@@ -222,11 +222,11 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Dashboard Overview Tab */}
       {activeTab === 'overview' && (
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <h2 className="mb-8 text-gray-800">📊 Dashboard Overview</h2>
           
           {/* WHAT: Key metrics using centralized ColoredCard component
@@ -287,12 +287,12 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Success Manager Overview Tab */}
       {activeTab === 'success' && (
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <h2 className="mb-8 text-gray-800">🎯 Success Manager Overview</h2>
           
           {/* WHAT: Success metrics using centralized ColoredCard component
@@ -357,12 +357,12 @@ export default function DashboardPage() {
               </div>
             </ColoredCard>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Aggregated Statistics Tab */}
       {activeTab === 'stats' && (
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <h2 className="mb-8 text-gray-800">📈 Aggregated Statistics</h2>
           
           {/* Demographics */}
@@ -415,12 +415,12 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* Multi-Hashtag Filter Tab */}
       {activeTab === 'filter' && (
-        <div className="admin-card">
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
           <h2 className="mb-8 text-gray-800">🔍 Multi-Hashtag Filter</h2>
           
           {/* Filter Input */}
@@ -526,7 +526,7 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-        </div>
+        </ColoredCard>
       )}
     </div>
   );

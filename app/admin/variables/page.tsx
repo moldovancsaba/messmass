@@ -857,7 +857,7 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
     <div>
       <div className="grid gap-4 grid-auto-260">
         {cats.map(cat => (
-          <div key={cat} className="admin-card p-3">
+          <ColoredCard key={cat} accentColor="#8b5cf6" hoverable={false} className="p-3">
             <h4 className="mt-0 mb-2">{cat}</h4>
             <ul className="list-none p-0 m-0">
               {(lists[cat] || []).map(v => (
@@ -875,7 +875,7 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
                 </li>
               ))}
             </ul>
-          </div>
+          </ColoredCard>
         ))}
       </div>
       <div className="flex justify-end gap-2 mt-4">

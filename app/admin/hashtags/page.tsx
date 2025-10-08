@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import HashtagEditor from '@/components/HashtagEditor';
+import ColoredCard from '@/components/ColoredCard';
 
 interface User {
   name: string;
@@ -52,10 +53,10 @@ export default function HashtagManagerPage() {
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div className="admin-card text-center">
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">🏷️</div>
           <div className="text-gray-600">Checking authentication...</div>
-        </div>
+        </ColoredCard>
       </div>
     );
   }
@@ -64,7 +65,8 @@ export default function HashtagManagerPage() {
   if (!hasAccess) {
     return (
       <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div className="admin-card text-center" style={{maxWidth: '500px', borderTop: '4px solid var(--mm-color-error-500)'}}>
+        <div style={{maxWidth: '500px'}}>
+        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="text-center">
           <div className="text-5xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
           <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Hashtag Manager.</p>
@@ -72,6 +74,7 @@ export default function HashtagManagerPage() {
           <a href="/admin" className="btn btn-primary">
             ← Back to Admin Dashboard
           </a>
+        </ColoredCard>
         </div>
       </div>
     );

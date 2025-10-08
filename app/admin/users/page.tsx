@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AdminHero from '@/components/AdminHero'
+import ColoredCard from '@/components/ColoredCard'
 
 interface ListedUser {
   id: string
@@ -137,7 +138,7 @@ export default function AdminUsersPage() {
         backLink="/admin"
       />
 
-      <div className="admin-card">
+      <ColoredCard accentColor="#10b981" hoverable={false}>
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Admin</h2>
         <form onSubmit={onCreateUser} className="user-create-form">
           <input
@@ -159,7 +160,7 @@ export default function AdminUsersPage() {
           </button>
         </form>
         {generatedPassword && (
-          <div className="admin-card password-generated">
+          <ColoredCard accentColor="#6366f1" hoverable={false} className="password-generated">
             <div className="password-generated-content">
               <div>
                 <div className="password-label">One-time password (copy and share securely)</div>
@@ -167,11 +168,11 @@ export default function AdminUsersPage() {
               </div>
               <button className="btn btn-secondary" onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button>
             </div>
-          </div>
+          </ColoredCard>
         )}
-      </div>
+      </ColoredCard>
 
-      <div className="admin-card mt-6">
+      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mt-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">All Admin Users</h2>
         {loading ? (
           <div>Loading users…</div>
@@ -208,7 +209,7 @@ export default function AdminUsersPage() {
             </table>
           </div>
         )}
-      </div>
+      </ColoredCard>
     </div>
   )
 }

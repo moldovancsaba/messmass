@@ -6,6 +6,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import ColoredCard from '@/components/ColoredCard'
 
 export default function ClearSession() {
   const router = useRouter()
@@ -39,7 +40,8 @@ export default function ClearSession() {
 
   return (
     <div className="login-container">
-      <div className="admin-card text-center" style={{maxWidth: '500px'}}>
+      <div style={{maxWidth: '500px'}}>
+      <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
         <div className="text-6xl mb-6">
           {cleared ? '✅' : '🔧'}
         </div>
@@ -74,6 +76,7 @@ export default function ClearSession() {
             </button>
           </>
         )}
+      </ColoredCard>
       </div>
     </div>
   )
