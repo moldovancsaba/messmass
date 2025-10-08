@@ -240,18 +240,11 @@ export default function HashtagStatsPage() {
 
   if (error) {
     return (
-      <div className="admin-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div className="glass-card" style={{
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>❌ Error</h1>
-          <p style={{ color: '#6b7280' }}>{error}</p>
-          <p style={{ color: '#6b7280' }}>The hashtag you&apos;re looking for might not exist or may have been removed.</p>
+      <div className="error-container">
+        <div className="error-card">
+          <h1 className="text-error mb-md">❌ Error</h1>
+          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600">The hashtag you&apos;re looking for might not exist or may have been removed.</p>
         </div>
       </div>
     );
@@ -259,14 +252,12 @@ export default function HashtagStatsPage() {
 
   if (!project) {
     return (
-      <div className="admin-container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div className="glass-card" style={{ textAlign: 'center', padding: '2rem' }}>
-          <h1 style={{ color: '#1f2937', marginBottom: '1rem' }}>📊 Hashtag Not Found</h1>
-          <p style={{ color: '#6b7280' }}>No projects found with this hashtag.</p>
+      <div className="error-container">
+        <div className="card text-center">
+          <div className="card-body">
+            <h1 className="text-gray-900 mb-md">📊 Hashtag Not Found</h1>
+            <p className="text-gray-600">No projects found with this hashtag.</p>
+          </div>
         </div>
       </div>
     );
@@ -345,7 +336,7 @@ export default function HashtagStatsPage() {
           }
         }}
         extraContent={(
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+          <label className="flex items-center gap-sm" style={{cursor: 'pointer'}}>
             <input
               type="checkbox"
               checked={includeDerived}
@@ -357,7 +348,7 @@ export default function HashtagStatsPage() {
       />
 
       {/* Unified Data Visualization — driven entirely by admin visualization blocks */}
-      <div style={{ width: '100%', padding: 0 }}>
+      <div className="w-full" style={{padding: 0}}>
         <UnifiedDataVisualization
           blocks={dataBlocks}
           chartResults={chartResults}
@@ -366,87 +357,51 @@ export default function HashtagStatsPage() {
         />
       </div>
 
-      {/* WHAT: Project list without inline styles */}
+      {/* WHAT: Project list with utility classes */}
       {projects.length > 0 && (
-        <div id="projects-list" className="card mt-lg p-lg">
-          <h2 style={{ fontSize: 'var(--mm-font-size-2xl)', fontWeight: 'var(--mm-font-weight-bold)', margin: 0, color: 'var(--mm-gray-900)' }}>
-            Projects with {actualHashtag ? `#${actualHashtag}` : `#${String(hashtagParam)}`} ({projects.length})
-          </h2>
-          <div className="mt-md" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: 'var(--mm-space-4)'
-          }}>
-            {projects.map((projectItem) => (
-              <div key={projectItem._id} style={{
-                padding: '1.5rem',
-                background: 'rgba(255, 255, 255, 0.95)',
-                borderRadius: '12px',
-                border: '1px solid rgba(99, 102, 241, 0.1)',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                transition: 'all 0.2s ease'
-              }}>
-                <h3 style={{
-                  margin: '0 0 0.75rem 0',
-                  fontSize: '1.125rem',
-                  fontWeight: 600,
-                  color: '#1f2937'
-                }}>
-                  {projectItem.viewSlug ? (
-                    <a 
-                      href={`/stats/${projectItem.viewSlug}`}
-                      style={{
-                        color: '#6366f1',
-                        textDecoration: 'none',
-                        borderBottom: '1px solid transparent',
-                        transition: 'border-color 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderBottomColor = '#6366f1';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderBottomColor = 'transparent';
-                      }}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`View statistics for ${projectItem.eventName}`}
-                    >
-                      {projectItem.eventName}
-                    </a>
-                  ) : (
-                    <span>{projectItem.eventName}</span>
-                  )}
-                </h3>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '0.875rem',
-                  color: '#6b7280'
-                }}>
-                  <span>📅 {new Date(projectItem.eventDate).toLocaleDateString()}</span>
-                  {projectItem.viewSlug && (
-                    <span style={{
-                      background: 'rgba(99, 102, 241, 0.1)',
-                      color: '#6366f1',
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: 500
-                    }}>
-                      📊 View Stats
-                    </span>
-                  )}
+        <div id="projects-list" className="card mt-lg">
+          <div className="card-header">
+            <h2 className="text-2xl font-bold m-0 text-gray-900">
+              Projects with {actualHashtag ? `#${actualHashtag}` : `#${String(hashtagParam)}`} ({projects.length})
+            </h2>
+          </div>
+          <div className="card-body">
+            <div className="projects-list-grid">
+              {projects.map((projectItem) => (
+                <div key={projectItem._id} className="project-list-item">
+                  <h3 className="project-item-title">
+                    {projectItem.viewSlug ? (
+                      <a 
+                        href={`/stats/${projectItem.viewSlug}`}
+                        className="project-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`View statistics for ${projectItem.eventName}`}
+                      >
+                        {projectItem.eventName}
+                      </a>
+                    ) : (
+                      <span>{projectItem.eventName}</span>
+                    )}
+                  </h3>
+                  <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span>📅 {new Date(projectItem.eventDate).toLocaleDateString()}</span>
+                    {projectItem.viewSlug && (
+                      <span className="view-stats-badge">
+                        📊 View Stats
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {/* Footer */}
-      <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', color: '#4b5563' }}>
-        <p style={{ margin: 0 }}>Generated on {new Date().toLocaleDateString()} • MessMass Hashtag Statistics</p>
+      <div className="text-center mt-lg p-md text-gray-500">
+        <p className="m-0">Generated on {new Date().toLocaleDateString()} • MessMass Hashtag Statistics</p>
       </div>
     </div>
   );
