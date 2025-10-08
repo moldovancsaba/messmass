@@ -8,18 +8,21 @@
 /* WHAT: Modern flat card design following TailAdmin V2 principles
    WHY: Glass-morphism is deprecated - using solid backgrounds with subtle shadows */
 
+/* WHAT: .admin-card updated to match ColoredCard component exactly
+ * WHY: Global .admin-card was overriding ColoredCard module styles, causing inconsistent padding/radius
+ * HOW: Now uses same padding (16px) and radius (12px) as ColoredCard.module.css */
 .admin-card {
   background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md); /* 8px - flat design */
+  border: var(--mm-border-width-sm) solid var(--mm-border-color-light);
+  border-radius: var(--mm-radius-lg); /* 12px - matches ColoredCard */
   box-shadow: var(--mm-shadow-sm);
-  padding: var(--mm-space-6); /* 24px */
+  padding: var(--mm-space-4); /* 16px - matches ColoredCard */
   transition: all 0.2s ease;
 }
 
 .admin-card:hover {
   box-shadow: var(--mm-shadow-md);
-  border-color: var(--mm-border-color-hover);
+  border-color: var(--mm-border-color-default);
 }
 
 
