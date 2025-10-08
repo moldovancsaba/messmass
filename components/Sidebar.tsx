@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
+import packageJson from '../package.json';
 
 /* What: Navigation item structure
    Why: Type-safe navigation configuration with icons and paths */
@@ -204,14 +205,19 @@ export default function Sidebar() {
           ))}
         </nav>
         
-        {/* What: Sidebar footer with version info
-           Why: Quick reference for current version */}
+        {/* WHAT: Unified footer with copyright and auto-updated version from package.json
+           WHY: Single source of truth - reads version dynamically, avoids hardcoded duplicates */}
         <div className={styles.sidebarFooter}>
           {!isCollapsed && (
-            <div className={styles.versionInfo}>
-              <span className={styles.versionLabel}>Version</span>
-              <span className={styles.versionNumber}>5.21.2</span>
-            </div>
+            <>
+              <div className={styles.footerText}>
+                © 2025 MessMass. All rights reserved.
+              </div>
+              <div className={styles.versionInfo}>
+                <span className={styles.versionLabel}>Version</span>
+                <span className={styles.versionNumber}>v{packageJson.version}</span>
+              </div>
+            </>
           )}
         </div>
       </aside>

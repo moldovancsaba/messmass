@@ -40,18 +40,8 @@ export default function AdminLayout({ children, user }: AdminLayoutProps) {
           {children}
         </main>
         
-        {/* What: Footer placeholder
-           Why: Can add copyright, links, etc. in future */}
-        <footer className={styles.footer}>
-          <div className={styles.footerContent}>
-            <span className={styles.footerText}>
-              © 2025 MessMass. All rights reserved.
-            </span>
-            <span className={styles.footerVersion}>
-              v5.20.1
-            </span>
-          </div>
-        </footer>
+        {/* WHAT: Footer removed from main content area
+           WHY: Single unified footer in Sidebar only - avoids duplicate footers */}
       </div>
     </div>
   );

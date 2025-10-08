@@ -283,15 +283,26 @@
 
 /* ===== Sidebar Footer ===== */
 .sidebarFooter {
-  /* What: Footer with version info
-     Why: Quick reference without taking up main content area */
+  /* WHAT: Unified footer with copyright and version from package.json
+     WHY: Single footer for entire admin interface */
   border-top: 1px solid var(--mm-border-color-default);
   padding: var(--mm-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.footerText {
+  /* WHAT: Copyright text styling
+     WHY: Small, subtle legal text above version info */
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  line-height: 1.4;
 }
 
 .versionInfo {
-  /* What: Version number display
-     Why: Small, subtle info display */
+  /* WHAT: Version number display
+     WHY: Small, subtle info display */
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-1);
