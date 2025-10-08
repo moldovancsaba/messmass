@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
-const execAsync = promisify(exec);
-
-/* WHAT: API endpoint to clear Next.js cache
-   WHY: Allow admins to force fresh content by clearing server-side cache
+/* WHAT: API endpoint to revalidate Next.js cache
+   WHY: Allow admins to force fresh content by revalidating caches
+   NOTE: File deletion doesn't work on serverless/Vercel - we use Next.js revalidation only
    SECURITY: Requires admin authentication */
 
 export async function POST(request: Request) {
@@ -31,36 +27,26 @@ export async function POST(request: Request) {
       details: {} as Record<string, any>
     };
 
-    // Clear Next.js build cache
-    if (type === 'build' || type === 'all') {
-      const cachePath = path.join(process.cwd(), '.next', 'cache');
-      
+    // Revalidate all routes (works on serverless)
+    if (type === 'routes' || type === 'all' || type === 'build') {
       try {
-        if (fs.existsSync(cachePath)) {
-          // Use rm -rf to delete the cache directory
-          await execAsync(`rm -rf "${cachePath}"`);
-          result.details.buildCache = 'Cleared successfully';
-        } else {
-          result.details.buildCache = 'No cache directory found';
-        }
-      } catch (error: any) {
-        result.details.buildCache = `Error: ${error.message}`;
-      }
-    }
-
-    // Clear Next.js server cache (revalidate all routes)
-    if (type === 'routes' || type === 'all') {
-      try {
-        // This triggers Next.js to revalidate on next request
-        const { revalidatePath } = await import('next/cache');
+        // Revalidate the root layout (affects all pages)
         revalidatePath('/', 'layout');
-        result.details.routesCache = 'Revalidation triggered';
+        
+        // Revalidate key paths
+        revalidatePath('/admin');
+        revalidatePath('/api/projects');
+        revalidatePath('/api/hashtags');
+        
+        result.details.cache = 'All routes revalidated - fresh content will be served on next request';
       } catch (error: any) {
-        result.details.routesCache = `Error: ${error.message}`;
+        result.details.cache = `Error: ${error.message}`;
       }
     }
 
-    result.message = `Cache cleared: ${Object.keys(result.details).join(', ')}`;
+    result.message = type === 'build' 
+      ? 'Cache revalidated (Note: Build cache clearing only works locally, not on Vercel)'
+      : 'Routes cache revalidated successfully';
 
     return NextResponse.json(result, {
       headers: {

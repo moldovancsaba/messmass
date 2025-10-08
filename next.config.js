@@ -7,6 +7,15 @@ const nextConfig = {
   typescript: {
     // Type checking is enabled
   },
+  // WHAT: Exclude .next/cache from serverless function bundles
+  // WHY: Prevents "Serverless Function has exceeded 250MB" error on Vercel
+  // The cache directory is 240MB+ and shouldn't be in function bundles
+  outputFileTracingExcludes: {
+    '*': [
+      '.next/cache/**/*',
+      'node_modules/@swc/**/*',
+    ],
+  },
   // Redirect old hashtag pages to filter system
   async redirects() {
     return [

@@ -118,19 +118,22 @@ Then select "Cached images and files" and click Clear.`);
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Server Build Cache */}
         <div className="admin-card">
-          <div className="text-4xl mb-4">🏗️</div>
+          <div className="text-4xl mb-4">🏭️</div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Next.js Build Cache
+            Server Cache Revalidation
           </h3>
-          <p className="text-gray-600 mb-4">
-            Clears the <code>.next/cache</code> directory. Use this when you've updated code or data structures.
+          <p className="text-gray-600 mb-2">
+            Revalidates Next.js server cache. Works on both local and production (Vercel).
+          </p>
+          <p className="text-xs text-gray-500 mb-4">
+            💡 Note: Physical cache file deletion only works locally, not on serverless platforms.
           </p>
           <button
             onClick={() => clearCache('build')}
             disabled={clearing}
             className="btn btn-primary btn-full"
           >
-            {clearing ? '🔄 Clearing...' : '🗑️ Clear Build Cache'}
+            {clearing ? '🔄 Revalidating...' : '♻️ Revalidate Server Cache'}
           </button>
         </div>
 
