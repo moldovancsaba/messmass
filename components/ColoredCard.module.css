@@ -1,0 +1,30 @@
+/* ColoredCard.module.css - Centralized card styling with left accent border */
+
+/* WHAT: Global admin card with colored left border
+ * WHY: Single source of truth for consistent card design across entire admin interface
+ * HOW: Uses design tokens, 4px left border, flat TailAdmin V2 design
+ */
+
+.coloredCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-light);
+  border-left: 4px solid; /* Color set via inline style for dynamic colors */
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  box-shadow: var(--mm-shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.coloredCard.hoverable:hover {
+  box-shadow: var(--mm-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--mm-border-color-default);
+  cursor: pointer;
+}
+
+/* Responsive padding */
+@media (max-width: 640px) {
+  .coloredCard {
+    padding: var(--mm-space-3);
+  }
+}

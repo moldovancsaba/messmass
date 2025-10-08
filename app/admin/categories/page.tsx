@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 import styles from './Categories.module.css';
 
 interface HashtagCategory {
@@ -209,10 +210,16 @@ if (error) {
         ]}
       />
 
-      {/* Categories Grid - direct content, no extra wrapper */}
+      {/* WHAT: Categories grid using centralized ColoredCard component
+       * WHY: Single source of truth for colored card styling - NO inline borderLeftColor styles
+       *      ColoredCard handles all card design (padding, border, hover, shadow) */}
       <div className={styles.categoryGrid}>
               {filteredCategories.map((category) => (
-                <div key={category._id} className={styles.categoryCard} style={{ borderLeftColor: category.color }}>
+                <ColoredCard 
+                  key={category._id} 
+                  accentColor={category.color}
+                  className={styles.categoryContent}
+                >
                   {/* Category Header */}
                   <div className={styles.categoryHeader}>
                     <div className={styles.categoryTitle}>
@@ -229,7 +236,7 @@ if (error) {
                     <span>Order: {category.order}</span>
                     <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
                   </div>
-                </div>
+                </ColoredCard>
               ))}
       </div>
 

@@ -90,10 +90,10 @@ export default function HashtagManagerPage() {
         searchPlaceholder="Search project hashtags..."
       />
 
-      <div className="admin-card">
-        {/* Hashtag Editor - now internally paginated and filtered server-side */}
-        <HashtagEditor className="mt-2" searchTerm={searchTerm} />
-      </div>
+      {/* WHAT: HashtagEditor renders colored cards internally using ColoredCard component
+       * WHY: No wrapper needed - HashtagEditor handles its own layout and card structure
+       *      Extra .admin-card wrapper was creating double-box effect */}
+      <HashtagEditor searchTerm={searchTerm} />
     </div>
   );
 }

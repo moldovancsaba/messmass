@@ -7,6 +7,7 @@ import { AdminUser } from '@/lib/auth';
 import HashtagInput from '@/components/HashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 
 interface Project {
   _id: string;
@@ -228,35 +229,37 @@ export default function DashboardPage() {
         <div className="admin-card">
           <h2 className="mb-8 text-gray-800">📊 Dashboard Overview</h2>
           
-          {/* Key Metrics Cards */}
+          {/* WHAT: Key metrics using centralized ColoredCard component
+           * WHY: Replaced hardcoded .metric-card classes with dynamic ColoredCard components
+           *      Single source of truth for all colored card styling */}
           <div className="metrics-grid">
-            <div className="metric-card metric-card-purple">
+            <ColoredCard accentColor="#8b5cf6" hoverable={false}>
               <div className="metric-value">
                 {aggregatedStats.totalProjects}
               </div>
               <div className="metric-label">Total Projects</div>
-            </div>
+            </ColoredCard>
 
-            <div className="metric-card metric-card-pink">
+            <ColoredCard accentColor="#f5576c" hoverable={false}>
               <div className="metric-value">
                 {aggregatedStats.totalImages.toLocaleString()}
               </div>
               <div className="metric-label">Total Images</div>
-            </div>
+            </ColoredCard>
 
-            <div className="metric-card metric-card-blue">
+            <ColoredCard accentColor="#3b82f6" hoverable={false}>
               <div className="metric-value">
                 {aggregatedStats.totalFans.toLocaleString()}
               </div>
               <div className="metric-label">Total Fans</div>
-            </div>
+            </ColoredCard>
 
-            <div className="metric-card metric-card-green">
+            <ColoredCard accentColor="#10b981" hoverable={false}>
               <div className="metric-value">
                 {aggregatedStats.totalAttendees.toLocaleString()}
               </div>
               <div className="metric-label">Total Attendees</div>
-            </div>
+            </ColoredCard>
           </div>
 
           {/* Recent Projects */}
@@ -292,9 +295,11 @@ export default function DashboardPage() {
         <div className="admin-card">
           <h2 className="mb-8 text-gray-800">🎯 Success Manager Overview</h2>
           
-          {/* Success Metrics */}
+          {/* WHAT: Success metrics using centralized ColoredCard component
+           * WHY: Replaced hardcoded .success-metric-box classes with dynamic ColoredCard
+           *      All three pages now use identical card implementation */}
           <div className="success-metrics-grid">
-            <div className="success-metric-box success-metric-box-green">
+            <ColoredCard accentColor="#10b981" hoverable={false}>
               <h4 className="success-metric-title success-metric-title-green">📊 Engagement Metrics</h4>
               <div className="metric-grid-small">
                 <div className="metric-row">
@@ -310,9 +315,9 @@ export default function DashboardPage() {
                   <strong>{(aggregatedStats.engagement.visitFacebook + aggregatedStats.engagement.visitInstagram + aggregatedStats.engagement.visitYoutube + aggregatedStats.engagement.visitTiktok + aggregatedStats.engagement.visitX).toLocaleString()}</strong>
                 </div>
               </div>
-            </div>
+            </ColoredCard>
 
-            <div className="success-metric-box success-metric-box-blue">
+            <ColoredCard accentColor="#3b82f6" hoverable={false}>
               <h4 className="success-metric-title success-metric-title-blue">👕 Merchandise Distribution</h4>
               <div className="metric-grid-small">
                 <div className="metric-row">
@@ -332,9 +337,9 @@ export default function DashboardPage() {
                   <strong>{aggregatedStats.merchandise.baseballCap.toLocaleString()}</strong>
                 </div>
               </div>
-            </div>
+            </ColoredCard>
 
-            <div className="success-metric-box success-metric-box-purple">
+            <ColoredCard accentColor="#8b5cf6" hoverable={false}>
               <h4 className="success-metric-title success-metric-title-purple">🎯 Success Indicators</h4>
               <div className="metric-grid-small">
                 <div className="metric-row">
@@ -350,7 +355,7 @@ export default function DashboardPage() {
                   <strong>{aggregatedStats.totalFans > 0 ? ((Object.values(aggregatedStats.engagement).reduce((a, b) => a + b, 0) / aggregatedStats.totalFans) * 100).toFixed(1) : 0}%</strong>
                 </div>
               </div>
-            </div>
+            </ColoredCard>
           </div>
         </div>
       )}

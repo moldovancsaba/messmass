@@ -77,24 +77,15 @@
   }
 }
 
-/* Category Card */
-.categoryCard {
-  background: var(--mm-white);
-  border: 1px solid var(--mm-border-color-light);
-  border-left: 4px solid; /* WHAT: Colored left border using category color, WHY: Visual hierarchy like dashboard cards */
-  border-radius: var(--mm-radius-lg);
-  padding: var(--mm-space-4);
+/* WHAT: Category card content styling (card itself is now ColoredCard component)
+ * WHY: ColoredCard handles background, border, padding, hover - we only style internal layout
+ * HOW: Flex column layout ensures proper spacing and footer positioning */
+.categoryContent {
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: var(--mm-shadow-sm);
-  transition: all 0.2s ease;
-}
-
-.categoryCard:hover {
-  box-shadow: var(--mm-shadow-md);
-  transform: translateY(-2px);
-  border-color: var(--mm-border-color-default);
+  /* WHAT: No background, border, padding here - all handled by ColoredCard
+   * WHY: Single source of truth principle - ColoredCard component owns all card styling */
 }
 
 .categoryHeader {
