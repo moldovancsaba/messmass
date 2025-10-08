@@ -332,7 +332,7 @@ export default function AdminDesignPage() {
       <div className="content-surface">
             {/* What: Typography/Font Selection Section
                 Why: Allow admin to choose and preview Google Fonts system-wide */}
-            <div className="typography-section section-card">
+            <div className="typography-section admin-card">
               <h2 className="typography-heading">
                 <span className="typography-icon">🔤</span>
                 Typography & Fonts
@@ -381,7 +381,7 @@ export default function AdminDesignPage() {
             <h2 className="section-heading">Page Style Configuration</h2>
 
             {/* Global Default Style */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading">Default (Global) Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
@@ -395,7 +395,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Admin Page Style */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading">Admin Page Style</h3>
               <div className="flex gap-4 items-center">
                 <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
@@ -409,7 +409,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Content Surface Color */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading">Main Content Surface Color</h3>
               <p className="subsection-description">
                 This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It's applied via the --content-bg CSS variable.
@@ -430,7 +430,7 @@ export default function AdminDesignPage() {
             </div>
             
             {/* Per-Project Style */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading">Project Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
@@ -445,7 +445,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Per-Hashtag Style */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading">Hashtag Style</h3>
               <div className="flex-row gap-4">
                 <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
@@ -476,7 +476,7 @@ export default function AdminDesignPage() {
             </div>
 
             {/* Create New Style Form */}
-            <div className="section-card">
+            <div className="admin-card">
               <h3 className="subsection-heading mb-6">Create New Style</h3>
               
               <div className="grid gap-6">

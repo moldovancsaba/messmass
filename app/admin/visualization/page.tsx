@@ -313,8 +313,8 @@ export default function VisualizationPage() {
 
       <div className="content-surface">
       {/* Grid Settings Editor */}
-      <div className="glass-card section-card">
-        <h2 className="section-title m-0">Grid Settings</h2>
+      <div className="admin-card">
+        <h2 className="text-2xl font-bold text-gray-900 m-0">Grid Settings</h2>
         <p className="info-note mt-2">
           Configure the number of units per breakpoint used by stats/filter/hashtag pages.
         </p>
@@ -385,8 +385,8 @@ export default function VisualizationPage() {
         </div>
       </div>
 
-      <div className="glass-card section-card">
-        <h2 className="section-title">Data Visualization Blocks</h2>
+      <div className="admin-card">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}
         <div className="info-box">
@@ -689,7 +689,7 @@ export default function VisualizationPage() {
       {/* Edit Block Modal */}
       {editingBlock && (
         <div className="modal-overlay">
-          <div className="glass-card modal-content">
+          <div className="admin-card modal-content">
             <h2 className="modal-title">
               Edit Data Block: {editingBlock.name}
             </h2>

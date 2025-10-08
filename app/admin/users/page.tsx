@@ -146,8 +146,8 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="admin-card section-card">
-        <h2 className="section-title">Create New Admin</h2>
+      <div className="admin-card">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Admin</h2>
         <form onSubmit={onCreateUser} className="user-create-form">
           <input
             className="form-input"
@@ -180,8 +180,8 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      <div className="admin-card section-card mt-6">
-        <h2 className="section-title">All Admin Users</h2>
+      <div className="admin-card mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">All Admin Users</h2>
         {loading ? (
           <div>Loading users…</div>
         ) : error ? (

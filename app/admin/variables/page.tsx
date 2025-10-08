@@ -498,7 +498,7 @@ const [createForm, setCreateForm] = useState({
                       ? buildReferenceToken({ name: variable.name, category: variable.category, derived: variable.derived, type: variable.type })
                       : variable.name
                     return (
-                      <div key={variable.name} className="glass-card section-card variable-card">
+                      <div key={variable.name} className="admin-card">
                         {/* WHAT: Enforce exact line order per request; WHY: Consistent, scannable, uniform cards. */}
                         <div className="variable-header">
                           <h3 className="variable-title">{variable.label}</h3>

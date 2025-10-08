@@ -55,7 +55,7 @@ export default function AdminLogin() {
 
   return (
     <div className="app-container">
-      <div className="glass-card login-card">
+      <div className="admin-card login-card">
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="admin-avatar login-icon">
