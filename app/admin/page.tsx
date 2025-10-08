@@ -19,14 +19,11 @@ export default function AdminPage() {
      Why: Show feedback while checking authentication */
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        minHeight: '400px',
-        color: 'var(--mm-gray-600)'
-      }}>
-        Loading admin dashboard...
+      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+        <div className="admin-card text-center">
+          <div className="text-4xl mb-4">📊</div>
+          <div className="text-gray-600">Loading admin dashboard...</div>
+        </div>
       </div>
     );
   }

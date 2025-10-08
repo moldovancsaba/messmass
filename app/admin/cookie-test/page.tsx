@@ -33,25 +33,31 @@ export default function CookieTest() {
     checkAuth()
   }, [])
 
-  if (loading) return <div style={{padding: '2rem'}}>Loading...</div>
+  if (loading) return (
+    <div className="page-container">
+      <div className="admin-card text-center">Loading...</div>
+    </div>
+  )
 
   return (
-    <div style={{padding: '2rem', fontFamily: 'monospace'}}>
-      <h1>🍪 Cookie Test Page</h1>
-      <p style={{marginBottom: '2rem'}}>Domain: {typeof window !== 'undefined' ? window.location.hostname : 'unknown'}</p>
+    <div className="page-container font-mono">
+      <div className="admin-card mb-8">
+        <h1 className="text-3xl font-bold mb-4">🍪 Cookie Test Page</h1>
+        <p className="mb-4">Domain: {typeof window !== 'undefined' ? window.location.hostname : 'unknown'}</p>
+      </div>
       
-      <div style={{background: '#f5f5f5', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
-        <h2>Auth API Response:</h2>
-        <pre>{JSON.stringify(authStatus, null, 2)}</pre>
+      <div className="admin-card mb-4">
+        <h2 className="text-xl font-bold mb-2">Auth API Response:</h2>
+        <pre className="bg-gray-100 p-4 rounded overflow-auto">{JSON.stringify(authStatus, null, 2)}</pre>
       </div>
 
-      <div style={{background: '#f5f5f5', padding: '1rem', borderRadius: '8px'}}>
-        <h2>Browser Cookies:</h2>
-        <pre>{document.cookie || '(no cookies)'}</pre>
+      <div className="admin-card mb-4">
+        <h2 className="text-xl font-bold mb-2">Browser Cookies:</h2>
+        <pre className="bg-gray-100 p-4 rounded overflow-auto">{document.cookie || '(no cookies)'}</pre>
       </div>
 
-      <div style={{marginTop: '2rem'}}>
-        <a href="/admin/login" style={{padding: '0.5rem 1rem', background: '#0070f3', color: 'white', textDecoration: 'none', borderRadius: '4px'}}>
+      <div className="admin-card">
+        <a href="/admin/login" className="btn btn-primary">
           ← Back to Login
         </a>
       </div>

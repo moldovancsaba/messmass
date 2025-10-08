@@ -51,40 +51,10 @@ export default function HashtagManagerPage() {
   // Loading state
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '400px',
-        padding: 'var(--mm-space-6)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          border: '1px solid var(--mm-border-color-light)',
-          borderRadius: 'var(--mm-radius-lg)',
-          padding: 'var(--mm-space-8)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 'var(--mm-space-4)',
-          boxShadow: 'var(--mm-shadow-sm)',
-          maxWidth: '400px',
-          width: '100%'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid var(--mm-gray-200)',
-            borderTopColor: 'var(--mm-color-primary-500)',
-            borderRadius: '50%',
-            animation: 'spin 0.8s linear infinite'
-          }}></div>
-          <p style={{
-            fontSize: 'var(--mm-font-size-base)',
-            color: 'var(--mm-gray-600)',
-            margin: 0,
-            fontWeight: 'var(--mm-font-weight-medium)'
-          }}>Checking authentication...</p>
+      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+        <div className="admin-card text-center">
+          <div className="text-4xl mb-4">🏷️</div>
+          <div className="text-gray-600">Checking authentication...</div>
         </div>
       </div>
     );
@@ -93,52 +63,13 @@ export default function HashtagManagerPage() {
   // Access denied state
   if (!hasAccess) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '400px',
-        padding: 'var(--mm-space-6)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          border: '1px solid var(--mm-border-color-light)',
-          borderTop: '4px solid var(--mm-error)',
-          borderRadius: 'var(--mm-radius-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center',
-          boxShadow: 'var(--mm-shadow-sm)',
-          maxWidth: '500px',
-          width: '100%'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: 'var(--mm-space-4)' }}>⚠️</div>
-          <h2 style={{
-            fontSize: 'var(--mm-font-size-xl)',
-            fontWeight: 'var(--mm-font-weight-bold)',
-            color: 'var(--mm-gray-900)',
-            margin: '0 0 var(--mm-space-3) 0'
-          }}>Access Denied</h2>
-          <p style={{
-            fontSize: 'var(--mm-font-size-base)',
-            color: 'var(--mm-gray-600)',
-            margin: '0 0 var(--mm-space-2) 0'
-          }}>You don&apos;t have permission to access the Hashtag Manager.</p>
-          <p style={{
-            fontSize: 'var(--mm-font-size-sm)',
-            color: 'var(--mm-gray-500)',
-            margin: '0 0 var(--mm-space-6) 0'
-          }}>Only administrators can manage hashtags.</p>
-          <a href="/admin" style={{
-            display: 'inline-block',
-            padding: 'var(--mm-space-2) var(--mm-space-4)',
-            background: 'var(--mm-color-primary-500)',
-            color: 'var(--mm-white)',
-            textDecoration: 'none',
-            borderRadius: 'var(--mm-radius-md)',
-            fontWeight: 'var(--mm-font-weight-medium)',
-            fontSize: 'var(--mm-font-size-sm)',
-            transition: 'all 0.2s ease'
-          }}>
+      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+        <div className="admin-card text-center" style={{maxWidth: '500px', borderTop: '4px solid var(--mm-color-error-500)'}}>
+          <div className="text-5xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
+          <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Hashtag Manager.</p>
+          <p className="text-sm text-gray-500 mb-6">Only administrators can manage hashtags.</p>
+          <a href="/admin" className="btn btn-primary">
             ← Back to Admin Dashboard
           </a>
         </div>
@@ -147,7 +78,7 @@ export default function HashtagManagerPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <AdminHero
         title="Hashtag Manager"
         backLink="/admin"
@@ -159,13 +90,7 @@ export default function HashtagManagerPage() {
         searchPlaceholder="Search project hashtags..."
       />
 
-      <div style={{
-        background: 'var(--mm-white)',
-        border: '1px solid var(--mm-border-color-light)',
-        borderRadius: 'var(--mm-radius-lg)',
-        padding: 'var(--mm-space-6)',
-        boxShadow: 'var(--mm-shadow-sm)'
-      }}>
+      <div className="admin-card">
         {/* Hashtag Editor - now internally paginated and filtered server-side */}
         <HashtagEditor className="mt-2" searchTerm={searchTerm} />
       </div>

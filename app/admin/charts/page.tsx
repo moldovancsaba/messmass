@@ -40,11 +40,10 @@ export default function ChartAlgorithmManagerPage() {
 
 if (loading) {
     return (
-      <div className="page-container">
-        <div className="admin-content">
-          <div className="admin-card" style={{ textAlign: 'center' }}>
-            Loading…
-          </div>
+      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+        <div className="admin-card text-center">
+          <div className="text-4xl mb-4">📊</div>
+          <div className="text-gray-600">Loading...</div>
         </div>
       </div>
     );
@@ -52,14 +51,13 @@ if (loading) {
 
 if (!hasAccess) {
     return (
-      <div className="page-container">
-        <div className="admin-content">
-          <div className="admin-card" style={{ textAlign: 'center' }}>
-            <h2 className="no-margin">Access Denied</h2>
-            <p className="mt-2">You don&apos;t have permission to access the Chart Algorithm Manager.</p>
-            <p className="mt-2">Only administrators can manage chart configurations.</p>
-            <a href="/admin" className="btn btn-primary">← Back to Admin Dashboard</a>
-          </div>
+      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+        <div className="admin-card text-center" style={{maxWidth: '500px', borderTop: '4px solid var(--mm-color-error-500)'}}>
+          <div className="text-5xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
+          <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Chart Algorithm Manager.</p>
+          <p className="text-sm text-gray-500 mb-6">Only administrators can manage chart configurations.</p>
+          <a href="/admin" className="btn btn-primary">← Back to Admin Dashboard</a>
         </div>
       </div>
     );
@@ -77,7 +75,7 @@ if (!hasAccess) {
         backLink="/admin"
       />
 
-      <div className="content-surface">
+      <div className="admin-card">
         {/* Chart Algorithm Manager Component */}
         <ChartAlgorithmManager />
       </div>
