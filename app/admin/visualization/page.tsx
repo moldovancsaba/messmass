@@ -8,6 +8,7 @@ import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTyp
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import vizStyles from './Visualization.module.css';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -571,19 +572,21 @@ export default function VisualizationPage() {
                   ) : (
                     <>
                       {/* Live Preview Grid - matches UnifiedDataVisualization */}
-                      <div className={`charts-grid charts-grid-${block._id || 'preview'} viz-preview-grid`}>
+                      {/* WHAT: Apply CSS module base classes + dynamic grid ID for per-block responsive styling
+                           WHY: Static styles use CSS modules; dynamic responsive grid uses inline <style> with block ID */}
+                      <div className={`charts-grid charts-grid-${block._id || 'preview'} viz-preview-grid ${vizStyles.chartsGridBase}`}>
                         {block.charts
                           .sort((a, b) => a.order - b.order)
                           .map((chart) => {
                             const result = previewResults[chart.chartId];
                             if (!result) return null;
                             return (
-                              <div key={`${block._id}-${chart.chartId}`} className={`chart-item chart-width-${chart.width} chart-min-height`}>
+                              <div key={`${block._id}-${chart.chartId}`} className={`${vizStyles.chartItem} chart-width-${chart.width} chart-min-height`}>
                                 <ChartContainer
                                   title={result.title}
                                   subtitle={result.subtitle}
                                   emoji={result.emoji}
-                                  className="unified-chart-item"
+                                  className={vizStyles.unifiedChartItem}
                                   chartWidth={chart.width}
                                 >
                                   <DynamicChart result={result} chartWidth={chart.width} />
@@ -595,22 +598,20 @@ export default function VisualizationPage() {
                         }
                       </div>
 
+                      {/* WHAT: Dynamic responsive grid styling per block ID
+                           WHY: CSS modules can't handle dynamic class names with runtime IDs,
+                                so we keep minimal <style jsx> for dynamic grid column rules only.
+                                All static styles moved to Visualization.module.css */}
                       <style jsx>{`
-                        .charts-grid-${block._id || 'preview'} { grid-template-columns: 1fr; justify-items: stretch; align-items: start; grid-auto-flow: row; }
                         .chart-width-1 { grid-column: span 1; }
                         .chart-width-2 { grid-column: span 2; }
                         @media (min-width: 768px) and (max-width: 1023px) {
-.charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.tablet)}, minmax(0, 1fr)) !important; }
+                          .charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.tablet)}, minmax(0, 1fr)) !important; }
                         }
                         @media (min-width: 1024px) {
-.charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.desktop)}, minmax(0, 1fr)) !important; }
+                          .charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.desktop)}, minmax(0, 1fr)) !important; }
                         }
-                        .unified-chart-item { background: rgba(248, 250, 252, 0.8); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.2s ease; height: 100%; box-sizing: border-box; }
-                        .unified-chart-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); border-color: rgba(99, 102, 241, 0.3); }
-                        .chart-item { display: flex; flex-direction: column; width: 100%; max-width: none; height: 100%; min-height: 350px; justify-self: stretch; min-width: 0; }
-                        .chart-item > * { width: 100%; height: 100%; flex: 1; }
                         .charts-grid-${block._id || 'preview'} :global(.chart-container) { min-width: 0 !important; max-width: none !important; width: 100% !important; }
-                        .chart-legend { min-width: 0; width: 100%; max-width: 100%; overflow: hidden; }
                       `}</style>
                     </>
                   )}

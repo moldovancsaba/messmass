@@ -9,11 +9,18 @@ interface HashtagItem {
   count: number;
 }
 
+/**
+ * HashtagMultiSelect Component
+ * 
+ * What: Pure hashtag selection UI component without action buttons.
+ * Why: Apply Filter action moved to admin filter page actions row to centralize
+ *      all filter controls (Apply, Share, Export) in one location for better UX.
+ *      This component now focuses solely on hashtag selection and preview.
+ */
 interface HashtagMultiSelectProps {
   hashtags: HashtagItem[];
   selectedHashtags: string[];
   onSelectionChange: (selected: string[]) => void;
-  onApplyFilter: () => void;
   disabled?: boolean;
   showPreview?: boolean;
   className?: string;
@@ -27,7 +34,6 @@ export default function HashtagMultiSelect({
   hashtags,
   selectedHashtags,
   onSelectionChange,
-  onApplyFilter,
   disabled = false,
   showPreview = true,
   className = ''
@@ -411,59 +417,6 @@ export default function HashtagMultiSelect({
             </div>
           );
         })()}
-      </div>
-
-      {/* Action Buttons */}
-      <div style={{
-        display: 'flex',
-        gap: '1rem',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <button
-          onClick={onApplyFilter}
-          disabled={disabled || selectedHashtags.length === 0}
-          style={{
-            padding: '1rem 2rem',
-            fontSize: '1rem',
-            fontWeight: '600',
-            background: disabled || selectedHashtags.length === 0
-              ? '#e5e7eb' 
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: disabled || selectedHashtags.length === 0
-              ? '#9ca3af' 
-              : 'white',
-            border: 'none',
-            borderRadius: '12px',
-            cursor: disabled || selectedHashtags.length === 0
-              ? 'not-allowed' 
-              : 'pointer',
-            transition: 'all 0.3s ease',
-            boxShadow: disabled || selectedHashtags.length === 0
-              ? 'none'
-              : '0 4px 15px rgba(102, 126, 234, 0.3)',
-            transform: 'scale(1)',
-            minWidth: '200px'
-          }}
-          onMouseEnter={(e) => {
-            if (!disabled && selectedHashtags.length > 0) {
-              e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!disabled && selectedHashtags.length > 0) {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
-            }
-          }}
-        >
-          {selectedHashtags.length === 0 ? (
-            <>🔍 Select hashtags to filter</>
-          ) : (
-            <>🔍 Apply Filter ({selectedHashtags.length} tag{selectedHashtags.length !== 1 ? 's' : ''})</>
-          )}
-        </button>
       </div>
 
       {/* No hashtags available message */}

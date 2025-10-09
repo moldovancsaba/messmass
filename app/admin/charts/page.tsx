@@ -41,7 +41,7 @@ export default function ChartAlgorithmManagerPage() {
 
 if (loading) {
     return (
-      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
+      <div className="page-container flex items-center justify-center min-h-screen">
         <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
           <div className="text-4xl mb-4">📊</div>
           <div className="text-gray-600">Loading...</div>
@@ -52,8 +52,8 @@ if (loading) {
 
   if (!hasAccess) {
     return (
-      <div className="page-container flex items-center justify-center" style={{minHeight: '400px'}}>
-        <div style={{maxWidth: '500px'}}>
+      <div className="page-container flex items-center justify-center min-h-screen">
+        <div className="max-w-md">
         <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="text-center">
           <div className="text-5xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>

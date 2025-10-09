@@ -373,13 +373,29 @@ function HashtagFilterPageContent() {
         </div>
       )}
 
-      {/* Actions row (style selector + Share/CSV) */}
+      {/* Actions row (style selector + Apply/Share/CSV) */}
+      {/* What: Centralized filter actions row showing Apply, Share, and Export controls.
+           Why: Groups all filter actions together for better discoverability and consistent UX.
+                Apply button visible when hashtags selected; Share/Export appear after applying filter. */}
       <ColoredCard accentColor="#6366f1" hoverable={false} className="p-3 mb-4">
         <div className="flex gap-2 flex-wrap justify-center">
+          {/* Apply Filter Button - visible when hashtags are selected */}
+          {selectedHashtags.length > 0 && (
+            <button
+              type="button"
+              className="btn btn-sm btn-primary"
+              onClick={handleApplyFilter}
+              disabled={statsLoading}
+              title="Apply selected hashtags to filter"
+            >
+              🔍 Apply Filter ({selectedHashtags.length} {selectedHashtags.length === 1 ? 'tag' : 'tags'})
+            </button>
+          )}
+          
           {hasAppliedFilter && project && (
             <>
               {/* Style selector for this filter share */}
-                    <select 
+                    <select
                       className="form-input min-w-200" 
                       value={selectedStyleId} 
                       onChange={async (e) => {
@@ -472,7 +488,6 @@ function HashtagFilterPageContent() {
           hashtags={availableHashtags}
           selectedHashtags={selectedHashtags}
           onSelectionChange={handleSelectionChange}
-          onApplyFilter={handleApplyFilter}
           disabled={statsLoading}
           showPreview={true}
         />

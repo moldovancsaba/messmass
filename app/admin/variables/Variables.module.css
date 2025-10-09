@@ -1,0 +1,41 @@
+/* Variables Page - CSS Module */
+/* WHAT: Centralized styles for variables management page
+   WHY: Replace <style jsx> with proper CSS module using design tokens */
+
+/* Variable cards grid */
+.varsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  align-items: stretch;
+  gap: var(--mm-space-4);
+}
+
+/* Variable card layout */
+.variableCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.variableCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+/* Variable type badge */
+.variableTypeBadge {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: var(--mm-radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Variable default value display */
+.variableDefault {
+  font-size: 0.75rem;
+  color: var(--mm-gray-600);
+}

@@ -1,5 +1,51 @@
 # MessMass Release Notes
 
+## [v5.46.0] — 2025-01-09T06:20:00.000Z
+
+### UI Improvement — Centralized Filter Actions
+
+**What Changed**
+- Moved "🔍 Apply Filter" button from HashtagMultiSelect component to admin filter page actions row
+- Apply Filter now appears in the same ColoredCard as Share Filter and Export CSV buttons
+- Button visible immediately when hashtags are selected (before applying filter)
+- Once filter is applied, all three action buttons appear together for consistent UX
+
+**Component Updates**
+- `components/HashtagMultiSelect.tsx`: Removed Apply Filter button and `onApplyFilter` prop
+  - Component now focuses purely on hashtag selection and preview
+  - Added strategic comments explaining the centralized actions design
+- `app/admin/filter/page.tsx`: Added Apply Filter button to actions ColoredCard
+  - Button uses same styling as other action buttons (btn btn-sm btn-primary)
+  - Conditional visibility: `selectedHashtags.length > 0`
+  - Maintains existing click handler and disabled state logic
+
+**Why This Change**
+- Improves discoverability by grouping all filter actions in one location
+- Creates consistent action button placement across admin pages
+- Reduces visual clutter in the hashtag selection area
+- Follows the unified design pattern of centralized control rows
+
+**Technical Details**
+- Removed `onApplyFilter: () => void` from HashtagMultiSelect interface
+- Removed 51 lines of button UI code from HashtagMultiSelect component
+- Added strategic comments in both files explaining the design decision
+- No API changes, no data structure changes
+- Backward compatible with existing functionality
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ ESLint validation: Pre-existing warnings only (not related to changes)
+- ✅ Production build: PASSING (3.1s compile time)
+- ✅ 39 static pages generated successfully
+
+**Files Modified**: 2 files
+- `components/HashtagMultiSelect.tsx`: Interface update, button removal, comments added
+- `app/admin/filter/page.tsx`: Button addition to actions row, prop removal
+
+**Lines Changed**: ~70 lines (51 removed, 19 added)
+
+---
+
 ## [v5.36.0] — 2025-10-10T12:45:00.000Z
 
 ### Design — TailAdmin V2 Flat Design Migration Complete

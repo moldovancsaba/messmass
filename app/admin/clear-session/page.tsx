@@ -40,7 +40,7 @@ export default function ClearSession() {
 
   return (
     <div className="login-container">
-      <div style={{maxWidth: '500px'}}>
+      <div className="max-w-md mx-auto">
       <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
         <div className="text-6xl mb-6">
           {cleared ? '✅' : '🔧'}
@@ -62,8 +62,7 @@ export default function ClearSession() {
             <button
               onClick={clearCookies}
               disabled={loading}
-              className="btn btn-primary btn-full mb-4"
-              style={{opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer'}}
+              className={`btn btn-primary btn-full mb-4 ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               {loading ? '🔄 Clearing...' : '🗑️ Clear Session & Retry Login'}
             </button>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { buildReferenceToken } from '@/lib/variableRefs';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import variablesStyles from './Variables.module.css';
 
 interface VariableFlags {
   visibleInClicker: boolean;
@@ -501,7 +502,7 @@ const [createForm, setCreateForm] = useState({
                   </span>
                 </h2>
                 
-                <div className="charts-grid vars-grid">
+                <div className={`charts-grid ${variablesStyles.varsGrid}`}>
                   {categoryVariables.slice(0, visibleCount).map((variable) => {
                     const reference = ['count','numeric','currency','percentage'].includes(variable.type)
                       ? buildReferenceToken({ name: variable.name, category: variable.category, derived: variable.derived, type: variable.type })
@@ -755,18 +756,6 @@ const [createForm, setCreateForm] = useState({
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        /* Ensure variable cards align and stretch uniformly */
-        .vars-grid {
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          align-items: stretch;
-        }
-        .variable-card { display: flex; flex-direction: column; height: 100%; }
-        .variable-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
-        .variable-type-badge { padding: 0.25rem 0.75rem; font-size: 0.75rem; border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .variable-default { font-size: 0.75rem; color: #6b7280; }
-      `}</style>
     </div>
   );
 }
