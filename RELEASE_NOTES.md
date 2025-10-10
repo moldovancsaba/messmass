@@ -1,5 +1,43 @@
 # MessMass Release Notes
 
+## [v5.46.1] — 2025-01-10T09:10:00.000Z
+
+### Refactor — Dashboard Component Standardization
+
+**What Changed**
+- Admin dashboard now uses centralized `<ColoredCard>` component instead of custom `.navCard` CSS
+- Added `<AdminHero>` component to dashboard for consistent header across all admin pages
+- Deleted `AdminDashboard.module.css` (206 lines) - no longer needed
+- All styling now controlled via centralized components
+
+**Why This Change**
+- **Maintainability**: UI changes in one place (ColoredCard) apply to entire app
+- **Consistency**: Dashboard now matches filter, projects, design pages exactly
+- **Simplicity**: No custom CSS to maintain - pure component reuse
+- **Single Source of Truth**: ColoredCard component is the only place to modify card styling
+
+**Technical Details**
+- Refactored `AdminDashboard.tsx` to use `<ColoredCard>` with `accentColor` props
+- Moved inline styles to use design tokens (`var(--mm-*)` for spacing, fonts, colors)
+- Added `<AdminHero>` with personalized subtitle: "Welcome back, {user.name}!"
+- Navigation cards now wrapped in `<Link>` → `<ColoredCard>` pattern (standard approach)
+
+**Files Modified**: 3
+- `components/AdminDashboard.tsx`: Refactored to use ColoredCard, removed CSS import
+- `app/admin/page.tsx`: Added AdminHero component
+- `components/AdminDashboard.module.css`: **DELETED** (no longer needed)
+
+**Lines Changed**: ~220 lines (206 CSS deleted, 14 code refactored)
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (3.0s compile time)
+- ✅ 39 static pages generated successfully
+
+**Impact**: Zero visual changes - identical appearance, better code organization
+
+---
+
 ## [v5.46.0] — 2025-01-09T06:20:00.000Z
 
 ### UI Improvement — Centralized Filter Actions

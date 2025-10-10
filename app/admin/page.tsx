@@ -2,15 +2,16 @@
 
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminDashboard from '@/components/AdminDashboard';
+import AdminHero from '@/components/AdminHero';
 import '../styles/admin.css';
 
 /* What: Main admin dashboard page
    Why: Entry point to admin area with navigation cards
    
-   Changes from legacy:
-   - Removed redundant header (now handled by AdminLayout in layout.tsx)
-   - Removed glass-card styling (using AdminLayout's structure)
-   - Kept loading and auth states */
+   Design:
+   - Uses centralized AdminHero component for consistent header across all admin pages
+   - Uses AdminDashboard component with ColoredCard for navigation grid
+   - No custom styling - pure component reuse */
 
 export default function AdminPage() {
   const { user, loading } = useAdminAuth();
@@ -36,17 +37,23 @@ export default function AdminPage() {
     return null;
   }
 
-  /* What: Dashboard content without duplicate header
-     Why: AdminLayout provides header, we just need the navigation cards */
+  /* What: Dashboard with AdminHero + navigation cards
+     Why: Consistent with all other admin pages (filter, projects, design, etc.) */
   return (
-    <AdminDashboard 
-      user={user}
-      permissions={{
-        canManageUsers: true,
-        canDelete: true,
-        canRead: true,
-        canWrite: true
-      }}
-    />
+    <>
+      <AdminHero
+        title="Admin Dashboard"
+        subtitle={`Welcome back, ${user.name}! Choose a management area below to get started.`}
+      />
+      <AdminDashboard 
+        user={user}
+        permissions={{
+          canManageUsers: true,
+          canDelete: true,
+          canRead: true,
+          canWrite: true
+        }}
+      />
+    </>
   );
 }

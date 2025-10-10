@@ -3,17 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { AdminUser } from '@/lib/auth';
-import styles from './AdminDashboard.module.css';
+import ColoredCard from './ColoredCard';
 
 /* What: Admin dashboard navigation component
    Why: Provides quick access to all admin sections
    
-   Modernization:
-   - Replaced gradient cards with flat TailAdmin V2 design
-   - Added color-coded accent bars
-   - Using CSS Modules for styling
-   - Equal card widths per Board Card Width Rule
-   - Improved accessibility with Link component */
+   Design:
+   - Uses centralized ColoredCard component for consistency
+   - All styling controlled via ColoredCard (maintainable in one place)
+   - Color-coded accent bars via accentColor prop
+   - No custom CSS modules - pure component reuse */
 
 interface AdminDashboardProps {
   user: AdminUser;
@@ -32,101 +31,137 @@ interface NavCard {
   icon: string;
   title: string;
   description: string;
-  colorClass: string;
+  accentColor: string; // Hex color for ColoredCard left border
 }
 
+/* What: Navigation card configuration with accent colors
+   Why: Centralized config - easy to add/remove/reorder cards
+   Colors: Match design token system from theme.css */
 const navCards: NavCard[] = [
   {
     href: '/admin/projects',
     icon: '🍿',
     title: 'Manage Projects',
     description: 'Create, edit, delete, and organize all your events',
-    colorClass: styles.colorGreen,
+    accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
   },
   {
     href: '/admin/filter',
     icon: '🔍',
     title: 'Hashtag Filter',
     description: 'Advanced multi-hashtag filtering and search',
-    colorClass: styles.colorCyan,
+    accentColor: '#06b6d4', // var(--mm-chart-cyan)
   },
   {
     href: '/admin/hashtags',
     icon: '🏷️',
     title: 'Hashtag Manager',
     description: 'Manage hashtag categories and colors',
-    colorClass: styles.colorPurple,
+    accentColor: '#8b5cf6', // var(--mm-chart-purple)
   },
   {
     href: '/admin/categories',
     icon: '🌍',
     title: 'Category Manager',
     description: 'Organize and group hashtag categories',
-    colorClass: styles.colorOrange,
+    accentColor: '#f97316', // var(--mm-chart-orange)
   },
   {
     href: '/admin/design',
     icon: '🎨',
     title: 'Design Manager',
     description: 'Customize styles and visualization layouts',
-    colorClass: styles.colorPink,
+    accentColor: '#ec4899', // var(--mm-chart-pink)
   },
   {
     href: '/admin/charts',
     icon: '📊',
     title: 'Chart Algorithm Manager',
     description: 'Configure chart algorithms and calculations',
-    colorClass: styles.colorYellow,
+    accentColor: '#f59e0b', // var(--mm-chart-yellow)
   },
   {
     href: '/admin/variables',
     icon: '🔢',
     title: 'Variable Manager',
     description: 'Manage dynamic variables and formulas',
-    colorClass: styles.colorBlue,
+    accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
   },
   {
     href: '/admin/visualization',
     icon: '📈',
     title: 'Visualization Manager',
     description: 'Control chart display and ordering',
-    colorClass: styles.colorTeal,
+    accentColor: '#14b8a6', // var(--mm-chart-teal)
   },
   {
     href: '/admin/cache',
     icon: '🗑️',
     title: 'Cache Management',
     description: 'Clear server and browser caches for fresh content',
-    colorClass: styles.colorRed,
+    accentColor: '#ef4444', // var(--mm-error) - Red
   },
 ];
+
+/* What: Card grid styles using design tokens
+   Why: Consistent with other admin pages, maintainable via globals.css */
+const gridStyles: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: 'var(--mm-space-6)',
+  marginBottom: 'var(--mm-space-6)',
+};
+
+/* What: Navigation card content layout
+   Why: Flex layout for icon + text, consistent spacing */
+const cardContentStyles: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'var(--mm-space-4)',
+};
+
+const iconStyles: React.CSSProperties = {
+  fontSize: '2.5rem',
+  lineHeight: 1,
+  flexShrink: 0,
+};
+
+const textContainerStyles: React.CSSProperties = {
+  flex: 1,
+};
+
+const titleStyles: React.CSSProperties = {
+  fontSize: 'var(--mm-font-size-lg)',
+  fontWeight: 'var(--mm-font-weight-semibold)',
+  color: 'var(--mm-gray-900)',
+  margin: '0 0 var(--mm-space-1) 0',
+  lineHeight: 'var(--mm-line-height-sm)',
+};
+
+const descriptionStyles: React.CSSProperties = {
+  fontSize: 'var(--mm-font-size-sm)',
+  color: 'var(--mm-gray-600)',
+  margin: 0,
+  lineHeight: 'var(--mm-line-height-md)',
+};
 
 export default function AdminDashboard({ user, permissions }: AdminDashboardProps) {
   return (
     <>
-      {/* What: Welcome section
-          Why: Personalized greeting and context */}
-      <div className={styles.welcomeSection}>
-        <h1 className={styles.welcomeTitle}>Welcome back, {user.name}! 👋</h1>
-        <p className={styles.welcomeText}>
-          You're logged in as <strong>{user.role}</strong>. Choose a management area below to get started.
-        </p>
-      </div>
-
-      {/* What: Navigation cards grid
-          Why: Quick access to all admin sections with visual differentiation */}
-      <div className={styles.dashboardGrid}>
+      {/* What: Navigation cards grid using centralized ColoredCard
+          Why: All styling controlled via ColoredCard component - maintainable in one place */}
+      <div style={gridStyles}>
         {navCards.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href}
-            className={`${styles.navCard} ${card.colorClass}`}
-          >
-            <div className={styles.navIcon}>{card.icon}</div>
-            <div className={styles.navContent}>
-              <h2 className={styles.navTitle}>{card.title}</h2>
-              <p className={styles.navDescription}>{card.description}</p>
-            </div>
+          <Link key={card.href} href={card.href} style={{ textDecoration: 'none' }}>
+            <ColoredCard accentColor={card.accentColor} hoverable={true}>
+              <div style={cardContentStyles}>
+                <div style={iconStyles}>{card.icon}</div>
+                <div style={textContainerStyles}>
+                  <h2 style={titleStyles}>{card.title}</h2>
+                  <p style={descriptionStyles}>{card.description}</p>
+                </div>
+              </div>
+            </ColoredCard>
           </Link>
         ))}
       </div>
