@@ -243,14 +243,14 @@ if (error) {
                      * WHY: NO custom button styles - must use global design system */}
                     <div className={styles.categoryActions}>
                       <button 
-                        className="btn btn-smallall btn-primary" 
+                        className="btn btn-small btn-primary" 
                         onClick={() => handleEditCategory(category._id)}
                         style={{ minWidth: '80px' }}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-smallall btn-danger" 
+                        className="btn btn-small btn-danger" 
                         onClick={() => handleDeleteCategory(category._id, category.name)}
                         style={{ minWidth: '80px' }}
                       >
@@ -361,14 +361,14 @@ if (error) {
                   setShowCreateForm(false);
                   resetForm();
                 }}
-                className="btn btn-smallall btn-secondary"
+                className="btn btn-small btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCategory}
                 disabled={!formData.name.trim()}
-                className="btn btn-smallall btn-primary"
+                className="btn btn-small btn-primary"
               >
                 🆕 Create Category
               </button>
@@ -455,14 +455,14 @@ if (error) {
                   setShowEditForm(false);
                   resetForm();
                 }}
-                className="btn btn-smallall btn-secondary"
+                className="btn btn-small btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateCategory}
                 disabled={!formData.name.trim()}
-                className="btn btn-smallall btn-primary"
+                className="btn btn-small btn-primary"
               >
                 ✔️ Update Category
               </button>

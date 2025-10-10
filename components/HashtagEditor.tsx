@@ -380,7 +380,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                            * WHY: NO custom button styles - must use global design system */}
                           <div className={styles.hashtagCardActions}>
                             <button
-                              className="btn btn-smallall btn-primary"
+                              className="btn btn-small btn-primary"
                               onClick={() => handleEdit(projectHashtag.hashtag)}
                               style={{ minWidth: '80px' }}
                             >
@@ -388,7 +388,7 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                             </button>
                             {hasCustomColor && (
                               <button
-                                className="btn btn-smallall btn-danger"
+                                className="btn btn-small btn-danger"
                                 onClick={() => handleDelete(projectHashtag.hashtag)}
                                 style={{ minWidth: '80px' }}
                               >

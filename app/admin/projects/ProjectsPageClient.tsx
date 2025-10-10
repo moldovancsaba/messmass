@@ -645,7 +645,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="project-name">
                         {/* CSV export button placed before event name */}
                         <button
-                          className="btn btn-smallall btn-secondary mr-2"
+                          className="btn btn-small btn-secondary mr-2"
                           title={`Download CSV for ${project.eventName}`}
                           onClick={async () => {
                             try {
@@ -783,7 +783,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                         {/* WHAT: Using centralized .btn classes from components.css
                          * WHY: Consistent Edit/Delete button styling across ALL admin pages */}
                         <button 
-                          className="btn btn-smallall btn-primary"
+                          className="btn btn-small btn-primary"
                           onClick={() => {
                             console.log('Edit Project button clicked for:', project.eventName);
                             editProject(project);
@@ -793,7 +793,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           ✏️ Edit Project
                         </button>
                         <button 
-                          className="btn btn-smallall btn-danger"
+                          className="btn btn-small btn-danger"
                           onClick={() => deleteProject(project._id)}
                         >
                           🗑️ Delete
@@ -897,13 +897,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             </div>
             <div className="modal-footer">
               <button 
-                className="btn btn-smallall btn-secondary" 
+                className="btn btn-small btn-secondary" 
                 onClick={() => setShowNewProjectForm(false)}
               >
                 Cancel
               </button>
               <button 
-                className="btn btn-smallall btn-primary" 
+                className="btn btn-small btn-primary" 
                 onClick={() => {
                   console.log('Create Project button clicked');
                   createNewProject();
@@ -977,11 +977,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-smallall btn-secondary" onClick={() => setShowEditProjectForm(false)}>
+              <button className="btn btn-small btn-secondary" onClick={() => setShowEditProjectForm(false)}>
                 Cancel
               </button>
               <button 
-                className="btn btn-smallall btn-primary" 
+                className="btn btn-small btn-primary" 
                 onClick={updateProject}
                 disabled={isUpdatingProject}
               >

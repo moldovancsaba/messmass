@@ -383,7 +383,7 @@ function HashtagFilterPageContent() {
           {selectedHashtags.length > 0 && (
             <button
               type="button"
-              className="btn btn-smallall btn-primary"
+              className="btn btn-small btn-primary"
               onClick={handleApplyFilter}
               disabled={statsLoading}
               title="Apply selected hashtags to filter"
@@ -465,14 +465,14 @@ function HashtagFilterPageContent() {
                           alert('Failed to generate shareable link');
                         }
                       }}
-                      className="btn btn-smallall btn-info"
+                      className="btn btn-small btn-info"
                       title="Share filter with password protection"
                     >
                       🔗 Share Filter
                     </button>
                     <button 
                       onClick={exportFilteredCSV}
-                      className="btn btn-smallall btn-success"
+                      className="btn btn-small btn-success"
                       title="Export filtered results to CSV"
                     >
                       📄 Export CSV
@@ -494,7 +494,7 @@ function HashtagFilterPageContent() {
         <div className="text-center py-4">
           {searchOffset != null ? (
             <button
-              className="btn btn-smallall btn-secondary"
+              className="btn btn-small btn-secondary"
               disabled={isLoadingMore}
               onClick={async () => {
                 if (isLoadingMore || searchOffset == null) return;
@@ -526,7 +526,7 @@ function HashtagFilterPageContent() {
             <p>{error}</p>
             <button 
               onClick={() => fetchFilteredStats()}
-              className="btn btn-smallall btn-primary mt-4"
+              className="btn btn-small btn-primary mt-4"
             >
               🔄 Try Again
             </button>
