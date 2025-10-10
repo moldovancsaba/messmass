@@ -560,7 +560,7 @@ const [createForm, setCreateForm] = useState({
                            * WHY: NO custom button styles - must use global design system */}
                           <div className={variablesStyles.variableActions}>
                             <button 
-                              className="btn btn-smallall btn-primary" 
+                              className="btn btn-small btn-primary" 
                               onClick={() => setActiveVar(variable)}
                               style={{ minWidth: '80px' }}
                             >
@@ -568,7 +568,7 @@ const [createForm, setCreateForm] = useState({
                             </button>
                             {variable.isCustom && (
                               <button 
-                                className="btn btn-smallall btn-danger"
+                                className="btn btn-small btn-danger"
                                 onClick={async () => {
                                   if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
                                   try {

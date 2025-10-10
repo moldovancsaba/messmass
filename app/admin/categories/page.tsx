@@ -243,14 +243,14 @@ if (error) {
                      * WHY: NO custom button styles - must use global design system */}
                     <div className={styles.categoryActions}>
                       <button 
-                        className="btn btn-smallall btn-primary" 
+                        className="btn btn-small btn-primary" 
                         onClick={() => handleEditCategory(category._id)}
                         style={{ minWidth: '80px' }}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-smallall btn-danger" 
+                        className="btn btn-small btn-danger" 
                         onClick={() => handleDeleteCategory(category._id, category.name)}
                         style={{ minWidth: '80px' }}
                       >

@@ -545,7 +545,7 @@ export default function VisualizationPage() {
                     <div className="flex-row">
                       <button
                         onClick={() => setEditingBlock(block)}
-                        className="btn btn-small btn-info"
+                        className="btn btn-small btn-primary"
                       >
                         ✏️ Edit
                       </button>
