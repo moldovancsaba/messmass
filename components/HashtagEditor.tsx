@@ -357,6 +357,8 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                     <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
                       {/* Left side: Content */}
                       <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* WHAT: Hashtag display with usage count
+                         * WHY: Removed "Default Color" badge - not needed on cards, information is implicit */}
                         <div className={styles.hashtagCardHeader}>
                           <span 
                             className={styles.hashtagBubble}
@@ -364,9 +366,6 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                           >
                             #{projectHashtag.hashtag}
                           </span>
-                          {!hasCustomColor && (
-                            <span className={styles.defaultBadge}>Default Color</span>
-                          )}
                         </div>
                         
                         <div className={styles.hashtagCardDetails}>
