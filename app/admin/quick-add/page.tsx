@@ -304,7 +304,7 @@ export default function QuickAddPage() {
         <div className="flex gap-3">
           <button 
             onClick={handlePreview}
-            className="btn btn-primary"
+            className="btn btn-small btn-primary"
             disabled={!rawInput.trim()}
           >
             Preview
@@ -312,7 +312,7 @@ export default function QuickAddPage() {
           {preview && (
             <button 
               onClick={handleReset}
-              className="btn btn-secondary"
+              className="btn btn-small btn-secondary"
             >
               Clear
             </button>
@@ -401,7 +401,7 @@ export default function QuickAddPage() {
 
           <button 
             onClick={handleCreate}
-            className="btn btn-success"
+            className="btn btn-small btn-success"
             disabled={isCreating}
           >
             {isCreating ? 'Creating...' : '✅ Create Project'}

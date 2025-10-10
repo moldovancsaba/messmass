@@ -71,7 +71,7 @@ export default function HashtagManagerPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
           <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Hashtag Manager.</p>
           <p className="text-sm text-gray-500 mb-6">Only administrators can manage hashtags.</p>
-          <a href="/admin" className="btn btn-primary">
+          <a href="/admin" className="btn btn-small btn-primary">
             ← Back to Admin Dashboard
           </a>
         </ColoredCard>

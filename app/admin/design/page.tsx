@@ -385,7 +385,7 @@ export default function AdminDesignPage() {
                     <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
-                <button onClick={saveGlobalStyle} className="btn btn-secondary">Save Default</button>
+                <button onClick={saveGlobalStyle} className="btn btn-small btn-secondary">Save Default</button>
               </div>
             </ColoredCard>
 
@@ -399,7 +399,7 @@ export default function AdminDesignPage() {
                     <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
-                <button onClick={saveAdminStyle} className="btn btn-secondary">Save Admin Style</button>
+                <button onClick={saveAdminStyle} className="btn btn-small btn-secondary">Save Admin Style</button>
               </div>
             </ColoredCard>
 
@@ -438,7 +438,7 @@ export default function AdminDesignPage() {
                     <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
-                <button onClick={saveProjectStyle} className="btn btn-secondary">Apply to Project</button>
+                <button onClick={saveProjectStyle} className="btn btn-small btn-secondary">Apply to Project</button>
               </div>
             </ColoredCard>
 
@@ -453,7 +453,7 @@ export default function AdminDesignPage() {
                     <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
-                <button onClick={saveHashtagStyle} className="btn btn-secondary">Apply to Hashtag</button>
+                <button onClick={saveHashtagStyle} className="btn btn-small btn-secondary">Apply to Hashtag</button>
               </div>
 
               {/* List existing hashtag assignments */}
@@ -548,7 +548,7 @@ export default function AdminDesignPage() {
                   </div>
                 </div>
 
-                <button className="btn btn-success" onClick={handleCreateStyle}>
+                <button className="btn btn-small btn-success" onClick={handleCreateStyle}>
                   Create Style
                 </button>
               </div>
@@ -606,8 +606,8 @@ export default function AdminDesignPage() {
                             </div>
                           </div>
                           <div className="flex-row">
-                            <button className="btn btn-success" onClick={saveEdit}>Save</button>
-                            <button className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
+                            <button className="btn btn-small btn-success" onClick={saveEdit}>Save</button>
+                            <button className="btn btn-small btn-secondary" onClick={cancelEdit}>Cancel</button>
                           </div>
                         </div>
                       )}

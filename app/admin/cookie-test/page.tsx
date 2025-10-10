@@ -58,7 +58,7 @@ export default function CookieTest() {
       </ColoredCard>
 
       <ColoredCard accentColor="#8b5cf6" hoverable={false}>
-        <a href="/admin/login" className="btn btn-primary">
+        <a href="/admin/login" className="btn btn-small btn-primary">
           ← Back to Login
         </a>
       </ColoredCard>

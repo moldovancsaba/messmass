@@ -815,7 +815,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       <div className="p-4 text-center">
           {searchQuery.trim() ? (
             searchOffset != null ? (
-              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
+              <button className="btn btn-small btn-secondary" disabled={isLoadingMore} onClick={loadMoreSearch}>
                 {isLoadingMore ? 'Loading…' : 'Load 20 more results'}
               </button>
             ) : (
@@ -823,7 +823,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             )
           ) : (sortField && sortOrder) ? (
             sortOffset != null ? (
-              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMoreSort}>
+              <button className="btn btn-small btn-secondary" disabled={isLoadingMore} onClick={loadMoreSort}>
                 {isLoadingMore ? 'Loading…' : 'Load 20 more'}
               </button>
             ) : (
@@ -831,7 +831,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             )
           ) : (
             nextCursor ? (
-              <button className="btn btn-secondary" disabled={isLoadingMore} onClick={loadMore}>
+              <button className="btn btn-small btn-secondary" disabled={isLoadingMore} onClick={loadMore}>
                 {isLoadingMore ? 'Loading…' : 'Load 20 more'}
               </button>
             ) : (

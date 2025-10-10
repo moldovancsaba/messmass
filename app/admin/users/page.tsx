@@ -155,7 +155,7 @@ export default function AdminUsersPage() {
             onChange={(e) => setName(e.target.value)}
             required
           />
-          <button type="submit" className="btn btn-primary" disabled={creating || !email.trim() || !name.trim()}>
+          <button type="submit" className="btn btn-small btn-primary" disabled={creating || !email.trim() || !name.trim()}>
             {creating ? 'Creating…' : 'Create'}
           </button>
         </form>
@@ -166,7 +166,7 @@ export default function AdminUsersPage() {
                 <div className="password-label">One-time password (copy and share securely)</div>
                 <code className="password-code">{generatedPassword}</code>
               </div>
-              <button className="btn btn-secondary" onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button>
+              <button className="btn btn-small btn-secondary" onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button>
             </div>
           </ColoredCard>
         )}

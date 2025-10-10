@@ -59,7 +59,7 @@ if (loading) {
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h2>
           <p className="text-base text-gray-600 mb-2">You don&apos;t have permission to access the Chart Algorithm Manager.</p>
           <p className="text-sm text-gray-500 mb-6">Only administrators can manage chart configurations.</p>
-          <a href="/admin" className="btn btn-primary">← Back to Admin Dashboard</a>
+          <a href="/admin" className="btn btn-small btn-primary">← Back to Admin Dashboard</a>
         </ColoredCard>
         </div>
       </div>

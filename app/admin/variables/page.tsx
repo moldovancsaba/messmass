@@ -143,15 +143,15 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
       <h3 className="mt-0 mb-0">Groups</h3>
       <p className="text-gray-600 mt-025 mb-0">Use groups to control the Editor (clicker/manual) layout directly from here.</p>
       <div className="flex gap-2 mt-3">
-        <button className="btn btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
-        <button className="btn btn-warning" onClick={async () => {
+        <button className="btn btn-small btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
+        <button className="btn btn-small btn-warning" onClick={async () => {
           try { setLoading(true); setError(null)
             await fetch('/api/variables-groups', { method: 'DELETE' })
             await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
             await reload()
           } catch (e:any) { setError(e?.message || 'Failed to replace groups') } finally { setLoading(false) }
         }} disabled={loading}>Replace with default groups</button>
-        <button className="btn btn-primary" onClick={addGroup} disabled={loading}>Add Group</button>
+        <button className="btn btn-small btn-primary" onClick={addGroup} disabled={loading}>Add Group</button>
       </div>
       {error && <div className="text-error text-sm mt-2">{error}</div>}
 
@@ -194,7 +194,7 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
                     <option key={v.name} value={v.name}>{v.label}</option>
                   ))}
                 </select>
-                <button className="btn btn-primary" onClick={() => saveGroup(groups[idx])} disabled={loading}>Save Group</button>
+                <button className="btn btn-small btn-primary" onClick={() => saveGroup(groups[idx])} disabled={loading}>Save Group</button>
               </div>
             </div>
           </ColoredCard>
@@ -274,8 +274,8 @@ function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { vari
       </div>
 
       <div className="flex gap-2 justify-end mt-4">
-        <button className="btn btn-secondary" onClick={onCancel} disabled={saving}>Cancel</button>
-        <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+        <button className="btn btn-small btn-secondary" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button className="btn btn-small btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
       </div>
       {error && (
         <div className="text-error text-xs mt-2">{error}</div>
@@ -618,7 +618,7 @@ const [createForm, setCreateForm] = useState({
                 {/* Load more within this category if there are more */}
                 {categoryVariables.length > visibleCount && (
                   <div className="text-center">
-                    <button className="btn btn-secondary" onClick={() => setVisibleCount(prev => prev + 20)}>
+                    <button className="btn btn-small btn-secondary" onClick={() => setVisibleCount(prev => prev + 20)}>
                       Load 20 more
                     </button>
                   </div>
@@ -640,7 +640,7 @@ const [createForm, setCreateForm] = useState({
                   }
                 </p>
                 {!searchTerm && (
-                  <button className="btn btn-primary" onClick={handleCreateVariable}>
+                  <button className="btn btn-small btn-primary" onClick={handleCreateVariable}>
                     ➕ Create First Variable
                   </button>
                 )}

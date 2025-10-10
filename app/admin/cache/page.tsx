@@ -250,7 +250,7 @@ Then select "Cached images and files" and click Clear.`);
 
           <button
             onClick={clearBrowserCacheManual}
-            className="btn btn-secondary"
+            className="btn btn-small btn-secondary"
           >
             📋 Show Instructions
           </button>
