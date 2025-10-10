@@ -537,25 +537,29 @@ export default function VisualizationPage() {
                     </div>
                   </div>
                   
+                  {/* WHAT: Action buttons stacked vertically on right
+                   * WHY: Consistent with hashtags, categories, variables, design pages */}
                   <div className="block-actions">
                     <div className={`status-badge ${block.isActive ? 'status-badge-active' : 'status-badge-inactive'}`}>
                       {block.isActive ? 'Active' : 'Inactive'}
                     </div>
                     
-                    <div className="flex-row">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-2)', alignItems: 'flex-end' }}>
                       <button
                         onClick={() => setEditingBlock(block)}
                         className="btn btn-small btn-primary"
+                        style={{ minWidth: '80px' }}
                       >
                         ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDeleteBlock(block._id!)}
                         className="btn btn-small btn-danger"
+                        style={{ minWidth: '80px' }}
                       >
                         🗑️ Delete
                       </button>
-                      <span className="drag-handle" title="Drag to reorder">⇕️</span>
+                      <span className="drag-handle" title="Drag to reorder" style={{ cursor: 'grab', fontSize: '1.2rem' }}>⇕️</span>
                     </div>
                   </div>
                 </div>
