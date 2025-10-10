@@ -207,14 +207,14 @@ export default function HashtagMultiSelect({
             <button
               onClick={handleSelectAll}
               disabled={disabled || hashtags.length === 0}
-              className="btn btn-sm btn-secondary"
+              className="btn btn-small btn-secondary"
             >
               Select All
             </button>
             <button
               onClick={handleClearAll}
               disabled={disabled || selectedHashtags.length === 0}
-              className="btn btn-sm btn-danger"
+              className="btn btn-small btn-danger"
             >
               Clear All
             </button>

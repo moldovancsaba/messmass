@@ -140,7 +140,7 @@ export default function AdminLogin() {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="btn btn-small btn-secondary"
+            className="btn btn-smallall btn-secondary"
           >
             ← Back to MessMass
           </button>

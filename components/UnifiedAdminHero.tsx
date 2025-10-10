@@ -139,7 +139,7 @@ export default function UnifiedAdminHero({
           <div className="admin-badge">
             <div className="admin-hero-actions">
               {backLink && (
-                <a href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
+                <a href={backLink} className="btn btn-small btn-secondary admin-hero-back">
                   {backLabel}
                 </a>
               )}
@@ -150,7 +150,7 @@ export default function UnifiedAdminHero({
                   onClick={button.disabled ? undefined : button.onClick}
                   disabled={button.disabled}
                   title={button.title}
-                  className={`btn btn-sm ${variantClass(button.variant)}`}
+                  className={`btn btn-small ${variantClass(button.variant)}`}
                 >
                   {button.icon && <span className="mr-2">{button.icon}</span>}
                   {button.label}

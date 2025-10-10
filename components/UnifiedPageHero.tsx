@@ -164,7 +164,7 @@ export default function UnifiedPageHero({
             {onExportCSV && (
               <button 
                 onClick={onExportCSV}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-small"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -177,7 +177,7 @@ export default function UnifiedPageHero({
             {onExportPDF && (
               <button 
                 onClick={onExportPDF}
-                className="btn btn-secondary btn-sm"
+                className="btn btn-secondary btn-small"
                 style={{
                   display: 'flex',
                   alignItems: 'center',

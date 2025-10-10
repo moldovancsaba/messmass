@@ -170,7 +170,7 @@ export default function AdminPageHero({
             )}
             
             {backLink && (
-              <a href={backLink} className="btn btn-sm btn-secondary admin-hero-back">
+              <a href={backLink} className="btn btn-small btn-secondary admin-hero-back">
                 ← Back to Admin
               </a>
             )}
@@ -201,7 +201,7 @@ export default function AdminPageHero({
             {onAction && (
               <button 
                 onClick={onAction}
-                className="btn btn-secondary btn-sm"
+                className="btn btn-secondary btn-small"
               >
                 {actionLabel || 'Action'}
               </button>
@@ -209,7 +209,7 @@ export default function AdminPageHero({
             {onExportCSV && (
               <button 
                 onClick={onExportCSV}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-small"
               >
                 📊 Export CSV
               </button>

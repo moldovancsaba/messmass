@@ -276,7 +276,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             else if (statKey) decrementStat(statKey);
           }}
           disabled={value === 0}
-          className="btn btn-sm btn-danger stat-decrement"
+          className="btn btn-small btn-danger stat-decrement"
         >
           -1
         </button>
@@ -447,7 +447,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               {/* Mode Toggle Button */}
               <button
                 onClick={() => setEditMode(editMode === 'clicker' ? 'manual' : 'clicker')}
-                className={`btn btn-sm ${editMode === 'clicker' ? 'btn-primary' : 'btn-success'} btn-full mt-2`}
+                className={`btn btn-small ${editMode === 'clicker' ? 'btn-primary' : 'btn-success'} btn-full mt-2`}
               >
                 {editMode === 'clicker' ? '🖱️ Clicker' : '✏️ Manual'}
               </button>

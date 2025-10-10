@@ -260,7 +260,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
           <div>
             <button 
-              className="btn btn-sm btn-primary"
+              className="btn btn-small btn-primary"
               onClick={() => startEditing()}
             >
               ➕ Add New Chart
@@ -326,14 +326,14 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                         {config.order}
                         <div className="order-buttons">
                           <button
-                            className="btn btn-sm btn-secondary"
+                            className="btn btn-small btn-secondary"
                             onClick={() => moveConfiguration(config._id!, 'up')}
                             disabled={index === 0}
                           >
                             ↑
                           </button>
                           <button
-                            className="btn btn-sm btn-secondary"
+                            className="btn btn-small btn-secondary"
                             onClick={() => moveConfiguration(config._id!, 'down')}
                             disabled={index === configurations.length - 1}
                           >
@@ -358,7 +358,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     <td className="stat-number">{config.elements.length}</td>
                     <td className="actions-cell">
                       <button
-                        className={`btn btn-sm ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn btn-small ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => toggleConfigurationActive(config)}
                       >
                         {config.isActive ? '✅ Active' : '❌ Inactive'}
@@ -366,13 +366,13 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                     <td className="actions-cell">
                       <button 
-                        className="btn btn-sm btn-info"
+                        className="btn btn-small btn-info"
                         onClick={() => startEditing(config)}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-sm btn-danger"
+                        className="btn btn-small btn-danger"
                         onClick={() => deleteConfiguration(config._id!, config.title)}
                       >
                         🗑️ Delete
@@ -727,7 +727,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
                         />
                         <button
                           type="button"
-                  className="btn btn-sm btn-secondary variable-picker-btn"
+                  className="btn btn-small btn-secondary variable-picker-btn"
                           onClick={() => setShowVariablePicker({ elementIndex: index })}
                           title="Pick variables"
                         >
@@ -791,7 +791,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
             <div className="variable-picker-header">
               <h4>Select Variable for Element {showVariablePicker.elementIndex + 1}</h4>
               <button 
-                className="btn btn-sm btn-secondary"
+                className="btn btn-small btn-secondary"
                 onClick={() => setShowVariablePicker(null)}
               >
                 ✕

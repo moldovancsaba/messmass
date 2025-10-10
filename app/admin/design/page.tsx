@@ -570,10 +570,10 @@ export default function AdminDesignPage() {
                             className="style-color-circle" 
                             style={{background: style.titleBubble.backgroundColor}}
                           ></div>
-                          <button className="btn btn-small btn-primary" onClick={() => startEdit(style)}>✏️ Edit</button>
-                          <button className="btn btn-small btn-danger" onClick={() => deleteStyle(style._id)}>Delete</button>
-                          <button className="btn btn-small btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
-                          <button className="btn btn-small btn-success" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
+                          <button className="btn btn-smallall btn-primary" onClick={() => startEdit(style)}>✏️ Edit</button>
+                          <button className="btn btn-smallall btn-danger" onClick={() => deleteStyle(style._id)}>Delete</button>
+                          <button className="btn btn-smallall btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
+                          <button className="btn btn-smallall btn-success" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
                         </div>
                       </div>
 

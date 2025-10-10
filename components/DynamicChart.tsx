@@ -554,7 +554,7 @@ export const ChartContainer: React.FC<{
     <div style={{ position: 'relative', width: '100%' }}>
       {/* Download button positioned outside the container */}
       <button 
-        className="btn btn-sm btn-primary chart-download-btn"
+        className="btn btn-small btn-primary chart-download-btn"
         onClick={exportChartAsPNG}
         title="Download chart as PNG"
         style={{

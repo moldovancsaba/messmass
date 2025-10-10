@@ -200,8 +200,8 @@ export default function AdminUsersPage() {
                     <td className="font-mono">{u.createdAt}</td>
                     <td className="font-mono">{u.updatedAt}</td>
                     <td className="actions-cell">
-                      <button className="btn btn-small btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
-                      <button className="btn btn-small btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
+                      <button className="btn btn-smallall btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
+                      <button className="btn btn-smallall btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
