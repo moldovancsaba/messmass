@@ -780,24 +780,28 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="stat-number">{fans}</td>
                       <td className="stat-number">{attendees}</td>
                       <td className="actions-cell">
-                        {/* WHAT: Using centralized .btn classes from components.css
-                         * WHY: Consistent Edit/Delete button styling across ALL admin pages */}
-                        <button 
-                          className="btn btn-small btn-primary"
-                          onClick={() => {
-                            console.log('Edit Project button clicked for:', project.eventName);
-                            editProject(project);
-                          }}
-                          title="Edit project name and date"
-                        >
-                          ✏️ Edit Project
-                        </button>
-                        <button 
-                          className="btn btn-small btn-danger"
-                          onClick={() => deleteProject(project._id)}
-                        >
-                          🗑️ Delete
-                        </button>
+                        {/* WHAT: Buttons aligned right and stacked vertically
+                         * WHY: Consistent with other admin pages - right-aligned, vertical stack */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-2)', alignItems: 'flex-end' }}>
+                          <button 
+                            className="btn btn-small btn-primary"
+                            onClick={() => {
+                              console.log('Edit Project button clicked for:', project.eventName);
+                              editProject(project);
+                            }}
+                            title="Edit project name and date"
+                            style={{ minWidth: '80px' }}
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button 
+                            className="btn btn-small btn-danger"
+                            onClick={() => deleteProject(project._id)}
+                            style={{ minWidth: '80px' }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
