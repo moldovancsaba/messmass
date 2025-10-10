@@ -83,25 +83,27 @@ export default function AdminHero({
             </div>
           )}
 
-          {/* Back link (when provided) */}
+          {/* WHAT: Back link using centralized .btn classes from components.css
+           * WHY: Must match all other buttons across admin pages - single source of truth */}
           {backLink && (
-            <Link href={backLink} className={styles.backLink}>
+            <Link href={backLink} className="btn btn-small btn-secondary">
               ← Back to Admin
             </Link>
           )}
 
-          {/* Action buttons */}
+          {/* WHAT: Action buttons using centralized .btn classes from components.css
+           * WHY: Must match all other buttons across admin pages - no custom button CSS */}
           {actionButtons.length > 0 && (
             <div className={styles.actionButtons}>
               {actionButtons.map((btn, idx) => {
-                const variantClass = btn.variant ? styles[`btn${btn.variant.charAt(0).toUpperCase() + btn.variant.slice(1)}`] : styles.btnPrimary;
+                const variantClass = `btn-${btn.variant || 'primary'}`;
                 return (
                   <button
                     key={idx}
                     onClick={btn.onClick}
                     disabled={!!btn.disabled}
                     title={btn.title}
-                    className={`${styles.actionButton} ${variantClass} ${btn.disabled ? styles.btnDisabled : ''}`}
+                    className={`btn btn-small ${variantClass}`}
                   >
                     {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
                   </button>

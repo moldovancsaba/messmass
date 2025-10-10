@@ -643,50 +643,6 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                   return (
                     <tr key={project._id}>
                       <td className="project-name">
-                        {/* CSV export button placed before event name */}
-                        <button
-                          className="btn btn-small btn-secondary mr-2"
-                          title={`Download CSV for ${project.eventName}`}
-                          onClick={async () => {
-                            try {
-                              const timestamp = new Date().getTime();
-                              const id = project.viewSlug || project._id;
-                              const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
-                              const data = await res.json();
-                              if (!data.success || !data.project) {
-                                alert('Failed to fetch project stats for CSV export');
-                                return;
-                              }
-                              const p = data.project;
-                              const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-                              const rows: Array<[string, string | number]> = [];
-                              rows.push(['Event Name', p.eventName]);
-                              rows.push(['Event Date', p.eventDate]);
-                              rows.push(['Created At', p.createdAt]);
-                              rows.push(['Updated At', p.updatedAt]);
-                              Object.entries(p.stats || {}).forEach(([k, v]) => {
-                                rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
-                              });
-                              const header = ['Variable', 'Value'];
-                              const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
-                              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                              const link = document.createElement('a');
-                              const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
-                              const url = URL.createObjectURL(blob);
-                              link.setAttribute('href', url);
-                              link.setAttribute('download', `${base}_variables.csv`);
-                              link.style.visibility = 'hidden';
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
-                            } catch (e) {
-                              alert('Export failed');
-                            }
-                          }}
-                        >
-                          ⬇️ CSV
-                        </button>
-
                         {project.viewSlug ? (
                           <button 
                             onClick={() => {
@@ -755,34 +711,75 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             </div>
                           ) : null;
                         })()}
-                        
-                        <br />
-                        {project.editSlug ? (
-                          <small>
-                            <button 
-                              onClick={() => {
-                                setSharePageId(project.editSlug!);
-                                setSharePageType('edit');
-                                setSharePopupOpen(true);
-                              }}
-                              className="btn-link btn-link-success"
-                              title={`Share edit page for ${project.eventName} statistics`}
-                            >
-                              📝 Edit Statistics
-                            </button>
-                          </small>
-                        ) : (
-                          <small className="no-edit-link">Legacy Project - No Edit Link</small>
-                        )}
                       </td>
                       <td>{new Date(project.eventDate).toLocaleDateString()}</td>
                       <td className="stat-number">{images}</td>
                       <td className="stat-number">{fans}</td>
                       <td className="stat-number">{attendees}</td>
                       <td className="actions-cell">
-                        {/* WHAT: Buttons aligned right and stacked vertically
-                         * WHY: Consistent with other admin pages - using centralized action-buttons-container */}
+                        {/* WHAT: All action buttons grouped in Actions column
+                         * WHY: Consistent with other admin pages - all actions in one place on the right */}
                         <div className="action-buttons-container">
+                          {/* CSV Export Button */}
+                          <button
+                            className="btn btn-small btn-info action-button"
+                            title={`Download CSV for ${project.eventName}`}
+                            onClick={async () => {
+                              try {
+                                const timestamp = new Date().getTime();
+                                const id = project.viewSlug || project._id;
+                                const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
+                                const data = await res.json();
+                                if (!data.success || !data.project) {
+                                  alert('Failed to fetch project stats for CSV export');
+                                  return;
+                                }
+                                const p = data.project;
+                                const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+                                const rows: Array<[string, string | number]> = [];
+                                rows.push(['Event Name', p.eventName]);
+                                rows.push(['Event Date', p.eventDate]);
+                                rows.push(['Created At', p.createdAt]);
+                                rows.push(['Updated At', p.updatedAt]);
+                                Object.entries(p.stats || {}).forEach(([k, v]) => {
+                                  rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
+                                });
+                                const header = ['Variable', 'Value'];
+                                const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
+                                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                                const link = document.createElement('a');
+                                const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
+                                const url = URL.createObjectURL(blob);
+                                link.setAttribute('href', url);
+                                link.setAttribute('download', `${base}_variables.csv`);
+                                link.style.visibility = 'hidden';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              } catch (e) {
+                                alert('Export failed');
+                              }
+                            }}
+                          >
+                            ⬇️ CSV
+                          </button>
+                          
+                          {/* Edit Statistics Share Button */}
+                          {project.editSlug && (
+                            <button
+                              className="btn btn-small btn-success action-button"
+                              onClick={() => {
+                                setSharePageId(project.editSlug!);
+                                setSharePageType('edit');
+                                setSharePopupOpen(true);
+                              }}
+                              title={`Share edit page for ${project.eventName} statistics`}
+                            >
+                              📝 Edit Stats
+                            </button>
+                          )}
+                          
+                          {/* Edit Project Button */}
                           <button 
                             className="btn btn-small btn-primary action-button"
                             onClick={() => {
@@ -793,6 +790,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           >
                             ✏️ Edit
                           </button>
+                          
+                          {/* Delete Project Button */}
                           <button 
                             className="btn btn-small btn-danger action-button"
                             onClick={() => deleteProject(project._id)}

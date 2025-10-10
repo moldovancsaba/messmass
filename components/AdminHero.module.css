@@ -131,124 +131,14 @@
   color: var(--mm-error);
 }
 
-/* Back Link - MUST match centralized .btn size from components.css */
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-4);  /* Same as .btn-small */
-  font-size: var(--text-xs);  /* Same as .btn-small */
-  font-weight: var(--mm-font-weight-medium);
-  color: var(--mm-gray-700);
-  background: var(--mm-gray-100);
-  border: 1px solid var(--mm-border-color-light);
-  border-radius: var(--radius-lg);  /* Same as .btn-small */
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.backLink:hover {
-  background: var(--mm-gray-200);
-  border-color: var(--mm-border-color-default);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-sm);
-}
-
-/* Action Buttons */
+/* WHAT: Action buttons container - only layout, no button styling
+ * WHY: Buttons now use centralized .btn classes from components.css
+ * HOW: Simple flexbox layout for button positioning */
 .actionButtons {
   display: flex;
   align-items: center;
   gap: var(--mm-space-2);
   flex-wrap: wrap;
-}
-
-/* Action buttons - MUST match centralized .btn-small from components.css */
-.actionButton {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-4);  /* Same as .btn-small */
-  font-size: var(--text-xs);  /* Same as .btn-small */
-  font-weight: var(--mm-font-weight-medium);
-  border: 1px solid transparent;
-  border-radius: var(--radius-lg);  /* Same as .btn-small */
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  outline: none;
-}
-
-.actionButton:focus-visible {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-.btnPrimary {
-  background: var(--mm-color-primary-500);
-  color: var(--mm-white);
-  border-color: var(--mm-color-primary-500);
-}
-
-.btnPrimary:hover:not(:disabled) {
-  background: var(--mm-color-primary-600);
-  border-color: var(--mm-color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.btnSecondary {
-  background: var(--mm-color-secondary-500);
-  color: var(--mm-white);
-  border-color: var(--mm-color-secondary-500);
-}
-
-.btnSecondary:hover:not(:disabled) {
-  background: var(--mm-color-secondary-600);
-  border-color: var(--mm-color-secondary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.btnSuccess {
-  background: var(--mm-success);
-  color: var(--mm-white);
-  border-color: var(--mm-success);
-}
-
-.btnSuccess:hover:not(:disabled) {
-  background: #0e9f6d;
-  border-color: #0e9f6d;
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.btnDanger {
-  background: var(--mm-error);
-  color: var(--mm-white);
-  border-color: var(--mm-error);
-}
-
-.btnDanger:hover:not(:disabled) {
-  background: #dc2626;
-  border-color: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.btnInfo {
-  background: var(--mm-info);
-  color: var(--mm-white);
-  border-color: var(--mm-info);
-}
-
-.btnInfo:hover:not(:disabled) {
-  background: var(--mm-color-primary-600);
-  border-color: var(--mm-color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.btnDisabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 /* Responsive Adjustments */
@@ -276,15 +166,16 @@
     width: 100%;
   }
 
-  .backLink,
-  .actionButton {
-    justify-content: center;
-    width: 100%;
-  }
-
   .actionButtons {
     flex-direction: column;
     width: 100%;
+  }
+
+  /* WHAT: Full-width buttons on mobile
+   * WHY: Better touch targets and visual consistency on small screens */
+  .actionButtons .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .badgeContainer {
@@ -299,8 +190,7 @@
     border: 1px solid var(--mm-border-color-light);
   }
 
-  .actionButtons,
-  .backLink {
+  .actionButtons {
     display: none;
   }
 }
