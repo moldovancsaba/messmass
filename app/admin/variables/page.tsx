@@ -511,9 +511,9 @@ const [createForm, setCreateForm] = useState({
                       <ColoredCard key={variable.name} accentColor={getTypeColor(variable.type)} hoverable={false}>
                         {/* WHAT: Horizontal layout with content on left, action buttons on right
                          * WHY: Consistent with hashtags and categories pages - prevents layout shifts */}
-                        <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                        <div className={variablesStyles.variableHorizontalLayout}>
                           {/* Left side: Variable content */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
+                          <div className={variablesStyles.variableContentArea}>
                             <div className="variable-header">
                               <h3 className="variable-title">{variable.label}</h3>
                               <code className="variable-ref">{reference}</code>
@@ -556,20 +556,19 @@ const [createForm, setCreateForm] = useState({
                           </div>
 
                           {/* Right side: Action buttons stacked vertically */}
-                          {/* WHAT: Using centralized .btn classes from components.css
-                           * WHY: NO custom button styles - must use global design system */}
-                          <div className={variablesStyles.variableActions}>
+                          {/* WHAT: Using centralized button classes from components.css
+                           * WHY: NO inline styles - using global design system */}
+                          <div className="action-buttons-container">
                             <button 
-                              className="btn btn-small btn-primary" 
+                              className="btn btn-small btn-primary action-button" 
                               onClick={() => setActiveVar(variable)}
-                              style={{ minWidth: '80px' }}
                             >
                               ✏️ Edit
                             </button>
                             {/* WHAT: All variables can be deleted by admin
                              * WHY: Admin has full CRUD control - no artificial distinction between built-in vs custom */}
                             <button 
-                              className="btn btn-small btn-danger"
+                              className="btn btn-small btn-danger action-button"
                               onClick={async () => {
                                   if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
                                   try {
@@ -605,7 +604,6 @@ const [createForm, setCreateForm] = useState({
                                     alert('Failed to delete variable');
                                   }
                                 }}
-                                style={{ minWidth: '80px' }}
                               >
                                 🗑️ Delete
                               </button>

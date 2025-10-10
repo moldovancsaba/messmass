@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PageStyle } from '@/lib/pageStyleTypes';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import styles from './Design.module.css';
 
 export default function AdminDesignPage() {
   const router = useRouter();
@@ -565,21 +566,21 @@ export default function AdminDesignPage() {
                     <div key={style._id} className="style-item">
                       {/* WHAT: Horizontal layout with content on left, action buttons on right
                        * WHY: Consistent with hashtags, categories, variables pages */}
-                      <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className={styles.styleHorizontalLayout}>
+                        <div className={styles.styleContentArea}>
                           <h4 className="style-item-title">{style.name}</h4>
                           <div 
-                            className="style-color-circle" 
-                            style={{background: style.titleBubble.backgroundColor, display: 'inline-block', marginTop: 'var(--mm-space-2)'}}
+                            className={`style-color-circle ${styles.styleColorCircle}`}
+                            style={{background: style.titleBubble.backgroundColor}}
                           ></div>
                         </div>
                         
                         {/* Right side: Action buttons stacked vertically */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-2)', alignItems: 'flex-end' }}>
-                          <button className="btn btn-small btn-primary" onClick={() => startEdit(style)} style={{ minWidth: '80px' }}>✏️ Edit</button>
-                          <button className="btn btn-small btn-danger" onClick={() => deleteStyle(style._id)} style={{ minWidth: '80px' }}>🗑️ Delete</button>
-                          <button className="btn btn-small btn-primary" onClick={() => setAsGlobal(style._id)} title="Set as Global Default" style={{ minWidth: '80px' }}>Set as Global</button>
-                          <button className="btn btn-small btn-success" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style" style={{ minWidth: '80px' }}>Set as Admin</button>
+                        <div className="action-buttons-container">
+                          <button className="btn btn-small btn-primary action-button" onClick={() => startEdit(style)}>✏️ Edit</button>
+                          <button className="btn btn-small btn-danger action-button" onClick={() => deleteStyle(style._id)}>🗑️ Delete</button>
+                          <button className="btn btn-small btn-primary action-button" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
+                          <button className="btn btn-small btn-success action-button" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
                         </div>
                       </div>
 

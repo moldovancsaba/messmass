@@ -31,6 +31,23 @@
   height: 100%;
 }
 
+/* WHAT: Horizontal layout container for variable content and actions
+ * WHY: Replaces inline style for display:flex, justifyContent:space-between
+ * HOW: Flex row layout with space-between and consistent gap */
+.variableHorizontalLayout {
+  display: flex;
+  gap: var(--mm-space-4);
+  justify-content: space-between;
+}
+
+/* WHAT: Content area on left side with flexible width
+ * WHY: Replaces inline style for flex:1, minWidth:0
+ * HOW: Flex grow to fill available space, min-width prevents overflow */
+.variableContentArea {
+  flex: 1;
+  min-width: 0;
+}
+
 .variableCardFooter {
   display: flex;
   align-items: center;

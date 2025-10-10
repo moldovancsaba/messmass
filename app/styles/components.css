@@ -143,6 +143,30 @@
   box-shadow: var(--mm-shadow-lg);
 }
 
+/* WHAT: Unified action button container for consistent vertical stacking
+ * WHY: Centralizes layout pattern used across all admin pages (categories, hashtags, variables, design, projects, etc.)
+ *      Eliminates need for inline style="display:flex; flexDirection:column..." everywhere
+ *      Single source of truth for action button positioning */
+.action-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  align-items: flex-end;
+}
+
+/* WHAT: Minimum width for action buttons to maintain visual consistency
+ * WHY: Ensures Edit/Delete buttons have same width across all admin pages */
+.action-button {
+  min-width: 80px;
+}
+
+/* WHAT: Drag handle for reorderable items
+ * WHY: Provides visual indicator for drag-and-drop functionality */
+.drag-handle {
+  cursor: grab;
+  font-size: 1.2rem;
+}
+
 /* ========================================
    FORM SYSTEM
 ======================================== */

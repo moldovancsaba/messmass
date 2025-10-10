@@ -781,23 +781,21 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="stat-number">{attendees}</td>
                       <td className="actions-cell">
                         {/* WHAT: Buttons aligned right and stacked vertically
-                         * WHY: Consistent with other admin pages - right-aligned, vertical stack */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-2)', alignItems: 'flex-end' }}>
+                         * WHY: Consistent with other admin pages - using centralized action-buttons-container */}
+                        <div className="action-buttons-container">
                           <button 
-                            className="btn btn-small btn-primary"
+                            className="btn btn-small btn-primary action-button"
                             onClick={() => {
                               console.log('Edit Project button clicked for:', project.eventName);
                               editProject(project);
                             }}
                             title="Edit project name and date"
-                            style={{ minWidth: '80px' }}
                           >
                             ✏️ Edit
                           </button>
                           <button 
-                            className="btn btn-small btn-danger"
+                            className="btn btn-small btn-danger action-button"
                             onClick={() => deleteProject(project._id)}
-                            style={{ minWidth: '80px' }}
                           >
                             🗑️ Delete
                           </button>

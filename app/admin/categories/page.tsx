@@ -222,9 +222,9 @@ if (error) {
                 >
                   {/* WHAT: Horizontal layout with content on left, action buttons on right
                    * WHY: Prevents buttons from pushing content when they appear/disappear */}
-                  <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                  <div className={styles.categoryHorizontalLayout}>
                     {/* Left side: Category content */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className={styles.categoryContentArea}>
                       <div className={styles.categoryHeader}>
                         <div className={styles.categoryTitle}>
                           <h3 className={styles.categoryName}>{category.name}</h3>
@@ -239,20 +239,18 @@ if (error) {
                     </div>
 
                     {/* Right side: Action buttons stacked vertically */}
-                    {/* WHAT: Using centralized .btn classes from components.css
-                     * WHY: NO custom button styles - must use global design system */}
-                    <div className={styles.categoryActions}>
+                    {/* WHAT: Using centralized button classes from components.css
+                     * WHY: NO inline styles - using global design system */}
+                    <div className="action-buttons-container">
                       <button 
-                        className="btn btn-small btn-primary" 
+                        className="btn btn-small btn-primary action-button" 
                         onClick={() => handleEditCategory(category._id)}
-                        style={{ minWidth: '80px' }}
                       >
                         ✏️ Edit
                       </button>
                       <button 
-                        className="btn btn-small btn-danger" 
+                        className="btn btn-small btn-danger action-button" 
                         onClick={() => handleDeleteCategory(category._id, category.name)}
-                        style={{ minWidth: '80px' }}
                       >
                         🗑️ Delete
                       </button>

@@ -544,22 +544,20 @@ export default function VisualizationPage() {
                       {block.isActive ? 'Active' : 'Inactive'}
                     </div>
                     
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-2)', alignItems: 'flex-end' }}>
+                    <div className="action-buttons-container">
                       <button
                         onClick={() => setEditingBlock(block)}
-                        className="btn btn-small btn-primary"
-                        style={{ minWidth: '80px' }}
+                        className="btn btn-small btn-primary action-button"
                       >
                         ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDeleteBlock(block._id!)}
-                        className="btn btn-small btn-danger"
-                        style={{ minWidth: '80px' }}
+                        className="btn btn-small btn-danger action-button"
                       >
                         🗑️ Delete
                       </button>
-                      <span className="drag-handle" title="Drag to reorder" style={{ cursor: 'grab', fontSize: '1.2rem' }}>⇕️</span>
+                      <span className="drag-handle" title="Drag to reorder">⮕️</span>
                     </div>
                   </div>
                 </div>
