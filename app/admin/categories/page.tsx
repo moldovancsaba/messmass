@@ -239,9 +239,23 @@ if (error) {
                     </div>
 
                     {/* Right side: Action buttons stacked vertically */}
+                    {/* WHAT: Using centralized .btn classes from components.css
+                     * WHY: NO custom button styles - must use global design system */}
                     <div className={styles.categoryActions}>
-                      <button className={styles.editButton} onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
-                      <button className={styles.deleteButton} onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
+                      <button 
+                        className="btn btn-smallall btn-primary" 
+                        onClick={() => handleEditCategory(category._id)}
+                        style={{ minWidth: '80px' }}
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button 
+                        className="btn btn-smallall btn-danger" 
+                        onClick={() => handleDeleteCategory(category._id, category.name)}
+                        style={{ minWidth: '80px' }}
+                      >
+                        🗑️ Delete
+                      </button>
                     </div>
                   </div>
                 </ColoredCard>
@@ -347,14 +361,14 @@ if (error) {
                   setShowCreateForm(false);
                   resetForm();
                 }}
-                className="btn btn-sm btn-secondary"
+                className="btn btn-small btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCategory}
                 disabled={!formData.name.trim()}
-                className="btn btn-sm btn-primary"
+                className="btn btn-small btn-primary"
               >
                 🆕 Create Category
               </button>
@@ -441,14 +455,14 @@ if (error) {
                   setShowEditForm(false);
                   resetForm();
                 }}
-                className="btn btn-sm btn-secondary"
+                className="btn btn-small btn-secondary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateCategory}
                 disabled={!formData.name.trim()}
-                className="btn btn-sm btn-primary"
+                className="btn btn-small btn-primary"
               >
                 ✔️ Update Category
               </button>

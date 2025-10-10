@@ -181,9 +181,9 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
                 {g.variables.map(name => (
                   <div key={name} className="badge badge-secondary inline-flex items-center gap-2">
                     <span>{availableVariables.find(v=>v.name===name)?.label || name}</span>
-                    <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, -1)}>↑</button>
-                    <button className="btn btn-sm btn-info" onClick={() => moveVar(idx, name, +1)}>↓</button>
-                    <button className="btn btn-sm btn-danger" onClick={() => removeVarFromGroup(idx, name)}>✕</button>
+                    <button className="btn btn-small btn-info" onClick={() => moveVar(idx, name, -1)}>↑</button>
+                    <button className="btn btn-small btn-info" onClick={() => moveVar(idx, name, +1)}>↓</button>
+                    <button className="btn btn-small btn-danger" onClick={() => removeVarFromGroup(idx, name)}>✕</button>
                   </div>
                 ))}
               </div>
@@ -556,9 +556,11 @@ const [createForm, setCreateForm] = useState({
                           </div>
 
                           {/* Right side: Action buttons stacked vertically */}
+                          {/* WHAT: Using centralized .btn classes from components.css
+                           * WHY: NO custom button styles - must use global design system */}
                           <div className={variablesStyles.variableActions}>
                             <button 
-                              className="btn btn-sm btn-primary" 
+                              className="btn btn-smallall btn-primary" 
                               onClick={() => setActiveVar(variable)}
                               style={{ minWidth: '80px' }}
                             >
@@ -566,7 +568,7 @@ const [createForm, setCreateForm] = useState({
                             </button>
                             {variable.isCustom && (
                               <button 
-                                className="btn btn-sm btn-danger" 
+                                className="btn btn-smallall btn-danger"
                                 onClick={async () => {
                                   if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
                                   try {
@@ -747,9 +749,9 @@ const [createForm, setCreateForm] = useState({
               <div className="text-error mt-2">{createForm.error}</div>
             )}
             <div className="flex justify-end gap-2 mt-4">
-              <button className="btn btn-sm btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
+              <button className="btn btn-small btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
               <button
-                className="btn btn-sm btn-primary"
+                className="btn btn-small btn-primary"
                 onClick={async () => {
                   if (!createForm.name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(createForm.name)) {
                     setCreateForm({ ...createForm, error: 'Provide a valid camelCase name (letters/numbers/underscore)' })
@@ -924,8 +926,8 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
         ))}
       </div>
       <div className="flex justify-end gap-2 mt-4">
-        <button className="btn btn-sm btn-secondary" onClick={onClose}>Cancel</button>
-        <button className="btn btn-sm btn-primary" onClick={saveOrder}>Save order</button>
+        <button className="btn btn-small btn-secondary" onClick={onClose}>Cancel</button>
+        <button className="btn btn-small btn-primary" onClick={saveOrder}>Save order</button>
       </div>
     </div>
   )

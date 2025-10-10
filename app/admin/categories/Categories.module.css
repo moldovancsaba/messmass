@@ -115,56 +115,14 @@
 
 /* WHAT: Action buttons stacked vertically on right side of card
  * WHY: Consistent pattern across all admin card-based pages (hashtags, categories, variables)
- * HOW: flex-column layout with consistent gap, aligned to right edge */
+ * HOW: flex-column layout with consistent gap, aligned to right edge
+ * NOTE: Button styling is handled by centralized .btn classes in components.css */
 .categoryActions {
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-2);
   flex-shrink: 0;
   align-items: flex-end;
-}
-
-/* WHAT: Standardized action buttons for Edit and Delete
- * WHY: Consistent button styling across all admin pages
- * HOW: Small size, clear colors, hover effects */
-.editButton,
-.deleteButton {
-  padding: var(--mm-space-1) var(--mm-space-3);
-  font-size: var(--mm-font-size-xs);
-  font-weight: var(--mm-font-weight-medium);
-  border: 1px solid transparent;
-  border-radius: var(--mm-radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  min-width: 80px;
-  text-align: center;
-}
-
-.editButton {
-  background: var(--mm-color-primary-500);
-  color: var(--mm-white);
-  border-color: var(--mm-color-primary-500);
-}
-
-.editButton:hover {
-  background: var(--mm-color-primary-600);
-  border-color: var(--mm-color-primary-600);
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-sm);
-}
-
-.deleteButton {
-  background: var(--mm-error);
-  color: var(--mm-white);
-  border-color: var(--mm-error);
-}
-
-.deleteButton:hover {
-  background: #dc2626;
-  border-color: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: var(--mm-shadow-sm);
 }
 
 .categoryFooter {

@@ -375,25 +375,27 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                         </div>
                       </div>
 
-                      {/* Right side: Action buttons stacked vertically */}
-                      <div className={styles.hashtagCardActions}>
-                        <button
-                          className="btn btn-sm btn-primary"
-                          onClick={() => handleEdit(projectHashtag.hashtag)}
-                          style={{ minWidth: '80px' }}
-                        >
-                          ✏️ Edit
-                        </button>
-                        {hasCustomColor && (
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(projectHashtag.hashtag)}
-                            style={{ minWidth: '80px' }}
-                          >
-                            🗑️ Delete
-                          </button>
-                        )}
-                      </div>
+                          {/* Right side: Action buttons stacked vertically */}
+                          {/* WHAT: Using centralized .btn classes from components.css
+                           * WHY: NO custom button styles - must use global design system */}
+                          <div className={styles.hashtagCardActions}>
+                            <button
+                              className="btn btn-small btn-primary"
+                              onClick={() => handleEdit(projectHashtag.hashtag)}
+                              style={{ minWidth: '80px' }}
+                            >
+                              ✏️ Edit
+                            </button>
+                            {hasCustomColor && (
+                              <button
+                                className="btn btn-small btn-danger"
+                                onClick={() => handleDelete(projectHashtag.hashtag)}
+                                style={{ minWidth: '80px' }}
+                              >
+                                🗑️ Delete
+                              </button>
+                            )}
+                          </div>
                     </div>
                   </ColoredCard>
                 );
