@@ -2,14 +2,26 @@
 /* WHAT: Centralized styles for variables management page
    WHY: Replace <style jsx> with proper CSS module using design tokens */
 
-/* WHAT: Variables grid matching hashtags/categories layout
- * WHY: Consistent card width across all admin pages
- * HOW: Same responsive grid pattern as other pages */
+/* WHAT: Variables grid matching categories layout EXACTLY
+ * WHY: Equal card width in same row - no auto-fill that creates unequal widths
+ * HOW: Fixed responsive columns like categories: 1fr -> 2fr -> 3fr */
 .varsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   align-items: stretch;
   gap: var(--mm-space-4);
+}
+
+@media (min-width: 640px) {
+  .varsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .varsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* Variable card layout */
