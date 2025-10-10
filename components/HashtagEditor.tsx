@@ -354,39 +354,47 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                 
                 return (
                   <ColoredCard key={projectHashtag.hashtag} accentColor={displayColor} className={styles.hashtagCardContent}>
-                    <div className={styles.hashtagCardHeader}>
-                      <span 
-                        className={styles.hashtagBubble}
-                        style={{ backgroundColor: displayColor }}
-                      >
-                        #{projectHashtag.hashtag}
-                      </span>
-                      {!hasCustomColor && (
-                        <span className={styles.defaultBadge}>Default Color</span>
-                      )}
-                    </div>
-                    
-                    <div className={styles.hashtagCardDetails}>
-                      <div className={styles.hashtagStats}>
-                        <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
+                    <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                      {/* Left side: Content */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className={styles.hashtagCardHeader}>
+                          <span 
+                            className={styles.hashtagBubble}
+                            style={{ backgroundColor: displayColor }}
+                          >
+                            #{projectHashtag.hashtag}
+                          </span>
+                          {!hasCustomColor && (
+                            <span className={styles.defaultBadge}>Default Color</span>
+                          )}
+                        </div>
+                        
+                        <div className={styles.hashtagCardDetails}>
+                          <div className={styles.hashtagStats}>
+                            <small>Used in {projectHashtag.count} project{projectHashtag.count !== 1 ? 's' : ''}</small>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className={styles.hashtagCardActions}>
-                      <button
-                        className="btn btn-sm btn-info"
-                        onClick={() => handleEdit(projectHashtag.hashtag)}
-                      >
-                        ✏️ Edit Hashtag
-                      </button>
-                      {hasCustomColor && (
+
+                      {/* Right side: Action buttons stacked vertically */}
+                      <div className={styles.hashtagCardActions}>
                         <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(projectHashtag.hashtag)}
+                          className="btn btn-sm btn-primary"
+                          onClick={() => handleEdit(projectHashtag.hashtag)}
+                          style={{ minWidth: '80px' }}
                         >
-                          🗑️ Delete
+                          ✏️ Edit
                         </button>
-                      )}
+                        {hasCustomColor && (
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDelete(projectHashtag.hashtag)}
+                            style={{ minWidth: '80px' }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </ColoredCard>
                 );

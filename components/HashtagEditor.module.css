@@ -188,10 +188,15 @@
   font-size: var(--mm-font-size-xs);
 }
 
+/* WHAT: Standardized action buttons stacked vertically on right
+ * WHY: Consistent with categories and variables pages
+ * HOW: flex-column layout with buttons aligned to right edge */
 .hashtagCardActions {
   display: flex;
+  flex-direction: column;
   gap: var(--mm-space-2);
-  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-top: auto;
 }
 
 .defaultBadge {

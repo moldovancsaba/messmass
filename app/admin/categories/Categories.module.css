@@ -113,12 +113,20 @@
   white-space: nowrap;
 }
 
+/* WHAT: Action buttons stacked vertically on right side of card
+ * WHY: Consistent pattern across all admin card-based pages (hashtags, categories, variables)
+ * HOW: flex-column layout with consistent gap, aligned to right edge */
 .categoryActions {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   gap: var(--mm-space-2);
   flex-shrink: 0;
+  align-items: flex-end;
 }
 
+/* WHAT: Standardized action buttons for Edit and Delete
+ * WHY: Consistent button styling across all admin pages
+ * HOW: Small size, clear colors, hover effects */
 .editButton,
 .deleteButton {
   padding: var(--mm-space-1) var(--mm-space-3);
@@ -129,6 +137,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
 }
 
 .editButton {

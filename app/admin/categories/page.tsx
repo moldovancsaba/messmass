@@ -220,21 +220,29 @@ if (error) {
                   accentColor={category.color}
                   className={styles.categoryContent}
                 >
-                  {/* Category Header */}
-                  <div className={styles.categoryHeader}>
-                    <div className={styles.categoryTitle}>
-                      <h3 className={styles.categoryName}>{category.name}</h3>
+                  {/* WHAT: Horizontal layout with content on left, action buttons on right
+                   * WHY: Prevents buttons from pushing content when they appear/disappear */}
+                  <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                    {/* Left side: Category content */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className={styles.categoryHeader}>
+                        <div className={styles.categoryTitle}>
+                          <h3 className={styles.categoryName}>{category.name}</h3>
+                        </div>
+                      </div>
+
+                      {/* Category Info */}
+                      <div className={styles.categoryFooter}>
+                        <span>Order: {category.order}</span>
+                        <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
+
+                    {/* Right side: Action buttons stacked vertically */}
                     <div className={styles.categoryActions}>
                       <button className={styles.editButton} onClick={() => handleEditCategory(category._id)}>✏️ Edit</button>
                       <button className={styles.deleteButton} onClick={() => handleDeleteCategory(category._id, category.name)}>🗑️ Delete</button>
                     </div>
-                  </div>
-
-                  {/* Category Info */}
-                  <div className={styles.categoryFooter}>
-                    <span>Order: {category.order}</span>
-                    <span>Updated {new Date(category.updatedAt).toLocaleDateString()}</span>
                   </div>
                 </ColoredCard>
               ))}
