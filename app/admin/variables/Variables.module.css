@@ -2,7 +2,9 @@
 /* WHAT: Centralized styles for variables management page
    WHY: Replace <style jsx> with proper CSS module using design tokens */
 
-/* Variable cards grid */
+/* WHAT: Variables grid matching hashtags/categories layout
+ * WHY: Consistent card width across all admin pages
+ * HOW: Same responsive grid pattern as other pages */
 .varsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -22,6 +24,17 @@
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
+}
+
+/* WHAT: Action buttons stacked vertically on right side of card
+ * WHY: Consistent pattern across all admin card-based pages (hashtags, categories, variables)
+ * HOW: flex-column layout with consistent gap, aligned to right edge */
+.variableActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  flex-shrink: 0;
+  align-items: flex-end;
 }
 
 /* Variable type badge */

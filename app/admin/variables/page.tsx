@@ -509,50 +509,106 @@ const [createForm, setCreateForm] = useState({
                       : variable.name
                     return (
                       <ColoredCard key={variable.name} accentColor={getTypeColor(variable.type)} hoverable={false}>
-                        {/* WHAT: Enforce exact line order per request; WHY: Consistent, scannable, uniform cards. */}
-                        <div className="variable-header">
-                          <h3 className="variable-title">{variable.label}</h3>
-                          <code className="variable-ref">{reference}</code>
+                        {/* WHAT: Horizontal layout with content on left, action buttons on right
+                         * WHY: Consistent with hashtags and categories pages - prevents layout shifts */}
+                        <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                          {/* Left side: Variable content */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className="variable-header">
+                              <h3 className="variable-title">{variable.label}</h3>
+                              <code className="variable-ref">{reference}</code>
+                            </div>
+
+                            {/* Flags Controls (each on its own line) */}
+                            <div className="variable-flags">
+                              <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!variable.flags?.visibleInClicker}
+                                  disabled={variable.derived || variable.type === 'text'}
+                                  onChange={(e) => {
+                                    const next = { ...variable.flags, visibleInClicker: e.target.checked }
+                                    persistFlags(variable.name, next)
+                                    setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                    setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                  }}
+                                />
+                                <span>Visible in Clicker</span>
+                              </label>
+                              <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!variable.flags?.editableInManual}
+                                  disabled={variable.derived || variable.type === 'text'}
+                                  onChange={(e) => {
+                                    const next = { ...variable.flags, editableInManual: e.target.checked }
+                                    persistFlags(variable.name, next)
+                                    setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                    setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
+                                  }}
+                                />
+                                <span>Editable in Manual</span>
+                              </label>
+                            </div>
+
+                            {/* TYPE at bottom */}
+                            <div className="variable-type-line">{variable.type.toUpperCase()}</div>
+                          </div>
+
+                          {/* Right side: Action buttons stacked vertically */}
+                          <div className={variablesStyles.variableActions}>
+                            <button 
+                              className="btn btn-sm btn-primary" 
+                              onClick={() => setActiveVar(variable)}
+                              style={{ minWidth: '80px' }}
+                            >
+                              ✏️ Edit
+                            </button>
+                            {variable.isCustom && (
+                              <button 
+                                className="btn btn-sm btn-danger" 
+                                onClick={async () => {
+                                  if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
+                                  try {
+                                    const res = await fetch(`/api/variables-config?name=${encodeURIComponent(variable.name)}`, { method: 'DELETE' });
+                                    const data = await res.json();
+                                    if (data?.success) {
+                                      // Reload variables
+                                      const reload = await fetch('/api/variables-config', { cache: 'no-store' });
+                                      const rdata = await reload.json();
+                                      if (rdata?.success && Array.isArray(rdata.variables)) {
+                                        const vars: Variable[] = rdata.variables.map((v: any) => ({
+                                          name: v.name,
+                                          label: v.label,
+                                          type: v.type || 'count',
+                                          category: v.category,
+                                          description: v.derived && v.formula ? v.formula : v.description || undefined,
+                                          derived: !!v.derived,
+                                          formula: v.formula,
+                                          icon: v.type === 'text' ? '🏷️' : undefined,
+                                          flags: v.flags || { visibleInClicker: false, editableInManual: false },
+                                          clickerOrder: typeof v.clickerOrder === 'number' ? v.clickerOrder : undefined,
+                                          manualOrder: typeof v.manualOrder === 'number' ? v.manualOrder : undefined,
+                                          isCustom: !!v.isCustom,
+                                        }));
+                                        setVariables(vars);
+                                        setFilteredVariables(vars);
+                                      }
+                                    } else {
+                                      alert(data?.error || 'Failed to delete variable');
+                                    }
+                                  } catch (e) {
+                                    console.error('Failed to delete variable', e);
+                                    alert('Failed to delete variable');
+                                  }
+                                }}
+                                style={{ minWidth: '80px' }}
+                              >
+                                🗑️ Delete
+                              </button>
+                            )}
+                          </div>
                         </div>
-
-                        <div className="variable-details">
-                        <button className="btn btn-sm btn-secondary btn-full" onClick={() => setActiveVar(variable)}>edit</button>
-                        </div>
-
-                        {/* Flags Controls (each on its own line) */}
-                        <div className="variable-flags">
-                          <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
-                            <input
-                              type="checkbox"
-                              checked={!!variable.flags?.visibleInClicker}
-                              disabled={variable.derived || variable.type === 'text'}
-                              onChange={(e) => {
-                                const next = { ...variable.flags, visibleInClicker: e.target.checked }
-                                persistFlags(variable.name, next)
-                                setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                              }}
-                            />
-                            <span>Visible in Clicker</span>
-                          </label>
-                          <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
-                            <input
-                              type="checkbox"
-                              checked={!!variable.flags?.editableInManual}
-                              disabled={variable.derived || variable.type === 'text'}
-                              onChange={(e) => {
-                                const next = { ...variable.flags, editableInManual: e.target.checked }
-                                persistFlags(variable.name, next)
-                                setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                              }}
-                            />
-                            <span>Editable in Manual</span>
-                          </label>
-        </div>
-
-        {/* Final line: TYPE */}
-        <div className="variable-type-line">{variable.type.toUpperCase()}</div>
                       </ColoredCard>
                     )
                   })}
