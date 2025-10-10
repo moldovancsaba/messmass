@@ -131,17 +131,17 @@
   color: var(--mm-error);
 }
 
-/* Back Link */
+/* Back Link - MUST match centralized .btn size from components.css */
 .backLink {
   display: inline-flex;
   align-items: center;
-  padding: var(--mm-space-2) var(--mm-space-4);
-  font-size: var(--mm-font-size-sm);
+  padding: var(--space-2) var(--space-4);  /* Same as .btn-small */
+  font-size: var(--text-xs);  /* Same as .btn-small */
   font-weight: var(--mm-font-weight-medium);
   color: var(--mm-gray-700);
   background: var(--mm-gray-100);
   border: 1px solid var(--mm-border-color-light);
-  border-radius: var(--mm-radius-md);
+  border-radius: var(--radius-lg);  /* Same as .btn-small */
   text-decoration: none;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -162,14 +162,15 @@
   flex-wrap: wrap;
 }
 
+/* Action buttons - MUST match centralized .btn-small from components.css */
 .actionButton {
   display: inline-flex;
   align-items: center;
-  padding: var(--mm-space-2) var(--mm-space-4);
-  font-size: var(--mm-font-size-sm);
+  padding: var(--space-2) var(--space-4);  /* Same as .btn-small */
+  font-size: var(--text-xs);  /* Same as .btn-small */
   font-weight: var(--mm-font-weight-medium);
   border: 1px solid transparent;
-  border-radius: var(--mm-radius-md);
+  border-radius: var(--radius-lg);  /* Same as .btn-small */
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
