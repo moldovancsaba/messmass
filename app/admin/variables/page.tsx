@@ -566,10 +566,11 @@ const [createForm, setCreateForm] = useState({
                             >
                               ✏️ Edit
                             </button>
-                            {variable.isCustom && (
-                              <button 
-                                className="btn btn-small btn-danger"
-                                onClick={async () => {
+                            {/* WHAT: All variables can be deleted by admin
+                             * WHY: Admin has full CRUD control - no artificial distinction between built-in vs custom */}
+                            <button 
+                              className="btn btn-small btn-danger"
+                              onClick={async () => {
                                   if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
                                   try {
                                     const res = await fetch(`/api/variables-config?name=${encodeURIComponent(variable.name)}`, { method: 'DELETE' });
@@ -608,7 +609,6 @@ const [createForm, setCreateForm] = useState({
                               >
                                 🗑️ Delete
                               </button>
-                            )}
                           </div>
                         </div>
                       </ColoredCard>
