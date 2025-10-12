@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
+import { createNotification, getCurrentUser } from '@/lib/notificationUtils';
 
 // Import hashtag category types for categorized hashtags support
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
@@ -415,6 +416,22 @@ export async function POST(request: NextRequest) {
     const result = await collection.insertOne(project);
     console.log('✅ Project created with ID:', result.insertedId);
 
+    // WHAT: Log notification for project creation
+    // WHY: Notify all users of new project activity
+    try {
+      const user = await getCurrentUser();
+      await createNotification(db, {
+        activityType: 'create',
+        user,
+        projectId: result.insertedId.toString(),
+        projectName: eventName,
+        projectSlug: viewSlug
+      });
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError);
+      // Don't fail the request if notification fails
+    }
+
     return NextResponse.json({
       success: true,
       projectId: result.insertedId.toString(),
@@ -581,6 +598,22 @@ export async function PUT(request: NextRequest) {
     );
 
     console.log('✅ Project updated successfully');
+    
+    // WHAT: Log notification for project edit
+    // WHY: Notify all users of project changes
+    try {
+      const user = await getCurrentUser();
+      await createNotification(db, {
+        activityType: 'edit',
+        user,
+        projectId: projectId,
+        projectName: eventName,
+        projectSlug: currentProject.viewSlug || null
+      });
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError);
+      // Don't fail the request if notification fails
+    }
     
     // Clean up unused hashtags
     await cleanupUnusedHashtags(db);

@@ -98,6 +98,24 @@ export async function PUT(
     const updatedProject = await collection.findOne({ _id: new ObjectId(id) })
     console.log('✅ Project updated successfully')
     
+    // WHAT: Log notification for stats update
+    // WHY: Notify all users when project statistics are modified
+    try {
+      const { getCurrentUser, createNotification } = await import('@/lib/notificationUtils');
+      const user = await getCurrentUser();
+      
+      await createNotification(db, {
+        activityType: 'edit-stats',
+        user,
+        projectId: id,
+        projectName: existingProject.eventName || 'Unknown Project',
+        projectSlug: existingProject.viewSlug || null
+      });
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError);
+      // Don't fail the request if notification fails
+    }
+    
     return NextResponse.json({
       success: true,
       project: updatedProject
