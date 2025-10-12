@@ -345,7 +345,7 @@ function HashtagFilterPageContent() {
   return (
     <div className="page-container">
       <AdminHero
-        title="🔍 Multi-Hashtag Filter"
+        title="🔍 Hashtag Filter"
         subtitle="Filter projects by multiple hashtags and generate shareable URLs"
         backLink="/admin"
         showSearch

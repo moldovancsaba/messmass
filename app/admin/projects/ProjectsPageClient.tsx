@@ -545,7 +545,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       {/* WHAT: AdminHero standardization for consistent header
           WHY: Unified design system across all admin pages */}
       <AdminHero
-        title="📊 Project Management"
+        title="🍿 Manage Projects"
         subtitle="Manage all event projects, statistics, and sharing options"
         backLink="/admin"
         showSearch

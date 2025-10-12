@@ -193,7 +193,7 @@ if (error) {
     <div className="page-container">
       {/* Header */}
       <AdminHero
-        title="📁 Categories"
+        title="🌍 Category Manager"
         subtitle="Manage hashtag categories with colors and display order"
         backLink="/admin"
         showSearch

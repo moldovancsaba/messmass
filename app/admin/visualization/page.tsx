@@ -305,7 +305,7 @@ export default function VisualizationPage() {
   return (
     <div className="page-container">
       <AdminHero
-        title="📊 Data Visualization Manager"
+        title="👁️ Visualization Manager"
         subtitle="Manage data visualization blocks and chart layouts"
         backLink="/admin"
         badges={[

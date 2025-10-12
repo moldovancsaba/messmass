@@ -439,7 +439,7 @@ const [createForm, setCreateForm] = useState({
   return (
     <div className="page-container">
       <AdminHero
-        title="📊 Variables"
+        title="🔢 Variable Manager"
         subtitle="Manage data variables and metrics"
         backLink="/admin"
         showSearch
