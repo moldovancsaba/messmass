@@ -22,6 +22,12 @@
   transition: margin-left 0.3s ease;
 }
 
+/* WHAT: Collapsed state - adjust margin when sidebar collapses to 80px
+ * WHY: Main content expands to fill available screen width */
+.mainWrapper.collapsed {
+  margin-left: 80px;
+}
+
 .mainContent {
   /* What: Main content area
      Why: Grows to fill space, proper spacing */

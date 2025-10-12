@@ -2,6 +2,7 @@ import React from 'react';
 import { ObjectId } from 'mongodb';
 import AdminLayout from '@/components/AdminLayout';
 import { getAdminUser } from '@/lib/auth';
+import { SidebarProvider } from '@/contexts/SidebarContext';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -57,18 +58,20 @@ export default async function AdminLayoutWrapper({ children }: { children: React
     .admin-header { background: var(--header-bg) !important; }
   ` : '';
 
-  /* What: Render new AdminLayout with sidebar, header, and content
-     Why: Consistent TailAdmin V2 layout across all admin pages */
+  /* What: Render new AdminLayout with sidebar, header, and content wrapped in SidebarProvider
+     Why: Consistent TailAdmin V2 layout across all admin pages with shared sidebar state */
   return (
     <>
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-      <AdminLayout user={user ? {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      } : undefined}>
-        {children}
-      </AdminLayout>
+      <SidebarProvider>
+        <AdminLayout user={user ? {
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        } : undefined}>
+          {children}
+        </AdminLayout>
+      </SidebarProvider>
     </>
   );
 }

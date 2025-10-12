@@ -1,5 +1,69 @@
 # MessMass Release Notes
 
+## [v5.49.1] — 2025-10-12T18:24:00.000Z
+
+### Fix — Sidebar Collapse/Expand Content Resize
+
+**What Changed**
+- Main content area now properly resizes when sidebar is collapsed/expanded
+- Content expands to fill available screen width when sidebar is hidden
+- Smooth 0.3s CSS transition for resize animation
+
+**Problem Fixed**
+- Previously: Sidebar would collapse but main content kept same margin, wasting screen space
+- Now: Main content dynamically adjusts margin based on sidebar width
+  - Expanded sidebar (280px): content margin-left is 280px
+  - Collapsed sidebar (80px): content margin-left is 80px
+
+**Technical Implementation**
+1. **Created SidebarContext** (`contexts/SidebarContext.tsx`):
+   - React Context to share sidebar state between components
+   - Manages `isCollapsed` and `isMobileOpen` states
+   - Provides `useSidebar()` hook for consuming components
+
+2. **Updated Sidebar Component**:
+   - Replaced local state with shared context state
+   - Sidebar collapse state now accessible throughout admin layout
+
+3. **Updated AdminLayout**:
+   - Consumes sidebar context to read collapse state
+   - Applies `.collapsed` CSS class to `mainWrapper` when sidebar is collapsed
+   - Dynamic margin adjustment via CSS
+
+4. **Added CSS State**:
+   - `.mainWrapper.collapsed { margin-left: 80px; }`
+   - Smooth transition already in place: `transition: margin-left 0.3s ease;`
+
+5. **Wrapped with Provider**:
+   - AdminLayout wrapped in `<SidebarProvider>` in `app/admin/layout.tsx`
+   - Ensures context is available to all admin pages
+
+**Why This Change**
+- Better space utilization on all screen sizes
+- Improves UX — users can maximize content area when needed
+- Maintains existing collapse functionality while fixing layout behavior
+- Follows established pattern of responsive margin adjustments
+
+**Files Modified**: 5
+- `contexts/SidebarContext.tsx`: **CREATED** (46 lines) - Context provider for sidebar state
+- `components/Sidebar.tsx`: Use shared context instead of local state
+- `components/AdminLayout.tsx`: Consume context, apply dynamic class
+- `components/AdminLayout.module.css`: Added `.mainWrapper.collapsed` rule
+- `app/admin/layout.tsx`: Wrap AdminLayout with SidebarProvider
+
+**Lines Changed**: ~100 lines (46 new context file, ~54 modifications)
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (3.0s compile time)
+- ✅ 42 static pages generated successfully
+- ✅ Sidebar collapse/expand transitions smoothly
+- ✅ Content margin adjusts correctly (280px → 80px)
+
+**Impact**: Functional enhancement — sidebar collapse now properly resizes content area
+
+---
+
 ## [v5.49.0] — 2025-10-12T18:02:00.000Z
 
 ### Feature — Optional Recipient Field in Share Dialog

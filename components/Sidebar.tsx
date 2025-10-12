@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 /* What: Navigation item structure
    Why: Type-safe navigation configuration with icons and paths */
@@ -30,8 +31,9 @@ interface NavSection {
    No breadcrumbs (explicitly prohibited by policy) */
 export default function Sidebar() {
   const pathname = usePathname();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  /* WHAT: Use shared sidebar context instead of local state
+   * WHY: AdminLayout needs to know collapse state to adjust main content margin */
+  const { isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen } = useSidebar();
   
   /* What: Navigation structure organized by functional sections
      Why: Logical grouping makes it easier to find admin features */
