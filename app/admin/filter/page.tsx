@@ -362,11 +362,12 @@ function HashtagFilterPageContent() {
             {' '}• {project.dateRange.formatted}
           </div>
           <div className="flex flex-wrap gap-2">
+            {/* WHAT: Display selected filter hashtags using centralized ColoredHashtagBubble component
+             * WHY: No inline style overrides - all styling controlled by CSS modules for consistency */}
             {selectedHashtags.map((hashtag) => (
               <ColoredHashtagBubble 
                 key={hashtag}
                 hashtag={hashtag}
-                customStyle={{ fontSize: '1.125rem', fontWeight: '600' }}
               />
             ))}
           </div>

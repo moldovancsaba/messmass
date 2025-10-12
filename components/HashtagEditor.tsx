@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
 import ColoredCard from '@/components/ColoredCard';
+import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import styles from './HashtagEditor.module.css';
 
 interface HashtagColor {
@@ -290,14 +291,14 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
             </div>
 
             {/* Preview */}
+            {/* WHAT: Use ColoredHashtagBubble component for preview consistency
+             * WHY: All hashtag bubbles should use the same centralized component */}
             <div className={styles.hashtagPreview}>
               <label className={styles.formLabel}>Preview:</label>
-              <span 
-                className={`${styles.hashtagBubble} preview`}
-                style={{ backgroundColor: formData.color }}
-              >
-                #{formData.name || 'example'}
-              </span>
+              <ColoredHashtagBubble 
+                hashtag={formData.name || 'example'}
+                categoryColor={formData.color}
+              />
             </div>
 
             <div className={styles.formActions}>
@@ -357,15 +358,13 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                     <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
                       {/* Left side: Content */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        {/* WHAT: Hashtag display with usage count
-                         * WHY: Removed "Default Color" badge - not needed on cards, information is implicit */}
+                        {/* WHAT: Hashtag display with usage count using ColoredHashtagBubble component
+                         * WHY: Centralized component ensures consistent styling across all admin pages */}
                         <div className={styles.hashtagCardHeader}>
-                          <span 
-                            className={styles.hashtagBubble}
-                            style={{ backgroundColor: displayColor }}
-                          >
-                            #{projectHashtag.hashtag}
-                          </span>
+                          <ColoredHashtagBubble 
+                            hashtag={projectHashtag.hashtag}
+                            categoryColor={displayColor}
+                          />
                         </div>
                         
                         <div className={styles.hashtagCardDetails}>
