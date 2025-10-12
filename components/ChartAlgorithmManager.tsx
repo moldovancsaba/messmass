@@ -356,27 +356,31 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                       </span>
                     </td>
                     <td className="stat-number">{config.elements.length}</td>
-                    <td className="actions-cell">
+                    <td>
                       <button
-                        className={`btn btn-small ${config.isActive ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn btn-small ${config.isActive ? 'btn-success' : 'btn-secondary'}`}
                         onClick={() => toggleConfigurationActive(config)}
                       >
                         {config.isActive ? '✅ Active' : '❌ Inactive'}
                       </button>
                     </td>
                     <td className="actions-cell">
-                      <button 
-                        className="btn btn-small btn-info"
-                        onClick={() => startEditing(config)}
-                      >
-                        ✏️ Edit
-                      </button>
-                      <button 
-                        className="btn btn-small btn-danger"
-                        onClick={() => deleteConfiguration(config._id!, config.title)}
-                      >
-                        🗑️ Delete
-                      </button>
+                      {/* WHAT: All action buttons vertically stacked using centralized container
+                       * WHY: Consistent with all other admin pages - buttons on right, stacked vertically */}
+                      <div className="action-buttons-container">
+                        <button 
+                          className="btn btn-small btn-primary action-button"
+                          onClick={() => startEditing(config)}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button 
+                          className="btn btn-small btn-danger action-button"
+                          onClick={() => deleteConfiguration(config._id!, config.title)}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -424,8 +428,6 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
         .chart-type-badge.pie { background: rgba(139, 92, 246, 0.1); color: var(--color-chart-purple); }
         .chart-type-badge.bar { background: rgba(59, 130, 246, 0.1); color: var(--color-chart-blue); }
         .chart-type-badge.kpi { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
-
-        .actions-cell { display: flex; gap: 0.5rem; align-items: center; }
       `}</style>
     </div>
   );
