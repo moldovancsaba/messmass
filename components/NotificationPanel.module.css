@@ -166,16 +166,73 @@
   color: var(--mm-gray-500);
 }
 
+.notificationActions {
+  /* WHAT: Container for notification actions (unread dot + archive button)
+   * WHY: Stack actions vertically on the right side */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
+  flex-shrink: 0;
+}
+
 .unreadDot {
   /* WHAT: Unread indicator dot
    * WHY: Visual marker for unread notifications */
-  position: absolute;
-  top: var(--mm-space-4);
-  right: var(--mm-space-4);
   width: 8px;
   height: 8px;
   background: var(--mm-color-primary-600);
   border-radius: var(--mm-radius-full);
+}
+
+.archiveButton {
+  /* WHAT: Archive (×) button to remove notification from list
+   * WHY: Allow users to dismiss notifications they don't want to see */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: var(--mm-radius-md);
+  color: var(--mm-gray-400);
+  font-size: 20px;
+  font-weight: var(--mm-font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  line-height: 1;
+}
+
+.archiveButton:hover {
+  background: var(--mm-gray-200);
+  color: var(--mm-gray-700);
+}
+
+.archiveButton:active {
+  transform: scale(0.9);
+}
+
+.newIndicator {
+  /* WHAT: Animated dot showing new notifications arrived
+   * WHY: Visual feedback for real-time notification updates */
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--mm-error);
+  font-size: 20px;
+  line-height: 1;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
 }
 
 /* WHAT: Loading state

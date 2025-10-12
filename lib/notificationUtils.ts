@@ -33,8 +33,8 @@ export async function createNotification(db: Db, params: CreateNotificationParam
       return false;
     }
 
-    // WHAT: Create notification document with ISO 8601 timestamp
-    // WHY: Store activity for display in notification panel
+    // WHAT: Create notification document with ISO 8601 timestamp and empty arrays
+    // WHY: Multi-user support - store activity visible to all users
     const timestamp = new Date().toISOString();
     const notification = {
       activityType: params.activityType,
@@ -43,7 +43,8 @@ export async function createNotification(db: Db, params: CreateNotificationParam
       projectName: params.projectName,
       projectSlug: params.projectSlug || null,
       timestamp,
-      read: false,
+      readBy: [],           // Array of user IDs who have read this notification
+      archivedBy: [],       // Array of user IDs who have archived this notification
       createdAt: timestamp
     };
 

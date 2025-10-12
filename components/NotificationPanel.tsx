@@ -17,7 +17,8 @@ interface Notification {
   projectName: string;
   projectSlug?: string | null;
   timestamp: string;
-  read: boolean;
+  readBy: string[];        // Array of user IDs who have read this
+  archivedBy: string[];    // Array of user IDs who have archived this
 }
 
 interface NotificationPanelProps {
@@ -29,6 +30,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
+  const [showNewIndicator, setShowNewIndicator] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // WHAT: Fetch notifications when panel opens
@@ -54,16 +58,26 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     }
   }, [isOpen, onClose]);
 
-  // WHAT: Fetch notifications from API
-  // WHY: Display recent activities in the panel
+  // WHAT: Fetch notifications from API with exclude archived filter
+  // WHY: Display recent activities in the panel, hide archived items
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/notifications?limit=20');
+      const response = await fetch('/api/notifications?limit=20&excludeArchived=true');
       const data = await response.json();
 
       if (data.success) {
         setNotifications(data.notifications);
+        setCurrentUserId(data.currentUserId);
+        
+        // WHAT: Detect new notifications by comparing unread count
+        // WHY: Show visual indicator when new notifications arrive
+        if (data.unreadCount > previousUnreadCount && previousUnreadCount > 0) {
+          setShowNewIndicator(true);
+          setTimeout(() => setShowNewIndicator(false), 3000);
+        }
+        
+        setPreviousUnreadCount(data.unreadCount);
         setUnreadCount(data.unreadCount);
       }
     } catch (error) {
@@ -80,16 +94,41 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       await fetch('/api/notifications/mark-read', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notificationIds: [notificationId] })
+        body: JSON.stringify({ notificationIds: [notificationId], action: 'read' })
       });
 
-      // Update local state
+      // Update local state - add current user to readBy array
       setNotifications(prev =>
-        prev.map(n => n._id === notificationId ? { ...n, read: true } : n)
+        prev.map(n => n._id === notificationId ? { ...n, readBy: [...n.readBy, currentUserId] } : n)
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // WHAT: Archive notification to remove from main list
+  // WHY: Allow users to hide notifications they don't want to see anymore
+  const archiveNotification = async (notificationId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent notification click
+    
+    try {
+      await fetch('/api/notifications/mark-read', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationIds: [notificationId], action: 'archive' })
+      });
+
+      // Remove from local state immediately
+      setNotifications(prev => prev.filter(n => n._id !== notificationId));
+      
+      // Decrease unread count if it was unread
+      const notification = notifications.find(n => n._id === notificationId);
+      if (notification && !notification.readBy.includes(currentUserId)) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error archiving notification:', error);
     }
   };
 
@@ -100,11 +139,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       await fetch('/api/notifications/mark-read', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markAll: true })
+        body: JSON.stringify({ markAll: true, action: 'read' })
       });
 
-      // Update local state
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      // Update local state - add current user to readBy arrays
+      setNotifications(prev => prev.map(n => ({
+        ...n,
+        readBy: n.readBy.includes(currentUserId) ? n.readBy : [...n.readBy, currentUserId]
+      })));
       setUnreadCount(0);
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
@@ -114,7 +156,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   // WHAT: Handle notification click - navigate to project and mark as read
   // WHY: Allow users to view project details directly from notification
   const handleNotificationClick = (notification: Notification) => {
-    if (!notification.read) {
+    if (!notification.readBy.includes(currentUserId)) {
       markAsRead(notification._id);
     }
     
@@ -161,7 +203,10 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
         <h3 className={styles.panelTitle}>
           Notifications
           {unreadCount > 0 && (
-            <span className={styles.unreadBadge}>{unreadCount}</span>
+            <span className={styles.unreadBadge}>
+              {unreadCount}
+              {showNewIndicator && <span className={styles.newIndicator}>•</span>}
+            </span>
           )}
         </h3>
         {notifications.length > 0 && (
@@ -198,7 +243,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               <div
                 key={notification._id}
                 className={`${styles.notificationItem} ${
-                  !notification.read ? styles.unread : ''
+                  !notification.readBy.includes(currentUserId) ? styles.unread : ''
                 }`}
                 onClick={() => handleNotificationClick(notification)}
               >
@@ -214,9 +259,19 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                     {formatTimestamp(notification.timestamp)}
                   </div>
                 </div>
-                {!notification.read && (
-                  <div className={styles.unreadDot}></div>
-                )}
+                <div className={styles.notificationActions}>
+                  {!notification.readBy.includes(currentUserId) && (
+                    <div className={styles.unreadDot}></div>
+                  )}
+                  <button
+                    className={styles.archiveButton}
+                    onClick={(e) => archiveNotification(notification._id, e)}
+                    title="Archive notification"
+                    aria-label="Archive"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
             );
           })

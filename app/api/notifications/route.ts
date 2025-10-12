@@ -1,28 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { getAdminUser } from '@/lib/auth';
 
-/* WHAT: Notifications API endpoint for fetching user activity notifications
- * WHY: Track project creation, edits, and stat updates to display in header bell
+/* WHAT: Multi-user notifications API endpoint for shared activity notifications
+ * WHY: Track project creation, edits, and stat updates visible to all users
+ *      Each user can independently mark notifications as read or archived
  * 
- * GET: Fetch notifications with pagination and unread count
+ * GET: Fetch notifications with per-user read/archive status and unread count
  * POST: Create new notification (called by project operations) */
 
 export async function GET(request: NextRequest) {
   try {
+    // WHAT: Get current user ID for per-user filtering
+    // WHY: Each user sees their own read/archive status
+    const user = await getAdminUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const client = await clientPromise;
     const db = client.db(process.env.MONGODB_DB || 'messmass');
     const notifications = db.collection('notifications');
 
-    // WHAT: Parse query parameters for pagination
-    // WHY: Support infinite scroll and limit initial load
+    // WHAT: Parse query parameters for pagination and filtering
+    // WHY: Support infinite scroll, read-only, and archived views
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
+    const archivedOnly = searchParams.get('archivedOnly') === 'true';
+    const excludeArchived = searchParams.get('excludeArchived') === 'true';
 
-    // WHAT: Build filter query
-    // WHY: Support filtering by read status
-    const filter = unreadOnly ? { read: false } : {};
+    // WHAT: Build filter query based on user's read/archive status
+    // WHY: Each user has independent read/archive state
+    const filter: any = {};
+    
+    if (unreadOnly) {
+      // Show only notifications not read by this user
+      filter.readBy = { $ne: user.id };
+    }
+    
+    if (archivedOnly) {
+      // Show only notifications archived by this user
+      filter.archivedBy = user.id;
+    } else if (excludeArchived) {
+      // Default: exclude archived notifications
+      filter.archivedBy = { $ne: user.id };
+    }
 
     // WHAT: Fetch notifications sorted by timestamp descending (newest first)
     // WHY: Users want to see most recent activities first
@@ -33,10 +60,13 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .toArray();
 
-    // WHAT: Count total and unread notifications
+    // WHAT: Count total and unread notifications for current user
     // WHY: Display badge count and support pagination
     const totalCount = await notifications.countDocuments(filter);
-    const unreadCount = await notifications.countDocuments({ read: false });
+    const unreadCount = await notifications.countDocuments({
+      readBy: { $ne: user.id },
+      archivedBy: { $ne: user.id }
+    });
 
     return NextResponse.json({
       success: true,
@@ -47,7 +77,8 @@ export async function GET(request: NextRequest) {
         totalCount,
         nextOffset: offset + limit < totalCount ? offset + limit : null
       },
-      unreadCount
+      unreadCount,
+      currentUserId: user.id
     });
   } catch (error) {
     console.error('Error fetching notifications:', error);
@@ -94,8 +125,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // WHAT: Create notification document with ISO 8601 timestamp
-    // WHY: Store activity for display in notification panel
+    // WHAT: Create notification document with ISO 8601 timestamp and empty read/archive arrays
+    // WHY: Multi-user support - each user can independently mark as read or archived
     const timestamp = new Date().toISOString();
     const notification = {
       activityType,
@@ -104,7 +135,8 @@ export async function POST(request: NextRequest) {
       projectName,
       projectSlug: projectSlug || null,
       timestamp,
-      read: false,
+      readBy: [],           // Array of user IDs who have read this notification
+      archivedBy: [],       // Array of user IDs who have archived this notification
       createdAt: timestamp
     };
 
