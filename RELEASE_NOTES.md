@@ -1,5 +1,96 @@
 # MessMass Release Notes
 
+## [v5.49.0] — 2025-10-12T18:02:00.000Z
+
+### Feature — Optional Recipient Field in Share Dialog
+
+**What Changed**
+- Added optional "Recipient Name or Email" input field to SharePopup component
+- Field appears above the URL and password sections when sharing any page
+- User can optionally note who they're sharing the link with before copying credentials
+- Field value resets automatically when popup opens/closes
+
+**Why This Change**
+- Users requested ability to track who they're sharing links with
+- Helps maintain a mental record of shared access without external notes
+- Purely for user convenience - field is optional and doesn't affect sharing functionality
+- Improves workflow when sharing multiple links to different recipients
+
+**Component Updates**
+- `components/SharePopup.tsx`:
+  - Added `recipientInfo` state variable with empty string default
+  - New input field with 👤 emoji, "(optional)" label, and helpful placeholder
+  - Focus/blur styling for better UX (purple border on focus)
+  - Helper text: "For your reference only - helps you remember who you shared this link with"
+  - Auto-reset when popup opens via useEffect cleanup
+
+**Technical Details**
+- No API changes - field is client-side only for user reference
+- No database changes - information not stored
+- Inline styles used to match existing SharePopup styling pattern
+- Focus states: border changes from gray (#e5e7eb) to purple (#4f46e5)
+- Field positioned first in the dialog flow (before URL/password sections)
+
+**UI/UX Details**
+- Label: "👤 Recipient Name or Email (optional)"
+- Placeholder: "e.g., John Doe or john@example.com"
+- Helper text below input explains purpose
+- Consistent spacing and styling with existing URL/password fields
+- Full width input with comfortable padding (0.75rem)
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (3.4s compile time)
+- ✅ 42 static pages generated successfully
+- ✅ Component renders correctly in admin/filter and admin/projects pages
+
+**Files Modified**: 1
+- `components/SharePopup.tsx`: Added recipient input field (47 new lines)
+
+**Lines Changed**: ~50 lines (47 added, 3 modified for state management)
+
+**Impact**: Purely additive - enhances user experience with optional tracking field, no breaking changes
+
+---
+
+## [v5.48.3] — 2025-10-12T14:13:00.000Z
+
+### Documentation — Multi-User Notification System & Category Color Guide
+
+**What Changed**
+- Added comprehensive Multi-User Notification System documentation to ARCHITECTURE.md
+- Created new CATEGORY_COLOR_SETUP_GUIDE.md for troubleshooting hashtag category colors
+- Updated all documentation timestamps to ISO 8601 format with milliseconds
+
+**Documentation Added**
+1. **ARCHITECTURE.md**:
+   - Complete notification system overview with data model, API endpoints, UI components
+   - Multi-user state management explanation (readBy/archivedBy arrays)
+   - Notification triggers for project operations
+   - Usage examples and troubleshooting guidance
+   - Future enhancement ideas
+
+2. **CATEGORY_COLOR_SETUP_GUIDE.md** (NEW):
+   - Step-by-step category color setup instructions
+   - Troubleshooting guide for common issues
+   - Manual database fix instructions for blocked admin UI
+   - Recommended color palettes for different category types
+   - Verification steps and code references
+
+**Why This Change**
+- Notification system was fully implemented but undocumented
+- Users experiencing issues with partner hashtag colors needed troubleshooting guide
+- Ensures project continuity and onboarding efficiency
+- Provides clear references for future developers
+
+**Files Modified**: 2
+- `ARCHITECTURE.md`: Added Multi-User Notification System section (~160 lines)
+- `CATEGORY_COLOR_SETUP_GUIDE.md`: **CREATED** (282 lines)
+
+**Impact**: Documentation only - no code or functionality changes
+
+---
+
 ## [v5.46.15] — 2025-01-10T15:30:00.000Z
 
 ### Refactor — Complete Elimination of Inline Styles from Admin Pages

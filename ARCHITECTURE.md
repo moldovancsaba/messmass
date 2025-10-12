@@ -334,9 +334,171 @@ The system supports sophisticated filtering with both traditional and categorize
 - CSS Specificity: Per-block, id-scoped grid classes (udv-grid-[blockId]) are injected to ensure layout cannot be overridden by legacy/global CSS. Important flags are applied where necessary to neutralize conflicts.
 - Pixel Constraints Removed: Chart container and legend min/max-width constraints are overridden to ensure unit-based grid math governs layout.
 - Data Flow: gridSettings are served by /api/page-config and passed to pages, then forwarded to UnifiedDataVisualization as gridUnits.
+---
+
+## Multi-User Notification System (Version 5.48.0+)
+
+### Overview
+
+The multi-user notification system tracks and displays project-related activities (creation, edits, statistics updates) to all users while maintaining independent read and archive states per user. This ensures team-wide visibility with personal notification management.
+
+### Key Features
+
+- **Multi-User Awareness**: All users see the same notifications
+- **Independent State Management**: Each user can mark notifications as read or archived independently
+- **Real-Time Updates**: Badge counts update automatically via polling
+- **Activity Tracking**: Captures project creation, edits, and statistics updates
+- **New Event Indicator**: Animated pulse on badge when new notifications arrive
+- **Archive Functionality**: Users can hide notifications without affecting other users
+
+### Architecture Components
+
+#### 1. Data Model
+
+**Notifications Collection** (`notifications`)
+```typescript
+interface Notification {
+  _id: ObjectId;
+  type: 'project-created' | 'project-edited' | 'stats-updated';
+  message: string;          // Human-readable notification text
+  projectId: string;        // Related project ID
+  projectSlug: string;      // Project slug for linking
+  eventName: string;        // Project event name
+  userName?: string;        // User who triggered the action (optional)
+  readBy: string[];         // Array of user IDs who marked as read
+  archivedBy: string[];     // Array of user IDs who archived
+  createdAt: string;        // ISO 8601 timestamp with milliseconds
+}
+```
+
+#### 2. API Endpoints
+
+**Notification Management**
+- `GET /api/notifications` - Fetch notifications for current user
+  - Filters out archived notifications for the current user
+  - Returns unread count and notification list
+  - Requires authentication
+- `POST /api/notifications` - Create new notification (internal use)
+  - Called automatically by project operations
+  - Initializes with empty readBy and archivedBy arrays
+- `PUT /api/notifications/mark-read` - Mark notification as read or archive
+  - Query params: `notificationId`, `action` (read | archive)
+  - Adds current user ID to appropriate array
+  - Requires authentication
+
+**Diagnostic Endpoint**
+- `GET /api/debug/notifications` - Production troubleshooting
+  - Shows authentication status
+  - Displays notification counts and recent notifications
+  - Provides troubleshooting guidance
+
+#### 3. UI Components
+
+**NotificationPanel Component** (`components/NotificationPanel.tsx`)
+- Bell icon with badge count in top header
+- Dropdown panel showing notification list
+- Mark as read functionality (checkmark button)
+- Archive functionality (X button)
+- New event indicator (animated pulse)
+- Links to related projects
+- Empty state messaging
+
+**Integration Points**
+- Integrated into `TopHeader` component
+- Polls every 30 seconds for updates
+- Updates badge count automatically
+- Handles authentication and error states
+
+#### 4. Notification Triggers
+
+Notifications are automatically created when:
+
+1. **Project Creation** (`POST /api/projects`)
+   - Type: `project-created`
+   - Message: "📊 New project created: {eventName}"
+
+2. **Project Edit** (`PUT /api/projects`)
+   - Type: `project-edited`
+   - Message: "✏️ Project updated: {eventName}"
+
+3. **Statistics Update** (Real-time via WebSocket or API)
+   - Type: `stats-updated`
+   - Message: "📈 Statistics updated for: {eventName}"
+
+### Implementation Details
+
+#### Multi-User State Management
+
+1. **Array-Based Tracking**: Uses `readBy` and `archivedBy` arrays containing user IDs
+2. **Independent Actions**: Each user's actions only affect their own arrays
+3. **Visibility Logic**: 
+   - Notification visible if user ID NOT in `archivedBy`
+   - Badge count includes notifications where user ID NOT in `readBy`
+
+#### Performance Considerations
+
+1. **Polling Strategy**: 30-second interval for badge updates (configurable)
+2. **Efficient Queries**: MongoDB queries filter archived notifications server-side
+3. **Index Recommendations**: Index on `createdAt` for sorting, compound index on `archivedBy` for filtering
+
+#### Authentication Integration
+
+1. **Session-Based**: Uses existing admin authentication system
+2. **User ID Resolution**: Extracts user ID from session (email as identifier)
+3. **Protection**: All endpoints require authentication via middleware
+
+### Usage Examples
+
+#### Fetching Notifications (Client)
+```typescript
+const response = await fetch('/api/notifications');
+const data = await response.json();
+// Returns: { success: true, notifications: [...], unreadCount: 5 }
+```
+
+#### Marking as Read
+```typescript
+await fetch(`/api/notifications/mark-read?notificationId=${id}&action=read`, {
+  method: 'PUT'
+});
+```
+
+#### Archiving Notification
+```typescript
+await fetch(`/api/notifications/mark-read?notificationId=${id}&action=archive`, {
+  method: 'PUT'
+});
+```
+
+### Benefits
+
+1. **Team Coordination**: All users stay informed of project activities
+2. **Personal Control**: Each user manages their own notification state
+3. **Non-Intrusive**: Archive function removes clutter without deleting for others
+4. **Audit Trail**: Complete history of project activities preserved
+5. **Extensible**: Easy to add new notification types and triggers
+
+### Future Enhancements
+
+- **WebSocket Integration**: Real-time push notifications without polling
+- **Notification Preferences**: User-configurable notification types
+- **Digest Mode**: Daily/weekly notification summaries
+- **Notification History**: Separate view for archived notifications
+- **Rich Notifications**: Include change details and diffs
+- **User Mentions**: @mention functionality in project notes
+
+### Troubleshooting
+
+For production issues:
+1. Use diagnostic endpoint: `/api/debug/notifications`
+2. Check authentication status
+3. Verify MongoDB connection
+4. Review notification counts and recent entries
+5. See detailed troubleshooting guide in `MULTI_USER_NOTIFICATIONS.md`
+
+---
 
 ## Technology Stack
-
 ### Frontend
 - **Next.js 15.4.6** - React framework with App Router
 - **TypeScript** - Type safety and developer experience

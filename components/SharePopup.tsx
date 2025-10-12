@@ -22,12 +22,16 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<'url' | 'password' | null>(null);
+  // WHAT: Optional recipient name/email field for user convenience
+  // WHY: Users want to track who they're sharing links with when copying the URL and password
+  const [recipientInfo, setRecipientInfo] = useState<string>('');
 
   useEffect(() => {
     // Always regenerate when popup opens or the target page changes.
     if (isOpen) {
       setShareableData(null);
       setCopiedField(null);
+      setRecipientInfo(''); // Reset recipient field when popup opens
       generateShareableLink();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,6 +226,53 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
           </div>
         ) : shareableData ? (
           <div>
+            {/* WHAT: Optional recipient name/email input field
+                WHY: Allows user to note who they're sharing with before copying URL/password */}
+            {/* Recipient Info Section */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ 
+                display: 'block', 
+                fontSize: '0.875rem', 
+                fontWeight: '600', 
+                color: '#374151',
+                marginBottom: '0.5rem'
+              }}>
+                👤 Recipient Name or Email <span style={{ color: '#9ca3af', fontWeight: '400' }}>(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={recipientInfo}
+                onChange={(e) => setRecipientInfo(e.target.value)}
+                placeholder="e.g., John Doe or john@example.com"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  background: 'white',
+                  color: '#374151',
+                  transition: 'border-color 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#4f46e5';
+                  e.currentTarget.style.outline = 'none';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                }}
+              />
+              <p style={{ 
+                margin: '0.5rem 0 0 0', 
+                fontSize: '0.75rem', 
+                color: '#6b7280',
+                fontStyle: 'italic'
+              }}>
+                For your reference only - helps you remember who you shared this link with
+              </p>
+            </div>
+
             {/* URL Section */}
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ 
