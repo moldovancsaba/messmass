@@ -88,10 +88,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const PAGE_SIZE = 20;
   
   // Sorting state
+  // WHAT: Default sort to newest projects first (eventDate descending)
+  // WHY: Users want to see most recent projects at the top by default
   type SortField = 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees' | null;
   type SortOrder = 'asc' | 'desc' | null;
-  const [sortField, setSortField] = useState<SortField>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+  const [sortField, setSortField] = useState<SortField>('eventDate');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   // In sort/search modes, the API uses offset-based pagination (nextOffset) instead of cursor.
   const [sortOffset, setSortOffset] = useState<number | null>(null);
@@ -655,7 +657,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             className="btn btn-small btn-success"
                             title={`Share statistics page for ${project.eventName}`}
                           >
-                            📊 {project.eventName}
+                            {project.eventName}
                           </button>
                         ) : (
                           <span className="project-name-text">{project.eventName}</span>
