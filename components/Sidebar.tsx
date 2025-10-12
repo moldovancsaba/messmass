@@ -42,31 +42,27 @@ export default function Sidebar() {
       title: 'Content',
       items: [
         { label: 'Dashboard', path: '/admin', icon: '📊' },
-        { label: 'Projects', path: '/admin/projects', icon: '📁' },
+        { label: 'Manage Projects', path: '/admin/projects', icon: '🍿' },
         { label: 'Quick Add', path: '/admin/quick-add', icon: '⚡' },
-      ],
-    },
-    {
-      title: 'Organization',
-      items: [
-        { label: 'Hashtags', path: '/admin/hashtags', icon: '🏷️' },
-        { label: 'Categories', path: '/admin/categories', icon: '📂' },
-        { label: 'Filter', path: '/admin/filter', icon: '🔍' },
+        { label: 'Hashtag Filter', path: '/admin/filter', icon: '🔍' },
       ],
     },
     {
       title: 'Configuration',
       items: [
-        { label: 'Charts', path: '/admin/charts', icon: '📈' },
-        { label: 'Variables', path: '/admin/variables', icon: '🔧' },
-        { label: 'Visualization', path: '/admin/visualization', icon: '👁️' },
+        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: '🏷️' },
+        { label: 'Category Manager', path: '/admin/categories', icon: '🌍' },
+        { label: 'Chart Algorithm Manager', path: '/admin/charts', icon: '📈' },
       ],
     },
     {
       title: 'Settings',
       items: [
-        { label: 'Design', path: '/admin/design', icon: '🎨' },
+        { label: 'Variable Manager', path: '/admin/variables', icon: '🔢' },
+        { label: 'Visualization Manager', path: '/admin/visualization', icon: '👁️' },
+        { label: 'Design Manager', path: '/admin/design', icon: '🎨' },
         { label: 'Users', path: '/admin/users', icon: '👥' },
+        { label: 'Cache Management', path: '/admin/cache', icon: '🗑️' },
       ],
     },
     {
