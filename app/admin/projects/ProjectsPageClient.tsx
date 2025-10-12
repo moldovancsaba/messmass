@@ -643,6 +643,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                   return (
                     <tr key={project._id}>
                       <td className="project-name">
+                        {/* WHAT: Event name as a clickable button to share project stats page
+                         * WHY: Proper button styling (same as Edit Stats) for readability, keeps left position as project title */}
                         {project.viewSlug ? (
                           <button 
                             onClick={() => {
@@ -650,10 +652,10 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               setSharePageType('stats');
                               setSharePopupOpen(true);
                             }}
-                            className="btn-link text-primary-700"
+                            className="btn btn-small btn-success"
                             title={`Share statistics page for ${project.eventName}`}
                           >
-                            {project.eventName}
+                            📊 {project.eventName}
                           </button>
                         ) : (
                           <span className="project-name-text">{project.eventName}</span>
