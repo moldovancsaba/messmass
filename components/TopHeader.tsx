@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import NotificationPanel from './NotificationPanel';
 import styles from './TopHeader.module.css';
 
 /* What: Top header component for admin layout
-   Why: Display user info, notifications placeholder, and logout
+   Why: Display user info, active notifications system, and logout
    
    No breadcrumbs (explicitly prohibited by policy) */
 
@@ -19,6 +20,42 @@ interface TopHeaderProps {
 
 export default function TopHeader({ user }: TopHeaderProps) {
   const router = useRouter();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+  /* What: Fetch unread notification count on mount and periodically
+     Why: Display badge with current unread count */
+  useEffect(() => {
+    fetchUnreadCount();
+    
+    // Poll every 30 seconds for new notifications
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  /* What: Fetch unread notification count from API
+     Why: Update badge without opening the panel */
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await fetch('/api/notifications?limit=1');
+      const data = await response.json();
+      if (data.success) {
+        setUnreadCount(data.unreadCount);
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
+  
+  /* What: Toggle notification panel visibility
+     Why: Show/hide notifications on bell click */
+  const handleBellClick = () => {
+    setShowNotifications(!showNotifications);
+    // Refresh count when opening panel
+    if (!showNotifications) {
+      fetchUnreadCount();
+    }
+  };
   
   /* What: Handle logout action
      Why: Clear session and redirect to login */
@@ -51,12 +88,26 @@ export default function TopHeader({ user }: TopHeaderProps) {
         </div>
         
         {/* What: Right section with user info and actions
-           Why: Quick access to user menu and logout */}
+           Why: Quick access to user menu, notifications, and logout */}
         <div className={styles.headerRight}>
-          {/* What: Notifications placeholder
-             Why: Future feature - can add notification bell icon */}
-          <div className={styles.notificationsPlaceholder} title="Notifications (coming soon)">
-            <span className={styles.notificationIcon}>🔔</span>
+          {/* What: Active notifications bell with badge and dropdown panel
+             Why: Display project activity notifications in real-time */}
+          <div className={styles.notificationsBell}>
+            <button
+              className={styles.notificationButton}
+              onClick={handleBellClick}
+              title="View notifications"
+              aria-label="Notifications"
+            >
+              <span className={styles.notificationIcon}>🔔</span>
+              {unreadCount > 0 && (
+                <span className={styles.notificationBadge}>{unreadCount}</span>
+              )}
+            </button>
+            <NotificationPanel
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+            />
           </div>
           
           {/* What: User info display

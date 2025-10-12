@@ -1,0 +1,247 @@
+/* WHAT: NotificationPanel component styles with flat design
+ * WHY: Clean, professional notification dropdown matching admin UI design system */
+
+.notificationPanel {
+  /* WHAT: Dropdown panel container
+   * WHY: Position below bell icon, with shadow and clean borders */
+  position: absolute;
+  top: calc(100% + var(--mm-space-2));
+  right: 0;
+  width: 400px;
+  max-height: 600px;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-xl);
+  box-shadow: var(--mm-shadow-lg);
+  overflow: hidden;
+  z-index: calc(var(--z-sticky) + 2);
+  display: flex;
+  flex-direction: column;
+}
+
+.panelHeader {
+  /* WHAT: Panel header with title and actions
+   * WHY: Fixed header that stays visible during scroll */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mm-space-4) var(--mm-space-5);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  background: var(--mm-gray-50);
+}
+
+.panelTitle {
+  /* WHAT: Notifications title with optional badge
+   * WHY: Clear labeling with unread count indicator */
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.unreadBadge {
+  /* WHAT: Unread count badge in header
+   * WHY: Shows total unread notifications at a glance */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--mm-space-1);
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-bold);
+  border-radius: var(--mm-radius-full);
+}
+
+.markAllButton {
+  /* WHAT: Mark all as read button
+   * WHY: Quick action to clear all notifications */
+  background: none;
+  border: none;
+  color: var(--mm-color-primary-600);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  padding: var(--mm-space-1) var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  transition: all var(--transition-base);
+}
+
+.markAllButton:hover {
+  background: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-700);
+}
+
+.notificationsList {
+  /* WHAT: Scrollable notifications list
+   * WHY: Support many notifications without expanding panel */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.notificationItem {
+  /* WHAT: Individual notification item
+   * WHY: Clickable card with hover effect */
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-4) var(--mm-space-5);
+  border-bottom: 1px solid var(--mm-border-color-light);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.notificationItem:hover {
+  background: var(--mm-gray-50);
+}
+
+.notificationItem:last-child {
+  border-bottom: none;
+}
+
+.notificationItem.unread {
+  /* WHAT: Styling for unread notifications
+   * WHY: Visual distinction for new activities */
+  background: var(--mm-color-primary-25);
+}
+
+.notificationItem.unread:hover {
+  background: var(--mm-color-primary-50);
+}
+
+.notificationIcon {
+  /* WHAT: Activity icon
+   * WHY: Quick visual identification of activity type */
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-lg);
+}
+
+.notificationContent {
+  /* WHAT: Notification text content
+   * WHY: Stacked layout for user, activity, project, and time */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notificationText {
+  /* WHAT: Main notification text (user + action)
+   * WHY: Primary information about the activity */
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-900);
+  line-height: 1.4;
+}
+
+.notificationProject {
+  /* WHAT: Project name
+   * WHY: Shows which project was affected */
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  font-weight: var(--mm-font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notificationTime {
+  /* WHAT: Relative timestamp
+   * WHY: Shows when activity occurred */
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+}
+
+.unreadDot {
+  /* WHAT: Unread indicator dot
+   * WHY: Visual marker for unread notifications */
+  position: absolute;
+  top: var(--mm-space-4);
+  right: var(--mm-space-4);
+  width: 8px;
+  height: 8px;
+  background: var(--mm-color-primary-600);
+  border-radius: var(--mm-radius-full);
+}
+
+/* WHAT: Loading state
+ * WHY: Feedback while fetching notifications */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-8);
+  gap: var(--mm-space-3);
+  color: var(--mm-gray-600);
+}
+
+.spinner {
+  /* WHAT: Loading spinner animation
+   * WHY: Visual feedback during data fetch */
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--mm-gray-200);
+  border-top-color: var(--mm-color-primary-600);
+  border-radius: var(--mm-radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* WHAT: Empty state
+ * WHY: Friendly message when no notifications exist */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-12) var(--mm-space-6);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: var(--mm-space-4);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.emptyText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+/* WHAT: Responsive adjustments
+ * WHY: Adapt panel width for mobile devices */
+@media (max-width: 480px) {
+  .notificationPanel {
+    width: calc(100vw - var(--mm-space-8));
+    right: var(--mm-space-4);
+  }
+}

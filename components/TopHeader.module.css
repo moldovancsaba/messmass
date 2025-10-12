@@ -54,9 +54,15 @@
   gap: var(--mm-space-4);
 }
 
-.notificationsPlaceholder {
-  /* What: Notifications icon placeholder
-     Why: Future feature, currently just visual */
+.notificationsBell {
+  /* WHAT: Notification bell container with dropdown
+   * WHY: Position dropdown panel relative to bell icon */
+  position: relative;
+}
+
+.notificationButton {
+  /* WHAT: Active notification bell button
+   * WHY: Clickable bell icon with badge for unread count */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,17 +71,42 @@
   border-radius: var(--mm-radius-md);
   background: transparent;
   border: 1px solid var(--mm-border-color-default);
-  cursor: not-allowed;
-  opacity: 0.6;
+  cursor: pointer;
   transition: all var(--transition-base);
+  position: relative;
 }
 
-.notificationsPlaceholder:hover {
+.notificationButton:hover {
   background: var(--mm-gray-50);
+  border-color: var(--mm-color-primary-300);
+}
+
+.notificationButton:active {
+  background: var(--mm-gray-100);
 }
 
 .notificationIcon {
   font-size: var(--mm-font-size-lg);
+}
+
+.notificationBadge {
+  /* WHAT: Unread count badge on bell icon
+   * WHY: Shows number of unread notifications at a glance */
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--mm-error);
+  color: var(--mm-white);
+  font-size: 10px;
+  font-weight: var(--mm-font-weight-bold);
+  border-radius: var(--mm-radius-full);
+  border: 2px solid var(--mm-white);
 }
 
 /* ===== User Info ===== */
