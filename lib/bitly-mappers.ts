@@ -238,42 +238,44 @@ export function calculateDaysBetween(startDate: string, endDate: string): number
 
 /**
  * WHAT: Merge new timeseries data with existing data
- * WHY: Preserves historical data while adding new days
+ * WHY: Preserves ALL historical data forever while adding new days
  * 
  * STRATEGY:
  * - Create map of existing data by date
- * - Overlay new data (overwrites if date exists)
- * - Keep only last 365 days
+ * - Overlay new data (overwrites if date exists to get Bitly corrections)
+ * - Keep ALL data points (no time limit)
  * - Sort chronologically
+ * 
+ * RATIONALE:
+ * - Bitly drops data after 30-90 days depending on plan
+ * - We must preserve all historical data to prevent loss
+ * - Database storage is cheap; lost analytics data is irreplaceable
+ * - Enables long-term trend analysis across years
  */
 export function mergeTimeseries(
   existing: Array<{ date: string; clicks: number }>,
   newData: Array<{ date: string; clicks: number }>
 ): Array<{ date: string; clicks: number }> {
   // WHAT: Create map of all data points by date
+  // WHY: Efficient merge and deduplication by date key
   const dataMap = new Map<string, number>();
   
-  // WHAT: Add existing data to map
+  // WHAT: Add ALL existing data to map
+  // WHY: Preserve complete historical record
   existing.forEach(point => {
     dataMap.set(point.date, point.clicks);
   });
   
   // WHAT: Overlay new data (overwrites if date already exists)
-  // WHY: New data is more authoritative than stale cached data
+  // WHY: New data from Bitly may contain corrections or updates; keep most recent value
   newData.forEach(point => {
     dataMap.set(point.date, point.clicks);
   });
   
-  // WHAT: Convert map back to array, filter to last 365 days, and sort
-  const maxDays = 365;
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - maxDays);
-  
+  // WHAT: Convert map back to array and sort chronologically
+  // WHY: No time-based filtering - keep ALL data points forever
+  // RESULT: Complete historical timeline from first sync to present
   return Array.from(dataMap.entries())
     .map(([date, clicks]) => ({ date, clicks }))
-    .filter(point => {
-      const pointDate = new Date(point.date);
-      return pointDate >= cutoffDate;
-    })
     .sort((a, b) => a.date.localeCompare(b.date));
 }
