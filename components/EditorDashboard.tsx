@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
-import { getAllHashtagRepresentations } from '@/lib/hashtagCategoryDisplay';
 import BitlyLinksEditor from './BitlyLinksEditor';
+import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
   expandHashtagsWithCategories 

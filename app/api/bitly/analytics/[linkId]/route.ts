@@ -6,7 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { getFullAnalytics } from '@/lib/bitly';
 import { 
   mapClicksSummary, 
@@ -35,7 +36,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { linkId: string } }
+  context: { params: Promise<{ linkId: string }> }
 ) {
   try {
     // WHAT: Verify admin authentication
@@ -49,7 +50,7 @@ export async function GET(
     }
 
     // WHAT: Validate linkId parameter
-    const { linkId } = params;
+    const { linkId } = await context.params;
     if (!ObjectId.isValid(linkId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid linkId format' },
@@ -62,7 +63,8 @@ export async function GET(
     const refresh = searchParams.get('refresh') === 'true';
 
     // WHAT: Fetch link document from database
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const link = await db.collection('bitly_links').findOne({ _id: new ObjectId(linkId) });
 
     if (!link) {

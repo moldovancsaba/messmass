@@ -8,7 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import { getAdminUser } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { getFullAnalytics } from '@/lib/bitly';
 import {
   mapClicksSummary,
@@ -197,7 +198,8 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Build query filter
     // WHY: Supports both full sync and selective link sync
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const filter: any = { archived: { $ne: true } };
 
     if (linkIds && Array.isArray(linkIds) && linkIds.length > 0) {
@@ -289,7 +291,8 @@ export async function POST(request: NextRequest) {
     // WHAT: Log fatal error to database
     const endedAt = new Date().toISOString();
     try {
-      const { db } = await connectToDatabase();
+      const client = await clientPromise;
+      const db = client.db(config.dbName);
       await db.collection('bitly_sync_logs').insertOne({
         runId,
         scope: 'manual', // Default to manual if scope undetermined

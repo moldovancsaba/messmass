@@ -8,7 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { getLink, normalizeBitlink } from '@/lib/bitly';
 import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
 import type { AssociateLinkInput, BitlyLinkResponse } from '@/lib/bitly-db.types';
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const { db } = await connectToDatabase();
+      const client = await clientPromise;
+      const db = client.db(config.dbName);
       const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });
       
       if (!project) {
@@ -93,7 +95,8 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Check if this bitlink already exists in database
     // WHY: Prevent duplicate entries; return existing if found
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const existingLink = await db.collection('bitly_links').findOne({ bitlink: normalized });
 
     if (existingLink) {
@@ -204,7 +207,8 @@ export async function GET(request: NextRequest) {
     }
 
     // WHAT: Query database with pagination
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const links = await db
       .collection('bitly_links')
       .find(filter)

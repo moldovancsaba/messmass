@@ -8,7 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import type { UpdateLinkInput } from '@/lib/bitly-db.types';
 
 /**
@@ -27,7 +28,7 @@ import type { UpdateLinkInput } from '@/lib/bitly-db.types';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { linkId: string } }
+  context: { params: Promise<{ linkId: string }> }
 ) {
   try {
     // WHAT: Verify admin authentication
@@ -41,7 +42,7 @@ export async function PUT(
     }
 
     // WHAT: Validate linkId parameter
-    const { linkId } = params;
+    const { linkId } = await context.params;
     if (!ObjectId.isValid(linkId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid linkId format' },
@@ -75,7 +76,8 @@ export async function PUT(
         }
 
         // WHAT: Verify new project exists
-        const { db } = await connectToDatabase();
+        const client = await clientPromise;
+        const db = client.db(config.dbName);
         const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });
         
         if (!project) {
@@ -95,7 +97,8 @@ export async function PUT(
     if (archived !== undefined) update.archived = archived;
 
     // WHAT: Apply update to database
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
     const result = await db.collection('bitly_links').findOneAndUpdate(
       { _id: new ObjectId(linkId) },
       { $set: update },
@@ -140,7 +143,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { linkId: string } }
+  context: { params: Promise<{ linkId: string }> }
 ) {
   try {
     // WHAT: Verify admin authentication
@@ -154,7 +157,7 @@ export async function DELETE(
     }
 
     // WHAT: Validate linkId parameter
-    const { linkId } = params;
+    const { linkId } = await context.params;
     if (!ObjectId.isValid(linkId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid linkId format' },
@@ -167,7 +170,8 @@ export async function DELETE(
     const { searchParams } = new URL(request.url);
     const hardDelete = searchParams.get('hard') === 'true';
 
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
 
     if (hardDelete) {
       // WHAT: Permanent deletion (use with extreme caution)
