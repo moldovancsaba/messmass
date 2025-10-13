@@ -2,10 +2,10 @@
 
 A real-time collaborative event statistics dashboard with an admin panel, unified hashtag system, and modern TailAdmin V2 design system.
 
-- Version: v5.36.0
-- Last Updated: 2025-10-10T12:45:00.000Z
+- Version: v5.53.0
+- Last Updated: 2025-10-13T11:23:00.000Z
 - Website: https://messmass.doneisbetter.com
-- Status: TailAdmin V2 flat design complete - zero gradients, zero glass-morphism, 100% design token compliance
+- Status: TailAdmin V2 flat design complete - zero gradients, 100% design token compliance
 
 Quickstart
 
@@ -21,7 +21,10 @@ Quickstart
 Docs
 
 - ARCHITECTURE.md — System overview, components, and styling architecture
-- DESIGN_SYSTEM.md — Complete TailAdmin V2 token reference and usage guide
+- DESIGN_SYSTEM.md — Design tokens, utilities, patterns (consolidated authority)
+- CARD_SYSTEM.md — ColoredCard component reference
+- ADMIN_LAYOUT_SYSTEM.md — Admin navigation and responsive layout
+- ADMIN_VARIABLES_SYSTEM.md — Variables and metrics management
 - ROADMAP.md — Forward-looking milestones
 - TASKLIST.md — Active and upcoming tasks (with owners and dates)
 - RELEASE_NOTES.md — Versioned log of changes
