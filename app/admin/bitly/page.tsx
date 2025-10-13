@@ -369,24 +369,25 @@ export default function BitlyAdminPage() {
             </div>
           ) : (
             /* WHAT: Standardized table matching projects page structure
-             * WHY: Consistent table styling across admin pages */
+             * WHY: Consistent table styling across admin pages
+             * RESPONSIVE: word-break on long text to prevent overflow */
             <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
-                  <th>Bitly Link</th>
-                  <th>Title</th>
-                  <th>Project</th>
-                  <th>Clicks</th>
-                  <th>Last Synced</th>
-                  <th>Actions</th>
+                  <th style={{ width: '20%', minWidth: '150px' }}>Bitly Link</th>
+                  <th style={{ width: '25%', minWidth: '150px' }}>Title</th>
+                  <th style={{ width: '20%', minWidth: '150px' }}>Project</th>
+                  <th style={{ width: '10%', minWidth: '80px' }}>Clicks</th>
+                  <th style={{ width: '15%', minWidth: '120px' }}>Last Synced</th>
+                  <th style={{ width: '10%', minWidth: '150px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {links.map(link => (
                   <tr key={link._id}>
-                    <td>
-                      {/* WHAT: Bitly link as clickable external link
-                       * WHY: Allows quick verification of the shortened URL */}
+                    <td style={{ wordBreak: 'break-all', maxWidth: '200px' }}>
+                      {/* WHAT: Bitly link as clickable external link with word-break
+                       * WHY: Prevents long URLs from overflowing table, allows verification */}
                       <a 
                         href={`https://${link.bitlink}`} 
                         target="_blank" 
@@ -396,14 +397,15 @@ export default function BitlyAdminPage() {
                         {link.bitlink}
                       </a>
                     </td>
-                    <td>{link.title}</td>
-                    <td>
-                      {/* WHAT: Inline project reassignment dropdown
-                       * WHY: Quick reassignment without opening a modal */}
+                    <td style={{ wordBreak: 'break-word', maxWidth: '250px' }}>{link.title}</td>
+                    <td style={{ maxWidth: '200px' }}>
+                      {/* WHAT: Inline project reassignment dropdown with width constraint
+                       * WHY: Quick reassignment without opening a modal, prevents overflow */}
                       <select
                         value={link.projectId || ''}
                         onChange={(e) => handleReassignLink(link._id, e.target.value || null)}
-                        className="form-input min-w-48"
+                        className="form-input"
+                        style={{ width: '100%', maxWidth: '200px' }}
                       >
                         <option value="">-- Unassigned --</option>
                         {projects.map(project => (
