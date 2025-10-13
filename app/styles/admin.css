@@ -873,37 +873,13 @@
 .user-select-none { user-select: none; }
 
 /* ========================================
-   DEPRECATED CLASS CLEANUP
+   DEPRECATED CLASSES REMOVED
 ======================================== */
 
-/* WHAT: Remove all references to deprecated glass-morphism classes
-   WHY: Flat design system, no more glass effects */
-
-/* These classes are now ALIASES to admin-card for backward compatibility */
-.glass-card {
-  /* Redirect to standard admin-card styling */
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-xl);
-  box-shadow: var(--mm-shadow-md);
-  padding: var(--mm-space-6);
-}
-
-.content-surface {
-  /* Redirect to standard admin-card styling */
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md);
-  box-shadow: var(--mm-shadow-md);
-  padding: var(--mm-space-8);
-}
-
-.section-card {
-  /* Redirect to standard admin-card styling */
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-md);
-  box-shadow: var(--mm-shadow-sm);
-  padding: var(--mm-space-6);
-  margin-bottom: var(--mm-space-6);
-}
+/* WHAT: Deprecated glass-morphism classes have been REMOVED
+   WHY: Rock-solid refactor - use proper classes instead:
+   - .glass-card → .admin-card or <ColoredCard>
+   - .content-surface → .admin-card
+   - .section-card → .admin-card
+   
+   NO BACKWARD COMPATIBILITY - All references must be updated */

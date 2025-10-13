@@ -59,7 +59,7 @@ export default function UnifiedAdminHero({
   const variantClass = (v: ActionButton['variant'] = 'primary') => `btn-${v}`;
 
   return (
-    <div className="admin-header glass-card">
+    <div className="admin-header admin-card">
       <div className="admin-header-content">
         {/* Left Side - Branding and Content */}
         <div className="admin-branding">

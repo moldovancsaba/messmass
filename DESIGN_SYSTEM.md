@@ -135,14 +135,14 @@ See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
-## ⚠️ Deprecations
+## ⚠️ Deprecated Classes REMOVED
 
-**Deprecated classes** (aliases exist for backward compatibility):
-- `.glass-card` → Use `.admin-card` or `<ColoredCard>`
-- `.content-surface` → Use `.admin-card`
-- `.section-card` → Use `.admin-card`
+**These classes have been REMOVED** (no backward compatibility):
+- `.glass-card` → Now `.admin-card` or `<ColoredCard>`
+- `.content-surface` → Now `.admin-card`
+- `.section-card` → Now `.admin-card`
 
-Aliases in `app/styles/admin.css` lines 883-909. Will be removed in v6.0.0.
+**All references in codebase have been updated.** Rock-solid refactor complete.
 
 ---
 

@@ -41,7 +41,7 @@ export default function PasswordGateDemoPage() {
   }
 
   return (
-    <div className="page-container content-surface">
+    <div className="page-container admin-card">
       <h1>PasswordGate Demo</h1>
       <p>
         This page demonstrates creating a page password and gating sensitive content for pageId=<code>{pageId}</code> (type: <code>{pageType}</code>).
@@ -52,7 +52,7 @@ export default function PasswordGateDemoPage() {
           {generating ? "Generating…" : "Generate demo password"}
         </button>
         {generated && (
-          <div className="glass-card content-surface">
+          <div className="admin-card admin-card">
             <div><strong>Shareable URL:</strong> {generated.url}</div>
             <div><strong>Password:</strong> {generated.password}</div>
           </div>
@@ -61,7 +61,7 @@ export default function PasswordGateDemoPage() {
 
       <h2>Protected Section</h2>
       <PasswordGate pageId={pageId} pageType={pageType}>
-        <div className="glass-card content-surface">
+        <div className="admin-card admin-card">
           <strong>Unlocked:</strong> You are now viewing protected content gated by PasswordGate.
         </div>
       </PasswordGate>

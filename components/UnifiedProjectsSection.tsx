@@ -28,7 +28,7 @@ export default function UnifiedProjectsSection({
   }
 
   return (
-    <div className="glass-card" style={{
+    <div className="admin-card" style={{
       padding: '2rem',
       marginBottom: '2rem'
     }}>

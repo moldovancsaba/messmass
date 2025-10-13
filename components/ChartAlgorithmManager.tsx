@@ -246,7 +246,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
   if (loading) {
     return (
-      <div className="glass-card">
+      <div className="admin-card">
         <div className="loading-spinner">Loading chart configurations...</div>
       </div>
     );
@@ -255,7 +255,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <div className="glass-card section-card" style={{ marginBottom: '2rem' }}>
+      <div className="admin-card" style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
           <div>
@@ -294,7 +294,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
 
       {/* Chart Configurations List */}
-      <div className="glass-card section-card">
+      <div className="admin-card">
           <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
           <table className="data-table">
             <thead>
@@ -607,7 +607,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content glass-card" style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
+      <div className="modal-content admin-card" style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
         <div className="modal-header">
           <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
           <button className="btn btn-secondary" onClick={onCancel}>✕</button>

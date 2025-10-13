@@ -98,34 +98,40 @@ Use design tokens when possible:
 
 ---
 
-## 🔄 Migration from Deprecated Classes
+## 🔄 Deprecated Classes - REMOVED
 
-### glass-card → ColoredCard
+**Old classes have been completely removed from the codebase:**
+
+### .glass-card → .admin-card or ColoredCard
 ```tsx
-// ❌ Before
+// Old (REMOVED)
 <div className="glass-card">...</div>
 
-// ✅ After
-<ColoredCard accentColor="#3b82f6" hoverable={false}>...</ColoredCard>
+// Now use
+<div className="admin-card">...</div>
+// or
+<ColoredCard accentColor="#3b82f6">...</ColoredCard>
 ```
 
-### content-surface → ColoredCard
+### .content-surface → .admin-card
 ```tsx
-// ❌ Before
+// Old (REMOVED)
 <div className="content-surface">...</div>
 
-// ✅ After
-<ColoredCard accentColor="#10b981">...</ColoredCard>
+// Now use
+<div className="admin-card">...</div>
 ```
 
-### section-card → ColoredCard
+### .section-card → .admin-card
 ```tsx
-// ❌ Before
+// Old (REMOVED)
 <div className="section-card">...</div>
 
-// ✅ After
-<ColoredCard accentColor="#8b5cf6">...</ColoredCard>
+// Now use
+<div className="admin-card">...</div>
 ```
+
+**All references throughout the codebase have been updated. No backward compatibility.**
 
 ---
 

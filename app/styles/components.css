@@ -1340,7 +1340,7 @@ textarea::placeholder {
     font-size: var(--text-3xl);
   }
   
-  .glass-card {
+  .admin-card {
     padding: var(--space-4);
   }
 }

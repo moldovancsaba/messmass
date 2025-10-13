@@ -97,7 +97,7 @@ export default function UnifiedDataVisualization({
 
   if (loading) {
     return (
-      <div className="glass-card" style={{
+      <div className="admin-card" style={{
         padding: '2rem',
         marginBottom: '2rem',
         textAlign: 'center'
@@ -130,7 +130,7 @@ export default function UnifiedDataVisualization({
 
   if (blocks.length === 0 || chartResults.length === 0) {
     return (
-      <div className="glass-card" style={{
+      <div className="admin-card" style={{
         padding: '2rem',
         marginBottom: '2rem',
         textAlign: 'center'
@@ -159,7 +159,7 @@ export default function UnifiedDataVisualization({
           // Stable class suffix for CSS and keys: prefer _id, fall back to index
           const idSuffix = block._id || `i${blockIndex}`;
           return (
-            <div key={block._id || `block-${blockIndex}`} className="glass-card" style={{
+            <div key={block._id || `block-${blockIndex}`} className="admin-card" style={{
               padding: '2rem',
               marginBottom: '2rem'
             }}>

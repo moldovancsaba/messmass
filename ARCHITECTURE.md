@@ -35,8 +35,9 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 ### Design System
 - All design tokens documented in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
 - TailAdmin V2 flat design (no glass-morphism)
-- Deprecated classes: `.glass-card`, `.content-surface`, `.section-card` (aliases exist for backward compatibility)
+- Old classes REMOVED: `.glass-card`, `.content-surface`, `.section-card` (now use `.admin-card`)
 - Current components: `ColoredCard`, `AdminLayout`, `Sidebar`, `TopHeader`
+- All card styling uses `.admin-card` class or `<ColoredCard>` component
 - Admin: `app/admin/layout.tsx` provides AdminLayout wrapper with sidebar navigation
 - Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config`
 

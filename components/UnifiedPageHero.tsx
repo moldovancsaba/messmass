@@ -36,7 +36,7 @@ export default function UnifiedPageHero({
   return (
     <div style={{ padding: '2rem' }}>
       {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
-      <div className="admin-header glass-card" style={{ margin: 0 }}>
+      <div className="admin-header admin-card" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{title}</h1>

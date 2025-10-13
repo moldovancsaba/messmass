@@ -18,7 +18,7 @@ export default function StandardState({ variant, title, message, icon, children 
   }[variant];
 
   return (
-    <div className="glass-card" style={{
+    <div className="admin-card" style={{
       padding: '2rem',
       textAlign: 'center',
       background: palette.bg,

@@ -43,7 +43,7 @@ export default function AdminPageHero({
 }: AdminPageHeroProps) {
   return (
     <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
-      <div className="admin-header glass-card" style={{ margin: 0 }}>
+      <div className="admin-header admin-card" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">
