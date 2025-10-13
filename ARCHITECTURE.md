@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-12T19:40:00.000Z
-Version: 5.50.0
+Last Updated: 2025-10-13T11:23:00.000Z
+Version: 5.53.0
 
 ## Project Overview
 
@@ -28,18 +28,17 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 - `--content-bg`: Main content surface background (new in 4.2.0), controlled by Design Manager (pageStyle.contentBackgroundColor).
 
 ### Core Classes
-- `.admin-container`: Consumes `--page-bg` and provides page-level background.
-- `.admin-header`: Hero surface that consumes `--header-bg` with consistent width and spacing.
-- `.content-surface`: New reusable wrapper for main page content with background `var(--content-bg)`, blur, radius, shadow, and uniform padding.
+- `.admin-card`: Standard admin content card
+- `<ColoredCard>`: Component with colored left accent border (see CARD_SYSTEM.md)
+- `<AdminLayout>`: Admin page wrapper with Sidebar + TopHeader (see ADMIN_LAYOUT_SYSTEM.md)
 
-### Application
-- Admin: `app/admin/layout.tsx` injects `--page-bg`, `--header-bg`, and `--content-bg` when an admin style is active.
-- Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config` and writes variables to `:root` for stats/edit/filter pages.
-- Pages previously “not wide enough” now wrap their bodies with `.content-surface` to match the admin main content width and visual language.
-
-### Rationale
-- Single-source component (AdminHero) ensures consistent layout and visuals across admin pages.
-- CSS variables provide predictable theming and reduce specificity wars; a single content wrapper normalizes width/padding.
+### Design System
+- All design tokens documented in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
+- TailAdmin V2 flat design (no glass-morphism)
+- Deprecated classes: `.glass-card`, `.content-surface`, `.section-card` (aliases exist for backward compatibility)
+- Current components: `ColoredCard`, `AdminLayout`, `Sidebar`, `TopHeader`
+- Admin: `app/admin/layout.tsx` provides AdminLayout wrapper with sidebar navigation
+- Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config`
 
 ## Configuration Loader (4.2.x)
 
@@ -853,5 +852,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-12T19:40:00.000Z*  
-*Version: 5.50.0*
+*Last Updated: 2025-10-13T11:23:00.000Z*  
+*Version: 5.53.0*

@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
+import ProjectSelector from '@/components/ProjectSelector';
 
 // WHAT: Type definitions for links and projects
 // WHY: Maintains type safety for Bitly integration with MessMass events
@@ -398,22 +399,16 @@ export default function BitlyAdminPage() {
                       </a>
                     </td>
                     <td style={{ wordBreak: 'break-word', maxWidth: '250px' }}>{link.title}</td>
-                    <td style={{ maxWidth: '200px' }}>
-                      {/* WHAT: Inline project reassignment dropdown with width constraint
-                       * WHY: Quick reassignment without opening a modal, prevents overflow */}
-                      <select
-                        value={link.projectId || ''}
-                        onChange={(e) => handleReassignLink(link._id, e.target.value || null)}
-                        className="form-input"
-                        style={{ width: '100%', maxWidth: '200px' }}
-                      >
-                        <option value="">-- Unassigned --</option>
-                        {projects.map(project => (
-                          <option key={project._id} value={project._id}>
-                            {project.eventName}
-                          </option>
-                        ))}
-                      </select>
+                    <td style={{ maxWidth: '250px' }}>
+                      {/* WHAT: ProjectSelector component with search and chip display
+                       * WHY: Better UX than dropdown - search for projects, see chip when selected
+                       * PATTERN: Matches hashtag input - transforms input to chip on selection */}
+                      <ProjectSelector
+                        selectedProjectId={link.projectId}
+                        projects={projects}
+                        onChange={(projectId) => handleReassignLink(link._id, projectId)}
+                        placeholder="Search projects..."
+                      />
                     </td>
                     <td className="stat-number">{link.click_summary.total.toLocaleString()}</td>
                     <td className="text-sm text-gray-600">
