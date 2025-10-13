@@ -1,7 +1,7 @@
 // app/admin/users/page.tsx — Admin Users Management
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AdminHero from '@/components/AdminHero'
@@ -18,15 +18,34 @@ interface ListedUser {
 
 export default function AdminUsersPage() {
   const router = useRouter()
+  
+  // WHAT: Server-side pagination state following established pattern
+  // WHY: Consistent pagination behavior across all admin pages
   const [users, setUsers] = useState<ListedUser[]>([])
+  const [totalMatched, setTotalMatched] = useState<number>(0)
+  const [nextOffset, setNextOffset] = useState<number | null>(0)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const PAGE_SIZE = 20
+  
   const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Create form
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [creating, setCreating] = useState(false)
   const [generatedPassword, setGeneratedPassword] = useState<string | null>(null)
+
+  // WHAT: Debounce search input to reduce API calls
+  // WHY: Prevents excessive requests while user is typing
+  const [debouncedTerm, setDebouncedTerm] = useState('')
+  const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300)
+    return () => clearTimeout(t)
+  }, [searchTerm])
 
   // Auth guard
   useEffect(() => {
@@ -37,7 +56,6 @@ export default function AdminUsersPage() {
           router.push('/admin/login')
           return
         }
-        await loadUsers()
       } catch {
         router.push('/admin/login')
       }
@@ -46,19 +64,88 @@ export default function AdminUsersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadUsers = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/admin/local-users', { cache: 'no-store' })
-      const data = await res.json()
-      if (res.ok && data.success) {
-        setUsers(data.users)
-      } else {
-        setError(data.error || 'Failed to load users')
+  // WHAT: Load first page whenever the debounced search changes
+  // WHY: Server-side search with pagination following established pattern
+  useEffect(() => {
+    const loadFirst = async () => {
+      setLoading(true)
+      abortRef.current?.abort()
+      const ctrl = new AbortController()
+      abortRef.current = ctrl
+      try {
+        const qs = debouncedTerm
+          ? `?search=${encodeURIComponent(debouncedTerm)}&offset=0&limit=${PAGE_SIZE}`
+          : `?offset=0&limit=${PAGE_SIZE}`
+        const res = await fetch(`/api/admin/local-users${qs}`, { cache: 'no-store', signal: ctrl.signal })
+        const data = await res.json()
+        if (data.success) {
+          setUsers(data.users || [])
+          setNextOffset(data.pagination?.nextOffset ?? null)
+          setTotalMatched(data.pagination?.totalMatched ?? data.users?.length ?? 0)
+          setError(null)
+        } else {
+          setError(data.error || 'Failed to load users')
+        }
+      } catch (err) {
+        // Swallow abort errors silently; log others
+        if ((err as any)?.name !== 'AbortError') {
+          console.error('Failed to fetch users:', err)
+          setError('Failed to load users')
+        }
+      } finally {
+        setLoading(false)
       }
-    } catch (e) {
-      setError('Failed to load users')
+    }
+
+    loadFirst()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm])
+
+  // WHAT: Load more users for pagination
+  // WHY: "Load 20 more" button functionality
+  const loadMore = async () => {
+    if (loadingMore || nextOffset == null) return
+    setLoadingMore(true)
+    abortRef.current?.abort()
+    const ctrl = new AbortController()
+    abortRef.current = ctrl
+    try {
+      const qs = debouncedTerm
+        ? `?search=${encodeURIComponent(debouncedTerm)}&offset=${nextOffset}&limit=${PAGE_SIZE}`
+        : `?offset=${nextOffset}&limit=${PAGE_SIZE}`
+      const res = await fetch(`/api/admin/local-users${qs}`, { cache: 'no-store', signal: ctrl.signal })
+      const data = await res.json()
+      if (data.success) {
+        setUsers(prev => [...prev, ...(data.users || [])])
+        setNextOffset(data.pagination?.nextOffset ?? null)
+        setTotalMatched(data.pagination?.totalMatched ?? totalMatched)
+      }
+    } catch (err) {
+      if ((err as any)?.name !== 'AbortError') {
+        console.error('Failed to load more users:', err)
+      }
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  // WHAT: Refresh users after create/regenerate/delete
+  // WHY: Keeps displayed data in sync with database
+  const refreshUsers = async () => {
+    setLoading(true)
+    try {
+      const qs = debouncedTerm
+        ? `?search=${encodeURIComponent(debouncedTerm)}&offset=0&limit=${PAGE_SIZE}`
+        : `?offset=0&limit=${PAGE_SIZE}`
+      const res = await fetch(`/api/admin/local-users${qs}`, { cache: 'no-store' })
+      const data = await res.json()
+      if (data.success) {
+        setUsers(data.users || [])
+        setNextOffset(data.pagination?.nextOffset ?? null)
+        setTotalMatched(data.pagination?.totalMatched ?? data.users?.length ?? 0)
+      }
+    } catch (err) {
+      console.error('Failed to refresh users:', err)
     } finally {
       setLoading(false)
     }
@@ -80,7 +167,7 @@ export default function AdminUsersPage() {
         setEmail('')
         setName('')
         setGeneratedPassword(data.password)
-        await loadUsers()
+        await refreshUsers()
       } else {
         setError(data.error || 'Failed to create user')
       }
@@ -103,7 +190,7 @@ export default function AdminUsersPage() {
       const data = await res.json()
       if (res.ok && data.success) {
         setGeneratedPassword(data.password)
-        await loadUsers()
+        await refreshUsers()
       } else {
         alert(data.error || 'Failed to regenerate password')
       }
@@ -119,7 +206,7 @@ export default function AdminUsersPage() {
       const res = await fetch(`/api/admin/local-users/${id}`, { method: 'DELETE' })
       const data = await res.json().catch(() => ({}))
       if (res.ok && data.success !== false) {
-        await loadUsers()
+        await refreshUsers()
       } else {
         alert(data.error || 'Failed to delete user')
       }
@@ -136,6 +223,10 @@ export default function AdminUsersPage() {
         title="Users Management"
         subtitle="Create and manage admin users"
         backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search users by email or name..."
       />
 
       <ColoredCard accentColor="#10b981" hoverable={false}>
@@ -174,40 +265,69 @@ export default function AdminUsersPage() {
 
       <ColoredCard accentColor="#3b82f6" hoverable={false} className="mt-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">All Admin Users</h2>
-        {loading ? (
+        
+        {/* WHAT: Pagination stats header showing X of Y items
+         * WHY: User feedback on search/filter results */}
+        {!loading && users.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+              Showing {users.length} of {totalMatched} users
+            </div>
+          </div>
+        )}
+        
+        {loading && users.length === 0 ? (
           <div>Loading users…</div>
         ) : error ? (
           <div className="error-text">{error}</div>
-        ) : (
-          <div className="table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Name</th>
-                  <th>Role</th>
-                  <th>Created</th>
-                  <th>Updated</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedUsers.map(u => (
-                  <tr key={u.id}>
-                    <td>{u.email}</td>
-                    <td>{u.name}</td>
-                    <td>{u.role}</td>
-                    <td className="font-mono">{u.createdAt}</td>
-                    <td className="font-mono">{u.updatedAt}</td>
-                    <td className="actions-cell">
-                      <button className="btn btn-small btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
-                      <button className="btn btn-small btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        ) : users.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+            {searchTerm ? `No users found matching "${searchTerm}"` : 'No users yet'}
           </div>
+        ) : (
+          <>
+            <div className="table-wrapper">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id}>
+                      <td>{u.email}</td>
+                      <td>{u.name}</td>
+                      <td>{u.role}</td>
+                      <td className="font-mono">{u.createdAt}</td>
+                      <td className="font-mono">{u.updatedAt}</td>
+                      <td className="actions-cell">
+                        <button className="btn btn-small btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
+                        <button className="btn btn-small btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* WHAT: Load More button for pagination
+             * WHY: Allows loading additional users when more than 20 exist */}
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              {nextOffset != null ? (
+                <button className="btn btn-secondary" disabled={loadingMore} onClick={loadMore}>
+                  {loadingMore ? 'Loading…' : `Load ${PAGE_SIZE} more`}
+                </button>
+              ) : (
+                <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+              )}
+            </div>
+          </>
         )}
       </ColoredCard>
     </div>

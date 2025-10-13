@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
@@ -17,8 +17,16 @@ interface HashtagCategory {
 
 export default function CategoriesPage() {
   const router = useRouter();
+  
+  // WHAT: Server-side pagination state following HashtagEditor pattern
+  // WHY: Consistent pagination behavior across all admin pages
   const [categories, setCategories] = useState<HashtagCategory[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<HashtagCategory[]>([]);
+  const [totalMatched, setTotalMatched] = useState<number>(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 20;
+  
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -30,39 +38,101 @@ export default function CategoriesPage() {
     order: 0
   });
 
-  // Fetch categories
-  const fetchCategories = async () => {
+  // WHAT: Debounce search input to reduce API calls
+  // WHY: Prevents excessive requests while user is typing
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  // WHAT: Load first page whenever the debounced search changes
+  // WHY: Server-side search with pagination following established pattern
+  useEffect(() => {
+    const loadFirst = async () => {
+      setLoading(true);
+      abortRef.current?.abort();
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      try {
+        const qs = debouncedTerm
+          ? `?search=${encodeURIComponent(debouncedTerm)}&offset=0&limit=${PAGE_SIZE}`
+          : `?offset=0&limit=${PAGE_SIZE}`;
+        const res = await fetch(`/api/hashtag-categories${qs}`, { cache: 'no-store', signal: ctrl.signal });
+        const data = await res.json();
+        if (data.success) {
+          setCategories(data.categories || []);
+          setNextOffset(data.pagination?.nextOffset ?? null);
+          setTotalMatched(data.pagination?.totalMatched ?? data.categories?.length ?? 0);
+        } else {
+          setError(data.error || 'Failed to load categories');
+        }
+      } catch (err) {
+        // Swallow abort errors silently; log others
+        if ((err as any)?.name !== 'AbortError') {
+          console.error('Failed to fetch categories:', err);
+          setError('Failed to load categories');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFirst();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm]);
+
+  // WHAT: Load more categories for pagination
+  // WHY: "Load 20 more" button functionality
+  const loadMore = async () => {
+    if (loadingMore || nextOffset == null) return;
+    setLoadingMore(true);
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
     try {
-      const response = await fetch('/api/hashtag-categories');
-      const data = await response.json();
-      
+      const qs = debouncedTerm
+        ? `?search=${encodeURIComponent(debouncedTerm)}&offset=${nextOffset}&limit=${PAGE_SIZE}`
+        : `?offset=${nextOffset}&limit=${PAGE_SIZE}`;
+      const res = await fetch(`/api/hashtag-categories${qs}`, { cache: 'no-store', signal: ctrl.signal });
+      const data = await res.json();
       if (data.success) {
-        setCategories(data.categories);
-        setFilteredCategories(data.categories);
-      } else {
-        setError(data.error || 'Failed to load categories');
+        setCategories(prev => [...prev, ...(data.categories || [])]);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setTotalMatched(data.pagination?.totalMatched ?? totalMatched);
       }
     } catch (err) {
-      console.error('Failed to fetch categories:', err);
-      setError('Failed to load categories');
+      if ((err as any)?.name !== 'AbortError') {
+        console.error('Failed to load more categories:', err);
+      }
+    } finally {
+      setLoadingMore(false);
     }
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  // Filter categories based on search
-  useEffect(() => {
-    if (!searchTerm) {
-      setFilteredCategories(categories);
-    } else {
-      const filtered = categories.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredCategories(filtered);
+  // WHAT: Refresh categories after create/update/delete
+  // WHY: Keeps displayed data in sync with database
+  const refreshCategories = async () => {
+    setLoading(true);
+    try {
+      const qs = debouncedTerm
+        ? `?search=${encodeURIComponent(debouncedTerm)}&offset=0&limit=${PAGE_SIZE}`
+        : `?offset=0&limit=${PAGE_SIZE}`;
+      const res = await fetch(`/api/hashtag-categories${qs}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success) {
+        setCategories(data.categories || []);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setTotalMatched(data.pagination?.totalMatched ?? data.categories?.length ?? 0);
+      }
+    } catch (err) {
+      console.error('Failed to refresh categories:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [searchTerm, categories]);
+  };
 
   // Reset form
   const resetForm = () => {
@@ -96,7 +166,7 @@ export default function CategoriesPage() {
       if (data.success) {
         resetForm();
         setShowCreateForm(false);
-        await fetchCategories();
+        await refreshCategories();
       } else {
         alert(data.error || 'Failed to create category');
       }
@@ -129,7 +199,7 @@ export default function CategoriesPage() {
       if (data.success) {
         resetForm();
         setShowEditForm(false);
-        await fetchCategories();
+        await refreshCategories();
       } else {
         alert(data.error || 'Failed to update category');
       }
@@ -165,7 +235,7 @@ export default function CategoriesPage() {
 
       const data = await response.json();
       if (data.success) {
-        await fetchCategories();
+        await refreshCategories();
       } else {
         alert(data.error || 'Failed to delete category');
       }
@@ -175,7 +245,15 @@ export default function CategoriesPage() {
     }
   };
 
-  // Loading state removed - show content immediately
+  // WHAT: Show loading state during initial fetch
+  // WHY: Better UX while waiting for server response
+  if (loading && categories.length === 0) {
+    return (
+      <div className="page-container">
+        <div className={styles.loading}>Loading categories...</div>
+      </div>
+    );
+  }
 
 if (error) {
     return (
@@ -183,7 +261,7 @@ if (error) {
         <div className={styles.errorCard}>
           <div className={styles.errorIcon}>⚠️</div>
           <div className={styles.errorText}>{error}</div>
-          <button className={styles.retryButton} onClick={fetchCategories}>Try Again</button>
+          <button className={styles.retryButton} onClick={refreshCategories}>Try Again</button>
         </div>
       </div>
     );
@@ -210,11 +288,21 @@ if (error) {
         ]}
       />
 
+      {/* WHAT: Pagination stats header showing X of Y items
+       * WHY: User feedback on search/filter results */}
+      {categories.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {categories.length} of {totalMatched} categories
+          </div>
+        </div>
+      )}
+
       {/* WHAT: Categories grid using centralized ColoredCard component
        * WHY: Single source of truth for colored card styling - NO inline borderLeftColor styles
        *      ColoredCard handles all card design (padding, border, hover, shadow) */}
       <div className={styles.categoryGrid}>
-              {filteredCategories.map((category) => (
+              {categories.map((category) => (
                 <ColoredCard 
                   key={category._id} 
                   accentColor={category.color}
@@ -260,8 +348,22 @@ if (error) {
               ))}
       </div>
 
+      {/* WHAT: Load More button for pagination
+       * WHY: Allows loading additional categories when more than 20 exist */}
+      {categories.length > 0 && (
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          {nextOffset != null ? (
+            <button className="btn btn-secondary" disabled={loadingMore} onClick={loadMore}>
+              {loadingMore ? 'Loading…' : `Load ${PAGE_SIZE} more`}
+            </button>
+          ) : (
+            <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+          )}
+        </div>
+      )}
+
       {/* Empty State */}
-      {filteredCategories.length === 0 && (
+      {categories.length === 0 && !loading && (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📂</div>
           <h3 className={styles.emptyTitle}>

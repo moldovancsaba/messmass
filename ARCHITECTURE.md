@@ -1,6 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-02T12:30:00.000Z
+Last Updated: 2025-10-12T19:40:00.000Z
+Version: 5.50.0
 
 ## Project Overview
 
@@ -498,6 +499,133 @@ For production issues:
 
 ---
 
+## Admin Layout & Navigation System (Version 5.49.3+)
+
+### Overview
+
+The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all MessMass admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
+
+**Status**: Stable, Production-Ready  
+**Documentation**: See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
+**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
+
+### Key Components
+
+#### 1. SidebarContext (`contexts/SidebarContext.tsx`)
+- **Role**: Centralized state management for sidebar behavior
+- **State**: `isCollapsed` (desktop/tablet) and `isMobileOpen` (mobile overlay)
+- **SSR-Safe**: Pure React state, no localStorage (avoids hydration mismatches)
+- **Integration**: Provider wraps entire admin layout in `app/admin/layout.tsx`
+
+#### 2. Sidebar (`components/Sidebar.tsx`)
+- **Role**: Navigation menu with responsive behavior
+- **Navigation Sections**: Content, Configuration, Settings, Help
+- **Active Detection**: Uses `usePathname()` with `startsWith()` logic
+- **Accessibility**: `role="navigation"`, ARIA attributes, keyboard navigation
+- **Mobile**: Hamburger toggle, backdrop click/Escape to close, body scroll lock
+
+#### 3. AdminLayout (`components/AdminLayout.tsx`)
+- **Role**: Layout wrapper providing structure for all admin pages
+- **Composition**: Fixed sidebar + main wrapper (header + content)
+- **Dynamic Margins**: Content margin adjusts based on sidebar state
+- **Max-width**: Content limited to 1600px for readability
+
+#### 4. TopHeader (`components/TopHeader.tsx`)
+- **Role**: Top navigation bar with user info, notifications, and logout
+- **Features**: Welcome message, notification bell (integrated with NotificationPanel), user avatar, logout button
+- **Policy**: No breadcrumbs (per WARP.md policy)
+- **Integration**: Notification system uses 30-second polling
+
+### Component Relationships & Data Flow
+
+```
+app/admin/layout.tsx (Server Component)
+  ├─> Fetches admin user + style settings
+  └─> SidebarProvider (Context)
+      └─> AdminLayout (Client Component)
+          ├─> Sidebar (consumes SidebarContext)
+          └─> mainWrapper
+              ├─> TopHeader (user, notifications)
+              └─> main content (children pages)
+```
+
+### Responsive Behavior
+
+| Breakpoint | Sidebar Width | Behavior | State Variable |
+|------------|---------------|----------|----------------|
+| Desktop (≥1280px) | 280px expanded / 80px collapsed | User toggles with button | `isCollapsed` |
+| Tablet (768-1279px) | 80px (auto-collapsed rail) | Icons only, labels hidden | `isCollapsed` (CSS) |
+| Mobile (<768px) | Overlay (off-canvas) | Hamburger menu opens drawer | `isMobileOpen` |
+
+**Main Content Margins**:
+- Desktop expanded: `margin-left: 280px`
+- Desktop/tablet collapsed: `margin-left: 80px`
+- Mobile: `margin-left: 0` (sidebar is overlay)
+
+### Design System Integration
+
+**CSS Modules**: All components use scoped CSS Modules  
+**Theme Tokens**: Leverages `app/styles/theme.css` for colors, spacing, typography  
+**Tokens Used**: `--mm-space-*`, `--mm-gray-*`, `--mm-color-primary-*`, `--mm-shadow-*`, `--z-*`
+
+**Tech Debt** (documented in CODE_REVIEW_FINDINGS):
+- Hard-coded widths (280px, 80px) should be tokenized
+- Hard-coded breakpoints (768px, 1280px) should be tokenized
+- Missing tooltips on collapsed sidebar icons
+- Missing skip-to-content link (WCAG 2.4.1)
+
+### Accessibility
+
+**Compliance**: WCAG 2.1 Level AA Compliant
+- ✅ Keyboard navigation (Tab, Enter, Escape)
+- ✅ ARIA attributes (`role`, `aria-label`, `aria-expanded`, `aria-controls`)
+- ✅ Color contrast meets 4.5:1 minimum
+- ✅ Touch targets ≥44x44px
+- ✅ Focus-visible styles
+
+### Usage Pattern
+
+All admin pages automatically inherit the layout via `app/admin/layout.tsx`. No explicit imports required:
+
+```tsx
+// app/admin/my-feature/page.tsx
+export default function MyFeaturePage() {
+  return (
+    <div>
+      <h1>My Feature</h1>
+      {/* Sidebar, header, and layout applied automatically */}
+    </div>
+  );
+}
+```
+
+To access sidebar state in child components:
+```typescript
+import { useSidebar } from '@/contexts/SidebarContext';
+const { isCollapsed, setIsCollapsed } = useSidebar();
+```
+
+### Performance
+
+- ✅ Zero unnecessary re-renders
+- ✅ Static navigation data (no fetch required)
+- ✅ Optimized conditional rendering
+- ✅ CSS Modules tree-shakable
+- ✅ No heavy dependencies
+
+### Future Enhancements
+
+See ROADMAP.md for planned improvements:
+1. Tokenize sidebar widths and breakpoints (High priority)
+2. Add tooltips for collapsed sidebar (Medium priority)
+3. Add skip-to-content link (Medium priority)
+4. Persist sidebar state with localStorage (Low priority)
+5. Implement focus trap in mobile overlay (Low priority)
+
+For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md).
+
+---
+
 ## Technology Stack
 ### Frontend
 - **Next.js 15.4.6** - React framework with App Router
@@ -544,5 +672,5 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-01T09:11:20.000Z*
-*Version: 5.16.0*
+*Last Updated: 2025-10-12T19:40:00.000Z*  
+*Version: 5.50.0*

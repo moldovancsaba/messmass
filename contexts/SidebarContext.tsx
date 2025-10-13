@@ -2,9 +2,31 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-/* WHAT: Sidebar state context for managing collapse/expand state
- * WHY: Share sidebar state between Sidebar component and AdminLayout
- *      so main content can adjust margins when sidebar collapses/expands */
+/**
+ * What: Sidebar state management context for admin layout system
+ * Why: Provides shared state between Sidebar component and AdminLayout to coordinate:
+ *      - Desktop/tablet collapse/expand behavior (280px ↔ 80px)
+ *      - Mobile overlay drawer open/close state
+ *      - Main content margin adjustments based on sidebar width
+ *      This centralized approach ensures consistent state across all admin pages without
+ *      prop drilling through the layout hierarchy.
+ * 
+ * Architecture:
+ *      - Pure React state (no localStorage for SSR safety)
+ *      - Type-safe with TypeScript interfaces
+ *      - Custom useSidebar() hook prevents context misuse
+ *      - Provider wraps entire admin layout in app/admin/layout.tsx
+ * 
+ * Responsive Behavior:
+ *      - Desktop (≥1280px): User can toggle between 280px (expanded) and 80px (collapsed)
+ *      - Tablet (768-1279px): Auto-collapsed to 80px, isCollapsed state affects styling
+ *      - Mobile (<768px): isMobileOpen controls overlay drawer visibility
+ * 
+ * Version: 5.49.3
+ * Last Updated: 2025-10-12T19:30:00.000Z
+ * Status: Stable, production-ready
+ * Review: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md
+ */
 
 interface SidebarContextType {
   isCollapsed: boolean;

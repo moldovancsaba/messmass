@@ -57,7 +57,25 @@ async function validateAdminAccess(request: NextRequest): Promise<boolean> {
 
 /**
  * GET /api/hashtag-categories
- * Retrieves all hashtag categories sorted by order
+ * Retrieves hashtag categories with pagination and search support
+ * 
+ * Query Parameters:
+ * - search: Search term to filter category names (case-insensitive)
+ * - offset: Starting position for pagination (default: 0)
+ * - limit: Maximum number of items to return (default: 20, max: 100)
+ * 
+ * Response Format:
+ * {
+ *   success: true,
+ *   categories: HashtagCategory[],
+ *   pagination: {
+ *     mode: 'paginated',
+ *     limit: 20,
+ *     offset: 0,
+ *     nextOffset: 20 | null,  // null if no more items
+ *     totalMatched: number     // Total items matching search
+ *   }
+ * }
  */
 export async function GET(request: NextRequest): Promise<NextResponse<HashtagCategoryApiResponse>> {
   try {
@@ -70,13 +88,39 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
       );
     }
 
+    // WHAT: Parse pagination and search parameters from query string
+    // WHY: Follows established pattern from /api/hashtags and /api/projects
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const limitParam = searchParams.get('limit');
+    const offsetParam = searchParams.get('offset');
+    
+    // WHAT: Validate and constrain limit (1-100), default 20
+    // WHY: Prevents excessive database loads and ensures consistent page sizes
+    const limit = Math.min(Math.max(Number(limitParam) || 20, 1), 100);
+    const offset = Math.max(Number(offsetParam) || 0, 0);
+
     const client = await clientPromise;
     const db = client.db(config.dbName);
     
-    // Fetch all categories from database
+    // WHAT: Build search filter for category names (case-insensitive)
+    // WHY: Case-insensitive regex allows flexible search without exact matches
+    const searchFilter = search
+      ? { name: { $regex: new RegExp(search, 'i') } }
+      : {};
+
+    // WHAT: Count total matching documents for pagination metadata
+    // WHY: Client needs totalMatched to show "X of Y" and know when last page is reached
+    const totalMatched = await db.collection('hashtag_categories')
+      .countDocuments(searchFilter);
+
+    // WHAT: Fetch paginated categories sorted by order field
+    // WHY: Order field ensures consistent display; skip/limit implement pagination
     const categoriesData = await db.collection('hashtag_categories')
-      .find({})
+      .find(searchFilter)
       .sort({ order: 1 }) // Sort by order field for consistent display
+      .skip(offset)
+      .limit(limit)
       .toArray();
 
     // Transform MongoDB documents to HashtagCategory interface
@@ -89,16 +133,30 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
       updatedAt: doc.updatedAt
     }));
 
-    console.log(`✅ Retrieved ${categories.length} hashtag categories`);
+    // WHAT: Calculate nextOffset for "Load More" button
+    // WHY: null indicates last page, number indicates more items available
+    const hasMore = offset + categories.length < totalMatched;
+    const nextOffset = hasMore ? offset + limit : null;
 
-    // WHAT: Apply caching with ETag support for static category data
-    // WHY: Categories rarely change; caching reduces database load
+    console.log(`✅ Retrieved ${categories.length} of ${totalMatched} hashtag categories (offset: ${offset}, search: "${search}")`);
+
+    // WHAT: Return paginated response with metadata
+    // WHY: Consistent API pattern allows reusable client-side pagination components
     const responseData = {
       success: true,
-      categories
+      categories,
+      pagination: {
+        mode: 'paginated' as const,
+        limit,
+        offset,
+        nextOffset,
+        totalMatched
+      }
     };
     
-    const etag = generateETag(categories);
+    // WHAT: ETag caching based on search parameters
+    // WHY: Different searches produce different results; cache key must include params
+    const etag = generateETag({ search, offset, limit, categories });
     
     // Check if client has fresh data
     if (checkIfNoneMatch(request, etag)) {
