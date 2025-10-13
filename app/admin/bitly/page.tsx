@@ -177,6 +177,37 @@ export default function BitlyAdminPage() {
     }
   }
 
+  // WHAT: Pull/refresh analytics data for a specific link (emergency use only)
+  // WHY: Manual override when immediate data update is needed before next daily sync
+  async function handlePullLinkData(linkId: string, bitlink: string) {
+    if (!confirm(`Manually pull latest analytics for ${bitlink}?\n\nNote: Analytics are automatically synced daily at 3 AM UTC. Only use this if you need immediate updates.`)) {
+      return;
+    }
+
+    setError('');
+    setSuccessMessage(`Pulling analytics for ${bitlink}...`);
+
+    try {
+      const res = await fetch(`/api/bitly/analytics/${linkId}?refresh=true`, {
+        method: 'GET',
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.refreshed) {
+        setSuccessMessage(`✓ Analytics refreshed for ${bitlink}`);
+        loadData(); // Reload to show updated analytics
+      } else if (data.success) {
+        setSuccessMessage(`✓ Analytics loaded for ${bitlink} (cached data)`);
+      } else {
+        setError(data.error || 'Failed to pull analytics');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Pull link data error:', err);
+    }
+  }
+
   // WHAT: Trigger manual sync for all links
   // WHY: Allows immediate data refresh without waiting for scheduled sync
   async function handleManualSync() {
@@ -200,6 +231,41 @@ export default function BitlyAdminPage() {
     } catch (err) {
       setError('Network error. Please try again.');
       console.error('Sync error:', err);
+    }
+  }
+
+  // WHAT: Pull links from Bitly organization and import them with full analytics (one-time setup)
+  // WHY: Initial bulk import of existing Bitly links with their complete analytics data
+  async function handlePullData() {
+    if (!confirm('Pull links from your Bitly account?\n\nThis will import up to 50 NEW links with their complete analytics data.\n\n⚠️ Use this for initial setup or when you have new links in Bitly.\nExisting links are automatically synced daily at 3 AM UTC.')) {
+      return;
+    }
+
+    setError('');
+    setSuccessMessage('Pulling data from Bitly... This may take a minute.');
+
+    try {
+      const res = await fetch('/api/bitly/pull', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 50 }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        const summary = data.summary;
+        setSuccessMessage(
+          `✓ ${data.message}\n` +
+          `Total: ${summary.total}, Imported: ${summary.imported}, Skipped: ${summary.skipped}, Errors: ${summary.errors}`
+        );
+        loadData(); // Reload to show newly imported links
+      } else {
+        setError(data.error || 'Pull failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Pull error:', err);
     }
   }
 
@@ -249,6 +315,13 @@ export default function BitlyAdminPage() {
           </p>
         </div>
         <div className="page-header-actions">
+          <button 
+            onClick={handlePullData} 
+            className="btn btn-info"
+            title="Import links from your Bitly organization"
+          >
+            ⬇️ Pull Data
+          </button>
           <button 
             onClick={handleManualSync} 
             className="btn btn-success"
@@ -351,7 +424,7 @@ export default function BitlyAdminPage() {
                   <th>Project</th>
                   <th>Clicks</th>
                   <th>Last Synced</th>
-                  <th>Actions</th>
+                  <th style={{ minWidth: '180px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -393,13 +466,22 @@ export default function BitlyAdminPage() {
                       {formatDate(link.lastSyncAt)}
                     </td>
                     <td>
-                      <button
-                        onClick={() => handleArchiveLink(link._id)}
-                        className="btn btn-small btn-danger"
-                        title="Archive this link"
-                      >
-                        🗑️
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => handlePullLinkData(link._id, link.bitlink)}
+                          className="btn btn-small btn-info"
+                          title="Emergency: Pull fresh analytics now (normally synced daily at 3 AM UTC)"
+                        >
+                          ⬇️
+                        </button>
+                        <button
+                          onClick={() => handleArchiveLink(link._id)}
+                          className="btn btn-small btn-danger"
+                          title="Archive this link"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -411,11 +493,17 @@ export default function BitlyAdminPage() {
 
       {/* WHAT: Info section */}
       <div className="info-box" style={{ marginTop: 'var(--space-6)' }}>
-        <p style={{ margin: '0.5rem 0' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>Auto-Sync:</strong> Links sync automatically every night at 3:00 AM UTC
+        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
         </p>
-        <p style={{ margin: '0.5rem 0' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>Manual Sync:</strong> Click "Sync Now" to refresh analytics immediately
+        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>⬇️ Pull Data (One-Time):</strong> Use this button to import NEW links from your Bitly account. Each link is imported with full analytics (clicks, geographic data, referrers, timeseries).
+        </p>
+        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
+        </p>
+        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>⬇️ Per-Link Pull (Emergency):</strong> The ⬇️ button on each link manually refreshes that specific link's analytics. Only use if you need immediate updates for that link.
         </p>
       </div>
     </div>
