@@ -62,8 +62,9 @@ export default function BitlyAdminPage() {
       setLoading(true);
       setError('');
 
-      // WHAT: Fetch projects for dropdown selection
-      const projectsRes = await fetch('/api/projects');
+      // WHAT: Fetch ALL projects for ProjectSelector (no pagination)
+      // WHY: User needs to search through entire project database, not just first page
+      const projectsRes = await fetch('/api/projects?limit=1000&sortField=eventDate&sortOrder=desc');
       const projectsData = await projectsRes.json();
       
       // WHAT: Fetch all Bitly links (including unassigned)
