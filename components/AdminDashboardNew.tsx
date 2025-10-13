@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import { AdminUser } from '@/lib/auth';
 
 interface AdminDashboardProps {
@@ -17,7 +18,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   return (
     <div className="admin-container">
       {/* Hero Section with Navigation */}
-      <div REPLACE_WITH_COLORED_CARD>
+      <ColoredCard>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h1 className="title" style={{ fontSize: '3rem', marginBottom: '1rem' }}>
             MessMass Admin
@@ -162,10 +163,10 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             </div>
           </a>
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Project Management Section */}
-      <div REPLACE_WITH_COLORED_CARD>
+      <ColoredCard>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -252,10 +253,10 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             </div>
           </div>
         </div>
-      </div>
+      </ColoredCard>
 
       {/* Quick Info Section */}
-      <div REPLACE_WITH_COLORED_CARD>
+      <ColoredCard>
         <h2 className="section-title">Quick Access</h2>
         <div style={{
           display: 'grid',
@@ -298,7 +299,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
             <div style={{ fontSize: '0.875rem', color: '#374151' }}>Categorize with hashtags</div>
           </div>
         </div>
-      </div>
+      </ColoredCard>
     </div>
   );
 }

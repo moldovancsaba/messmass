@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import ColoredCard from "@/components/ColoredCard";
 import PasswordGate from "@/components/PasswordGate";
 
 /**
@@ -41,7 +42,7 @@ export default function PasswordGateDemoPage() {
   }
 
   return (
-    <div className="page-container admin-card">
+    <ColoredCard className="page-container">
       <h1>PasswordGate Demo</h1>
       <p>
         This page demonstrates creating a page password and gating sensitive content for pageId=<code>{pageId}</code> (type: <code>{pageType}</code>).
@@ -52,19 +53,19 @@ export default function PasswordGateDemoPage() {
           {generating ? "Generating…" : "Generate demo password"}
         </button>
         {generated && (
-          <div className="admin-card">
+          <ColoredCard>
             <div><strong>Shareable URL:</strong> {generated.url}</div>
             <div><strong>Password:</strong> {generated.password}</div>
-          </div>
+          </ColoredCard>
         )}
       </div>
 
       <h2>Protected Section</h2>
       <PasswordGate pageId={pageId} pageType={pageType}>
-        <div className="admin-card">
+        <ColoredCard>
           <strong>Unlocked:</strong> You are now viewing protected content gated by PasswordGate.
-        </div>
+        </ColoredCard>
       </PasswordGate>
-    </div>
+    </ColoredCard>
   );
 }

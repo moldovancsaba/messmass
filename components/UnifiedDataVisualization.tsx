@@ -1,4 +1,5 @@
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import { DynamicChart, ChartContainer } from './DynamicChart';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
@@ -97,7 +98,7 @@ export default function UnifiedDataVisualization({
 
   if (loading) {
     return (
-      <div REPLACE_WITH_COLORED_CARD style={{
+      <ColoredCard style={{
         padding: '2rem',
         marginBottom: '2rem',
         textAlign: 'center'
@@ -124,13 +125,13 @@ export default function UnifiedDataVisualization({
             100% { transform: rotate(360deg); }
           }
         `}</style>
-      </div>
+      </ColoredCard>
     );
   }
 
   if (blocks.length === 0 || chartResults.length === 0) {
     return (
-      <div REPLACE_WITH_COLORED_CARD style={{
+      <ColoredCard style={{
         padding: '2rem',
         marginBottom: '2rem',
         textAlign: 'center'
@@ -148,7 +149,7 @@ export default function UnifiedDataVisualization({
           📊 Data Visualization
         </h2>
         <p style={{ color: '#6b7280', margin: 0 }}>No data visualization blocks configured</p>
-      </div>
+      </ColoredCard>
     );
   }
 
@@ -159,7 +160,7 @@ export default function UnifiedDataVisualization({
           // Stable class suffix for CSS and keys: prefer _id, fall back to index
           const idSuffix = block._id || `i${blockIndex}`;
           return (
-            <div key={block._id || `block-${blockIndex}`} REPLACE_WITH_COLORED_CARD style={{
+            <ColoredCard key={block._id || `block-${blockIndex}`} style={{
               padding: '2rem',
               marginBottom: '2rem'
             }}>
@@ -242,7 +243,7 @@ export default function UnifiedDataVisualization({
                   <p>No charts with valid data in this block</p>
                 </div>
               )}
-            </div>
+            </ColoredCard>
           );
         })}
 

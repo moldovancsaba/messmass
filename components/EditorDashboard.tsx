@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ColoredCard from './ColoredCard';
 import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
@@ -472,7 +473,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           // WHY: Prevents empty "Success Manager" or other titled blocks from appearing
           if (filtered.length === 0) return null
           return (
-            <div key={idx} className="admin-card">
+            <ColoredCard key={idx}>
               {title && (
                 <h2 className="section-title">
                   {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
@@ -511,14 +512,14 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   )
                 ))}
               </div>
-            </div>
+            </ColoredCard>
           )
         })}
         {groups.length === 0 && (
-          <div className="admin-card">
+          <ColoredCard>
             <h2 className="section-title">No groups configured</h2>
             <p style={{ color: '#6b7280' }}>Go to Admin → Variables → Groups to initialize default groups.</p>
-          </div>
+          </ColoredCard>
         )}
         
         {/* REMOVED LEGACY SECTIONS */}
@@ -534,7 +535,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             : customVars.some(v => v.flags.editableInManual)
           if (!showAny) return null
           return (
-            <div className="admin-card">
+            <ColoredCard>
               <h2 className="section-title">🧩 Custom Variables</h2>
               <div className="stats-cards-row">
                 {editMode === 'clicker' ? (
@@ -551,7 +552,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   </>
                 )}
               </div>
-            </div>
+            </ColoredCard>
           )
         })()}
         
