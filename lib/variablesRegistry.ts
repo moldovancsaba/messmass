@@ -72,11 +72,20 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
   { name: 'bitlyTopCountry', label: 'Top Country', type: 'text', category: 'Bitly', description: 'Country with most clicks' },
   { name: 'bitlyCountryCount', label: 'Countries Reached', type: 'count', category: 'Bitly', description: 'Number of unique countries' },
   
-  // Bitly - Traffic Sources
-  { name: 'bitlyDirectClicks', label: 'Direct Clicks', type: 'count', category: 'Bitly', description: 'Clicks with no referrer' },
-  { name: 'bitlySocialClicks', label: 'Social Media Clicks', type: 'count', category: 'Bitly', description: 'Clicks from social platforms' },
-  { name: 'bitlyTopReferrer', label: 'Top Referrer', type: 'text', category: 'Bitly', description: 'Domain with most clicks' },
-  { name: 'bitlyReferrerCount', label: 'Referrer Count', type: 'count', category: 'Bitly', description: 'Number of unique referrers' },
+  // Bitly - Traffic Sources (Platform-level)
+  { name: 'bitlyDirectClicks', label: 'Direct Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks with no referrer' },
+  { name: 'bitlySocialClicks', label: 'Social Media Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from social platforms' },
+  { name: 'bitlyTopReferrer', label: 'Top Referrer Platform', type: 'text', category: 'Bitly / Traffic Sources', description: 'Platform with most clicks (e.g., Instagram, Facebook)' },
+  { name: 'bitlyReferrerCount', label: 'Referrer Platforms Count', type: 'count', category: 'Bitly / Traffic Sources', description: 'Number of unique referrer platforms' },
+  
+  // Bitly - Referring Domains (Domain-level, more granular)
+  { name: 'bitlyTopDomain', label: 'Top Referring Domain', type: 'text', category: 'Bitly / Traffic Sources', description: 'Specific domain with most clicks (e.g., l.instagram.com)' },
+  { name: 'bitlyDomainCount', label: 'Referring Domains Count', type: 'count', category: 'Bitly / Traffic Sources', description: 'Number of unique referring domains' },
+  { name: 'bitlyQrCodeClicks', label: 'QR Code Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from qr.partners.bit.ly' },
+  { name: 'bitlyInstagramMobileClicks', label: 'Instagram Mobile Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from l.instagram.com' },
+  { name: 'bitlyInstagramWebClicks', label: 'Instagram Web Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from www.instagram.com' },
+  { name: 'bitlyFacebookMobileClicks', label: 'Facebook Mobile Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from m.facebook.com' },
+  { name: 'bitlyFacebookMessengerClicks', label: 'Facebook Messenger Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from lm.facebook.com' },
   
   // Bitly - Device & Platform (Future)
   { name: 'bitlyMobileClicks', label: 'Mobile Clicks', type: 'count', category: 'Bitly', description: 'Clicks from mobile devices' },
