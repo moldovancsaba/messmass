@@ -11,6 +11,7 @@ import type {
   BitlyClicksTimeseries,
   BitlyCountriesResponse,
   BitlyReferrersResponse,
+  BitlyReferringDomainsResponse,
   BitlyErrorResponse,
   BitlyRateLimitInfo,
   BitlyCampaign,
@@ -357,9 +358,11 @@ export async function getCountries(
 }
 
 /**
- * WHAT: Fetch referrer/traffic source breakdown
+ * WHAT: Fetch referrer/traffic source breakdown (platform-level)
  * WHY: Enables campaign attribution and source tracking (social, email, direct, etc.)
  * REF: GET /v4/bitlinks/{bitlink}/referrers
+ * 
+ * EXAMPLES: "Instagram", "Facebook", "direct", "Google", "Bitly QR Code"
  */
 export async function getReferrers(
   bitlink: string,
@@ -381,21 +384,55 @@ export async function getReferrers(
 }
 
 /**
+ * WHAT: Fetch referring domains breakdown (domain-level, more granular than referrers)
+ * WHY: Provides detailed traffic source attribution at domain level
+ * REF: GET /v4/bitlinks/{bitlink}/referring_domains
+ * 
+ * EXAMPLES:
+ * - "l.instagram.com" (Instagram mobile app)
+ * - "www.instagram.com" (Instagram web)
+ * - "qr.partners.bit.ly" (QR code scans)
+ * - "m.facebook.com" (Facebook mobile)
+ * 
+ * USE CASE: Distinguishes between mobile and web platforms for better attribution
+ */
+export async function getReferringDomains(
+  bitlink: string,
+  options: { unit?: 'day' | 'week' | 'month'; units?: number; unit_reference?: string } = {}
+): Promise<BitlyReferringDomainsResponse> {
+  const normalized = normalizeBitlink(bitlink);
+  const params = new URLSearchParams();
+  
+  if (options.unit) params.append('unit', options.unit);
+  if (options.units) params.append('units', options.units.toString());
+  if (options.unit_reference) params.append('unit_reference', options.unit_reference);
+
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+  const { data } = await bitlyRequest<BitlyReferringDomainsResponse>(
+    `/bitlinks/${normalized}/referring_domains${queryString}`
+  );
+  
+  return data;
+}
+
+/**
  * WHAT: Convenience function to fetch all analytics for a bitlink in one call
  * WHY: Reduces API call count and simplifies sync operations
  * 
  * STRATEGY: Fetch all analytics endpoints in parallel for efficiency
+ * ENDPOINTS: summary, timeseries, countries, referrers, referring_domains
  */
 export async function getFullAnalytics(bitlink: string) {
   const normalized = normalizeBitlink(bitlink);
   
   // WHAT: Fetch all analytics data in parallel
   // WHY: Minimizes total time and respects rate limits by batching
-  const [summary, series, countries, referrers] = await Promise.all([
+  const [summary, series, countries, referrers, referring_domains] = await Promise.all([
     getClicksSummary(normalized, { unit: 'day', units: -1 }), // All-time summary
     getClicksSeries(normalized, { unit: 'day', units: 90 }), // Last 90 days of daily data
     getCountries(normalized, { unit: 'day', units: -1 }), // All-time by country
-    getReferrers(normalized, { unit: 'day', units: -1 }), // All-time referrers
+    getReferrers(normalized, { unit: 'day', units: -1 }), // All-time referrers (platform-level)
+    getReferringDomains(normalized, { unit: 'day', units: -1 }), // All-time domains (granular)
   ]);
 
   return {
@@ -403,5 +440,6 @@ export async function getFullAnalytics(bitlink: string) {
     series,
     countries,
     referrers,
+    referring_domains,
   };
 }

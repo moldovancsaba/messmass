@@ -126,9 +126,11 @@ export interface BitlyCitiesResponse {
 /**
  * Individual referrer click metric
  * WHAT: Click count for a specific referrer/traffic source
+ * 
+ * NOTE: API returns "value" field (e.g., "Instagram", "direct", "Facebook")
  */
 export interface BitlyReferrerMetric {
-  referrer: string; // Referrer domain or "direct" for direct traffic
+  value: string; // Platform name: "direct", "Instagram", "Facebook", "Google", etc.
   clicks: number; // Number of clicks from this referrer
 }
 
@@ -143,6 +145,39 @@ export interface BitlyReferrersResponse {
   unit_reference?: string; // ISO 8601 date reference
   units?: number; // Number of time units
   unit?: 'day' | 'week' | 'month'; // Time unit for aggregation
+  facet?: string; // Facet type (e.g., "referrers")
+}
+
+/**
+ * Individual referring domain click metric
+ * WHAT: Click count for a specific referring domain/URL
+ * 
+ * NOTE: More granular than referrers - shows actual domains
+ * Examples: "l.instagram.com", "m.facebook.com", "www.google.com"
+ */
+export interface BitlyReferringDomainMetric {
+  value: string; // Domain or "direct" (e.g., "l.instagram.com", "qr.partners.bit.ly")
+  clicks: number; // Number of clicks from this domain
+}
+
+/**
+ * Referring Domains response
+ * REF: GET /v4/bitlinks/{bitlink}/referring_domains
+ * WHAT: Detailed domain-level traffic source breakdown
+ * WHY: More granular than referrers - distinguishes between mobile vs web platforms
+ * 
+ * EXAMPLES:
+ * - "l.instagram.com" (Instagram mobile app)
+ * - "www.instagram.com" (Instagram web)
+ * - "m.facebook.com" (Facebook mobile)
+ * - "qr.partners.bit.ly" (QR code scans)
+ */
+export interface BitlyReferringDomainsResponse {
+  metrics: BitlyReferringDomainMetric[]; // Array of domain-level click metrics
+  unit_reference?: string; // ISO 8601 date reference
+  units?: number; // Number of time units
+  unit?: 'day' | 'week' | 'month'; // Time unit for aggregation
+  facet?: string; // Facet type (e.g., "referring_domains")
 }
 
 /**

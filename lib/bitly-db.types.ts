@@ -74,10 +74,19 @@ export interface BitlyLinkDocument {
     }>;
   };
   
-  // WHAT: Traffic source breakdown
-  // WHY: Enables campaign attribution and source tracking
+  // WHAT: Traffic source breakdown (platform-level)
+  // WHY: Enables campaign attribution and source tracking at platform level
+  // EXAMPLES: "Instagram", "Facebook", "direct", "Google"
   referrers: Array<{
-    referrer: string; // Referrer domain or "direct" for direct traffic
+    referrer: string; // Platform name (e.g., "Instagram", "Facebook", "direct")
+    clicks: number;
+  }>;
+  
+  // WHAT: Domain-level traffic source breakdown (more granular than referrers)
+  // WHY: Distinguishes between mobile vs web platforms and specific sources
+  // EXAMPLES: "l.instagram.com" (Instagram mobile), "www.instagram.com" (Instagram web)
+  referring_domains: Array<{
+    domain: string; // Specific domain (e.g., "l.instagram.com", "qr.partners.bit.ly", "direct")
     clicks: number;
   }>;
   

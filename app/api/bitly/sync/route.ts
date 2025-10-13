@@ -16,6 +16,7 @@ import {
   mapSeriesToDaily,
   mapCountries,
   mapReferrers,
+  mapReferringDomains,
   mergeTimeseries,
   calculateSyncStartDate,
 } from '@/lib/bitly-mappers';
@@ -52,13 +53,14 @@ async function syncSingleLink(
     // WHAT: Fetch all analytics from Bitly API in parallel
     // WHY: Minimizes total sync time and reduces sequential API calls
     const analytics = await getFullAnalytics(link.bitlink);
-    apiCalls = 4; // summary + series + countries + referrers
+    apiCalls = 5; // summary + series + countries + referrers + referring_domains
 
     // WHAT: Map API responses to MongoDB structures
     const updatedClickSummary = mapClicksSummary(analytics.summary);
     const newTimeseries = mapSeriesToDaily(analytics.series);
     const updatedCountries = mapCountries(analytics.countries);
     const updatedReferrers = mapReferrers(analytics.referrers);
+    const updatedReferringDomains = mapReferringDomains(analytics.referring_domains);
 
     // WHAT: Merge new timeseries with existing data
     // WHY: Preserves historical data while adding new days
@@ -79,6 +81,7 @@ async function syncSingleLink(
           clicks_timeseries: mergedTimeseries,
           'geo.countries': updatedCountries,
           referrers: updatedReferrers,
+          referring_domains: updatedReferringDomains,
           lastSyncAt: now,
           lastClicksSyncedUntil,
           updatedAt: now,

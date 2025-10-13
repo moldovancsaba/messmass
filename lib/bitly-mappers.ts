@@ -10,6 +10,7 @@ import type {
   BitlyClicksTimeseries,
   BitlyCountriesResponse,
   BitlyReferrersResponse,
+  BitlyReferringDomainsResponse,
 } from './bitly.types';
 import type { BitlyLinkDocument } from './bitly-db.types';
 import { extractCampaign } from './bitly';
@@ -112,6 +113,7 @@ export function mapBitlyLinkToDoc(
       cities: [],
     },
     referrers: [],
+    referring_domains: [],
     
     // WHAT: Set lastSyncAt to epoch to trigger immediate sync
     // WHY: Indicates this link has never been synced
@@ -193,12 +195,40 @@ export function mapCountries(response: BitlyCountriesResponse) {
  * WHAT: Map Bitly referrers response to MongoDB referrers structure
  * WHY: Normalizes traffic source data for attribution analysis
  * 
- * STRATEGY: Sort by click count descending to surface top sources
+ * STRATEGY:
+ * - Map Bitly's "value" field to our "referrer" field
+ * - Sort by click count descending to surface top sources
+ * 
+ * EXAMPLES: "Instagram", "Facebook", "direct", "Google", "Bitly QR Code"
  */
 export function mapReferrers(response: BitlyReferrersResponse) {
   return response.metrics
     .map(metric => ({
-      referrer: metric.referrer || 'direct', // Default to 'direct' if undefined
+      referrer: metric.value || 'direct', // Map Bitly's "value" to our "referrer"
+      clicks: ensureFiniteNumber(metric.clicks),
+    }))
+    .sort((a, b) => b.clicks - a.clicks); // Sort by clicks descending
+}
+
+/**
+ * WHAT: Map Bitly referring domains response to MongoDB referring_domains structure
+ * WHY: Provides granular domain-level traffic source attribution
+ * 
+ * STRATEGY:
+ * - Map Bitly's "value" field to our "domain" field
+ * - Sort by click count descending to surface top domains
+ * - More granular than referrers: distinguishes mobile vs web platforms
+ * 
+ * EXAMPLES:
+ * - "l.instagram.com" (Instagram mobile app)
+ * - "www.instagram.com" (Instagram web)
+ * - "qr.partners.bit.ly" (QR code scans)
+ * - "m.facebook.com" (Facebook mobile)
+ */
+export function mapReferringDomains(response: BitlyReferringDomainsResponse) {
+  return response.metrics
+    .map(metric => ({
+      domain: metric.value || 'direct', // Map Bitly's "value" to our "domain"
       clicks: ensureFiniteNumber(metric.clicks),
     }))
     .sort((a, b) => b.clicks - a.clicks); // Sort by clicks descending
