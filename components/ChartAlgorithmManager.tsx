@@ -385,7 +385,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
                     </td>
                   </tr>
                 ))
-              ))}
+              )}
             </tbody>
           </table>
       </ColoredCard>
@@ -785,7 +785,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
             {config._id ? 'Update' : 'Create'} Chart
           </button>
         </div>
-      </div>
+      </ColoredCard>
       
       {/* Variable Picker Modal */}
       {showVariablePicker && (

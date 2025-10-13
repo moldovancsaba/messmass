@@ -7,8 +7,8 @@ import React from 'react';
 import styles from './ColoredCard.module.css';
 
 interface ColoredCardProps {
-  /** Color for the left border accent */
-  accentColor: string;
+  /** Optional color for the left border accent (default: transparent/no accent) */
+  accentColor?: string;
   /** Optional CSS class names */
   className?: string;
   /** Card content */
@@ -17,6 +17,8 @@ interface ColoredCardProps {
   onClick?: () => void;
   /** Optional hover effect */
   hoverable?: boolean;
+  /** Optional inline styles */
+  style?: React.CSSProperties;
 }
 
 export default function ColoredCard({
@@ -24,12 +26,18 @@ export default function ColoredCard({
   className = '',
   children,
   onClick,
-  hoverable = true
+  hoverable = true,
+  style
 }: ColoredCardProps) {
+  const combinedStyle = {
+    ...style,
+    ...(accentColor ? { borderLeftColor: accentColor } : {})
+  };
+
   return (
     <div
       className={`${styles.coloredCard} ${hoverable ? styles.hoverable : ''} ${className}`}
-      style={{ borderLeftColor: accentColor }}
+      style={combinedStyle}
       onClick={onClick}
     >
       {children}
