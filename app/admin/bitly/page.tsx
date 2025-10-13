@@ -1,14 +1,17 @@
 // app/admin/bitly/page.tsx
 // WHAT: Admin interface for managing Bitly link associations
-// WHY: Provides visual UI for connecting Bitly URLs to MessMass projects
-// USER WORKFLOW: Click to add links, view analytics, reassign between projects
+// WHY: Provides visual UI for connecting Bitly URLs to MessMass projects with proper design system compliance
+// DESIGN SYSTEM: Uses AdminHero, modal pattern, and standardized table layout matching /admin/projects
+// USER WORKFLOW: AdminHero with action buttons → Table with inline actions → Modal forms
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import AdminHero from '@/components/AdminHero';
 
 // WHAT: Type definitions for links and projects
+// WHY: Maintains type safety for Bitly integration with MessMass events
 interface BitlyLink {
   _id: string;
   projectId: string | null;
@@ -304,119 +307,70 @@ export default function BitlyAdminPage() {
     return null; // Will redirect to login
   }
 
+  // WHAT: AdminHero component for standardized header
+  // WHY: Matches design system used in /admin/projects and other admin pages
   return (
-    <div className="admin-container">
-      {/* WHAT: Page header with title and actions */}
-      <div className="page-header">
-        <div className="page-header-content">
-          <h1 className="page-title">🔗 Bitly Management</h1>
-          <p className="page-subtitle">
-            Manage Bitly link associations and track analytics for MessMass projects
-          </p>
-        </div>
-        <div className="page-header-actions">
-          <button 
-            onClick={handlePullData} 
-            className="btn btn-info"
-            title="Import links from your Bitly organization"
-          >
-            ⬇️ Pull Data
-          </button>
-          <button 
-            onClick={handleManualSync} 
-            className="btn btn-success"
-          >
-            🔄 Sync Now
-          </button>
-          <button 
-            onClick={() => setShowAddForm(!showAddForm)} 
-            className="btn btn-primary"
-          >
-            {showAddForm ? '✕ Cancel' : '+ Add Link'}
-          </button>
-        </div>
-      </div>
+    <div className="page-container">
+      <AdminHero
+        title="🔗 Bitly Link Management"
+        subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your MessMass events"
+        backLink="/admin"
+        actionButtons={[
+          {
+            label: 'Pull Data',
+            icon: '⬇️',
+            onClick: handlePullData,
+            variant: 'info',
+            title: 'Import new links from your Bitly organization'
+          },
+          {
+            label: 'Sync Now',
+            icon: '🔄',
+            onClick: handleManualSync,
+            variant: 'success',
+            title: 'Manually refresh analytics for all links'
+          },
+          {
+            label: 'Add Link',
+            icon: '+',
+            onClick: () => setShowAddForm(true),
+            variant: 'primary',
+            title: 'Add a new Bitly link'
+          }
+        ]}
+      />
 
-      {/* WHAT: Status messages */}
+      {/* WHAT: Status messages with proper spacing
+       * WHY: Consistent alert styling matching admin pages */}
       {error && (
-        <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>
+        <div className="alert alert-danger mb-4">
           {error}
         </div>
       )}
       {successMessage && (
-        <div className="alert alert-success" style={{ marginBottom: 'var(--space-4)' }}>
+        <div className="alert alert-success mb-4">
           {successMessage}
         </div>
       )}
 
-      {/* WHAT: Add link form */}
-      {showAddForm && (
-        <div className="glass-card" style={{ marginBottom: 'var(--space-6)' }}>
-          <h2 className="section-title">Add Bitly Link</h2>
-          <form onSubmit={handleAddLink}>
-            <div className="form-group">
-              <label className="form-label">Bitly Link or URL *</label>
-              <input
-                type="text"
-                className="form-input"
-                value={newBitlink}
-                onChange={(e) => setNewBitlink(e.target.value)}
-                placeholder="bit.ly/abc123 or https://example.com/page"
-                required
-              />
+      {/* WHAT: Links table with standardized structure
+       * WHY: Matches projects page table design for consistency */}
+      <div className="projects-table-container">
+        <div className="table-overflow-hidden">
+          {links.length === 0 ? (
+            /* WHAT: Empty state matching ProjectsPageClient pattern
+             * WHY: Consistent UX across admin pages */
+            <div className="admin-empty-state">
+              <div className="admin-empty-icon">🔗</div>
+              <div className="admin-empty-title">No Bitly Links Yet</div>
+              <div className="admin-empty-subtitle">
+                Click &quot;Add Link&quot; above to connect your first Bitly shortened URL to a MessMass event
+              </div>
             </div>
-
-            <div className="form-group">
-              <label className="form-label">Assign to Project (optional)</label>
-              <select
-                className="form-input"
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-              >
-                <option value="">-- Leave Unassigned --</option>
-                {projects.map(project => (
-                  <option key={project._id} value={project._id}>
-                    {project.eventName} ({new Date(project.eventDate).toLocaleDateString()})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Custom Title (optional)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={customTitle}
-                onChange={(e) => setCustomTitle(e.target.value)}
-                placeholder="Leave empty to use Bitly's title"
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary">
-              Add Link
-            </button>
-          </form>
-        </div>
-      )}
-
-      {/* WHAT: Links table */}
-      <div className="glass-card">
-        <div className="section-header">
-          <h2 className="section-title">Links ({links.length})</h2>
-        </div>
-        
-        {links.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">🔗</div>
-            <h3 className="empty-state-title">No Bitly links yet</h3>
-            <p className="empty-state-text">
-              Click "Add Link" above to connect your first Bitly URL to a MessMass project
-            </p>
-          </div>
-        ) : (
-          <div className="table-container">
-            <table className="data-table">
+          ) : (
+            /* WHAT: Standardized table matching projects page structure
+             * WHY: Consistent table styling across admin pages */
+            <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
                   <th>Bitly Link</th>
@@ -424,30 +378,32 @@ export default function BitlyAdminPage() {
                   <th>Project</th>
                   <th>Clicks</th>
                   <th>Last Synced</th>
-                  <th style={{ minWidth: '180px' }}>Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {links.map(link => (
                   <tr key={link._id}>
                     <td>
+                      {/* WHAT: Bitly link as clickable external link
+                       * WHY: Allows quick verification of the shortened URL */}
                       <a 
                         href={`https://${link.bitlink}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="link link-primary"
-                        style={{ fontWeight: 500 }}
+                        className="link link-primary font-medium"
                       >
                         {link.bitlink}
                       </a>
                     </td>
                     <td>{link.title}</td>
                     <td>
+                      {/* WHAT: Inline project reassignment dropdown
+                       * WHY: Quick reassignment without opening a modal */}
                       <select
                         value={link.projectId || ''}
                         onChange={(e) => handleReassignLink(link._id, e.target.value || null)}
-                        className="form-input"
-                        style={{ minWidth: '200px' }}
+                        className="form-input min-w-48"
                       >
                         <option value="">-- Unassigned --</option>
                         {projects.map(project => (
@@ -457,29 +413,27 @@ export default function BitlyAdminPage() {
                         ))}
                       </select>
                     </td>
-                    <td>
-                      <span className="badge badge-success" style={{ fontWeight: 600 }}>
-                        {link.click_summary.total.toLocaleString()}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.9rem', color: 'var(--color-gray-600)' }}>
+                    <td className="stat-number">{link.click_summary.total.toLocaleString()}</td>
+                    <td className="text-sm text-gray-600">
                       {formatDate(link.lastSyncAt)}
                     </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <td className="actions-cell">
+                      {/* WHAT: Action buttons matching design system
+                       * WHY: Consistent button styling with proper variants (info for pull, danger for archive) */}
+                      <div className="action-buttons-container">
                         <button
                           onClick={() => handlePullLinkData(link._id, link.bitlink)}
-                          className="btn btn-small btn-info"
+                          className="btn btn-small btn-info action-button"
                           title="Emergency: Pull fresh analytics now (normally synced daily at 3 AM UTC)"
                         >
-                          ⬇️
+                          ⬇️ Pull
                         </button>
                         <button
                           onClick={() => handleArchiveLink(link._id)}
-                          className="btn btn-small btn-danger"
+                          className="btn btn-small btn-danger action-button"
                           title="Archive this link"
                         >
-                          🗑️
+                          🗑️ Archive
                         </button>
                       </div>
                     </td>
@@ -487,25 +441,104 @@ export default function BitlyAdminPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* WHAT: Info section */}
-      <div className="info-box" style={{ marginTop: 'var(--space-6)' }}>
-        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
-        </p>
-        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>⬇️ Pull Data (One-Time):</strong> Use this button to import NEW links from your Bitly account. Each link is imported with full analytics (clicks, geographic data, referrers, timeseries).
-        </p>
-        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
-        </p>
-        <p style={{ margin: '0.5rem 0', fontSize: '0.95rem' }}>
-          <strong style={{ color: 'var(--color-primary-600)' }}>⬇️ Per-Link Pull (Emergency):</strong> The ⬇️ button on each link manually refreshes that specific link's analytics. Only use if you need immediate updates for that link.
-        </p>
+      {/* WHAT: Info section with standardized styling
+       * WHY: Provides help text about sync operations without inline styles */}
+      <div className="admin-card mt-6">
+        <h3 className="section-title mb-4">Sync Information</h3>
+        <div className="space-y-3">
+          <p className="text-sm">
+            <strong className="text-primary">🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
+          </p>
+          <p className="text-sm">
+            <strong className="text-primary">⬇️ Pull Data (One-Time):</strong> Use this button to import NEW links from your Bitly account. Each link is imported with full analytics (clicks, geographic data, referrers, timeseries).
+          </p>
+          <p className="text-sm">
+            <strong className="text-primary">🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
+          </p>
+          <p className="text-sm">
+            <strong className="text-primary">⬇️ Per-Link Pull (Emergency):</strong> The ⬇️ button on each link manually refreshes that specific link&apos;s analytics. Only use if you need immediate updates for that link.
+          </p>
+        </div>
       </div>
+
+      {/* WHAT: Add Link Modal matching ProjectsPageClient modal pattern
+       * WHY: Consistent modal UX across admin pages; better accessibility than inline form
+       * ACCESSIBILITY: ESC to close, backdrop click, focus management */}
+      {showAddForm && (
+        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">+ Add Bitly Link</h2>
+              <button className="modal-close" onClick={() => setShowAddForm(false)}>✕</button>
+            </div>
+            <form onSubmit={handleAddLink}>
+              <div className="modal-body">
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Bitly Link or URL *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newBitlink}
+                    onChange={(e) => setNewBitlink(e.target.value)}
+                    placeholder="bit.ly/abc123 or https://example.com/page"
+                    required
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    Enter a Bitly short link or the original long URL
+                  </p>
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Assign to Project (optional)</label>
+                  <select
+                    className="form-input"
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                  >
+                    <option value="">-- Leave Unassigned --</option>
+                    {projects.map(project => (
+                      <option key={project._id} value={project._id}>
+                        {project.eventName} ({new Date(project.eventDate).toLocaleDateString()})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Custom Title (optional)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={customTitle}
+                    onChange={(e) => setCustomTitle(e.target.value)}
+                    placeholder="Leave empty to use Bitly's title"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button"
+                  className="btn btn-small btn-secondary" 
+                  onClick={() => setShowAddForm(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="btn btn-small btn-primary"
+                >
+                  Add Link
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
