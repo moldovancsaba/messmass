@@ -411,7 +411,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   return (
     <div className="admin-container">
       {/* Header with same styling as stats page */}
-      <div className="admin-card admin-header">
+      <div className="admin-header">
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{project.eventName}</h1>
@@ -456,7 +456,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         </div>
       </div>
 
-      <div className="admin-card content-grid">
+      <div className="content-grid">
         {/* Groups-driven rendering only (no legacy sections) */}
         {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => {
           const chart = chartById(g.chartId)
@@ -472,7 +472,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           // WHY: Prevents empty "Success Manager" or other titled blocks from appearing
           if (filtered.length === 0) return null
           return (
-            <div key={idx} className="admin-card admin-card">
+            <div key={idx} className="admin-card">
               {title && (
                 <h2 className="section-title">
                   {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
@@ -515,7 +515,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           )
         })}
         {groups.length === 0 && (
-          <div className="admin-card admin-card">
+          <div className="admin-card">
             <h2 className="section-title">No groups configured</h2>
             <p style={{ color: '#6b7280' }}>Go to Admin → Variables → Groups to initialize default groups.</p>
           </div>
@@ -534,7 +534,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             : customVars.some(v => v.flags.editableInManual)
           if (!showAny) return null
           return (
-            <div className="admin-card admin-card">
+            <div className="admin-card">
               <h2 className="section-title">🧩 Custom Variables</h2>
               <div className="stats-cards-row">
                 {editMode === 'clicker' ? (

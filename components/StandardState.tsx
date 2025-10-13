@@ -18,7 +18,7 @@ export default function StandardState({ variant, title, message, icon, children 
   }[variant];
 
   return (
-    <div className="admin-card" style={{
+    <div REPLACE_WITH_COLORED_CARD style={{
       padding: '2rem',
       textAlign: 'center',
       background: palette.bg,

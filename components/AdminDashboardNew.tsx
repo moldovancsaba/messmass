@@ -17,7 +17,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
   return (
     <div className="admin-container">
       {/* Hero Section with Navigation */}
-      <div className="admin-card">
+      <div REPLACE_WITH_COLORED_CARD>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h1 className="title" style={{ fontSize: '3rem', marginBottom: '1rem' }}>
             MessMass Admin
@@ -165,7 +165,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       </div>
 
       {/* Project Management Section */}
-      <div className="admin-card">
+      <div REPLACE_WITH_COLORED_CARD>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -255,7 +255,7 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
       </div>
 
       {/* Quick Info Section */}
-      <div className="admin-card">
+      <div REPLACE_WITH_COLORED_CARD>
         <h2 className="section-title">Quick Access</h2>
         <div style={{
           display: 'grid',

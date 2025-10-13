@@ -98,40 +98,43 @@ Use design tokens when possible:
 
 ---
 
-## 🔄 Deprecated Classes - REMOVED
+## 🔄 ALL CSS Card Classes REMOVED
 
-**Old classes have been completely removed from the codebase:**
+**These classes have been COMPLETELY REMOVED from the codebase:**
 
-### .glass-card → .admin-card or ColoredCard
+### NO CSS Classes - Use ColoredCard Component ONLY
+
+**REMOVED Classes**:
+- `.glass-card` → Use `<ColoredCard>`
+- `.content-surface` → Use `<ColoredCard>`
+- `.section-card` → Use `<ColoredCard>`
+- `.admin-card` → Use `<ColoredCard>`
+
+**Correct Usage**:
 ```tsx
-// Old (REMOVED)
+// ✅ Component-based (CORRECT)
+import ColoredCard from '@/components/ColoredCard';
+
+<ColoredCard>
+  Your content here
+</ColoredCard>
+
+// With accent color
+<ColoredCard accentColor="#3b82f6">
+  Your content here
+</ColoredCard>
+```
+
+**❌ NO CSS Classes**:
+```tsx
+// ❌ These NO LONGER WORK - classes removed
+<div className="admin-card">...</div>
 <div className="glass-card">...</div>
-
-// Now use
-<div className="admin-card">...</div>
-// or
-<ColoredCard accentColor="#3b82f6">...</ColoredCard>
-```
-
-### .content-surface → .admin-card
-```tsx
-// Old (REMOVED)
 <div className="content-surface">...</div>
-
-// Now use
-<div className="admin-card">...</div>
-```
-
-### .section-card → .admin-card
-```tsx
-// Old (REMOVED)
 <div className="section-card">...</div>
-
-// Now use
-<div className="admin-card">...</div>
 ```
 
-**All references throughout the codebase have been updated. No backward compatibility.**
+**Refactor Status**: CSS removed ✅ | Code migration in progress (see REFACTOR_TODO_ADMIN_CARD.md)
 
 ---
 

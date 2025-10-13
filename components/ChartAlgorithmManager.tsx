@@ -246,7 +246,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
   if (loading) {
     return (
-      <div className="admin-card">
+      <div REPLACE_WITH_COLORED_CARD>
         <div className="loading-spinner">Loading chart configurations...</div>
       </div>
     );
@@ -255,7 +255,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <div className="admin-card" style={{ marginBottom: '2rem' }}>
+      <div REPLACE_WITH_COLORED_CARD style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
           <div>
@@ -294,7 +294,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
 
       {/* Chart Configurations List */}
-      <div className="admin-card">
+      <div REPLACE_WITH_COLORED_CARD>
           <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
           <table className="data-table">
             <thead>

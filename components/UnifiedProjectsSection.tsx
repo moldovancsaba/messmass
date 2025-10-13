@@ -28,7 +28,7 @@ export default function UnifiedProjectsSection({
   }
 
   return (
-    <div className="admin-card" style={{
+    <div REPLACE_WITH_COLORED_CARD style={{
       padding: '2rem',
       marginBottom: '2rem'
     }}>

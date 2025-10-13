@@ -445,7 +445,7 @@ export default function BitlyAdminPage() {
 
       {/* WHAT: Info section with standardized styling
        * WHY: Provides help text about sync operations without inline styles */}
-      <div className="admin-card mt-6">
+      <div className="mt-6">
         <h3 className="section-title mb-4">Sync Information</h3>
         <div className="space-y-3">
           <p className="text-sm">

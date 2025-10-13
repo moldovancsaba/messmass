@@ -90,15 +90,17 @@ Sizes: `.btn-{small,large}`
 
 ### Cards
 
-**Standard**:
+**ONLY USE ColoredCard Component** (see [CARD_SYSTEM.md](./CARD_SYSTEM.md)):
 ```tsx
-<div className="admin-card">Content</div>
+<ColoredCard>Content</ColoredCard>
 ```
 
-**ColoredCard** (see [CARD_SYSTEM.md](./CARD_SYSTEM.md)):
+**With Accent Color**:
 ```tsx
 <ColoredCard accentColor="#3b82f6">Content</ColoredCard>
 ```
+
+**❌ NO CSS CLASSES**: `.admin-card`, `.glass-card`, `.content-surface`, `.section-card` have been REMOVED
 
 ---
 
@@ -135,14 +137,16 @@ See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
-## ⚠️ Deprecated Classes REMOVED
+## ⚠️ ALL CSS Card Classes REMOVED
 
-**These classes have been REMOVED** (no backward compatibility):
-- `.glass-card` → Now `.admin-card` or `<ColoredCard>`
-- `.content-surface` → Now `.admin-card`
-- `.section-card` → Now `.admin-card`
+**These classes have been COMPLETELY REMOVED** (no backward compatibility):
+- `.glass-card` → REMOVED, use `<ColoredCard>`
+- `.content-surface` → REMOVED, use `<ColoredCard>`
+- `.section-card` → REMOVED, use `<ColoredCard>`
+- `.admin-card` → REMOVED, use `<ColoredCard>`
 
-**All references in codebase have been updated.** Rock-solid refactor complete.
+**Component-based architecture ONLY**: All card UI must use `<ColoredCard>` component.
+**Refactor status**: CSS classes removed, code migration in progress (see REFACTOR_TODO_ADMIN_CARD.md)
 
 ---
 
