@@ -1,4 +1,5 @@
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 
 interface ActionButton {
@@ -59,7 +60,7 @@ export default function UnifiedAdminHero({
   const variantClass = (v: ActionButton['variant'] = 'primary') => `btn-${v}`;
 
   return (
-    <div className="admin-header admin-card">
+    <ColoredCard className="admin-header">
       <div className="admin-header-content">
         {/* Left Side - Branding and Content */}
         <div className="admin-branding">
@@ -160,6 +161,6 @@ export default function UnifiedAdminHero({
           </div>
         </div>
       </div>
-    </div>
+    </ColoredCard>
   );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 
 interface Badge {
@@ -43,7 +44,7 @@ export default function AdminPageHero({
 }: AdminPageHeroProps) {
   return (
     <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
-      <div className="admin-header admin-card" style={{ margin: 0 }}>
+      <ColoredCard className="admin-header" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">
@@ -216,7 +217,7 @@ export default function AdminPageHero({
             )}
           </div>
         )}
-      </div>
+      </ColoredCard>
     </div>
   );
 }

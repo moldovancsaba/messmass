@@ -1,4 +1,5 @@
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 import { PageStyle } from '@/lib/pageStyleTypes';
@@ -36,7 +37,7 @@ export default function UnifiedPageHero({
   return (
     <div style={{ padding: '2rem' }}>
       {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
-      <div className="admin-header admin-card" style={{ margin: 0 }}>
+      <ColoredCard className="admin-header" style={{ margin: 0 }}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{title}</h1>
@@ -189,7 +190,7 @@ export default function UnifiedPageHero({
             )}
           </div>
         )}
-      </div>
+      </ColoredCard>
     </div>
   );
 }

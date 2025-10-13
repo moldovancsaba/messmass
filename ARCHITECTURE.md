@@ -27,17 +27,17 @@ MessMass is a project management system built with Next.js, TypeScript, and Mong
 - `--header-bg`: Header/Hero surface background (fallback: `rgba(255, 255, 255, 0.95)`).
 - `--content-bg`: Main content surface background (new in 4.2.0), controlled by Design Manager (pageStyle.contentBackgroundColor).
 
-### Core Classes
-- `.admin-card`: Standard admin content card
-- `<ColoredCard>`: Component with colored left accent border (see CARD_SYSTEM.md)
+### Core Components
+- `<ColoredCard>`: Card component with optional colored left accent border (see CARD_SYSTEM.md)
 - `<AdminLayout>`: Admin page wrapper with Sidebar + TopHeader (see ADMIN_LAYOUT_SYSTEM.md)
 
 ### Design System
 - All design tokens documented in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
 - TailAdmin V2 flat design (no glass-morphism)
-- Old classes REMOVED: `.glass-card`, `.content-surface`, `.section-card` (now use `.admin-card`)
+- **ALL CSS card classes REMOVED**: `.glass-card`, `.content-surface`, `.section-card`, `.admin-card`
+- **ONLY USE**: `<ColoredCard>` component for all card UI
 - Current components: `ColoredCard`, `AdminLayout`, `Sidebar`, `TopHeader`
-- All card styling uses `.admin-card` class or `<ColoredCard>` component
+- All card styling uses `<ColoredCard>` component ONLY (component-based architecture)
 - Admin: `app/admin/layout.tsx` provides AdminLayout wrapper with sidebar navigation
 - Public: `components/PagePasswordLogin.tsx` resolves page style via `/api/page-config`
 

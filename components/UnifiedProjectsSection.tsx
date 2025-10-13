@@ -1,4 +1,5 @@
 import React from 'react';
+import ColoredCard from './ColoredCard';
 import CategorizedHashtagBubble from './CategorizedHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 
@@ -28,7 +29,7 @@ export default function UnifiedProjectsSection({
   }
 
   return (
-    <div className="admin-card" style={{
+    <ColoredCard style={{
       padding: '2rem',
       marginBottom: '2rem'
     }}>
@@ -195,6 +196,6 @@ export default function UnifiedProjectsSection({
           </div>
         ))}
       </div>
-    </div>
+    </ColoredCard>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import ColoredCard from './ColoredCard';
 import { ChartConfiguration, AVAILABLE_VARIABLES, AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
@@ -246,16 +247,16 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
 
   if (loading) {
     return (
-      <div className="admin-card">
+      <ColoredCard>
         <div className="loading-spinner">Loading chart configurations...</div>
-      </div>
+      </ColoredCard>
     );
   }
 
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <div className="admin-card" style={{ marginBottom: '2rem' }}>
+      <ColoredCard style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
           <div>
@@ -290,11 +291,11 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
             <div className="stat-label">KPI Charts</div>
           </div>
         </div>
-      </div>
+      </ColoredCard>
 
 
       {/* Chart Configurations List */}
-      <div className="admin-card">
+      <ColoredCard>
           <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
           <table className="data-table">
             <thead>
@@ -387,7 +388,7 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
               )}
             </tbody>
           </table>
-        </div>
+      </ColoredCard>
 
       {/* Chart Configuration Editor Modal */}
       {showEditor && editingConfig && (
@@ -607,7 +608,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content admin-card" style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
+      <ColoredCard className="modal-content" style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
         <div className="modal-header">
           <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
           <button className="btn btn-secondary" onClick={onCancel}>✕</button>
@@ -784,7 +785,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
             {config._id ? 'Update' : 'Create'} Chart
           </button>
         </div>
-      </div>
+      </ColoredCard>
       
       {/* Variable Picker Modal */}
       {showVariablePicker && (

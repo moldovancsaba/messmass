@@ -873,13 +873,18 @@
 .user-select-none { user-select: none; }
 
 /* ========================================
-   DEPRECATED CLASSES REMOVED
+   ALL CSS CARD CLASSES REMOVED
 ======================================== */
 
-/* WHAT: Deprecated glass-morphism classes have been REMOVED
-   WHY: Rock-solid refactor - use proper classes instead:
-   - .glass-card → .admin-card or <ColoredCard>
-   - .content-surface → .admin-card
-   - .section-card → .admin-card
+/* WHAT: ALL CSS-based card classes have been COMPLETELY REMOVED
+   WHY: Component-based architecture only - no CSS classes for cards
    
-   NO BACKWARD COMPATIBILITY - All references must be updated */
+   REMOVED CLASSES (NO LONGER EXIST):
+   - .glass-card
+   - .content-surface
+   - .section-card
+   - .admin-card
+   
+   ONLY USE: <ColoredCard> component from /components/ColoredCard.tsx
+   
+   NO BACKWARD COMPATIBILITY - All code must use React components */
