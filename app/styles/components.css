@@ -172,7 +172,7 @@
 ======================================== */
 
 .form-group {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .form-label {
@@ -913,7 +913,7 @@ textarea::placeholder {
   background: white;
   border-radius: 12px;
   padding: 0;
-  max-width: 600px;
+  max-width: 800px;
   width: 90%;
   max-height: 90vh;
   overflow: auto;

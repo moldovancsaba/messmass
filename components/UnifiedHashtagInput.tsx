@@ -317,6 +317,7 @@ export default function UnifiedHashtagInput({
                   key={index}
                   hashtag={hashtag}
                   categoryColor={categoryColor}
+                  small={true}
                   customStyle={{
                     fontSize: '0.875rem',
                     fontWeight: '500'

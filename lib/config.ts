@@ -8,7 +8,7 @@ export type AppConfig = {
   mongodbUri: string;
   dbName: string;
   // Security policy: do NOT provide a baked default for secrets. If callers need this, they must use env.require('ADMIN_PASSWORD').
-  // Kept optional here to avoid import-time throws for modules that don’t use it at build time.
+  // Kept optional here to avoid import-time throws for modules that don't use it at build time.
   adminPassword?: string;
   nextPublicWsUrl?: string; // Optional, for real-time server if configured
   nodeEnv: 'development' | 'production' | 'test' | string;
@@ -17,6 +17,13 @@ export type AppConfig = {
   // Centralized service bases (server-only)
   appBaseUrl?: string;
   apiBaseUrl?: string;
+  // Bitly API integration (server-only)
+  // WHAT: Access token for Bitly API v4 authentication
+  // WHY: Required to fetch link analytics and manage shortened URLs for event tracking
+  bitlyAccessToken?: string;
+  // WHAT: Optional organization/group GUID to restrict API calls to specific workspace
+  // WHY: Improves performance and organization when working with multiple Bitly workspaces
+  bitlyOrganizationGuid?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -54,6 +61,11 @@ export const config: AppConfig = {
   // Service bases (server-only)
   appBaseUrl: getEnv('APP_BASE_URL'),
   apiBaseUrl: getEnv('API_BASE_URL'),
+  // Bitly API integration (server-only)
+  // WHAT: Read Bitly credentials from environment variables
+  // WHY: Required for importing link analytics from Bitly into MessMass event projects
+  bitlyAccessToken: getEnv('BITLY_ACCESS_TOKEN'),
+  bitlyOrganizationGuid: getEnv('BITLY_ORGANIZATION_GUID'),
 };
 
 // Convenience helpers to encourage centralization and avoid direct process.env usage

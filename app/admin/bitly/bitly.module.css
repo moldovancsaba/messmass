@@ -1,0 +1,287 @@
+/* app/admin/bitly/bitly.module.css */
+/* WHAT: Styling for Bitly link management admin interface */
+/* WHY: Provides clean, professional UI matching MessMass design system */
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #333;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.syncButton,
+.addButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.syncButton {
+  background: #4CAF50;
+  color: white;
+}
+
+.syncButton:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.addButton {
+  background: #2196F3;
+  color: white;
+}
+
+.addButton:hover {
+  background: #0b7dda;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #c62828;
+}
+
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #4CAF50;
+}
+
+.addForm {
+  background: #f5f5f5;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.addForm h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #2196F3;
+}
+
+.submitButton {
+  background: #2196F3;
+  color: white;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+  background: #0b7dda;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.linksTable {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.linksTable h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.linksTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.linksTable thead {
+  background: #f5f5f5;
+}
+
+.linksTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+}
+
+.linksTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.linksTable tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.linkUrl {
+  color: #2196F3;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.linkUrl:hover {
+  text-decoration: underline;
+}
+
+.projectSelect {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 200px;
+}
+
+.projectSelect:focus {
+  outline: none;
+  border-color: #2196F3;
+}
+
+.clickCount {
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.timestamp {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.archiveButton {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.archiveButton:hover {
+  transform: scale(1.2);
+}
+
+.info {
+  background: #e3f2fd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #2196F3;
+}
+
+.info p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.info strong {
+  color: #1976d2;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .syncButton,
+  .addButton {
+    width: 100%;
+  }
+
+  .linksTable {
+    overflow-x: auto;
+  }
+
+  .linksTable table {
+    min-width: 800px;
+  }
+}

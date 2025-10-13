@@ -1,0 +1,210 @@
+/* components/BitlyLinksEditor.module.css */
+/* WHAT: Styling for inline Bitly links editor in event edit page */
+/* WHY: Matches MessMass design system with clean, compact layout */
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.count {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 400;
+}
+
+.addButton {
+  background: #2196F3;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  background: #0b7dda;
+  transform: translateY(-1px);
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border-left: 3px solid #c62828;
+  font-size: 0.9rem;
+}
+
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border-left: 3px solid #4CAF50;
+  font-size: 0.9rem;
+}
+
+.addForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2196F3;
+}
+
+.submitButton {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.submitButton:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-size: 0.95rem;
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.linkCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.linkCard:hover {
+  background: #f5f5f5;
+  border-color: #2196F3;
+}
+
+.linkInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.linkUrl {
+  color: #2196F3;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.linkUrl:hover {
+  text-decoration: underline;
+}
+
+.linkMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.clicks {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.separator {
+  color: #ddd;
+}
+
+.title {
+  color: #666;
+  font-style: italic;
+}
+
+.removeButton {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.removeButton:hover {
+  color: #c62828;
+  background: #ffebee;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .addForm {
+    flex-direction: column;
+  }
+
+  .linkCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .removeButton {
+    align-self: flex-end;
+  }
+}
