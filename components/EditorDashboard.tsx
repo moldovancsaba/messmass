@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
-import BitlyLinksEditor from './BitlyLinksEditor';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -556,15 +555,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           )
         })()}
         
-        {/* Bitly Links Management Section */}
-        {/* WHAT: Inline Bitly link management for this event */}
-        {/* WHY: Allows admins to connect Bitly links directly from event editor */}
-        <div className="glass-card section-card">
-          <BitlyLinksEditor projectId={project._id} projectName={project.eventName} />
-        </div>
-        
         {/* Hashtag Management Section - REMOVED per user request */}
         {/* Hashtags are now managed elsewhere in the system */}
+        {/* Bitly Links Management Section - MOVED to Edit Project modal in admin/projects */}
       </div>
     </div>
   );

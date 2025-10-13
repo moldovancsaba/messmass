@@ -8,6 +8,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import SharePopup from '@/components/SharePopup';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -984,6 +985,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                     <option key={s._id} value={s._id}>{s.name}</option>
                   ))}
                 </select>
+              </div>
+              
+              {/* WHAT: Bitly Links Management Section */}
+              {/* WHY: Allows admins to connect Bitly links directly from project edit modal */}
+              <div className="form-group">
+                <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
               </div>
             </div>
             <div className="modal-footer">
