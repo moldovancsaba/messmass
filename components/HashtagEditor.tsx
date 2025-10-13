@@ -325,14 +325,18 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
         </div>
       )}
 
-      {/* Project Hashtags List */}
-      <div className={styles.hashtagsList}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <h4 style={{ margin: 0 }}>Project Hashtags ({totalMatched})</h4>
+      {/* WHAT: Pagination stats header showing X of Y items
+       * WHY: Consistent format across all admin pages (Categories, Users, Projects, Filter) */}
+      {!loading && projectHashtags.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
           <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-            Showing {projectHashtags.length} of {totalMatched}
+            Showing {projectHashtags.length} of {totalMatched} hashtags
           </div>
         </div>
+      )}
+
+      {/* Project Hashtags List */}
+      <div className={styles.hashtagsList}>
         
         {loading ? (
           <div className={styles.loading}>Loading hashtags...</div>

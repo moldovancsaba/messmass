@@ -626,6 +626,187 @@ For complete documentation, usage examples, troubleshooting, and technical detai
 
 ---
 
+## Admin Variables & Metrics Management System (Version 5.52.0)
+
+### Overview
+
+The Admin Variables System is a centralized configuration layer that controls which metrics appear in the Editor's rapid-counting interface (Clicker), which metrics are manually editable, how variables are grouped and ordered, and how they're referenced in formulas and chart configurations.
+
+**Status**: Production-Ready  
+**Documentation**: See [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md) for complete documentation
+
+### Key Components
+
+#### 1. Variable Registry (`lib/variablesRegistry.ts`)
+- **Role**: Single source of truth for base and derived variables
+- **Base Variables**: Stats fields (images, fans, demographics, merchandise, visits, event)
+- **Derived Variables**: Auto-computed metrics (totalImages, totalFans, totalVisit)
+- **Text Variables**: Dynamic hashtag category variables
+- **Type Safety**: TypeScript interfaces for `VariableDefinition`
+
+#### 2. SEYU Reference Tokens (`lib/variableRefs.ts`)
+- **Role**: Organization-prefixed token generation for multi-tenancy readiness
+- **Format**: `[SEYUSUFFIX]` with normalization rules
+- **Normalization**: ALL→TOTAL, VISITED→VISIT, VISIT*→*VISIT, FANS suffix, MERCH prefix
+- **Usage**: Chart formulas reference variables as `[SEYUMERCHEDFANS]`, `[SEYUTOTALIMAGES]`
+
+#### 3. Variables Configuration API (`/api/variables-config`)
+- **Role**: Merge registry with MongoDB overrides and flags
+- **GET**: Fetch all variables with flags and ordering
+- **POST**: Create/update variable metadata and flags
+- **DELETE**: Remove custom or overridden variables
+- **Collection**: `variablesConfig` in MongoDB
+
+#### 4. Variables Admin UI (`/app/admin/variables/page.tsx`)
+- **Features**: CRUD operations, search/filter, drag-and-drop ordering
+- **Groups Manager**: Control Editor layout with variable grouping
+- **Flags Management**: Toggle visibleInClicker / editableInManual per variable
+- **Custom Variables**: Create project-specific metrics via modal
+
+### Data Model
+
+**Variable Definition (Registry)**
+```typescript
+interface VariableDefinition {
+  name: string;           // camelCase identifier
+  label: string;          // Display name
+  type: 'count' | 'percentage' | 'currency' | 'numeric' | 'text';
+  category: string;       // Grouping (Images, Fans, Demographics, etc.)
+  description?: string;
+  derived?: boolean;      // True for computed variables
+  formula?: string;       // Formula string for derived variables
+  aliases?: string[];     // Alternative names
+}
+```
+
+**Variable Config (Database)**
+```typescript
+interface VariableConfigDoc {
+  _id: string;            // Equals name for easy upsert
+  name: string;
+  label?: string;         // Override registry label
+  type?: string;          // Override registry type
+  category?: string;      // Override registry category
+  derived?: boolean;
+  formula?: string;
+  isCustom?: boolean;     // True for user-defined variables
+  flags: {
+    visibleInClicker: boolean;    // Show in Editor Clicker UI
+    editableInManual: boolean;    // Allow manual editing
+  };
+  clickerOrder?: number;  // Button position in Clicker
+  manualOrder?: number;   // Field position in Manual mode
+  createdAt: string;      // ISO 8601 with milliseconds
+  updatedAt: string;      // ISO 8601 with milliseconds
+}
+```
+
+**Variable Group (Database)**
+```typescript
+interface VariableGroup {
+  _id?: string;
+  groupOrder: number;         // Display sequence
+  chartId?: string;           // KPI chart to show above variables
+  titleOverride?: string;     // Custom section title
+  variables: string[];        // Ordered array of variable names
+}
+```
+
+### Visibility & Editability Flags
+
+**Default Flags by Category**:
+- **Images, Fans, Demographics, Merchandise**: `{ visibleInClicker: true, editableInManual: true }`
+- **Moderation, Visits, Event**: `{ visibleInClicker: false, editableInManual: true }`
+- **Derived/Text**: `{ visibleInClicker: false, editableInManual: false }`
+
+**Rationale**:
+- Clicker designed for high-frequency live event metrics
+- Manual mode for post-event data entry (all base stats)
+- Derived/text variables are computed or non-numeric
+
+### SEYU Token Examples
+
+| Variable Name | Registry Label | SEYU Token | Normalization Rule |
+|---------------|---------------|------------|--------------------|
+| `allImages` | Total Images | `[SEYUTOTALIMAGES]` | ALL → TOTAL |
+| `visitShortUrl` | Short URL Visits | `[SEYUSHORTURLVISIT]` | VISIT* → *VISIT |
+| `eventValuePropositionVisited` | Value Prop Visited | `[SEYUPROPOSITIONVISIT]` | VISITED → VISIT |
+| `stadium` | Location | `[SEYUSTADIUMFANS]` | Add FANS suffix |
+| `merched` | People with Merch | `[SEYUMERCHEDFANS]` | Explicit mapping |
+| `jersey` | Jerseys | `[SEYUMERCHERSEY]` | MERCH prefix |
+
+### Variable Groups Manager
+
+**Purpose**: Controls Editor dashboard layout by organizing variables into themed sections with optional KPI charts.
+
+**Default Groups** (initialized via "Initialize default groups"):
+1. **Images** (order 1) — remoteImages, hostessImages, selfies + `all-images-taken` chart
+2. **Location** (order 2) — remoteFans, stadium + `total-fans` chart
+3. **Demographics** (order 3) — female, male, genAlpha, genYZ, genX, boomer
+4. **Merchandise** (order 4) — merched, jersey, scarf, flags, baseballCap, other
+
+**API**: `/api/variables-groups` (GET/POST/DELETE)
+
+### Custom Variables
+
+**Purpose**: Allows admins to define project-specific metrics beyond base registry (e.g., `vipGuests`, `pressAttendees`).
+
+**Creation Flow**:
+1. Click "New Variable" in Admin Variables page
+2. Fill form: name (camelCase), label, type, category, flags
+3. Variable persisted with `isCustom: true` in MongoDB
+4. Values stored in `project.stats` alongside base variables
+
+**Deletion**: Custom variables deletable via "🗑️ Delete" button (admin has full CRUD control).
+
+### Integration with Editor
+
+**Editor Dashboard Consumption** (`/app/edit/[slug]/page.tsx`):
+1. Fetches `/api/variables-config` on mount
+2. Filters for Clicker: `visibleInClicker === true`
+3. Orders by `clickerOrder` (ascending) within each category
+4. Renders grouped sections if groups exist, with KPI charts if `chartId` set
+5. Manual mode checks `editableInManual` flag to show/hide input fields
+
+**Benefits**:
+- Runtime configuration without code deploys
+- Flexible Editor UI tailored to project needs
+- Consistent variable referencing across formulas and charts
+- Multi-tenancy ready with SEYU namespace
+
+### Roadmap Compliance
+
+✅ **Milestone: Admin Variables — Org-Prefixed References & Card Layout**
+- SEYU-prefixed reference tokens with normalization
+- Card layout enforces exact line order (Label → REF → Flags → TYPE) and equal heights
+- Derived label standardized to "Total Images"
+
+✅ **Milestone: Variable Visibility & Editability Flags + Edit Integration**
+- Flags persist across sessions via MongoDB
+- Custom variables supported with modal creation
+- Editor integration respects flags in clicker/manual sections
+- No UI drift — centralized button/style system
+
+### Performance
+
+- ✅ Single API call on Editor mount loads all config
+- ✅ Client-side filtering and ordering (no repeated API calls)
+- ✅ MongoDB indexes on `name` for fast lookups
+- ✅ CSS Modules for scoped, tree-shakable styling
+
+### Future Enhancements
+
+See ROADMAP.md for planned improvements:
+1. Bulk variable operations (enable/disable multiple)
+2. Variable templates (predefined sets for common event types)
+3. Formula validation in UI for derived variables
+4. Export/import variable configurations
+5. Variable usage analytics (which variables are edited most)
+
+For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md).
+
+---
+
 ## Technology Stack
 ### Frontend
 - **Next.js 15.4.6** - React framework with App Router

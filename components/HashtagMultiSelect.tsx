@@ -25,6 +25,7 @@ interface HashtagMultiSelectProps {
   disabled?: boolean;
   showPreview?: boolean;
   className?: string;
+  totalHashtags?: number; // Total count from server pagination (if available)
 }
 
 interface MatchPreview {
@@ -37,7 +38,8 @@ export default function HashtagMultiSelect({
   onSelectionChange,
   disabled = false,
   showPreview = true,
-  className = ''
+  className = '',
+  totalHashtags
 }: HashtagMultiSelectProps) {
   const [matchPreview, setMatchPreview] = useState<MatchPreview>({ count: 0 });
 
@@ -153,7 +155,9 @@ export default function HashtagMultiSelect({
       <div className={styles.selectionSection}>
         <div className={styles.sectionHeader}>
           <h4 className={styles.sectionTitle}>
-            Available Hashtags ({hashtags.length})
+            {/* WHAT: Show total available hashtags from server if provided, otherwise show current page count
+             * WHY: Consistent with "Showing X of Y" pattern across admin pages */}
+            Available Hashtags ({totalHashtags != null ? totalHashtags : hashtags.length})
           </h4>
           <div className={styles.actionButtons}>
             <button

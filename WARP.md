@@ -186,6 +186,107 @@ The project features a **completely unified hashtag system** with consistent com
 - **`PUT /api/admin/hashtag-categories/[id]`** - Update category
 - **`DELETE /api/admin/hashtag-categories/[id]`** - Delete category
 
+### Variables APIs
+- **`GET /api/variables-config`** - Fetch all variables with flags and ordering
+- **`POST /api/variables-config`** - Create/update variable metadata and flags
+- **`DELETE /api/variables-config?name=...`** - Delete custom variable
+- **`GET /api/variables-groups`** - Fetch variable groups
+- **`POST /api/variables-groups`** - Create/update group or seed defaults
+- **`DELETE /api/variables-groups`** - Delete all groups
+
+## 🔢 Admin Variables & Metrics System
+
+### Key Files
+- **`lib/variablesRegistry.ts`** - Base and derived variable definitions
+- **`lib/variableRefs.ts`** - SEYU token generation with normalization
+- **`app/admin/variables/page.tsx`** - Variables management UI
+- **`app/api/variables-config/route.ts`** - Configuration API
+
+### SEYU Reference Tokens
+
+**Format**: `[SEYUSUFFIX]` with organization prefix
+
+**Normalization Rules**:
+- `ALL` → `TOTAL` (e.g., `allImages` → `[SEYUTOTALIMAGES]`)
+- `VISITED` → `VISIT` (e.g., `eventValuePropositionVisited` → `[SEYUPROPOSITIONVISIT]`)
+- `VISIT*` → `*VISIT` (e.g., `visitShortUrl` → `[SEYUSHORTURLVISIT]`)
+- Add `FANS` suffix (e.g., `stadium` → `[SEYUSTADIUMFANS]`)
+- Add `MERCH` prefix (e.g., `jersey` → `[SEYUMERCHERSEY]`)
+
+**Usage in Chart Formulas**:
+```javascript
+"formula": "([SEYUMERCHEDFANS] / [SEYUTOTALFANS]) * [SEYUATTENDEES]"
+```
+
+### Variable Types
+
+**Base Variables** (defined in registry):
+- **Images**: `remoteImages`, `hostessImages`, `selfies`
+- **Fans**: `remoteFans`, `stadium`
+- **Demographics**: `female`, `male`, `genAlpha`, `genYZ`, `genX`, `boomer`
+- **Merchandise**: `merched`, `jersey`, `scarf`, `flags`, `baseballCap`, `other`
+- **Visits**: `visitQrCode`, `visitShortUrl`, `visitWeb`, `socialVisit`, `eventValuePropositionVisited`, `eventValuePropositionPurchases`
+- **Event**: `eventAttendees`, `eventResultHome`, `eventResultVisitor`
+
+**Derived Variables** (auto-computed):
+- `allImages` (Total Images): `remoteImages + hostessImages + selfies`
+- `totalFans`: `remoteFans + stadium`
+- `totalVisit`: Sum of all visit sources
+
+**Custom Variables**:
+- User-defined metrics (e.g., `vipGuests`, `pressAttendees`)
+- Created via Admin UI, stored in `project.stats`
+
+### Visibility Flags
+
+Each variable has two independent flags:
+
+| Flag | Purpose | Default |
+|------|---------|----------|
+| `visibleInClicker` | Show in Editor Clicker UI | `true` for Images, Fans, Demographics, Merchandise |
+| `editableInManual` | Allow manual editing | `true` for all base variables |
+
+**Important**: Derived and text variables are NOT editable (flags forced to `false`).
+
+### Variable Groups
+
+Control Editor layout via groups:
+- **Group Order**: Display sequence
+- **Chart ID**: Optional KPI chart above variables
+- **Title Override**: Custom section title
+- **Variables Array**: Ordered list of variables in group
+
+**Default Groups**:
+1. Images (remoteImages, hostessImages, selfies) + `all-images-taken` chart
+2. Location (remoteFans, stadium) + `total-fans` chart
+3. Demographics (female, male, genAlpha, genYZ, genX, boomer)
+4. Merchandise (merched, jersey, scarf, flags, baseballCap, other)
+
+### Common Patterns
+
+**Adding a New Variable**:
+1. Add to `BASE_STATS_VARIABLES` in `lib/variablesRegistry.ts`
+2. Add SEYU mapping to `EXPLICIT_SUFFIX_MAP` in `lib/variableRefs.ts` (if needed)
+3. Variable appears in Admin UI with default flags based on category
+
+**Creating Custom Variable**:
+1. Go to `/admin/variables`
+2. Click "New Variable"
+3. Fill form: name (camelCase), label, type, category, flags
+4. Variable persists in MongoDB and appears in Editor
+
+**Hiding Variable from Clicker**:
+1. Go to `/admin/variables`
+2. Find variable card
+3. Uncheck "Visible in Clicker"
+4. Save automatically persists flag
+
+**Reordering Clicker Buttons**:
+1. Go to `/admin/variables`
+2. Click "Reorder Clicker" button
+3. Drag-and-drop within categories
+4. Click "Save order"
+
 ## 🔒 Authentication System
 
 - Full documentation: see `AUTHENTICATION_AND_ACCESS.md` for admin sessions, page passwords, and zero-trust access.
@@ -264,7 +365,8 @@ ADMIN_PASSWORD=your_secure_password
 
 For detailed information, see:
 - **`ARCHITECTURE.md`** - Complete system architecture and component relationships
-- **`HASHTAG_SYSTEM.md`** - Unified hashtag system documentation  
+- **`HASHTAG_SYSTEM.md`** - Unified hashtag system documentation
+- **`ADMIN_VARIABLES_SYSTEM.md`** - Variables & metrics management system
 - **`TASKLIST.md`** - Current active tasks and project status
 - **`LEARNINGS.md`** - Historical decisions and lessons learned
 - **`ROADMAP.md`** - Future development plans and milestones
@@ -292,4 +394,4 @@ For detailed information, see:
 
 ---
 
-*Version: 5.20.0 | Last Updated: 2025-10-02T12:30:00.000Z | Status: Active Development*
+*Version: 5.52.0 | Last Updated: 2025-01-31T14:30:00.000Z | Status: Active Development*

@@ -85,6 +85,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   const [searchOffset, setSearchOffset] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [totalMatched, setTotalMatched] = useState<number>(0);
   const PAGE_SIZE = 20;
   
   // Sorting state
@@ -154,6 +155,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         setNextCursor(data.pagination?.mode === 'cursor' ? (data.pagination?.nextCursor || null) : null);
         setSearchOffset(data.pagination?.mode === 'search' ? (data.pagination?.nextOffset ?? null) : null);
         setSortOffset(data.pagination?.mode === 'sort' ? (data.pagination?.nextOffset ?? null) : null);
+        setTotalMatched(data.pagination?.totalMatched ?? data.projects.length);
       } else {
         console.error('API returned error:', data.error);
       }
@@ -202,6 +204,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
           setProjects(data.projects);
           setSearchOffset(data.pagination?.nextOffset ?? null);
           setNextCursor(null); // not used in search mode
+          setTotalMatched(data.pagination?.totalMatched ?? data.projects.length);
         }
       } catch (e) {
         console.error('Search failed', e);
@@ -566,11 +569,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         ]}
       />
       
-      {/* Results Summary */}
-      {(filteredAndSortedProjects.length > 0 || searchQuery) && (
-        <div className="mb-4 text-sm text-gray-600">
-          <strong>{filteredAndSortedProjects.length}</strong> {filteredAndSortedProjects.length === 1 ? 'project' : 'projects'}
-          {searchQuery && ' (filtered results)'}
+      {/* WHAT: Pagination stats header showing X of Y items
+       * WHY: Consistent format across all admin pages (Categories, Users, Hashtags) */}
+      {!loading && projects.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {projects.length} of {totalMatched} projects
+          </div>
         </div>
       )}
 

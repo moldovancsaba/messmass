@@ -87,6 +87,7 @@ function HashtagFilterPageContent() {
   // Search + pagination for hashtags (align with Project Management UX)
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOffset, setSearchOffset] = useState<number | null>(0);
+  const [totalHashtags, setTotalHashtags] = useState<number>(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const PAGE_SIZE = 20;
@@ -225,6 +226,7 @@ function HashtagFilterPageContent() {
         const mapped: HashtagItem[] = items.map(i => ({ hashtag: i.hashtag, slug: i.hashtag, count: i.count }));
         setAvailableHashtags(prev => append ? [...prev, ...mapped] : mapped);
         setSearchOffset(data.pagination?.nextOffset ?? null);
+        setTotalHashtags(data.pagination?.totalMatched ?? mapped.length);
       } else {
         console.error('Failed to load hashtags:', data.error);
       }
@@ -353,6 +355,16 @@ function HashtagFilterPageContent() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search hashtags..."
       />
+      
+      {/* WHAT: Pagination stats header showing X of Y items
+       * WHY: Consistent format across all admin pages (Categories, Users, Projects) */}
+      {!loading && availableHashtags.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {availableHashtags.length} of {totalHashtags} hashtags available for filtering
+          </div>
+        </div>
+      )}
       
       {/* Results Summary */}
       {hasAppliedFilter && project && (
@@ -491,6 +503,7 @@ function HashtagFilterPageContent() {
           onSelectionChange={handleSelectionChange}
           disabled={statsLoading}
           showPreview={true}
+          totalHashtags={totalHashtags}
         />
         <div className="text-center py-4">
           {searchOffset != null ? (
