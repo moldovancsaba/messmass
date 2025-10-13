@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import styles from './bitly.module.css';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 // WHAT: Type definitions for links and projects
 interface BitlyLink {
@@ -219,45 +219,73 @@ export default function BitlyAdminPage() {
     }
   }
 
-  if (loading) {
+  // WHAT: Auth check wrapper
+  // WHY: Ensure user is authenticated before showing Bitly management
+  const { user, loading: authLoading } = useAdminAuth();
+
+  if (authLoading || loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading Bitly links...</div>
+      <div className="loading-container">
+        <div className="loading-card">
+          <div className="text-4xl mb-4">🔗</div>
+          <div className="text-gray-600">Loading Bitly links...</div>
+        </div>
       </div>
     );
   }
 
+  if (!user) {
+    return null; // Will redirect to login
+  }
+
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Bitly Link Management</h1>
-        <div className={styles.headerActions}>
+    <div className="admin-container">
+      {/* WHAT: Page header with title and actions */}
+      <div className="page-header">
+        <div className="page-header-content">
+          <h1 className="page-title">🔗 Bitly Management</h1>
+          <p className="page-subtitle">
+            Manage Bitly link associations and track analytics for MessMass projects
+          </p>
+        </div>
+        <div className="page-header-actions">
           <button 
             onClick={handleManualSync} 
-            className={styles.syncButton}
+            className="btn btn-success"
           >
             🔄 Sync Now
           </button>
           <button 
             onClick={() => setShowAddForm(!showAddForm)} 
-            className={styles.addButton}
+            className="btn btn-primary"
           >
             {showAddForm ? '✕ Cancel' : '+ Add Link'}
           </button>
         </div>
       </div>
 
-      {error && <div className={styles.error}>{error}</div>}
-      {successMessage && <div className={styles.success}>{successMessage}</div>}
+      {/* WHAT: Status messages */}
+      {error && (
+        <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>
+          {error}
+        </div>
+      )}
+      {successMessage && (
+        <div className="alert alert-success" style={{ marginBottom: 'var(--space-4)' }}>
+          {successMessage}
+        </div>
+      )}
 
+      {/* WHAT: Add link form */}
       {showAddForm && (
-        <div className={styles.addForm}>
-          <h2>Add Bitly Link</h2>
+        <div className="glass-card" style={{ marginBottom: 'var(--space-6)' }}>
+          <h2 className="section-title">Add Bitly Link</h2>
           <form onSubmit={handleAddLink}>
-            <div className={styles.formGroup}>
-              <label>Bitly Link or URL *</label>
+            <div className="form-group">
+              <label className="form-label">Bitly Link or URL *</label>
               <input
                 type="text"
+                className="form-input"
                 value={newBitlink}
                 onChange={(e) => setNewBitlink(e.target.value)}
                 placeholder="bit.ly/abc123 or https://example.com/page"
@@ -265,9 +293,10 @@ export default function BitlyAdminPage() {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label>Assign to Project (optional)</label>
+            <div className="form-group">
+              <label className="form-label">Assign to Project (optional)</label>
               <select
+                className="form-input"
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
               >
@@ -280,98 +309,113 @@ export default function BitlyAdminPage() {
               </select>
             </div>
 
-            <div className={styles.formGroup}>
-              <label>Custom Title (optional)</label>
+            <div className="form-group">
+              <label className="form-label">Custom Title (optional)</label>
               <input
                 type="text"
+                className="form-input"
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
                 placeholder="Leave empty to use Bitly's title"
               />
             </div>
 
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className="btn btn-primary">
               Add Link
             </button>
           </form>
         </div>
       )}
 
-      <div className={styles.linksTable}>
-        <h2>Links ({links.length})</h2>
+      {/* WHAT: Links table */}
+      <div className="glass-card">
+        <div className="section-header">
+          <h2 className="section-title">Links ({links.length})</h2>
+        </div>
         
         {links.length === 0 ? (
-          <p className={styles.emptyState}>
-            No links yet. Click "Add Link" to get started!
-          </p>
+          <div className="empty-state">
+            <div className="empty-state-icon">🔗</div>
+            <h3 className="empty-state-title">No Bitly links yet</h3>
+            <p className="empty-state-text">
+              Click "Add Link" above to connect your first Bitly URL to a MessMass project
+            </p>
+          </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Bitly Link</th>
-                <th>Title</th>
-                <th>Project</th>
-                <th>Clicks</th>
-                <th>Last Synced</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {links.map(link => (
-                <tr key={link._id}>
-                  <td>
-                    <a 
-                      href={`https://${link.bitlink}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className={styles.linkUrl}
-                    >
-                      {link.bitlink}
-                    </a>
-                  </td>
-                  <td>{link.title}</td>
-                  <td>
-                    <select
-                      value={link.projectId || ''}
-                      onChange={(e) => handleReassignLink(link._id, e.target.value || null)}
-                      className={styles.projectSelect}
-                    >
-                      <option value="">-- Unassigned --</option>
-                      {projects.map(project => (
-                        <option key={project._id} value={project._id}>
-                          {project.eventName}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className={styles.clickCount}>
-                    {link.click_summary.total.toLocaleString()}
-                  </td>
-                  <td className={styles.timestamp}>
-                    {formatDate(link.lastSyncAt)}
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => handleArchiveLink(link._id)}
-                      className={styles.archiveButton}
-                      title="Archive this link"
-                    >
-                      🗑️
-                    </button>
-                  </td>
+          <div className="table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Bitly Link</th>
+                  <th>Title</th>
+                  <th>Project</th>
+                  <th>Clicks</th>
+                  <th>Last Synced</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {links.map(link => (
+                  <tr key={link._id}>
+                    <td>
+                      <a 
+                        href={`https://${link.bitlink}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="link link-primary"
+                        style={{ fontWeight: 500 }}
+                      >
+                        {link.bitlink}
+                      </a>
+                    </td>
+                    <td>{link.title}</td>
+                    <td>
+                      <select
+                        value={link.projectId || ''}
+                        onChange={(e) => handleReassignLink(link._id, e.target.value || null)}
+                        className="form-input"
+                        style={{ minWidth: '200px' }}
+                      >
+                        <option value="">-- Unassigned --</option>
+                        {projects.map(project => (
+                          <option key={project._id} value={project._id}>
+                            {project.eventName}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <span className="badge badge-success" style={{ fontWeight: 600 }}>
+                        {link.click_summary.total.toLocaleString()}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.9rem', color: 'var(--color-gray-600)' }}>
+                      {formatDate(link.lastSyncAt)}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleArchiveLink(link._id)}
+                        className="btn btn-small btn-danger"
+                        title="Archive this link"
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      <div className={styles.info}>
-        <p>
-          <strong>Auto-Sync:</strong> Links sync automatically every night at 3:00 AM UTC
+      {/* WHAT: Info section */}
+      <div className="info-box" style={{ marginTop: 'var(--space-6)' }}>
+        <p style={{ margin: '0.5rem 0' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>Auto-Sync:</strong> Links sync automatically every night at 3:00 AM UTC
         </p>
-        <p>
-          <strong>Manual Sync:</strong> Click "Sync Now" to refresh analytics immediately
+        <p style={{ margin: '0.5rem 0' }}>
+          <strong style={{ color: 'var(--color-primary-600)' }}>Manual Sync:</strong> Click "Sync Now" to refresh analytics immediately
         </p>
       </div>
     </div>

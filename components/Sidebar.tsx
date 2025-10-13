@@ -61,6 +61,7 @@ export default function Sidebar() {
         { label: 'Variable Manager', path: '/admin/variables', icon: '🔢' },
         { label: 'Visualization Manager', path: '/admin/visualization', icon: '👁️' },
         { label: 'Design Manager', path: '/admin/design', icon: '🎨' },
+        { label: 'Bitly Management', path: '/admin/bitly', icon: '🔗' },
         { label: 'Users', path: '/admin/users', icon: '👥' },
         { label: 'Cache Management', path: '/admin/cache', icon: '🗑️' },
       ],
