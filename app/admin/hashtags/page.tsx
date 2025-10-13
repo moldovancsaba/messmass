@@ -95,7 +95,7 @@ export default function HashtagManagerPage() {
 
       {/* WHAT: HashtagEditor renders colored cards internally using ColoredCard component
        * WHY: No wrapper needed - HashtagEditor handles its own layout and card structure
-       *      Extra .admin-card wrapper was creating double-box effect */}
+       *      ColoredCard wrapper handles the card styling */}
       <HashtagEditor searchTerm={searchTerm} />
     </div>
   );

@@ -8,7 +8,7 @@
 /* WHAT: Card system fully migrated to ColoredCard component
    WHY: Component-based styling is maintainable, single source of truth
    LOCATION: /components/ColoredCard.tsx and ColoredCard.module.css
-   MIGRATION COMPLETED: All .admin-card usage replaced with <ColoredCard> component */
+   MIGRATION COMPLETED: All card styling now uses <ColoredCard> component */
 
 /* ========================================
    BUTTON SYSTEM
