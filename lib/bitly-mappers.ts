@@ -175,10 +175,16 @@ export function mapSeriesToDaily(response: BitlyClicksTimeseries) {
 /**
  * WHAT: Map Bitly countries response to MongoDB geo.countries structure
  * WHY: Normalizes geographic data for analytics queries
+ * 
+ * CRITICAL FIX: Bitly API returns "value" field, not "country" field
+ * API response: { "value": "US", "clicks": 123 }
+ * MongoDB storage: { "country": "US", "clicks": 123 }
  */
 export function mapCountries(response: BitlyCountriesResponse) {
+  // WHAT: Map from Bitly's "value" field to our "country" field
+  // WHY: Bitly API uses "value" for country codes, we normalize to "country" for clarity
   return response.metrics.map(metric => ({
-    country: metric.country, // ISO 3166-1 alpha-2 code (e.g., "US", "HU")
+    country: metric.value, // Map Bitly's "value" field to our "country" field
     clicks: ensureFiniteNumber(metric.clicks),
   }));
 }

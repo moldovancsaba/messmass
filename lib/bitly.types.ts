@@ -79,9 +79,12 @@ export interface BitlyClicksTimeseries {
 /**
  * Individual country click metric
  * WHAT: Click count for a specific country
+ * 
+ * NOTE: Bitly API returns "value" not "country" as the field name
+ * API response: { "value": "US", "clicks": 123 }
  */
 export interface BitlyCountryMetric {
-  country: string; // ISO 3166-1 alpha-2 country code (e.g., "US", "HU")
+  value: string; // ISO 3166-1 alpha-2 country code (e.g., "US", "HU", "SK")
   clicks: number; // Number of clicks from this country
 }
 
