@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import styles from './HashtagMultiSelect.module.css';
 
 interface HashtagItem {
   hashtag: string;
@@ -110,24 +111,8 @@ export default function HashtagMultiSelect({
     <div className={`hashtag-multi-select ${className}`}>
       {/* Preview Results - Only show if we have selections */}
       {showPreview && selectedHashtags.length > 0 && (
-        <div style={{
-          marginBottom: '1.5rem',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            padding: '0.75rem 1rem',
-            background: matchPreview.count > 0 
-                ? 'rgba(16, 185, 129, 0.1)' 
-                : 'rgba(239, 68, 68, 0.1)',
-            borderRadius: '8px',
-            border: `1px solid ${
-              matchPreview.count > 0 
-                  ? 'rgba(16, 185, 129, 0.2)' 
-                  : 'rgba(239, 68, 68, 0.2)'
-            }`,
-            fontSize: '0.875rem',
-            fontWeight: '500'
-          }}>
+        <div className={styles.previewContainer}>
+          <div className={`${styles.previewBox} ${matchPreview.count > 0 ? styles.success : styles.error}`}>
             📊 {matchPreview.count} project{matchPreview.count !== 1 ? 's' : ''} match{matchPreview.count === 1 ? 'es' : ''} your filter
           </div>
         </div>
@@ -135,36 +120,15 @@ export default function HashtagMultiSelect({
 
       {/* Selected Hashtags Display */}
       {selectedHashtags.length > 0 && (
-        <div style={{
-          marginBottom: '1.5rem',
-          padding: '1rem',
-          background: 'rgba(99, 102, 241, 0.05)',
-          borderRadius: '12px',
-          border: '1px solid rgba(99, 102, 241, 0.1)'
-        }}>
-          <div style={{
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            color: '#4c51bf',
-            marginBottom: '0.75rem'
-          }}>
+        <div className={styles.selectedContainer}>
+          <div className={styles.selectedTitle}>
             Selected Filters ({selectedHashtags.length}):
           </div>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-            alignItems: 'center'
-          }}>
+          <div className={styles.selectedTags}>
             {selectedHashtags.map((hashtag, index) => (
-              <div key={hashtag} style={{ display: 'flex', alignItems: 'center' }}>
+              <div key={hashtag} className={styles.selectedTag}>
                 {index > 0 && (
-                  <span style={{
-                    margin: '0 0.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: 'bold',
-                    color: '#6b7280'
-                  }}>
+                  <span className={styles.andSeparator}>
                     AND
                   </span>
                 )}
@@ -186,24 +150,12 @@ export default function HashtagMultiSelect({
       )}
 
       {/* Hashtag Selection Grid */}
-      <div style={{
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1rem'
-        }}>
-          <h4 style={{
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            color: '#374151',
-            margin: 0
-          }}>
+      <div className={styles.selectionSection}>
+        <div className={styles.sectionHeader}>
+          <h4 className={styles.sectionTitle}>
             Available Hashtags ({hashtags.length})
           </h4>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className={styles.actionButtons}>
             <button
               onClick={handleSelectAll}
               disabled={disabled || hashtags.length === 0}
@@ -239,68 +191,24 @@ export default function HashtagMultiSelect({
             <div>
               {/* Traditional Hashtags */}
               {traditionalHashtags.length > 0 && (
-                <div style={{ marginBottom: '2rem' }}>
-                  <h5 style={{
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    color: '#374151',
-                    margin: '0 0 1rem 0',
-                    padding: '0.5rem 0',
-                    borderBottom: '2px solid #e5e7eb'
-                  }}>
+                <div className={styles.categorySection}>
+                  <h5 className={styles.categoryTitle}>
                     🏷️ General Hashtags ({traditionalHashtags.length})
                   </h5>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                    gap: '0.75rem'
-                  }}>
+                  <div className={styles.hashtagsGrid}>
                     {traditionalHashtags.map((item) => (
                       <label
                         key={item.hashtag}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '0.75rem',
-                          background: selectedHashtags.includes(item.hashtag) 
-                            ? 'rgba(99, 102, 241, 0.1)' 
-                            : 'rgba(255, 255, 255, 0.9)',
-                          border: `2px solid ${
-                            selectedHashtags.includes(item.hashtag) 
-                              ? 'rgba(99, 102, 241, 0.3)' 
-                              : 'rgba(229, 231, 235, 0.5)'
-                          }`,
-                          borderRadius: '12px',
-                          cursor: disabled ? 'not-allowed' : 'pointer',
-                          transition: 'all 0.2s ease',
-                          opacity: disabled ? 0.6 : 1
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!disabled) {
-                            e.currentTarget.style.transform = 'scale(1.02)';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!disabled) {
-                            e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.boxShadow = 'none';
-                          }
-                        }}
+                        className={`${styles.hashtagItem} ${selectedHashtags.includes(item.hashtag) ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
                       >
                         <input
                           type="checkbox"
                           checked={selectedHashtags.includes(item.hashtag)}
                           onChange={() => handleHashtagToggle(item.hashtag)}
                           disabled={disabled}
-                          style={{
-                            marginRight: '0.75rem',
-                            width: '1.25rem',
-                            height: '1.25rem',
-                            cursor: disabled ? 'not-allowed' : 'pointer'
-                          }}
+                          className={styles.checkbox}
                         />
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div className={styles.hashtagContent}>
                           <ColoredHashtagBubble 
                             hashtag={item.hashtag}
                             customStyle={{
@@ -308,15 +216,7 @@ export default function HashtagMultiSelect({
                               fontWeight: '500'
                             }}
                           />
-                          <span style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: '#6b7280',
-                            background: 'rgba(107, 114, 128, 0.1)',
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '12px',
-                            marginLeft: '0.5rem'
-                          }}>
+                          <span className={styles.countBadge}>
                             {item.count}
                           </span>
                         </div>
@@ -328,68 +228,24 @@ export default function HashtagMultiSelect({
               
               {/* Categorized Hashtags */}
               {Object.entries(categorizedByCategory).map(([category, categoryHashtags]) => (
-                <div key={category} style={{ marginBottom: '2rem' }}>
-                  <h5 style={{
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    color: '#374151',
-                    margin: '0 0 1rem 0',
-                    padding: '0.5rem 0',
-                    borderBottom: '2px solid #e5e7eb'
-                  }}>
+                <div key={category} className={styles.categorySection}>
+                  <h5 className={styles.categoryTitle}>
                     📂 {category.charAt(0).toUpperCase() + category.slice(1)} Category ({categoryHashtags.length})
                   </h5>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                    gap: '0.75rem'
-                  }}>
+                  <div className={styles.hashtagsGrid}>
                     {categoryHashtags.map((item) => (
                       <label
                         key={item.hashtag}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '0.75rem',
-                          background: selectedHashtags.includes(item.hashtag) 
-                            ? 'rgba(99, 102, 241, 0.1)' 
-                            : 'rgba(255, 255, 255, 0.9)',
-                          border: `2px solid ${
-                            selectedHashtags.includes(item.hashtag) 
-                              ? 'rgba(99, 102, 241, 0.3)' 
-                              : 'rgba(229, 231, 235, 0.5)'
-                          }`,
-                          borderRadius: '12px',
-                          cursor: disabled ? 'not-allowed' : 'pointer',
-                          transition: 'all 0.2s ease',
-                          opacity: disabled ? 0.6 : 1
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!disabled) {
-                            e.currentTarget.style.transform = 'scale(1.02)';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!disabled) {
-                            e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.boxShadow = 'none';
-                          }
-                        }}
+                        className={`${styles.hashtagItem} ${selectedHashtags.includes(item.hashtag) ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
                       >
                         <input
                           type="checkbox"
                           checked={selectedHashtags.includes(item.hashtag)}
                           onChange={() => handleHashtagToggle(item.hashtag)}
                           disabled={disabled}
-                          style={{
-                            marginRight: '0.75rem',
-                            width: '1.25rem',
-                            height: '1.25rem',
-                            cursor: disabled ? 'not-allowed' : 'pointer'
-                          }}
+                          className={styles.checkbox}
                         />
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div className={styles.hashtagContent}>
                           <ColoredHashtagBubble 
                             hashtag={item.hashtag}
                             customStyle={{
@@ -397,15 +253,7 @@ export default function HashtagMultiSelect({
                               fontWeight: '500'
                             }}
                           />
-                          <span style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: '#6b7280',
-                            background: 'rgba(107, 114, 128, 0.1)',
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '12px',
-                            marginLeft: '0.5rem'
-                          }}>
+                          <span className={styles.countBadge}>
                             {item.count}
                           </span>
                         </div>
@@ -421,16 +269,12 @@ export default function HashtagMultiSelect({
 
       {/* No hashtags available message */}
       {hashtags.length === 0 && (
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem',
-          color: '#6b7280'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏷️</div>
-          <div style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>🏷️</div>
+          <div className={styles.emptyTitle}>
             No hashtags available
           </div>
-          <div style={{ fontSize: '0.875rem' }}>
+          <div className={styles.emptySubtitle}>
             Create projects with hashtags to enable filtering
           </div>
         </div>
