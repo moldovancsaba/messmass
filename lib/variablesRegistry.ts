@@ -62,6 +62,33 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
   { name: 'eventAttendees', label: 'Event Attendees', type: 'count', category: 'Event' },
   { name: 'eventResultHome', label: 'Event Result Home', type: 'count', category: 'Event' },
   { name: 'eventResultVisitor', label: 'Event Result Visitor', type: 'count', category: 'Event' },
+
+  // Bitly - Core Metrics
+  { name: 'bitlyTotalClicks', label: 'Total Bitly Clicks', type: 'count', category: 'Bitly', description: 'Sum of all Bitly link clicks for event' },
+  { name: 'bitlyUniqueClicks', label: 'Unique Bitly Clicks', type: 'count', category: 'Bitly', description: 'Unique visitors from Bitly links' },
+  
+  // Bitly - Geographic
+  { name: 'bitlyClicksByCountry', label: 'Clicks by Top Country', type: 'count', category: 'Bitly', description: 'Click count from top country' },
+  { name: 'bitlyTopCountry', label: 'Top Country', type: 'text', category: 'Bitly', description: 'Country with most clicks' },
+  { name: 'bitlyCountryCount', label: 'Countries Reached', type: 'count', category: 'Bitly', description: 'Number of unique countries' },
+  
+  // Bitly - Traffic Sources
+  { name: 'bitlyDirectClicks', label: 'Direct Clicks', type: 'count', category: 'Bitly', description: 'Clicks with no referrer' },
+  { name: 'bitlySocialClicks', label: 'Social Media Clicks', type: 'count', category: 'Bitly', description: 'Clicks from social platforms' },
+  { name: 'bitlyTopReferrer', label: 'Top Referrer', type: 'text', category: 'Bitly', description: 'Domain with most clicks' },
+  { name: 'bitlyReferrerCount', label: 'Referrer Count', type: 'count', category: 'Bitly', description: 'Number of unique referrers' },
+  
+  // Bitly - Device & Platform (Future)
+  { name: 'bitlyMobileClicks', label: 'Mobile Clicks', type: 'count', category: 'Bitly', description: 'Clicks from mobile devices' },
+  { name: 'bitlyDesktopClicks', label: 'Desktop Clicks', type: 'count', category: 'Bitly', description: 'Clicks from desktop computers' },
+  { name: 'bitlyTabletClicks', label: 'Tablet Clicks', type: 'count', category: 'Bitly', description: 'Clicks from tablets' },
+  { name: 'bitlyiOSClicks', label: 'iOS Clicks', type: 'count', category: 'Bitly', description: 'Clicks from iOS devices' },
+  { name: 'bitlyAndroidClicks', label: 'Android Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Android devices' },
+  
+  // Bitly - Browsers (Future)
+  { name: 'bitlyChromeClicks', label: 'Chrome Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Chrome browser' },
+  { name: 'bitlySafariClicks', label: 'Safari Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Safari browser' },
+  { name: 'bitlyFirefoxClicks', label: 'Firefox Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Firefox browser' },
 ]
 
 // Derived variables — formulas are informational; evaluation happens elsewhere when needed.
@@ -110,6 +137,24 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     derived: true,
     formula: 'socialVisit + visitQrCode + visitShortUrl + visitWeb',
     description: 'Social + QR Code + Short URL + Web'
+  },
+  {
+    name: 'bitlyClickRate',
+    label: 'Bitly Click-Through Rate',
+    type: 'percentage',
+    category: 'Bitly',
+    derived: true,
+    formula: '(bitlyTotalClicks / eventAttendees) * 100',
+    description: 'Percentage of attendees who clicked Bitly links'
+  },
+  {
+    name: 'bitlyMobileRate',
+    label: 'Bitly Mobile Usage Rate',
+    type: 'percentage',
+    category: 'Bitly',
+    derived: true,
+    formula: '(bitlyMobileClicks / bitlyTotalClicks) * 100',
+    description: 'Percentage of Bitly clicks from mobile devices'
   },
 ]
 
