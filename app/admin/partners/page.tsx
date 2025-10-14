@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 
 // WHAT: Bitly link option for multi-select
@@ -623,25 +624,16 @@ export default function PartnersAdminPage() {
 
                 <div className="form-group mb-4">
                   <label className="form-label-block">Bitly Links (optional)</label>
-                  <select
-                    className="form-input"
-                    multiple
-                    size={5}
-                    value={newPartnerData.bitlyLinkIds}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions).map(option => option.value);
-                      setNewPartnerData(prev => ({ ...prev, bitlyLinkIds: selected }));
-                    }}
-                    style={{ height: '120px' }}
-                  >
-                    {allBitlyLinks.map(link => (
-                      <option key={link._id} value={link._id}>
-                        {link.bitlink} - {link.title}
-                      </option>
-                    ))}
-                  </select>
+                  <BitlyLinksSelector
+                    selectedLinkIds={newPartnerData.bitlyLinkIds}
+                    availableLinks={allBitlyLinks}
+                    onChange={(linkIds) => 
+                      setNewPartnerData(prev => ({ ...prev, bitlyLinkIds: linkIds }))
+                    }
+                    placeholder="Search and add Bitly links..."
+                  />
                   <p className="text-xs text-gray-600 mt-1">
-                    Hold Cmd/Ctrl to select multiple links
+                    Search by bitlink or title, click to add. Remove with ✕ button.
                   </p>
                 </div>
               </div>
@@ -720,25 +712,16 @@ export default function PartnersAdminPage() {
 
                 <div className="form-group mb-4">
                   <label className="form-label-block">Bitly Links (optional)</label>
-                  <select
-                    className="form-input"
-                    multiple
-                    size={5}
-                    value={editPartnerData.bitlyLinkIds}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions).map(option => option.value);
-                      setEditPartnerData(prev => ({ ...prev, bitlyLinkIds: selected }));
-                    }}
-                    style={{ height: '120px' }}
-                  >
-                    {allBitlyLinks.map(link => (
-                      <option key={link._id} value={link._id}>
-                        {link.bitlink} - {link.title}
-                      </option>
-                    ))}
-                  </select>
+                  <BitlyLinksSelector
+                    selectedLinkIds={editPartnerData.bitlyLinkIds}
+                    availableLinks={allBitlyLinks}
+                    onChange={(linkIds) => 
+                      setEditPartnerData(prev => ({ ...prev, bitlyLinkIds: linkIds }))
+                    }
+                    placeholder="Search and add Bitly links..."
+                  />
                   <p className="text-xs text-gray-600 mt-1">
-                    Hold Cmd/Ctrl to select multiple links
+                    Search by bitlink or title, click to add. Remove with ✕ button.
                   </p>
                 </div>
               </div>

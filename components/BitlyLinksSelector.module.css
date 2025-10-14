@@ -1,0 +1,179 @@
+/* components/BitlyLinksSelector.module.css */
+/* WHAT: Styles for BitlyLinksSelector component
+ * WHY: Consistent design with hashtag/project selectors and MessMass design tokens
+ * PATTERN: Matches UnifiedHashtagInput, ColoredHashtagBubble, and ProjectSelector styling */
+
+/* WHAT: Main container for the component
+ * WHY: Contains chips and input wrapper */
+.container {
+  width: 100%;
+}
+
+/* WHAT: Container for selected link chips
+ * WHY: Display selected links as removable bubbles above input */
+.chipsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-2);
+}
+
+/* WHAT: Individual link chip/bubble styling
+ * WHY: Matches ColoredHashtagBubble visual style for consistency */
+.linkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: #E0F2FE; /* Light Sky Blue background */
+  border: 1px solid #0EA5E9; /* Sky Blue border */
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: #0C4A6E; /* Dark Sky Blue text */
+  transition: all 0.2s ease;
+  max-width: 100%;
+}
+
+.linkChip.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* WHAT: Chip label text
+ * WHY: Truncate long bitlinks with ellipsis */
+.chipLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* WHAT: Remove button (X) on chip
+ * WHY: Clear individual link selection */
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: #0EA5E9; /* Sky Blue */
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chipRemove:hover {
+  background: #BAE6FD; /* Lighter Sky Blue */
+  color: #075985; /* Darker Sky Blue */
+}
+
+.chipRemove:active {
+  transform: scale(0.95);
+}
+
+.chipRemove:focus-visible {
+  outline: 2px solid #0EA5E9;
+  outline-offset: 2px;
+}
+
+/* WHAT: Wrapper for input and dropdown positioning
+ * WHY: Relative positioning for absolute dropdown */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* WHAT: Search input field styling
+ * WHY: Matches form-input design system classes */
+.searchInput {
+  width: 100%;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #0EA5E9; /* Sky Blue */
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.searchInput:disabled {
+  background: var(--mm-gray-100);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* WHAT: Dropdown container for link results
+ * WHY: Absolute positioning below input, matches hashtag dropdown */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-lg);
+  z-index: 1000;
+}
+
+/* WHAT: Individual link item in dropdown
+ * WHY: Hover and focus states for better UX */
+.dropdownItem {
+  padding: var(--mm-space-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover,
+.dropdownItem.focused {
+  background-color: #F0F9FF; /* Very Light Sky Blue */
+}
+
+/* WHAT: Bitlink URL in dropdown item
+ * WHY: Primary text, bold for emphasis */
+.linkBitlink {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: #0EA5E9; /* Sky Blue */
+  margin-bottom: var(--mm-space-1);
+  word-break: break-all;
+}
+
+/* WHAT: Link title in dropdown item  
+ * WHY: Secondary metadata, smaller and grayed */
+.linkTitle {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* WHAT: No results message styling
+ * WHY: User feedback when search returns empty */
+.noResults {
+  padding: var(--mm-space-4);
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  font-style: italic;
+}
