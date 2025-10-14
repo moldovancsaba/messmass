@@ -223,7 +223,21 @@ export default function BitlyAdminPage() {
 
       if (data.success) {
         setSuccessMessage(`✓ Removed ${bitlink} from ${projectName}`);
-        loadData(); // Reload to show updated associations
+        
+        // WHAT: Update local state without reloading entire page
+        // WHY: Instant UI update, no page reload needed
+        setLinks(prevLinks => 
+          prevLinks.map(link => {
+            if (link._id === linkId) {
+              // WHAT: Remove association from this link's associations array
+              return {
+                ...link,
+                associations: (link.associations || []).filter(assoc => assoc.projectId !== projectId)
+              };
+            }
+            return link;
+          })
+        );
       } else {
         setError(data.error || 'Failed to remove association');
       }
@@ -263,8 +277,31 @@ export default function BitlyAdminPage() {
         const project = projects.find(p => p._id === projectId);
         const projectName = project?.eventName || 'selected project';
         setSuccessMessage(`✓ ${bitlink} added to ${projectName}`);
-        console.log('[handleAddLinkToProject] Success! Reloading data...');
-        loadData(); // Reload to show updated associations
+        console.log('[handleAddLinkToProject] Success! Updating local state...');
+        
+        // WHAT: Update local state without reloading entire page
+        // WHY: Instant UI update, no flickering, better UX
+        setLinks(prevLinks => 
+          prevLinks.map(link => {
+            if (link._id === linkId) {
+              // WHAT: Add new association to this link's associations array
+              const newAssociation = {
+                projectId,
+                projectName,
+                startDate: null, // Will be calculated by backend
+                endDate: null,
+                autoCalculated: true,
+                clicks: 0,
+                lastSyncedAt: null
+              };
+              return {
+                ...link,
+                associations: [...(link.associations || []), newAssociation]
+              };
+            }
+            return link;
+          })
+        );
       } else {
         console.error('[handleAddLinkToProject] API returned error:', data.error);
         setError(data.error || 'Failed to add link to project');
