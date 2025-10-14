@@ -37,18 +37,35 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
     loadLinks();
   }, [projectId]);
 
-  // WHAT: Fetch all Bitly links associated with this project
+  // WHAT: Fetch all Bitly links associated with this project via junction table
+  // WHY: Many-to-many system - links can be shared across multiple projects
   async function loadLinks() {
     try {
       setLoading(true);
-      const res = await fetch(`/api/bitly/links?projectId=${projectId}`);
+      // WHAT: Use project-specific metrics API to get associated links
+      // WHY: This API joins junction table data with link details
+      const res = await fetch(`/api/bitly/project-metrics/${projectId}`);
       const data = await res.json();
       
-      if (data.success) {
-        setLinks(data.links || []);
+      if (data.success && data.associations) {
+        // WHAT: Extract link data from associations array
+        // WHY: Transform junction table format to match BitlyLink interface
+        const linkData = data.associations.map((assoc: any) => ({
+          _id: assoc.bitlyLinkId,
+          bitlink: assoc.bitlink,
+          title: assoc.title || 'Untitled',
+          click_summary: {
+            total: assoc.clicks || 0
+          },
+          lastSyncAt: assoc.lastSyncedAt || new Date().toISOString()
+        }));
+        setLinks(linkData);
+      } else {
+        setLinks([]);
       }
     } catch (err) {
       console.error('Failed to load Bitly links:', err);
+      setLinks([]);
     } finally {
       setLoading(false);
     }
@@ -91,24 +108,24 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
     }
   }
 
-  // WHAT: Handle removing a link from this project
-  async function handleRemoveLink(linkId: string) {
-    if (!confirm('Remove this link? Data will be preserved but link will be unassigned.')) {
+  // WHAT: Handle removing a link-to-project association (many-to-many)
+  // WHY: Delete from junction table instead of unassigning (preserves other project associations)
+  async function handleRemoveLink(linkId: string, bitlink: string) {
+    if (!confirm(`Remove ${bitlink} from ${projectName}? The link will remain available for other projects.`)) {
       return;
     }
 
     try {
-      // WHAT: Unassign the link (set projectId to null)
-      const res = await fetch(`/api/bitly/links/${linkId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: null }),
+      // WHAT: Delete association from junction table
+      // WHY: Many-to-many system - only removes this specific project connection
+      const res = await fetch(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`, {
+        method: 'DELETE',
       });
 
       const data = await res.json();
 
       if (data.success) {
-        setSuccess('✓ Link removed');
+        setSuccess('✓ Link removed from this project');
         loadLinks(); // Reload to remove from list
       } else {
         setError(data.error || 'Failed to remove link');
@@ -181,7 +198,7 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
                 </div>
               </div>
               <button
-                onClick={() => handleRemoveLink(link._id)}
+                onClick={() => handleRemoveLink(link._id, link.bitlink)}
                 className={styles.removeButton}
                 title="Remove from this event"
               >
