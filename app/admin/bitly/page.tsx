@@ -54,8 +54,20 @@ export default function BitlyAdminPage() {
   const [links, setLinks] = useState<BitlyLink[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // WHAT: Pagination state following /admin/projects pattern
+  // WHY: Handle large datasets (3000+ links) without timeouts
+  const [totalMatched, setTotalMatched] = useState(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
+  const PAGE_SIZE = 20;
+  
+  // WHAT: Search state with debouncing
+  // WHY: Allow users to filter through thousands of links
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
   
   // WHAT: Sorting state
   // WHY: Enable user-controlled table sorting like projects page
@@ -70,6 +82,15 @@ export default function BitlyAdminPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [customTitle, setCustomTitle] = useState('');
 
+  // WHAT: Debounce search input (300ms delay)
+  // WHY: Reduce API calls while user types
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm.trim());
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   // WHAT: Hydrate sort state from URL (if present)
   // WHY: Allow shareable sorted views via URL parameters
   useEffect(() => {
@@ -81,34 +102,42 @@ export default function BitlyAdminPage() {
     if (so && allowedOrders.includes(so)) setSortOrder(so);
   }, [searchParams]);
 
-  // WHAT: Fetch links and projects on component mount and when sort changes
-  // WHY: Populates the management interface with current data in requested order
+  // WHAT: Load first page when search/sort changes
+  // WHY: Fresh search or sort requires restarting pagination
   useEffect(() => {
     loadData();
-  }, [sortField, sortOrder]);
+  }, [debouncedTerm, sortField, sortOrder]);
 
-  // WHAT: Load both links and projects from API
+  // WHAT: Load first page of links with search and sorting
+  // WHY: Start fresh pagination when search/sort changes
   async function loadData() {
     try {
       setLoading(true);
       setError('');
+      setLinks([]); // Clear existing links
 
       // WHAT: Fetch ALL projects for ProjectSelector (no pagination)
-      // WHY: User needs to search through entire project database, not just first page
+      // WHY: User needs to search through entire project database
       const projectsRes = await fetch('/api/projects?limit=1000&sortField=eventDate&sortOrder=desc');
       const projectsData = await projectsRes.json();
       
-      // WHAT: Build links API URL with sorting parameters
-      // WHY: Enable server-side sorting for consistent ordering
+      // WHAT: Build links API URL with pagination, search, and sorting
+      // WHY: Load only 20 links at a time for performance
       const params = new URLSearchParams();
       params.set('includeUnassigned', 'true');
-      params.set('limit', '100');
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+      
       if (sortField && sortOrder) {
         params.set('sortField', sortField);
         params.set('sortOrder', sortOrder);
       }
       
-      // WHAT: Fetch all Bitly links with sorting applied
+      // WHAT: Fetch first page of Bitly links
       const linksRes = await fetch(`/api/bitly/links?${params.toString()}`);
       const linksData = await linksRes.json();
 
@@ -118,12 +147,52 @@ export default function BitlyAdminPage() {
 
       if (linksData.success && linksData.links) {
         setLinks(linksData.links);
+        setTotalMatched(linksData.pagination.total);
+        setNextOffset(linksData.pagination.hasMore ? PAGE_SIZE : null);
       }
     } catch (err) {
       setError('Failed to load data. Please refresh the page.');
       console.error('Load error:', err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  // WHAT: Load more links (pagination)
+  // WHY: "Load 20 more" button functionality
+  async function loadMore() {
+    if (nextOffset === null || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+      setError('');
+
+      const params = new URLSearchParams();
+      params.set('includeUnassigned', 'true');
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', nextOffset.toString());
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+
+      const res = await fetch(`/api/bitly/links?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success && data.links) {
+        setLinks(prev => [...prev, ...data.links]);
+        setNextOffset(data.pagination.hasMore ? nextOffset + PAGE_SIZE : null);
+      }
+    } catch (err) {
+      setError('Failed to load more links.');
+      console.error('Load more error:', err);
+    } finally {
+      setLoadingMore(false);
     }
   }
 
@@ -535,6 +604,10 @@ export default function BitlyAdminPage() {
         title="🔗 Bitly Link Management"
         subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your MessMass events"
         backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={(value) => setSearchTerm(value)}
+        searchPlaceholder="Search Bitly links..."
         actionButtons={[
           {
             label: 'Get Links from Bitly',
@@ -577,6 +650,16 @@ export default function BitlyAdminPage() {
       {successMessage && (
         <div className="alert alert-success mb-4">
           {successMessage}
+        </div>
+      )}
+
+      {/* WHAT: Pagination stats header showing X of Y items
+       * WHY: Consistent format matching projects page design */}
+      {!loading && links.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {links.length} of {totalMatched} links
+          </div>
         </div>
       )}
 
@@ -767,6 +850,24 @@ export default function BitlyAdminPage() {
             </table>
           )}
         </div>
+      </div>
+
+      {/* WHAT: Load More button for pagination
+       * WHY: Allow users to load next 20 links without full page reload */}
+      <div className="p-4 text-center">
+        {nextOffset !== null ? (
+          <button 
+            className="btn btn-small btn-secondary" 
+            disabled={loadingMore} 
+            onClick={loadMore}
+          >
+            {loadingMore ? 'Loading…' : 'Load 20 more'}
+          </button>
+        ) : (
+          links.length > 0 && (
+            <span className="text-gray-500 text-sm">No more items</span>
+          )
+        )}
       </div>
 
       {/* WHAT: Info section with standardized styling

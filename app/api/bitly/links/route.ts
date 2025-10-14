@@ -197,6 +197,7 @@ export async function POST(request: NextRequest) {
  * 
  * AUTH: Admin only
  * QUERY PARAMS:
+ *   - search: Search term (filters by bitlink, long_url, or title)
  *   - projectId: Filter links by project (omit to get all links)
  *   - includeAnalytics: Include analytics data (default: false)
  *   - includeUnassigned: Include links with no projectId (default: false)
@@ -219,6 +220,7 @@ export async function GET(request: NextRequest) {
 
     // WHAT: Parse query parameters
     const { searchParams } = new URL(request.url);
+    const searchQuery = searchParams.get('search');
     const projectId = searchParams.get('projectId');
     const includeAnalytics = searchParams.get('includeAnalytics') === 'true';
     const includeUnassigned = searchParams.get('includeUnassigned') === 'true';
@@ -228,8 +230,19 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder');
 
     // WHAT: Build query filter
-    // WHY: Supports multiple use cases (all links, project links, unassigned links)
+    // WHY: Supports multiple use cases (all links, project links, unassigned links, search)
     const filter: any = { archived: { $ne: true } }; // Exclude archived by default
+
+    // WHAT: Add search filter if search query provided
+    // WHY: Allow users to search through 3000+ links by bitlink, URL, or title
+    if (searchQuery && searchQuery.trim()) {
+      const searchRegex = { $regex: searchQuery.trim(), $options: 'i' };
+      filter.$or = [
+        { bitlink: searchRegex },
+        { long_url: searchRegex },
+        { title: searchRegex }
+      ];
+    }
 
     if (projectId) {
       // WHAT: Filter by specific project
