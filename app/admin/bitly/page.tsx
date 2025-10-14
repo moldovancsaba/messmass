@@ -27,6 +27,16 @@ interface BitlyLink {
   };
   lastSyncAt: string;
   createdAt: string;
+  // Many-to-many junction data (if available)
+  associations?: Array<{
+    projectId: string;
+    projectName: string;
+    startDate: string | null;
+    endDate: string | null;
+    autoCalculated: boolean;
+    clicks: number;
+    lastSyncedAt: string | null;
+  }>;
 }
 
 interface Project {
@@ -239,6 +249,37 @@ export default function BitlyAdminPage() {
     }
   }
 
+  // WHAT: Refresh cached metrics for all junction table entries
+  // WHY: Updates date-range-filtered metrics after sync or when needed
+  async function handleRefreshMetrics() {
+    if (!confirm('Refresh all cached Bitly metrics?\n\nThis will update analytics for all event-link associations using the latest Bitly data.')) {
+      return;
+    }
+
+    setError('');
+    setSuccessMessage('Refreshing cached metrics... This may take a minute.');
+
+    try {
+      const res = await fetch('/api/bitly/recalculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'all' }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage(`✓ Refreshed ${data.associationsUpdated} event-link associations!`);
+        loadData(); // Reload to show updated metrics
+      } else {
+        setError(data.error || 'Refresh failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Refresh metrics error:', err);
+    }
+  }
+
   // WHAT: Pull links from Bitly organization and import them with full analytics (one-time setup)
   // WHY: Initial bulk import of existing Bitly links with their complete analytics data
   async function handlePullData() {
@@ -290,6 +331,21 @@ export default function BitlyAdminPage() {
     }
   }
 
+  // WHAT: Format date range for display
+  // WHY: Shows temporal boundaries for many-to-many link associations
+  function formatDateRange(startDate: string | null, endDate: string | null): string {
+    if (startDate === null && endDate === null) {
+      return 'All time';
+    }
+    if (startDate === null) {
+      return `Until ${endDate}`;
+    }
+    if (endDate === null) {
+      return `From ${startDate} onward`;
+    }
+    return `${startDate} to ${endDate}`;
+  }
+
   // WHAT: Auth check wrapper
   // WHY: Ensure user is authenticated before showing Bitly management
   const { user, loading: authLoading } = useAdminAuth();
@@ -331,6 +387,13 @@ export default function BitlyAdminPage() {
             onClick: handleManualSync,
             variant: 'success',
             title: 'Manually refresh analytics for all links'
+          },
+          {
+            label: 'Refresh Metrics',
+            icon: '📊',
+            onClick: handleRefreshMetrics,
+            variant: 'secondary',
+            title: 'Update cached metrics for all event associations'
           },
           {
             label: 'Add Link',
@@ -444,7 +507,7 @@ export default function BitlyAdminPage() {
       </div>
 
       {/* WHAT: Info section with standardized styling
-       * WHY: Provides help text about sync operations without inline styles */}
+       * WHY: Provides help text about sync operations and many-to-many system */}
       <div className="mt-6">
         <h3 className="section-title mb-4">Sync Information</h3>
         <div className="space-y-3">
@@ -458,7 +521,23 @@ export default function BitlyAdminPage() {
             <strong className="text-primary">🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
           </p>
           <p className="text-sm">
+            <strong className="text-primary">📊 Refresh Metrics:</strong> After syncing new Bitly data, click this to update cached analytics for all event associations. Date ranges are automatically recalculated when event dates change.
+          </p>
+          <p className="text-sm">
             <strong className="text-primary">⬇️ Per-Link Pull (Emergency):</strong> The ⬇️ button on each link manually refreshes that specific link&apos;s analytics. Only use if you need immediate updates for that link.
+          </p>
+        </div>
+        
+        <h3 className="section-title mt-6 mb-4">Many-to-Many Link System</h3>
+        <div className="space-y-3">
+          <p className="text-sm">
+            <strong className="text-primary">🔗 Shared Links:</strong> Bitly links can now be associated with multiple events. Analytics are automatically split by temporal boundaries so each event gets accurate attribution.
+          </p>
+          <p className="text-sm">
+            <strong className="text-primary">📅 Date Ranges:</strong> When a link is shared across events, the system calculates date ranges automatically. The first event gets all history, the last event gets ongoing data, and middle events get bounded ranges.
+          </p>
+          <p className="text-sm">
+            <strong className="text-primary">♻️ Auto-Recalculation:</strong> When you change an event&apos;s date or delete an event, date ranges for affected Bitly links are automatically recalculated to maintain data integrity.
           </p>
         </div>
       </div>

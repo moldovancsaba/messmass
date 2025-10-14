@@ -12,6 +12,9 @@ import {
   getAllHashtagRepresentations 
 } from '@/lib/hashtagCategoryUtils';
 
+// Import Bitly recalculation services for many-to-many link management
+import { recalculateProjectLinks, handleProjectDeletion } from '@/lib/bitly-recalculator';
+
 // Define project interface for type safety
 // Enhanced to support both traditional and categorized hashtags
 interface ProjectDocument {
@@ -599,6 +602,19 @@ export async function PUT(request: NextRequest) {
 
     console.log('✅ Project updated successfully');
     
+    // WHAT: Trigger Bitly recalculation if eventDate changed
+    // WHY: Date changes affect temporal boundaries for Bitly analytics attribution
+    if (currentProject.eventDate !== eventDate) {
+      console.log('📅 Event date changed, triggering Bitly recalculation...');
+      try {
+        const bitlinksAffected = await recalculateProjectLinks(new ObjectId(projectId));
+        console.log(`✅ Recalculated ${bitlinksAffected} Bitly links due to date change`);
+      } catch (bitlyError) {
+        console.error('⚠️ Failed to recalculate Bitly links:', bitlyError);
+        // Don't fail the request if Bitly recalculation fails
+      }
+    }
+    
     // WHAT: Log notification for project edit
     // WHY: Notify all users of project changes
     try {
@@ -667,6 +683,17 @@ export async function DELETE(request: NextRequest) {
     const result = await collection.deleteOne({ _id: new ObjectId(projectId) });
 
     console.log('✅ Project deleted successfully');
+    
+    // WHAT: Trigger Bitly recalculation for affected links
+    // WHY: Deleted event's date ranges must be redistributed to remaining events
+    console.log('🔗 Handling Bitly link redistribution after project deletion...');
+    try {
+      const bitlinksAffected = await handleProjectDeletion(new ObjectId(projectId));
+      console.log(`✅ Redistributed date ranges for ${bitlinksAffected} Bitly links`);
+    } catch (bitlyError) {
+      console.error('⚠️ Failed to handle Bitly redistribution:', bitlyError);
+      // Don't fail the request if Bitly handling fails
+    }
     
     // Enhanced hashtag cleanup for both traditional and categorized hashtags
     // Remove all hashtag representations (including category-prefixed versions)
