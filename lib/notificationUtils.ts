@@ -14,9 +14,14 @@ export interface CreateNotificationParams {
 }
 
 /**
- * WHAT: Create a notification by writing directly to MongoDB
+ * WHAT: Create a notification by writing directly to MongoDB with intelligent grouping
  * WHY: Logs user activities for display in the header bell notification panel
+ *      Groups rapid consecutive edits to prevent notification spam
  *      Direct DB write avoids circular API calls from within API routes
+ * 
+ * STRATEGY: If a similar notification (same user, activity, project) exists within
+ *           the last 5 minutes, update its timestamp instead of creating a duplicate.
+ *           This groups rapid edits during a single workflow into one notification.
  * 
  * @param db - MongoDB database instance
  * @param params - Notification parameters
@@ -33,9 +38,41 @@ export async function createNotification(db: Db, params: CreateNotificationParam
       return false;
     }
 
-    // WHAT: Create notification document with ISO 8601 timestamp and empty arrays
-    // WHY: Multi-user support - store activity visible to all users
-    const timestamp = new Date().toISOString();
+    const now = new Date();
+    const timestamp = now.toISOString();
+    
+    // WHAT: Calculate 5-minute window for grouping notifications
+    // WHY: Group rapid consecutive edits from the same user on the same project
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
+    
+    // WHAT: Check if a similar notification exists within the last 5 minutes
+    // WHY: Prevent notification spam during rapid editing workflows
+    const existingNotification = await notifications.findOne({
+      user: params.user,
+      activityType: params.activityType,
+      projectId: params.projectId,
+      timestamp: { $gte: fiveMinutesAgo }
+    });
+    
+    if (existingNotification) {
+      // WHAT: Update existing notification timestamp to show latest activity
+      // WHY: Groups rapid edits into single notification while keeping it fresh
+      await notifications.updateOne(
+        { _id: existingNotification._id },
+        { 
+          $set: { 
+            timestamp,
+            projectName: params.projectName, // Update name in case it changed
+            projectSlug: params.projectSlug || existingNotification.projectSlug || null
+          }
+        }
+      );
+      console.log(`🔄 Notification grouped: ${params.user} ${params.activityType} "${params.projectName}" (updated existing)`);
+      return true;
+    }
+    
+    // WHAT: Create new notification document with ISO 8601 timestamp and empty arrays
+    // WHY: No recent similar notification exists - create a fresh one
     const notification = {
       activityType: params.activityType,
       user: params.user,
