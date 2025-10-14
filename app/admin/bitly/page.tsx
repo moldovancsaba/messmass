@@ -204,6 +204,35 @@ export default function BitlyAdminPage() {
     }
   }
 
+  // WHAT: Handle removing a link-to-project association
+  // WHY: Allow users to correct mistakes or remove outdated associations
+  async function handleRemoveAssociation(linkId: string, bitlink: string, projectId: string, projectName: string) {
+    if (!confirm(`Remove association between ${bitlink} and ${projectName}?`)) {
+      return;
+    }
+
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const res = await fetch(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage(`✓ Removed ${bitlink} from ${projectName}`);
+        loadData(); // Reload to show updated associations
+      } else {
+        setError(data.error || 'Failed to remove association');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Remove association error:', err);
+    }
+  }
+
   // WHAT: Handle adding a link to a project (many-to-many)
   // WHY: Allows same link to be associated with multiple events via junction table
   async function handleAddLinkToProject(linkId: string, bitlink: string, projectId: string) {
@@ -601,7 +630,9 @@ export default function BitlyAdminPage() {
                             <span
                               key={assoc.projectId}
                               style={{
-                                display: 'inline-block',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
                                 padding: '2px 8px',
                                 fontSize: '12px',
                                 backgroundColor: '#e3f2fd',
@@ -611,7 +642,27 @@ export default function BitlyAdminPage() {
                               }}
                               title={`Clicks: ${assoc.clicks || 0} | ${assoc.autoCalculated ? 'Auto-calculated date range' : 'Manual date range'}`}
                             >
-                              {assoc.projectName || 'Unknown Project'}
+                              <span>{assoc.projectName || 'Unknown Project'}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveAssociation(link._id, link.bitlink, assoc.projectId, assoc.projectName)}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#1976d2',
+                                  cursor: 'pointer',
+                                  padding: '0',
+                                  fontSize: '14px',
+                                  lineHeight: '1',
+                                  fontWeight: 'bold',
+                                  opacity: 0.7
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                                title={`Remove ${assoc.projectName} from this link`}
+                              >
+                                ✕
+                              </button>
                             </span>
                           ))}
                         </div>
