@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Parse request body for optional parameters
     const body = await request.json().catch(() => ({}));
-    const limit = body.limit || 50; // Default to 50 links
+    const limit = body.limit || 5; // Default to 5 links to avoid rate limits
 
     console.log(`[Bitly Pull] Starting import of up to ${limit} links from organization`);
 

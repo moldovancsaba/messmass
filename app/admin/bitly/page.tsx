@@ -395,31 +395,44 @@ export default function BitlyAdminPage() {
   // WHAT: Pull links from Bitly organization and import them with full analytics (one-time setup)
   // WHY: Initial bulk import of existing Bitly links with their complete analytics data
   async function handlePullData() {
-    if (!confirm('🔗 Get All Links from Bitly.com\n\nThis will automatically:\n\n✓ Fetch up to 50 links from your Bitly organization\n✓ Import NEW links with complete analytics\n✓ Skip links that already exist (no duplicates)\n\n⚠️ Use this for initial setup or when you have new links in Bitly.\n\nExisting links are automatically synced daily at 3 AM UTC.\n\nContinue?')) {
+    if (!confirm('🔗 Get Links from Bitly.com\n\nThis will automatically:\n\n✓ Fetch up to 5 links from your Bitly organization\n✓ Import NEW links with complete analytics\n✓ Skip links that already exist (no duplicates)\n\n⚠️ Rate Limit: Limited to 5 links per request to avoid API errors.\n\nClick multiple times if you have more links to import.\n\nContinue?')) {
       return;
     }
 
     setError('');
-    setSuccessMessage('Pulling data from Bitly... This may take a minute.');
+    setSuccessMessage('Pulling data from Bitly... This may take a moment.');
 
     try {
       const res = await fetch('/api/bitly/pull', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 50 }),
+        body: JSON.stringify({ limit: 5 }),
       });
 
       const data = await res.json();
 
       if (data.success) {
         const summary = data.summary;
-        setSuccessMessage(
-          `✓ ${data.message}\n` +
-          `Total: ${summary.total}, Imported: ${summary.imported}, Skipped: ${summary.skipped}, Errors: ${summary.errors}`
-        );
+        const message = `✓ ${data.message}\nTotal: ${summary.total}, Imported: ${summary.imported}, Skipped: ${summary.skipped}, Errors: ${summary.errors}`;
+        
+        if (summary.imported > 0) {
+          setSuccessMessage(message + '\n\n💡 Tip: Click "Get Links" again if you have more links to import!');
+        } else if (summary.skipped > 0) {
+          setSuccessMessage(message + '\n\nAll links already imported!');
+        } else {
+          setSuccessMessage(message);
+        }
+        
         loadData(); // Reload to show newly imported links
       } else {
-        setError(data.error || 'Pull failed');
+        // WHAT: Handle specific Bitly API errors
+        if (data.error?.includes('403') || data.error?.includes('Forbidden')) {
+          setError('⚠️ Bitly API Error: Access forbidden. Please check your Bitly access token has proper permissions.');
+        } else if (data.error?.includes('429') || data.error?.includes('rate limit')) {
+          setError('⚠️ Rate Limit: Too many requests. Please wait a moment and try again.');
+        } else {
+          setError(data.error || 'Pull failed');
+        }
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -728,7 +741,7 @@ export default function BitlyAdminPage() {
             <strong className="text-primary">🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
           </p>
           <p className="text-sm">
-            <strong className="text-primary">⬇️ Get Links from Bitly (Automatic):</strong> Click this button to automatically import up to 50 NEW links from your Bitly.com organization. The system fetches all links, imports new ones with full analytics (clicks, geographic data, referrers, timeseries), and skips duplicates. No copy-paste needed!
+            <strong className="text-primary">⬇️ Get Links from Bitly (Automatic):</strong> Click this button to automatically import up to 5 NEW links from your Bitly.com organization. The system fetches links, imports new ones with full analytics (clicks, geographic data, referrers, timeseries), and skips duplicates. Click multiple times if you have more than 5 links. No copy-paste needed!
           </p>
           <p className="text-sm">
             <strong className="text-primary">🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
