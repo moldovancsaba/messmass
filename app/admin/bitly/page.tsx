@@ -207,33 +207,42 @@ export default function BitlyAdminPage() {
   // WHAT: Handle adding a link to a project (many-to-many)
   // WHY: Allows same link to be associated with multiple events via junction table
   async function handleAddLinkToProject(linkId: string, bitlink: string, projectId: string) {
+    console.log('[handleAddLinkToProject] Called with:', { linkId, bitlink, projectId });
     setError('');
     setSuccessMessage('');
 
     try {
       // Call the same POST endpoint that now supports many-to-many
+      const requestBody = {
+        projectId: projectId,
+        bitlinkOrLongUrl: bitlink,
+      };
+      console.log('[handleAddLinkToProject] Sending request:', requestBody);
+      
       const res = await fetch('/api/bitly/links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: projectId,
-          bitlinkOrLongUrl: bitlink,
-        }),
+        body: JSON.stringify(requestBody),
       });
+      
+      console.log('[handleAddLinkToProject] Response status:', res.status);
 
       const data = await res.json();
+      console.log('[handleAddLinkToProject] Response data:', data);
 
       if (data.success) {
         const project = projects.find(p => p._id === projectId);
         const projectName = project?.eventName || 'selected project';
         setSuccessMessage(`✓ ${bitlink} added to ${projectName}`);
+        console.log('[handleAddLinkToProject] Success! Reloading data...');
         loadData(); // Reload to show updated associations
       } else {
+        console.error('[handleAddLinkToProject] API returned error:', data.error);
         setError(data.error || 'Failed to add link to project');
       }
     } catch (err) {
       setError('Network error. Please try again.');
-      console.error('Add link to project error:', err);
+      console.error('[handleAddLinkToProject] Exception:', err);
     }
   }
 
@@ -591,9 +600,13 @@ export default function BitlyAdminPage() {
                         selectedProjectId={null}
                         projects={projects}
                         onChange={(projectId) => {
+                          console.log('[ProjectSelector onChange] Triggered with projectId:', projectId);
+                          console.log('[ProjectSelector onChange] Link context:', { linkId: link._id, bitlink: link.bitlink });
                           if (projectId) {
                             // Add link to selected project via API
                             handleAddLinkToProject(link._id, link.bitlink, projectId);
+                          } else {
+                            console.log('[ProjectSelector onChange] projectId is null, skipping API call');
                           }
                         }}
                         placeholder="+ Add to event..."
