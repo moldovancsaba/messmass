@@ -21,9 +21,12 @@ export type AppConfig = {
   // WHAT: Access token for Bitly API v4 authentication
   // WHY: Required to fetch link analytics and manage shortened URLs for event tracking
   bitlyAccessToken?: string;
-  // WHAT: Optional organization/group GUID to restrict API calls to specific workspace
-  // WHY: Improves performance and organization when working with multiple Bitly workspaces
+  // WHAT: Optional organization GUID for Bitly workspace
+  // WHY: Identifies the Bitly organization workspace
   bitlyOrganizationGuid?: string;
+  // WHAT: Group GUID for fetching links from specific Bitly group
+  // WHY: Required for /groups/{guid}/bitlinks endpoint (some accounts don't support /user/bitlinks)
+  bitlyGroupGuid?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -66,6 +69,7 @@ export const config: AppConfig = {
   // WHY: Required for importing link analytics from Bitly into MessMass event projects
   bitlyAccessToken: getEnv('BITLY_ACCESS_TOKEN'),
   bitlyOrganizationGuid: getEnv('BITLY_ORGANIZATION_GUID'),
+  bitlyGroupGuid: getEnv('BITLY_GROUP_GUID'),
 };
 
 // Convenience helpers to encourage centralization and avoid direct process.env usage

@@ -280,17 +280,18 @@ export async function getUserBitlinks(
  * WHY: Enables bulk discovery and association of links with MessMass projects
  * REF: GET /v4/groups/{group_guid}/bitlinks
  * 
- * NOTE: Only use this if you have a specific group GUID. For most cases, use getUserBitlinks() instead.
+ * NOTE: Preferred method when /user/bitlinks returns 404. Requires BITLY_GROUP_GUID.
  */
 export async function getGroupBitlinks(
   groupGuid?: string,
   options: { size?: number; page?: number } = {}
 ): Promise<BitlyGroupLinksResponse> {
-  // WHAT: Use configured organization GUID or require it as parameter
-  const guid = groupGuid || config.bitlyOrganizationGuid;
+  // WHAT: Use provided GUID, fallback to config (try GROUP first, then ORGANIZATION)
+  // WHY: Some accounts require GROUP GUID specifically, others work with ORG GUID
+  const guid = groupGuid || config.bitlyGroupGuid || config.bitlyOrganizationGuid;
   if (!guid) {
     throw new BitlyApiError(
-      'BITLY_ORGANIZATION_GUID is not configured and not provided as parameter',
+      'BITLY_GROUP_GUID or BITLY_ORGANIZATION_GUID must be configured in environment variables',
       undefined,
       undefined,
       false
