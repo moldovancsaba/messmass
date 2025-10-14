@@ -1,0 +1,767 @@
+// app/admin/partners/page.tsx
+// WHAT: Admin interface for managing partners (organizations that own/operate events)
+// WHY: Centralized management for clubs, federations, venues, brands
+// DESIGN SYSTEM: Uses AdminHero, modal pattern, standardized table layout matching /admin/projects
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import AdminHero from '@/components/AdminHero';
+import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
+import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import type { PartnerResponse } from '@/lib/partner.types';
+
+// WHAT: Bitly link option for multi-select
+interface BitlyLinkOption {
+  _id: string;
+  bitlink: string;
+  title: string;
+  long_url: string;
+}
+
+export default function PartnersAdminPage() {
+  // WHAT: Component state management
+  // WHY: Tracks partners, UI state, and user inputs
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [partners, setPartners] = useState<PartnerResponse[]>([]);
+  const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  
+  // WHAT: Pagination state following /admin/projects pattern
+  // WHY: Handle potentially large partner databases efficiently
+  const [totalMatched, setTotalMatched] = useState(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
+  const PAGE_SIZE = 20;
+  
+  // WHAT: Search state with debouncing
+  // WHY: Allow users to filter partners by name or hashtags
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  
+  // WHAT: Sorting state
+  // WHY: Enable user-controlled table sorting
+  type SortField = 'name' | 'createdAt' | 'updatedAt' | null;
+  type SortOrder = 'asc' | 'desc' | null;
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  
+  // WHAT: Form states for add/edit modals
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<PartnerResponse | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // WHAT: Form data for new partner
+  const [newPartnerData, setNewPartnerData] = useState({
+    name: '',
+    emoji: '',
+    hashtags: [] as string[],
+    categorizedHashtags: {} as { [categoryName: string]: string[] },
+    bitlyLinkIds: [] as string[],
+  });
+  
+  // WHAT: Form data for editing partner
+  const [editPartnerData, setEditPartnerData] = useState({
+    name: '',
+    emoji: '',
+    hashtags: [] as string[],
+    categorizedHashtags: {} as { [categoryName: string]: string[] },
+    bitlyLinkIds: [] as string[],
+  });
+
+  // WHAT: Debounce search input (300ms delay)
+  // WHY: Reduce API calls while user types
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm.trim());
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // WHAT: Hydrate sort state from URL (if present)
+  // WHY: Allow shareable sorted views via URL parameters
+  useEffect(() => {
+    const sf = searchParams?.get('sortField') as SortField | null;
+    const so = searchParams?.get('sortOrder') as SortOrder | null;
+    const allowedFields: SortField[] = ['name', 'createdAt', 'updatedAt'];
+    const allowedOrders: SortOrder[] = ['asc', 'desc'];
+    if (sf && allowedFields.includes(sf)) setSortField(sf);
+    if (so && allowedOrders.includes(so)) setSortOrder(so);
+  }, [searchParams]);
+
+  // WHAT: Load first page when search/sort changes
+  // WHY: Fresh search or sort requires restarting pagination
+  useEffect(() => {
+    loadData();
+  }, [debouncedTerm, sortField, sortOrder]);
+
+  // WHAT: Load first page of partners with search and sorting
+  // WHY: Start fresh pagination when search/sort changes
+  async function loadData() {
+    try {
+      setLoading(true);
+      setError('');
+      setPartners([]); // Clear existing partners
+
+      // WHAT: Fetch all Bitly links for multi-select dropdown
+      // WHY: Users need to associate partners with Bitly links
+      const bitlyRes = await fetch('/api/bitly/links?includeUnassigned=true&limit=1000');
+      const bitlyData = await bitlyRes.json();
+      if (bitlyData.success && bitlyData.links) {
+        setAllBitlyLinks(bitlyData.links.map((link: any) => ({
+          _id: link._id,
+          bitlink: link.bitlink,
+          title: link.title,
+          long_url: link.long_url,
+        })));
+      }
+
+      // WHAT: Build partners API URL with pagination, search, and sorting
+      // WHY: Load only 20 partners at a time for performance
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+      
+      // WHAT: Fetch first page of partners
+      const partnersRes = await fetch(`/api/partners?${params.toString()}`);
+      const partnersData = await partnersRes.json();
+
+      if (partnersData.success && partnersData.partners) {
+        setPartners(partnersData.partners);
+        setTotalMatched(partnersData.pagination.total);
+        setNextOffset(partnersData.pagination.hasMore ? PAGE_SIZE : null);
+      }
+    } catch (err) {
+      setError('Failed to load data. Please refresh the page.');
+      console.error('Load error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // WHAT: Load more partners (pagination)
+  // WHY: "Load 20 more" button functionality
+  async function loadMore() {
+    if (nextOffset === null || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+      setError('');
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', nextOffset.toString());
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+
+      const res = await fetch(`/api/partners?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success && data.partners) {
+        setPartners(prev => [...prev, ...data.partners]);
+        setNextOffset(data.pagination.hasMore ? nextOffset + PAGE_SIZE : null);
+      }
+    } catch (err) {
+      setError('Failed to load more partners.');
+      console.error('Load more error:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  // WHAT: Handle sorting column click
+  // WHY: Three-state cycle per column: asc → desc → clear
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else if (sortOrder === 'desc') {
+        setSortField(null);
+        setSortOrder(null);
+      }
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+    
+    // WHAT: Sync to URL query for shareable state
+    const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
+    const currentField = sortField;
+    const currentOrder = sortOrder;
+    let nextField: SortField = field;
+    let nextOrder: SortOrder = 'asc';
+    if (currentField === field) {
+      nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
+    }
+    if (nextOrder) {
+      params.set('sortField', nextField as string);
+      params.set('sortOrder', nextOrder);
+    } else {
+      params.delete('sortField');
+      params.delete('sortOrder');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }
+
+  // WHAT: Handle adding a new partner
+  // WHY: Allows creation of organization entities
+  async function handleAddPartner(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    if (!newPartnerData.name.trim() || !newPartnerData.emoji.trim()) {
+      setError('Name and emoji are required');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const res = await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPartnerData),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage(`✓ Partner "${newPartnerData.name}" created successfully!`);
+        setShowAddForm(false);
+        setNewPartnerData({
+          name: '',
+          emoji: '',
+          hashtags: [],
+          categorizedHashtags: {},
+          bitlyLinkIds: [],
+        });
+        loadData(); // Reload to show new partner
+      } else {
+        setError(data.error || 'Failed to create partner');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Add partner error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  // WHAT: Open edit modal with partner data
+  // WHY: Populate form with existing partner values
+  function openEditForm(partner: PartnerResponse) {
+    setEditingPartner(partner);
+    setEditPartnerData({
+      name: partner.name,
+      emoji: partner.emoji,
+      hashtags: partner.hashtags || [],
+      categorizedHashtags: partner.categorizedHashtags || {},
+      bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
+    });
+    setShowEditForm(true);
+  }
+
+  // WHAT: Handle updating an existing partner
+  // WHY: Allows editing partner details
+  async function handleUpdatePartner(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    if (!editingPartner || !editPartnerData.name.trim() || !editPartnerData.emoji.trim()) {
+      setError('Name and emoji are required');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const res = await fetch('/api/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId: editingPartner._id,
+          ...editPartnerData,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage(`✓ Partner "${editPartnerData.name}" updated successfully!`);
+        setShowEditForm(false);
+        setEditingPartner(null);
+        loadData(); // Reload to show updated partner
+      } else {
+        setError(data.error || 'Failed to update partner');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Update partner error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  // WHAT: Handle deleting a partner
+  // WHY: Remove organizations from system
+  async function handleDeletePartner(partnerId: string, partnerName: string) {
+    if (!confirm(`Delete partner "${partnerName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const res = await fetch(`/api/partners?partnerId=${partnerId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage(`✓ Partner "${partnerName}" deleted successfully`);
+        loadData(); // Reload to remove deleted partner
+      } else {
+        setError(data.error || 'Failed to delete partner');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Delete partner error:', err);
+    }
+  }
+
+  // WHAT: Auth check wrapper
+  // WHY: Ensure user is authenticated before showing partners management
+  const { user, loading: authLoading } = useAdminAuth();
+
+  if (authLoading || loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-card">
+          <div className="text-4xl mb-4">🤝</div>
+          <div className="text-gray-600">Loading partners...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
+
+  // WHAT: AdminHero component for standardized header
+  // WHY: Matches design system used in /admin/projects and other admin pages
+  return (
+    <div className="page-container">
+      <AdminHero
+        title="🤝 Partner Management"
+        subtitle="Manage organizations that own or operate events: clubs, federations, venues, brands"
+        backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={(value) => setSearchTerm(value)}
+        searchPlaceholder="Search partners..."
+        actionButtons={[
+          {
+            label: 'Add Partner',
+            icon: '+',
+            onClick: () => setShowAddForm(true),
+            variant: 'primary',
+            title: 'Create a new partner organization'
+          }
+        ]}
+      />
+
+      {/* WHAT: Status messages with proper spacing */}
+      {error && (
+        <div className="alert alert-danger mb-4">
+          {error}
+        </div>
+      )}
+      {successMessage && (
+        <div className="alert alert-success mb-4">
+          {successMessage}
+        </div>
+      )}
+
+      {/* WHAT: Pagination stats header */}
+      {!loading && partners.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Showing {partners.length} of {totalMatched} partners
+          </div>
+        </div>
+      )}
+
+      {/* WHAT: Partners table with standardized structure */}
+      <div className="projects-table-container">
+        <div className="table-overflow-hidden">
+          {partners.length === 0 ? (
+            /* WHAT: Empty state */
+            <div className="admin-empty-state">
+              <div className="admin-empty-icon">🤝</div>
+              <div className="admin-empty-title">No Partners Yet</div>
+              <div className="admin-empty-subtitle">
+                Click &quot;Add Partner&quot; above to create your first partner organization
+              </div>
+            </div>
+          ) : (
+            /* WHAT: Standardized table matching projects page structure */
+            <table className="projects-table table-full-width table-inherit-radius">
+              <thead>
+                <tr>
+                  <th style={{ width: '5%' }}>Icon</th>
+                  <th 
+                    onClick={() => handleSort('name')} 
+                    className="sortable-th" 
+                    style={{ width: '20%' }}
+                  >
+                    Name
+                    {sortField === 'name' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
+                  <th style={{ width: '30%' }}>Hashtags</th>
+                  <th style={{ width: '25%' }}>Bitly Links</th>
+                  <th 
+                    onClick={() => handleSort('updatedAt')} 
+                    className="sortable-th" 
+                    style={{ width: '10%' }}
+                  >
+                    Updated
+                    {sortField === 'updatedAt' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
+                  <th style={{ width: '10%' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {partners.map(partner => (
+                  <tr key={partner._id}>
+                    <td style={{ fontSize: '2rem', textAlign: 'center' }}>{partner.emoji}</td>
+                    <td className="font-medium">{partner.name}</td>
+                    <td>
+                      {/* WHAT: Display hashtags as bubbles */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                        {/* Traditional hashtags */}
+                        {partner.hashtags && partner.hashtags.map(hashtag => (
+                          <ColoredHashtagBubble
+                            key={`general-${hashtag}`}
+                            hashtag={hashtag}
+                            small={true}
+                            interactive={false}
+                            projectCategorizedHashtags={partner.categorizedHashtags}
+                            autoResolveColor={true}
+                          />
+                        ))}
+                        {/* Categorized hashtags */}
+                        {partner.categorizedHashtags && Object.entries(partner.categorizedHashtags).map(([category, hashtags]) =>
+                          hashtags.map(hashtag => (
+                            <ColoredHashtagBubble
+                              key={`${category}-${hashtag}`}
+                              hashtag={`${category}:${hashtag}`}
+                              showCategoryPrefix={true}
+                              small={true}
+                              interactive={false}
+                            />
+                          ))
+                        )}
+                        {!partner.hashtags?.length && !Object.keys(partner.categorizedHashtags || {}).length && (
+                          <span className="text-gray-400 text-sm">No hashtags</span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      {/* WHAT: Display Bitly links */}
+                      {partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          {partner.bitlyLinks.map(link => (
+                            <a
+                              key={link._id}
+                              href={`https://${link.bitlink}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="link link-primary text-sm"
+                              title={link.title}
+                            >
+                              {link.bitlink}
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-sm">No links</span>
+                      )}
+                    </td>
+                    <td className="text-sm text-gray-600">
+                      {new Date(partner.updatedAt).toLocaleDateString()}
+                    </td>
+                    <td className="actions-cell">
+                      <div className="action-buttons-container">
+                        <button
+                          onClick={() => openEditForm(partner)}
+                          className="btn btn-small btn-primary action-button"
+                          title="Edit partner"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeletePartner(partner._id, partner.name)}
+                          className="btn btn-small btn-danger action-button"
+                          title="Delete partner"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* WHAT: Load More button */}
+      <div className="p-4 text-center">
+        {nextOffset !== null ? (
+          <button 
+            className="btn btn-small btn-secondary" 
+            disabled={loadingMore} 
+            onClick={loadMore}
+          >
+            {loadingMore ? 'Loading…' : 'Load 20 more'}
+          </button>
+        ) : (
+          partners.length > 0 && (
+            <span className="text-gray-500 text-sm">No more items</span>
+          )
+        )}
+      </div>
+
+      {/* WHAT: Add Partner Modal */}
+      {showAddForm && (
+        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">+ Add Partner</h2>
+              <button className="modal-close" onClick={() => setShowAddForm(false)}>✕</button>
+            </div>
+            <form onSubmit={handleAddPartner}>
+              <div className="modal-body">
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Partner Name *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerData.name}
+                    onChange={(e) => setNewPartnerData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter partner name (e.g., FC Barcelona, UEFA, Camp Nou)"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Partner Emoji *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newPartnerData.emoji}
+                    onChange={(e) => setNewPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
+                    placeholder="⚽ 🏟️ 🏆 (single emoji)"
+                    required
+                    maxLength={4}
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    Choose an emoji to represent this partner
+                  </p>
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Hashtags (optional)</label>
+                  <UnifiedHashtagInput
+                    generalHashtags={newPartnerData.hashtags}
+                    onGeneralChange={(hashtags) => 
+                      setNewPartnerData(prev => ({ ...prev, hashtags }))
+                    }
+                    categorizedHashtags={newPartnerData.categorizedHashtags}
+                    onCategorizedChange={(categorizedHashtags) => 
+                      setNewPartnerData(prev => ({ ...prev, categorizedHashtags }))
+                    }
+                    placeholder="Search or add hashtags..."
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Bitly Links (optional)</label>
+                  <select
+                    className="form-input"
+                    multiple
+                    size={5}
+                    value={newPartnerData.bitlyLinkIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(option => option.value);
+                      setNewPartnerData(prev => ({ ...prev, bitlyLinkIds: selected }));
+                    }}
+                    style={{ height: '120px' }}
+                  >
+                    {allBitlyLinks.map(link => (
+                      <option key={link._id} value={link._id}>
+                        {link.bitlink} - {link.title}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Hold Cmd/Ctrl to select multiple links
+                  </p>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button"
+                  className="btn btn-small btn-secondary" 
+                  onClick={() => setShowAddForm(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="btn btn-small btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Creating...' : 'Create Partner'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* WHAT: Edit Partner Modal */}
+      {showEditForm && editingPartner && (
+        <div className="modal-overlay" onClick={() => setShowEditForm(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">✏️ Edit Partner</h2>
+              <button className="modal-close" onClick={() => setShowEditForm(false)}>✕</button>
+            </div>
+            <form onSubmit={handleUpdatePartner}>
+              <div className="modal-body">
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Partner Name *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={editPartnerData.name}
+                    onChange={(e) => setEditPartnerData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter partner name"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Partner Emoji *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={editPartnerData.emoji}
+                    onChange={(e) => setEditPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
+                    placeholder="⚽ 🏟️ 🏆"
+                    required
+                    maxLength={4}
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Hashtags (optional)</label>
+                  <UnifiedHashtagInput
+                    generalHashtags={editPartnerData.hashtags}
+                    onGeneralChange={(hashtags) => 
+                      setEditPartnerData(prev => ({ ...prev, hashtags }))
+                    }
+                    categorizedHashtags={editPartnerData.categorizedHashtags}
+                    onCategorizedChange={(categorizedHashtags) => 
+                      setEditPartnerData(prev => ({ ...prev, categorizedHashtags }))
+                    }
+                    placeholder="Search or add hashtags..."
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Bitly Links (optional)</label>
+                  <select
+                    className="form-input"
+                    multiple
+                    size={5}
+                    value={editPartnerData.bitlyLinkIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(option => option.value);
+                      setEditPartnerData(prev => ({ ...prev, bitlyLinkIds: selected }));
+                    }}
+                    style={{ height: '120px' }}
+                  >
+                    {allBitlyLinks.map(link => (
+                      <option key={link._id} value={link._id}>
+                        {link.bitlink} - {link.title}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Hold Cmd/Ctrl to select multiple links
+                  </p>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button"
+                  className="btn btn-small btn-secondary" 
+                  onClick={() => setShowEditForm(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="btn btn-small btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Updating...' : 'Update Partner'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

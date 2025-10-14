@@ -46,18 +46,32 @@ const navCards: NavCard[] = [
     accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
   },
   {
+    href: '/admin/partners',
+    icon: '🤝',
+    title: 'Partner Management',
+    description: 'Manage clubs, federations, venues, and brands',
+    accentColor: '#06b6d4', // var(--mm-chart-cyan)
+  },
+  {
+    href: '/admin/bitly',
+    icon: '🔗',
+    title: 'Bitly Link Management',
+    description: 'Track and manage Bitly short links and analytics',
+    accentColor: '#0ea5e9', // Sky Blue
+  },
+  {
     href: '/admin/filter',
     icon: '🔍',
     title: 'Hashtag Filter',
     description: 'Advanced multi-hashtag filtering and search',
-    accentColor: '#06b6d4', // var(--mm-chart-cyan)
+    accentColor: '#8b5cf6', // var(--mm-chart-purple)
   },
   {
     href: '/admin/hashtags',
     icon: '🏷️',
     title: 'Hashtag Manager',
     description: 'Manage hashtag categories and colors',
-    accentColor: '#8b5cf6', // var(--mm-chart-purple)
+    accentColor: '#a855f7', // Purple
   },
   {
     href: '/admin/categories',
