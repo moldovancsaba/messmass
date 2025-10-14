@@ -47,20 +47,24 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
       const res = await fetch(`/api/bitly/project-metrics/${projectId}`);
       const data = await res.json();
       
-      if (data.success && data.associations) {
-        // WHAT: Extract link data from associations array
-        // WHY: Transform junction table format to match BitlyLink interface
-        const linkData = data.associations.map((assoc: any) => ({
-          _id: assoc.bitlyLinkId,
-          bitlink: assoc.bitlink,
-          title: assoc.title || 'Untitled',
+      console.log('[BitlyLinksEditor] API response:', data);
+      
+      if (data.links && Array.isArray(data.links)) {
+        // WHAT: Extract link data from API response
+        // WHY: Transform project metrics format to match BitlyLink interface
+        const linkData = data.links.map((link: any) => ({
+          _id: link.bitlyLinkId,
+          bitlink: link.bitlink,
+          title: link.title || 'Untitled',
           click_summary: {
-            total: assoc.clicks || 0
+            total: link.metrics?.clicks || 0
           },
-          lastSyncAt: assoc.lastSyncedAt || new Date().toISOString()
+          lastSyncAt: link.lastSyncedAt || new Date().toISOString()
         }));
+        console.log('[BitlyLinksEditor] Transformed links:', linkData);
         setLinks(linkData);
       } else {
+        console.log('[BitlyLinksEditor] No links found in response');
         setLinks([]);
       }
     } catch (err) {
