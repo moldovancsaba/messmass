@@ -8,14 +8,8 @@ import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
-import { getGroupBitlinks, getLink, getFullAnalytics } from '@/lib/bitly';
-import { 
-  mapBitlyLinkToDoc, 
-  mapClicksSummary, 
-  mapSeriesToDaily, 
-  mapCountries, 
-  mapReferrers 
-} from '@/lib/bitly-mappers';
+import { getGroupBitlinks, getLink } from '@/lib/bitly';
+import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
 
 /**
  * POST /api/bitly/pull
@@ -97,14 +91,10 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // WHAT: Fetch full link metadata and analytics from Bitly API
-        // WHY: Need complete details including long_url, title, tags, AND analytics data
-        console.log(`[Bitly Pull] Fetching metadata and analytics for ${bitlink}`);
+        // WHAT: Fetch ONLY link metadata (no analytics to avoid Forbidden errors)
+        // WHY: Analytics cause 403 errors; just import link structure first
+        console.log(`[Bitly Pull] Fetching metadata for ${bitlink}`);
         const linkMetadata = await getLink(bitlink);
-        
-        // WHAT: Fetch complete analytics data for the link
-        // WHY: Import all analytics so events can calculate metrics immediately
-        const analytics = await getFullAnalytics(bitlink);
 
         // WHAT: Map Bitly metadata to MongoDB document structure
         // WHY: Transforms API response to our database schema
@@ -114,43 +104,33 @@ export async function POST(request: NextRequest) {
           undefined // Use Bitly's title
         );
 
-        // WHAT: Map analytics data to MongoDB structures
-        // WHY: Store click counts, geographic data, referrers, and timeseries for event calculations
-        const clickSummary = mapClicksSummary(analytics.summary);
-        const timeseries = mapSeriesToDaily(analytics.series);
-        const countries = mapCountries(analytics.countries);
-        const referrersData = mapReferrers(analytics.referrers);
-
-        // WHAT: Calculate last synced date from timeseries
-        // WHY: Track sync boundaries for incremental updates
-        const lastClicksSyncedUntil = timeseries.length > 0
-          ? timeseries[timeseries.length - 1].date
-          : undefined;
-
-        // WHAT: Insert link document with full analytics into database
-        // WHY: Persist the link AND its analytics for immediate event calculations
+        // WHAT: Insert link document WITHOUT analytics (will be synced later)
+        // WHY: Just import the link structure; analytics will be filled by daily sync
         const now = new Date().toISOString();
         await linksCollection.insertOne({
           ...linkDoc,
-          click_summary: clickSummary,
-          clicks_timeseries: timeseries,
-          geo: {
-            countries,
-            cities: [], // Cities data not available in bulk pull
+          click_summary: {
+            total: 0,
+            unique: 0,
+            updatedAt: now
           },
-          referrers: referrersData,
+          clicks_timeseries: [],
+          geo: {
+            countries: [],
+            cities: [],
+          },
+          referrers: [],
           lastSyncAt: now,
-          lastClicksSyncedUntil,
           createdAt: now,
           updatedAt: now,
         });
 
-        console.log(`[Bitly Pull] ✓ Imported ${bitlink} with ${clickSummary.total} total clicks`);
+        console.log(`[Bitly Pull] ✓ Imported ${bitlink} (analytics will sync automatically)`);
         results.imported++;
 
-        // WHAT: Longer delay to avoid rate limiting with analytics calls
-        // WHY: Each link now makes 5 API calls (metadata + 4 analytics endpoints)
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // WHAT: Short delay between links
+        // WHY: Only 1 API call per link now (just metadata)
+        await new Promise(resolve => setTimeout(resolve, 200));
 
       } catch (error) {
         console.error(`[Bitly Pull] Error processing ${linkSummary.id}:`, error);
