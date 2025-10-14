@@ -13,6 +13,7 @@ import config from '@/lib/config';
 import { getLink, normalizeBitlink } from '@/lib/bitly';
 import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
 import type { AssociateLinkInput, BitlyLinkResponse } from '@/lib/bitly-db.types';
+import { createLinkAssociation } from '@/lib/bitly-recalculator';
 
 /**
  * POST /api/bitly/links
@@ -94,27 +95,44 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Check if this bitlink already exists in database
-    // WHY: Prevent duplicate entries; return existing if found
+    // WHY: Support many-to-many - create junction entry if link exists
     const client = await clientPromise;
     const db = client.db(config.dbName);
     const existingLink = await db.collection('bitly_links').findOne({ bitlink: normalized });
 
-    if (existingLink) {
-      // WHAT: Link already exists
-      // WHY: Inform user; they should use PUT to update/reassign
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'This Bitly link is already associated. Use PUT to reassign or update it.',
-          link: existingLink 
-        },
-        { status: 409 }
-      );
+    if (existingLink && projectObjectId) {
+      // WHAT: Link already exists - create junction table association
+      // WHY: Many-to-many support - same link can be used by multiple events
+      console.log(`[Bitly Links API] Link exists, creating junction association`);
+      
+      try {
+        const association = await createLinkAssociation({
+          bitlyLinkId: existingLink._id as ObjectId,
+          projectId: projectObjectId,
+          autoCalculated: true,
+        });
+        
+        return NextResponse.json({
+          success: true,
+          link: existingLink,
+          association,
+          message: 'Bitly link associated with project (many-to-many)',
+        });
+      } catch (error) {
+        console.error('[Bitly Links API] Failed to create association:', error);
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: error instanceof Error ? error.message : 'Failed to create association'
+          },
+          { status: 500 }
+        );
+      }
     }
 
-    // WHAT: Map Bitly metadata to MongoDB document structure
-    // WHY: Transforms API response to our database schema
-    const linkDoc = mapBitlyLinkToDoc(projectObjectId, bitlyMetadata, title);
+    // WHAT: Map Bitly metadata to MongoDB document structure (no projectId - using junction table)
+    // WHY: Transforms API response to our database schema without deprecated projectId field
+    const linkDoc = mapBitlyLinkToDoc(null, bitlyMetadata, title);
 
     // WHAT: Override tags if provided in request
     // WHY: Allows admin to add custom tags beyond Bitly's tags
@@ -123,7 +141,7 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Insert link document into database
-    // WHY: Persists the association for analytics tracking
+    // WHY: Persists the link metadata (association via junction table)
     const now = new Date().toISOString();
     const insertResult = await db.collection('bitly_links').insertOne({
       ...linkDoc,
@@ -131,14 +149,32 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     });
 
+    // WHAT: Create junction table association if project specified
+    // WHY: Many-to-many relationship via junction table
+    let association = null;
+    if (projectObjectId) {
+      try {
+        association = await createLinkAssociation({
+          bitlyLinkId: insertResult.insertedId,
+          projectId: projectObjectId,
+          autoCalculated: true,
+        });
+        console.log(`[Bitly Links API] Created junction association for new link`);
+      } catch (error) {
+        console.error('[Bitly Links API] Failed to create association:', error);
+        // Link created but association failed - log and continue
+      }
+    }
+
     // WHAT: Fetch the inserted document to return to client
     const insertedLink = await db.collection('bitly_links').findOne({ _id: insertResult.insertedId });
 
     return NextResponse.json({
       success: true,
       link: insertedLink,
+      association,
       message: projectObjectId 
-        ? 'Bitly link successfully associated with project' 
+        ? 'Bitly link successfully associated with project (many-to-many)' 
         : 'Bitly link imported (unassigned)',
     });
 

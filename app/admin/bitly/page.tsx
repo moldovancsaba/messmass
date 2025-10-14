@@ -122,11 +122,13 @@ export default function BitlyAdminPage() {
       const data = await res.json();
 
       if (data.success) {
-        setSuccessMessage(`✓ ${data.message}`);
-        setNewBitlink('');
+        setSuccessMessage(`✓ ${data.message} - You can add this link to more projects or close the form.`);
+        // WHAT: Keep form open and bitlink filled for adding to multiple projects
+        // WHY: Many-to-many support - same link can be used by multiple events
+        // Only clear the project selector to allow selecting another project
+        setSelectedProjectId('');
         setCustomTitle('');
-        setShowAddForm(false);
-        loadData(); // Reload to show new link
+        loadData(); // Reload to show new association
       } else {
         setError(data.error || 'Failed to add link');
       }
@@ -584,6 +586,9 @@ export default function BitlyAdminPage() {
                       </option>
                     ))}
                   </select>
+                  <p className="text-xs text-gray-600 mt-1">
+                    🔗 <strong>Many-to-Many:</strong> After adding, you can select another project to associate the same link with multiple events
+                  </p>
                 </div>
 
                 <div className="form-group mb-4">
