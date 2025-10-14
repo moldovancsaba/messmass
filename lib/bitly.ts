@@ -253,9 +253,34 @@ export async function getLink(bitlink: string): Promise<BitlyLinkMetadata> {
 }
 
 /**
+ * WHAT: Fetch all bitlinks for the authenticated user
+ * WHY: Enables bulk discovery without requiring group GUID - works with access token only
+ * REF: GET /v4/user/bitlinks
+ * 
+ * STRATEGY: This endpoint is preferred when BITLY_ORGANIZATION_GUID is not configured
+ * as it automatically fetches all links accessible to the authenticated user.
+ */
+export async function getUserBitlinks(
+  options: { size?: number; page?: number } = {}
+): Promise<BitlyGroupLinksResponse> {
+  const params = new URLSearchParams();
+  if (options.size) params.append('size', options.size.toString());
+  if (options.page) params.append('page', options.page.toString());
+
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+  const { data } = await bitlyRequest<BitlyGroupLinksResponse>(
+    `/user/bitlinks${queryString}`
+  );
+  
+  return data;
+}
+
+/**
  * WHAT: Fetch all bitlinks for a group/organization
  * WHY: Enables bulk discovery and association of links with MessMass projects
  * REF: GET /v4/groups/{group_guid}/bitlinks
+ * 
+ * NOTE: Only use this if you have a specific group GUID. For most cases, use getUserBitlinks() instead.
  */
 export async function getGroupBitlinks(
   groupGuid?: string,

@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
-import { getGroupBitlinks, getLink } from '@/lib/bitly';
+import { getUserBitlinks, getLink } from '@/lib/bitly';
 import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
 
 /**
@@ -42,16 +42,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const limit = body.limit || 5; // Default to 5 links to avoid rate limits
 
-    console.log(`[Bitly Pull] Starting import of up to ${limit} links from organization`);
+    console.log(`[Bitly Pull] Starting import of up to ${limit} links from user account`);
 
-    // WHAT: Fetch links from Bitly organization
-    // WHY: Discovery of all links available in the account
-    const bitlyResponse = await getGroupBitlinks(undefined, { size: limit });
+    // WHAT: Fetch links from Bitly user account (no group GUID required)
+    // WHY: Works with just access token; discovers all links accessible to authenticated user
+    const bitlyResponse = await getUserBitlinks({ size: limit });
 
     if (!bitlyResponse.links || bitlyResponse.links.length === 0) {
       return NextResponse.json({
         success: true,
-        message: 'No links found in Bitly organization',
+      message: 'No links found in Bitly account',
         summary: {
           total: 0,
           imported: 0,
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    console.log(`[Bitly Pull] Found ${bitlyResponse.links.length} links in Bitly organization`);
+    console.log(`[Bitly Pull] Found ${bitlyResponse.links.length} links in Bitly account`);
 
     // WHAT: Connect to database
     const client = await clientPromise;
