@@ -43,6 +43,7 @@ export default function Sidebar() {
       items: [
         { label: 'Dashboard', path: '/admin', icon: '📊' },
         { label: 'Manage Projects', path: '/admin/projects', icon: '🍿' },
+        { label: 'Partner Management', path: '/admin/partners', icon: '🤝' },
         { label: 'Quick Add', path: '/admin/quick-add', icon: '⚡' },
         { label: 'Hashtag Filter', path: '/admin/filter', icon: '🔍' },
       ],

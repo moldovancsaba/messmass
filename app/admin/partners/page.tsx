@@ -99,6 +99,7 @@ export default function PartnersAdminPage() {
   // WHY: Fresh search or sort requires restarting pagination
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTerm, sortField, sortOrder]);
 
   // WHAT: Load first page of partners with search and sorting
