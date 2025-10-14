@@ -138,30 +138,36 @@ export default function BitlyAdminPage() {
     }
   }
 
-  // WHAT: Handle reassigning a link to a different project
-  // WHY: Enables moving links between events as needed
-  async function handleReassignLink(linkId: string, newProjectId: string | null) {
+  // WHAT: Handle adding a link to a project (many-to-many)
+  // WHY: Allows same link to be associated with multiple events via junction table
+  async function handleAddLinkToProject(linkId: string, bitlink: string, projectId: string) {
     setError('');
     setSuccessMessage('');
 
     try {
-      const res = await fetch(`/api/bitly/links/${linkId}`, {
-        method: 'PUT',
+      // Call the same POST endpoint that now supports many-to-many
+      const res = await fetch('/api/bitly/links', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: newProjectId }),
+        body: JSON.stringify({
+          projectId: projectId,
+          bitlinkOrLongUrl: bitlink,
+        }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        setSuccessMessage('✓ Link reassigned successfully');
-        loadData(); // Reload to show updated assignment
+        const project = projects.find(p => p._id === projectId);
+        const projectName = project?.eventName || 'selected project';
+        setSuccessMessage(`✓ ${bitlink} added to ${projectName}`);
+        loadData(); // Reload to show updated associations
       } else {
-        setError(data.error || 'Failed to reassign link');
+        setError(data.error || 'Failed to add link to project');
       }
     } catch (err) {
       setError('Network error. Please try again.');
-      console.error('Reassign error:', err);
+      console.error('Add link to project error:', err);
     }
   }
 
@@ -441,9 +447,9 @@ export default function BitlyAdminPage() {
             <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
-                  <th style={{ width: '20%', minWidth: '150px' }}>Bitly Link</th>
-                  <th style={{ width: '25%', minWidth: '150px' }}>Title</th>
-                  <th style={{ width: '20%', minWidth: '150px' }}>Project</th>
+                  <th style={{ width: '18%', minWidth: '150px' }}>Bitly Link</th>
+                  <th style={{ width: '22%', minWidth: '150px' }}>Title</th>
+                  <th style={{ width: '25%', minWidth: '200px' }}>Add to Project (Many-to-Many)</th>
                   <th style={{ width: '10%', minWidth: '80px' }}>Clicks</th>
                   <th style={{ width: '15%', minWidth: '120px' }}>Last Synced</th>
                   <th style={{ width: '10%', minWidth: '150px' }}>Actions</th>
@@ -465,15 +471,20 @@ export default function BitlyAdminPage() {
                       </a>
                     </td>
                     <td style={{ wordBreak: 'break-word', maxWidth: '250px' }}>{link.title}</td>
-                    <td style={{ maxWidth: '250px' }}>
-                      {/* WHAT: ProjectSelector component with search and chip display
-                       * WHY: Better UX than dropdown - search for projects, see chip when selected
-                       * PATTERN: Matches hashtag input - transforms input to chip on selection */}
+                    <td style={{ maxWidth: '280px' }}>
+                      {/* WHAT: Always-active ProjectSelector for adding to multiple events
+                       * WHY: Many-to-many support - users can quickly add link to any event
+                       * PATTERN: Search and select to create new association */}
                       <ProjectSelector
-                        selectedProjectId={link.projectId}
+                        selectedProjectId={null}
                         projects={projects}
-                        onChange={(projectId) => handleReassignLink(link._id, projectId)}
-                        placeholder="Search projects..."
+                        onChange={(projectId) => {
+                          if (projectId) {
+                            // Add link to selected project via API
+                            handleAddLinkToProject(link._id, link.bitlink, projectId);
+                          }
+                        }}
+                        placeholder="+ Add to event..."
                       />
                     </td>
                     <td className="stat-number">{link.click_summary.total.toLocaleString()}</td>
