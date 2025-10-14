@@ -548,7 +548,7 @@ export default function BitlyAdminPage() {
                       </span>
                     )}
                   </th>
-                  <th style={{ width: '25%', minWidth: '200px' }}>Add to Project (Many-to-Many)</th>
+                  <th style={{ width: '25%', minWidth: '200px' }}>Associated Projects</th>
                   <th 
                     onClick={() => handleSort('clicks')} 
                     className="sortable-th" 
@@ -593,6 +593,30 @@ export default function BitlyAdminPage() {
                     </td>
                     <td style={{ wordBreak: 'break-word', maxWidth: '250px' }}>{link.title}</td>
                     <td style={{ maxWidth: '280px' }}>
+                      {/* WHAT: Display associated projects as chips/bubbles
+                       * WHY: Show which events this link is connected to (many-to-many) */}
+                      {link.associations && link.associations.length > 0 && (
+                        <div style={{ marginBottom: '8px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                          {link.associations.map((assoc) => (
+                            <span
+                              key={assoc.projectId}
+                              style={{
+                                display: 'inline-block',
+                                padding: '2px 8px',
+                                fontSize: '12px',
+                                backgroundColor: '#e3f2fd',
+                                color: '#1976d2',
+                                borderRadius: '12px',
+                                border: '1px solid #90caf9'
+                              }}
+                              title={`Clicks: ${assoc.clicks || 0} | ${assoc.autoCalculated ? 'Auto-calculated date range' : 'Manual date range'}`}
+                            >
+                              {assoc.projectName || 'Unknown Project'}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      
                       {/* WHAT: Always-active ProjectSelector for adding to multiple events
                        * WHY: Many-to-many support - users can quickly add link to any event
                        * PATTERN: Search and select to create new association */}

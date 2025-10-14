@@ -287,12 +287,54 @@ export async function GET(request: NextRequest) {
 
     // WHAT: Count total matching documents for pagination
     const total = await db.collection('bitly_links').countDocuments(filter);
+    
+    // WHAT: Fetch associations from junction table for each link
+    // WHY: Display which projects are connected to each Bitly link (many-to-many)
+    const linksWithAssociations = await Promise.all(
+      links.map(async (link) => {
+        const associations = await db
+          .collection('bitly_project_links')
+          .aggregate([
+            {
+              $match: { bitlyLinkId: link._id }
+            },
+            {
+              $lookup: {
+                from: 'projects',
+                localField: 'projectId',
+                foreignField: '_id',
+                as: 'project'
+              }
+            },
+            {
+              $unwind: { path: '$project', preserveNullAndEmptyArrays: true }
+            },
+            {
+              $project: {
+                projectId: { $toString: '$projectId' },
+                projectName: '$project.eventName',
+                startDate: 1,
+                endDate: 1,
+                autoCalculated: 1,
+                clicks: '$cachedMetrics.clicks',
+                lastSyncedAt: '$updatedAt'
+              }
+            }
+          ])
+          .toArray();
+        
+        return {
+          ...link,
+          associations
+        };
+      })
+    );
 
     // WHAT: Optionally strip analytics data to reduce payload size
     // WHY: List views don't need full timeseries; saves bandwidth
     const responseLinks = includeAnalytics
-      ? links
-      : links.map(link => ({
+      ? linksWithAssociations
+      : linksWithAssociations.map(link => ({
           ...link,
           clicks_timeseries: undefined, // Remove timeseries
           geo: { countries: [], cities: [] }, // Remove geo details

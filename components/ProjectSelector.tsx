@@ -78,7 +78,10 @@ export default function ProjectSelector({
 
   // WHAT: Handle project selection from dropdown
   // WHY: Update parent component and close dropdown
-  const handleSelectProject = (projectId: string) => {
+  const handleSelectProject = (e: React.MouseEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('[ProjectSelector] handleSelectProject called with projectId:', projectId);
     onChange(projectId);
     setIsDropdownOpen(false);
     setSearchQuery('');
@@ -123,7 +126,9 @@ export default function ProjectSelector({
       case 'Enter':
         e.preventDefault();
         if (focusedIndex >= 0 && filteredProjects[focusedIndex]) {
-          handleSelectProject(filteredProjects[focusedIndex]._id);
+          // WHAT: Cast keyboard event to mouse event for type compatibility
+          // WHY: handleSelectProject expects MouseEvent for preventDefault
+          handleSelectProject(e as unknown as React.MouseEvent, filteredProjects[focusedIndex]._id);
         }
         break;
       case 'Escape':
@@ -189,7 +194,7 @@ export default function ProjectSelector({
             <div
               key={project._id}
               className={`${styles.dropdownItem} ${index === focusedIndex ? styles.focused : ''}`}
-              onClick={() => handleSelectProject(project._id)}
+              onClick={(e) => handleSelectProject(e, project._id)}
               onMouseEnter={() => setFocusedIndex(index)}
             >
               <div className={styles.projectName}>{project.eventName}</div>
