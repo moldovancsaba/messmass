@@ -395,7 +395,7 @@ export default function BitlyAdminPage() {
   // WHAT: Pull links from Bitly organization and import them with full analytics (one-time setup)
   // WHY: Initial bulk import of existing Bitly links with their complete analytics data
   async function handlePullData() {
-    if (!confirm('Pull links from your Bitly account?\n\nThis will import up to 50 NEW links with their complete analytics data.\n\n⚠️ Use this for initial setup or when you have new links in Bitly.\nExisting links are automatically synced daily at 3 AM UTC.')) {
+    if (!confirm('🔗 Get All Links from Bitly.com\n\nThis will automatically:\n\n✓ Fetch up to 50 links from your Bitly organization\n✓ Import NEW links with complete analytics\n✓ Skip links that already exist (no duplicates)\n\n⚠️ Use this for initial setup or when you have new links in Bitly.\n\nExisting links are automatically synced daily at 3 AM UTC.\n\nContinue?')) {
       return;
     }
 
@@ -487,11 +487,11 @@ export default function BitlyAdminPage() {
         backLink="/admin"
         actionButtons={[
           {
-            label: 'Pull Data',
+            label: 'Get Links from Bitly',
             icon: '⬇️',
             onClick: handlePullData,
             variant: 'info',
-            title: 'Import new links from your Bitly organization'
+            title: 'Automatically import all links from your Bitly.com organization'
           },
           {
             label: 'Sync Now',
@@ -728,7 +728,7 @@ export default function BitlyAdminPage() {
             <strong className="text-primary">🔄 Auto-Sync (Daily):</strong> All link analytics sync automatically every night at 3:00 AM UTC. This is the recommended way to keep data fresh.
           </p>
           <p className="text-sm">
-            <strong className="text-primary">⬇️ Pull Data (One-Time):</strong> Use this button to import NEW links from your Bitly account. Each link is imported with full analytics (clicks, geographic data, referrers, timeseries).
+            <strong className="text-primary">⬇️ Get Links from Bitly (Automatic):</strong> Click this button to automatically import up to 50 NEW links from your Bitly.com organization. The system fetches all links, imports new ones with full analytics (clicks, geographic data, referrers, timeseries), and skips duplicates. No copy-paste needed!
           </p>
           <p className="text-sm">
             <strong className="text-primary">🔄 Sync Now (Emergency):</strong> Manually refresh analytics for all links if you need immediate updates before the next auto-sync.
