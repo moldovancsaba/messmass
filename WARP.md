@@ -331,11 +331,33 @@ cd server && npm start    # WebSocket on :7654
 
 ### Required Environment Variables
 ```bash
+# Database
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=messmass
+
+# WebSocket (Real-time collaboration)
 NEXT_PUBLIC_WS_URL=wss://your-websocket-server.com
+
+# Authentication
 ADMIN_PASSWORD=your_secure_password
+
+# Bitly API Integration (v5.54.11+)
+# WHAT: Required for Bitly link management and analytics
+# WHY: Enables importing Bitly links and tracking click analytics for event URLs
+BITLY_ACCESS_TOKEN=your_bitly_access_token
+BITLY_ORGANIZATION_GUID=your_org_guid  # From Bitly dashboard URL
+BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 ```
+
+**Finding Bitly GUIDs:**
+- Go to: `https://app.bitly.com/settings/organization/{ORG_GUID}/groups/{GROUP_GUID}`
+- Example: `https://app.bitly.com/settings/organization/Ok3navgADoq/groups/Bk3nahlqFcH`
+  - Organization GUID: `Ok3navgADoq`
+  - Group GUID: `Bk3nahlqFcH`
+
+**Bitly Access Token:**
+- Get from: https://app.bitly.com/settings/api/
+- Click "Generate Token" or use existing token
 
 ## ⚠️ Critical Rules & Prohibitions
 
@@ -394,4 +416,24 @@ For detailed information, see:
 
 ---
 
-*Version: 5.53.0 | Last Updated: 2025-10-13T11:23:00.000Z | Status: Active Development*
+## 📢 Notification System
+
+### Intelligent Grouping (v5.54.12+)
+- **5-minute time window** for grouping similar notifications
+- **Prevents spam** during rapid editing workflows
+- **Updates timestamp** instead of creating duplicates
+- **Match criteria**: Same user + activity type + project + within 5 minutes
+
+### Notification Types
+- **create**: New project created (✨ icon)
+- **edit**: Project details updated (✏️ icon)
+- **edit-stats**: Statistics modified (📊 icon)
+
+### Implementation
+- **Backend**: `lib/notificationUtils.ts` with MongoDB time-window query
+- **Frontend**: `components/NotificationPanel.tsx` with real-time updates
+- **Database**: `notifications` collection with `readBy` and `archivedBy` arrays
+
+---
+
+*Version: 5.54.12 | Last Updated: 2025-10-14T11:48:00.000Z | Status: Active Development*
