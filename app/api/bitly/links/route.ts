@@ -192,8 +192,8 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET /api/bitly/links
- * WHAT: List Bitly links with optional filtering
- * WHY: Enables admin UI to display links and their associations
+ * WHAT: List Bitly links with optional filtering and sorting
+ * WHY: Enables admin UI to display links and their associations with user-controlled ordering
  * 
  * AUTH: Admin only
  * QUERY PARAMS:
@@ -202,6 +202,8 @@ export async function POST(request: NextRequest) {
  *   - includeUnassigned: Include links with no projectId (default: false)
  *   - limit: Pagination limit (default: 50)
  *   - offset: Pagination offset (default: 0)
+ *   - sortField: Field to sort by (bitlink | title | clicks | lastSyncAt)
+ *   - sortOrder: Sort direction (asc | desc)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -222,6 +224,8 @@ export async function GET(request: NextRequest) {
     const includeUnassigned = searchParams.get('includeUnassigned') === 'true';
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const sortField = searchParams.get('sortField');
+    const sortOrder = searchParams.get('sortOrder');
 
     // WHAT: Build query filter
     // WHY: Supports multiple use cases (all links, project links, unassigned links)
@@ -242,13 +246,41 @@ export async function GET(request: NextRequest) {
       filter.projectId = { $ne: null };
     }
 
-    // WHAT: Query database with pagination
+    // WHAT: Build sort options
+    // WHY: Support user-controlled sorting by multiple fields
+    let sortOptions: any = { updatedAt: -1 }; // Default sort
+    
+    if (sortField && sortOrder) {
+      const order = sortOrder === 'asc' ? 1 : -1;
+      
+      switch (sortField) {
+        case 'bitlink':
+          sortOptions = { bitlink: order };
+          break;
+        case 'title':
+          sortOptions = { title: order };
+          break;
+        case 'clicks':
+          // WHAT: Sort by total clicks from summary
+          // WHY: Allows admins to find high-performing links quickly
+          sortOptions = { 'click_summary.total': order };
+          break;
+        case 'lastSyncAt':
+          sortOptions = { lastSyncAt: order };
+          break;
+        default:
+          // Keep default sort if invalid field provided
+          break;
+      }
+    }
+
+    // WHAT: Query database with pagination and sorting
     const client = await clientPromise;
     const db = client.db(config.dbName);
     const links = await db
       .collection('bitly_links')
       .find(filter)
-      .sort({ updatedAt: -1 }) // Most recently updated first
+      .sort(sortOptions)
       .skip(offset)
       .limit(limit)
       .toArray();

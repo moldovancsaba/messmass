@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
 import ProjectSelector from '@/components/ProjectSelector';
@@ -48,11 +49,20 @@ interface Project {
 export default function BitlyAdminPage() {
   // WHAT: Component state management
   // WHY: Tracks links, projects, UI state, and user inputs
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [links, setLinks] = useState<BitlyLink[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // WHAT: Sorting state
+  // WHY: Enable user-controlled table sorting like projects page
+  type SortField = 'bitlink' | 'title' | 'clicks' | 'lastSyncAt' | null;
+  type SortOrder = 'asc' | 'desc' | null;
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
   
   // WHAT: Form state for adding new links
   const [showAddForm, setShowAddForm] = useState(false);
@@ -60,11 +70,22 @@ export default function BitlyAdminPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [customTitle, setCustomTitle] = useState('');
 
-  // WHAT: Fetch links and projects on component mount
-  // WHY: Populates the management interface with current data
+  // WHAT: Hydrate sort state from URL (if present)
+  // WHY: Allow shareable sorted views via URL parameters
+  useEffect(() => {
+    const sf = searchParams?.get('sortField') as SortField | null;
+    const so = searchParams?.get('sortOrder') as SortOrder | null;
+    const allowedFields: SortField[] = ['bitlink', 'title', 'clicks', 'lastSyncAt'];
+    const allowedOrders: SortOrder[] = ['asc', 'desc'];
+    if (sf && allowedFields.includes(sf)) setSortField(sf);
+    if (so && allowedOrders.includes(so)) setSortOrder(so);
+  }, [searchParams]);
+
+  // WHAT: Fetch links and projects on component mount and when sort changes
+  // WHY: Populates the management interface with current data in requested order
   useEffect(() => {
     loadData();
-  }, []);
+  }, [sortField, sortOrder]);
 
   // WHAT: Load both links and projects from API
   async function loadData() {
@@ -77,8 +98,18 @@ export default function BitlyAdminPage() {
       const projectsRes = await fetch('/api/projects?limit=1000&sortField=eventDate&sortOrder=desc');
       const projectsData = await projectsRes.json();
       
-      // WHAT: Fetch all Bitly links (including unassigned)
-      const linksRes = await fetch('/api/bitly/links?includeUnassigned=true&limit=100');
+      // WHAT: Build links API URL with sorting parameters
+      // WHY: Enable server-side sorting for consistent ordering
+      const params = new URLSearchParams();
+      params.set('includeUnassigned', 'true');
+      params.set('limit', '100');
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+      
+      // WHAT: Fetch all Bitly links with sorting applied
+      const linksRes = await fetch(`/api/bitly/links?${params.toString()}`);
       const linksData = await linksRes.json();
 
       if (projectsData.success && projectsData.projects) {
@@ -94,6 +125,41 @@ export default function BitlyAdminPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // WHAT: Handle sorting column click
+  // WHY: Three-state cycle per column: asc → desc → clear (matches projects page behavior)
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else if (sortOrder === 'desc') {
+        setSortField(null);
+        setSortOrder(null);
+      }
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+    
+    // WHAT: Sync to URL query for shareable state
+    // WHY: Allow users to share sorted views via URL
+    const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
+    const currentField = sortField;
+    const currentOrder = sortOrder;
+    let nextField: SortField = field;
+    let nextOrder: SortOrder = 'asc';
+    if (currentField === field) {
+      nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
+    }
+    if (nextOrder) {
+      params.set('sortField', nextField as string);
+      params.set('sortOrder', nextOrder);
+    } else {
+      params.delete('sortField');
+      params.delete('sortOrder');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
   }
 
   // WHAT: Handle adding a new Bitly link
@@ -447,11 +513,57 @@ export default function BitlyAdminPage() {
             <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
-                  <th style={{ width: '18%', minWidth: '150px' }}>Bitly Link</th>
-                  <th style={{ width: '22%', minWidth: '150px' }}>Title</th>
+                  {/* WHAT: Sortable column headers with click handlers and indicators
+                   * WHY: Enable user-controlled sorting matching projects page behavior */}
+                  <th 
+                    onClick={() => handleSort('bitlink')} 
+                    className="sortable-th" 
+                    style={{ width: '18%', minWidth: '150px' }}
+                  >
+                    Bitly Link
+                    {sortField === 'bitlink' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
+                  <th 
+                    onClick={() => handleSort('title')} 
+                    className="sortable-th" 
+                    style={{ width: '22%', minWidth: '150px' }}
+                  >
+                    Title
+                    {sortField === 'title' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
                   <th style={{ width: '25%', minWidth: '200px' }}>Add to Project (Many-to-Many)</th>
-                  <th style={{ width: '10%', minWidth: '80px' }}>Clicks</th>
-                  <th style={{ width: '15%', minWidth: '120px' }}>Last Synced</th>
+                  <th 
+                    onClick={() => handleSort('clicks')} 
+                    className="sortable-th" 
+                    style={{ width: '10%', minWidth: '80px' }}
+                  >
+                    Clicks
+                    {sortField === 'clicks' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
+                  <th 
+                    onClick={() => handleSort('lastSyncAt')} 
+                    className="sortable-th" 
+                    style={{ width: '15%', minWidth: '120px' }}
+                  >
+                    Last Synced
+                    {sortField === 'lastSyncAt' && (
+                      <span className="sort-indicator">
+                        {sortOrder === 'asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </th>
                   <th style={{ width: '10%', minWidth: '150px' }}>Actions</th>
                 </tr>
               </thead>
