@@ -103,16 +103,12 @@ export default function PartnersAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTerm, sortField, sortOrder]);
 
-  // WHAT: Load first page of partners with search and sorting
-  // WHY: Start fresh pagination when search/sort changes
-  async function loadData() {
+  // WHAT: Lazy load Bitly links only when needed
+  // WHY: Fetching 3000+ links on page load is slow - only load when opening modals
+  async function loadBitlyLinks() {
+    if (allBitlyLinks.length > 0) return; // Already loaded
+    
     try {
-      setLoading(true);
-      setError('');
-      setPartners([]); // Clear existing partners
-
-      // WHAT: Fetch all Bitly links for multi-select dropdown
-      // WHY: Users need to associate partners with Bitly links
       const bitlyRes = await fetch('/api/bitly/links?includeUnassigned=true&limit=1000');
       const bitlyData = await bitlyRes.json();
       if (bitlyData.success && bitlyData.links) {
@@ -123,6 +119,18 @@ export default function PartnersAdminPage() {
           long_url: link.long_url,
         })));
       }
+    } catch (err) {
+      console.error('Failed to load Bitly links:', err);
+    }
+  }
+
+  // WHAT: Load first page of partners with search and sorting
+  // WHY: Start fresh pagination when search/sort changes
+  async function loadData() {
+    try {
+      setLoading(true);
+      setError('');
+      setPartners([]); // Clear existing partners
 
       // WHAT: Build partners API URL with pagination, search, and sorting
       // WHY: Load only 20 partners at a time for performance
@@ -274,6 +282,7 @@ export default function PartnersAdminPage() {
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values
   function openEditForm(partner: PartnerResponse) {
+    loadBitlyLinks(); // Lazy load links when opening form
     setEditingPartner(partner);
     setEditPartnerData({
       name: partner.name,
@@ -390,7 +399,10 @@ export default function PartnersAdminPage() {
           {
             label: 'Add Partner',
             icon: '+',
-            onClick: () => setShowAddForm(true),
+            onClick: () => {
+              loadBitlyLinks(); // Lazy load links when opening form
+              setShowAddForm(true);
+            },
             variant: 'primary',
             title: 'Create a new partner organization'
           }
