@@ -392,21 +392,21 @@ export default function BitlyAdminPage() {
     }
   }
 
-  // WHAT: Pull links from Bitly organization and import them with full analytics (one-time setup)
-  // WHY: Initial bulk import of existing Bitly links with their complete analytics data
+  // WHAT: Pull links from Bitly group and import only NEW ones (bulk operation)
+  // WHY: Fast bulk import that automatically skips existing links
   async function handlePullData() {
-    if (!confirm('🔗 Get Links from Bitly.com\n\nThis will automatically:\n\n✓ Fetch up to 5 links from your Bitly organization\n✓ Import NEW links with complete analytics\n✓ Skip links that already exist (no duplicates)\n\n⚠️ Rate Limit: Limited to 5 links per request to avoid API errors.\n\nClick multiple times if you have more links to import.\n\nContinue?')) {
+    if (!confirm('🔗 Get Links from Bitly.com\n\nThis will automatically:\n\n✓ Fetch up to 100 links from your Bitly group (fast single request)\n✓ Filter and import ONLY NEW links not yet in database\n✓ Skip links that already exist (automatic duplicate detection)\n✓ Bulk insert for maximum performance\n\n💡 Click multiple times to import more batches of 100 links.\n\nContinue?')) {
       return;
     }
 
     setError('');
-    setSuccessMessage('Pulling data from Bitly... This may take a moment.');
+    setSuccessMessage('Pulling data from Bitly... Fetching 100 links...');
 
     try {
       const res = await fetch('/api/bitly/pull', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 5 }),
+        body: JSON.stringify({ limit: 100 }),
       });
 
       const data = await res.json();
@@ -416,9 +416,9 @@ export default function BitlyAdminPage() {
         const message = `✓ ${data.message}\nTotal: ${summary.total}, Imported: ${summary.imported}, Skipped: ${summary.skipped}, Errors: ${summary.errors}`;
         
         if (summary.imported > 0) {
-          setSuccessMessage(message + '\n\n💡 Tip: Click "Get Links" again if you have more links to import!');
-        } else if (summary.skipped > 0) {
-          setSuccessMessage(message + '\n\nAll links already imported!');
+          setSuccessMessage(message + '\n\n💡 Tip: Click "Get Links" again to import the next 100!');
+        } else if (summary.skipped > 0 && summary.skipped === summary.total) {
+          setSuccessMessage(message + '\n\n✅ These 100 links already exist. Click again to check next batch!');
         } else {
           setSuccessMessage(message);
         }
