@@ -436,4 +436,4 @@ For detailed information, see:
 
 ---
 
-*Version: 6.0.0 | Last Updated: 2025-01-21T11:14:00.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform*
+*Version: 6.4.0 | Last Updated: 2025-10-15T20:40:00.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform*

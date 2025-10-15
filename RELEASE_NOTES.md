@@ -1,5 +1,27 @@
 # MessMass Release Notes
 
+## [v6.4.0] — 2025-10-15T20:40:00.000Z
+
+### 🐛 Bug Fix — Bitly Search UX Enhancement
+
+**What Changed**
+- ✅ **Fixed Bitly search page reload issue** (BITLY-SEARCH-001)
+- ✅ **Separated `loading` and `isSearching` states** for better UX
+- ✅ **Added Enter key prevention** to AdminHero search input
+- ✅ **Inline search updates** without jarring white flash
+
+**Why This Fix**
+
+The Bitly admin page had a critical UX issue where typing in the search field caused a full page reload with a white flash. This was jarring and confusing for users. The fix separates loading states and prevents Enter key submission, matching the behavior of the Projects page.
+
+**Files Modified**: 2
+- `app/admin/bitly/page.tsx`: Split loading/isSearching states (~15 lines)
+- `components/UnifiedAdminHero.tsx`: Added Enter key prevention (~5 lines)
+
+**Impact**: Improved admin experience with smoother, non-disruptive search
+
+---
+
 ## [v6.0.0] — 2025-01-21T11:14:00.000Z
 
 ### 🎉 MAJOR RELEASE — Enterprise Event Analytics Platform
