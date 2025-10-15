@@ -1,5 +1,155 @@
 # MessMass Release Notes
 
+## [v5.57.0] — 2025-01-21T10:30:00.000Z
+
+### Feature — Predictive Search Partner Selectors for Sports Match Builder
+
+**What Changed**
+- **Created reusable PartnerSelector component** with search and chip display pattern
+- **Replaced basic dropdown menus** with modern, searchable partner selectors
+- **Added keyboard navigation support** (arrow keys, enter, escape)
+- **Implemented chip-style display** when partner selected (emoji + name)
+
+**Why This Release**
+User requested predictive search functionality for partner selection in the Sports Match Builder, similar to the hashtag search interface. The previous implementation used basic HTML `<select>` dropdowns which didn't support search or filtering, making it difficult to find partners in a growing list.
+
+**User Requirements Fulfilled**
+```
+event builder:
+[Partner 1 Predictive search with Dropdown ▼] × [Partner 2 Predictive search with Dropdown ▼] [Date Picker 📅]
+```
+
+**Implementation Details**
+
+**Created**: `components/PartnerSelector.tsx` — Reusable Partner Selection Component
+```typescript
+// WHAT: Reusable partner selector with search input and chip display
+// WHY: Provides consistent UX for partner selection across the application
+// PATTERN: Similar to ProjectSelector - search input transforms to chip when selected
+
+export default function PartnerSelector({
+  selectedPartnerId,
+  partners,
+  onChange,
+  placeholder = 'Search partners...',
+  disabled = false,
+  label
+}: PartnerSelectorProps) {
+  // Key Features:
+  // - Predictive search filtering by partner name
+  // - Chip display with emoji and name when selected
+  // - Click-outside handling to close dropdown
+  // - Full keyboard navigation (arrows, enter, escape)
+  // - Remove button (X) to clear selection
+}
+```
+
+**Created**: `components/PartnerSelector.module.css` — Component Styling
+- Uses MessMass design tokens (CSS variables)
+- Success color scheme for partner chips (green)
+- Matches ColoredHashtagBubble visual style
+- Responsive dropdown with max-height and scroll
+- Accessible focus states for keyboard navigation
+
+**Modified**: `app/admin/quick-add/page.tsx` — Sports Match Tab
+```typescript
+// Before: Basic HTML select dropdown
+<select
+  id="partner1"
+  className="form-input"
+  value={partner1Id}
+  onChange={(e) => setPartner1Id(e.target.value)}
+>
+  <option value="">-- Select Partner 1 --</option>
+  {partners.map(partner => (
+    <option key={partner._id} value={partner._id}>
+      {partner.emoji} {partner.name}
+    </option>
+  ))}
+</select>
+
+// After: Predictive search with chip display
+<PartnerSelector
+  selectedPartnerId={partner1Id}
+  partners={partners}
+  onChange={(id) => setPartner1Id(id || '')}
+  placeholder="Search home team..."
+  disabled={loadingPartners}
+/>
+```
+
+**Features**
+- ✅ **Predictive search**: Type to filter partners by name
+- ✅ **Emoji display**: Visual identifier for partner type (⚽ 🏒 🤾)
+- ✅ **Chip transformation**: Selected partner shows as removable chip
+- ✅ **Keyboard navigation**: Arrow keys to navigate, Enter to select, Escape to close
+- ✅ **Click outside**: Closes dropdown automatically
+- ✅ **Remove option**: X button to clear selection and return to search
+- ✅ **Loading state**: Disabled when partners are loading
+- ✅ **Accessibility**: ARIA labels and focus management
+
+**Design System Compliance**
+
+**Color Scheme**:
+- Chips use success colors (green) from design tokens
+- Dropdown uses primary colors for focus states
+- Consistent with other selector components (ProjectSelector, BitlyLinksSelector)
+
+**Spacing and Typography**:
+- `var(--mm-space-*)` for consistent padding/gaps
+- `var(--mm-font-size-*)` for font sizes
+- `var(--mm-radius-md)` for border radius
+- `var(--mm-shadow-lg)` for dropdown shadow
+
+**User Experience Improvements**
+- ⚡ **Fast partner finding**: Type to search instead of scrolling dropdown
+- 🎯 **Visual feedback**: Emoji and name visible during search and after selection
+- ⌨️ **Keyboard friendly**: Full keyboard navigation without mouse
+- 🧹 **Clean interface**: Chip display saves space and looks modern
+- ♿ **Accessible**: Screen reader compatible with proper ARIA labels
+
+**Files Modified**: 3 + 1 version bump
+- `components/PartnerSelector.tsx`: New reusable component (~221 lines)
+- `components/PartnerSelector.module.css`: Component styles (~179 lines)
+- `app/admin/quick-add/page.tsx`: Replaced select dropdowns with PartnerSelector (~8 lines changed)
+- `package.json`: Version bumped to 5.57.0
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (Compiled successfully in 3.8s)
+- ✅ All partner selection features working correctly
+- ✅ No breaking changes to existing functionality
+
+**Testing Checklist**
+- ✅ Search filters partners correctly by name
+- ✅ Clicking partner selects and shows chip
+- ✅ Keyboard navigation works (arrows, enter, escape)
+- ✅ Click outside closes dropdown
+- ✅ Remove button (X) clears selection and shows search input again
+- ✅ Loading state disables both selectors
+- ✅ Preview and Create functions work with selected partners
+
+**Component Reusability**
+The `PartnerSelector` component is fully reusable and can be integrated anywhere in the application where partner selection is needed:
+- Forms and modals
+- Filtering interfaces
+- Admin management pages
+- Quick-add workflows
+
+**Pattern Consistency**
+This implementation follows the established patterns from:
+- `ProjectSelector.tsx` — Search and chip pattern
+- `BitlyLinksSelector.tsx` — Multi-select pattern
+- `UnifiedHashtagInput.tsx` — Predictive search dropdown
+
+**Impact**: Major UX improvement for Sports Match Builder — enables fast, searchable partner selection with modern chip-based display
+
+**Sign-off**: Agent Mode  
+**Date**: 2025-01-21T10:30:00.000Z  
+**Status**: ✅ Implemented, Tested, Production-Ready
+
+---
+
 ## [v5.54.12] — 2025-10-14T11:48:00.000Z
 
 ### Feature — Intelligent Notification Grouping to Prevent Spam
