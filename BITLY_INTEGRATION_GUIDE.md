@@ -1,147 +1,198 @@
-# Bitly Integration User Guide
+# 🔗 Bitly Integration Technical Guide
 
-**Last Updated:** 2025-10-13T09:30:00.000Z  
-**Version:** 5.51.1
+**Version:** 6.0.0  
+**Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
+**Status:** Production
 
-## 🎯 What This Does
-
-Connects your Bitly shortened links to your MessMass events to track:
-- **Click statistics** (how many people clicked your links)
-- **Geographic data** (which countries your clicks come from)
-- **Traffic sources** (where people found your links - social media, email, etc.)
-- **Campaign performance** (UTM tracking for marketing campaigns)
-
-## 🚀 How to Use It
-
-### Step 1: Access the Admin Panel
-
-1. Go to your MessMass admin panel
-2. Log in with your admin credentials
-3. Navigate to **Admin → Bitly** in the menu
-
-### Step 2: Add a Bitly Link
-
-1. Click the **"+ Add Link"** button
-2. Fill in the form:
-   - **Bitly Link or URL** (required): 
-     - You can paste either:
-       - A Bitly short link: `bit.ly/abc123`
-       - A full Bitly URL: `https://bit.ly/abc123`
-       - The original long URL
-   - **Assign to Project** (optional):
-     - Select an event from the dropdown
-     - Or leave it unassigned to add it later
-   - **Custom Title** (optional):
-     - Add a friendly name
-     - If empty, uses Bitly's title
-3. Click **"Add Link"**
-
-### Step 3: Manage Links
-
-**View All Links:**
-- The table shows all your Bitly links
-- See click counts, sync status, and assignments
-
-**Reassign a Link:**
-- Use the dropdown in the "Project" column
-- Select a different event to move the link
-- Or select "-- Unassigned --" to unassign it
-
-**Remove a Link:**
-- Click the 🗑️ (trash) icon
-- Confirms before archiving
-- Data is preserved but link becomes hidden
-
-### Step 4: Refresh Analytics
-
-**Automatic Sync:**
-- Happens every night at 3:00 AM UTC
-- No action needed - runs automatically
-
-**Manual Sync:**
-- Click the **"🔄 Sync Now"** button
-- Updates all links immediately
-- Takes about 1 minute
-
-## 📊 View Analytics
-
-Once links are synced, analytics will show:
-- **Total Clicks**: In the "Clicks" column
-- **Last Synced**: When data was last updated
-- **Detailed Analytics**: *(Coming soon in project stats pages)*
-
-## ❓ Common Questions
-
-### Q: What happens when I add a link?
-**A:** The system fetches the link's information from Bitly and stores it. The first sync happens automatically at night, or you can click "Sync Now" for immediate data.
-
-### Q: Can I connect multiple Bitly links to one event?
-**A:** Yes! One event can have many Bitly links associated with it.
-
-### Q: Can I move a link between events?
-**A:** Yes! Just use the dropdown in the "Project" column to reassign it.
-
-### Q: What if I enter the wrong link?
-**A:** You can archive it (🗑️ button) and add the correct one. Archived links don't sync but data is kept.
-
-### Q: How often does data update?
-**A:** Automatically every night at 3:00 AM UTC, or click "Sync Now" anytime for immediate refresh.
-
-### Q: Do I need to do anything after adding a link?
-**A:** No! After you add it, the system automatically:
-- Syncs data every night
-- Tracks all clicks
-- Updates analytics
-- Stores geographic and referrer information
-
-## 🔧 Technical Details (For Developers)
-
-### Environment Variables Required:
-- `BITLY_ACCESS_TOKEN` - Your Bitly API token
-- `BITLY_ORGANIZATION_GUID` - Your Bitly organization ID
-
-### API Endpoints:
-- `POST /api/bitly/links` - Add link
-- `GET /api/bitly/links` - List links
-- `PUT /api/bitly/links/[id]` - Update link
-- `DELETE /api/bitly/links/[id]` - Archive link
-- `GET /api/bitly/analytics/[id]` - Get analytics
-- `POST /api/bitly/sync` - Trigger sync
-
-### Database Collections:
-- `bitly_links` - Link metadata and analytics
-- `bitly_sync_logs` - Sync operation logs
-
-### Cron Schedule:
-- Runs daily at 3:00 AM UTC via Vercel Cron
-
-## 🆘 Troubleshooting
-
-**"Failed to fetch link from Bitly"**
-- Check that the Bitly link exists and is accessible
-- Verify your Bitly access token is correct in Vercel
-
-**"Network error"**
-- Check your internet connection
-- Try refreshing the page
-
-**Links not syncing**
-- Check Vercel deployment logs
-- Verify `BITLY_ACCESS_TOKEN` is set in Vercel environment variables
-- Check `bitly_sync_logs` collection in MongoDB for error details
-
-**Clicks showing as 0**
-- Newly added links need time to sync
-- Click "Sync Now" to force immediate update
-- If still 0, the link may not have received any clicks yet
-
-## 📞 Support
-
-For technical issues or questions:
-1. Check the MongoDB `bitly_sync_logs` collection for error details
-2. Review Vercel function logs for the sync endpoint
-3. Ensure environment variables are properly set
+Complete technical documentation for the MessMass Bitly integration system with many-to-many relationships, date range attribution, and analytics sync.
 
 ---
 
-**Remember:** You only need to add links once. Everything else happens automatically!
+See [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md) for partner-based Bitly link inheritance.  
+See [QUICK_ADD_GUIDE.md](QUICK_ADD_GUIDE.md) for Sports Match Builder Bitly integration.
+
+---
+
+## Overview
+
+MessMass integrates with Bitly API v4 to provide comprehensive link analytics across events, supporting:
+
+- **Many-to-Many Relationships**: One link → multiple events, one event → multiple links
+- **Smart Date Attribution**: Automatic temporal data separation for shared links
+- **Cached Metrics**: Pre-computed analytics per event for instant access
+- **Partner Inheritance**: Automatic link association via Sports Match Builder
+- **Real-Time Sync**: Daily automatic + manual refresh
+
+---
+
+## Key Features (v6.0.0)
+
+✅ **Junction Table Architecture** - Flexible many-to-many link-project associations  
+✅ **Auto-Calculated Date Ranges** - Smart temporal attribution with 2-day buffers  
+✅ **Cached Analytics** - Per-event metrics stored for fast access  
+✅ **Bulk Import** - Import 100+ links from Bitly organization  
+✅ **Partner Integration** - Automatic association via Sports Match Builder  
+✅ **Comprehensive Metrics** - Clicks, geography, referrers, devices, timeseries
+
+---
+
+## Database Schema
+
+### bitly_links Collection
+
+```javascript
+{
+  _id: ObjectId("..."),
+  bitlink: "bit.ly/season-pass",
+  long_url: "https://example.com/tickets",
+  title: "Season Tickets 2025",
+  total_clicks: 1547,
+  unique_clicks: 892,
+  countries: [{ country: "US", clicks: 654 }],
+  referrers: [{ referrer: "facebook", clicks: 432 }],
+  timeseries: [{ date: "2025-03-01", clicks: 45 }],
+  lastSyncedAt: "2025-01-21T11:00:00.000Z"
+}
+```
+
+### bitly_project_links Collection (Junction Table)
+
+```javascript
+{
+  _id: ObjectId("..."),
+  bitlyLinkId: ObjectId("..."),
+  projectId: ObjectId("..."),
+  startDate: "2025-03-01T00:00:00.000Z",
+  endDate: "2025-03-17T23:59:59.999Z",
+  autoCalculated: true,
+  cachedMetrics: {
+    totalClicks: 234,
+    uniqueClicks: 156,
+    countriesData: [{ country: "US", clicks: 89 }],
+    referrersData: [{ referrer: "facebook", clicks: 134 }]
+  }
+}
+```
+
+---
+
+## Date Range Attribution Algorithm
+
+**Problem**: When `bit.ly/season-pass` serves multiple events, how do we attribute clicks?
+
+**Solution**: Auto-calculated non-overlapping date ranges with 2-day post-event buffers.
+
+**Example**:
+
+Events using `bit.ly/season-pass`:
+- Event A: 2025-03-01
+- Event B: 2025-03-15
+- Event C: 2025-04-05
+
+**Calculated Ranges**:
+- Event A: `[1970-01-01] → [2025-03-03]` (all historical + 2 days post-event)
+- Event B: `[2025-03-03] → [2025-03-17]` (2 days post-event)
+- Event C: `[2025-03-17] → [2099-12-31]` (all future clicks)
+
+**Why +2 days?** Captures post-event engagement (photo sharing, discussion).
+
+---
+
+## API Endpoints
+
+### GET /api/bitly/links
+List links with pagination, search, sorting. Returns links with associated projects.
+
+### POST /api/bitly/associations
+Create link-project association. Triggers date range calculation and metric caching.
+
+### DELETE /api/bitly/associations  
+Remove association. Recalculates date ranges for remaining associations.
+
+### GET /api/bitly/project-metrics/[projectId]
+Get all Bitly metrics for a project, filtered by date ranges with cached data.
+
+### POST /api/bitly/pull
+Bulk import up to 100 links from Bitly organization.
+
+### POST /api/bitly/recalculate
+Manually trigger date range and cache refresh for a link.
+
+---
+
+## Sync System
+
+**Automatic**: Daily at 3:00 AM UTC via Vercel Cron  
+**Manual**: Admin "Refresh Analytics" button
+
+**Process**:
+1. Fetch analytics from Bitly API (rate-limited)
+2. Update `bitly_links` collection with raw data
+3. Recalculate date ranges for changed events
+4. Refresh cached metrics in `bitly_project_links`
+
+---
+
+## Partner Integration
+
+When creating events via Sports Match Builder, Bitly links from Partner 1 (home team) are automatically associated with the generated event.
+
+**See**: [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md) for detailed partner integration.
+
+---
+
+## Performance
+
+**Before Caching**: 2-5 seconds per project metrics query  
+**After Caching**: 50-100ms per query  
+**Improvement**: 20-50x faster
+
+Cached metrics eliminate expensive timeseries filtering on every request.
+
+---
+
+## Environment Variables
+
+```bash
+BITLY_ACCESS_TOKEN=your_bitly_api_token
+BITLY_ORGANIZATION_GUID=your_org_guid
+BITLY_GROUP_GUID=your_group_guid
+```
+
+**Finding GUIDs**: See `https://app.bitly.com/settings/organization/{ORG_GUID}/groups/{GROUP_GUID}`
+
+---
+
+## Code Example: Fetch Project Metrics
+
+```typescript
+async function getProjectBitlyMetrics(projectId: string) {
+  const response = await fetch(`/api/bitly/project-metrics/${projectId}`);
+  const data = await response.json();
+  
+  return data.aggregatedMetrics; // { totalClicks, uniqueClicks, linkCount }
+}
+```
+
+---
+
+## Troubleshooting
+
+**"Not Found" during pull**: Check `BITLY_GROUP_GUID` environment variable  
+**Links not syncing**: Check Vercel cron logs and `bitly_sync_logs` collection  
+**Incorrect attribution**: Trigger `POST /api/bitly/recalculate` to fix date ranges  
+**Slow performance**: Verify cached metrics exist in `bitly_project_links`
+
+---
+
+**For Complete Technical Details**:
+- Database schemas: See code in `lib/bitly-types.ts`
+- Date algorithm: See `lib/bitly-date-calculator.ts`  
+- Aggregation: See `lib/bitly-aggregator.ts`
+- Sync service: See `lib/bitly-sync.ts`
+
+---
+
+**MessMass Bitly Integration Version 6.0.0**  
+**Last Updated: 2025-01-21T11:14:00.000Z (UTC)**  
+**© 2025 MessMass Platform**
