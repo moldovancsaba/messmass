@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 5.57.1
-Last Updated: 2025-10-15T10:33:00.000Z
+Current Version: 6.0.0
+Last Updated: 2025-01-21T11:14:00.000Z (UTC)
 
 ## Operational — Bitly Search Enhancements (Q1 2026)
 Priority: Medium

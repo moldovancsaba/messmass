@@ -272,8 +272,8 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>MessMass Version 5.21.2</strong><br />
-            Last Updated: 2025-10-06
+            <strong>MessMass Version 6.0.0</strong><br />
+            Last Updated: 2025-01-21T11:14:00.000Z (UTC)
           </p>
           <p>
             For additional help, contact your system administrator or refer to the{' '}
