@@ -1,17 +1,246 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-13T11:23:00.000Z
-Version: 5.53.0
+Last Updated: 2025-01-21T11:14:00.000Z
+Version: 6.0.0
 
 ## Project Overview
 
-MessMass is a project management system built with Next.js, TypeScript, and MongoDB, designed to help users organize and track projects with advanced hashtag categorization capabilities.
+MessMass is an enterprise-grade event analytics platform built with Next.js 15, TypeScript, and MongoDB Atlas, designed for sports organizations, venues, brands, and event managers. The platform provides comprehensive real-time statistics tracking, intelligent partner management, automated event creation workflows (Sports Match Builder), advanced Bitly link analytics with many-to-many event associations, configurable KPI dashboards, and a unified hashtag system with category-aware organization.
 
 ## Version History
 
-- **Version 4.2.0** — Admin HERO standardization and Content Surface (Styling consolidation)
-- **Version 2.2.0** - Hashtag Categories System ✅ **COMPLETED**
-- **Version 2.3.0** - Shareables Component Library (In Progress)
+- **Version 6.0.0** — Partners Management System + Sports Match Builder + Comprehensive Documentation
+- **Version 5.57.0** — PartnerSelector Component with Predictive Search
+- **Version 5.56.0-5.56.3** — Partners CRUD System with Pagination and Search
+- **Version 5.54.0-5.54.12** — Bitly Integration Enhancements (Many-to-Many, Notification Grouping)
+- **Version 5.52.0** — Admin Variables & Metrics Management System
+- **Version 5.49.3** — Admin Layout & Navigation System
+- **Version 5.48.0** — Multi-User Notification System
+- **Version 4.2.0** — Admin HERO Standardization and Content Surface
+- **Version 2.2.0** — Hashtag Categories System ✅ **COMPLETED**
+
+---
+
+## Partners Management System (Version 6.0.0)
+
+### Overview
+
+The Partners Management System provides comprehensive infrastructure for managing organizational entities (clubs, federations, venues, brands) that participate in or host events. Partners serve as the foundation for rapid event creation via the Sports Match Builder and maintain associations with Bitly tracking links for attribution.
+
+### Key Features
+
+- **Partner Database**: Comprehensive directory of organizations with metadata
+- **Partner Profiles**: Emoji identifiers, hashtags, Bitly link associations
+- **Searchable Directory**: Pagination, sorting, and predictive search
+- **Reusable Components**: PartnerSelector with chip-based selection pattern
+- **Event Integration**: Automatic hashtag and link inheritance in Sports Match Builder
+- **Bitly Attribution**: Partners associated with tracking links for analytics
+
+### Architecture Components
+
+#### 1. Data Model
+
+**Partners Collection** (`partners`)
+```typescript
+interface Partner {
+  _id: ObjectId;
+  name: string;                    // Partner name (e.g., "FC Barcelona")
+  emoji: string;                   // Visual identifier (e.g., "⚽")
+  hashtags?: string[];             // Traditional hashtags
+  categorizedHashtags?: {          // Category-specific hashtags
+    [categoryName: string]: string[];
+  };
+  bitlyLinkIds?: ObjectId[];       // Associated Bitly links (references to bitly_links)
+  createdAt: Date;                 // ISO 8601 with milliseconds
+  updatedAt: Date;                 // ISO 8601 with milliseconds
+}
+```
+
+**Example Partner Document**:
+```json
+{
+  "_id": ObjectId("..."),
+  "name": "Ferencvárosi TC",
+  "emoji": "⚽",
+  "hashtags": ["football", "greenwhite"],
+  "categorizedHashtags": {
+    "location": ["budapest", "hungary"],
+    "sport": ["football"]
+  },
+  "bitlyLinkIds": [ObjectId("..."), ObjectId("...")],
+  "createdAt": "2025-01-15T10:30:00.000Z",
+  "updatedAt": "2025-01-20T14:22:00.000Z"
+}
+```
+
+#### 2. API Endpoints
+
+**Partner Management**
+- `GET /api/partners` - List partners with pagination, search, and sorting
+  - Query params:
+    - `limit` (number, default 20)
+    - `offset` (number, default 0)
+    - `search` (string, searches name field)
+    - `sortField` (name | createdAt | updatedAt)
+    - `sortOrder` (asc | desc)
+  - Response:
+    ```json
+    {
+      "success": true,
+      "partners": [...],
+      "pagination": {
+        "totalMatched": 150,
+        "limit": 20,
+        "offset": 0,
+        "nextOffset": 20
+      }
+    }
+    ```
+
+- `POST /api/partners` - Create new partner
+  - Body: `{ name, emoji, hashtags?, categorizedHashtags?, bitlyLinkIds? }`
+  - Requires authentication
+  - Returns created partner with `_id`
+
+- `PUT /api/partners` - Update existing partner
+  - Query param: `partnerId` (ObjectId)
+  - Body: Partial partner data to update
+  - Requires authentication
+  - Updates `updatedAt` timestamp automatically
+
+- `DELETE /api/partners` - Delete partner
+  - Query param: `partnerId` (ObjectId)
+  - Requires authentication
+  - Returns `{ success: true, deletedCount: 1 }`
+
+**Bitly Links Populated**: When fetching partners, Bitly links are populated from the `bitly_links` collection to provide full link details (bitlink, title, long_url) in the response.
+
+#### 3. UI Components
+
+**PartnerSelector Component** (`components/PartnerSelector.tsx`)
+- **Pattern**: Chip-based selector with predictive search (follows ProjectSelector pattern)
+- **Features**:
+  - Predictive search filtering by partner name
+  - Dropdown with emoji + name display
+  - Transforms to chip when partner selected
+  - Keyboard navigation (arrow keys, enter, escape)
+  - Click-outside handling to close dropdown
+  - Remove button (X) to clear selection
+  - Full accessibility (ARIA labels, focus management)
+
+**Usage Example**:
+```typescript
+import PartnerSelector from '@/components/PartnerSelector';
+
+<PartnerSelector
+  selectedPartnerId={partner1Id}
+  partners={partners}
+  onChange={(id) => setPartner1Id(id || '')}
+  placeholder="Search home team..."
+  disabled={loadingPartners}
+/>
+```
+
+**Partner Admin Page** (`app/admin/partners/page.tsx`)
+- **Layout**: AdminHero + table + modals (matches /admin/projects and /admin/bitly patterns)
+- **Features**:
+  - Searchable partner table with pagination (20 per page)
+  - Sortable columns (name, created date)
+  - Add/Edit modals with full CRUD operations
+  - Hashtag integration via UnifiedHashtagInput
+  - Bitly link association via BitlyLinksSelector
+  - Delete confirmation with safety checks
+
+**Design System Compliance**:
+- Uses `AdminHero` for page header
+- Modal patterns consistent with project/Bitly pages
+- Table styling matches admin design system
+- Chip-based components use success color scheme (green)
+- All spacing and typography use design tokens (`--mm-*`)
+
+#### 4. Sports Match Builder Integration
+
+**Quick Add Page** (`app/admin/quick-add/page.tsx`)
+- **Purpose**: Rapid event creation from partner selection
+- **Features**:
+  - Tabbed interface: "From Sheet" | "Sports Match"
+  - Partner 1 (Home Team) selector
+  - Partner 2 (Away Team) selector
+  - Match date picker
+  - Event preview with merged data
+  - One-click event creation
+
+**Event Generation Logic**:
+
+1. **Event Name**: `{Partner1.emoji} {Partner1.name} x {Partner2.name}`
+   - Example: "⚽ Ferencvárosi TC x Újpest FC"
+
+2. **Hashtag Merging**:
+   - Partner 1: ALL hashtags (traditional + categorized)
+   - Partner 2: All hashtags EXCEPT location category
+   - Deduplication: Remove duplicate hashtags across both partners
+   - Result: Home team location + both teams' hashtags
+
+3. **Bitly Link Inheritance**:
+   - Only Partner 1 (Home Team) Bitly links are inherited
+   - Rationale: Home team's tracking links used for event attribution
+
+4. **Event Date**: User-selected date from date picker
+
+**Example Preview**:
+```json
+{
+  "eventName": "⚽ Ferencvárosi TC x Újpest FC",
+  "eventDate": "2025-02-15",
+  "hashtags": ["football", "greenwhite", "purple"],
+  "categorizedHashtags": {
+    "location": ["budapest"],
+    "sport": ["football"]
+  },
+  "bitlyLinks": [ObjectId("...")]
+}
+```
+
+#### 5. Database Integration
+
+**Collections Involved**:
+- `partners` - Partner entities
+- `projects` - Events created from partners
+- `bitly_links` - Tracking links associated with partners
+- `bitly_project_links` - Many-to-many junction for link-event associations
+
+**Relationships**:
+```
+partners (1) ----< (N) bitlyLinkIds
+partners (1) ----< (N) projects (via Sports Match Builder)
+bitly_links (N) ----< (N) projects (via bitly_project_links junction)
+```
+
+### Benefits
+
+1. **Rapid Event Creation**: Sports Match Builder reduces event creation time from minutes to seconds
+2. **Data Consistency**: Partner profiles ensure consistent hashtags and naming across events
+3. **Attribution**: Bitly link associations enable accurate traffic attribution to partners
+4. **Scalability**: Partner directory grows with organization, reusable across all events
+5. **Searchability**: Predictive search makes finding partners fast even with large directories
+6. **Flexibility**: Partners support multiple types (clubs, federations, venues, brands)
+
+### Performance Considerations
+
+1. **Pagination**: 20 partners per page prevents overloading UI
+2. **Search Optimization**: Case-insensitive regex search on indexed `name` field
+3. **Lazy Loading**: Bitly links fetched only when needed (modal open)
+4. **Cached Partners**: Partner list cached during Sports Match Builder session
+5. **Indexed Fields**: MongoDB indexes on `name` and `createdAt` for fast queries
+
+### Future Enhancements
+
+- **Partner Types**: Add explicit type field (club, federation, venue, brand)
+- **Partner Logos**: Upload and display partner logos
+- **Partner Statistics**: Aggregate event stats per partner
+- **Partner Relationships**: Parent-child relationships (federation > clubs)
+- **Bulk Import**: CSV/Excel import for large partner datasets
+- **Partner API Keys**: Allow partners to access their own event data
 
 ---
 
@@ -294,31 +523,79 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/hashtag/[hashtag]` - Aggregated statistics for a single hashtag (resurfaced; leverages the same style system)
 
 ### Admin Pages
-- `/admin` - Admin dashboard
-- `/admin/projects` - Project management
+- `/admin` - Admin dashboard with navigation cards
+- `/admin/projects` - Project management (CRUD, pagination, search, sorting)
+- `/admin/partners` - **Partner management (v6.0.0)** (CRUD, pagination, search)
+- `/admin/quick-add` - **Sports Match Builder + Sheet Import (v6.0.0)**
+- `/admin/bitly` - Bitly link management and sync
 - `/admin/hashtags` - Hashtag color management
 - `/admin/categories` - Hashtag category management
 - `/admin/filter` - Advanced hashtag filtering tool
+- `/admin/variables` - Variable & metrics configuration
 - `/admin/charts` - Chart configuration management
 - `/admin/design` - UI design customization
 - `/admin/visualization` - Data visualization settings
 
 ### API Endpoints
-- `/api/projects` - Project CRUD operations and dataset-wide listing
-  - Listing supports two modes:
-    - Default (no sort/search): cursor pagination by updatedAt desc (nextCursor)
-    - Sort/Search mode: offset pagination with totalMatched/nextOffset
-  - Sorting query params:
-    - sortField: eventName | eventDate | images | fans | attendees
-    - sortOrder: asc | desc
-  - Numeric sorts use computed fields (images, fans, attendees) with null-safe defaults; eventName sorting uses case-insensitive collation
-- `/api/hashtags/filter-by-slug/[slug]` - Public hashtag filtering (supports both slugs and direct hashtag queries)
-- `/api/hashtags/filter` - Admin hashtag filtering
-- `/api/hashtags/slugs` - Available hashtag listing
-- `/api/hashtag-categories` - Category management
-- `/api/hashtag-colors` - Hashtag color management
-- `/api/page-config` - Page styling configuration
-- `/api/chart-config` - Chart configuration management
+
+**Projects**
+- `GET /api/projects` - List projects with pagination, search, and sorting
+  - Default mode: cursor pagination by updatedAt desc (nextCursor)
+  - Sort/Search mode: offset pagination with totalMatched/nextOffset
+  - sortField: eventName | eventDate | images | fans | attendees
+  - sortOrder: asc | desc
+- `POST /api/projects` - Create new project
+- `PUT /api/projects` - Update existing project
+- `DELETE /api/projects` - Delete project
+
+**Partners** (v6.0.0)
+- `GET /api/partners` - List partners with pagination, search, and sorting
+- `POST /api/partners` - Create new partner
+- `PUT /api/partners` - Update existing partner
+- `DELETE /api/partners` - Delete partner
+
+**Bitly Integration**
+- `GET /api/bitly/links` - List Bitly links with pagination and search
+- `POST /api/bitly/links` - Create or associate Bitly link
+- `PUT /api/bitly/links` - Update Bitly link metadata
+- `DELETE /api/bitly/links` - Delete Bitly link
+- `POST /api/bitly/pull` - Bulk import links from Bitly account
+- `POST /api/bitly/sync` - Sync analytics data for all links
+- `POST /api/bitly/sync/[linkId]` - Sync analytics for specific link
+- `GET /api/bitly/associations` - Get link-project associations
+- `POST /api/bitly/associations` - Create link-project association
+- `DELETE /api/bitly/associations` - Remove link-project association
+
+**Hashtags & Filtering**
+- `GET /api/hashtags` - List hashtags with counts (supports search + pagination)
+- `POST /api/hashtags/filter` - Admin hashtag filtering
+- `GET /api/hashtags/filter-by-slug/[slug]` - Public filtering (slugs or direct queries)
+- `GET /api/hashtags/slugs` - Available hashtag listing
+- `GET /api/hashtags/[hashtag]` - Aggregated stats for single hashtag
+
+**Hashtag Categories**
+- `GET /api/admin/hashtag-categories` - List categories
+- `POST /api/admin/hashtag-categories` - Create category
+- `PUT /api/admin/hashtag-categories/[id]` - Update category
+- `DELETE /api/admin/hashtag-categories/[id]` - Delete category
+
+**Variables & Metrics**
+- `GET /api/variables-config` - Fetch all variables with flags and ordering
+- `POST /api/variables-config` - Create/update variable metadata and flags
+- `DELETE /api/variables-config` - Delete custom variable
+- `GET /api/variables-groups` - Fetch variable groups
+- `POST /api/variables-groups` - Create/update group or seed defaults
+- `DELETE /api/variables-groups` - Delete all groups
+
+**Notifications**
+- `GET /api/notifications` - Fetch notifications for current user
+- `POST /api/notifications` - Create notification (internal)
+- `PUT /api/notifications/mark-read` - Mark as read or archive
+
+**Configuration**
+- `GET /api/page-config` - Page styling configuration
+- `GET /api/chart-config` - Chart configuration
+- `GET /api/hashtag-colors` - Hashtag color management
 
 ### URL Notes (v2.6.0 → v2.10.0)
 - v2.6.0: Hashtag pages were deprecated in favor of the unified filter system
@@ -808,21 +1085,136 @@ For complete documentation, API reference, usage patterns, and technical decisio
 ---
 
 ## Technology Stack
+
 ### Frontend
-- **Next.js 15.4.6** - React framework with App Router
-- **TypeScript** - Type safety and developer experience
-- **Tailwind CSS** - Utility-first styling
-- **Lucide React** - Icon library
+
+| Technology | Version | Purpose |
+|------------|---------|----------|
+| **Next.js** | 15.5.4 | React framework with App Router (RSC) |
+| **React** | 18.3.1 | UI library with concurrent features |
+| **TypeScript** | 5.6.3 | Type safety and developer experience (strict mode) |
+| **Chart.js** | 4.5.0 | Chart rendering library |
+| **react-chartjs-2** | 5.3.0 | React wrapper for Chart.js |
+| **html2canvas** | 1.4.1 | PNG export for charts |
+| **jsPDF** | 3.0.1 | PDF generation for exports |
+| **WebSocket (ws)** | 8.18.3 | Real-time client-server communication |
+| **js-cookie** | 3.0.5 | Client-side cookie management |
+| **uuid** | 11.1.0 | Unique identifier generation |
+
+**Styling**:
+- **CSS Modules**: Component-scoped styling
+- **CSS Variables**: Design tokens (`--mm-*` prefix) via `app/styles/theme.css`
+- **No Tailwind**: Fully custom design system (TailAdmin V2 flat design)
+- **No External UI Library**: All components built from scratch
 
 ### Backend
-- **Next.js API Routes** - Serverless API endpoints
-- **MongoDB** - NoSQL database with flexible schema
-- **NextAuth.js** - Authentication system
 
-### Development
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Vercel** - Deployment platform
+| Technology | Version | Purpose |
+|------------|---------|----------|
+| **MongoDB** | 6.8.0 | NoSQL database (MongoDB Atlas cloud) |
+| **Next.js API Routes** | 15.5.4 | REST API endpoints (serverless functions) |
+| **Node.js** | ≥18.0.0 | JavaScript runtime (server-side) |
+| **dotenv** | 17.2.1 | Environment variable management |
+
+**External APIs**:
+- **Bitly API v4**: Link shortening and analytics
+
+**Authentication**:
+- **Custom Session-Based Auth**: HTTP-only cookies (no NextAuth.js)
+- **Password-Based**: Admin login with bcrypt hashing
+- **Page Protection**: Per-page password gates for public stats
+
+### Development Tools
+
+| Tool | Version | Purpose |
+|------|---------|----------|
+| **ESLint** | 8.57.0 | JavaScript/TypeScript linting |
+| **eslint-config-next** | 15.5.4 | Next.js-specific ESLint rules |
+| **TypeScript Compiler** | 5.6.3 | Type checking (tsc --noEmit) |
+| **npm** | ≥8.0.0 | Package manager |
+
+**Build Tools**:
+- Next.js built-in bundler (Turbopack in dev mode)
+- TypeScript compiler for type checking
+- ESLint for code quality enforcement
+
+### Infrastructure & Deployment
+
+| Service | Purpose |
+|---------|----------|
+| **Vercel** | Next.js app hosting (automatic deployment from GitHub main) |
+| **Railway/Heroku** | WebSocket server hosting (separate Node.js process) |
+| **MongoDB Atlas** | Cloud database (free tier or paid) |
+| **Vercel Edge Network** | CDN for static assets and API routes |
+| **GitHub** | Source control and CI/CD trigger |
+
+**Environment Configuration**:
+```bash
+# Required in .env.local and Vercel Environment Variables
+MONGODB_URI=mongodb+srv://...
+MONGODB_DB=messmass
+NEXT_PUBLIC_WS_URL=wss://websocket-server.com
+ADMIN_PASSWORD=secure_password
+
+# Optional (Bitly integration)
+BITLY_ACCESS_TOKEN=...
+BITLY_ORGANIZATION_GUID=...
+BITLY_GROUP_GUID=...
+```
+
+### Database Schema Summary
+
+| Collection | Purpose | Indexes |
+|------------|---------|----------|
+| `projects` | Event records with stats | eventDate, updatedAt, slug |
+| `partners` | Partner organizations | name, createdAt |
+| `bitly_links` | Bitly link metadata | bitlink, createdAt |
+| `bitly_project_links` | Link-project associations (many-to-many) | projectId, linkId |
+| `hashtag_categories` | Category definitions with colors | name |
+| `hashtags` | Hashtag usage tracking | _id (hashtag text) |
+| `notifications` | Multi-user notifications | createdAt, archivedBy |
+| `variablesConfig` | Variable flags and overrides | name |
+| `variableGroups` | Editor layout groups | groupOrder |
+| `users` | Admin users | email (unique) |
+
+### Real-Time Architecture
+
+**WebSocket Server** (Separate Node.js Process):
+- **Location**: `server/websocket-server.js`
+- **Port**: 7654 (configurable)
+- **Protocol**: WebSocket (ws library)
+- **Features**:
+  - Project-based rooms for isolation
+  - Automatic reconnection with exponential backoff
+  - Heartbeat mechanism (ping/pong)
+  - Message types: join-project, stat-update, project-update
+
+**Client-Side Integration**:
+- **Hook**: `hooks/useWebSocket.ts`
+- **Auto-Reconnect**: Yes, with exponential backoff
+- **Connection URL**: `NEXT_PUBLIC_WS_URL` environment variable
+
+### Performance Optimizations
+
+1. **Server-Side Rendering (SSR)**: Pages pre-rendered on server for SEO and initial load speed
+2. **API Route Caching**: Strategic caching headers on API responses
+3. **MongoDB Indexes**: All frequently queried fields indexed
+4. **Pagination**: 20 items per page across all admin interfaces
+5. **Lazy Loading**: Bitly links and large datasets loaded on-demand
+6. **CSS Modules**: Tree-shakable scoped styles (no runtime CSS-in-JS)
+7. **Image Optimization**: Next.js automatic image optimization
+8. **Edge Functions**: API routes deployed to Vercel Edge Network
+
+### Security Measures
+
+1. **HTTP-Only Cookies**: Session tokens never accessible via JavaScript
+2. **CSRF Protection**: SameSite cookie attribute
+3. **Password Hashing**: Bcrypt for admin passwords (if implemented)
+4. **Environment Variables**: Secrets never committed to repository
+5. **API Authentication**: Middleware validates session on all protected routes
+6. **Input Validation**: TypeScript + runtime validation on API endpoints
+7. **MongoDB Injection Prevention**: Parameterized queries via MongoDB driver
+8. **Rate Limiting**: (To be implemented) Prevent brute force attacks
 
 ---
 
@@ -853,5 +1245,6 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-10-13T11:23:00.000Z*  
-*Version: 5.53.0*
+*Last Updated: 2025-01-21T11:14:00.000Z*  
+*Version: 6.0.0*  
+*Status: Production-Ready — Enterprise Event Analytics Platform*
