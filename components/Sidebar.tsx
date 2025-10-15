@@ -57,6 +57,12 @@ export default function Sidebar() {
       ],
     },
     {
+      title: 'Analytics',
+      items: [
+        { label: 'Insights Dashboard', path: '/admin/insights', icon: '💡' },
+      ],
+    },
+    {
       title: 'Settings',
       items: [
         { label: 'Variable Manager', path: '/admin/variables', icon: '🔢' },

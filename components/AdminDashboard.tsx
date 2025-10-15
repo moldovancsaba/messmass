@@ -60,6 +60,13 @@ const navCards: NavCard[] = [
     accentColor: '#0ea5e9', // Sky Blue
   },
   {
+    href: '/admin/insights',
+    icon: '💡',
+    title: 'Analytics Insights',
+    description: 'AI-powered insights with anomaly detection, trends, and predictions',
+    accentColor: '#f59e0b', // var(--mm-chart-yellow) - Golden/amber for insights
+  },
+  {
     href: '/admin/filter',
     icon: '🔍',
     title: 'Hashtag Filter',

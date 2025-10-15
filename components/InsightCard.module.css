@@ -1,0 +1,291 @@
+/**
+ * InsightCard Styles
+ * 
+ * WHAT: Card component styles for insights display
+ * WHY: Consistent visual presentation with severity-based coloring
+ */
+
+/* WHAT: Base card styles */
+/* WHY: Container for insight content */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.2s ease;
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+/* WHAT: Compact mode for dashboard overview */
+/* WHY: Space-efficient display */
+.card.compact {
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.card.compact .description,
+.card.compact .recommendation,
+.card.compact .relatedEvents,
+.card.compact .footer {
+  display: none;
+}
+
+/* WHAT: Severity-based border colors */
+/* WHY: Visual priority indication */
+.card.critical {
+  border-left: 4px solid var(--error);
+}
+
+.card.warning {
+  border-left: 4px solid var(--warning);
+}
+
+.card.info {
+  border-left: 4px solid var(--info);
+}
+
+/* WHAT: Header with type and badges */
+/* WHY: Quick identification section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.typeIcon {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-sm);
+}
+
+.typeIcon span:first-child {
+  font-size: var(--font-lg);
+}
+
+.typeLabel {
+  text-transform: capitalize;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.badges {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* WHAT: Severity badge styles */
+/* WHY: Color-coded severity indicators */
+.severityBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.severityBadge.critical {
+  background: var(--error-light);
+  color: var(--error-dark);
+}
+
+.severityBadge.warning {
+  background: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+.severityBadge.info {
+  background: var(--info-light);
+  color: var(--info-dark);
+}
+
+.actionableBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+/* WHAT: Content area */
+/* WHY: Main insight information */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.metricRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+}
+
+.metric {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.value {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.change {
+  font-size: var(--font-sm);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.change.positive {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+.change.negative {
+  background: var(--error-light);
+  color: var(--error-dark);
+}
+
+.description {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* WHAT: Confidence indicator */
+/* WHY: Show reliability of insight */
+.confidence {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-sm);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.confidenceLabel {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.confidenceValue {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.confidenceBar {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidenceProgress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--warning), var(--success));
+  transition: width 0.3s ease;
+}
+
+/* WHAT: Recommendation box */
+/* WHY: Highlight actionable suggestions */
+.recommendation {
+  padding: var(--spacing-sm);
+  background: var(--info-light);
+  border-left: 3px solid var(--info);
+  border-radius: var(--radius-sm);
+}
+
+.recommendation strong {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--info-dark);
+  font-size: var(--font-sm);
+}
+
+.recommendation p {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* WHAT: Related events indicator */
+/* WHY: Show connections to other events */
+.relatedEvents {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  padding: var(--spacing-xs);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+/* WHAT: Footer with timestamp */
+/* WHY: Show when insight was generated */
+.footer {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-light);
+}
+
+.timestamp {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* WHAT: Responsive design */
+/* WHY: Mobile-friendly layout */
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-sm);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .metricRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+}
