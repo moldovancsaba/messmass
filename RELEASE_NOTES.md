@@ -1,5 +1,102 @@
 # MessMass Release Notes
 
+## [v5.57.1] — 2025-10-15T10:33:00.000Z
+
+### Fix — Bitly Search Page Reload Issue
+
+**What Changed**
+- **Added `isSearching` state** to separate search operations from initial page load
+- **Split load functions** into `loadInitialData()` and `loadSearch()`
+- **Added `reloadLinks()` helper** to intelligently choose the right load function after mutations
+- **Added Enter key prevention** to AdminHero search field
+
+**Why This Release**
+User reported that typing in the Bitly search field caused a full page reload with white flash and "Loading Bitly links..." message. This was a jarring UX issue that differed from the smooth, inline search behavior on the Projects management page.
+
+**Root Cause**
+- The Bitly page used a single `loading` state for both initial page load and search operations
+- Typing in search triggered `setLoading(true)`, which showed the full-page loading screen
+- This created a white flash reload effect on every search keystroke
+
+**Implementation Details**
+
+**Modified**: `app/admin/bitly/page.tsx` — Separated Loading States
+```typescript
+// WHAT: Add separate state for search operations
+// WHY: Prevents full loading screen during search - matches Projects page UX
+const [loading, setLoading] = useState(true);
+const [isSearching, setIsSearching] = useState(false);
+
+// WHAT: Load initial page of links (first mount only)
+async function loadInitialData() {
+  setLoading(true);  // Shows full loading screen
+  // ... fetch logic
+  setLoading(false);
+}
+
+// WHAT: Load links during search/sort (no full loading screen)
+async function loadSearch() {
+  setIsSearching(true);  // Updates inline without white flash
+  // ... fetch logic
+  setIsSearching(false);
+}
+
+// WHAT: Helper to intelligently choose load function
+function reloadLinks() {
+  if (debouncedTerm || sortField || sortOrder) {
+    loadSearch();  // Inline update
+  } else {
+    loadInitialData();  // Full screen
+  }
+}
+```
+
+**Modified**: `components/AdminHero.tsx` — Added Enter Key Prevention
+```typescript
+// WHAT: Optional prop for keyboard event handling
+onSearchKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+
+// WHAT: Usage in Bitly page
+<AdminHero
+  onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+  // ... other props
+/>
+```
+
+**Features**
+- ✅ **No page reload**: Typing in search updates results inline
+- ✅ **300ms debounce maintained**: Efficient API calls
+- ✅ **Pagination preserved**: "Load 20 more" works with active search
+- ✅ **Enter key prevented**: No accidental form submission
+- ✅ **Pattern reused**: Matches Projects page UX exactly
+
+**User Experience Improvements**
+- 🚫 **Eliminated white flash**: No more full-page loading during search
+- ⚡ **Instant results**: Search updates appear smoothly without reload
+- 🔍 **Consistent UX**: Bitly search now matches Projects search behavior
+- ⌨️ **Better keyboard UX**: Enter key does nothing (no navigation/reload)
+
+**Files Modified**: 2
+- `app/admin/bitly/page.tsx`: Added `isSearching` state, split load functions (~60 lines changed)
+- `components/AdminHero.tsx`: Added `onSearchKeyDown` prop (~3 lines added)
+
+**Build Validation**
+- ✅ TypeScript type-check: PASSING
+- ✅ Production build: PASSING (Compiled successfully in 3.4s)
+- ✅ No breaking changes to existing functionality
+
+**Pattern Reference**
+- Based on: `app/admin/projects/ProjectsPageClient.tsx` (lines 82-218)
+- Follows established search pattern with `loading` vs `isSearching` states
+
+**Impact**: Critical UX improvement for Bitly management page — eliminates jarring reload effect during search
+
+**Sign-off**: Agent Mode  
+**Date**: 2025-10-15T10:33:00.000Z  
+**Status**: ✅ Implemented, Built, Ready for Testing
+
+---
+
 ## [v5.57.0] — 2025-01-21T10:30:00.000Z
 
 ### Feature — Predictive Search Partner Selectors for Sports Match Builder

@@ -1,7 +1,22 @@
 # ROADMAP.md
 
-Current Version: 5.49.3
-Last Updated: 2025-10-12T19:20:30.000Z
+Current Version: 5.57.1
+Last Updated: 2025-10-15T10:33:00.000Z
+
+## Operational — Bitly Search Enhancements (Q1 2026)
+Priority: Medium
+Dependencies: Bitly integration (v5.54.x), tag system, junction table optimization
+- **Context**: Bitly search currently filters by bitlink, long_url, and title. Future enhancements should expand search capabilities while maintaining performance.
+- **Action**: Extend Bitly search to include tags filtering (requires tag system integration across all search contexts)
+- **Action**: Implement associated project names search (requires junction table query optimization for many-to-many relationships)
+- **Action**: Consider abstracting loading/isSearching pattern into reusable hook for all admin pages
+- **Acceptance**:
+  - Search by tags works consistently across Projects, Bitly, and other admin pages
+  - Project name search in Bitly efficiently queries junction table without performance degradation
+  - Unified search hook reduces code duplication across admin pages
+- **Rationale**: Incremental search improvements based on user needs; ensure consistency before expanding
+Logged at: 2025-10-15T10:33:00.000Z
+Author: Agent Mode
 
 ## Operational — Admin Layout & Navigation System Documentation (Q4 2025)
 Priority: High

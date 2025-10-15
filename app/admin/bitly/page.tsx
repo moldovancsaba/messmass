@@ -55,6 +55,7 @@ export default function BitlyAdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
@@ -105,12 +106,18 @@ export default function BitlyAdminPage() {
   // WHAT: Load first page when search/sort changes
   // WHY: Fresh search or sort requires restarting pagination
   useEffect(() => {
-    loadData();
+    // WHAT: Use different loading function based on whether this is initial load or search
+    // WHY: Prevents full page loading screen during search - matches Projects page UX
+    if (debouncedTerm || sortField || sortOrder) {
+      loadSearch();
+    } else {
+      loadInitialData();
+    }
   }, [debouncedTerm, sortField, sortOrder]);
 
-  // WHAT: Load first page of links with search and sorting
-  // WHY: Start fresh pagination when search/sort changes
-  async function loadData() {
+  // WHAT: Load initial page of links (first mount only)
+  // WHY: Shows full loading screen on initial page load
+  async function loadInitialData() {
     try {
       setLoading(true);
       setError('');
@@ -155,6 +162,57 @@ export default function BitlyAdminPage() {
       console.error('Load error:', err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  // WHAT: Load links during search/sort operations (no full loading screen)
+  // WHY: Prevents white flash reload effect during search - updates results inline
+  // PATTERN: Matches app/admin/projects/ProjectsPageClient.tsx search behavior
+  async function loadSearch() {
+    try {
+      setIsSearching(true);
+      setError('');
+      setLinks([]); // Clear existing links
+
+      // WHAT: Fetch ALL projects for ProjectSelector (no pagination)
+      // WHY: User needs to search through entire project database
+      const projectsRes = await fetch('/api/projects?limit=1000&sortField=eventDate&sortOrder=desc');
+      const projectsData = await projectsRes.json();
+      
+      // WHAT: Build links API URL with pagination, search, and sorting
+      // WHY: Load only 20 links at a time for performance
+      const params = new URLSearchParams();
+      params.set('includeUnassigned', 'true');
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+      
+      // WHAT: Fetch first page of Bitly links
+      const linksRes = await fetch(`/api/bitly/links?${params.toString()}`);
+      const linksData = await linksRes.json();
+
+      if (projectsData.success && projectsData.projects) {
+        setProjects(projectsData.projects);
+      }
+
+      if (linksData.success && linksData.links) {
+        setLinks(linksData.links);
+        setTotalMatched(linksData.pagination.total);
+        setNextOffset(linksData.pagination.hasMore ? PAGE_SIZE : null);
+      }
+    } catch (err) {
+      setError('Failed to load data. Please refresh the page.');
+      console.error('Load search error:', err);
+    } finally {
+      setIsSearching(false);
     }
   }
 
@@ -263,7 +321,7 @@ export default function BitlyAdminPage() {
         // Only clear the project selector to allow selecting another project
         setSelectedProjectId('');
         setCustomTitle('');
-        loadData(); // Reload to show new association
+        reloadLinks(); // Reload to show new association
       } else {
         setError(data.error || 'Failed to add link');
       }
@@ -400,7 +458,7 @@ export default function BitlyAdminPage() {
 
       if (data.success) {
         setSuccessMessage('✓ Link archived');
-        loadData(); // Reload to remove archived link from list
+        reloadLinks(); // Reload to remove archived link from list
       } else {
         setError(data.error || 'Failed to archive link');
       }
@@ -429,7 +487,7 @@ export default function BitlyAdminPage() {
 
       if (data.success && data.refreshed) {
         setSuccessMessage(`✓ Analytics refreshed for ${bitlink}`);
-        loadData(); // Reload to show updated analytics
+        reloadLinks(); // Reload to show updated analytics
       } else if (data.success) {
         setSuccessMessage(`✓ Analytics loaded for ${bitlink} (cached data)`);
       } else {
@@ -457,7 +515,7 @@ export default function BitlyAdminPage() {
 
       if (data.success) {
         setSuccessMessage(`✓ Sync complete! Updated ${data.summary.linksUpdated} links.`);
-        loadData(); // Reload to show updated analytics
+        reloadLinks(); // Reload to show updated analytics
       } else {
         setError(data.message || 'Sync failed');
       }
@@ -488,7 +546,7 @@ export default function BitlyAdminPage() {
 
       if (data.success) {
         setSuccessMessage(`✓ Refreshed ${data.associationsUpdated} event-link associations!`);
-        loadData(); // Reload to show updated metrics
+        reloadLinks(); // Reload to show updated metrics
       } else {
         setError(data.error || 'Refresh failed');
       }
@@ -529,7 +587,7 @@ export default function BitlyAdminPage() {
           setSuccessMessage(message);
         }
         
-        loadData(); // Reload to show newly imported links
+        reloadLinks(); // Reload to show newly imported links
       } else {
         // WHAT: Handle specific Bitly API errors
         if (data.error?.includes('403') || data.error?.includes('Forbidden')) {
@@ -577,6 +635,16 @@ export default function BitlyAdminPage() {
     return `${startDate} to ${endDate}`;
   }
 
+  // WHAT: Helper to determine which load function to use
+  // WHY: After mutations (add/delete/sync), reload without full loading screen if search/sort active
+  function reloadLinks() {
+    if (debouncedTerm || sortField || sortOrder) {
+      loadSearch();
+    } else {
+      loadInitialData();
+    }
+  }
+
   // WHAT: Auth check wrapper
   // WHY: Ensure user is authenticated before showing Bitly management
   const { user, loading: authLoading } = useAdminAuth();
@@ -608,6 +676,7 @@ export default function BitlyAdminPage() {
         searchValue={searchTerm}
         onSearchChange={(value) => setSearchTerm(value)}
         searchPlaceholder="Search Bitly links..."
+        onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
         actionButtons={[
           {
             label: 'Get Links from Bitly',

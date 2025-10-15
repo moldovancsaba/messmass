@@ -27,6 +27,7 @@ interface AdminHeroProps {
   showSearch?: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  onSearchKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   searchPlaceholder?: string;
   // Optional actions (right-side buttons)
   actionButtons?: ActionButton[];
@@ -43,6 +44,7 @@ export default function AdminHero({
   showSearch = false,
   searchValue,
   onSearchChange,
+  onSearchKeyDown,
   searchPlaceholder = 'Search...',
   actionButtons = []
 }: AdminHeroProps) {
@@ -64,6 +66,7 @@ export default function AdminHero({
                 type="text"
                 value={searchValue || ''}
                 onChange={(e) => onSearchChange(e.target.value)}
+                onKeyDown={onSearchKeyDown}
                 placeholder={searchPlaceholder}
                 className={styles.searchInput}
               />
