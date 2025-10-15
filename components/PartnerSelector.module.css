@@ -1,0 +1,179 @@
+/* components/PartnerSelector.module.css */
+/* WHAT: Styles for PartnerSelector component
+ * WHY: Consistent design with ProjectSelector and MessMass design tokens
+ * PATTERN: Matches ColoredHashtagBubble and UnifiedHashtagInput styling */
+
+/* WHAT: Container for input and dropdown positioning
+ * WHY: Relative positioning for absolute dropdown */
+.container {
+  position: relative;
+  width: 100%;
+}
+
+/* WHAT: Search input field styling
+ * WHY: Matches form-input design system classes */
+.searchInput {
+  width: 100%;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput:disabled {
+  background: var(--mm-gray-100);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* WHAT: Dropdown container for partner results
+ * WHY: Absolute positioning below input, matches hashtag dropdown */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-lg);
+  z-index: 1000;
+}
+
+/* WHAT: Individual partner item in dropdown
+ * WHY: Hover and focus states for better UX */
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover,
+.dropdownItem.focused {
+  background-color: var(--mm-color-primary-50);
+}
+
+/* WHAT: Partner emoji in dropdown item
+ * WHY: Visual identifier for partner type (sport, team, etc.) */
+.partnerEmoji {
+  font-size: var(--mm-font-size-lg);
+  flex-shrink: 0;
+}
+
+/* WHAT: Partner name in dropdown item
+ * WHY: Primary text, medium weight for readability */
+.partnerName {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-900);
+}
+
+/* WHAT: No results message styling
+ * WHY: User feedback when search returns empty */
+.noResults {
+  padding: var(--mm-space-4);
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  font-style: italic;
+}
+
+/* WHAT: Container for selected partner chip
+ * WHY: Wrapper to control chip positioning and spacing */
+.chipContainer {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* WHAT: Partner chip/bubble when selected
+ * WHY: Matches ColoredHashtagBubble visual style for consistency */
+.partnerChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: var(--mm-color-success-100);
+  border: 1px solid var(--mm-color-success-300);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-color-success-700);
+  transition: all 0.2s ease;
+  max-width: 100%;
+}
+
+.partnerChip.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* WHAT: Emoji in chip
+ * WHY: Visual identifier for selected partner */
+.chipEmoji {
+  font-size: var(--mm-font-size-base);
+  flex-shrink: 0;
+}
+
+/* WHAT: Chip label text
+ * WHY: Truncate long partner names with ellipsis */
+.chipLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* WHAT: Remove button (X) on chip
+ * WHY: Clear selection and return to input state */
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--mm-color-success-600);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chipRemove:hover {
+  background: var(--mm-color-success-200);
+  color: var(--mm-color-success-800);
+}
+
+.chipRemove:active {
+  transform: scale(0.95);
+}
+
+/* WHAT: Focus visible styles for accessibility
+ * WHY: Keyboard navigation support */
+.chipRemove:focus-visible {
+  outline: 2px solid var(--mm-color-success-500);
+  outline-offset: 2px;
+}
