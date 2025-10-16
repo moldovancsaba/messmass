@@ -1,6 +1,12 @@
 # TASKLIST.md
-Current Version: 6.4.0
-Last Updated: 2025-10-15T20:40:00.000Z (UTC)
+Current Version: 6.5.0
+Last Updated: 2025-10-16T07:52:00.000Z (UTC)
+
+### Immediate — Analytics Insights Help (v6.5.0)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| INSIGHTS-HELP-001 | Add in-page help on how to use and what it shows | Agent Mode | 2025-10-16T07:45:00.000Z | ✅ Complete (2025-10-16T07:52:00.000Z) |
 
 ### Critical — Bitly Search Page Reload Fix (v5.57.1)
 

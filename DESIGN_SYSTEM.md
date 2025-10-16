@@ -186,4 +186,4 @@ See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
-*Version: 6.4.0 | Last Updated: 2025-10-15T20:40:00.000Z (UTC)*
+*Version: 6.5.0 | Last Updated: 2025-10-16T07:52:00.000Z (UTC)*

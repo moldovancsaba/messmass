@@ -173,6 +173,97 @@
   gap: var(--spacing-md);
 }
 
+/* WHAT: Help section styles */
+/* WHY: Clear, readable usage guidance */
+.helpSection {
+  margin: var(--spacing-lg) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-secondary);
+}
+
+.helpContent {
+  padding: var(--spacing-lg);
+}
+
+.helpTitle {
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.helpBlock {
+  margin-bottom: var(--spacing-lg);
+}
+
+.insightTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.insightTypeCard {
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.insightTypeHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.insightTypeIcon {
+  font-size: 1.25rem;
+}
+
+.example {
+  color: var(--text-secondary);
+  margin: var(--spacing-xs) 0 0 0;
+}
+
+.severityLevels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.severityRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.severityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.severityBadge.critical {
+  background: rgba(220, 38, 38, 0.08);
+  color: rgb(185, 28, 28);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.severityBadge.warning {
+  background: rgba(234, 179, 8, 0.12);
+  color: rgb(161, 98, 7);
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.severityBadge.info {
+  background: rgba(59, 130, 246, 0.10);
+  color: rgb(29, 78, 216);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
 /* WHAT: Empty state */
 /* WHY: Handle no insights case gracefully */
 .empty {

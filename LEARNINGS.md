@@ -1,5 +1,21 @@
 # MessMass Development Learnings
 
+## 2025-10-16T07:52:00.000Z — In-Page Help for Analytics Insights (Frontend / UX)
+
+What: Added collapsible help section to the Analytics Insights page explaining how to use filters, insight types, severity levels, and action prioritization.
+
+Why: Reduce onboarding friction and ensure users immediately understand what the insights mean and how to act on them.
+
+Decisions:
+- Help is collapsed by default to preserve primary content focus
+- Uses AdminHero action button for consistent access
+- Kept content concise with icons and examples for quick scanning
+
+Outcome:
+- Faster user comprehension of insights and actions
+- Fewer support questions about what insights indicate
+- Consistent UX pattern reusable across other analytics pages
+
 ## 2025-10-15T10:33:00.000Z — Loading vs Searching State Pattern (Frontend / UX / React)
 
 **What**: Separated `loading` and `isSearching` states to prevent full-page loading screen during search operations on admin pages.

@@ -1,5 +1,24 @@
 # MessMass Release Notes
 
+## [v6.5.0] — 2025-10-16T07:52:00.000Z
+
+### ✨ Feature — Analytics Insights In-Page Help
+
+**What Changed**
+- ✅ Added collapsible help section to Analytics Insights page
+- ✅ Explained insight types (Anomalies, Trends, Benchmarks, Predictions, Recommendations)
+- ✅ Documented severity levels and how to prioritize actions
+- ✅ Clarified filters, confidence score, actionable badge, and timestamps
+
+**Why**
+Provide clear onboarding and immediate understanding of how to use insights effectively without external docs.
+
+**Files Modified**: 2
+- `app/admin/insights/page.tsx`: Added help section and toggle
+- `app/admin/insights/page.module.css`: Styles for help content
+
+---
+
 ## [v6.4.0] — 2025-10-15T20:40:00.000Z
 
 ### 🐛 Bug Fix — Bitly Search UX Enhancement

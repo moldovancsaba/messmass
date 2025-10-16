@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 6.4.0
-Last Updated: 2025-10-15T20:40:00.000Z (UTC)
+Current Version: 6.5.0
+Last Updated: 2025-10-16T07:52:00.000Z (UTC)
 
 ---
 
@@ -326,4 +326,4 @@ Dependencies: None
 ---
 
 *MessMass Roadmap — Strategic Planning Document*  
-*Version 6.4.0 | Last Updated: 2025-10-15T20:40:00.000Z (UTC)*
+*Version 6.5.0 | Last Updated: 2025-10-16T07:52:00.000Z (UTC)*
