@@ -9,6 +9,7 @@ MessMass is an enterprise-grade event analytics platform built with Next.js 15, 
 
 ## Version History
 
+- **Version 6.8.0** — KYC creation flow and boolean/date types
 - **Version 6.7.0** — KYC export and advanced filters (source/tags/flags)
 - **Version 6.6.0** — KYC Variables page and Clicker Manager split
 - **Version 6.5.0** — Analytics Insights: In-page Help and Usage Guide

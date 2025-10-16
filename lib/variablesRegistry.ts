@@ -5,7 +5,7 @@
 // exposure of new editable stats fields and newly added hashtag categories as variables
 // without manual updates.
 
-export type VariableType = 'count' | 'percentage' | 'currency' | 'numeric' | 'text'
+export type VariableType = 'count' | 'percentage' | 'currency' | 'numeric' | 'text' | 'boolean' | 'date'
 
 export interface VariableDefinition {
   name: string

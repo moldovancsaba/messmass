@@ -1,5 +1,22 @@
 # MessMass Release Notes
 
+## [v6.8.0] — 2025-10-16T12:35:00.000Z
+
+### ✨ Feature — KYC Create Variable + New Types (boolean/date)
+
+What Changed
+- ✅ Added "New Variable" modal to /admin/kyc
+- ✅ Support for boolean and date variable types across registry and API
+
+Why
+Allow full-variable governance from KYC, including adding new fields and correctly typing non-numeric data.
+
+Files Modified
+- app/admin/kyc/page.tsx
+- lib/variablesRegistry.ts
+
+---
+
 ## [v6.7.0] — 2025-10-16T12:12:00.000Z
 
 ### ✨ Feature — KYC Export & Advanced Filters

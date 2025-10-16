@@ -41,6 +41,7 @@ export default function KycVariablesPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeVar, setActiveVar] = useState<Variable | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   // WHAT: Source filters and tags (categories) filter
   // WHY: Allow narrowing KYC list by data origin and grouping tags
@@ -105,6 +106,7 @@ export default function KycVariablesPage() {
         onSearchChange={setSearch}
         searchPlaceholder="Search variables..."
         actionButtons={[
+          { label: "New Variable", onClick: () => setCreateOpen(true), variant: "primary" },
           { label: "↔️ Open Clicker Manager", onClick: () => { window.location.href = "/admin/variables"; }, variant: "secondary" },
           { label: "⬇️ Export CSV", onClick: () => exportCSV(filtered), variant: "secondary" },
           { label: "⬇️ Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
@@ -231,6 +233,15 @@ export default function KycVariablesPage() {
           </div>
         </div>
       )}
+
+      {createOpen && (
+        <div className="modal-overlay" onClick={() => setCreateOpen(false)}>
+          <div className="modal-content max-w-640" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">➕ New Variable</h3>
+            <CreateVariableForm onClose={() => setCreateOpen(false)} onCreated={async () => { setCreateOpen(false); await load(); }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -273,6 +284,91 @@ function exportCSV(rows: Variable[]) {
   ).join('\n');
   const ts = new Date().toISOString();
   downloadBlob(csv, `kyc-variables-${ts}.csv`, 'text/csv');
+}
+
+function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [form, setForm] = useState({
+    name: '',
+    label: '',
+    type: 'count' as Variable['type'],
+    category: '',
+    description: '',
+    visibleInClicker: true,
+    editableInManual: true,
+    saving: false,
+    error: '' as string | null,
+  });
+
+  return (
+    <div>
+      <div className="grid gap-3 grid-1fr-1fr">
+        <div>
+          <label className="form-label-block">Name (camelCase)</label>
+          <input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. vipGuests" />
+        </div>
+        <div>
+          <label className="form-label-block">Label</label>
+          <input className="form-input" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="e.g. VIP Guests" />
+        </div>
+        <div>
+          <label className="form-label-block">Type</label>
+          <select className="form-select" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Variable['type'] })}>
+            <option value="count">count</option>
+            <option value="numeric">numeric</option>
+            <option value="currency">currency</option>
+            <option value="percentage">percentage</option>
+            <option value="boolean">boolean</option>
+            <option value="date">date</option>
+            <option value="text">text</option>
+          </select>
+        </div>
+        <div>
+          <label className="form-label-block">Category</label>
+          <input className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Event" />
+        </div>
+        <div className="grid-col-span-2">
+          <label className="form-label-block">Description (optional)</label>
+          <textarea className="form-input" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What does this track?" />
+        </div>
+        <div className="flex gap-4 items-center grid-col-span-2">
+          <label className="flex gap-2 items-center">
+            <input type="checkbox" checked={form.visibleInClicker} onChange={(e) => setForm({ ...form, visibleInClicker: e.target.checked })} />
+            Visible in Clicker
+          </label>
+          <label className="flex gap-2 items-center">
+            <input type="checkbox" checked={form.editableInManual} onChange={(e) => setForm({ ...form, editableInManual: e.target.checked })} />
+            Editable in Manual
+          </label>
+        </div>
+      </div>
+      {form.error && <div className="text-error mt-2">{form.error}</div>}
+      <div className="flex justify-end gap-2 mt-4">
+        <button className="btn btn-small btn-secondary" onClick={onClose} disabled={form.saving}>Cancel</button>
+        <button className="btn btn-small btn-primary" disabled={form.saving} onClick={async () => {
+          if (!form.name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(form.name)) { setForm({ ...form, error: 'Provide a valid camelCase name' }); return; }
+          if (!form.label || !form.category) { setForm({ ...form, error: 'Label and Category are required' }); return; }
+          try {
+            setForm(prev => ({ ...prev, saving: true, error: '' }));
+            const res = await fetch('/api/variables-config', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+                name: form.name,
+                label: form.label,
+                type: form.type,
+                category: form.category,
+                description: form.description || undefined,
+                flags: { visibleInClicker: form.visibleInClicker, editableInManual: form.editableInManual },
+              })
+            });
+            const data = await res.json();
+            if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to create variable');
+            onCreated();
+          } catch (e: any) {
+            setForm(prev => ({ ...prev, saving: false, error: e?.message || 'Failed to create variable' }));
+          }
+        }}>{form.saving ? 'Saving…' : 'Create'}</button>
+      </div>
+    </div>
+  );
 }
 
 function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: () => void }) {

@@ -1,6 +1,13 @@
 # TASKLIST.md
-Current Version: 6.7.0
-Last Updated: 2025-10-16T12:12:00.000Z (UTC)
+Current Version: 6.8.0
+Last Updated: 2025-10-16T12:35:00.000Z (UTC)
+
+### Immediate — KYC Create + Type Support (v6.8.0)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| KYC-005 | Add "New Variable" in KYC page | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
+| KYC-006 | Add boolean/date types support | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
 
 ### Immediate — KYC Export & Filters (v6.7.0)
 
