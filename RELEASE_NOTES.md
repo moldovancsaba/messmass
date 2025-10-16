@@ -1,5 +1,23 @@
 # MessMass Release Notes
 
+## [v6.7.0] — 2025-10-16T12:12:00.000Z
+
+### ✨ Feature — KYC Export & Advanced Filters
+
+What Changed
+- ✅ Export current KYC view as CSV and JSON
+- ✅ Source filters (manual, system, derived, text)
+- ✅ Flag filters (clicker/manual)
+- ✅ Category tags filter (toggle badges)
+
+Why
+Enable data governance, audits, and fast analysis by exporting and slicing variables.
+
+Files Modified
+- app/admin/kyc/page.tsx
+
+---
+
 ## [v6.6.0] — 2025-10-16T11:25:00.000Z
 
 ### ✨ Feature — KYC Variables and Clicker Manager Split

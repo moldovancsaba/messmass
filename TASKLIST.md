@@ -1,6 +1,12 @@
 # TASKLIST.md
-Current Version: 6.6.0
-Last Updated: 2025-10-16T11:25:00.000Z (UTC)
+Current Version: 6.7.0
+Last Updated: 2025-10-16T12:12:00.000Z (UTC)
+
+### Immediate — KYC Export & Filters (v6.7.0)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| KYC-004 | Add Export (CSV/JSON), Tags filter, Source filters to KYC | Agent Mode | 2025-10-16T12:15:00.000Z | ✅ Complete (2025-10-16T12:12:00.000Z) |
 
 ### Immediate — KYC Variables & Clicker Split (v6.6.0)
 

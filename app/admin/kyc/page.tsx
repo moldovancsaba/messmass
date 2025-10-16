@@ -42,6 +42,12 @@ export default function KycVariablesPage() {
   const [loading, setLoading] = useState(true);
   const [activeVar, setActiveVar] = useState<Variable | null>(null);
 
+  // WHAT: Source filters and tags (categories) filter
+  // WHY: Allow narrowing KYC list by data origin and grouping tags
+  const [sourceFilter, setSourceFilter] = useState<{ manual: boolean; system: boolean; derived: boolean; text: boolean }>({ manual: true, system: true, derived: true, text: true });
+  const [flagFilter, setFlagFilter] = useState<{ clicker: boolean; manual: boolean }>({ clicker: false, manual: false });
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+
   const load = async () => {
     setLoading(true);
     try {
@@ -68,17 +74,25 @@ export default function KycVariablesPage() {
 
   useEffect(() => { load(); }, []);
 
+  const categories = useMemo(() => Array.from(new Set(variables.map(v => v.category))).sort(), [variables]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const list = variables;
-    if (!q) return list;
-    return list.filter((v) =>
-      v.name.toLowerCase().includes(q) ||
-      v.label.toLowerCase().includes(q) ||
-      (v.category || "").toLowerCase().includes(q) ||
-      (v.description || "").toLowerCase().includes(q)
-    );
-  }, [variables, search]);
+    return variables.filter((v) => {
+      // Text search
+      const matchesText = !q || v.name.toLowerCase().includes(q) || v.label.toLowerCase().includes(q) || (v.category || "").toLowerCase().includes(q) || (v.description || "").toLowerCase().includes(q);
+      if (!matchesText) return false;
+      // Source filter
+      const src = computeSource(v);
+      if (!sourceFilter[src]) return false;
+      // Flags filter (if enabled)
+      if (flagFilter.clicker && !v.flags?.visibleInClicker) return false;
+      if (flagFilter.manual && !v.flags?.editableInManual) return false;
+      // Category tags filter (if any selected)
+      if (selectedCategories.size > 0 && !selectedCategories.has(v.category)) return false;
+      return true;
+    });
+  }, [variables, search, sourceFilter, flagFilter, selectedCategories]);
 
   return (
     <div className="page-container">
@@ -92,6 +106,8 @@ export default function KycVariablesPage() {
         searchPlaceholder="Search variables..."
         actionButtons={[
           { label: "↔️ Open Clicker Manager", onClick: () => { window.location.href = "/admin/variables"; }, variant: "secondary" },
+          { label: "⬇️ Export CSV", onClick: () => exportCSV(filtered), variant: "secondary" },
+          { label: "⬇️ Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
         ]}
         badges={[
           { text: "KYC", variant: "primary" },
@@ -107,8 +123,63 @@ export default function KycVariablesPage() {
       )}
 
       {!loading && (
-        <div className="grid gap-3">
-          {filtered.map((v) => {
+        <>
+          {/* WHAT: Filters row (sources, flags, tags) */}
+          {/* WHY: Quick narrowing by data origin and usage */}
+          <ColoredCard accentColor="#10b981" hoverable={false}>
+            <div className="grid gap-3 grid-1fr-1fr-1fr">
+              <div>
+                <label className="form-label">Source</label>
+                <div className="flex flex-wrap gap-3">
+                  {(["manual","system","derived","text"] as const).map(k => (
+                    <label key={k} className="flex items-center gap-2">
+                      <input type="checkbox" checked={sourceFilter[k]} onChange={(e) => setSourceFilter(prev => ({ ...prev, [k]: e.target.checked }))} />
+                      <span className="text-sm capitalize">{k}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="form-label">Flags</label>
+                <div className="flex flex-wrap gap-3">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={flagFilter.clicker} onChange={(e) => setFlagFilter(prev => ({ ...prev, clicker: e.target.checked }))} />
+                    <span className="text-sm">clicker</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={flagFilter.manual} onChange={(e) => setFlagFilter(prev => ({ ...prev, manual: e.target.checked }))} />
+                    <span className="text-sm">manual</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label className="form-label">Tags (Categories)</label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map(cat => {
+                    const active = selectedCategories.has(cat);
+                    return (
+                      <button key={cat} className={`badge ${active ? 'badge-primary' : 'badge-secondary'}`} onClick={() => {
+                        setSelectedCategories(prev => {
+                          const next = new Set(prev);
+                          if (next.has(cat)) next.delete(cat); else next.add(cat);
+                          return next;
+                        })
+                      }}>{cat}</button>
+                    )
+                  })}
+                  {categories.length === 0 && (
+                    <span className="text-sm text-gray-600">No categories</span>
+                  )}
+                  {selectedCategories.size > 0 && (
+                    <button className="btn btn-small btn-secondary" onClick={() => setSelectedCategories(new Set())}>Clear</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </ColoredCard>
+
+          <div className="grid gap-3 mt-3">
+            {filtered.map((v) => {
             const source = computeSource(v);
             const typeBadge = v.type.toUpperCase();
             const tags = [v.category, source, v.derived ? "derived" : undefined].filter(Boolean) as string[];
@@ -149,9 +220,9 @@ export default function KycVariablesPage() {
             );
           })}
         </div>
+        </>
       )}
 
-      {/* Edit modal reuses variables-config API; keep UX consistent with Variables page */}
       {activeVar && (
         <div className="modal-overlay" onClick={() => setActiveVar(null)}>
           <div className="modal-content max-w-620" onClick={(e) => e.stopPropagation()}>
@@ -162,6 +233,46 @@ export default function KycVariablesPage() {
       )}
     </div>
   );
+}
+
+function downloadBlob(content: string | Blob, filename: string, type: string) {
+  const blob = content instanceof Blob ? content : new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportJSON(rows: Variable[]) {
+  const ts = new Date().toISOString();
+  downloadBlob(JSON.stringify(rows, null, 2), `kyc-variables-${ts}.json`, 'application/json');
+}
+
+function exportCSV(rows: Variable[]) {
+  const headers = ['name','label','type','source','category','visibleInClicker','editableInManual','derived','description'];
+  const csv = [headers.join(',')].concat(
+    rows.map(v => {
+      const src = computeSource(v);
+      const values = [
+        v.name,
+        v.label,
+        v.type,
+        src,
+        v.category,
+        String(!!v.flags?.visibleInClicker),
+        String(!!v.flags?.editableInManual),
+        String(!!v.derived),
+        (v.description || '').replace(/\n/g, ' ').replace(/"/g, '""')
+      ];
+      return values.map(x => /[,\n\"]/.test(String(x)) ? `"${String(x).replace(/\"/g, '""')}"` : String(x)).join(',');
+    })
+  ).join('\n');
+  const ts = new Date().toISOString();
+  downloadBlob(csv, `kyc-variables-${ts}.csv`, 'text/csv');
 }
 
 function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: () => void }) {
