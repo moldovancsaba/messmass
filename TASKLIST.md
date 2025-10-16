@@ -1,6 +1,14 @@
 # TASKLIST.md
-Current Version: 6.5.0
-Last Updated: 2025-10-16T07:52:00.000Z (UTC)
+Current Version: 6.6.0
+Last Updated: 2025-10-16T11:25:00.000Z (UTC)
+
+### Immediate — KYC Variables & Clicker Split (v6.6.0)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| KYC-001 | Create /admin/kyc listing all variables with types, sources, flags | Agent Mode | 2025-10-16T11:35:00.000Z | ✅ Complete (2025-10-16T11:25:00.000Z) |
+| KYC-002 | Refactor /admin/variables to Clicker Manager (groups only) | Agent Mode | 2025-10-16T11:40:00.000Z | ✅ Complete (2025-10-16T11:25:00.000Z) |
+| KYC-003 | Update sidebar: add KYC Variables and Clicker Manager | Agent Mode | 2025-10-16T11:45:00.000Z | ✅ Complete (2025-10-16T11:25:00.000Z) |
 
 ### Immediate — Analytics Insights Help (v6.5.0)
 

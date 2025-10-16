@@ -1,5 +1,24 @@
 # MessMass Release Notes
 
+## [v6.6.0] — 2025-10-16T11:25:00.000Z
+
+### ✨ Feature — KYC Variables and Clicker Manager Split
+
+What Changed
+- ✅ New admin page: /admin/kyc — lists all variables with type, source (manual/system/derived), flags
+- ✅ Refactored /admin/variables to "Clicker Manager" (groups and ordering only)
+- ✅ Sidebar updated: KYC Variables + Clicker Manager
+
+Why
+Clarify responsibilities: KYC is the single source of truth for variables; Clicker Manager focuses on layout/groups. Enables adding variables to clicker anytime via KYC.
+
+Files Modified / Added
+- app/admin/kyc/page.tsx (new)
+- app/admin/variables/page.tsx (refactor)
+- components/Sidebar.tsx (nav)
+
+---
+
 ## [v6.5.0] — 2025-10-16T07:52:00.000Z
 
 ### ✨ Feature — Analytics Insights In-Page Help

@@ -439,31 +439,27 @@ const [createForm, setCreateForm] = useState({
   return (
     <div className="page-container">
       <AdminHero
-        title="🔢 Variable Manager"
-        subtitle="Manage data variables and metrics"
+        title="🖱️ Clicker Manager"
+        subtitle="Manage Editor groups and ordering for the clicker/manual"
         backLink="/admin"
-        showSearch
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Search variables..."
+        showSearch={false}
         actionButtons={[
+          {
+            label: 'Open KYC Variables',
+            icon: '🔐',
+            onClick: () => { window.location.href = '/admin/kyc'; },
+            variant: 'secondary'
+          },
           {
             label: 'Reorder Clicker',
             icon: '↕️',
             onClick: () => setReorderOpen(true),
-            variant: 'secondary'
-          },
-          {
-            label: 'New Variable',
-            icon: '➕',
-            onClick: () => setShowCreateForm(true),
             variant: 'primary'
           }
         ]}
         badges={[
-          { text: 'Data Manager', variant: 'primary' },
-          { text: 'Variables', variant: 'secondary' },
-          { text: `${filteredVariables.length} Variables`, variant: 'success' }
+          { text: 'Clicker', variant: 'primary' },
+          { text: 'Groups', variant: 'secondary' }
         ]}
       />
           <GroupsManager variables={variables} />
@@ -489,162 +485,7 @@ const [createForm, setCreateForm] = useState({
             </div>
           )}
 
-          {/* Variables by Category */}
-          <div>
-            {Object.entries(variablesByCategory).map(([category, categoryVariables]) => (
-              <div key={category} className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                  <span className="category-badge">
-                    {category}
-                  </span>
-                  <span className="text-gray-600 text-base font-normal">
-                    ({categoryVariables.length} variables)
-                  </span>
-                </h2>
-                
-                <div className={`charts-grid ${variablesStyles.varsGrid}`}>
-                  {categoryVariables.slice(0, visibleCount).map((variable) => {
-                    const reference = ['count','numeric','currency','percentage'].includes(variable.type)
-                      ? buildReferenceToken({ name: variable.name, category: variable.category, derived: variable.derived, type: variable.type })
-                      : variable.name
-                    return (
-                      <ColoredCard key={variable.name} accentColor={getTypeColor(variable.type)} hoverable={false}>
-                        {/* WHAT: Horizontal layout with content on left, action buttons on right
-                         * WHY: Consistent with hashtags and categories pages - prevents layout shifts */}
-                        <div className={variablesStyles.variableHorizontalLayout}>
-                          {/* Left side: Variable content */}
-                          <div className={variablesStyles.variableContentArea}>
-                            <div className="variable-header">
-                              <h3 className="variable-title">{variable.label}</h3>
-                              <code className="variable-ref">{reference}</code>
-                            </div>
-
-                            {/* Flags Controls (each on its own line) */}
-                            <div className="variable-flags">
-                              <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
-                                <input
-                                  type="checkbox"
-                                  checked={!!variable.flags?.visibleInClicker}
-                                  disabled={variable.derived || variable.type === 'text'}
-                                  onChange={(e) => {
-                                    const next = { ...variable.flags, visibleInClicker: e.target.checked }
-                                    persistFlags(variable.name, next)
-                                    setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                    setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                  }}
-                                />
-                                <span>Visible in Clicker</span>
-                              </label>
-                              <label className={`variable-flag ${(variable.derived || variable.type === 'text') ? 'opacity-50' : 'opacity-100'}`}>
-                                <input
-                                  type="checkbox"
-                                  checked={!!variable.flags?.editableInManual}
-                                  disabled={variable.derived || variable.type === 'text'}
-                                  onChange={(e) => {
-                                    const next = { ...variable.flags, editableInManual: e.target.checked }
-                                    persistFlags(variable.name, next)
-                                    setVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                    setFilteredVariables(prev => prev.map(v => v.name === variable.name ? { ...v, flags: next } as Variable : v))
-                                  }}
-                                />
-                                <span>Editable in Manual</span>
-                              </label>
-                            </div>
-
-                            {/* TYPE at bottom */}
-                            <div className="variable-type-line">{variable.type.toUpperCase()}</div>
-                          </div>
-
-                          {/* Right side: Action buttons stacked vertically */}
-                          {/* WHAT: Using centralized button classes from components.css
-                           * WHY: NO inline styles - using global design system */}
-                          <div className="action-buttons-container">
-                            <button 
-                              className="btn btn-small btn-primary action-button" 
-                              onClick={() => setActiveVar(variable)}
-                            >
-                              ✏️ Edit
-                            </button>
-                            {/* WHAT: All variables can be deleted by admin
-                             * WHY: Admin has full CRUD control - no artificial distinction between built-in vs custom */}
-                            <button 
-                              className="btn btn-small btn-danger action-button"
-                              onClick={async () => {
-                                  if (!confirm(`Are you sure you want to delete the variable "${variable.label}"?`)) return;
-                                  try {
-                                    const res = await fetch(`/api/variables-config?name=${encodeURIComponent(variable.name)}`, { method: 'DELETE' });
-                                    const data = await res.json();
-                                    if (data?.success) {
-                                      // Reload variables
-                                      const reload = await fetch('/api/variables-config', { cache: 'no-store' });
-                                      const rdata = await reload.json();
-                                      if (rdata?.success && Array.isArray(rdata.variables)) {
-                                        const vars: Variable[] = rdata.variables.map((v: any) => ({
-                                          name: v.name,
-                                          label: v.label,
-                                          type: v.type || 'count',
-                                          category: v.category,
-                                          description: v.derived && v.formula ? v.formula : v.description || undefined,
-                                          derived: !!v.derived,
-                                          formula: v.formula,
-                                          icon: v.type === 'text' ? '🏷️' : undefined,
-                                          flags: v.flags || { visibleInClicker: false, editableInManual: false },
-                                          clickerOrder: typeof v.clickerOrder === 'number' ? v.clickerOrder : undefined,
-                                          manualOrder: typeof v.manualOrder === 'number' ? v.manualOrder : undefined,
-                                          isCustom: !!v.isCustom,
-                                        }));
-                                        setVariables(vars);
-                                        setFilteredVariables(vars);
-                                      }
-                                    } else {
-                                      alert(data?.error || 'Failed to delete variable');
-                                    }
-                                  } catch (e) {
-                                    console.error('Failed to delete variable', e);
-                                    alert('Failed to delete variable');
-                                  }
-                                }}
-                              >
-                                🗑️ Delete
-                              </button>
-                          </div>
-                        </div>
-                      </ColoredCard>
-                    )
-                  })}
-                </div>
-                {/* Load more within this category if there are more */}
-                {categoryVariables.length > visibleCount && (
-                  <div className="text-center">
-                    <button className="btn btn-small btn-secondary" onClick={() => setVisibleCount(prev => prev + 20)}>
-                      Load 20 more
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Empty State */}
-            {filteredVariables.length === 0 && (
-              <div className="text-center p-12 text-gray-600">
-                <div className="text-5xl mb-4">📊</div>
-                <h3 className="mb-2">
-                  {searchTerm ? 'No variables found' : 'No variables yet'}
-                </h3>
-                <p className="mb-6">
-                  {searchTerm 
-                    ? `No variables match "${searchTerm}"`
-                    : 'Create your first data variable to get started'
-                  }
-                </p>
-                {!searchTerm && (
-                  <button className="btn btn-small btn-primary" onClick={handleCreateVariable}>
-                    ➕ Create First Variable
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Variables list moved to KYC; this page focuses on groups only */}
 
       {/* Reorder Clicker Modal */}
       {reorderOpen && (
@@ -666,13 +507,13 @@ const [createForm, setCreateForm] = useState({
         </div>
       )}
 
-      {/* Create Variable Modal */}
-      {showCreateForm && (
+      {/* Create Variable moved to KYC page */}
+      {false && showCreateForm && (
         <div className="modal-overlay"
              onClick={() => setShowCreateForm(false)}>
           <div className="modal-content max-w-640" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">➕ New Variable</h3>
-            <p className="text-gray-600 mt-1 mb-4">Create a custom variable that persists in stats and can be shown in Clicker/Manual.</p>
+            <p className="text-gray-600 mt-1 mb-4">Create a custom variable on the KYC page.</p>
             <div className="grid gap-3 grid-1fr-1fr">
               <div>
                 <label className="form-label-block">Name (camelCase)</label>
