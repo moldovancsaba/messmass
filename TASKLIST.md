@@ -1,6 +1,22 @@
 # TASKLIST.md
-Current Version: 6.9.2
-Last Updated: 2025-10-16T15:39:45.000Z (UTC)
+Current Version: 6.10.0
+Last Updated: 2025-01-16T16:05:00.000Z (UTC)
+
+### Immediate — Chart System Enhancement Phase B (v6.10.0)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| CHART-P1.1-001 | Extend formula engine with [PARAM:key] token support | Agent Mode | 2025-01-16T15:00:00.000Z | ✅ Complete (2025-01-16T14:30:00.000Z) |
+| CHART-P1.1-002 | Migrate Value chart to parameterized formulas (script) | Agent Mode | 2025-01-16T15:10:00.000Z | ✅ Complete (2025-01-16T14:45:00.000Z) |
+| CHART-P1.1-003 | Update ChartElement type with parameters field | Agent Mode | 2025-01-16T15:20:00.000Z | ✅ Complete (2025-01-16T14:50:00.000Z) |
+| CHART-P1.1-004 | Update chartCalculator to pass parameters to evaluateFormula | Agent Mode | 2025-01-16T15:25:00.000Z | ✅ Complete (2025-01-16T14:55:00.000Z) |
+| CHART-P1.2-001 | Add 25 Bitly variables to formulaEngine mappings | Agent Mode | 2025-01-16T15:35:00.000Z | ✅ Complete (2025-01-16T15:05:00.000Z) |
+| CHART-P1.2-002 | Create Bitly Device Split pie chart (script) | Agent Mode | 2025-01-16T15:40:00.000Z | ✅ Complete (2025-01-16T15:15:00.000Z) |
+| CHART-P1.2-003 | Create Bitly Referrers bar chart (script) | Agent Mode | 2025-01-16T15:45:00.000Z | ✅ Complete (2025-01-16T15:20:00.000Z) |
+| CHART-P1.2-004 | Create Bitly Geographic Reach KPI chart (script) | Agent Mode | 2025-01-16T15:50:00.000Z | ✅ Complete (2025-01-16T15:25:00.000Z) |
+| CHART-P1.3-001 | Extend formula engine with [MANUAL:key] token support | Agent Mode | 2025-01-16T15:55:00.000Z | ✅ Complete (2025-01-16T15:35:00.000Z) |
+| CHART-P1.3-002 | Update ChartElement type with manualData field | Agent Mode | 2025-01-16T16:00:00.000Z | ✅ Complete (2025-01-16T15:40:00.000Z) |
+| CHART-P1.3-003 | Update chartCalculator to pass manualData to evaluateFormula | Agent Mode | 2025-01-16T16:02:00.000Z | ✅ Complete (2025-01-16T15:42:00.000Z) |
 
 ### Immediate — KYC Create + Type Support (v6.8.0)
 

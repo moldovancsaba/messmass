@@ -75,7 +75,20 @@ export function calculateChart(
   const elements = configuration.elements.map(element => {
     try {
       console.log(`Evaluating element: ${element.label} with formula: ${element.formula}`);
-      const value = evaluateFormula(element.formula, stats);
+
+      // WHAT: Extract parameter values from element.parameters to support [PARAM:key] tokens
+      // WHY: Ensures parameterized formulas evaluate using configurable multipliers rather than hardcoded numbers
+      const paramValues: Record<string, number> | undefined = element.parameters
+        ? Object.fromEntries(
+            Object.entries(element.parameters).map(([k, v]) => [k, (v as any)?.value ?? 0])
+          )
+        : undefined;
+
+      // WHAT: Extract manual data for [MANUAL:key] tokens (aggregated analytics)
+      // WHY: Supports hashtag seasonality and partner benchmark charts with pre-computed data
+      const manualValues: Record<string, number> | undefined = (element as any).manualData;
+
+      const value = evaluateFormula(element.formula, stats, paramValues, manualValues);
       console.log(`Result for ${element.label}: ${value}`);
       
       if (value === 'NA') {

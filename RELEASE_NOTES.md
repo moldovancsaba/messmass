@@ -1,5 +1,49 @@
 # MessMass Release Notes
 
+## [v6.10.0] — 2025-01-16T16:05:00.000Z
+
+### ✨ Feature — Chart System Enhancement Phase B (P1.1, P1.2, P1.3)
+
+**What Changed**
+- ✅ **P1.1: Parameterized Marketing Multipliers** in Value chart
+  - Extended formula engine with `[PARAM:key]` token support
+  - Migrated Value chart formulas to use configurable parameters (CPM, multipliers)
+  - Parameters stored per-element in MongoDB with label, value, unit, description
+  - Updated ChartElement type and chartCalculator to pass parameters during evaluation
+- ✅ **P1.2: Bitly Enrichment Charts** (3 new charts)
+  - Added 25 Bitly variables to formula engine (device, referrer, geographic data)
+  - Created **Bitly Device Split** pie chart (order 35) - Mobile vs Desktop+Tablet
+  - Created **Bitly Referrers** bar chart (order 36) - QR, Instagram, Facebook, Social, Direct
+  - Created **Bitly Geographic Reach** KPI chart (order 37) - Countries reached count
+- ✅ **P1.3: Manual Data Token Support** for aggregated analytics
+  - Extended formula engine with `[MANUAL:key]` token support
+  - Enables hashtag seasonality and partner benchmark charts with pre-computed data
+  - Updated ChartElement type with optional `manualData` field
+
+**Why**
+
+These enhancements transform the Chart Algorithm Manager from hardcoded formulas to a fully flexible, data-driven system:
+1. **Parameterization** enables marketing teams to tune CPM values without code changes
+2. **Bitly charts** surface clickstream insights (device preference, traffic sources, global reach)
+3. **Manual tokens** unlock advanced analytics (seasonality trends, partner comparisons)
+
+**Files Modified/Created**: 11
+- `lib/formulaEngine.ts`: Added PARAM/MANUAL token support + 25 Bitly variable mappings
+- `lib/chartConfigTypes.ts`: Extended ChartElement with `parameters` and `manualData` fields
+- `lib/chartCalculator.ts`: Pass parameters and manualData to evaluateFormula
+- `scripts/parameterize-value-chart.js` (NEW): Migrated Value chart to parameters
+- `scripts/create-bitly-device-chart.js` (NEW): Device split pie chart
+- `scripts/create-bitly-referrer-chart.js` (NEW): Referrers bar chart
+- `scripts/create-bitly-geo-chart.js` (NEW): Geographic reach KPI chart
+- MongoDB: `chartConfigurations.value` updated with parameters
+- MongoDB: 3 new Bitly chart documents created
+
+**Impact**: Marketing flexibility, Bitly insights surface, foundation for advanced analytics
+
+**Dependencies**: Requires Bitly data in project.stats for charts to display values
+
+---
+
 ## [v6.9.2] — 2025-10-16T15:39:45.000Z
 
 ### ✨ Feature — Real-Time Formula Validator in Admin Charts

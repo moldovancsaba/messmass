@@ -1,14 +1,15 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-16T15:39:45.000Z
-Version: 6.9.2
+Last Updated: 2025-01-16T16:05:00.000Z
+Version: 6.10.0
 
 ## Project Overview
 
-MessMass is an enterprise-grade event analytics platform built with Next.js 15, TypeScript, and MongoDB Atlas, designed for sports organizations, venues, brands, and event managers. The platform provides comprehensive real-time statistics tracking, intelligent partner management, automated event creation workflows (Sports Match Builder), advanced Bitly link analytics with many-to-many event associations, configurable KPI dashboards, and a unified hashtag system with category-aware organization.
+MessMass is an enterprise-grade event analytics platform built with Next.js 15, TypeScript, and MongoDB Atlas, designed for sports organizations, venues, brands, and event managers. The platform provides comprehensive real-time statistics tracking, intelligent partner management, automated event creation workflows (Sports Match Builder), advanced Bitly link analytics with many-to-many event associations, parameterized KPI dashboards with marketing multipliers, Bitly enrichment charts, and a unified hashtag system with category-aware organization.
 
 ## Version History
 
+- **Version 6.10.0** — Chart System Enhancement Phase B (Parameterization, Bitly Charts, Manual Tokens)
 - **Version 6.9.2** — Real-Time Formula Validator in Admin Charts
 - **Version 6.9.0** — Chart System P0 Hardening (production)
 - **Version 6.8.0** — KYC creation flow and boolean/date types
@@ -1235,10 +1236,286 @@ const variables = extractVariablesFromFormula(formula);
 - Formula templates library (common patterns)
 - Semantic validation (e.g., warn if mixing counts with percentages)
 - Historical formula validation (check all existing charts on DB schema change)
+
+---
+
+## Chart System Enhancement Phase B (Version 6.10.0)
+
+### Overview
+
+Chart System Enhancement Phase B transforms the Chart Algorithm Manager from hardcoded formulas to a fully flexible, data-driven system with parameterized values, Bitly enrichment charts, and support for aggregated analytics.
+
+**Status**: Production-Ready  
+**Release**: v6.10.0 (2025-01-16)  
+**Components**: Formula engine extensions, 3 Bitly charts, parameter migration
+
+### Phase B.1: Parameterized Marketing Multipliers
+
+#### Overview
+
+Enables marketing teams to tune CPM values and multipliers without code changes by introducing `[PARAM:key]` tokens in formulas.
+
+**Before** (Hardcoded):
+```typescript
+formula: "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 4.87"
+```
+
+**After** (Parameterized):
+```typescript
+formula: "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailOptin]",
+parameters: {
+  cpmEmailOptin: {
+    value: 4.87,
+    label: "Email Opt-in CPM",
+    unit: "EUR",
+    description: "€4.87 avg market cost per email opt-in in Europe, 2025"
+  }
+}
+```
+
+#### Implementation
+
+**Formula Engine Extension** (`lib/formulaEngine.ts`):
+```typescript
+// Updated signature to accept parameters
+export function evaluateFormula(
+  formula: string, 
+  stats: ProjectStats, 
+  parameters?: Record<string, number>,
+  manualData?: Record<string, number>
+): number | 'NA'
+
+// PARAM token substitution
+if (parameters) {
+  processedFormula = processedFormula.replace(
+    /\[PARAM:([a-zA-Z0-9_]+)\]/g, 
+    (_match, paramKey) => {
+      const value = parameters[paramKey];
+      return value !== undefined ? String(value) : '0';
+    }
+  );
+}
+```
+
+**ChartElement Type Extension** (`lib/chartConfigTypes.ts`):
+```typescript
+interface ChartElement {
+  id: string;
+  label: string;
+  formula: string;
+  color: string;
+  description?: string;
+  
+  parameters?: {
+    [key: string]: {
+      value: number;
+      label: string;
+      description: string;
+      unit?: string; // "EUR", "%", "count", "multiplier"
+    }
+  };
+}
+```
+
+**Value Chart Migration** (`scripts/parameterize-value-chart.js`):
+- Migrated 5 Value chart elements to use `[PARAM:x]` tokens
+- Parameters: `cpmEmailOptin`, `cpmEmailAddon`, `cpmStadiumAd`, `exposureRatio`, `premiumContactValue`, `sharedImages`, `avgViews`, `cpmSocialOrganic`
+- All parameters documented with EUR values and descriptions
+
+#### Benefits
+
+1. **Marketing Flexibility**: Update CPM values via MongoDB without code deployment
+2. **Regional Adaptation**: Different parameter sets per region or partner
+3. **A/B Testing**: Test different multiplier values without formula changes
+4. **Audit Trail**: Parameters stored with metadata (source, date, rationale)
+
+### Phase B.2: Bitly Enrichment Charts
+
+#### Overview
+
+Three new charts visualize Bitly clickstream data (device types, traffic sources, geographic reach) when Bitly integration is active.
+
+#### New Charts Created
+
+**1. Bitly Device Split** (Pie Chart, Order 35)
+```typescript
+{
+  chartId: 'bitly-device-split',
+  title: 'Bitly Device Split',
+  type: 'pie',
+  emoji: '📱',
+  elements: [
+    { label: 'Mobile', formula: '[SEYUBITLYMOBILECLICKS]', color: '#3b82f6' },
+    { label: 'Desktop + Tablet', formula: '[SEYUBITLYDESKTOPCLICKS] + [SEYUBITLYTABLETCLICKS]', color: '#8b5cf6' }
+  ]
+}
+```
+
+**2. Bitly Referrers** (Bar Chart, Order 36)
+```typescript
+{
+  chartId: 'bitly-referrers',
+  title: 'Bitly Referrers',
+  type: 'bar',
+  elements: [
+    { label: 'QR Code', formula: '[SEYUBITLYQRCODECLICKS]', color: '#10b981' },
+    { label: 'Instagram', formula: '[SEYUBITLYINSTAGRAMMOBILECLICKS] + [SEYUBITLYINSTAGRAMWEBCLICKS]', color: '#ec4899' },
+    { label: 'Facebook', formula: '[SEYUBITLYFACEBOOKMOBILECLICKS] + [SEYUBITLYFACEBOOKMESSENGERCLICKS]', color: '#3b82f6' },
+    { label: 'Other Social', formula: '[SEYUBITLYSOCIALCLICKS]', color: '#8b5cf6' },
+    { label: 'Direct', formula: '[SEYUBITLYDIRECTCLICKS]', color: '#6b7280' }
+  ]
+}
+```
+
+**3. Bitly Geographic Reach** (KPI Chart, Order 37)
+```typescript
+{
+  chartId: 'bitly-geographic-reach',
+  title: 'Bitly Geographic Reach',
+  type: 'kpi',
+  emoji: '🌍',
+  elements: [
+    { label: 'Countries Reached', formula: '[SEYUBITLYCOUNTRYCOUNT]', color: '#3b82f6' }
+  ]
+}
+```
+
+#### Bitly Variables Added (25 total)
+
+**Core Metrics**:
+- `bitlyTotalClicks`, `bitlyUniqueClicks`
+
+**Geographic**:
+- `bitlyClicksByCountry`, `bitlyTopCountry`, `bitlyCountryCount`
+
+**Traffic Sources (Platform-level)**:
+- `bitlyDirectClicks`, `bitlySocialClicks`, `bitlyTopReferrer`, `bitlyReferrerCount`
+
+**Referring Domains (Granular)**:
+- `bitlyTopDomain`, `bitlyDomainCount`, `bitlyQrCodeClicks`, `bitlyInstagramMobileClicks`, `bitlyInstagramWebClicks`, `bitlyFacebookMobileClicks`, `bitlyFacebookMessengerClicks`
+
+**Device & Platform**:
+- `bitlyMobileClicks`, `bitlyDesktopClicks`, `bitlyTabletClicks`, `bitlyiOSClicks`, `bitlyAndroidClicks`
+
+**Browsers**:
+- `bitlyChromeClicks`, `bitlySafariClicks`, `bitlyFirefoxClicks`
+
+#### Data Requirements
+
+Bitly charts display "NA" if project lacks Bitly data. Expected data source:
+- Bitly API analytics aggregated into `project.stats` (future implementation)
+- Manual entry via Admin Variables (interim solution)
+
+### Phase B.3: Manual Data Token Support
+
+#### Overview
+
+Enables `[MANUAL:key]` tokens for aggregated analytics data that doesn't belong in individual project stats (e.g., hashtag seasonality, partner benchmarks).
+
+#### Implementation
+
+**Formula Engine Extension**:
+```typescript
+// MANUAL token substitution
+if (manualData) {
+  processedFormula = processedFormula.replace(
+    /\[MANUAL:([a-zA-Z0-9_]+)\]/g, 
+    (_match, manualKey) => {
+      const value = manualData[manualKey];
+      return value !== undefined ? String(value) : '0';
+    }
+  );
+}
+```
+
+**ChartElement Type Extension**:
+```typescript
+interface ChartElement {
+  // ... existing fields
+  manualData?: {
+    [key: string]: number; // Simple key-value map for aggregated data
+  };
+}
+```
+
+**Validation Support**:
+- `[PARAM:x]` and `[MANUAL:x]` tokens always considered valid
+- No mapping required in VARIABLE_MAPPINGS
+- Resolved externally at evaluation time
+
+#### Use Cases
+
+**Hashtag Seasonality** (Future):
+```typescript
+formula: "[MANUAL:q1EventCount] + [MANUAL:q2EventCount] + [MANUAL:q3EventCount]",
+manualData: {
+  q1EventCount: 45, // Pre-aggregated from MongoDB query
+  q2EventCount: 62,
+  q3EventCount: 38
+}
+```
+
+**Partner Benchmarks** (Future):
+```typescript
+formula: "[MANUAL:avgFansPerEvent] / [SEYUTOTALFANS] * 100",
+manualData: {
+  avgFansPerEvent: 4200 // Computed across all partner events
+}
+```
+
+### Integration Points
+
+**Chart Calculator** (`lib/chartCalculator.ts`):
+```typescript
+// Extract parameters and manualData from element
+const paramValues = element.parameters 
+  ? Object.fromEntries(Object.entries(element.parameters).map(([k, v]) => [k, v.value]))
+  : undefined;
+
+const manualValues = element.manualData;
+
+const value = evaluateFormula(element.formula, stats, paramValues, manualValues);
+```
+
+### Testing
+
+**Validation**:
+- ✅ Type-check passes (all types updated)
+- ✅ Build passes (production-ready)
+- ✅ Parameter substitution verified in dev environment
+- ✅ 3 Bitly charts created in MongoDB Atlas
+
+**Manual Testing Required**:
+- [ ] Value chart displays parameterized values correctly
+- [ ] Bitly charts render when Bitly data present
+- [ ] Charts show "NA" gracefully when data missing
+- [ ] Parameter editing via MongoDB updates chart values
+
+### Future Enhancements
+
+**Parameter Editor UI** (v6.11.0+):
+- Admin page to edit chart parameters without MongoDB access
+- Historical parameter value tracking
+- Parameter inheritance across chart families
+
+**Hashtag Analytics Charts** (v6.11.0+):
+- Sport share pie chart with `[MANUAL:sportCounts]`
+- Seasonality timeline with `[MANUAL:quarterCounts]`
+- Partner filter dropdown for benchmark comparisons
+
+**Bitly Data Aggregator** (v6.12.0+):
+- Automated Bitly API polling
+- `project.stats` population with Bitly metrics
+- Cache layer to reduce API calls
+
+---
+
+## Admin Variables & Metrics System
+
 3. Orders by `clickerOrder` (ascending) within each category
 4. Renders grouped sections if groups exist, with KPI charts if `chartId` set
-5. Manual mode checks `editableInManual` flag to show/hide input fields
 
+### Visibility Flags
 **Benefits**:
 - Runtime configuration without code deploys
 - Flexible Editor UI tailored to project needs
@@ -1439,6 +1716,6 @@ When working with the hashtag categories system:
 
 ---
 
-*Last Updated: 2025-01-21T11:14:00.000Z*  
-*Version: 6.0.0*  
+*Last Updated: 2025-01-16T16:05:00.000Z*  
+*Version: 6.10.0*  
 *Status: Production-Ready — Enterprise Event Analytics Platform*

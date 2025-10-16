@@ -78,7 +78,46 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'SCARF_PRICE': 'scarfPrice',
   'FLAGS_PRICE': 'flagsPrice',
   'CAP_PRICE': 'capPrice',
-  'OTHER_PRICE': 'otherPrice'
+  'OTHER_PRICE': 'otherPrice',
+  
+  // WHAT: Bitly Analytics Variables (links, traffic sources, devices, geography)
+  // WHY: Enable Bitly enrichment charts with clickstream data from Bitly API
+  
+  // Bitly - Core Metrics
+  'BITLY_TOTAL_CLICKS': 'bitlyTotalClicks',
+  'BITLY_UNIQUE_CLICKS': 'bitlyUniqueClicks',
+  
+  // Bitly - Geographic
+  'BITLY_CLICKS_BY_COUNTRY': 'bitlyClicksByCountry',
+  'BITLY_TOP_COUNTRY': 'bitlyTopCountry',
+  'BITLY_COUNTRY_COUNT': 'bitlyCountryCount',
+  
+  // Bitly - Traffic Sources (Platform-level)
+  'BITLY_DIRECT_CLICKS': 'bitlyDirectClicks',
+  'BITLY_SOCIAL_CLICKS': 'bitlySocialClicks',
+  'BITLY_TOP_REFERRER': 'bitlyTopReferrer',
+  'BITLY_REFERRER_COUNT': 'bitlyReferrerCount',
+  
+  // Bitly - Referring Domains (Domain-level granular)
+  'BITLY_TOP_DOMAIN': 'bitlyTopDomain',
+  'BITLY_DOMAIN_COUNT': 'bitlyDomainCount',
+  'BITLY_QR_CODE_CLICKS': 'bitlyQrCodeClicks',
+  'BITLY_INSTAGRAM_MOBILE_CLICKS': 'bitlyInstagramMobileClicks',
+  'BITLY_INSTAGRAM_WEB_CLICKS': 'bitlyInstagramWebClicks',
+  'BITLY_FACEBOOK_MOBILE_CLICKS': 'bitlyFacebookMobileClicks',
+  'BITLY_FACEBOOK_MESSENGER_CLICKS': 'bitlyFacebookMessengerClicks',
+  
+  // Bitly - Device & Platform
+  'BITLY_MOBILE_CLICKS': 'bitlyMobileClicks',
+  'BITLY_DESKTOP_CLICKS': 'bitlyDesktopClicks',
+  'BITLY_TABLET_CLICKS': 'bitlyTabletClicks',
+  'BITLY_IOS_CLICKS': 'bitlyiOSClicks',
+  'BITLY_ANDROID_CLICKS': 'bitlyAndroidClicks',
+  
+  // Bitly - Browsers
+  'BITLY_CHROME_CLICKS': 'bitlyChromeClicks',
+  'BITLY_SAFARI_CLICKS': 'bitlySafariClicks',
+  'BITLY_FIREFOX_CLICKS': 'bitlyFirefoxClicks'
 };
 
 // Build normalized mapping: keys without underscores, values are stats field names
@@ -227,12 +266,12 @@ interface ProjectStats {
 
 /**
  * Extracts all variable names used in a formula
- * Variables are identified by the pattern [VARIABLE_NAME]
+ * Variables are identified by the pattern [VARIABLE_NAME] or [PARAM:key] or [MANUAL:key]
  * @param formula - The formula string to analyze
  * @returns Array of variable names found in the formula
  */
 export function extractVariablesFromFormula(formula: string): string[] {
-  const variableRegex = /\[([A-Z_]+)\]/g;
+  const variableRegex = /\[([A-Z_:]+)\]/g;
   const variables: string[] = [];
   let match;
   
@@ -257,9 +296,14 @@ export function validateFormula(formula: string): FormulaValidationResult {
     // Extract variables from formula
     const usedVariables = extractVariablesFromFormula(formula);
     
-    // Check if all variables are valid
+    // Check if all variables are valid (including PARAM and MANUAL tokens)
     const invalidVariables = usedVariables.filter(
       variable => {
+        // PARAM and MANUAL tokens are always valid (resolved externally)
+        if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) {
+          return false;
+        }
+        
         const normalized = normalizeTokenRaw(variable)
         // If not a known field and not a supported computed alias → invalid
         const field = resolveFieldNameByNormalizedToken(normalized)
@@ -322,13 +366,39 @@ export function validateFormula(formula: string): FormulaValidationResult {
 
 /**
  * Substitutes variables in a formula with their actual values from project stats
+ * Also supports [PARAM:key] and [MANUAL:key] tokens (resolved externally)
  * Replaces [VARIABLE_NAME] with the corresponding numeric value
  * @param formula - The formula string with variables
  * @param stats - Project statistics containing actual values
+ * @param parameters - Optional parameters object for [PARAM:x] token resolution
+ * @param manualData - Optional manual data object for [MANUAL:x] token resolution (aggregated analytics)
  * @returns Formula string with variables replaced by numbers
  */
-function substituteVariables(formula: string, stats: ProjectStats): string {
+function substituteVariables(
+  formula: string, 
+  stats: ProjectStats, 
+  parameters?: Record<string, number>,
+  manualData?: Record<string, number>
+): string {
   let processedFormula = formula;
+
+  // WHAT: Support [PARAM:key] tokens for parameterized values
+  // WHY: Enable configurable marketing multipliers without hardcoding in formulas
+  if (parameters) {
+    processedFormula = processedFormula.replace(/\[PARAM:([a-zA-Z0-9_]+)\]/g, (_match, paramKey) => {
+      const value = parameters[paramKey];
+      return value !== undefined ? String(value) : '0';
+    });
+  }
+
+  // WHAT: Support [MANUAL:key] tokens for manually computed aggregated data
+  // WHY: Enable hashtag analytics charts with aggregated seasonality/partner data
+  if (manualData) {
+    processedFormula = processedFormula.replace(/\[MANUAL:([a-zA-Z0-9_]+)\]/g, (_match, manualKey) => {
+      const value = manualData[manualKey];
+      return value !== undefined ? String(value) : '0';
+    });
+  }
 
   // Single-pass replacement function to support both legacy and SEYU tokens
   processedFormula = processedFormula.replace(/\[([A-Z_]+)\]/g, (_match, rawToken) => {
@@ -484,12 +554,19 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
  * Handles variable substitution, function processing, and safe evaluation
  * @param formula - The formula string to evaluate
  * @param stats - Project statistics for variable values
+ * @param parameters - Optional parameters for [PARAM:x] token resolution
+ * @param manualData - Optional manual data for [MANUAL:x] token resolution (aggregated analytics)
  * @returns Numeric result or 'NA' for errors/invalid results
  */
-export function evaluateFormula(formula: string, stats: ProjectStats): number | 'NA' {
+export function evaluateFormula(
+  formula: string, 
+  stats: ProjectStats, 
+  parameters?: Record<string, number>,
+  manualData?: Record<string, number>
+): number | 'NA' {
   try {
-    // Step 1: Substitute variables with actual values
-    const formulaWithValues = substituteVariables(formula, stats);
+    // Step 1: Substitute variables with actual values (including parameters and manual data)
+    const formulaWithValues = substituteVariables(formula, stats, parameters, manualData);
     
     // Step 2: Process mathematical functions
     const formulaWithFunctions = processMathFunctions(formulaWithValues);

@@ -12,6 +12,23 @@ export interface ChartElement {
   formula: string; // Mathematical formula using variables (e.g., "[FEMALE]", "[INDOOR] + [OUTDOOR]")
   color: string; // Hex color code (e.g., "#ff6b9d")
   description?: string; // Optional description for documentation
+  
+  // WHAT: Optional per-element parameters used by the formula via [PARAM:key] tokens
+  // WHY: Allows marketing multipliers and configurable values to be tuned without hardcoding numbers in formulas
+  parameters?: {
+    [key: string]: {
+      value: number; // Numeric value used during evaluation
+      label: string; // Human-readable name for the parameter
+      description: string; // Context on how/why this parameter is used
+      unit?: string; // Optional unit, e.g., "EUR", "%", "count", "multiplier"
+    }
+  };
+
+  // WHAT: Optional manually computed data used by the formula via [MANUAL:key] tokens
+  // WHY: Enables aggregated analytics (e.g., hashtag seasonality, partner benchmarks) without storing in stats
+  manualData?: {
+    [key: string]: number; // Simple key-value map for aggregated data points
+  };
 }
 
 /**
