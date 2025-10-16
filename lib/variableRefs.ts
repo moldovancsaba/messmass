@@ -41,16 +41,6 @@ const EXPLICIT_SUFFIX_MAP: Record<string, string> = {
   baseballCap: 'MERCHBASEBALLCAP',
   other: 'MERCHOTHER',
 
-  // Visits
-  totalVisit: 'TOTALVISIT',
-  socialVisit: 'SOCIALVISIT',
-  visitShortUrl: 'SHORTURLVISIT',
-  visitQrCode: 'QRCODEVISIT',
-  visitWeb: 'WEBVISIT',
-
-  // eDM / Value Proposition
-  eventValuePropositionVisited: 'PROPOSITIONVISIT',
-  eventValuePropositionPurchases: 'PROPOSITIONPURCHASE',
 }
 
 // Helper: convert camelCase → UPPERCASE with no separators (e.g., visitShortUrl → VISITSHORTURL)

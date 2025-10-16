@@ -50,14 +50,6 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
   { name: 'approvedImages', label: 'Approved Images', type: 'count', category: 'Moderation' },
   { name: 'rejectedImages', label: 'Rejected Images', type: 'count', category: 'Moderation' },
 
-  // Visits & Engagement
-  { name: 'visitQrCode', label: 'QR Code Visits', type: 'count', category: 'Visits' },
-  { name: 'visitShortUrl', label: 'Short URL Visits', type: 'count', category: 'Visits' },
-  { name: 'visitWeb', label: 'Web Visits', type: 'count', category: 'Visits' },
-  { name: 'socialVisit', label: 'Social Visit', type: 'count', category: 'Visits', description: 'Total social platform visits' },
-  { name: 'eventValuePropositionVisited', label: 'Value Prop Visited', type: 'count', category: 'Visits', aliases: ['eDM Visits'] },
-  { name: 'eventValuePropositionPurchases', label: 'Value Prop Purchases', type: 'count', category: 'Visits' },
-
   // Event
   { name: 'eventAttendees', label: 'Event Attendees', type: 'count', category: 'Event' },
   { name: 'eventResultHome', label: 'Event Result Home', type: 'count', category: 'Event' },
@@ -137,15 +129,6 @@ export const DERIVED_VARIABLES: VariableDefinition[] = [
     derived: true,
     formula: 'genX + boomer',
     description: 'Gen X + Boomer'
-  },
-  {
-    name: 'totalVisit',
-    label: 'Total Visit',
-    type: 'count',
-    category: 'Visits',
-    derived: true,
-    formula: 'socialVisit + visitQrCode + visitShortUrl + visitWeb',
-    description: 'Social + QR Code + Short URL + Web'
   },
   {
     name: 'bitlyClickRate',

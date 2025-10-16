@@ -104,24 +104,18 @@ export const AVAILABLE_VARIABLES: AvailableVariable[] = [
 { name: 'BASEBALL_CAP', displayName: 'Baseball Cap Sales', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[SEYUMERCHBASEBALLCAP] * 20' },
 { name: 'OTHER', displayName: 'Other Merchandise', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[SEYUMERCHOTHER] * 10' },
   
-  // Visits & Engagement
-{ name: 'VISIT_QR_CODE', displayName: 'QR Code Visits', category: 'Engagement', description: 'Number of QR code visits', exampleUsage: '[SEYUQRCODEVISIT] + [SEYUSHORTURLVISIT]' },
-{ name: 'VISIT_SHORT_URL', displayName: 'Short URL Visits', category: 'Engagement', description: 'Number of short URL visits', exampleUsage: '[SEYUSHORTURLVISIT] * 2' },
-{ name: 'VISIT_WEB', displayName: 'Web Visits', category: 'Engagement', description: 'Number of web visits', exampleUsage: '[SEYUWEBVISIT] + [SEYUQRCODEVISIT]' },
+  // Social Media Visits
 { name: 'VISIT_FACEBOOK', displayName: 'Facebook Visits', category: 'Social Media', description: 'Number of Facebook visits', exampleUsage: '[SEYUFACEBOOKVISIT] * 1.5' },
 { name: 'VISIT_INSTAGRAM', displayName: 'Instagram Visits', category: 'Social Media', description: 'Number of Instagram visits', exampleUsage: '[SEYUINSTAGRAMVISIT] + [SEYUTIKTOKVISIT]' },
 { name: 'VISIT_YOUTUBE', displayName: 'YouTube Visits', category: 'Social Media', description: 'Number of YouTube visits', exampleUsage: '[SEYUYOUTUBEVISIT] / 2' },
 { name: 'VISIT_TIKTOK', displayName: 'TikTok Visits', category: 'Social Media', description: 'Number of TikTok visits', exampleUsage: '[SEYUTIKTOKVISIT] * 3' },
 { name: 'VISIT_X', displayName: 'X (Twitter) Visits', category: 'Social Media', description: 'Number of X (Twitter) visits', exampleUsage: '[SEYUXVISIT] + [SEYUFACEBOOKVISIT]' },
 { name: 'VISIT_TRUSTPILOT', displayName: 'Trustpilot Visits', category: 'Engagement', description: 'Number of Trustpilot visits', exampleUsage: '[SEYUTRUSTPILOTVISIT] * 10' },
-{ name: 'SOCIAL_VISIT', displayName: 'Social Visit (Total)', category: 'Engagement', description: 'Sum of visits across all social platforms', exampleUsage: '[SEYUSOCIALVISIT] / [SEYUATTENDEES] * 100' },
   
   // Event Metrics
 { name: 'EVENT_ATTENDEES', displayName: 'Event Attendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[SEYUATTENDEES] * 0.1' },
 { name: 'EVENT_RESULT_HOME', displayName: 'Home Team Result', category: 'Event', description: 'Home team result/score', exampleUsage: '[SEYURESULTHOME] - [SEYURESULTVISITOR]' },
 { name: 'EVENT_RESULT_VISITOR', displayName: 'Visitor Team Result', category: 'Event', description: 'Visitor team result/score', exampleUsage: '[SEYURESULTVISITOR] + [SEYURESULTHOME]' },
-{ name: 'EVENT_VALUE_PROPOSITION_VISITED', displayName: 'Value Proposition Visited', category: 'Event', description: 'Number of value proposition page visits', exampleUsage: '[SEYUPROPOSITIONVISIT] * 15' },
-{ name: 'EVENT_VALUE_PROPOSITION_PURCHASES', displayName: 'Value Proposition Purchases', category: 'Event', description: 'Number of value proposition purchases', exampleUsage: '[SEYUPROPOSITIONPURCHASE] / [SEYUPROPOSITIONVISIT]' },
   
   // Merchandise Pricing Variables for Sales Calculations
 { name: 'JERSEY_PRICE', displayName: 'Jersey Unit Price', category: 'Merchandise Pricing', description: 'Price per jersey in EUR', exampleUsage: '[SEYUMERCHJERSEY] * [SEYUJERSEYPRICE]' },

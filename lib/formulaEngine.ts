@@ -54,24 +54,10 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'BASEBALL_CAP': 'baseballCap',
   'OTHER': 'other',
   
-  // Visits & Engagement
-  'VISIT_QR_CODE': 'visitQrCode',
-  'VISIT_SHORT_URL': 'visitShortUrl',
-  'VISIT_WEB': 'visitWeb',
-  'VISIT_FACEBOOK': 'visitFacebook',
-  'VISIT_INSTAGRAM': 'visitInstagram',
-  'VISIT_YOUTUBE': 'visitYoutube',
-  'VISIT_TIKTOK': 'visitTiktok',
-  'VISIT_X': 'visitX',
-  'VISIT_TRUSTPILOT': 'visitTrustpilot',
-  'SOCIAL_VISIT': 'socialVisit', // New aggregated social visit
-  
   // Event Metrics
 'EVENT_ATTENDEES': 'eventAttendees',
   'EVENT_RESULT_HOME': 'eventResultHome',
   'EVENT_RESULT_VISITOR': 'eventResultVisitor',
-  'EVENT_VALUE_PROPOSITION_VISITED': 'eventValuePropositionVisited',
-  'EVENT_VALUE_PROPOSITION_PURCHASES': 'eventValuePropositionPurchases',
   
   // Merchandise Pricing Variables (configurable values for sales calculations)
   'JERSEY_PRICE': 'jerseyPrice',
@@ -143,25 +129,16 @@ const ALIAS_NORMALIZED_KEYS: Record<string, string> = {
   MERCHJERSEY: 'JERSEY',
   MERCHEDFANS: 'MERCHED',
 
-  // Visits (order flipped VISIT → suffix VISIT)
-  QRCODEVISIT: 'VISITQRCODE',
-  SHORTURLVISIT: 'VISITSHORTURL',
-  WEBVISIT: 'VISITWEB',
-  SOCIALVISIT: 'SOCIALVISIT',
-  TOTALVISIT: 'TOTALVISIT', // computed
-
   // Event
   ATTENDEES: 'EVENTATTENDEES',
   RESULTHOME: 'EVENTRESULTHOME',
-  RESULTVISITOR: 'EVENTRESULTVISITOR',
-  PROPOSITIONVISIT: 'EVENTVALUEPROPOSITIONVISITED',
-  PROPOSITIONPURCHASE: 'EVENTVALUEPROPOSITIONPURCHASES',
+  RESULTVISITOR: 'EVENTRESULTVISITOR'
 }
 
 function resolveFieldNameByNormalizedToken(normalizedToken: string): string | undefined {
   // Computed aliases handled separately
   const computedSet = new Set([
-    'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 'REMOTEFANS', 'TOTALVISIT', 'TOTALUNDER40', 'TOTALOVER40'
+    'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 'REMOTEFANS', 'TOTALUNDER40', 'TOTALOVER40'
   ])
   if (computedSet.has(normalizedToken)) return undefined
 
@@ -241,21 +218,10 @@ interface ProjectStats {
   // Optional Success Manager fields
   approvedImages?: number;
   rejectedImages?: number;
-  visitQrCode?: number;
-  visitShortUrl?: number;
-  visitWeb?: number;
-  visitFacebook?: number;
-  visitInstagram?: number;
-  visitYoutube?: number;
-  visitTiktok?: number;
-  visitX?: number;
-  visitTrustpilot?: number;
   eventAttendees?: number;
   eventTicketPurchases?: number;
   eventResultHome?: number;
   eventResultVisitor?: number;
-  eventValuePropositionVisited?: number;
-  eventValuePropositionPurchases?: number;
   // Merchandise pricing variables
   jerseyPrice?: number;
   scarfPrice?: number;
@@ -423,18 +389,6 @@ function substituteVariables(
     const genX = (stats as any).genX || 0
     const boomer = (stats as any).boomer || 0
 
-    const visitQrCode = (stats as any).visitQrCode || 0
-    const visitShortUrl = (stats as any).visitShortUrl || 0
-    const visitWeb = (stats as any).visitWeb || 0
-    const visitFacebook = (stats as any).visitFacebook || 0
-    const visitInstagram = (stats as any).visitInstagram || 0
-    const visitYoutube = (stats as any).visitYoutube || 0
-    const visitTiktok = (stats as any).visitTiktok || 0
-    const visitX = (stats as any).visitX || 0
-    const visitTrustpilot = (stats as any).visitTrustpilot || 0
-
-    const socialVisit = (stats as any).socialVisit ?? (visitFacebook + visitInstagram + visitYoutube + visitTiktok + visitX + visitTrustpilot)
-
     // Computed tokens
     if (normalized === 'TOTALFANS') {
       const remoteFansComputed = (stats as any).remoteFans ?? (indoor + outdoor)
@@ -447,9 +401,6 @@ function substituteVariables(
     }
     if (normalized === 'TOTALIMAGES' || normalized === 'ALLIMAGES') {
       return String(remoteImages + hostessImages + selfies)
-    }
-    if (normalized === 'TOTALVISIT') {
-      return String(socialVisit + visitQrCode + visitShortUrl + visitWeb)
     }
     if (normalized === 'TOTALUNDER40') {
       return String(genAlpha + genYZ)
@@ -638,12 +589,8 @@ export function testFormula(formula: string): { result: number | 'NA'; sampleDat
     genAlpha: 20, genYZ: 100, genX: 80, boomer: 80,
     merched: 40, jersey: 15, scarf: 8, flags: 12, baseballCap: 5, other: 3,
     approvedImages: 45, rejectedImages: 5,
-    visitQrCode: 30, visitShortUrl: 20, visitWeb: 100,
-    visitFacebook: 25, visitInstagram: 40, visitYoutube: 15,
-    visitTiktok: 35, visitX: 10, visitTrustpilot: 5,
     eventAttendees: 1000, eventTicketPurchases: 850,
     eventResultHome: 2, eventResultVisitor: 1,
-    eventValuePropositionVisited: 75, eventValuePropositionPurchases: 12,
     // Merchandise pricing variables (sample prices in EUR)
     jerseyPrice: 85, scarfPrice: 25, flagsPrice: 15, capPrice: 20, otherPrice: 10
   };
