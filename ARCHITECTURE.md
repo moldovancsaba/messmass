@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-16T14:41:45.000Z
-Version: 6.9.0
+Last Updated: 2025-10-16T15:39:45.000Z
+Version: 6.9.2
 
 ## Project Overview
 
@@ -9,6 +9,8 @@ MessMass is an enterprise-grade event analytics platform built with Next.js 15, 
 
 ## Version History
 
+- **Version 6.9.2** — Real-Time Formula Validator in Admin Charts
+- **Version 6.9.0** — Chart System P0 Hardening (production)
 - **Version 6.8.0** — KYC creation flow and boolean/date types
 - **Version 6.7.0** — KYC export and advanced filters (source/tags/flags)
 - **Version 6.6.0** — KYC Variables page and Clicker Manager split
@@ -1046,6 +1048,193 @@ interface VariableGroup {
 **Editor Dashboard Consumption** (`/app/edit/[slug]/page.tsx`):
 1. Fetches `/api/variables-config` on mount
 2. Filters for Clicker: `visibleInClicker === true`
+
+---
+
+## Formula Validation System (Version 6.9.2)
+
+### Overview
+
+The Formula Validation System provides real-time validation for chart formulas in the Admin Charts interface, preventing invalid formulas from entering the system and guiding admins toward consistent token usage.
+
+**Status**: Production-Ready  
+**Components**: FormulaEditor component, validation functions, Validate All feature
+
+### Key Components
+
+#### 1. FormulaEditor Component (`components/FormulaEditor.tsx`)
+- **Role**: Reusable formula input with live validation feedback
+- **Features**:
+  - 300ms debounced validation as user types
+  - Variable picker dropdown with search and category filtering
+  - Real-time error/warning/success status display
+  - Syntax highlighting for variable tokens
+  - Deprecation warnings for non-SEYU tokens
+  - Division-by-zero detection
+  - Click-outside handling for variable picker
+  - Keyboard navigation support
+
+**Usage Example**:
+```typescript
+import FormulaEditor from '@/components/FormulaEditor';
+
+<FormulaEditor
+  formula={element.formula}
+  onChange={(newFormula) => updateElement(index, 'formula', newFormula)}
+  onValidate={(result) => handleValidation(index, result)}
+  placeholder="Enter formula..."
+/>
+```
+
+#### 2. Validation Functions (`lib/formulaEngine.ts`)
+
+**Exported Functions**:
+```typescript
+// Validates formula syntax and variables
+export function validateFormula(formula: string): FormulaValidationResult
+
+// Extracts all variable tokens from formula
+export function extractVariablesFromFormula(formula: string): string[]
+```
+
+**Validation Result Interface**:
+```typescript
+interface FormulaValidationResult {
+  isValid: boolean;
+  error?: string;
+  usedVariables: string[];
+  evaluatedResult?: number | 'NA';
+}
+```
+
+**Validation Rules**:
+- ❌ **Error**: Unknown variables (not in VARIABLE_MAPPINGS or computed set)
+- ❌ **Error**: Unbalanced parentheses
+- ⚠️ **Warning**: Non-SEYU tokens (deprecated format)
+- ⚠️ **Warning**: Division by zero risk (regex: `/\/ *0(?!\d)/`)
+- ✅ **Success**: Valid formula with test evaluation result
+
+#### 3. Validate All Feature (ChartAlgorithmManager)
+
+**Location**: Admin Charts page header  
+**Button**: "✓ Validate All"  
+
+**Functionality**:
+- Validates all formulas across all chart configurations
+- Counts: total formulas, valid, errors, warnings
+- Lists specific error messages by chart and element
+- Displays summary alert with results
+
+**Implementation**:
+```typescript
+const validateAllFormulas = () => {
+  configurations.forEach(config => {
+    config.elements.forEach((element, idx) => {
+      const result = validateFormula(element.formula);
+      // Count errors, warnings, check for deprecated tokens
+    });
+  });
+  // Display summary alert
+};
+```
+
+### Validation Process
+
+**Step 1: Token Extraction**
+```typescript
+const variableRegex = /\[([A-Z_]+)\]/g;
+const variables = extractVariablesFromFormula(formula);
+// Example: "[SEYUFEMALE] + [SEYUMALE]" → ["SEYUFEMALE", "SEYUMALE"]
+```
+
+**Step 2: Variable Validation**
+- Normalize tokens (strip SEYU prefix, remove underscores)
+- Check against VARIABLE_MAPPINGS and computed set
+- Flag unknown variables as errors
+
+**Step 3: Syntax Validation**
+- Check balanced parentheses (track open/close count)
+- Detect unclosed or premature closing parentheses
+
+**Step 4: Deprecation Check**
+- Identify tokens without SEYU prefix (e.g., `[FEMALE]` vs `[SEYUFEMALE]`)
+- Emit warnings to guide migration
+
+**Step 5: Division-by-Zero Check**
+- Regex match: `/\/ *0(?!\d)/` (literal division by zero)
+- Emit warning (formula will evaluate to NA at runtime)
+
+**Step 6: Test Evaluation**
+- Substitute variables with sample values (all = 1)
+- Evaluate formula safely via `Function` constructor
+- Return numeric result or 'NA'
+
+### Variable Picker UI
+
+**Design**: Dropdown overlay with search and category filter
+
+**Features**:
+- **Search**: Live filter by variable name, display name, or description
+- **Category Filter**: Dropdown to filter by Images, Fans, Demographics, etc.
+- **Variable Cards**: Display name, SEYU token, description, example usage
+- **Click to Insert**: Inserts `[TOKEN]` at cursor position
+- **Keyboard Support**: Escape to close, arrow navigation
+
+**Categories Available**:
+- All (no filter)
+- Images
+- Location
+- Demographics
+- Merchandise
+- Moderation
+- Engagement
+- Social Media
+- Event
+- Merchandise Pricing
+
+### Error Messages
+
+**Common Errors**:
+- `"Invalid variables: [INVALIDTOKEN]"` — Unknown variable token
+- `"Unbalanced parentheses: closing parenthesis without opening"` — Syntax error
+- `"Unbalanced parentheses: unclosed opening parenthesis"` — Missing close paren
+
+**Common Warnings**:
+- `"Variable [FEMALE] uses deprecated format. Consider using SEYU-prefixed tokens."` — Migration guidance
+- `"Potential division by zero detected. Formula will return NA if denominator is 0."` — Safety warning
+
+### Integration Points
+
+**ChartAlgorithmManager** (`components/ChartAlgorithmManager.tsx`):
+- Validates formulas on element edit
+- Blocks save if any formula has errors
+- Shows validation status per element
+
+**Future Integration** (planned for parameterization):
+- Support `[PARAM:parameterName]` tokens
+- Support `[MANUAL:key]` tokens for aggregated data
+- Extended validation for new token types
+
+### Performance
+
+**Debouncing**: 300ms delay prevents validation on every keystroke  
+**Caching**: Validation results stored in component state  
+**Efficiency**: Single-pass regex for token extraction
+
+### Accessibility
+
+- ✅ Keyboard navigation (Tab, Enter, Escape)
+- ✅ ARIA labels for validation status
+- ✅ Color + icon + text for error states (WCAG compliant)
+- ✅ Focus management (auto-focus search, return focus after insert)
+
+### Future Enhancements
+
+- Add inline formula autocomplete (as-you-type suggestions)
+- Syntax highlighting with color-coded tokens
+- Formula templates library (common patterns)
+- Semantic validation (e.g., warn if mixing counts with percentages)
+- Historical formula validation (check all existing charts on DB schema change)
 3. Orders by `clickerOrder` (ascending) within each category
 4. Renders grouped sections if groups exist, with KPI charts if `chartId` set
 5. Manual mode checks `editableInManual` flag to show/hide input fields

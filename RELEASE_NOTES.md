@@ -1,5 +1,31 @@
 # MessMass Release Notes
 
+## [v6.9.2] — 2025-10-16T15:39:45.000Z
+
+### ✨ Feature — Real-Time Formula Validator in Admin Charts
+
+**What Changed**
+- ✅ Created FormulaEditor component with live validation (components/FormulaEditor.tsx)
+- ✅ Live error/warning feedback as admins type formulas
+- ✅ Variable picker dropdown with search and category filtering
+- ✅ Deprecation warnings for non-SEYU tokens
+- ✅ Division-by-zero detection with warnings
+- ✅ "Validate All" button in ChartAlgorithmManager to check all chart formulas at once
+- ✅ Export validation functions (validateFormula, extractVariablesFromFormula) from formulaEngine
+
+**Why**
+
+Prevent invalid formulas from entering the chart configuration system. Enable admins to write formulas with immediate feedback, catching errors before save. Deprecation warnings guide migration to SEYU-prefixed tokens for consistency.
+
+**Files Modified/Created**: 3
+- `components/FormulaEditor.tsx` (NEW): 479 lines - live validation UI component
+- `components/ChartAlgorithmManager.tsx`: Added validateAllFormulas function + button
+- `lib/formulaEngine.ts`: Export validation functions for reuse
+
+**Impact**: Safer chart configuration, reduced errors, improved admin UX
+
+---
+
 ## [v6.9.0] — 2025-10-16T14:41:45.000Z
 
 ### 🔧 Chart System — P0 Hardening (Production)

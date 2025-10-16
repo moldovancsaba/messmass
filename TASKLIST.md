@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 6.8.0
-Last Updated: 2025-10-16T14:40:30.000Z (UTC)
+Current Version: 6.9.2
+Last Updated: 2025-10-16T15:39:45.000Z (UTC)
 
 ### Immediate — KYC Create + Type Support (v6.8.0)
 
@@ -9,7 +9,15 @@ Last Updated: 2025-10-16T14:40:30.000Z (UTC)
 | KYC-005 | Add "New Variable" in KYC page | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
 | KYC-006 | Add boolean/date types support | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
 
-### Immediate — Charts P0 Hardening (v6.8.x)
+### Immediate — Formula Validator (v6.9.2)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+|| FORMULA-001 | Create FormulaEditor component with live validation | Agent Mode | 2025-10-16T15:39:45.000Z | ✅ Complete (2025-10-16T15:30:00.000Z) |
+|| FORMULA-002 | Add Validate All button to ChartAlgorithmManager | Agent Mode | 2025-10-16T15:39:45.000Z | ✅ Complete (2025-10-16T15:30:00.000Z) |
+|| FORMULA-003 | Export validation functions from formulaEngine | Agent Mode | 2025-10-16T15:39:45.000Z | ✅ Complete (2025-10-16T15:30:00.000Z) |
+
+### Immediate — Charts P0 Hardening (v6.9.0)
 
 | Task ID | Title | Owner | Expected Delivery | Status |
 |---------|-------|-------|-------------------|--------|

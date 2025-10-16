@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ColoredCard from './ColoredCard';
 import { ChartConfiguration, AVAILABLE_VARIABLES, AvailableVariable } from '@/lib/chartConfigTypes';
-import { validateFormula, testFormula } from '@/lib/formulaEngine';
+import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 
 // Props type for the Chart Algorithm Manager component
@@ -244,6 +244,49 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
     return { error: null, result: test.result };
   };
 
+  // WHAT: Validate all formulas across all chart configurations
+  // WHY: Allow admins to check all charts at once for errors/warnings
+  const validateAllFormulas = () => {
+    let totalFormulas = 0;
+    let validFormulas = 0;
+    let errorCount = 0;
+    let warningCount = 0;
+    const errors: string[] = [];
+
+    configurations.forEach(config => {
+      config.elements.forEach((element, idx) => {
+        totalFormulas++;
+        const result = validateFormula(element.formula);
+        
+        if (result.isValid) {
+          validFormulas++;
+        } else {
+          errorCount++;
+          errors.push(`${config.title} - Element ${idx + 1} (${element.label}): ${result.error}`);
+        }
+        
+        // Check for deprecation warnings
+        const usedVariables = extractVariablesFromFormula(element.formula);
+        usedVariables.forEach(variable => {
+          const normalized = variable.replace(/_/g, '');
+          if (!normalized.startsWith('SEYU')) {
+            warningCount++;
+          }
+        });
+      });
+    });
+
+    const summary = `
+Validation Complete:
+- Total Formulas: ${totalFormulas}
+- Valid: ${validFormulas}
+- Errors: ${errorCount}
+- Warnings: ${warningCount}
+${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas are valid!'}`;
+
+    alert(summary);
+  };
+
 
   if (loading) {
     return (
@@ -259,7 +302,14 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
       <ColoredCard style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
-          <div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button 
+              className="btn btn-small btn-secondary"
+              onClick={() => validateAllFormulas()}
+              title="Validate all chart formulas"
+            >
+              ✓ Validate All
+            </button>
             <button 
               className="btn btn-small btn-primary"
               onClick={() => startEditing()}
