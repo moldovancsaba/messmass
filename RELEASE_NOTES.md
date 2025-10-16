@@ -1,5 +1,26 @@
 # MessMass Release Notes
 
+## [v6.9.0] — 2025-10-16T14:41:45.000Z
+
+### 🔧 Chart System — P0 Hardening (Production)
+
+What Changed
+- ✅ Corrected Engagement chart formulas (engaged, interactive, front-runners, fanaticals, casuals)
+- ✅ Fixed "Remote vs Event" to use remote fans vs stadium fans
+- ✅ Clarified Merchandise bar total label to "Total items" (counts semantics)
+- ✅ Normalized Value Prop Conversion formula token to [SEYUPROPOSITIONVISIT]
+- ✅ Deactivated duplicate/misleading "faces" KPI (kept faces-per-image)
+
+Why
+Bring metrics in line with variable definitions and KYC goals, remove misleading calculations, and prevent misinterpretation in sponsor/partner reporting.
+
+Files/Systems Affected
+- MongoDB Atlas `chartConfigurations` (production) — updated documents
+- Public API `/api/chart-config/public` — reflects changes immediately
+- Documentation — ROADMAP.md, TASKLIST.md, WARP.DEV_AI_CONVERSATION.md updated with ISO timestamps
+
+---
+
 ## [v6.8.0] — 2025-10-16T12:35:00.000Z
 
 ### ✨ Feature — KYC Create Variable + New Types (boolean/date)

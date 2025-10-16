@@ -1,5 +1,17 @@
 # WARP.DEV_AI_CONVERSATION
 
+## 2025-10-16T14:40:30.000Z — Plan & Delivery Log: Charts P0 Hardening (Production)
+- Scope: Apply critical fixes to production chart configurations via MongoDB Atlas (public API-backed).
+- Actions:
+  - Engagement: corrected 5 element formulas (engaged, interactive, front-runners, fanaticals, casuals)
+  - Remote vs Event: switched to remote fans vs stadium fans
+  - Merchandise: total label clarified to "Total items" (counts semantics)
+  - VP Conversion: token normalized to [SEYUPROPOSITIONVISIT]
+  - Faces KPI: deactivated duplicate/misleading chart (keep faces-per-image)
+- Validation: Verified via https://www.messmass.com/api/chart-config/public (34 active charts; updated formulas present)
+- Next: Parameterize marketing multipliers; add Bitly device/referrer/geo charts; hashtag seasonality; SportsDB mapping
+- Status: Complete
+
 ## 2025-10-12T19:20:30.000Z — Plan & Delivery Log: v5.50.0 — Admin Layout & Navigation System Documentation
 - **Context**: User requested documentation and review of existing features: collapsible sidebar, notifications, and menu system. Upon investigation, all features are already fully implemented (Sidebar v5.48.0+, NotificationPanel, AdminLayout, SidebarContext). The notification system is well-documented (MULTI_USER_NOTIFICATIONS.md), but the admin layout/navigation system lacks dedicated documentation.
 - **Scope**: Document and review the admin layout system without code changes (unless bugs are found).

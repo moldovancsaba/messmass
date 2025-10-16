@@ -1,7 +1,7 @@
 # ROADMAP.md
 
 Current Version: 6.8.0
-Last Updated: 2025-10-16T12:35:00.000Z (UTC)
+Last Updated: 2025-10-16T14:40:30.000Z (UTC)
 
 ---
 
@@ -27,6 +27,20 @@ Last Updated: 2025-10-16T12:35:00.000Z (UTC)
 ---
 
 ## 🔧 Operational Tasks
+
+### Chart System P0 Hardening (Q4 2025)
+Priority: Critical
+Dependencies: chartConfigurations in MongoDB Atlas
+- Action: Correct Engagement chart formulas (engaged, interactive, front-runners, fanaticals, casuals) with div/zero guards
+- Action: Fix "Remote vs Event" to use remote fans vs stadium fans
+- Action: Update "Merchandise" total label to avoid revenue implication (counts only)
+- Action: Correct VP Conversion formula token to [SEYUPROPOSITIONVISIT]
+- Action: Deactivate duplicate/misleading KPI (faces) — keep faces-per-image
+Acceptance:
+- Public API returns updated formulas and labels; faces KPI inactive
+- Calculations align with variable registry and KYC goals
+Logged at: 2025-10-16T14:40:30.000Z
+Author: Agent Mode
 
 ### Bitly Search Enhancements (Q2 2026)
 **Priority**: Medium

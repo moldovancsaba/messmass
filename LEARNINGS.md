@@ -1,5 +1,23 @@
 # MessMass Development Learnings
 
+## 2025-10-16T14:41:45.000Z — Chart System P0 Hardening (Formulas/Clarity/Governance)
+
+What: Corrected critical chart formulas and semantics in production via MongoDB Atlas; ensured alignment with KYC goals and variable definitions.
+
+Why: Prevent misleading insights and ensure reliable sponsor/partner reporting (engagement %, merch penetration, funnels).
+
+Decisions:
+- Engagement chart redefined to proper % metrics (fans/attendees, interactions per image, merch %, flags+scarf %, casuals %)
+- Remote vs Event uses fans (remote vs stadium) — no images in this split
+- Merchandise bar clarified as counts; revenue to be separate and parameterized
+- VP conversion normalized to [SEYUPROPOSITIONPURCHASE] / [SEYUPROPOSITIONVISIT] * 100
+- Deactivated duplicate/misleading “faces” KPI; kept faces-per-image KPI
+
+Outcome:
+- Public API reflects corrected configurations (34 active charts)
+- Roadmap/Tasklist updated; release notes v6.9.0 recorded
+- Foundation set for P1: parameterized multipliers, Bitly device/referrer/geo charts, hashtag seasonality, SportsDB enrichment
+
 ## 2025-10-16T07:52:00.000Z — In-Page Help for Analytics Insights (Frontend / UX)
 
 What: Added collapsible help section to the Analytics Insights page explaining how to use filters, insight types, severity levels, and action prioritization.

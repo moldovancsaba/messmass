@@ -1,6 +1,6 @@
 # TASKLIST.md
 Current Version: 6.8.0
-Last Updated: 2025-10-16T12:35:00.000Z (UTC)
+Last Updated: 2025-10-16T14:40:30.000Z (UTC)
 
 ### Immediate — KYC Create + Type Support (v6.8.0)
 
@@ -8,6 +8,16 @@ Last Updated: 2025-10-16T12:35:00.000Z (UTC)
 |---------|-------|-------|-------------------|--------|
 | KYC-005 | Add "New Variable" in KYC page | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
 | KYC-006 | Add boolean/date types support | Agent Mode | 2025-10-16T12:40:00.000Z | ✅ Complete (2025-10-16T12:35:00.000Z) |
+
+### Immediate — Charts P0 Hardening (v6.8.x)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| CHART-P0-001 | Fix Engagement formulas (5 elements) | Agent Mode | 2025-10-16T14:40:30.000Z | ✅ Complete (2025-10-16T14:40:30.000Z) |
+| CHART-P0-002 | Remote vs Event → remote fans vs stadium | Agent Mode | 2025-10-16T14:40:30.000Z | ✅ Complete (2025-10-16T14:40:30.000Z) |
+| CHART-P0-003 | Merchandise total label → "Total items" | Agent Mode | 2025-10-16T14:40:30.000Z | ✅ Complete (2025-10-16T14:40:30.000Z) |
+| CHART-P0-004 | VP Conversion formula token fix | Agent Mode | 2025-10-16T14:40:30.000Z | ✅ Complete (2025-10-16T14:40:30.000Z) |
+| CHART-P0-005 | Deactivate duplicate KPI: faces | Agent Mode | 2025-10-16T14:40:30.000Z | ✅ Complete (2025-10-16T14:40:30.000Z) |
 
 ### Immediate — KYC Export & Filters (v6.7.0)
 
