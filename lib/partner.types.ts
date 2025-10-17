@@ -34,9 +34,13 @@ export interface Partner {
     founded?: string;          // Year founded (e.g., "1899")
     country?: string;          // Country (e.g., "Spain")
     website?: string;          // Official website URL
-    badge?: string;            // Team badge/logo URL
+    badge?: string;            // Team badge/logo URL from TheSportsDB
     lastSynced?: string;       // ISO 8601 timestamp of last sync
   };
+  
+  // WHAT: Partner logo hosted on ImgBB
+  // WHY: Permanent CDN-hosted logo for display in UI (uploaded from sportsDb.badge)
+  logoUrl?: string;
   
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
@@ -53,6 +57,7 @@ export interface CreatePartnerInput {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[]; // String IDs from client
+  logoUrl?: string;
   sportsDb?: {
     teamId?: string;
     leagueId?: string;
@@ -79,6 +84,7 @@ export interface UpdatePartnerInput {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[];
+  logoUrl?: string;
   sportsDb?: {
     teamId?: string;
     leagueId?: string;

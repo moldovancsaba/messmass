@@ -74,6 +74,7 @@ export default function PartnersAdminPage() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
+    logoUrl: undefined as string | undefined,
     sportsDb: undefined as any,
   });
   
@@ -361,7 +362,34 @@ export default function PartnersAdminPage() {
         lastSynced: new Date().toISOString(),
       };
 
-      // WHAT: Update partner with SportsDB data via PUT /api/partners
+      // WHAT: Upload badge to ImgBB for permanent hosting
+      // WHY: Display logo in UI without depending on TheSportsDB URLs
+      let logoUrl: string | undefined;
+      if (team.strBadge) {
+        try {
+          const imgbbRes = await fetch('/api/partners/upload-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              badgeUrl: team.strBadge,
+              partnerName: editingPartner.name,
+            }),
+          });
+          
+          const imgbbData = await imgbbRes.json();
+          if (imgbbData.success && imgbbData.logoUrl) {
+            logoUrl = imgbbData.logoUrl;
+            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
+          } else {
+            console.warn('⚠️ Logo upload failed, continuing without logo');
+          }
+        } catch (logoErr) {
+          console.error('❌ Logo upload error:', logoErr);
+          // Continue without logo - non-blocking error
+        }
+      }
+
+      // WHAT: Update partner with SportsDB data and logo via PUT /api/partners
       // WHY: Persist enrichment data to MongoDB for chart system
       const updateRes = await fetch('/api/partners', {
         method: 'PUT',
@@ -369,6 +397,7 @@ export default function PartnersAdminPage() {
         body: JSON.stringify({
           partnerId: editingPartner._id,
           sportsDb: sportsDbData,
+          logoUrl: logoUrl, // Add ImgBB logo URL
         }),
       });
 
@@ -380,6 +409,7 @@ export default function PartnersAdminPage() {
         setEditPartnerData(prev => ({
           ...prev,
           sportsDb: sportsDbData,
+          logoUrl: logoUrl, // Update logo URL in local state
         }));
         // WHAT: Clear search results after successful link
         setSportsDbSearch('');
@@ -431,12 +461,36 @@ export default function PartnersAdminPage() {
         lastSynced: new Date().toISOString(),
       };
 
+      // WHAT: Upload badge to ImgBB during re-sync
+      // WHY: Update logo if badge URL changed
+      let logoUrl: string | undefined;
+      if (team.strBadge) {
+        try {
+          const imgbbRes = await fetch('/api/partners/upload-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              badgeUrl: team.strBadge,
+              partnerName: editingPartner.name,
+            }),
+          });
+          
+          const imgbbData = await imgbbRes.json();
+          if (imgbbData.success && imgbbData.logoUrl) {
+            logoUrl = imgbbData.logoUrl;
+          }
+        } catch (logoErr) {
+          console.error('Logo upload error during re-sync:', logoErr);
+        }
+      }
+
       const updateRes = await fetch('/api/partners', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           partnerId: editingPartner._id,
           sportsDb: sportsDbData,
+          logoUrl: logoUrl, // Update logo URL
         }),
       });
 
@@ -447,6 +501,7 @@ export default function PartnersAdminPage() {
         setEditPartnerData(prev => ({
           ...prev,
           sportsDb: sportsDbData,
+          logoUrl: logoUrl, // Update logo URL in local state
         }));
         loadData();
       } else {
@@ -471,6 +526,7 @@ export default function PartnersAdminPage() {
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
       bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
+      logoUrl: partner.logoUrl,
       sportsDb: partner.sportsDb,
     });
     // WHAT: Clear SportsDB search state when opening edit form
@@ -634,10 +690,11 @@ export default function PartnersAdminPage() {
               <thead>
                 <tr>
                   <th style={{ width: '5%' }}>Icon</th>
+                  <th style={{ width: '5%' }}>Logo</th>
                   <th 
                     onClick={() => handleSort('name')} 
                     className="sortable-th" 
-                    style={{ width: '20%' }}
+                    style={{ width: '15%' }}
                   >
                     Name
                     {sortField === 'name' && (
@@ -667,6 +724,25 @@ export default function PartnersAdminPage() {
                 {partners.map(partner => (
                   <tr key={partner._id}>
                     <td style={{ fontSize: '2rem', textAlign: 'center' }}>{partner.emoji}</td>
+                    <td style={{ textAlign: 'center', padding: '8px' }}>
+                      {/* WHAT: Display partner logo from ImgBB */}
+                      {/* WHY: Show team badge for visual identification */}
+                      {partner.logoUrl ? (
+                        <img
+                          src={partner.logoUrl}
+                          alt={`${partner.name} logo`}
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            objectFit: 'contain',
+                            borderRadius: '4px',
+                          }}
+                          title={`${partner.name} logo`}
+                        />
+                      ) : (
+                        <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>—</span>
+                      )}
+                    </td>
                     <td className="font-medium">{partner.name}</td>
                     <td>
                       {/* WHAT: Display hashtags as bubbles */}
