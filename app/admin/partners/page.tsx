@@ -342,24 +342,33 @@ export default function PartnersAdminPage() {
       const data = await res.json();
 
       if (data.success && data.results) {
-        // WHAT: Apply fuzzy filtering on client side
-        // WHY: Be more forgiving with typos, show close matches
+        // WHAT: Show all API results without client-side filtering
+        // WHY: TheSportsDB API search is already good, filtering removes valid results
+        // EXAMPLE: "zagreb" finds "Dinamo Zagreb", "Cedevita Zagreb", etc.
         const searchLower = sportsDbSearch.toLowerCase();
-        const filtered = data.results.filter((team: any) => {
-          const similarity = stringSimilarity(searchLower, team.strTeam);
-          // Show if similarity > 0.4 (forgiving threshold)
-          return similarity > 0.4;
+        
+        // WHAT: Sort by relevance (best matches first)
+        // WHY: Teams with search term at start appear first
+        const sorted = [...data.results].sort((a: any, b: any) => {
+          const nameA = a.strTeam.toLowerCase();
+          const nameB = b.strTeam.toLowerCase();
+          
+          // Exact match first
+          if (nameA === searchLower) return -1;
+          if (nameB === searchLower) return 1;
+          
+          // Starts with search term
+          const startsA = nameA.startsWith(searchLower);
+          const startsB = nameB.startsWith(searchLower);
+          if (startsA && !startsB) return -1;
+          if (startsB && !startsA) return 1;
+          
+          // Contains search term (all results should match this)
+          return 0;
         });
         
-        // Sort by similarity (best matches first)
-        filtered.sort((a: any, b: any) => {
-          const simA = stringSimilarity(searchLower, a.strTeam);
-          const simB = stringSimilarity(searchLower, b.strTeam);
-          return simB - simA;
-        });
-        
-        console.log(`🔍 Fuzzy search: ${data.results.length} total, ${filtered.length} after filtering`);
-        setSportsDbResults(filtered);
+        console.log(`🔍 Search results: ${data.results.length} teams found for "${sportsDbSearch}"`);
+        setSportsDbResults(sorted);
       } else {
         setError(data.error || 'Failed to search TheSportsDB');
         setSportsDbResults([]);
