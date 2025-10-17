@@ -1,0 +1,48 @@
+{
+  "timestamp": "2025-10-16T17:14:41.904Z",
+  "fixes": [
+    {
+      "id": "P0-001",
+      "name": "Engagement Chart Formulas",
+      "status": "FAIL",
+      "details": [
+        "❌ Chart not found"
+      ]
+    },
+    {
+      "id": "P0-002",
+      "name": "Remote vs Event (Fans)",
+      "status": "PASS",
+      "details": [
+        "✅ event: [SEYUSTADIUMFANS]",
+        "✅ remote: [SEYUREMOTEFANS]"
+      ]
+    },
+    {
+      "id": "P0-003",
+      "name": "Merchandise Total Label",
+      "status": "PASS",
+      "details": [
+        "✅ Total Label: \"Total items\""
+      ]
+    },
+    {
+      "id": "P0-004",
+      "name": "VP Conversion Formula",
+      "status": "FAIL",
+      "details": [
+        "❌ Chart not found"
+      ]
+    },
+    {
+      "id": "P0-005",
+      "name": "Faces KPI Deactivated",
+      "status": "PASS",
+      "details": [
+        "✅ isActive: false"
+      ]
+    }
+  ],
+  "passed": 3,
+  "failed": 2
+}

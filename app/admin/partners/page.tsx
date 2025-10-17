@@ -74,7 +74,15 @@ export default function PartnersAdminPage() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
+    sportsDb: undefined as any,
   });
+  
+  // WHAT: SportsDB search state
+  // WHY: Track team search and linking status
+  const [sportsDbSearch, setSportsDbSearch] = useState('');
+  const [sportsDbResults, setSportsDbResults] = useState<any[]>([]);
+  const [sportsDbSearching, setSportsDbSearching] = useState(false);
+  const [sportsDbLinking, setSportsDbLinking] = useState(false);
 
   // WHAT: Debounce search input (300ms delay)
   // WHY: Reduce API calls while user types
@@ -279,8 +287,181 @@ export default function PartnersAdminPage() {
     }
   }
 
+  // WHAT: Search TheSportsDB for teams by name
+  // WHY: Allow admin to find and link sports organizations to partners
+  async function searchSportsDbTeams() {
+    if (!sportsDbSearch.trim()) return;
+
+    try {
+      setSportsDbSearching(true);
+      const params = new URLSearchParams();
+      params.set('type', 'team');
+      params.set('query', sportsDbSearch);
+
+      const res = await fetch(`/api/sports-db/search?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success && data.results) {
+        setSportsDbResults(data.results);
+      } else {
+        setError(data.error || 'Failed to search TheSportsDB');
+        setSportsDbResults([]);
+      }
+    } catch (err) {
+      setError('Network error while searching TheSportsDB');
+      console.error('SportsDB search error:', err);
+      setSportsDbResults([]);
+    } finally {
+      setSportsDbSearching(false);
+    }
+  }
+
+  // WHAT: Link partner to TheSportsDB team and fetch enriched data
+  // WHY: Store stadium capacity, league info, badges for chart benchmarking
+  async function linkToSportsDbTeam(teamId: string) {
+    if (!editingPartner) return;
+
+    // WHAT: Confirm replacement if partner already has SportsDB data
+    // WHY: Prevent accidental overwrites of existing links
+    if (editPartnerData.sportsDb?.teamId) {
+      if (!confirm('This partner is already linked to a team. Replace the existing link?')) {
+        return;
+      }
+    }
+
+    try {
+      setSportsDbLinking(true);
+      setError('');
+
+      // WHAT: Fetch full team details from TheSportsDB API
+      // WHY: Need complete metadata (capacity, league, badge, etc.)
+      const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
+      const lookupData = await lookupRes.json();
+
+      if (!lookupData.success || !lookupData.team) {
+        setError('Failed to fetch team details from TheSportsDB');
+        return;
+      }
+
+      const team = lookupData.team;
+
+      // WHAT: Build SportsDB enrichment object
+      // WHY: Store all relevant metadata for future chart calculations
+      const sportsDbData = {
+        teamId: team.idTeam,
+        leagueId: team.idLeague,
+        venueId: team.idVenue,
+        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
+        venueName: team.strStadium,
+        leagueName: team.strLeague,
+        founded: team.intFormedYear,
+        country: team.strCountry,
+        website: team.strWebsite,
+        badge: team.strBadge,
+        lastSynced: new Date().toISOString(),
+      };
+
+      // WHAT: Update partner with SportsDB data via PUT /api/partners
+      // WHY: Persist enrichment data to MongoDB for chart system
+      const updateRes = await fetch('/api/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId: editingPartner._id,
+          sportsDb: sportsDbData,
+        }),
+      });
+
+      const updateData = await updateRes.json();
+
+      if (updateData.success) {
+        setSuccessMessage(`✓ Successfully linked to ${team.strTeam}`);
+        // WHAT: Update local state to show enriched data immediately
+        setEditPartnerData(prev => ({
+          ...prev,
+          sportsDb: sportsDbData,
+        }));
+        // WHAT: Clear search results after successful link
+        setSportsDbSearch('');
+        setSportsDbResults([]);
+        // WHAT: Reload partners list to reflect changes
+        loadData();
+      } else {
+        setError(updateData.error || 'Failed to save SportsDB link');
+      }
+    } catch (err) {
+      setError('Network error while linking to TheSportsDB');
+      console.error('SportsDB link error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  }
+
+  // WHAT: Re-sync existing SportsDB data from API
+  // WHY: Update capacity, league info if changed on TheSportsDB
+  async function resyncSportsDbData() {
+    if (!editingPartner || !editPartnerData.sportsDb?.teamId) return;
+
+    try {
+      setSportsDbLinking(true);
+      setError('');
+
+      const teamId = editPartnerData.sportsDb.teamId;
+      const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
+      const lookupData = await lookupRes.json();
+
+      if (!lookupData.success || !lookupData.team) {
+        setError('Failed to re-sync team details from TheSportsDB');
+        return;
+      }
+
+      const team = lookupData.team;
+
+      const sportsDbData = {
+        teamId: team.idTeam,
+        leagueId: team.idLeague,
+        venueId: team.idVenue,
+        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
+        venueName: team.strStadium,
+        leagueName: team.strLeague,
+        founded: team.intFormedYear,
+        country: team.strCountry,
+        website: team.strWebsite,
+        badge: team.strBadge,
+        lastSynced: new Date().toISOString(),
+      };
+
+      const updateRes = await fetch('/api/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId: editingPartner._id,
+          sportsDb: sportsDbData,
+        }),
+      });
+
+      const updateData = await updateRes.json();
+
+      if (updateData.success) {
+        setSuccessMessage(`✓ Successfully re-synced data from TheSportsDB`);
+        setEditPartnerData(prev => ({
+          ...prev,
+          sportsDb: sportsDbData,
+        }));
+        loadData();
+      } else {
+        setError(updateData.error || 'Failed to re-sync SportsDB data');
+      }
+    } catch (err) {
+      setError('Network error while re-syncing TheSportsDB data');
+      console.error('SportsDB re-sync error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  }
+
   // WHAT: Open edit modal with partner data
-  // WHY: Populate form with existing partner values
+  // WHY: Populate form with existing partner values including SportsDB enrichment
   function openEditForm(partner: PartnerResponse) {
     loadBitlyLinks(); // Lazy load links when opening form
     setEditingPartner(partner);
@@ -290,7 +471,12 @@ export default function PartnersAdminPage() {
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
       bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
+      sportsDb: partner.sportsDb,
     });
+    // WHAT: Clear SportsDB search state when opening edit form
+    // WHY: Start fresh for each edit session
+    setSportsDbSearch('');
+    setSportsDbResults([]);
     setShowEditForm(true);
   }
 
@@ -734,6 +920,177 @@ export default function PartnersAdminPage() {
                   />
                   <p className="text-xs text-gray-600 mt-1">
                     Search by bitlink or title, click to add. Remove with ✕ button.
+                  </p>
+                </div>
+
+                {/* WHAT: SportsDB Team Linking Section */}
+                {/* WHY: Allow enriching partner with sports club metadata (capacity, league, badge) */}
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Link to TheSportsDB (optional)</label>
+                  
+                  {/* WHAT: Display existing SportsDB link if present */}
+                  {editPartnerData.sportsDb && (
+                    <div style={{
+                      padding: '12px',
+                      backgroundColor: '#f0fdf4',
+                      border: '1px solid #86efac',
+                      borderRadius: '8px',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                        {/* WHAT: Display team badge if available */}
+                        {editPartnerData.sportsDb.badge && (
+                          <img
+                            src={editPartnerData.sportsDb.badge}
+                            alt="Team badge"
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              objectFit: 'contain',
+                              flexShrink: 0
+                            }}
+                          />
+                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, color: '#16a34a', marginBottom: '4px' }}>
+                            ✓ Linked to TheSportsDB
+                          </div>
+                          {editPartnerData.sportsDb.leagueName && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                              League: {editPartnerData.sportsDb.leagueName}
+                            </div>
+                          )}
+                          {editPartnerData.sportsDb.venueName && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                              Venue: {editPartnerData.sportsDb.venueName}
+                              {editPartnerData.sportsDb.venueCapacity && (
+                                <span> ({editPartnerData.sportsDb.venueCapacity.toLocaleString()} capacity)</span>
+                              )}
+                            </div>
+                          )}
+                          {editPartnerData.sportsDb.country && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                              Country: {editPartnerData.sportsDb.country}
+                            </div>
+                          )}
+                          {editPartnerData.sportsDb.founded && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                              Founded: {editPartnerData.sportsDb.founded}
+                            </div>
+                          )}
+                          {editPartnerData.sportsDb.lastSynced && (
+                            <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '4px' }}>
+                              Last synced: {new Date(editPartnerData.sportsDb.lastSynced).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* WHAT: Re-sync button to update SportsDB data */}
+                      {/* WHY: Capacity and league info may change over time */}
+                      <button
+                        type="button"
+                        onClick={resyncSportsDbData}
+                        disabled={sportsDbLinking}
+                        className="btn btn-small btn-secondary"
+                        style={{ marginTop: '12px', width: '100%' }}
+                      >
+                        {sportsDbLinking ? '🔄 Syncing...' : '🔄 Re-sync from TheSportsDB'}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* WHAT: Search interface for finding teams */}
+                  {/* WHY: Allow admin to search TheSportsDB by team name */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={sportsDbSearch}
+                      onChange={(e) => setSportsDbSearch(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          searchSportsDbTeams();
+                        }
+                      }}
+                      placeholder="Search TheSportsDB by team name..."
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={searchSportsDbTeams}
+                      disabled={sportsDbSearching || !sportsDbSearch.trim()}
+                      className="btn btn-small btn-primary"
+                    >
+                      {sportsDbSearching ? '🔍 Searching...' : '🔍 Search'}
+                    </button>
+                  </div>
+
+                  {/* WHAT: Display search results with link buttons */}
+                  {/* WHY: Show matching teams with relevant metadata for admin selection */}
+                  {sportsDbResults.length > 0 && (
+                    <div style={{
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px'
+                    }}>
+                      {sportsDbResults.map((team) => (
+                        <div
+                          key={team.idTeam}
+                          style={{
+                            padding: '12px',
+                            borderBottom: '1px solid #e5e7eb',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                          }}
+                        >
+                          {/* WHAT: Team badge thumbnail */}
+                          {team.strBadge && (
+                            <img
+                              src={team.strBadge}
+                              alt={team.strTeam}
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'contain',
+                                flexShrink: 0
+                              }}
+                            />
+                          )}
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 600, marginBottom: '2px' }}>
+                              {team.strTeam}
+                            </div>
+                            {team.strLeague && (
+                              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                {team.strLeague}
+                              </div>
+                            )}
+                            {team.intStadiumCapacity && (
+                              <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
+                                Capacity: {parseInt(team.intStadiumCapacity, 10).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                          {/* WHAT: Link button to connect partner with this team */}
+                          {/* WHY: Trigger full team lookup and data enrichment */}
+                          <button
+                            type="button"
+                            onClick={() => linkToSportsDbTeam(team.idTeam)}
+                            disabled={sportsDbLinking}
+                            className="btn btn-small btn-primary"
+                          >
+                            {sportsDbLinking ? '🔗 Linking...' : '🔗 Link'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <p className="text-xs text-gray-600 mt-1">
+                    Search for sports teams to enrich partner data with stadium capacity, league info, and badges.
                   </p>
                 </div>
               </div>

@@ -1,0 +1,1004 @@
+{
+  "timestamp": "2025-10-16T17:15:27.771Z",
+  "source": "MongoDB Atlas messmass.chartConfigurations",
+  "totalCharts": 30,
+  "charts": [
+    {
+      "_id": "68a302a4b484e59e38aee79c",
+      "chartId": "merchandise",
+      "title": "Merchandise",
+      "type": "bar",
+      "order": 1,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "Total items",
+      "elements": [
+        {
+          "id": "jersey",
+          "label": "Jersey",
+          "formula": "[SEYUMERCHJERSEY]",
+          "color": "#1b1f3c",
+          "description": "Jersey merchandise"
+        },
+        {
+          "id": "scarf",
+          "label": "Scarf",
+          "formula": "[SEYUMERCHSCARF]",
+          "color": "#00a37c",
+          "description": "Scarf merchandise"
+        },
+        {
+          "id": "flags",
+          "label": "Flags",
+          "formula": "[SEYUFLAGS]",
+          "color": "#2d5780",
+          "description": "Flag merchandise"
+        },
+        {
+          "id": "baseball-cap",
+          "label": "Baseball Cap",
+          "formula": "[SEYUBASEBALLCAP]",
+          "color": "#b82786",
+          "description": "Baseball cap merchandise"
+        },
+        {
+          "id": "other",
+          "label": "Other",
+          "formula": "[SEYUOTHER]",
+          "color": "#0086c7",
+          "description": "Other merchandise"
+        }
+      ],
+      "createdAt": "2025-08-18T10:38:28.349Z",
+      "updatedAt": "2025-10-16T14:38:47.285Z",
+      "createdBy": "admin",
+      "lastModifiedBy": "admin"
+    },
+    {
+      "_id": "68a302a4b484e59e38aee798",
+      "chartId": "gender-distribution",
+      "title": "Gender",
+      "type": "pie",
+      "order": 4,
+      "isActive": true,
+      "emoji": "👥",
+      "elements": [
+        {
+          "id": "female",
+          "label": "Female",
+          "formula": "[SEYUFEMALE]",
+          "color": "#b82786",
+          "description": "Female attendees"
+        },
+        {
+          "id": "male",
+          "label": "Male",
+          "formula": "[SEYUMALE]",
+          "color": "#00a37c",
+          "description": "Male attendees"
+        }
+      ],
+      "createdAt": "2025-08-18T10:38:28.349Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "admin",
+      "lastModifiedBy": "admin"
+    },
+    {
+      "_id": "68a302a4b484e59e38aee799",
+      "chartId": "fans-location",
+      "title": "Location",
+      "type": "pie",
+      "order": 6,
+      "isActive": true,
+      "emoji": "📍",
+      "elements": [
+        {
+          "id": "remote",
+          "label": "Remote",
+          "formula": "[SEYUREMOTEFANS]",
+          "color": "#2d5780",
+          "description": "Remote fans (indoor + outdoor)"
+        },
+        {
+          "id": "event",
+          "label": "Event",
+          "formula": "[SEYUSTADIUMFANS]",
+          "color": "#b82786",
+          "description": "Stadium fans"
+        }
+      ],
+      "createdAt": "2025-08-18T10:38:28.349Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "admin",
+      "lastModifiedBy": "admin"
+    },
+    {
+      "_id": "68a302a4b484e59e38aee79a",
+      "chartId": "age-groups",
+      "title": "Age",
+      "type": "pie",
+      "order": 5,
+      "isActive": true,
+      "emoji": "👥",
+      "elements": [
+        {
+          "id": "under-40",
+          "label": "Under 40",
+          "formula": "[SEYUGENALPHA] + [SEYUGENYZ]",
+          "color": "#0086c7",
+          "description": "Gen Alpha + Gen Y/Z"
+        },
+        {
+          "id": "over-40",
+          "label": "Over 40",
+          "formula": "[SEYUGENX] + [SEYUBOOMER]",
+          "color": "#1b1f3c",
+          "description": "Gen X + Boomer"
+        }
+      ],
+      "createdAt": "2025-08-18T10:38:28.349Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "admin",
+      "lastModifiedBy": "admin"
+    },
+    {
+      "_id": "68a302a4b484e59e38aee79d",
+      "chartId": "value",
+      "title": "Generated Value",
+      "type": "bar",
+      "order": 3,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "Total Generated Value",
+      "elements": [
+        {
+          "id": "marketing-optin",
+          "label": "Marketing Opt-in Users",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailOptin]",
+          "color": "#3b82f6",
+          "description": "Every image corresponds to a GDPR-compliant opt-in fan. Each contact has measurable acquisition cost in digital marketing.",
+          "parameters": {
+            "cpmEmailOptin": {
+              "value": 4.87,
+              "label": "Email Opt-in CPM",
+              "unit": "EUR",
+              "description": "€4.87 avg market cost per email opt-in in Europe, 2025"
+            }
+          }
+        },
+        {
+          "id": "value-prop-emails",
+          "label": "Value Proposition Emails",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailAddon]",
+          "color": "#10b981",
+          "description": "Every email delivered includes branded fan photo plus sponsor offer. Add-on ad space valued at €1.07 avg CPM email value add per send.",
+          "parameters": {
+            "cpmEmailAddon": {
+              "value": 1.07,
+              "label": "Email Add-on CPM",
+              "unit": "EUR",
+              "description": "€1.07 avg CPM email value add per send"
+            }
+          }
+        },
+        {
+          "id": "giant-screen-ads",
+          "label": "Ads on Giant Screen",
+          "formula": "([SEYUATTENDEES] / 1000) * [PARAM:cpmStadiumAd] * [PARAM:exposureRatio] * ([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES])",
+          "color": "#f59e0b",
+          "description": "Fans + brands shown on stadium big screen = in-stadium advertising equivalent. Stadium advertising CPM ≈ €6.00 per 1,000 attendees per 30s slot. 6s exposure = 0.2 of CPM.",
+          "parameters": {
+            "cpmStadiumAd": {
+              "value": 6,
+              "label": "Stadium Ad CPM",
+              "unit": "EUR",
+              "description": "€6.00 per 1,000 attendees per 30s slot"
+            },
+            "exposureRatio": {
+              "value": 0.2,
+              "label": "Exposure Ratio",
+              "unit": "multiplier",
+              "description": "6s exposure = 0.2 of 30s CPM"
+            }
+          }
+        },
+        {
+          "id": "under40-engagement",
+          "label": "Under-40 Engagement",
+          "formula": "([SEYUGENALPHA] + [SEYUGENYZ]) * [PARAM:premiumContactValue]",
+          "color": "#8b5cf6",
+          "description": "80% of engaged fans are under 40 - critical target for most brands. Each identified contact carries premium value.",
+          "parameters": {
+            "premiumContactValue": {
+              "value": 2.14,
+              "label": "Premium Contact Value",
+              "unit": "EUR",
+              "description": "€2.14 avg value of youth contact vs older groups"
+            }
+          }
+        },
+        {
+          "id": "brand-awareness",
+          "label": "Brand Awareness Boost",
+          "formula": "[PARAM:sharedImages] * [PARAM:avgViews] * [PARAM:cpmSocialOrganic]",
+          "color": "#ef4444",
+          "description": "Organic shares amplify brand presence into social feeds. Benchmarked to social organic impressions CPM.",
+          "parameters": {
+            "sharedImages": {
+              "value": 200,
+              "label": "Shared Images",
+              "unit": "count",
+              "description": "Estimated number of shared images"
+            },
+            "avgViews": {
+              "value": 300,
+              "label": "Avg Views per Share",
+              "unit": "count",
+              "description": "Average views per shared image"
+            },
+            "cpmSocialOrganic": {
+              "value": 0.0145,
+              "label": "Social Organic CPM",
+              "unit": "EUR",
+              "description": "€14.50 CPM / 1000 = €0.0145 per impression"
+            }
+          }
+        }
+      ],
+      "createdAt": "2025-08-18T10:38:28.349Z",
+      "updatedAt": "2025-10-16T15:43:19.397Z",
+      "createdBy": "admin",
+      "lastModifiedBy": "admin",
+      "emoji": "📊",
+      "subtitle": "Breakdown of Event-Generated Brand Value"
+    },
+    {
+      "_id": "68a84432d0be19a4e92065ab",
+      "chartId": "faces-per-image",
+      "title": "Faces per Image",
+      "type": "kpi",
+      "order": 8,
+      "isActive": true,
+      "emoji": "👀",
+      "elements": [
+        {
+          "id": "faces-per-image-value",
+          "label": "Average faces per approved image",
+          "formula": "([SEYUFEMALE]+[SEYUMALE])/[SEYUAPPROVEDIMAGES]",
+          "color": "#b82786",
+          "description": "Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure."
+        }
+      ],
+      "createdAt": "2025-08-22T10:19:30.908Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "system",
+      "lastModifiedBy": "68c16725cc6c9c0cccfcf74d"
+    },
+    {
+      "_id": "68a8ac83915d69fa459ab8d8",
+      "chartId": "image-density",
+      "title": "Image Density",
+      "type": "kpi",
+      "order": 9,
+      "isActive": true,
+      "emoji": "🧮",
+      "elements": [
+        {
+          "id": "image-density-value",
+          "label": "Images per 100 fans",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) / ([SEYUFEMALE] + [SEYUMALE]) * 100",
+          "color": "#b82786",
+          "description": "Show how actively fans created content. Help venues and rights holders benchmark activation performance. Derived from your counts - a simple, comparable index across events. Target audience: Event ops, sponsorship sales, client success."
+        }
+      ],
+      "createdAt": "2025-08-22T17:44:34.996Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "system",
+      "lastModifiedBy": "admin"
+    },
+    {
+      "_id": "68bc49781e40d35cc449ef5f",
+      "chartId": "approved-images",
+      "title": "Approved Images",
+      "type": "kpi",
+      "order": 11,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "approved images",
+          "formula": "[SEYUAPPROVEDIMAGES]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-09-06T14:47:20.959Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "admin"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28df",
+      "chartId": "items-per-merched-fan",
+      "title": "Items per Merched Fan",
+      "type": "kpi",
+      "order": 19,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "items-per-merched-fan-value",
+          "label": "Merch items / Merched fans",
+          "formula": "([SEYUMERCHJERSEY] + [SEYUMERCHSCARF] + [SEYUFLAGS] + [SEYUBASEBALLCAP] + [SEYUOTHER]) / [SEYUMERCHEDFANS]",
+          "color": "#7b68ee",
+          "description": "Average number of merch items per merched fan. Indicates depth of merch adoption."
+        }
+      ],
+      "emoji": "🎽",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28d9",
+      "chartId": "merch-adoption-rate",
+      "title": "Merch Adoption Rate",
+      "type": "kpi",
+      "order": 13,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "merch-adoption-rate-value",
+          "label": "Merched fans / All fans (%)",
+          "formula": "[SEYUMERCHEDFANS] / ([SEYUTOTALFANS]) * 100",
+          "color": "#10b981",
+          "description": "Percentage of fans wearing merchandise. Core signal for fan loyalty and sales potential."
+        }
+      ],
+      "emoji": "🧢",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28dc",
+      "chartId": "youth-audience-share",
+      "title": "Youth Audience Share",
+      "type": "kpi",
+      "order": 16,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "youth-audience-share-value",
+          "label": "Under 40 / All attendees (%)",
+          "formula": "([SEYUGENALPHA] + [SEYUGENYZ]) / ([SEYUGENALPHA] + [SEYUGENYZ] + [SEYUGENX] + [SEYUBOOMER]) * 100",
+          "color": "#06b6d4",
+          "description": "Share of younger demographics. Key for brand targeting and premium youth sponsorship inventory."
+        }
+      ],
+      "emoji": "🧑‍🤝‍🧑",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28d8",
+      "chartId": "remote-fan-share",
+      "title": "Remote Fan Share",
+      "type": "kpi",
+      "order": 12,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "remote-fan-share-value",
+          "label": "Remote fans / All fans (%)",
+          "formula": "([SEYUREMOTEFANS]) / ([SEYUTOTALFANS]) * 100",
+          "color": "#3b82f6",
+          "description": "Proportion of fans participating remotely. Useful for remote activation strategy."
+        }
+      ],
+      "emoji": "🏠",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28db",
+      "chartId": "content-capture-rate",
+      "title": "Content Capture Rate",
+      "type": "kpi",
+      "order": 15,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "content-capture-rate-value",
+          "label": "Images per 100 attendees",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) / [SEYUATTENDEES] * 100",
+          "color": "#f59e0b",
+          "description": "How actively the audience creates content relative to attendance. Normalizes content across event sizes."
+        }
+      ],
+      "emoji": "📸",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c2872d5baaa62267fd28da",
+      "chartId": "image-approval-rate",
+      "title": "Image Approval Rate",
+      "type": "kpi",
+      "order": 14,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-approval-rate-value",
+          "label": "Approved / (Approved + Rejected) (%)",
+          "formula": "[SEYUAPPROVEDIMAGES] / ([SEYUAPPROVEDIMAGES] + [SEYUREJECTEDIMAGES]) * 100",
+          "color": "#8b5cf6",
+          "description": "Image quality/compliance funnel health. Indicates moderation performance and usable asset share."
+        }
+      ],
+      "emoji": "✅",
+      "createdAt": "2025-09-11T08:24:13.105Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-kpi-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05047",
+      "chartId": "engaged-share",
+      "title": "Engaged vs Not Engaged",
+      "type": "pie",
+      "order": 28,
+      "isActive": true,
+      "emoji": "🤝",
+      "elements": [
+        {
+          "id": "engaged",
+          "label": "Engaged",
+          "formula": "([SEYUTOTALFANS])",
+          "color": "#10b981",
+          "description": "Fans interacting (indoor + outdoor + stadium)"
+        },
+        {
+          "id": "not-engaged",
+          "label": "Not Engaged",
+          "formula": "[SEYUATTENDEES] - ([SEYUTOTALFANS])",
+          "color": "#9ca3af",
+          "description": "Attendees not captured as fans"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b0503f",
+      "chartId": "merch-vs-nonmerch",
+      "title": "Merch vs Non‑Merch Fans",
+      "type": "pie",
+      "order": 20,
+      "isActive": true,
+      "emoji": "🧢",
+      "elements": [
+        {
+          "id": "merched",
+          "label": "Merched",
+          "formula": "[SEYUMERCHEDFANS]",
+          "color": "#10b981",
+          "description": "Fans wearing any merchandise"
+        },
+        {
+          "id": "non-merched",
+          "label": "Non‑Merched",
+          "formula": "([SEYUTOTALFANS]) - [SEYUMERCHEDFANS]",
+          "color": "#9ca3af",
+          "description": "Fans without visible merchandise"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05046",
+      "chartId": "match-result-share",
+      "title": "Match Result Share",
+      "type": "pie",
+      "order": 27,
+      "isActive": true,
+      "emoji": "⚽",
+      "elements": [
+        {
+          "id": "home",
+          "label": "Home",
+          "formula": "[SEYURESULTHOME]",
+          "color": "#22c55e",
+          "description": "Home team result"
+        },
+        {
+          "id": "visitor",
+          "label": "Visitor",
+          "formula": "[SEYURESULTVISITOR]",
+          "color": "#ef4444",
+          "description": "Visitor team result"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05040",
+      "chartId": "hostess-vs-fan-images",
+      "title": "Hostess vs Fan Images",
+      "type": "pie",
+      "order": 21,
+      "isActive": true,
+      "emoji": "📸",
+      "elements": [
+        {
+          "id": "hostess-images",
+          "label": "Hostess",
+          "formula": "[SEYUHOSTESSIMAGES]",
+          "color": "#8b5cf6",
+          "description": "Photos captured by hostesses"
+        },
+        {
+          "id": "fan-images",
+          "label": "Fan‑Captured",
+          "formula": "[SEYUREMOTEIMAGES] + [SEYUSELFIES]",
+          "color": "#f59e0b",
+          "description": "Remote shots and selfies created by fans"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05042",
+      "chartId": "Remote vs Event",
+      "title": "Remote vs Event",
+      "type": "pie",
+      "order": 23,
+      "isActive": true,
+      "emoji": "🏟️",
+      "elements": [
+        {
+          "id": "event",
+          "label": "Event",
+          "formula": "[SEYUSTADIUMFANS]",
+          "color": "#3b82f6",
+          "description": "On-site (stadium) fans"
+        },
+        {
+          "id": "remote",
+          "label": "Remote",
+          "formula": "[SEYUREMOTEFANS]",
+          "color": "#f97316",
+          "description": "Remote fans (indoor + outdoor)"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-10-16T14:38:47.255Z",
+      "createdBy": "script:add-pie-charts",
+      "lastModifiedBy": "68c16725cc6c9c0cccfcf74d"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05041",
+      "chartId": "approval-split",
+      "title": "Approved vs Rejected Images",
+      "type": "pie",
+      "order": 22,
+      "isActive": true,
+      "emoji": "✅",
+      "elements": [
+        {
+          "id": "approved",
+          "label": "Approved",
+          "formula": "[SEYUAPPROVEDIMAGES]",
+          "color": "#22c55e",
+          "description": "Images approved after moderation"
+        },
+        {
+          "id": "rejected",
+          "label": "Rejected",
+          "formula": "[SEYUREJECTEDIMAGES]",
+          "color": "#ef4444",
+          "description": "Images rejected during moderation"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c28a1cc39dc94de8b05043",
+      "chartId": "apparel-vs-accessories",
+      "title": "Apparel vs Accessories",
+      "type": "pie",
+      "order": 24,
+      "isActive": true,
+      "emoji": "🎽",
+      "elements": [
+        {
+          "id": "apparel",
+          "label": "Apparel",
+          "formula": "[SEYUMERCHJERSEY]",
+          "color": "#7b68ee",
+          "description": "Jerseys sold (items)"
+        },
+        {
+          "id": "accessories",
+          "label": "Accessories",
+          "formula": "[SEYUMERCHSCARF] + [SEYUFLAGS] + [SEYUBASEBALLCAP] + [SEYUOTHER]",
+          "color": "#06b6d4",
+          "description": "Scarfs, flags, caps, and other merch (items)"
+        }
+      ],
+      "createdAt": "2025-09-11T08:36:44.007Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-pie-charts"
+    },
+    {
+      "_id": "68c2c023000e86b2913163fa",
+      "chartId": "fan-distribution-extended",
+      "title": "Fan Distribution Extended",
+      "type": "bar",
+      "order": 32,
+      "isActive": true,
+      "emoji": "👥",
+      "elements": [
+        {
+          "id": "indoor",
+          "label": "Indoor",
+          "formula": "[SEYUINDOOR]",
+          "color": "#3b82f6",
+          "description": "Fans in indoor areas"
+        },
+        {
+          "id": "outdoor",
+          "label": "Outdoor",
+          "formula": "[SEYUOUTDOOR]",
+          "color": "#f97316",
+          "description": "Fans in outdoor areas"
+        },
+        {
+          "id": "stadium",
+          "label": "Stadium",
+          "formula": "[SEYUSTADIUMFANS]",
+          "color": "#22c55e",
+          "description": "Fans at stadium"
+        },
+        {
+          "id": "merched",
+          "label": "Merched",
+          "formula": "[SEYUMERCHEDFANS]",
+          "color": "#8b5cf6",
+          "description": "Fans wearing merch"
+        },
+        {
+          "id": "non-merched",
+          "label": "Non‑Merched",
+          "formula": "([SEYUTOTALFANS]) - [SEYUMERCHEDFANS]",
+          "color": "#9ca3af",
+          "description": "Fans without merch"
+        }
+      ],
+      "showTotal": true,
+      "totalLabel": "Total",
+      "createdAt": "2025-09-11T12:27:14.512Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-bar-charts"
+    },
+    {
+      "_id": "68c2c023000e86b2913163f8",
+      "chartId": "merch-items-mix",
+      "title": "Merch Items Mix (Counts)",
+      "type": "bar",
+      "order": 30,
+      "isActive": true,
+      "emoji": "🛒",
+      "elements": [
+        {
+          "id": "jersey",
+          "label": "Jersey",
+          "formula": "[SEYUMERCHJERSEY]",
+          "color": "#7b68ee",
+          "description": "Number of jerseys"
+        },
+        {
+          "id": "scarf",
+          "label": "Scarf",
+          "formula": "[SEYUMERCHSCARF]",
+          "color": "#ff6b9d",
+          "description": "Number of scarfs"
+        },
+        {
+          "id": "flags",
+          "label": "Flags",
+          "formula": "[SEYUFLAGS]",
+          "color": "#ffa726",
+          "description": "Number of flags"
+        },
+        {
+          "id": "baseball-cap",
+          "label": "Baseball Cap",
+          "formula": "[SEYUBASEBALLCAP]",
+          "color": "#66bb6a",
+          "description": "Number of caps"
+        },
+        {
+          "id": "other",
+          "label": "Other",
+          "formula": "[SEYUOTHER]",
+          "color": "#ef5350",
+          "description": "Other merch items"
+        }
+      ],
+      "showTotal": true,
+      "totalLabel": "Total",
+      "createdAt": "2025-09-11T12:27:14.512Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-bar-charts"
+    },
+    {
+      "_id": "68c2c023000e86b2913163fb",
+      "chartId": "content-pipeline",
+      "title": "Content Pipeline Overview",
+      "type": "bar",
+      "order": 33,
+      "isActive": true,
+      "emoji": "🧵",
+      "elements": [
+        {
+          "id": "remote",
+          "label": "Remote",
+          "formula": "[SEYUREMOTEIMAGES]",
+          "color": "#0ea5e9",
+          "description": "Remote images by fans"
+        },
+        {
+          "id": "hostess",
+          "label": "Hostess",
+          "formula": "[SEYUHOSTESSIMAGES]",
+          "color": "#a78bfa",
+          "description": "Hostess-captured images"
+        },
+        {
+          "id": "selfies",
+          "label": "Selfies",
+          "formula": "[SEYUSELFIES]",
+          "color": "#f59e0b",
+          "description": "Selfies captured"
+        },
+        {
+          "id": "approved",
+          "label": "Approved",
+          "formula": "[SEYUAPPROVEDIMAGES]",
+          "color": "#22c55e",
+          "description": "Approved assets"
+        },
+        {
+          "id": "rejected",
+          "label": "Rejected",
+          "formula": "[SEYUREJECTEDIMAGES]",
+          "color": "#ef4444",
+          "description": "Rejected assets"
+        }
+      ],
+      "showTotal": true,
+      "totalLabel": "Total",
+      "createdAt": "2025-09-11T12:27:14.512Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-bar-charts"
+    },
+    {
+      "_id": "68c2c023000e86b2913163f9",
+      "chartId": "social-platform-visits",
+      "title": "Social Platform Visits",
+      "type": "bar",
+      "order": 31,
+      "isActive": true,
+      "emoji": "📱",
+      "elements": [
+        {
+          "id": "facebook",
+          "label": "Facebook",
+          "formula": "[SEYUFACEBOOKVISIT]",
+          "color": "#1877f2",
+          "description": "Facebook referral visits"
+        },
+        {
+          "id": "instagram",
+          "label": "Instagram",
+          "formula": "[SEYUINSTAGRAMVISIT]",
+          "color": "#e1306c",
+          "description": "Instagram referral visits"
+        },
+        {
+          "id": "youtube",
+          "label": "YouTube",
+          "formula": "[SEYUYOUTUBEVISIT]",
+          "color": "#ff0000",
+          "description": "YouTube referral visits"
+        },
+        {
+          "id": "tiktok",
+          "label": "TikTok",
+          "formula": "[SEYUTIKTOKVISIT]",
+          "color": "#69c9d0",
+          "description": "TikTok referral visits"
+        },
+        {
+          "id": "x",
+          "label": "X (Twitter)",
+          "formula": "[SEYUXVISIT]",
+          "color": "#111111",
+          "description": "X (Twitter) referral visits"
+        }
+      ],
+      "showTotal": true,
+      "totalLabel": "Total",
+      "createdAt": "2025-09-11T12:27:14.512Z",
+      "updatedAt": "2025-09-27T19:18:30.002Z",
+      "createdBy": "script:add-bar-charts"
+    },
+    {
+      "_id": "68c41b4cf4f0a9c161a40dfd",
+      "chartId": "faces",
+      "title": "faces on images",
+      "type": "kpi",
+      "order": 35,
+      "isActive": false,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "faces",
+          "formula": "([SEYUMALE]+[SEYUFEMALE])/[SEYUSELFIES]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-09-12T13:08:28.146Z",
+      "updatedAt": "2025-10-16T17:14:34.768Z",
+      "createdBy": "68c16725cc6c9c0cccfcf74d",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "68d954f3fe25b96b1727d0e0",
+      "chartId": "all-images-taken",
+      "title": "📸 Total Images",
+      "type": "kpi",
+      "order": 1,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "kpi",
+          "label": "Total Images",
+          "formula": "[SEYUTOTALIMAGES]",
+          "color": "#3b82f6"
+        }
+      ],
+      "emoji": "📸",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": null,
+      "createdAt": "2025-09-28T15:32:03.009Z",
+      "updatedAt": "2025-09-28T16:12:48.330Z",
+      "createdBy": "68c16725cc6c9c0cccfcf74d",
+      "lastModifiedBy": "68c16725cc6c9c0cccfcf74d"
+    },
+    {
+      "_id": "68f115223104911f879595c9",
+      "chartId": "bitly-device-split",
+      "title": "Bitly Device Split",
+      "type": "pie",
+      "order": 35,
+      "isActive": true,
+      "emoji": "📱",
+      "subtitle": "Device types for Bitly link clicks",
+      "elements": [
+        {
+          "id": "mobile",
+          "label": "Mobile",
+          "formula": "[SEYUBITLYMOBILECLICKS]",
+          "color": "#3b82f6",
+          "description": "Clicks from mobile devices"
+        },
+        {
+          "id": "desktop-tablet",
+          "label": "Desktop + Tablet",
+          "formula": "[SEYUBITLYDESKTOPCLICKS] + [SEYUBITLYTABLETCLICKS]",
+          "color": "#8b5cf6",
+          "description": "Clicks from desktop computers and tablets"
+        }
+      ],
+      "createdAt": "2025-10-16T15:54:10.183Z",
+      "updatedAt": "2025-10-16T15:54:10.184Z",
+      "createdBy": "system-migration",
+      "lastModifiedBy": "system-migration"
+    },
+    {
+      "_id": "68f1152af4db6c5933963baf",
+      "chartId": "bitly-referrers",
+      "title": "Bitly Referrers",
+      "type": "bar",
+      "order": 36,
+      "isActive": true,
+      "subtitle": "Top traffic sources for Bitly links",
+      "showTotal": false,
+      "elements": [
+        {
+          "id": "qr-code",
+          "label": "QR Code",
+          "formula": "[SEYUBITLYQRCODECLICKS]",
+          "color": "#10b981",
+          "description": "Clicks from QR code scans (qr.partners.bit.ly)"
+        },
+        {
+          "id": "instagram",
+          "label": "Instagram",
+          "formula": "[SEYUBITLYINSTAGRAMMOBILECLICKS] + [SEYUBITLYINSTAGRAMWEBCLICKS]",
+          "color": "#ec4899",
+          "description": "Clicks from Instagram mobile and web"
+        },
+        {
+          "id": "facebook",
+          "label": "Facebook",
+          "formula": "[SEYUBITLYFACEBOOKMOBILECLICKS] + [SEYUBITLYFACEBOOKMESSENGERCLICKS]",
+          "color": "#3b82f6",
+          "description": "Clicks from Facebook mobile and Messenger"
+        },
+        {
+          "id": "social-other",
+          "label": "Other Social",
+          "formula": "[SEYUBITLYSOCIALCLICKS]",
+          "color": "#8b5cf6",
+          "description": "Clicks from other social platforms"
+        },
+        {
+          "id": "direct",
+          "label": "Direct",
+          "formula": "[SEYUBITLYDIRECTCLICKS]",
+          "color": "#6b7280",
+          "description": "Direct clicks with no referrer"
+        }
+      ],
+      "createdAt": "2025-10-16T15:54:18.284Z",
+      "updatedAt": "2025-10-16T15:54:18.285Z",
+      "createdBy": "system-migration",
+      "lastModifiedBy": "system-migration"
+    },
+    {
+      "_id": "68f11530625c3ff60e51a055",
+      "chartId": "bitly-geographic-reach",
+      "title": "Bitly Geographic Reach",
+      "type": "kpi",
+      "order": 37,
+      "isActive": true,
+      "emoji": "🌍",
+      "subtitle": "International audience reach",
+      "elements": [
+        {
+          "id": "countries-reached",
+          "label": "Countries Reached",
+          "formula": "[SEYUBITLYCOUNTRYCOUNT]",
+          "color": "#3b82f6",
+          "description": "Number of unique countries accessing Bitly links"
+        }
+      ],
+      "createdAt": "2025-10-16T15:54:24.392Z",
+      "updatedAt": "2025-10-16T15:54:24.393Z",
+      "createdBy": "system-migration",
+      "lastModifiedBy": "system-migration"
+    }
+  ]
+}

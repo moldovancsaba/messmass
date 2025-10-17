@@ -22,6 +22,22 @@ export interface Partner {
   // WHY: Partners can have dedicated tracking links
   bitlyLinkIds?: ObjectId[]; // References to bitly_links collection
   
+  // WHAT: TheSportsDB enrichment data
+  // WHY: Store sports club metadata for analytics (stadium capacity, leagues, badges)
+  sportsDb?: {
+    teamId?: string;           // TheSportsDB team ID (e.g., "133739")
+    leagueId?: string;         // TheSportsDB league ID (e.g., "4335")
+    venueId?: string;          // TheSportsDB venue ID
+    venueCapacity?: number;    // Stadium capacity as number (e.g., 99354)
+    venueName?: string;        // Official venue name (e.g., "Camp Nou")
+    leagueName?: string;       // League name (e.g., "La Liga")
+    founded?: string;          // Year founded (e.g., "1899")
+    country?: string;          // Country (e.g., "Spain")
+    website?: string;          // Official website URL
+    badge?: string;            // Team badge/logo URL
+    lastSynced?: string;       // ISO 8601 timestamp of last sync
+  };
+  
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
@@ -37,6 +53,19 @@ export interface CreatePartnerInput {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[]; // String IDs from client
+  sportsDb?: {
+    teamId?: string;
+    leagueId?: string;
+    venueId?: string;
+    venueCapacity?: number;
+    venueName?: string;
+    leagueName?: string;
+    founded?: string;
+    country?: string;
+    website?: string;
+    badge?: string;
+    lastSynced?: string;
+  };
 }
 
 /**
@@ -50,6 +79,19 @@ export interface UpdatePartnerInput {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[];
+  sportsDb?: {
+    teamId?: string;
+    leagueId?: string;
+    venueId?: string;
+    venueCapacity?: number;
+    venueName?: string;
+    leagueName?: string;
+    founded?: string;
+    country?: string;
+    website?: string;
+    badge?: string;
+    lastSynced?: string;
+  };
 }
 
 /**

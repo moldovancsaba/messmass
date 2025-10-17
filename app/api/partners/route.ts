@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as CreatePartnerInput;
-    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds } = body;
+    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb } = body;
 
     if (!name || !emoji) {
       return NextResponse.json(
@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
       hashtags: hashtags || [],
       categorizedHashtags: categorizedHashtags || {},
       bitlyLinkIds: bitlyObjectIds || [],
+      sportsDb: sportsDb || undefined, // Include TheSportsDB enrichment data if provided
       createdAt: now,
       updatedAt: now,
     };
@@ -233,7 +234,7 @@ export async function PUT(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as UpdatePartnerInput;
-    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds } = body;
+    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb } = body;
 
     if (!partnerId || !ObjectId.isValid(partnerId)) {
       return NextResponse.json(
@@ -251,6 +252,10 @@ export async function PUT(request: NextRequest) {
     if (emoji !== undefined) updateDoc.emoji = emoji.trim();
     if (hashtags !== undefined) updateDoc.hashtags = hashtags;
     if (categorizedHashtags !== undefined) updateDoc.categorizedHashtags = categorizedHashtags;
+    
+    // WHAT: Update TheSportsDB enrichment data if provided
+    // WHY: Allow linking/unlinking partners to sports teams
+    if (sportsDb !== undefined) updateDoc.sportsDb = sportsDb;
     
     // WHAT: Convert bitlyLinkIds to ObjectIds if provided
     if (bitlyLinkIds !== undefined) {
