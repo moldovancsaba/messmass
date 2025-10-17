@@ -22,20 +22,60 @@ export interface Partner {
   // WHY: Partners can have dedicated tracking links
   bitlyLinkIds?: ObjectId[]; // References to bitly_links collection
   
-  // WHAT: TheSportsDB enrichment data
-  // WHY: Store sports club metadata for analytics (stadium capacity, leagues, badges)
+  // WHAT: TheSportsDB enrichment data (complete team profile)
+  // WHY: Store all available sports club metadata for comprehensive KYC and analytics
   sportsDb?: {
-    teamId?: string;           // TheSportsDB team ID (e.g., "133739")
-    leagueId?: string;         // TheSportsDB league ID (e.g., "4335")
-    venueId?: string;          // TheSportsDB venue ID
-    venueCapacity?: number;    // Stadium capacity as number (e.g., 99354)
-    venueName?: string;        // Official venue name (e.g., "Camp Nou")
-    leagueName?: string;       // League name (e.g., "La Liga")
-    founded?: string;          // Year founded (e.g., "1899")
-    country?: string;          // Country (e.g., "Spain")
-    website?: string;          // Official website URL
-    badge?: string;            // Team badge/logo URL from TheSportsDB
-    lastSynced?: string;       // ISO 8601 timestamp of last sync
+    // Core Identifiers
+    teamId?: string;                   // TheSportsDB team ID (e.g., "133739")
+    strTeam?: string;                  // Full team name (e.g., "FC Barcelona")
+    strTeamShort?: string;             // Short name (e.g., "Barcelona")
+    strAlternate?: string;             // Alternative team names
+    
+    // Sport & League
+    strSport?: string;                 // Sport type (e.g., "Soccer", "Handball")
+    strLeague?: string;                // League name (e.g., "La Liga")
+    leagueId?: string;                 // TheSportsDB league ID (e.g., "4335")
+    
+    // Venue/Stadium
+    strStadium?: string;               // Stadium/venue name (e.g., "Camp Nou")
+    venueId?: string;                  // TheSportsDB venue ID
+    intStadiumCapacity?: number;       // Stadium capacity as number (e.g., 99354)
+    strStadiumThumb?: string;          // Stadium image URL
+    strStadiumDescription?: string;    // Stadium description
+    strStadiumLocation?: string;       // Stadium city/location
+    
+    // Team Details
+    intFormedYear?: string;            // Year founded (e.g., "1899")
+    strCountry?: string;               // Country (e.g., "Spain")
+    strDescriptionEN?: string;         // English description
+    
+    // Visual Assets
+    strTeamBadge?: string;             // Badge/logo URL (main logo)
+    strTeamLogo?: string;              // Alternative logo URL
+    strTeamJersey?: string;            // Jersey/kit image URL
+    strTeamBanner?: string;            // Banner image URL
+    strTeamFanart1?: string;           // Fan art image 1
+    strTeamFanart2?: string;           // Fan art image 2
+    strTeamFanart3?: string;           // Fan art image 3
+    strTeamFanart4?: string;           // Fan art image 4
+    
+    // Social Media & Web
+    strWebsite?: string;               // Official website URL
+    strFacebook?: string;              // Facebook page URL
+    strTwitter?: string;               // Twitter handle
+    strInstagram?: string;             // Instagram handle
+    
+    // Sync Metadata
+    lastSynced?: string;               // ISO 8601 timestamp of last sync
+    
+    // Legacy fields (kept for backward compatibility)
+    leagueName?: string;               // Alias for strLeague
+    venueName?: string;                // Alias for strStadium
+    venueCapacity?: number;            // Alias for intStadiumCapacity
+    founded?: string;                  // Alias for intFormedYear
+    country?: string;                  // Alias for strCountry
+    website?: string;                  // Alias for strWebsite
+    badge?: string;                    // Alias for strTeamBadge
   };
   
   // WHAT: Partner logo hosted on ImgBB
@@ -58,19 +98,7 @@ export interface CreatePartnerInput {
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[]; // String IDs from client
   logoUrl?: string;
-  sportsDb?: {
-    teamId?: string;
-    leagueId?: string;
-    venueId?: string;
-    venueCapacity?: number;
-    venueName?: string;
-    leagueName?: string;
-    founded?: string;
-    country?: string;
-    website?: string;
-    badge?: string;
-    lastSynced?: string;
-  };
+  sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
 }
 
 /**
@@ -85,19 +113,7 @@ export interface UpdatePartnerInput {
   categorizedHashtags?: { [categoryName: string]: string[] };
   bitlyLinkIds?: string[];
   logoUrl?: string;
-  sportsDb?: {
-    teamId?: string;
-    leagueId?: string;
-    venueId?: string;
-    venueCapacity?: number;
-    venueName?: string;
-    leagueName?: string;
-    founded?: string;
-    country?: string;
-    website?: string;
-    badge?: string;
-    lastSynced?: string;
-  };
+  sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
 }
 
 /**

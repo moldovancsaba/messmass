@@ -13,6 +13,7 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
+import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 import styles from './PartnerManager.module.css';
 import logoStyles from '../projects/PartnerLogos.module.css';
 
@@ -481,21 +482,75 @@ export default function PartnersAdminPage() {
         }
       }
 
-      // WHAT: Build SportsDB enrichment object
-      // WHY: Store all relevant metadata for future chart calculations
+      // WHAT: Build comprehensive SportsDB enrichment object with ALL available fields
+      // WHY: Store complete team profile for KYC and future analytics
       const sportsDbData = {
+        // Core Identifiers
         teamId: team.idTeam,
+        strTeam: team.strTeam,
+        strTeamShort: team.strTeamShort,
+        strAlternate: team.strAlternate,
+        
+        // Sport & League
+        strSport: team.strSport,
+        strLeague: team.strLeague,
         leagueId: team.idLeague,
+        
+        // Venue/Stadium
+        strStadium: team.strStadium,
         venueId: team.idVenue,
-        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        venueName: team.strStadium,
+        intStadiumCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
+        strStadiumThumb: team.strStadiumThumb,
+        strStadiumDescription: team.strStadiumDescription,
+        strStadiumLocation: team.strStadiumLocation,
+        
+        // Team Details
+        intFormedYear: team.intFormedYear,
+        strCountry: team.strCountry,
+        strDescriptionEN: team.strDescriptionEN,
+        
+        // Visual Assets
+        strTeamBadge: team.strBadge,
+        strTeamLogo: team.strTeamLogo,
+        strTeamJersey: team.strTeamJersey,
+        strTeamBanner: team.strTeamBanner,
+        strTeamFanart1: team.strTeamFanart1,
+        strTeamFanart2: team.strTeamFanart2,
+        strTeamFanart3: team.strTeamFanart3,
+        strTeamFanart4: team.strTeamFanart4,
+        
+        // Social Media & Web
+        strWebsite: team.strWebsite,
+        strFacebook: team.strFacebook,
+        strTwitter: team.strTwitter,
+        strInstagram: team.strInstagram,
+        
+        // Sync Metadata
+        lastSynced: new Date().toISOString(),
+        
+        // Legacy fields (backward compatibility)
         leagueName: team.strLeague,
+        venueName: team.strStadium,
+        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
         founded: team.intFormedYear,
         country: team.strCountry,
         website: team.strWebsite,
         badge: team.strBadge,
-        lastSynced: new Date().toISOString(),
       };
+      
+      // WHAT: Auto-generate categorized hashtags from team data
+      // WHY: Enrich partner with sport, league, and location hashtags for filtering
+      console.log('🏷️ Generating hashtags from SportsDB team data...');
+      const generatedHashtags = generateSportsDbHashtags(team);
+      console.log('Generated hashtags:', generatedHashtags);
+      
+      // WHAT: Merge with existing partner hashtags
+      // WHY: Preserve manually added hashtags while adding auto-generated ones
+      const enrichedHashtags = mergeSportsDbHashtags(
+        editPartnerData.categorizedHashtags,
+        generatedHashtags
+      );
+      console.log('Enriched hashtags:', enrichedHashtags);
 
       // WHAT: Upload badge to ImgBB for permanent hosting
       // WHY: Display logo in UI without depending on TheSportsDB URLs
@@ -546,6 +601,7 @@ export default function PartnersAdminPage() {
           partnerId: editingPartner._id,
           sportsDb: sportsDbData,
           logoUrl: logoUrl, // Add ImgBB logo URL
+          categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
         }),
       });
 
@@ -564,7 +620,7 @@ export default function PartnersAdminPage() {
           name: editPartnerData.name,
           emoji: editPartnerData.emoji,
           hashtags: editPartnerData.hashtags,
-          categorizedHashtags: editPartnerData.categorizedHashtags,
+          categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
           bitlyLinkIds: editPartnerData.bitlyLinkIds,
           logoUrl: logoUrl,
           sportsDb: sportsDbData, // Add new SportsDB data
@@ -634,19 +690,69 @@ export default function PartnersAdminPage() {
 
       const team = lookupData.result;
 
+      // WHAT: Build comprehensive SportsDB enrichment object with ALL available fields
+      // WHY: Store complete team profile for KYC and future analytics (same as linkToSportsDbTeam)
       const sportsDbData = {
+        // Core Identifiers
         teamId: team.idTeam,
+        strTeam: team.strTeam,
+        strTeamShort: team.strTeamShort,
+        strAlternate: team.strAlternate,
+        
+        // Sport & League
+        strSport: team.strSport,
+        strLeague: team.strLeague,
         leagueId: team.idLeague,
+        
+        // Venue/Stadium
+        strStadium: team.strStadium,
         venueId: team.idVenue,
-        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        venueName: team.strStadium,
+        intStadiumCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
+        strStadiumThumb: team.strStadiumThumb,
+        strStadiumDescription: team.strStadiumDescription,
+        strStadiumLocation: team.strStadiumLocation,
+        
+        // Team Details
+        intFormedYear: team.intFormedYear,
+        strCountry: team.strCountry,
+        strDescriptionEN: team.strDescriptionEN,
+        
+        // Visual Assets
+        strTeamBadge: team.strBadge,
+        strTeamLogo: team.strTeamLogo,
+        strTeamJersey: team.strTeamJersey,
+        strTeamBanner: team.strTeamBanner,
+        strTeamFanart1: team.strTeamFanart1,
+        strTeamFanart2: team.strTeamFanart2,
+        strTeamFanart3: team.strTeamFanart3,
+        strTeamFanart4: team.strTeamFanart4,
+        
+        // Social Media & Web
+        strWebsite: team.strWebsite,
+        strFacebook: team.strFacebook,
+        strTwitter: team.strTwitter,
+        strInstagram: team.strInstagram,
+        
+        // Sync Metadata
+        lastSynced: new Date().toISOString(),
+        
+        // Legacy fields (backward compatibility)
         leagueName: team.strLeague,
+        venueName: team.strStadium,
+        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
         founded: team.intFormedYear,
         country: team.strCountry,
         website: team.strWebsite,
         badge: team.strBadge,
-        lastSynced: new Date().toISOString(),
       };
+      
+      // WHAT: Auto-generate categorized hashtags from re-synced team data
+      // WHY: Update hashtags if team metadata changed (e.g., league change)
+      const generatedHashtags = generateSportsDbHashtags(team);
+      const enrichedHashtags = mergeSportsDbHashtags(
+        editPartnerData.categorizedHashtags,
+        generatedHashtags
+      );
 
       // WHAT: Upload badge to ImgBB during re-sync
       // WHY: Update logo if badge URL changed
@@ -678,6 +784,7 @@ export default function PartnersAdminPage() {
           partnerId: editingPartner._id,
           sportsDb: sportsDbData,
           logoUrl: logoUrl, // Update logo URL
+          categorizedHashtags: enrichedHashtags, // Update auto-generated hashtags
         }),
       });
 
@@ -689,6 +796,7 @@ export default function PartnersAdminPage() {
           ...prev,
           sportsDb: sportsDbData,
           logoUrl: logoUrl, // Update logo URL in local state
+          categorizedHashtags: enrichedHashtags, // Update hashtags in local state
         }));
         loadData();
       } else {
