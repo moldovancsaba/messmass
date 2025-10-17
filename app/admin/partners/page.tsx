@@ -404,22 +404,39 @@ export default function PartnersAdminPage() {
       const updateData = await updateRes.json();
 
       if (updateData.success) {
-        setSuccessMessage(`✓ Successfully linked to ${team.strTeam}`);
+        console.log('✅ Partner linked successfully, updating UI...');
+        console.log('SportsDB data:', sportsDbData);
+        console.log('Logo URL:', logoUrl);
+        
         // WHAT: Update local state to show enriched data immediately
-        setEditPartnerData(prev => ({
-          ...prev,
-          sportsDb: sportsDbData,
-          logoUrl: logoUrl, // Update logo URL in local state
-        }));
+        // WHY: Force React re-render by creating completely new state object
+        setEditPartnerData({
+          name: editPartnerData.name,
+          emoji: editPartnerData.emoji,
+          hashtags: editPartnerData.hashtags,
+          categorizedHashtags: editPartnerData.categorizedHashtags,
+          bitlyLinkIds: editPartnerData.bitlyLinkIds,
+          logoUrl: logoUrl,
+          sportsDb: sportsDbData, // Add new SportsDB data
+        });
+        
         // WHAT: Clear search results after successful link
         setSportsDbSearch('');
         setSportsDbResults([]);
+        
+        // WHAT: Show success message
+        setSuccessMessage(`✓ Successfully linked to ${team.strTeam}`);
+        
         // WHAT: Reload partners list to reflect changes
         loadData();
+        
+        console.log('✅ UI state updated, enriched data should now be visible');
       } else {
+        console.error('❌ Failed to save:', updateData.error);
         setError(updateData.error || 'Failed to save SportsDB link');
       }
     } catch (err) {
+      console.error('❌ Network error:', err);
       setError('Network error while linking to TheSportsDB');
       console.error('SportsDB link error:', err);
     } finally {
