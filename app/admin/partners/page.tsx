@@ -362,6 +362,14 @@ export default function PartnersAdminPage() {
 
       const team = lookupData.result;
       console.log('✅ Team details received:', team.strTeam);
+      
+      // WHAT: Validate that returned team ID matches requested ID
+      // WHY: TheSportsDB API sometimes returns wrong team (known bug)
+      if (team.idTeam !== teamId) {
+        console.error(`❌ TheSportsDB API returned wrong team! Requested: ${teamId}, Got: ${team.idTeam}`);
+        setError(`TheSportsDB API error: Requested team ${teamId} but received ${team.strTeam} (${team.idTeam}). This team cannot be linked due to API issues.`);
+        return;
+      }
 
       // WHAT: Build SportsDB enrichment object
       // WHY: Store all relevant metadata for future chart calculations
@@ -459,10 +467,23 @@ export default function PartnersAdminPage() {
         // WHAT: Show success message
         setSuccessMessage(`✓ Successfully linked to ${team.strTeam}`);
         
-        // WHAT: Reload partners list to reflect changes
+        // WHAT: Update partners list state directly to show logo immediately
+        // WHY: Avoid waiting for API reload, instant UI feedback
+        setPartners(prevPartners => 
+          prevPartners.map(p => 
+            p._id === editingPartner._id 
+              ? { ...p, logoUrl, sportsDb: sportsDbData }
+              : p
+          )
+        );
+        
+        // WHAT: Also update editingPartner to keep modal data in sync
+        setEditingPartner(prev => prev ? { ...prev, logoUrl, sportsDb: sportsDbData } : null);
+        
+        // WHAT: Reload partners list to ensure database sync
         loadData();
         
-        console.log('✅ UI state updated, enriched data should now be visible');
+        console.log('✅ UI state updated, logo should now be visible in list');
       } else {
         console.error('❌ Failed to save:', updateData.error);
         setError(updateData.error || 'Failed to save SportsDB link');
