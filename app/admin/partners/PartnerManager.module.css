@@ -13,6 +13,10 @@
   width: 5%;
 }
 
+.colFlag {
+  width: 5%;
+}
+
 .colLogo {
   width: 5%;
 }
@@ -44,6 +48,13 @@
 /* WHAT: Emoji cell styling
  * WHY: Large emoji display matching partner emoji size */
 .emojiCell {
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* WHAT: Country flag cell styling
+ * WHY: Display flag emoji between partner emoji and logo */
+.flagCell {
   font-size: 2rem;
   text-align: center;
 }

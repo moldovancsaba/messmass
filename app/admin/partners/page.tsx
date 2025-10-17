@@ -14,6 +14,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
+import { countryToFlag } from '@/lib/countryToFlag';
 import styles from './PartnerManager.module.css';
 import logoStyles from '../projects/PartnerLogos.module.css';
 
@@ -1096,6 +1097,7 @@ export default function PartnersAdminPage() {
               <thead>
                 <tr>
                   <th className={styles.colIcon}>Icon</th>
+                  <th className={styles.colFlag}>Flag</th>
                   <th className={styles.colLogo}>Logo</th>
                   <th 
                     onClick={() => handleSort('name')} 
@@ -1128,6 +1130,11 @@ export default function PartnersAdminPage() {
                 {partners.map(partner => (
                   <tr key={partner._id}>
                     <td className={styles.emojiCell}>{partner.emoji}</td>
+                    <td className={styles.flagCell}>
+                      {/* WHAT: Display country flag from SportsDB data */}
+                      {/* WHY: Visual identification of partner's country */}
+                      {countryToFlag(partner.sportsDb?.strCountry) || '—'}
+                    </td>
                     <td className={styles.logoCell}>
                       {/* WHAT: Display partner logo from ImgBB */}
                       {/* WHY: Show team badge for visual identification */}
