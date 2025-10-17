@@ -397,6 +397,8 @@ export default function QuickAddPage() {
           eventDate: matchPreview.eventDate,
           hashtags: matchPreview.hashtags,
           categorizedHashtags: matchPreview.categorizedHashtags,
+          partner1Id: matchPreview.partner1._id,  // WHAT: Home team reference
+          partner2Id: matchPreview.partner2._id,  // WHAT: Away team reference
           stats: {
             // Initialize with zeros
             remoteImages: 0,

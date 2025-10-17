@@ -214,19 +214,65 @@ export async function GET(request: NextRequest) {
       const results = first.results || [];
       const totalMatched = (first.totalCount?.[0]?.count as number) || 0;
 
-      const formatted = results.map((project: any) => ({
-        _id: project._id.toString(),
-        eventName: project.eventName,
-        eventDate: project.eventDate,
-        hashtags: project.hashtags || [],
-        categorizedHashtags: project.categorizedHashtags || {},
-        stats: project.stats,
-        viewSlug: project.viewSlug,
-        editSlug: project.editSlug,
-        styleId: project.styleId || null,
-        createdAt: project.createdAt,
-        updatedAt: project.updatedAt
-      }));
+      // WHAT: Populate partner data for Sports Match projects (sort/search mode)
+      // WHY: Frontend needs partner logos and emojis for display
+      const partnersCollection = db.collection('partners');
+      const partnerIds = results
+        .map((p: any) => [p.partner1Id, p.partner2Id])
+        .flat()
+        .filter((id: any) => id && ObjectId.isValid(id))
+        .map((id: any) => new ObjectId(id));
+      
+      const partnersData = partnerIds.length > 0
+        ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+        : [];
+      
+      const partnersMap = new Map(
+        partnersData.map(p => [p._id.toString(), p])
+      );
+
+      const formatted = results.map((project: any) => {
+        const result: any = {
+          _id: project._id.toString(),
+          eventName: project.eventName,
+          eventDate: project.eventDate,
+          hashtags: project.hashtags || [],
+          categorizedHashtags: project.categorizedHashtags || {},
+          stats: project.stats,
+          viewSlug: project.viewSlug,
+          editSlug: project.editSlug,
+          styleId: project.styleId || null,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt
+        };
+        
+        // Add partner data if available
+        if (project.partner1Id) {
+          const partner1 = partnersMap.get(project.partner1Id.toString());
+          if (partner1) {
+            result.partner1 = {
+              _id: partner1._id.toString(),
+              name: partner1.name,
+              emoji: partner1.emoji,
+              logoUrl: partner1.logoUrl
+            };
+          }
+        }
+        
+        if (project.partner2Id) {
+          const partner2 = partnersMap.get(project.partner2Id.toString());
+          if (partner2) {
+            result.partner2 = {
+              _id: partner2._id.toString(),
+              name: partner2.name,
+              emoji: partner2.emoji,
+              logoUrl: partner2.logoUrl
+            };
+          }
+        }
+        
+        return result;
+      });
 
       const nextOffset = offset + formatted.length;
       const hasMore = nextOffset < totalMatched;
@@ -271,19 +317,65 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .toArray();
 
-    const formatted = projects.map(project => ({
-      _id: project._id.toString(),
-      eventName: project.eventName,
-      eventDate: project.eventDate,
-      hashtags: project.hashtags || [],               // Traditional hashtags (backward compatibility)
-      categorizedHashtags: project.categorizedHashtags || {}, // New categorized hashtags
-      stats: project.stats,
-      viewSlug: project.viewSlug,
-      editSlug: project.editSlug,
-      styleId: project.styleId || null,               // Project-specific style reference
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt
-    }));
+    // WHAT: Populate partner data for Sports Match projects
+    // WHY: Frontend needs partner logos and emojis for display
+    const partnersCollection = db.collection('partners');
+    const partnerIds = projects
+      .map(p => [p.partner1Id, p.partner2Id])
+      .flat()
+      .filter(id => id && ObjectId.isValid(id))
+      .map(id => new ObjectId(id));
+    
+    const partnersData = partnerIds.length > 0
+      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+      : [];
+    
+    const partnersMap = new Map(
+      partnersData.map(p => [p._id.toString(), p])
+    );
+    
+    const formatted = projects.map(project => {
+      const result: any = {
+        _id: project._id.toString(),
+        eventName: project.eventName,
+        eventDate: project.eventDate,
+        hashtags: project.hashtags || [],               // Traditional hashtags (backward compatibility)
+        categorizedHashtags: project.categorizedHashtags || {}, // New categorized hashtags
+        stats: project.stats,
+        viewSlug: project.viewSlug,
+        editSlug: project.editSlug,
+        styleId: project.styleId || null,               // Project-specific style reference
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt
+      };
+      
+      // Add partner data if available
+      if (project.partner1Id) {
+        const partner1 = partnersMap.get(project.partner1Id.toString());
+        if (partner1) {
+          result.partner1 = {
+            _id: partner1._id.toString(),
+            name: partner1.name,
+            emoji: partner1.emoji,
+            logoUrl: partner1.logoUrl
+          };
+        }
+      }
+      
+      if (project.partner2Id) {
+        const partner2 = partnersMap.get(project.partner2Id.toString());
+        if (partner2) {
+          result.partner2 = {
+            _id: partner2._id.toString(),
+            name: partner2.name,
+            emoji: partner2.emoji,
+            logoUrl: partner2.logoUrl
+          };
+        }
+      }
+      
+      return result;
+    });
 
     let nextCursor: string | null = null;
     if (projects.length === limit) {
@@ -314,8 +406,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId
-    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId + partner references
+    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id } = body;
 
     if (!eventName || !eventDate || !stats) {
       return NextResponse.json(
@@ -359,7 +451,7 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
     
-    // Enhanced project structure to support categorized hashtags and styleId
+    // Enhanced project structure to support categorized hashtags, styleId, and partner references
     const project: any = {
       eventName,
       eventDate,
@@ -375,6 +467,15 @@ export async function POST(request: NextRequest) {
     // Add styleId if provided
     if (styleId && styleId !== null && styleId !== 'null') {
       project.styleId = styleId;
+    }
+    
+    // WHAT: Add partner references for Sports Match projects
+    // WHY: Enable display of team logos in projects list
+    if (partner1Id && ObjectId.isValid(partner1Id)) {
+      project.partner1Id = new ObjectId(partner1Id);
+    }
+    if (partner2Id && ObjectId.isValid(partner2Id)) {
+      project.partner2Id = new ObjectId(partner2Id);
     }
 
     // Enhanced hashtag processing to handle both traditional and categorized hashtags

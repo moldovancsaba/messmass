@@ -28,6 +28,18 @@ interface Project {
   viewSlug?: string;
   editSlug?: string;
   styleId?: string | null;
+  partner1?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
+  partner2?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -651,23 +663,72 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                   return (
                     <tr key={project._id}>
                       <td className="project-name">
-                        {/* WHAT: Event name as a clickable button to share project stats page
-                         * WHY: Proper button styling (same as Edit Stats) for readability, keeps left position as project title */}
-                        {project.viewSlug ? (
-                          <button 
-                            onClick={() => {
-                              setSharePageId(project.viewSlug!);
-                              setSharePageType('stats');
-                              setSharePopupOpen(true);
-                            }}
-                            className="btn btn-small btn-success"
-                            title={`Share statistics page for ${project.eventName}`}
-                          >
-                            {project.eventName}
-                          </button>
-                        ) : (
-                          <span className="project-name-text">{project.eventName}</span>
-                        )}
+                        {/* WHAT: Sports Match layout with emoji and partner logos
+                         * WHY: Match partner management style, show team logos for Sports Match projects */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {/* WHAT: Standalone emoji matching partner management size */}
+                          {project.partner1 && (
+                            <span style={{ fontSize: '2rem', flexShrink: 0 }}>
+                              {project.partner1.emoji}
+                            </span>
+                          )}
+                          
+                          {/* WHAT: Partner 1 (Home Team) logo */}
+                          {project.partner1?.logoUrl ? (
+                            <img
+                              src={project.partner1.logoUrl}
+                              alt={`${project.partner1.name} logo`}
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'contain',
+                                borderRadius: '4px',
+                                flexShrink: 0,
+                              }}
+                              title={project.partner1.name}
+                            />
+                          ) : project.partner1 ? (
+                            <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                          ) : null}
+                          
+                          {/* WHAT: Event name as clickable button */}
+                          {project.viewSlug ? (
+                            <button 
+                              onClick={() => {
+                                setSharePageId(project.viewSlug!);
+                                setSharePageType('stats');
+                                setSharePopupOpen(true);
+                              }}
+                              className="btn btn-small btn-success"
+                              style={{ fontWeight: 500 }}
+                              title={`Share statistics page for ${project.eventName}`}
+                            >
+                              {project.eventName}
+                            </button>
+                          ) : (
+                            <span className="project-name-text" style={{ fontWeight: 500 }}>
+                              {project.eventName}
+                            </span>
+                          )}
+                          
+                          {/* WHAT: Partner 2 (Away Team) logo */}
+                          {project.partner2?.logoUrl ? (
+                            <img
+                              src={project.partner2.logoUrl}
+                              alt={`${project.partner2.name} logo`}
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'contain',
+                                borderRadius: '4px',
+                                flexShrink: 0,
+                              }}
+                              title={project.partner2.name}
+                            />
+                          ) : project.partner2 ? (
+                            <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                          ) : null}
+                        </div>
                         
                         {(() => {
                           const displayHashtags: React.ReactElement[] = [];
