@@ -736,8 +736,56 @@ export default function QuickAddPage() {
               
               <div className="bg-gray-50 p-6 rounded-lg mb-6">
                 <div className="mb-4 pb-4 border-bottom-default">
-                  <strong className="inline-block min-w-120 text-gray-700">Event Name:</strong>
-                  <span className="text-gray-900 text-xl font-semibold">{matchPreview.eventName}</span>
+                  <strong className="block mb-2 text-gray-700">Event Name:</strong>
+                  {/* WHAT: Match projects list layout with emoji and logos
+                   * WHY: Show visual preview exactly as it will appear in projects list */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                    {/* Standalone emoji */}
+                    <span style={{ fontSize: '2rem', flexShrink: 0 }}>
+                      {matchPreview.partner1.emoji}
+                    </span>
+                    
+                    {/* Partner 1 (Home Team) logo */}
+                    {matchPreview.partner1.logoUrl ? (
+                      <img
+                        src={matchPreview.partner1.logoUrl}
+                        alt={`${matchPreview.partner1.name} logo`}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          objectFit: 'contain',
+                          borderRadius: '4px',
+                          flexShrink: 0,
+                        }}
+                        title={matchPreview.partner1.name}
+                      />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                    )}
+                    
+                    {/* Event name */}
+                    <span className="text-gray-900" style={{ fontSize: '1.25rem', fontWeight: 500 }}>
+                      {matchPreview.eventName}
+                    </span>
+                    
+                    {/* Partner 2 (Away Team) logo */}
+                    {matchPreview.partner2.logoUrl ? (
+                      <img
+                        src={matchPreview.partner2.logoUrl}
+                        alt={`${matchPreview.partner2.name} logo`}
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          objectFit: 'contain',
+                          borderRadius: '4px',
+                          flexShrink: 0,
+                        }}
+                        title={matchPreview.partner2.name}
+                      />
+                    ) : (
+                      <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                    )}
+                  </div>
                 </div>
                 
                 <div className="mb-4 pb-4 border-bottom-default">
