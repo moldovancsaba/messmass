@@ -320,31 +320,48 @@ export default function PartnersAdminPage() {
   // WHAT: Link partner to TheSportsDB team and fetch enriched data
   // WHY: Store stadium capacity, league info, badges for chart benchmarking
   async function linkToSportsDbTeam(teamId: string) {
-    if (!editingPartner) return;
+    console.log('🔗 === LINK TO SPORTSDB STARTED ===');
+    console.log('Team ID:', teamId);
+    console.log('Editing Partner:', editingPartner);
+    
+    if (!editingPartner) {
+      console.error('❌ No partner being edited!');
+      return;
+    }
 
     // WHAT: Confirm replacement if partner already has SportsDB data
     // WHY: Prevent accidental overwrites of existing links
     if (editPartnerData.sportsDb?.teamId) {
+      console.log('⚠️ Partner already has SportsDB link, asking for confirmation...');
       if (!confirm('This partner is already linked to a team. Replace the existing link?')) {
+        console.log('❌ User cancelled replacement');
         return;
       }
+      console.log('✅ User confirmed replacement');
     }
 
     try {
+      console.log('🔄 Setting linking state to true...');
       setSportsDbLinking(true);
       setError('');
 
       // WHAT: Fetch full team details from TheSportsDB API
       // WHY: Need complete metadata (capacity, league, badge, etc.)
+      console.log('🔍 Fetching team details from TheSportsDB...');
       const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
+      console.log('API Response Status:', lookupRes.status);
+      
       const lookupData = await lookupRes.json();
+      console.log('API Response Data:', lookupData);
 
       if (!lookupData.success || !lookupData.team) {
+        console.error('❌ Failed to fetch team details:', lookupData.error);
         setError('Failed to fetch team details from TheSportsDB');
         return;
       }
 
       const team = lookupData.team;
+      console.log('✅ Team details received:', team.strTeam);
 
       // WHAT: Build SportsDB enrichment object
       // WHY: Store all relevant metadata for future chart calculations
@@ -366,6 +383,8 @@ export default function PartnersAdminPage() {
       // WHY: Display logo in UI without depending on TheSportsDB URLs
       let logoUrl: string | undefined;
       if (team.strBadge) {
+        console.log('🖼️ Uploading logo to ImgBB...');
+        console.log('Badge URL:', team.strBadge);
         try {
           const imgbbRes = await fetch('/api/partners/upload-logo', {
             method: 'POST',
@@ -376,21 +395,32 @@ export default function PartnersAdminPage() {
             }),
           });
           
+          console.log('ImgBB Response Status:', imgbbRes.status);
           const imgbbData = await imgbbRes.json();
+          console.log('ImgBB Response Data:', imgbbData);
+          
           if (imgbbData.success && imgbbData.logoUrl) {
             logoUrl = imgbbData.logoUrl;
             console.log('✅ Logo uploaded to ImgBB:', logoUrl);
           } else {
-            console.warn('⚠️ Logo upload failed, continuing without logo');
+            console.warn('⚠️ Logo upload failed:', imgbbData.error);
+            console.warn('Continuing without logo...');
           }
         } catch (logoErr) {
           console.error('❌ Logo upload error:', logoErr);
           // Continue without logo - non-blocking error
         }
+      } else {
+        console.log('ℹ️ No badge URL provided, skipping logo upload');
       }
 
       // WHAT: Update partner with SportsDB data and logo via PUT /api/partners
       // WHY: Persist enrichment data to MongoDB for chart system
+      console.log('💾 Saving to database...');
+      console.log('Partner ID:', editingPartner._id);
+      console.log('SportsDB Data:', sportsDbData);
+      console.log('Logo URL:', logoUrl);
+      
       const updateRes = await fetch('/api/partners', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -401,7 +431,9 @@ export default function PartnersAdminPage() {
         }),
       });
 
+      console.log('Database Update Response Status:', updateRes.status);
       const updateData = await updateRes.json();
+      console.log('Database Update Response Data:', updateData);
 
       if (updateData.success) {
         console.log('✅ Partner linked successfully, updating UI...');
@@ -436,11 +468,18 @@ export default function PartnersAdminPage() {
         setError(updateData.error || 'Failed to save SportsDB link');
       }
     } catch (err) {
-      console.error('❌ Network error:', err);
+      console.error('❌ === EXCEPTION CAUGHT ===');
+      console.error('Error type:', typeof err);
+      console.error('Error:', err);
+      if (err instanceof Error) {
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+      }
       setError('Network error while linking to TheSportsDB');
-      console.error('SportsDB link error:', err);
     } finally {
+      console.log('🏁 Linking process finished, resetting state...');
       setSportsDbLinking(false);
+      console.log('🔗 === LINK TO SPORTSDB COMPLETED ===');
     }
   }
 
@@ -1171,7 +1210,10 @@ export default function PartnersAdminPage() {
                           {/* WHY: Trigger full team lookup and data enrichment */}
                           <button
                             type="button"
-                            onClick={() => linkToSportsDbTeam(team.idTeam)}
+                            onClick={() => {
+                              console.log('👆 LINK BUTTON CLICKED for team:', team.idTeam, team.strTeam);
+                              linkToSportsDbTeam(team.idTeam);
+                            }}
                             disabled={sportsDbLinking}
                             className="btn btn-small btn-primary"
                           >
