@@ -327,8 +327,9 @@ export default function PartnersAdminPage() {
     return matches / longer.length;
   }
   
-  // WHAT: Search TheSportsDB for teams by name with fuzzy matching
-  // WHY: Admin needs to find teams to link partners with sports club data, handle typos
+  // WHAT: Search TheSportsDB for teams by name
+  // WHY: Admin needs to find teams to link partners with sports club data
+  // NOTE: Free API tier has limitations - may not return all teams the website shows
   async function searchSportsDbTeams() {
     if (!sportsDbSearch.trim()) return;
 
@@ -1449,14 +1450,27 @@ export default function PartnersAdminPage() {
                   <button
                     type="button"
                     onClick={() => setShowManualEntry(true)}
-                    className="btn btn-small btn-secondary"
-                    style={{ width: '100%', marginTop: '12px' }}
+                    style={{ 
+                      width: '100%', 
+                      marginTop: '12px',
+                      padding: '12px',
+                      backgroundColor: '#f59e0b',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d97706'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f59e0b'}
                   >
-                    🖊️ Can't find it? Enter sports data manually
+                    🖊️ Can't find it? Enter manually (Recommended for missing teams)
                   </button>
 
                   <p className="text-xs text-gray-600 mt-2">
-                    Search for sports teams to enrich partner data with stadium capacity, league info, and badges.
+                    <strong>Note:</strong> TheSportsDB FREE API has limitations - it may not return all teams shown on their website. 
+                    If you can't find your team, use the manual entry button above.
                   </p>
                 </div>
               </div>
