@@ -6,6 +6,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import PartnerSelector from '@/components/PartnerSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
+import styles from '@/app/admin/projects/PartnerLogos.module.css';
 
 /* What: Quick Add from Sheet page for bulk event import
    Why: Streamline creating projects from Google Sheets data */
@@ -464,38 +465,16 @@ export default function QuickAddPage() {
       
       {/* WHAT: Tab navigation for different quick add methods
        * WHY: Support both sheet import and partner-based creation */}
-      <div className="mb-6" style={{ display: 'flex', gap: 'var(--mm-space-2)', borderBottom: '2px solid var(--mm-border-color-default)' }}>
+      <div className={styles.tabNavigation}>
         <button
           onClick={() => setActiveTab('sheet')}
-          style={{
-            padding: 'var(--mm-space-3) var(--mm-space-4)',
-            background: activeTab === 'sheet' ? 'var(--mm-color-primary-500)' : 'transparent',
-            color: activeTab === 'sheet' ? 'var(--mm-white)' : 'var(--mm-gray-700)',
-            border: 'none',
-            borderBottom: activeTab === 'sheet' ? '3px solid var(--mm-color-primary-600)' : '3px solid transparent',
-            cursor: 'pointer',
-            fontWeight: 'var(--mm-font-weight-semibold)',
-            fontSize: 'var(--mm-font-size-base)',
-            transition: 'all 0.2s ease',
-            borderRadius: 'var(--mm-radius-md) var(--mm-radius-md) 0 0',
-          }}
+          className={`${styles.tabButton} ${activeTab === 'sheet' ? styles.active : ''}`}
         >
           📋 From Sheet
         </button>
         <button
           onClick={() => setActiveTab('partners')}
-          style={{
-            padding: 'var(--mm-space-3) var(--mm-space-4)',
-            background: activeTab === 'partners' ? 'var(--mm-color-primary-500)' : 'transparent',
-            color: activeTab === 'partners' ? 'var(--mm-white)' : 'var(--mm-gray-700)',
-            border: 'none',
-            borderBottom: activeTab === 'partners' ? '3px solid var(--mm-color-primary-600)' : '3px solid transparent',
-            cursor: 'pointer',
-            fontWeight: 'var(--mm-font-weight-semibold)',
-            fontSize: 'var(--mm-font-size-base)',
-            transition: 'all 0.2s ease',
-            borderRadius: 'var(--mm-radius-md) var(--mm-radius-md) 0 0',
-          }}
+          className={`${styles.tabButton} ${activeTab === 'partners' ? styles.active : ''}`}
         >
           🤝 Sports Match
         </button>
@@ -739,9 +718,9 @@ export default function QuickAddPage() {
                   <strong className="block mb-2 text-gray-700">Event Name:</strong>
                   {/* WHAT: Match projects list layout with emoji and logos
                    * WHY: Show visual preview exactly as it will appear in projects list */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                  <div className={styles.previewRow}>
                     {/* Standalone emoji */}
-                    <span style={{ fontSize: '2rem', flexShrink: 0 }}>
+                    <span className={styles.previewEmoji}>
                       {matchPreview.partner1.emoji}
                     </span>
                     
@@ -750,21 +729,15 @@ export default function QuickAddPage() {
                       <img
                         src={matchPreview.partner1.logoUrl}
                         alt={`${matchPreview.partner1.name} logo`}
-                        style={{
-                          width: '40px',
-                          height: '40px',
-                          objectFit: 'contain',
-                          borderRadius: '4px',
-                          flexShrink: 0,
-                        }}
+                        className={styles.previewLogo}
                         title={matchPreview.partner1.name}
                       />
                     ) : (
-                      <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                      <div className={styles.previewLogoPlaceholder} />
                     )}
                     
                     {/* Event name */}
-                    <span className="text-gray-900" style={{ fontSize: '1.25rem', fontWeight: 500 }}>
+                    <span className={styles.previewEventName}>
                       {matchPreview.eventName}
                     </span>
                     
@@ -773,17 +746,11 @@ export default function QuickAddPage() {
                       <img
                         src={matchPreview.partner2.logoUrl}
                         alt={`${matchPreview.partner2.name} logo`}
-                        style={{
-                          width: '40px',
-                          height: '40px',
-                          objectFit: 'contain',
-                          borderRadius: '4px',
-                          flexShrink: 0,
-                        }}
+                        className={styles.previewLogo}
                         title={matchPreview.partner2.name}
                       />
                     ) : (
-                      <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                      <div className={styles.previewLogoPlaceholder} />
                     )}
                   </div>
                 </div>

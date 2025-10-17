@@ -14,7 +14,7 @@ import {
   getAllHashtagRepresentations,
   expandHashtagsWithCategories 
 } from '@/lib/hashtagCategoryUtils';
-
+import partnerStyles from './PartnerLogos.module.css';
 // WHAT: Server-driven sorting implementation for full-dataset ordering
 // WHY: Clicking table headers must sort ALL projects, not just the visible page.
 // This replaces client-only sorting with backend sort & offset pagination in search/sort modes.
@@ -585,8 +585,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       {/* WHAT: Pagination stats header showing X of Y items
        * WHY: Consistent format across all admin pages (Categories, Users, Hashtags) */}
       {!loading && projects.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+        <div className={partnerStyles.paginationStats}>
+          <div className={partnerStyles.paginationText}>
             Showing {projects.length} of {totalMatched} projects
           </div>
         </div>
@@ -665,10 +665,10 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                       <td className="project-name">
                         {/* WHAT: Sports Match layout with emoji and partner logos
                          * WHY: Match partner management style, show team logos for Sports Match projects */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className={partnerStyles.partnerRow}>
                           {/* WHAT: Standalone emoji matching partner management size */}
                           {project.partner1 && (
-                            <span style={{ fontSize: '2rem', flexShrink: 0 }}>
+                            <span className={partnerStyles.partnerEmoji}>
                               {project.partner1.emoji}
                             </span>
                           )}
@@ -678,17 +678,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             <img
                               src={project.partner1.logoUrl}
                               alt={`${project.partner1.name} logo`}
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                objectFit: 'contain',
-                                borderRadius: '4px',
-                                flexShrink: 0,
-                              }}
+                              className={partnerStyles.partnerLogo}
                               title={project.partner1.name}
                             />
                           ) : project.partner1 ? (
-                            <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                            <div className={partnerStyles.partnerLogoPlaceholder} />
                           ) : null}
                           
                           {/* WHAT: Event name as clickable button */}
@@ -699,14 +693,13 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                 setSharePageType('stats');
                                 setSharePopupOpen(true);
                               }}
-                              className="btn btn-small btn-success"
-                              style={{ fontWeight: 500 }}
+                              className={`btn btn-small btn-success ${partnerStyles.eventName}`}
                               title={`Share statistics page for ${project.eventName}`}
                             >
                               {project.eventName}
                             </button>
                           ) : (
-                            <span className="project-name-text" style={{ fontWeight: 500 }}>
+                            <span className={`project-name-text ${partnerStyles.eventName}`}>
                               {project.eventName}
                             </span>
                           )}
@@ -716,17 +709,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             <img
                               src={project.partner2.logoUrl}
                               alt={`${project.partner2.name} logo`}
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                objectFit: 'contain',
-                                borderRadius: '4px',
-                                flexShrink: 0,
-                              }}
+                              className={partnerStyles.partnerLogo}
                               title={project.partner2.name}
                             />
                           ) : project.partner2 ? (
-                            <div style={{ width: '40px', height: '40px', flexShrink: 0 }} />
+                            <div className={partnerStyles.partnerLogoPlaceholder} />
                           ) : null}
                         </div>
                         

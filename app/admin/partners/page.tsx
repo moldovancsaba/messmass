@@ -13,6 +13,8 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
+import styles from './PartnerManager.module.css';
+import logoStyles from '../projects/PartnerLogos.module.css';
 
 // WHAT: Bitly link option for multi-select
 interface BitlyLinkOption {
@@ -961,8 +963,8 @@ export default function PartnersAdminPage() {
 
       {/* WHAT: Pagination stats header */}
       {!loading && partners.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+        <div className={logoStyles.paginationStats}>
+          <div className={logoStyles.paginationText}>
             Showing {partners.length} of {totalMatched} partners
           </div>
         </div>
@@ -985,12 +987,11 @@ export default function PartnersAdminPage() {
             <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
-                  <th style={{ width: '5%' }}>Icon</th>
-                  <th style={{ width: '5%' }}>Logo</th>
+                  <th className={styles.colIcon}>Icon</th>
+                  <th className={styles.colLogo}>Logo</th>
                   <th 
                     onClick={() => handleSort('name')} 
-                    className="sortable-th" 
-                    style={{ width: '15%' }}
+                    className={`sortable-th ${styles.colName}`}
                   >
                     Name
                     {sortField === 'name' && (
@@ -999,12 +1000,11 @@ export default function PartnersAdminPage() {
                       </span>
                     )}
                   </th>
-                  <th style={{ width: '30%' }}>Hashtags</th>
-                  <th style={{ width: '25%' }}>Bitly Links</th>
+                  <th className={styles.colHashtags}>Hashtags</th>
+                  <th className={styles.colBitlyLinks}>Bitly Links</th>
                   <th 
                     onClick={() => handleSort('updatedAt')} 
-                    className="sortable-th" 
-                    style={{ width: '10%' }}
+                    className={`sortable-th ${styles.colUpdated}`}
                   >
                     Updated
                     {sortField === 'updatedAt' && (
@@ -1013,36 +1013,31 @@ export default function PartnersAdminPage() {
                       </span>
                     )}
                   </th>
-                  <th style={{ width: '10%' }}>Actions</th>
+                  <th className={styles.colActions}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {partners.map(partner => (
                   <tr key={partner._id}>
-                    <td style={{ fontSize: '2rem', textAlign: 'center' }}>{partner.emoji}</td>
-                    <td style={{ textAlign: 'center', padding: '8px' }}>
+                    <td className={styles.emojiCell}>{partner.emoji}</td>
+                    <td className={styles.logoCell}>
                       {/* WHAT: Display partner logo from ImgBB */}
                       {/* WHY: Show team badge for visual identification */}
                       {partner.logoUrl ? (
                         <img
                           src={partner.logoUrl}
                           alt={`${partner.name} logo`}
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            objectFit: 'contain',
-                            borderRadius: '4px',
-                          }}
+                          className={styles.logoImage}
                           title={`${partner.name} logo`}
                         />
                       ) : (
-                        <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>—</span>
+                        <span className={styles.logoPlaceholder}>—</span>
                       )}
                     </td>
                     <td className="font-medium">{partner.name}</td>
                     <td>
                       {/* WHAT: Display hashtags as bubbles */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                      <div className={styles.hashtagsContainer}>
                         {/* Traditional hashtags */}
                         {partner.hashtags && partner.hashtags.map(hashtag => (
                           <ColoredHashtagBubble
@@ -1074,7 +1069,7 @@ export default function PartnersAdminPage() {
                     <td>
                       {/* WHAT: Display Bitly links */}
                       {partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div className={styles.bitlyLinksContainer}>
                           {partner.bitlyLinks.map(link => (
                             <a
                               key={link._id}
@@ -1302,38 +1297,27 @@ export default function PartnersAdminPage() {
                   
                   {/* WHAT: Display existing SportsDB link if present */}
                   {editPartnerData.sportsDb && (
-                    <div style={{
-                      padding: '12px',
-                      backgroundColor: '#f0fdf4',
-                      border: '1px solid #86efac',
-                      borderRadius: '8px',
-                      marginBottom: '12px'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <div className={styles.sportsDbPanel}>
+                      <div className={styles.sportsDbPanelInner}>
                         {/* WHAT: Display team badge if available */}
                         {editPartnerData.sportsDb.badge && (
                           <img
                             src={editPartnerData.sportsDb.badge}
                             alt="Team badge"
-                            style={{
-                              width: '48px',
-                              height: '48px',
-                              objectFit: 'contain',
-                              flexShrink: 0
-                            }}
+                            className={styles.sportsDbBadge}
                           />
                         )}
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 600, color: '#16a34a', marginBottom: '4px' }}>
+                        <div className={styles.sportsDbInfo}>
+                          <div className={styles.sportsDbTitle}>
                             ✓ Linked to TheSportsDB
                           </div>
                           {editPartnerData.sportsDb.leagueName && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                            <div className={styles.sportsDbInfoLine}>
                               League: {editPartnerData.sportsDb.leagueName}
                             </div>
                           )}
                           {editPartnerData.sportsDb.venueName && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                            <div className={styles.sportsDbInfoLine}>
                               Venue: {editPartnerData.sportsDb.venueName}
                               {editPartnerData.sportsDb.venueCapacity && (
                                 <span> ({editPartnerData.sportsDb.venueCapacity.toLocaleString()} capacity)</span>
@@ -1341,17 +1325,17 @@ export default function PartnersAdminPage() {
                             </div>
                           )}
                           {editPartnerData.sportsDb.country && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                            <div className={styles.sportsDbInfoLine}>
                               Country: {editPartnerData.sportsDb.country}
                             </div>
                           )}
                           {editPartnerData.sportsDb.founded && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                            <div className={styles.sportsDbInfoLine}>
                               Founded: {editPartnerData.sportsDb.founded}
                             </div>
                           )}
                           {editPartnerData.sportsDb.lastSynced && (
-                            <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '4px' }}>
+                            <div className={styles.sportsDbSyncTime}>
                               Last synced: {new Date(editPartnerData.sportsDb.lastSynced).toLocaleString()}
                             </div>
                           )}
@@ -1363,8 +1347,7 @@ export default function PartnersAdminPage() {
                         type="button"
                         onClick={resyncSportsDbData}
                         disabled={sportsDbLinking}
-                        className="btn btn-small btn-secondary"
-                        style={{ marginTop: '12px', width: '100%' }}
+                        className={`btn btn-small btn-secondary ${styles.sportsDbResyncButton}`}
                       >
                         {sportsDbLinking ? '🔄 Syncing...' : '🔄 Re-sync from TheSportsDB'}
                       </button>
@@ -1373,10 +1356,10 @@ export default function PartnersAdminPage() {
 
                   {/* WHAT: Search interface for finding teams */}
                   {/* WHY: Allow admin to search TheSportsDB by team name */}
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                  <div className={styles.sportsDbSearchContainer}>
                     <input
                       type="text"
-                      className="form-input"
+                      className={`form-input ${styles.sportsDbSearchInput}`}
                       value={sportsDbSearch}
                       onChange={(e) => setSportsDbSearch(e.target.value)}
                       onKeyDown={(e) => {
@@ -1386,7 +1369,6 @@ export default function PartnersAdminPage() {
                         }
                       }}
                       placeholder="Search TheSportsDB by team name..."
-                      style={{ flex: 1 }}
                     />
                     <button
                       type="button"
@@ -1401,59 +1383,43 @@ export default function PartnersAdminPage() {
                   {/* WHAT: Display search results with link buttons */}
                   {/* WHY: Show matching teams with relevant metadata for admin selection */}
                   {sportsDbResults.length > 0 && (
-                    <div style={{
-                      maxHeight: '300px',
-                      overflowY: 'auto',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px'
-                    }}>
+                    <div className={styles.sportsDbResults}>
                       {sportsDbResults.map((team) => (
                         <div
                           key={team.idTeam}
-                          style={{
-                            padding: '12px',
-                            borderBottom: '1px solid #e5e7eb',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px'
-                          }}
+                          className={styles.teamResultItem}
                         >
                           {/* WHAT: Team badge thumbnail */}
                           {team.strBadge && (
                             <img
                               src={team.strBadge}
                               alt={team.strTeam}
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                objectFit: 'contain',
-                                flexShrink: 0
-                              }}
+                              className={styles.teamResultBadge}
                             />
                           )}
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: 600, marginBottom: '2px' }}>
+                          <div className={styles.teamResultInfo}>
+                            <div className={styles.teamResultName}>
                               {team.strTeam}
                             </div>
                             {/* WHAT: Show sport type to differentiate multi-sport clubs */}
                             {/* WHY: Aalborg has handball, soccer teams - user needs to know which */}
                             {team.strSport && (
-                              <div style={{ fontSize: '0.875rem', color: '#3b82f6', fontWeight: 500, marginBottom: '2px' }}>
+                              <div className={styles.teamResultSport}>
                                 🏅 {team.strSport}
                               </div>
                             )}
                             {team.strLeague && (
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
+                              <div className={styles.teamResultLeague}>
                                 {team.strLeague}
                               </div>
                             )}
                             {team.strCountry && (
-                              <div style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '2px' }}>
+                              <div className={styles.teamResultCountry}>
                                 🌍 {team.strCountry}
                               </div>
                             )}
                             {team.intStadiumCapacity && (
-                              <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
+                              <div className={styles.teamResultCapacity}>
                                 🏟️ Capacity: {parseInt(team.intStadiumCapacity, 10).toLocaleString()}
                               </div>
                             )}
@@ -1481,20 +1447,7 @@ export default function PartnersAdminPage() {
                   <button
                     type="button"
                     onClick={() => setShowManualEntry(true)}
-                    style={{ 
-                      width: '100%', 
-                      marginTop: '12px',
-                      padding: '12px',
-                      backgroundColor: '#f59e0b',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d97706'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f59e0b'}
+                    className={styles.manualEntryButton}
                   >
                     🖊️ Can't find it? Enter manually (Recommended for missing teams)
                   </button>

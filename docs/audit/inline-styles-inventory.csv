@@ -1,0 +1,35 @@
+filepath,line_number,style_properties,component,priority,design_token_replacement
+app/admin/projects/ProjectsPageClient.tsx,589,"display: flex, alignItems: center, justifyContent: space-between, gap: 1rem, marginBottom: 1rem",Pagination stats container,HIGH,"styles.paginationStats"
+app/admin/projects/ProjectsPageClient.tsx,590,"color: #6b7280, fontSize: 0.875rem",Pagination text,HIGH,"styles.paginationText"
+app/admin/projects/ProjectsPageClient.tsx,669,"display: flex, alignItems: center, gap: 8px",Partner row container,HIGH,"styles.partnerRow"
+app/admin/projects/ProjectsPageClient.tsx,672,"fontSize: 2rem, flexShrink: 0",Partner emoji,HIGH,"styles.partnerEmoji"
+app/admin/projects/ProjectsPageClient.tsx,681-687,"width: 40px, height: 40px, objectFit: contain, borderRadius: 4px, flexShrink: 0",Partner logo image,HIGH,"styles.partnerLogo"
+app/admin/projects/ProjectsPageClient.tsx,691,"width: 40px, height: 40px, flexShrink: 0",Partner logo placeholder,HIGH,"styles.partnerLogoPlaceholder"
+app/admin/projects/ProjectsPageClient.tsx,703,"fontWeight: 500",Event name button,HIGH,"styles.eventName"
+app/admin/projects/ProjectsPageClient.tsx,709,"fontWeight: 500",Event name text,HIGH,"styles.eventName"
+app/admin/projects/ProjectsPageClient.tsx,719-725,"width: 40px, height: 40px, objectFit: contain, borderRadius: 4px, flexShrink: 0",Partner2 logo image,HIGH,"styles.partnerLogo"
+app/admin/projects/ProjectsPageClient.tsx,729,"width: 40px, height: 40px, flexShrink: 0",Partner2 logo placeholder,HIGH,"styles.partnerLogoPlaceholder"
+app/admin/quick-add/page.tsx,742,"display: flex, alignItems: center, gap: 8px, marginTop: 8px",Preview partner row,HIGH,"styles.partnerRow"
+app/admin/quick-add/page.tsx,744,"fontSize: 2rem, flexShrink: 0",Preview emoji,HIGH,"styles.partnerEmoji"
+app/admin/quick-add/page.tsx,753-759,"width: 40px, height: 40px, objectFit: contain, borderRadius: 4px, flexShrink: 0",Preview home logo,HIGH,"styles.partnerLogo"
+app/admin/quick-add/page.tsx,763,"width: 40px, height: 40px, flexShrink: 0",Preview home placeholder,HIGH,"styles.partnerLogoPlaceholder"
+app/admin/quick-add/page.tsx,767,"fontSize: 1.25rem, fontWeight: 500",Preview event name,HIGH,"styles.eventNamePreview"
+app/admin/quick-add/page.tsx,776-782,"width: 40px, height: 40px, objectFit: contain, borderRadius: 4px, flexShrink: 0",Preview away logo,HIGH,"styles.partnerLogo"
+app/admin/quick-add/page.tsx,786,"width: 40px, height: 40px, flexShrink: 0",Preview away placeholder,HIGH,"styles.partnerLogoPlaceholder"
+app/admin/partners/page.tsx,964,"display: flex, alignItems: center, justifyContent: space-between, gap: 1rem, marginBottom: 1rem",Pagination stats,MEDIUM,"styles.paginationStats"
+app/admin/partners/page.tsx,965,"color: #6b7280, fontSize: 0.875rem",Pagination text,MEDIUM,"styles.paginationText"
+app/admin/partners/page.tsx,988,"width: 5%",Table header width,LOW,Keep for table layout
+app/admin/partners/page.tsx,1022,"fontSize: 2rem, textAlign: center",Partner emoji cell,MEDIUM,"styles.partnerEmojiCell"
+app/admin/partners/page.tsx,1023,"textAlign: center, padding: 8px",Partner logo cell,MEDIUM,"styles.partnerLogoCell"
+app/admin/partners/page.tsx,1030-1035,"width: 40px, height: 40px, objectFit: contain, borderRadius: 4px",Partner logo image,MEDIUM,"styles.partnerLogo"
+app/admin/partners/page.tsx,1039,"color: #9ca3af, fontSize: 0.75rem",Empty logo text,MEDIUM,"styles.emptyLogoText"
+app/admin/partners/page.tsx,1045,"display: flex, flexWrap: wrap, gap: 4px",Hashtags container,MEDIUM,"styles.hashtagsContainer"
+app/admin/partners/page.tsx,1077,"display: flex, flexDirection: column, gap: 4px",Bitly links container,MEDIUM,"styles.linksContainer"
+
+Total inline styles found: 27
+High priority: 17 (partner logos system)
+Medium priority: 9 (partner management page)
+Low priority: 1 (table widths - keep for layout)
+
+Generated: 2025-01-17T15:39:00.000Z
+Status: AUDIT COMPLETE - Ready for Phase 2 (Replacement)

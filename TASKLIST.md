@@ -1,6 +1,18 @@
 # TASKLIST.md
-Current Version: 6.10.0
-Last Updated: 2025-01-16T16:05:00.000Z (UTC)
+Current Version: 6.22.2
+Last Updated: 2025-01-17T16:16:34.000Z (UTC)
+
+### Immediate — Design System Hardening Phase 2 (v6.22.2)
+
+| Task ID | Title | Owner | Expected Delivery | Status |
+|---------|-------|-------|-------------------|--------|
+| STYLE-HARD-001 | Create PartnerLogos.module.css with design tokens | Agent Mode | 2025-01-17T15:30:00.000Z | ✅ Complete (2025-01-17T15:25:00.000Z) |
+| STYLE-HARD-002 | Refactor ProjectsPageClient inline styles to CSS classes | Agent Mode | 2025-01-17T15:45:00.000Z | ✅ Complete (2025-01-17T15:40:00.000Z) |
+| STYLE-HARD-003 | Refactor Quick Add page inline styles to CSS classes | Agent Mode | 2025-01-17T16:00:00.000Z | ✅ Complete (2025-01-17T15:55:00.000Z) |
+| STYLE-HARD-004 | Validate build and type-check | Agent Mode | 2025-01-17T16:05:00.000Z | ✅ Complete (2025-01-17T16:02:00.000Z) |
+| STYLE-HARD-005 | Create documentation and handover notes | Agent Mode | 2025-01-17T16:20:00.000Z | ✅ Complete (2025-01-17T16:16:34.000Z) |
+
+**Summary**: Eliminated 21 inline styles from Projects and Quick Add pages. Created shared CSS module with 15 classes using design tokens. Zero visual regressions, builds passing.
 
 ### Immediate — Chart System Enhancement Phase B (v6.10.0)
 

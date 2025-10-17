@@ -64,3 +64,92 @@
   color: var(--mm-gray-500);
   font-size: var(--mm-font-size-sm); /* 0.875rem / 14px */
 }
+
+/* ====================================
+   TAB NAVIGATION STYLES
+   ==================================== */
+
+/* WHAT: Tab navigation container
+ * WHY: Consistent tab navigation across admin pages */
+.tabNavigation {
+  display: flex;
+  gap: var(--mm-space-2);
+  border-bottom: 2px solid var(--mm-border-color-default);
+  margin-bottom: var(--mm-space-6);
+}
+
+/* WHAT: Individual tab button
+ * WHY: Clean tab styling using design tokens */
+.tabButton {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  background: transparent;
+  color: var(--mm-gray-700);
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: var(--mm-font-weight-semibold);
+  font-size: var(--mm-font-size-base);
+  transition: all 0.2s ease;
+  border-radius: var(--mm-radius-md) var(--mm-radius-md) 0 0;
+}
+
+/* WHAT: Active tab styling
+ * WHY: Clear visual indicator for selected tab */
+.tabButton.active {
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border-bottom: 3px solid var(--mm-color-primary-600);
+}
+
+/* WHAT: Tab button hover state
+ * WHY: Interactive feedback */
+.tabButton:hover:not(.active) {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+}
+
+/* ====================================
+   MATCH PREVIEW STYLES
+   ==================================== */
+
+/* WHAT: Preview container for match details
+ * WHY: Larger display for preview section */
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  margin-top: var(--mm-space-2);
+}
+
+/* WHAT: Larger emoji for preview
+ * WHY: More prominent in preview section */
+.previewEmoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+/* WHAT: Preview logo styling
+ * WHY: Consistent size with projects list */
+.previewLogo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--mm-radius-sm);
+  flex-shrink: 0;
+}
+
+/* WHAT: Preview logo placeholder
+ * WHY: Maintain layout when logo missing */
+.previewLogoPlaceholder {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* WHAT: Event name in preview (larger text)
+ * WHY: More prominent display in preview section */
+.previewEventName {
+  font-size: var(--mm-font-size-xl); /* 1.25rem / 20px */
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-900);
+}

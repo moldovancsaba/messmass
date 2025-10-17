@@ -1,0 +1,291 @@
+/* app/admin/partners/PartnerManager.module.css */
+/* WHAT: Styles for Partner Management page
+ * WHY: Eliminate inline styles, use design tokens for consistency
+ * PATTERN: Matches AdminHero, modal, and table design system */
+
+/* ====================================
+   TABLE COLUMN WIDTHS
+   ==================================== */
+
+/* WHAT: Table header column widths
+ * WHY: Consistent column sizing for partner data display */
+.colIcon {
+  width: 5%;
+}
+
+.colLogo {
+  width: 5%;
+}
+
+.colName {
+  width: 15%;
+}
+
+.colHashtags {
+  width: 30%;
+}
+
+.colBitlyLinks {
+  width: 25%;
+}
+
+.colUpdated {
+  width: 10%;
+}
+
+.colActions {
+  width: 10%;
+}
+
+/* ====================================
+   TABLE CELL CONTENT STYLES
+   ==================================== */
+
+/* WHAT: Emoji cell styling
+ * WHY: Large emoji display matching partner emoji size */
+.emojiCell {
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* WHAT: Logo cell container
+ * WHY: Centered logo display with consistent padding */
+.logoCell {
+  text-align: center;
+  padding: var(--mm-space-2); /* 8px */
+}
+
+/* WHAT: Partner logo image
+ * WHY: Consistent 40x40px size matching design system */
+.logoImage {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--mm-radius-sm); /* 4px */
+}
+
+/* WHAT: Logo placeholder when missing
+ * WHY: Visual feedback for missing logos */
+.logoPlaceholder {
+  color: var(--mm-gray-400);
+  font-size: var(--mm-font-size-xs); /* 0.75rem */
+}
+
+/* WHAT: Hashtags container
+ * WHY: Flex wrap layout for multiple hashtag bubbles */
+.hashtagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-1); /* 4px */
+}
+
+/* WHAT: Bitly links container
+ * WHY: Vertical stack of links with spacing */
+.bitlyLinksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1); /* 4px */
+}
+
+/* ====================================
+   SPORTSDB LINKING SECTION
+   ==================================== */
+
+/* WHAT: Existing SportsDB link display panel
+ * WHY: Green success panel showing linked team data */
+.sportsDbPanel {
+  padding: var(--mm-space-3);
+  background-color: var(--mm-color-success-50);
+  border: 1px solid var(--mm-color-success-300);
+  border-radius: var(--mm-radius-md);
+  margin-bottom: var(--mm-space-3);
+}
+
+/* WHAT: Panel inner layout
+ * WHY: Flex layout for badge + team info */
+.sportsDbPanelInner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mm-space-3);
+}
+
+/* WHAT: Team badge in SportsDB panel
+ * WHY: Larger badge display (48x48px) */
+.sportsDbBadge {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* WHAT: Team info container
+ * WHY: Flexible width for text content */
+.sportsDbInfo {
+  flex: 1;
+}
+
+/* WHAT: SportsDB link title
+ * WHY: Bold green text indicating success */
+.sportsDbTitle {
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-color-success-600);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: SportsDB info line (league, venue, etc.)
+ * WHY: Smaller gray text for metadata */
+.sportsDbInfoLine {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-1);
+}
+
+.sportsDbInfoLine:last-child {
+  margin-bottom: 0;
+}
+
+/* WHAT: Last synced timestamp
+ * WHY: Extra small gray text for sync metadata */
+.sportsDbSyncTime {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-400);
+  margin-top: var(--mm-space-1);
+}
+
+/* WHAT: Re-sync button wrapper
+ * WHY: Full-width button with top spacing */
+.sportsDbResyncButton {
+  margin-top: var(--mm-space-3);
+  width: 100%;
+}
+
+/* ====================================
+   SPORTSDB SEARCH INTERFACE
+   ==================================== */
+
+/* WHAT: Search input + button container
+ * WHY: Flex layout for search bar */
+.sportsDbSearchContainer {
+  display: flex;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-3);
+}
+
+/* WHAT: Search input field
+ * WHY: Flexible width input */
+.sportsDbSearchInput {
+  flex: 1;
+}
+
+/* ====================================
+   SPORTSDB SEARCH RESULTS
+   ==================================== */
+
+/* WHAT: Results container
+ * WHY: Scrollable list of team results */
+.sportsDbResults {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-md);
+}
+
+/* WHAT: Individual team result item
+ * WHY: Flex layout for badge + info + button */
+.teamResultItem {
+  padding: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+.teamResultItem:last-child {
+  border-bottom: none;
+}
+
+/* WHAT: Team badge in search results
+ * WHY: Smaller badge display (40x40px) */
+.teamResultBadge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* WHAT: Team info container in results
+ * WHY: Flexible width for team details */
+.teamResultInfo {
+  flex: 1;
+}
+
+/* WHAT: Team name in results
+ * WHY: Bold primary text */
+.teamResultName {
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: Sport type badge
+ * WHY: Blue accent text to differentiate multi-sport clubs */
+.teamResultSport {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-color-primary-600);
+  font-weight: var(--mm-font-weight-medium);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: League name in results
+ * WHY: Gray secondary text */
+.teamResultLeague {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: Country in results
+ * WHY: Lighter gray text */
+.teamResultCountry {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-400);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: Stadium capacity in results
+ * WHY: Lighter gray text, no margin on last item */
+.teamResultCapacity {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-400);
+}
+
+/* ====================================
+   MANUAL ENTRY BUTTON
+   ==================================== */
+
+/* WHAT: Manual entry button styling
+ * WHY: Warning-colored CTA when API doesn't have team */
+.manualEntryButton {
+  width: 100%;
+  margin-top: var(--mm-space-3);
+  padding: var(--mm-space-3);
+  background-color: var(--mm-color-warning-500);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.manualEntryButton:hover {
+  background-color: var(--mm-color-warning-600);
+}
+
+.manualEntryButton:active {
+  background-color: var(--mm-color-warning-700);
+}
+
+.manualEntryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
