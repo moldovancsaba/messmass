@@ -327,14 +327,45 @@ export default function PartnersAdminPage() {
     return matches / longer.length;
   }
   
-  // WHAT: Search TheSportsDB for teams by name
-  // WHY: Admin needs to find teams to link partners with sports club data
+  // WHAT: Search TheSportsDB for teams by name OR by pasted team URL
+  // WHY: Allow direct linking when user provides a team profile URL (e.g., https://www.thesportsdb.com/team/134003-fehérvár)
   // NOTE: Free API tier has limitations - may not return all teams the website shows
   async function searchSportsDbTeams() {
     if (!sportsDbSearch.trim()) return;
 
     try {
       setSportsDbSearching(true);
+
+      // WHAT: Detect TheSportsDB team URL and extract ID
+      const urlMatch = sportsDbSearch.match(/thesportsdb\.com\/team\/(\d+)/i);
+      if (urlMatch && urlMatch[1]) {
+        const teamIdFromUrl = urlMatch[1];
+        console.log('🔎 Detected TheSportsDB team URL. Extracted ID:', teamIdFromUrl);
+
+        // Fetch exact team by ID via lookup
+        const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamIdFromUrl}`);
+        const lookupData = await lookupRes.json();
+        console.log('Lookup response for URL ID:', lookupData);
+
+        if (lookupData.success && lookupData.result) {
+          const team = lookupData.result;
+          // Validate that returned ID matches extracted ID
+          if (team.idTeam !== teamIdFromUrl) {
+            setError(`TheSportsDB returned a different team (got ${team.idTeam}). Please try manual entry.`);
+            setSportsDbResults([]);
+          } else {
+            // Show only this exact team as the sole result
+            setSportsDbResults([team]);
+            setError('');
+          }
+        } else {
+          setError(lookupData.error || 'Failed to fetch team from TheSportsDB by URL');
+          setSportsDbResults([]);
+        }
+        return; // Done handling URL flow
+      }
+
+      // Fallback: normal name search
       const params = new URLSearchParams();
       params.set('type', 'team');
       params.set('query', sportsDbSearch);
