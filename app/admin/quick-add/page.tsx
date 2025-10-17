@@ -315,9 +315,9 @@ export default function QuickAddPage() {
       return;
     }
     
-    // WHAT: Build event name with Partner 1 emoji
-    // WHY: Emoji indicates event type (soccer, handball, etc.)
-    const eventName = `${partner1.emoji} ${partner1.name} x ${partner2.name}`;
+    // WHAT: Build event name without emoji
+    // WHY: Emoji is now displayed separately in UI, no need in name string
+    const eventName = `${partner1.name} x ${partner2.name}`;
     
     // WHAT: Collect hashtags - Partner 1 ALL, Partner 2 without location category
     // WHY: Location should come from home team (Partner 1) only
