@@ -354,13 +354,13 @@ export default function PartnersAdminPage() {
       const lookupData = await lookupRes.json();
       console.log('API Response Data:', lookupData);
 
-      if (!lookupData.success || !lookupData.team) {
+      if (!lookupData.success || !lookupData.result) {
         console.error('❌ Failed to fetch team details:', lookupData.error);
         setError('Failed to fetch team details from TheSportsDB');
         return;
       }
 
-      const team = lookupData.team;
+      const team = lookupData.result;
       console.log('✅ Team details received:', team.strTeam);
 
       // WHAT: Build SportsDB enrichment object
@@ -496,12 +496,12 @@ export default function PartnersAdminPage() {
       const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
       const lookupData = await lookupRes.json();
 
-      if (!lookupData.success || !lookupData.team) {
+      if (!lookupData.success || !lookupData.result) {
         setError('Failed to re-sync team details from TheSportsDB');
         return;
       }
 
-      const team = lookupData.team;
+      const team = lookupData.result;
 
       const sportsDbData = {
         teamId: team.idTeam,
