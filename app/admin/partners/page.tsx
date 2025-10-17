@@ -84,6 +84,18 @@ export default function PartnersAdminPage() {
   const [sportsDbResults, setSportsDbResults] = useState<any[]>([]);
   const [sportsDbSearching, setSportsDbSearching] = useState(false);
   const [sportsDbLinking, setSportsDbLinking] = useState(false);
+  
+  // WHAT: Manual SportsDB entry state
+  // WHY: Allow manual override when API doesn't have team or returns wrong data
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualEntryData, setManualEntryData] = useState({
+    venueName: '',
+    venueCapacity: '',
+    leagueName: '',
+    country: '',
+    founded: '',
+    logoUrl: '',
+  });
 
   // WHAT: Debounce search input (300ms delay)
   // WHY: Reduce API calls while user types
@@ -288,8 +300,35 @@ export default function PartnersAdminPage() {
     }
   }
 
-  // WHAT: Search TheSportsDB for teams by name
-  // WHY: Allow admin to find and link sports organizations to partners
+  // WHAT: Calculate simple string similarity for fuzzy matching
+  // WHY: Handle typos like "Alaborg" -> "Aalborg"
+  // RETURNS: Similarity score 0-1 (higher = more similar)
+  function stringSimilarity(str1: string, str2: string): number {
+    const s1 = str1.toLowerCase();
+    const s2 = str2.toLowerCase();
+    
+    // Exact match
+    if (s1 === s2) return 1.0;
+    
+    // Contains match (substring)
+    if (s1.includes(s2) || s2.includes(s1)) return 0.8;
+    
+    // Levenshtein distance approximation (character overlap)
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+    
+    let matches = 0;
+    for (let i = 0; i < shorter.length; i++) {
+      if (longer.includes(shorter[i])) {
+        matches++;
+      }
+    }
+    
+    return matches / longer.length;
+  }
+  
+  // WHAT: Search TheSportsDB for teams by name with fuzzy matching
+  // WHY: Admin needs to find teams to link partners with sports club data, handle typos
   async function searchSportsDbTeams() {
     if (!sportsDbSearch.trim()) return;
 
@@ -303,7 +342,24 @@ export default function PartnersAdminPage() {
       const data = await res.json();
 
       if (data.success && data.results) {
-        setSportsDbResults(data.results);
+        // WHAT: Apply fuzzy filtering on client side
+        // WHY: Be more forgiving with typos, show close matches
+        const searchLower = sportsDbSearch.toLowerCase();
+        const filtered = data.results.filter((team: any) => {
+          const similarity = stringSimilarity(searchLower, team.strTeam);
+          // Show if similarity > 0.4 (forgiving threshold)
+          return similarity > 0.4;
+        });
+        
+        // Sort by similarity (best matches first)
+        filtered.sort((a: any, b: any) => {
+          const simA = stringSimilarity(searchLower, a.strTeam);
+          const simB = stringSimilarity(searchLower, b.strTeam);
+          return simB - simA;
+        });
+        
+        console.log(`🔍 Fuzzy search: ${data.results.length} total, ${filtered.length} after filtering`);
+        setSportsDbResults(filtered);
       } else {
         setError(data.error || 'Failed to search TheSportsDB');
         setSportsDbResults([]);
@@ -319,9 +375,11 @@ export default function PartnersAdminPage() {
 
   // WHAT: Link partner to TheSportsDB team and fetch enriched data
   // WHY: Store stadium capacity, league info, badges for chart benchmarking
-  async function linkToSportsDbTeam(teamId: string) {
+  // PARAMS: teamId - TheSportsDB team ID, teamData - optional team data from search (bypasses lookup API)
+  async function linkToSportsDbTeam(teamId: string, teamData?: any) {
     console.log('🔗 === LINK TO SPORTSDB STARTED ===');
     console.log('Team ID:', teamId);
+    console.log('Team Data Provided:', teamData ? 'Yes (from search)' : 'No (will use lookup API)');
     console.log('Editing Partner:', editingPartner);
     
     if (!editingPartner) {
@@ -345,30 +403,39 @@ export default function PartnersAdminPage() {
       setSportsDbLinking(true);
       setError('');
 
-      // WHAT: Fetch full team details from TheSportsDB API
-      // WHY: Need complete metadata (capacity, league, badge, etc.)
-      console.log('🔍 Fetching team details from TheSportsDB...');
-      const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
-      console.log('API Response Status:', lookupRes.status);
+      let team: any;
       
-      const lookupData = await lookupRes.json();
-      console.log('API Response Data:', lookupData);
+      // WHAT: Use provided team data or fetch from lookup API
+      // WHY: Search data is reliable, lookup API has bugs (returns wrong teams)
+      if (teamData) {
+        console.log('✅ Using team data from search results (bypassing lookup API)');
+        team = teamData;
+      } else {
+        // WHAT: Fetch full team details from TheSportsDB API
+        // WHY: Fallback for re-sync or when team data not provided
+        console.log('🔍 Fetching team details from TheSportsDB lookup API...');
+        const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
+        console.log('API Response Status:', lookupRes.status);
+        
+        const lookupData = await lookupRes.json();
+        console.log('API Response Data:', lookupData);
 
-      if (!lookupData.success || !lookupData.result) {
-        console.error('❌ Failed to fetch team details:', lookupData.error);
-        setError('Failed to fetch team details from TheSportsDB');
-        return;
-      }
+        if (!lookupData.success || !lookupData.result) {
+          console.error('❌ Failed to fetch team details:', lookupData.error);
+          setError('Failed to fetch team details from TheSportsDB');
+          return;
+        }
 
-      const team = lookupData.result;
-      console.log('✅ Team details received:', team.strTeam);
-      
-      // WHAT: Validate that returned team ID matches requested ID
-      // WHY: TheSportsDB API sometimes returns wrong team (known bug)
-      if (team.idTeam !== teamId) {
-        console.error(`❌ TheSportsDB API returned wrong team! Requested: ${teamId}, Got: ${team.idTeam}`);
-        setError(`TheSportsDB API error: Requested team ${teamId} but received ${team.strTeam} (${team.idTeam}). This team cannot be linked due to API issues.`);
-        return;
+        team = lookupData.result;
+        console.log('✅ Team details received from lookup:', team.strTeam);
+        
+        // WHAT: Validate that returned team ID matches requested ID
+        // WHY: TheSportsDB lookup API sometimes returns wrong team (known bug)
+        if (team.idTeam !== teamId) {
+          console.error(`❌ TheSportsDB API returned wrong team! Requested: ${teamId}, Got: ${team.idTeam}`);
+          setError(`TheSportsDB API error: Requested team ${teamId} but received ${team.strTeam} (${team.idTeam}). This team cannot be linked due to API issues.`);
+          return;
+        }
       }
 
       // WHAT: Build SportsDB enrichment object
@@ -592,6 +659,117 @@ export default function PartnersAdminPage() {
     }
   }
 
+  // WHAT: Handle manual SportsDB data entry
+  // WHY: Fallback when API doesn't have team or returns wrong data
+  async function handleManualEntry(e: React.FormEvent) {
+    e.preventDefault();
+    
+    if (!editingPartner) return;
+    
+    try {
+      setSportsDbLinking(true);
+      setError('');
+      
+      // WHAT: Build SportsDB data from manual input
+      const sportsDbData = {
+        teamId: undefined, // No API team ID
+        leagueId: undefined,
+        venueId: undefined,
+        venueCapacity: manualEntryData.venueCapacity ? parseInt(manualEntryData.venueCapacity, 10) : undefined,
+        venueName: manualEntryData.venueName || undefined,
+        leagueName: manualEntryData.leagueName || undefined,
+        founded: manualEntryData.founded || undefined,
+        country: manualEntryData.country || undefined,
+        website: undefined,
+        badge: manualEntryData.logoUrl || undefined,
+        lastSynced: new Date().toISOString(),
+      };
+      
+      // WHAT: Upload logo to ImgBB if URL provided
+      let logoUrl: string | undefined;
+      if (manualEntryData.logoUrl) {
+        console.log('🖼️ Uploading manually provided logo to ImgBB...');
+        try {
+          const imgbbRes = await fetch('/api/partners/upload-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              badgeUrl: manualEntryData.logoUrl,
+              partnerName: editingPartner.name,
+            }),
+          });
+          
+          const imgbbData = await imgbbRes.json();
+          if (imgbbData.success && imgbbData.logoUrl) {
+            logoUrl = imgbbData.logoUrl;
+            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
+          }
+        } catch (logoErr) {
+          console.error('❌ Logo upload error:', logoErr);
+        }
+      }
+      
+      // WHAT: Save to database
+      const updateRes = await fetch('/api/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId: editingPartner._id,
+          sportsDb: sportsDbData,
+          logoUrl: logoUrl,
+        }),
+      });
+      
+      const updateData = await updateRes.json();
+      
+      if (updateData.success) {
+        setSuccessMessage('✓ Successfully added manual sports data');
+        
+        // Update local state
+        setEditPartnerData({
+          name: editPartnerData.name,
+          emoji: editPartnerData.emoji,
+          hashtags: editPartnerData.hashtags,
+          categorizedHashtags: editPartnerData.categorizedHashtags,
+          bitlyLinkIds: editPartnerData.bitlyLinkIds,
+          logoUrl: logoUrl,
+          sportsDb: sportsDbData,
+        });
+        
+        // Update partners list
+        setPartners(prevPartners => 
+          prevPartners.map(p => 
+            p._id === editingPartner._id 
+              ? { ...p, logoUrl, sportsDb: sportsDbData }
+              : p
+          )
+        );
+        
+        setEditingPartner(prev => prev ? { ...prev, logoUrl, sportsDb: sportsDbData } : null);
+        
+        // Clear manual entry form
+        setShowManualEntry(false);
+        setManualEntryData({
+          venueName: '',
+          venueCapacity: '',
+          leagueName: '',
+          country: '',
+          founded: '',
+          logoUrl: '',
+        });
+        
+        loadData();
+      } else {
+        setError(updateData.error || 'Failed to save manual sports data');
+      }
+    } catch (err) {
+      setError('Network error while saving manual sports data');
+      console.error('Manual entry error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  }
+  
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values including SportsDB enrichment
   function openEditForm(partner: PartnerResponse) {
@@ -1216,24 +1394,36 @@ export default function PartnersAdminPage() {
                             <div style={{ fontWeight: 600, marginBottom: '2px' }}>
                               {team.strTeam}
                             </div>
+                            {/* WHAT: Show sport type to differentiate multi-sport clubs */}
+                            {/* WHY: Aalborg has handball, soccer teams - user needs to know which */}
+                            {team.strSport && (
+                              <div style={{ fontSize: '0.875rem', color: '#3b82f6', fontWeight: 500, marginBottom: '2px' }}>
+                                🏅 {team.strSport}
+                              </div>
+                            )}
                             {team.strLeague && (
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2px' }}>
                                 {team.strLeague}
+                              </div>
+                            )}
+                            {team.strCountry && (
+                              <div style={{ fontSize: '0.875rem', color: '#9ca3af', marginBottom: '2px' }}>
+                                🌍 {team.strCountry}
                               </div>
                             )}
                             {team.intStadiumCapacity && (
                               <div style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
-                                Capacity: {parseInt(team.intStadiumCapacity, 10).toLocaleString()}
+                                🏟️ Capacity: {parseInt(team.intStadiumCapacity, 10).toLocaleString()}
                               </div>
                             )}
                           </div>
-                          {/* WHAT: Link button to connect partner with this team */}
-                          {/* WHY: Trigger full team lookup and data enrichment */}
+                          {/* WHAT: Link button with team data to bypass buggy lookup API */}
+                          {/* WHY: Search API works correctly, lookup API returns wrong teams */}
                           <button
                             type="button"
                             onClick={() => {
                               console.log('👆 LINK BUTTON CLICKED for team:', team.idTeam, team.strTeam);
-                              linkToSportsDbTeam(team.idTeam);
+                              linkToSportsDbTeam(team.idTeam, team);
                             }}
                             disabled={sportsDbLinking}
                             className="btn btn-small btn-primary"
@@ -1245,7 +1435,18 @@ export default function PartnersAdminPage() {
                     </div>
                   )}
 
-                  <p className="text-xs text-gray-600 mt-1">
+                  {/* WHAT: Manual entry button */}
+                  {/* WHY: Fallback when team not in API or API returns wrong data */}
+                  <button
+                    type="button"
+                    onClick={() => setShowManualEntry(true)}
+                    className="btn btn-small btn-secondary"
+                    style={{ width: '100%', marginTop: '12px' }}
+                  >
+                    🖊️ Can't find it? Enter sports data manually
+                  </button>
+
+                  <p className="text-xs text-gray-600 mt-2">
                     Search for sports teams to enrich partner data with stadium capacity, league info, and badges.
                   </p>
                 </div>
@@ -1265,6 +1466,112 @@ export default function PartnersAdminPage() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Updating...' : 'Update Partner'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* WHAT: Manual Sports Data Entry Modal */}
+      {/* WHY: Fallback when TheSportsDB doesn't have team or API returns wrong data */}
+      {showManualEntry && (
+        <div className="modal-overlay" onClick={() => setShowManualEntry(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">🖊️ Enter Sports Data Manually</h2>
+              <button className="modal-close" onClick={() => setShowManualEntry(false)}>✕</button>
+            </div>
+            <form onSubmit={handleManualEntry}>
+              <div className="modal-body">
+                <p className="text-sm text-gray-600 mb-4">
+                  Use this form when TheSportsDB doesn't have the team or returns incorrect data. All fields are optional.
+                </p>
+                
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Venue Name</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={manualEntryData.venueName}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, venueName: e.target.value }))}
+                    placeholder="e.g., Jutlander Bank Arena"
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Venue Capacity</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={manualEntryData.venueCapacity}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, venueCapacity: e.target.value }))}
+                    placeholder="e.g., 5000"
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">League Name</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={manualEntryData.leagueName}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, leagueName: e.target.value }))}
+                    placeholder="e.g., Danish Mens Handball League"
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Country</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={manualEntryData.country}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, country: e.target.value }))}
+                    placeholder="e.g., Denmark"
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Founded Year</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={manualEntryData.founded}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, founded: e.target.value }))}
+                    placeholder="e.g., 2000"
+                  />
+                </div>
+
+                <div className="form-group mb-4">
+                  <label className="form-label-block">Logo URL</label>
+                  <input
+                    type="url"
+                    className="form-input"
+                    value={manualEntryData.logoUrl}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, logoUrl: e.target.value }))}
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    Logo will be uploaded to ImgBB for permanent hosting
+                  </p>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button"
+                  className="btn btn-small btn-secondary" 
+                  onClick={() => setShowManualEntry(false)}
+                  disabled={sportsDbLinking}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="btn btn-small btn-primary"
+                  disabled={sportsDbLinking}
+                >
+                  {sportsDbLinking ? 'Saving...' : 'Save Sports Data'}
                 </button>
               </div>
             </form>
