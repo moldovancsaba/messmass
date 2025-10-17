@@ -189,6 +189,19 @@ export async function searchTeams(query: string): Promise<SportsDbTeam[]> {
 }
 
 /**
+ * WHAT: Extract team ID from TheSportsDB URL
+ * WHY: Support direct URL-based enrichment when user pastes team profile URL
+ * EXAMPLE: extractTeamIdFromUrl("https://www.thesportsdb.com/team/141401-eisbären-berlin") => "141401"
+ * RETURNS: Team ID string or null if URL is invalid
+ */
+export function extractTeamIdFromUrl(url: string): string | null {
+  if (!url || typeof url !== 'string') return null;
+  
+  const urlMatch = url.match(/thesportsdb\.com\/team\/(\d+)/i);
+  return urlMatch ? urlMatch[1] : null;
+}
+
+/**
  * WHAT: Lookup team by ID
  * WHY: Fetch complete team details including stadium capacity for enrichment
  * EXAMPLE: lookupTeam("133604") => {idTeam: "133604", strTeam: "FC Barcelona", intStadiumCapacity: "99354", ...}

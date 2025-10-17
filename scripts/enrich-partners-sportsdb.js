@@ -2,6 +2,17 @@
 // WHAT: Bulk enrichment script to link existing partners with TheSportsDB data
 // WHY: Automate the process of enriching partner database with sports club metadata
 // USAGE: node scripts/enrich-partners-sportsdb.js [--dry-run] [--force] [--filter=name]
+//
+// URL-BASED ENRICHMENT:
+// Partners with a `sportsDbUrl` field will be enriched using direct team ID lookup.
+// This is more reliable than name search when the exact TheSportsDB URL is known.
+// Example URL: https://www.thesportsdb.com/team/141401-eisbären-berlin
+//
+// To add sportsDbUrl to partners, update MongoDB manually:
+//   db.partners.updateOne(
+//     { name: "Eisbären Berlin" },
+//     { $set: { sportsDbUrl: "https://www.thesportsdb.com/team/141401-eisbären-berlin" } }
+//   )
 
 // WHAT: Load environment variables from .env.local
 // WHY: Allow script to run without manual env var setup
@@ -168,6 +179,98 @@ function buildSportsDbData(team) {
 }
 
 /**
+ * WHAT: Extract team ID from TheSportsDB URL
+ * WHY: Support direct URL-based enrichment when search fails
+ * RETURNS: Team ID string or null if URL is invalid
+ */
+function extractTeamIdFromUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  
+  const urlMatch = url.match(/thesportsdb\.com\/team\/(\d+)/i);
+  return urlMatch ? urlMatch[1] : null;
+}
+
+/**
+ * WHAT: Enrich partner using direct TheSportsDB URL
+ * WHY: Fallback when name-based search fails or returns wrong results
+ * PARAMS: partner - partner document, partnersCollection - MongoDB collection
+ * RETURNS: Object with success status and enrichment data
+ */
+async function enrichPartnerByUrl(partner, partnersCollection, isDryRun) {
+  const result = {
+    success: false,
+    action: null, // 'enriched', 'validation_error', 'extraction_error', 'api_error'
+    data: null,
+  };
+  
+  // WHAT: Check if partner has sportsDbUrl field
+  if (!partner.sportsDbUrl) {
+    return result;
+  }
+  
+  console.log(`  🔗 Found TheSportsDB URL: ${partner.sportsDbUrl}`);
+  
+  // WHAT: Extract team ID from URL
+  const teamId = extractTeamIdFromUrl(partner.sportsDbUrl);
+  
+  if (!teamId) {
+    console.log(`  ❌ Failed to extract team ID from URL`);
+    result.action = 'extraction_error';
+    return result;
+  }
+  
+  console.log(`  🔍 Extracted team ID: ${teamId}`);
+  
+  // WHAT: Fetch team details by ID
+  await sleep(RATE_LIMIT_DELAY);
+  const team = await lookupTeamById(teamId);
+  
+  if (!team) {
+    console.log(`  ❌ Failed to fetch team details from API`);
+    result.action = 'api_error';
+    return result;
+  }
+  
+  // WHAT: Validate API response matches extracted team ID
+  // WHY: TheSportsDB API sometimes returns wrong team
+  if (team.idTeam !== teamId) {
+    console.log(`  ❌ Validation failed: expected team ID ${teamId}, got ${team.idTeam}`);
+    result.action = 'validation_error';
+    return result;
+  }
+  
+  console.log(`  ✅ Team data validated: ${team.strTeam}`);
+  
+  // WHAT: Build enrichment data
+  const sportsDbData = buildSportsDbData(team);
+  
+  // WHAT: Display enrichment data
+  console.log(`  📊 League: ${sportsDbData.leagueName || 'N/A'}`);
+  console.log(`  🏟️  Venue: ${sportsDbData.venueName || 'N/A'} (${sportsDbData.venueCapacity?.toLocaleString() || 'N/A'} capacity)`);
+  
+  // WHAT: Update partner in database (unless dry-run)
+  if (!isDryRun) {
+    await partnersCollection.updateOne(
+      { _id: partner._id },
+      { 
+        $set: { 
+          sportsDb: sportsDbData,
+          updatedAt: new Date().toISOString(),
+        } 
+      }
+    );
+    console.log(`  💾 Saved to database`);
+  } else {
+    console.log(`  🧪 DRY RUN - would save to database`);
+  }
+  
+  result.success = true;
+  result.action = 'enriched';
+  result.data = sportsDbData;
+  return result;
+}
+
+/**
  * WHAT: Main enrichment logic
  * WHY: Process all partners and link them to TheSportsDB
  */
@@ -224,10 +327,14 @@ async function enrichPartners() {
     const stats = {
       total: partners.length,
       enriched: 0,
+      urlEnriched: 0,
+      searchEnriched: 0,
       skipped: 0,
       noMatch: 0,
       manualReview: 0,
       errors: 0,
+      urlValidationErrors: 0,
+      urlExtractionErrors: 0,
     };
     
     const manualReviewList = [];
@@ -243,6 +350,27 @@ async function enrichPartners() {
         console.log(`  ⏭️  Already has SportsDB data (use --force to re-enrich)`);
         stats.skipped++;
         continue;
+      }
+      
+      // WHAT: Try URL-based enrichment first if sportsDbUrl field exists
+      // WHY: Direct URL lookup is more reliable than name search
+      if (partner.sportsDbUrl) {
+        const urlResult = await enrichPartnerByUrl(partner, partnersCollection, isDryRun);
+        
+        if (urlResult.success) {
+          stats.enriched++;
+          stats.urlEnriched++;
+          console.log('');
+          continue;
+        } else if (urlResult.action === 'validation_error') {
+          stats.urlValidationErrors++;
+        } else if (urlResult.action === 'extraction_error') {
+          stats.urlExtractionErrors++;
+        } else if (urlResult.action === 'api_error') {
+          stats.errors++;
+        }
+        
+        console.log(`  ⚠️  URL-based enrichment failed, falling back to name search...`);
       }
       
       // WHAT: Search TheSportsDB by partner name
@@ -309,6 +437,7 @@ async function enrichPartners() {
         }
         
         stats.enriched++;
+        stats.searchEnriched++;
       } else if (bestMatch.score >= MEDIUM_CONFIDENCE_THRESHOLD) {
         // WHAT: Log medium-confidence matches for manual review
         // WHY: Prevent false positives while flagging likely matches
@@ -338,10 +467,18 @@ async function enrichPartners() {
     console.log('====================');
     console.log(`Total partners processed: ${stats.total}`);
     console.log(`✅ Successfully enriched: ${stats.enriched}`);
+    console.log(`   🔗 URL-based: ${stats.urlEnriched}`);
+    console.log(`   🔍 Search-based: ${stats.searchEnriched}`);
     console.log(`⏭️  Skipped (already enriched): ${stats.skipped}`);
     console.log(`❌ No matches found: ${stats.noMatch}`);
     console.log(`⚠️  Requires manual review: ${stats.manualReview}`);
     console.log(`🔴 Errors: ${stats.errors}`);
+    if (stats.urlValidationErrors > 0) {
+      console.log(`   ⚠️  URL validation errors: ${stats.urlValidationErrors}`);
+    }
+    if (stats.urlExtractionErrors > 0) {
+      console.log(`   ⚠️  URL extraction errors: ${stats.urlExtractionErrors}`);
+    }
     
     // WHAT: Print manual review list
     // WHY: Help admin complete remaining enrichments
