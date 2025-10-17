@@ -1,0 +1,66 @@
+/* PartnerLogos.module.css - Partner/Team Display Layout */
+/* WHAT: Reusable styles for displaying partner logos with event names
+ * WHY: Eliminate hardcoded inline styles, use design tokens
+ * USED IN: Projects list, Quick Add preview */
+
+/* WHAT: Main container for partner logos + event name layout
+ * WHY: Flexbox layout with consistent spacing using design tokens */
+.partnerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2); /* 8px spacing between elements */
+}
+
+/* WHAT: Standalone emoji matching partner management size
+ * WHY: Visual indicator for event type (soccer, handball, etc.) */
+.partnerEmoji {
+  font-size: 2rem; /* Matches partner management emoji size */
+  flex-shrink: 0;
+}
+
+/* WHAT: Partner logo image styling
+ * WHY: Consistent 40x40px size matching partner management */
+.partnerLogo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--mm-radius-sm); /* 4px from theme */
+  flex-shrink: 0;
+}
+
+/* WHAT: Empty placeholder when logo is missing
+ * WHY: Maintain layout consistency even without logo */
+.partnerLogoPlaceholder {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* WHAT: Event name text styling
+ * WHY: Match partner management font weight */
+.eventName {
+  font-weight: var(--mm-font-weight-medium); /* 500 */
+}
+
+/* WHAT: Event name in preview (larger text)
+ * WHY: More prominent display in preview section */
+.eventNamePreview {
+  font-size: var(--mm-font-size-xl); /* 1.25rem / 20px */
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-900);
+}
+
+/* WHAT: Pagination stats styling
+ * WHY: Consistent spacing and colors using design tokens */
+.paginationStats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-4); /* 1rem */
+  margin-bottom: var(--mm-space-4);
+}
+
+.paginationText {
+  color: var(--mm-gray-500);
+  font-size: var(--mm-font-size-sm); /* 0.875rem / 14px */
+}

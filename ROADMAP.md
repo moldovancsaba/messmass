@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 6.8.0
-Last Updated: 2025-10-16T14:40:30.000Z (UTC)
+Current Version: 6.22.2
+Last Updated: 2025-01-17T15:25:00.000Z (UTC)
 
 ---
 
@@ -72,14 +72,31 @@ Author: Agent Mode
 Logged at: 2025-01-21T12:52:00.000Z
 Author: Agent Mode
 
-### Style System Hardening (Q2 2026)
-**Priority**: Medium
-**Dependencies**: Design tokens, AdminHero, Layout utilities
-- **Action**: Remove remaining inline styles; centralize into CSS Modules using tokens
-- **Action**: Consolidate duplicated CSS files — keep only canonical imports
-- **Action**: Prepare Atlas-managed theme injection plan (GET/PUT /api/admin/theme)
-- **Acceptance**: < 5 inline styles remaining, all design tokens centralized
-Logged at: 2025-01-21T12:52:00.000Z
+### Style System Hardening (Q1 2026) 🔄 IN PROGRESS
+**Priority**: Critical  
+**Status**: Active - Phase 1
+**Dependencies**: Design tokens (theme.css), CSS Modules
+
+**Problem Identified**: Hardcoded inline styles introduced in v6.22.0-6.22.2 violate design system:
+- app/admin/projects/ProjectsPageClient.tsx (partner logo layout)
+- app/admin/quick-add/page.tsx (preview section)  
+- app/admin/partners/page.tsx (table layouts)
+
+**Actions**:
+- **Phase 1**: Audit all inline styles, create inventory CSV ✓ Planned
+- **Phase 2**: Create reusable CSS modules for common layouts (PartnerLogos.module.css created)
+- **Phase 3**: Replace all inline styles with CSS module classes
+- **Phase 4**: Add ESLint rule to prevent inline styles
+- **Phase 5**: Consolidate duplicated CSS files
+- **Phase 6**: Prepare Atlas-managed theme injection plan (GET/PUT /api/admin/theme)
+
+**Acceptance Criteria**:
+- Zero inline styles (except computed token-driven styles)
+- All layouts use design tokens from theme.css
+- ESLint enforcement active
+- Visual regression: zero changes to UI appearance
+
+Logged at: 2025-01-17T15:25:00.000Z
 Author: Agent Mode
 
 ### Bitly Analytics Export & Reporting (Q2 2026)
@@ -306,6 +323,28 @@ Dependencies: None
   - Improve ordering UX
 - Audit and simplify unused admin features (Low)
   - Remove stale preview-only code paths
+
+---
+
+## 📦 Recently Completed
+
+### ✅ TheSportsDB URL-Based Team Lookup (v6.21.0)
+**Completed**: 2025-01-17T13:55:00.000Z
+- Direct team lookup by URL when search fails
+- Team ID extraction from TheSportsDB URLs
+- API validation to ensure correct team data
+- Fallback enrichment for bulk partner operations
+
+### ✅ Partner Logos in Projects List (v6.22.0-6.22.2)
+**Completed**: 2025-01-17T14:52:00.000Z  
+- Sports Match display with team logos
+- Layout: [Emoji] [Home Logo] Event Name [Away Logo]
+- Partner references (partner1Id, partner2Id) in projects
+- Logo population across cursor/sort/search pagination modes
+- Quick Add preview with logo display
+- Event name cleanup (emoji extracted from name string)
+
+**Technical Debt**: Introduced inline styles - tracked in Style System Hardening
 
 ---
 
