@@ -244,7 +244,7 @@ export default function HelpPage() {
           <h4>Login Problems</h4>
           <ul>
             <li>Clear browser cookies and try again</li>
-            <li>Use the "Clear Session" page: <code>/admin/clear-session</code></li>
+            <li>Use the &quot;Clear Session&quot; page: <code>/admin/clear-session</code></li>
             <li>Contact your administrator for password reset</li>
           </ul>
 
@@ -252,7 +252,7 @@ export default function HelpPage() {
           <ul>
             <li>Check your internet connection</li>
             <li>Refresh the page to see latest updates</li>
-            <li>Ensure you're on the correct edit link</li>
+            <li>Ensure you&apos;re on the correct edit link</li>
           </ul>
 
           <h4>Charts Not Displaying</h4>

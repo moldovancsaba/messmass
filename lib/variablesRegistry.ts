@@ -90,6 +90,49 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
   { name: 'bitlyChromeClicks', label: 'Chrome Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Chrome browser' },
   { name: 'bitlySafariClicks', label: 'Safari Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Safari browser' },
   { name: 'bitlyFirefoxClicks', label: 'Firefox Clicks', type: 'count', category: 'Bitly', description: 'Clicks from Firefox browser' },
+
+  // SportsDB - Core Identifiers
+  { name: 'sportsDbTeamId', label: 'SportsDB Team ID', type: 'text', category: 'SportsDB / Core', description: 'TheSportsDB unique team identifier' },
+  { name: 'sportsDbStrTeam', label: 'Full Team Name', type: 'text', category: 'SportsDB / Core', description: 'Official full team name from SportsDB' },
+  { name: 'sportsDbStrTeamShort', label: 'Short Team Name', type: 'text', category: 'SportsDB / Core', description: 'Abbreviated team name' },
+  { name: 'sportsDbStrAlternate', label: 'Alternative Team Names', type: 'text', category: 'SportsDB / Core', description: 'Alternative team name variations' },
+
+  // SportsDB - Sport & League
+  { name: 'sportsDbStrSport', label: 'Sport Type', type: 'text', category: 'SportsDB / League', description: 'Sport type (e.g., Soccer, Handball)' },
+  { name: 'sportsDbStrLeague', label: 'League Name', type: 'text', category: 'SportsDB / League', description: 'League name (e.g., La Liga)' },
+  { name: 'sportsDbLeagueId', label: 'SportsDB League ID', type: 'text', category: 'SportsDB / League', description: 'TheSportsDB league identifier' },
+
+  // SportsDB - Venue/Stadium
+  { name: 'sportsDbStrStadium', label: 'Stadium Name', type: 'text', category: 'SportsDB / Venue', description: 'Stadium or venue name' },
+  { name: 'sportsDbVenueId', label: 'SportsDB Venue ID', type: 'text', category: 'SportsDB / Venue', description: 'TheSportsDB venue identifier' },
+  { name: 'sportsDbIntStadiumCapacity', label: 'Stadium Capacity', type: 'count', category: 'SportsDB / Venue', description: 'Maximum stadium capacity (number of seats)' },
+  { name: 'sportsDbStrStadiumThumb', label: 'Stadium Image URL', type: 'text', category: 'SportsDB / Venue', description: 'Stadium image thumbnail URL' },
+  { name: 'sportsDbStrStadiumDescription', label: 'Stadium Description', type: 'text', category: 'SportsDB / Venue', description: 'Stadium description text' },
+  { name: 'sportsDbStrStadiumLocation', label: 'Stadium Location', type: 'text', category: 'SportsDB / Venue', description: 'Stadium city or location' },
+
+  // SportsDB - Team Details
+  { name: 'sportsDbIntFormedYear', label: 'Year Founded', type: 'text', category: 'SportsDB / Team', description: 'Year the team was founded' },
+  { name: 'sportsDbStrCountry', label: 'Country', type: 'text', category: 'SportsDB / Team', description: 'Team country' },
+  { name: 'sportsDbStrDescriptionEN', label: 'Team Description', type: 'text', category: 'SportsDB / Team', description: 'English description of the team' },
+
+  // SportsDB - Visual Assets
+  { name: 'sportsDbStrTeamBadge', label: 'Team Badge URL', type: 'text', category: 'SportsDB / Assets', description: 'Team badge/logo URL' },
+  { name: 'sportsDbStrTeamLogo', label: 'Team Logo URL', type: 'text', category: 'SportsDB / Assets', description: 'Alternative team logo URL' },
+  { name: 'sportsDbStrTeamJersey', label: 'Team Jersey URL', type: 'text', category: 'SportsDB / Assets', description: 'Team jersey/kit image URL' },
+  { name: 'sportsDbStrTeamBanner', label: 'Team Banner URL', type: 'text', category: 'SportsDB / Assets', description: 'Team banner image URL' },
+  { name: 'sportsDbStrTeamFanart1', label: 'Fan Art 1 URL', type: 'text', category: 'SportsDB / Assets', description: 'Fan art image 1 URL' },
+  { name: 'sportsDbStrTeamFanart2', label: 'Fan Art 2 URL', type: 'text', category: 'SportsDB / Assets', description: 'Fan art image 2 URL' },
+  { name: 'sportsDbStrTeamFanart3', label: 'Fan Art 3 URL', type: 'text', category: 'SportsDB / Assets', description: 'Fan art image 3 URL' },
+  { name: 'sportsDbStrTeamFanart4', label: 'Fan Art 4 URL', type: 'text', category: 'SportsDB / Assets', description: 'Fan art image 4 URL' },
+
+  // SportsDB - Social Media & Web
+  { name: 'sportsDbStrWebsite', label: 'Team Website', type: 'text', category: 'SportsDB / Social', description: 'Official team website URL' },
+  { name: 'sportsDbStrFacebook', label: 'Facebook Page', type: 'text', category: 'SportsDB / Social', description: 'Facebook page URL' },
+  { name: 'sportsDbStrTwitter', label: 'Twitter Handle', type: 'text', category: 'SportsDB / Social', description: 'Twitter/X handle' },
+  { name: 'sportsDbStrInstagram', label: 'Instagram Handle', type: 'text', category: 'SportsDB / Social', description: 'Instagram handle' },
+
+  // SportsDB - Sync Metadata
+  { name: 'sportsDbLastSynced', label: 'Last Synced', type: 'date', category: 'SportsDB / Meta', description: 'ISO 8601 timestamp of last SportsDB sync' },
 ]
 
 // Derived variables — formulas are informational; evaluation happens elsewhere when needed.

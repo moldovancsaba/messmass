@@ -41,6 +41,12 @@ const EXPLICIT_SUFFIX_MAP: Record<string, string> = {
   baseballCap: 'MERCHBASEBALLCAP',
   other: 'MERCHOTHER',
 
+  // SportsDB / Venue
+  sportsDbIntStadiumCapacity: 'STADIUMCAPACITY',
+  sportsDbStrStadium: 'STADIUMNAME',
+  sportsDbStrCountry: 'TEAMCOUNTRY',
+  sportsDbStrLeague: 'LEAGUENAME',
+  sportsDbStrSport: 'SPORTTYPE',
 }
 
 // Helper: convert camelCase → UPPERCASE with no separators (e.g., visitShortUrl → VISITSHORTURL)

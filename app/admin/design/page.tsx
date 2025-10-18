@@ -408,7 +408,7 @@ export default function AdminDesignPage() {
             <ColoredCard accentColor="#f5576c" hoverable={false} className="mb-8">
               <h3 className="subsection-heading">Main Content Surface Color</h3>
               <p className="subsection-description">
-                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It's applied via the --content-bg CSS variable.
+                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It&apos;s applied via the --content-bg CSS variable.
               </p>
               <div className="content-bg-grid">
                 <span className="content-bg-label">Content Background</span>

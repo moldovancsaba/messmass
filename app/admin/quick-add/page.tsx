@@ -496,7 +496,7 @@ export default function QuickAddPage() {
         </div>
         <ul className="text-sm text-gray-600 list-disc-padded">
           <li className="mb-2"><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
-          <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., "péntek, 17 október 2025")</li>
+          <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., &quot;péntek, 17 október 2025&quot;)</li>
           <li><strong>Home Team | Visitor Team | Location | League</strong></li>
         </ul>
       </ColoredCard>

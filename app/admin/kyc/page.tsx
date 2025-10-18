@@ -184,7 +184,10 @@ export default function KycVariablesPage() {
             {filtered.map((v) => {
             const source = computeSource(v);
             const typeBadge = v.type.toUpperCase();
-            const tags = [v.category, source, v.derived ? "derived" : undefined].filter(Boolean) as string[];
+            // WHAT: Deduplicate tags to avoid React key collision (e.g., derived variables have "derived" twice)
+            // WHY: Tags array may contain duplicate values (category, source, derived flag), causing React key warnings
+            const tagsRaw = [v.category, source, v.derived ? "derived" : undefined].filter(Boolean) as string[];
+            const tags = Array.from(new Set(tagsRaw));
             return (
               <ColoredCard key={v.name} accentColor="#3b82f6" hoverable={false}>
                 {/* WHAT: KYC variable row */}
@@ -208,8 +211,8 @@ export default function KycVariablesPage() {
                     )}
                     {tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {tags.map(t => (
-                          <span key={t} className="badge badge-secondary">{t}</span>
+                        {tags.map((t, idx) => (
+                          <span key={`${t}-${idx}`} className="badge badge-secondary">{t}</span>
                         ))}
                       </div>
                     )}

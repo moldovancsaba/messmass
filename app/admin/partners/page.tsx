@@ -1564,12 +1564,12 @@ export default function PartnersAdminPage() {
                     onClick={() => setShowManualEntry(true)}
                     className={styles.manualEntryButton}
                   >
-                    🖊️ Can't find it? Enter manually (Recommended for missing teams)
+                    🖊️ Can&apos;t find it? Enter manually (Recommended for missing teams)
                   </button>
 
                   <p className="text-xs text-gray-600 mt-2">
                     <strong>Note:</strong> TheSportsDB FREE API has limitations - it may not return all teams shown on their website. 
-                    If you can't find your team, use the manual entry button above.
+                    If you can&apos;t find your team, use the manual entry button above.
                   </p>
                 </div>
               </div>
@@ -1607,7 +1607,7 @@ export default function PartnersAdminPage() {
             <form onSubmit={handleManualEntry}>
               <div className="modal-body">
                 <p className="text-sm text-gray-600 mb-4">
-                  Use this form when TheSportsDB doesn't have the team or returns incorrect data. All fields are optional.
+                  Use this form when TheSportsDB doesn&apos;t have the team or returns incorrect data. All fields are optional.
                 </p>
                 
                 <div className="form-group mb-4">

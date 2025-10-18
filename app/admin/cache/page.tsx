@@ -155,7 +155,7 @@ Then select "Cached images and files" and click Clear.`);
             Browser Cache
           </h3>
           <p className="text-gray-600 mb-4">
-            Clears your browser's cache and forces a hard reload. This only affects YOUR browser.
+            Clears your browser&apos;s cache and forces a hard reload. This only affects YOUR browser.
           </p>
           <button
             onClick={() => clearCache('browser')}
