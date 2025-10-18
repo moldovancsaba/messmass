@@ -1,0 +1,654 @@
+/* app/styles/utilities.module.css */
+/* WHAT: Foundation utility classes for MessMass
+   WHY: Replace inline styles with reusable, theme-aware classes
+   HOW: Token-aligned utilities using app/styles/theme.css variables */
+
+/* ========================================
+   LAYOUT UTILITIES
+   ======================================== */
+
+/* Flexbox Layouts */
+.flexRow {
+  display: flex;
+  align-items: center;
+}
+
+.flexRowBetween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flexRowStart {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flexRowEnd {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.flexRowCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.flexColumnCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
+}
+
+/* Grid Layouts */
+.gridAuto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.gridAuto200 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.gridAuto300 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Gap Utilities (aligned to --mm-space scale) */
+.gapXs {
+  gap: var(--mm-space-1);
+}
+
+.gapSm {
+  gap: var(--mm-space-2);
+}
+
+.gapMd {
+  gap: var(--mm-space-4);
+}
+
+.gapLg {
+  gap: var(--mm-space-6);
+}
+
+.gapXl {
+  gap: var(--mm-space-8);
+}
+
+/* Container Utilities */
+.containerCenter {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.containerNarrow {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.containerWide {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========================================
+   SPACING UTILITIES
+   ======================================== */
+
+/* Padding */
+.pXs {
+  padding: var(--mm-space-1);
+}
+
+.pSm {
+  padding: var(--mm-space-2);
+}
+
+.pMd {
+  padding: var(--mm-space-4);
+}
+
+.pLg {
+  padding: var(--mm-space-6);
+}
+
+.pXl {
+  padding: var(--mm-space-8);
+}
+
+.p2xl {
+  padding: var(--mm-space-12);
+}
+
+/* Margin Bottom */
+.mbXs {
+  margin-bottom: var(--mm-space-1);
+}
+
+.mbSm {
+  margin-bottom: var(--mm-space-2);
+}
+
+.mbMd {
+  margin-bottom: var(--mm-space-4);
+}
+
+.mbLg {
+  margin-bottom: var(--mm-space-6);
+}
+
+.mbXl {
+  margin-bottom: var(--mm-space-8);
+}
+
+.mb2xl {
+  margin-bottom: var(--mm-space-12);
+}
+
+/* Margin Top */
+.mtXs {
+  margin-top: var(--mm-space-1);
+}
+
+.mtSm {
+  margin-top: var(--mm-space-2);
+}
+
+.mtMd {
+  margin-top: var(--mm-space-4);
+}
+
+.mtLg {
+  margin-top: var(--mm-space-6);
+}
+
+.mtXl {
+  margin-top: var(--mm-space-8);
+}
+
+.mt2xl {
+  margin-top: var(--mm-space-12);
+}
+
+/* ========================================
+   TYPOGRAPHY UTILITIES
+   ======================================== */
+
+/* Text Colors */
+.textPrimary {
+  color: var(--mm-gray-900);
+}
+
+.textSecondary {
+  color: var(--mm-gray-600);
+}
+
+.textMuted {
+  color: var(--mm-gray-500);
+}
+
+.textWhite {
+  color: var(--mm-white);
+}
+
+/* Font Sizes (aligned to theme scale) */
+.textXs {
+  font-size: var(--mm-font-size-xs);
+}
+
+.textSm {
+  font-size: var(--mm-font-size-sm);
+}
+
+.textBase {
+  font-size: var(--mm-font-size-base);
+}
+
+.textLg {
+  font-size: var(--mm-font-size-lg);
+}
+
+.textXl {
+  font-size: var(--mm-font-size-xl);
+}
+
+.text2xl {
+  font-size: var(--mm-font-size-2xl);
+}
+
+.text3xl {
+  font-size: var(--mm-font-size-3xl);
+}
+
+.text4xl {
+  font-size: var(--mm-font-size-4xl);
+}
+
+/* Font Weights */
+.fontNormal {
+  font-weight: var(--mm-font-weight-normal);
+}
+
+.fontMedium {
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.fontSemibold {
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.fontBold {
+  font-weight: var(--mm-font-weight-bold);
+}
+
+/* Text Alignment */
+.textLeft {
+  text-align: left;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+/* Line Height */
+.lineHeight1 {
+  line-height: 1;
+}
+
+.lineHeight1_5 {
+  line-height: 1.5;
+}
+
+.lineHeight1_6 {
+  line-height: 1.6;
+}
+
+/* Word Break */
+.wordBreakAll {
+  word-break: break-all;
+}
+
+.wordBreakWord {
+  word-break: break-word;
+}
+
+/* Text Decoration */
+.textDecorationNone {
+  text-decoration: none;
+}
+
+/* ========================================
+   CARD/CONTAINER STYLES
+   ======================================== */
+
+/* Card Base */
+.card {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-6);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.cardTransparent {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--mm-radius-sm);
+  padding: var(--mm-space-6);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.cardHighlight {
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.cardSuccess {
+  background: var(--mm-success-light);
+  border: 1px solid var(--mm-success);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-6);
+  text-align: center;
+}
+
+.cardInfo {
+  background: var(--mm-info-light);
+  border: 1px solid var(--mm-info);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-6);
+  text-align: center;
+}
+
+.cardWarning {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-6);
+  text-align: center;
+}
+
+/* Border Radius */
+.radiusSm {
+  border-radius: var(--mm-radius-sm);
+}
+
+.radiusMd {
+  border-radius: var(--mm-radius-md);
+}
+
+.radiusLg {
+  border-radius: var(--mm-radius-lg);
+}
+
+.radiusFull {
+  border-radius: var(--mm-radius-full);
+}
+
+/* Shadows */
+.shadowSm {
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.shadowMd {
+  box-shadow: var(--mm-shadow-md);
+}
+
+.shadowLg {
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* ========================================
+   INTERACTIVE UTILITIES
+   ======================================== */
+
+/* Cursor */
+.cursorPointer {
+  cursor: pointer;
+}
+
+.cursorNotAllowed {
+  cursor: not-allowed;
+}
+
+/* Opacity */
+.opacity50 {
+  opacity: 0.5;
+}
+
+.opacity70 {
+  opacity: 0.7;
+}
+
+.opacity90 {
+  opacity: 0.9;
+}
+
+/* Transitions */
+.transitionAll {
+  transition: all var(--transition-base);
+}
+
+.transitionTransform {
+  transition: transform var(--transition-base);
+}
+
+.transitionOpacity {
+  transition: opacity var(--transition-base);
+}
+
+/* Hover Effects */
+.hoverScale:hover {
+  transform: scale(1.02);
+}
+
+.hoverOpacity:hover {
+  opacity: 0.8;
+}
+
+.hoverShadow:hover {
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* ========================================
+   SIZE/CONSTRAINT UTILITIES
+   ======================================== */
+
+/* Max Width */
+.maxW200 {
+  max-width: 200px;
+}
+
+.maxW250 {
+  max-width: 250px;
+}
+
+.maxW280 {
+  max-width: 280px;
+}
+
+.maxW300 {
+  max-width: 300px;
+}
+
+.maxW600 {
+  max-width: 600px;
+}
+
+/* Width */
+.wFull {
+  width: 100%;
+}
+
+.w10 {
+  width: 10%;
+}
+
+.w15 {
+  width: 15%;
+}
+
+.w18 {
+  width: 18%;
+}
+
+.w22 {
+  width: 22%;
+}
+
+.w25 {
+  width: 25%;
+}
+
+/* Min Width */
+.minW80 {
+  min-width: 80px;
+}
+
+.minW120 {
+  min-width: 120px;
+}
+
+.minW150 {
+  min-width: 150px;
+}
+
+.minW200 {
+  min-width: 200px;
+}
+
+/* Height */
+.h16 {
+  height: 16px;
+}
+
+.h18 {
+  height: 18px;
+}
+
+/* Min Height */
+.minHAuto {
+  min-height: auto;
+}
+
+/* ========================================
+   BADGE/TAG UTILITIES
+   ======================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: var(--mm-color-primary-50);
+  color: var(--mm-color-primary-600);
+  border-radius: 12px;
+  border: 1px solid var(--mm-color-primary-200);
+}
+
+.badgeWrapper {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ========================================
+   BUTTON RESET UTILITIES
+   ======================================== */
+
+.btnReset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btnIcon {
+  background: none;
+  border: none;
+  color: var(--mm-color-primary-600);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: var(--mm-font-weight-bold);
+  opacity: 0.7;
+}
+
+.btnIcon:hover {
+  opacity: 1;
+}
+
+/* ========================================
+   EMPTY STATE UTILITIES
+   ======================================== */
+
+.emptyState {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-gray-600);
+}
+
+.emptyStateIcon {
+  font-size: 4rem;
+  margin-bottom: var(--mm-space-4);
+}
+
+.emptyStateTitle {
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+  font-size: var(--mm-font-size-2xl);
+}
+
+.emptyStateText {
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-8);
+  font-size: var(--mm-font-size-base);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ========================================
+   TABLE UTILITIES
+   ======================================== */
+
+.tableCell10 {
+  width: 10%;
+  min-width: 80px;
+}
+
+.tableCell15 {
+  width: 15%;
+  min-width: 120px;
+}
+
+.tableCell18 {
+  width: 18%;
+  min-width: 150px;
+}
+
+.tableCell22 {
+  width: 22%;
+  min-width: 150px;
+}
+
+.tableCell25 {
+  width: 25%;
+  min-width: 200px;
+}
+
+/* ========================================
+   UTILITY COMBINATIONS
+   ======================================== */
+
+/* Header Row (common pattern) */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+}
+
+.headerRowCount {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* Section Header */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-8);
+}
+
+/* Loading/Empty State Container */
+.stateContainer {
+  text-align: center;
+  padding: 3rem 2rem;
+}

@@ -1,0 +1,248 @@
+/* components/AdminDashboard.module.css */
+/* WHAT: AdminDashboard component styles with gradient navigation cards
+   WHY: Replace 56 inline style instances with reusable CSS classes
+   HOW: Gradient nav cards, info sections, and responsive grids using design tokens */
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.heroSection {
+  text-align: center;
+  margin-bottom: var(--mm-space-12);
+}
+
+.heroTitle {
+  font-size: var(--mm-font-size-4xl);
+  margin-bottom: var(--mm-space-4);
+}
+
+.heroSubtitle {
+  font-size: var(--mm-font-size-xl);
+  color: var(--mm-gray-600);
+}
+
+/* ========================================
+   NAVIGATION CARDS GRID
+   ======================================== */
+
+.navGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--mm-space-6);
+  margin-bottom: var(--mm-space-12);
+}
+
+/* Base nav card */
+.navCard {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-6);
+  color: var(--mm-white);
+  text-decoration: none;
+  border-radius: var(--mm-radius-md);
+  transition: all var(--transition-base);
+}
+
+.navCard:hover {
+  transform: scale(1.02);
+}
+
+/* Gradient variants for nav cards */
+.navCardPurple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.navCardPurple:hover {
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.navCardPink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+}
+
+.navCardPink:hover {
+  box-shadow: 0 6px 16px rgba(240, 147, 251, 0.4);
+}
+
+.navCardBlue {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.navCardBlue:hover {
+  box-shadow: 0 6px 16px rgba(79, 172, 254, 0.4);
+}
+
+.navCardGreen {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
+}
+
+.navCardGreen:hover {
+  box-shadow: 0 6px 16px rgba(67, 233, 123, 0.4);
+}
+
+.navCardEmoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.navCardContent {
+  flex: 1;
+}
+
+.navCardTitle {
+  font-weight: var(--mm-font-weight-bold);
+  font-size: var(--mm-font-size-lg);
+  margin-bottom: var(--mm-space-1);
+}
+
+.navCardDescription {
+  font-size: var(--mm-font-size-sm);
+  opacity: 0.9;
+}
+
+/* ========================================
+   SECTION HEADER
+   ======================================== */
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-8);
+}
+
+.manageButton {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-4) var(--mm-space-6);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+/* ========================================
+   INFO SECTION (Project Management Hub)
+   ======================================== */
+
+.infoSection {
+  text-align: center;
+  padding: var(--mm-space-12) var(--mm-space-8);
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.infoSectionEmoji {
+  font-size: 4rem;
+  margin-bottom: var(--mm-space-4);
+}
+
+.infoSectionTitle {
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+  font-size: var(--mm-font-size-2xl);
+}
+
+.infoSectionDescription {
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-8);
+  font-size: var(--mm-font-size-base);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Feature cards grid inside info section */
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-8);
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.8);
+  padding: var(--mm-space-6);
+  border-radius: var(--mm-radius-sm);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.featureCardEmoji {
+  font-size: 2rem;
+  margin-bottom: var(--mm-space-2);
+}
+
+.featureCardTitle {
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+  margin-bottom: var(--mm-space-1);
+}
+
+.featureCardDescription {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* ========================================
+   QUICK ACCESS CARDS
+   ======================================== */
+
+.quickAccessGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+.quickAccessCard {
+  padding: var(--mm-space-6);
+  border-radius: var(--mm-radius-md);
+  text-align: center;
+}
+
+.quickAccessCardSuccess {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.quickAccessCardInfo {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.quickAccessCardWarning {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.quickAccessEmoji {
+  font-size: 2rem;
+  margin-bottom: var(--mm-space-2);
+}
+
+.quickAccessTitle {
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-1);
+}
+
+.quickAccessTitleSuccess {
+  color: #059669;
+}
+
+.quickAccessTitleInfo {
+  color: #2563eb;
+}
+
+.quickAccessTitleWarning {
+  color: #7c3aed;
+}
+
+.quickAccessDescription {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
