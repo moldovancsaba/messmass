@@ -642,6 +642,206 @@ sum:request.error{env:production}.as_count() / sum:request.total{env:production}
 
 ---
 
+## Employee Access & Authentication Endpoints
+
+### Overview
+
+MessMass uses page-specific passwords to grant employees access to protected pages (stats/edit/filter). These passwords are validated through `/api/page-passwords`, which must be excluded from CSRF protection for a critical reason: **authentication endpoints can't require CSRF tokens** (chicken-and-egg problem).
+
+### The Authentication Chicken-and-Egg Problem
+
+**Problem**: CSRF tokens are stored in cookies and validated against request headers. But to get a cookie, you need to make a request. And to make a request with CSRF protection, you need the token.
+
+**Solution**: Exclude authentication endpoints from CSRF checks, but protect them with rate limiting instead.
+
+### CSRF Exclusion List
+
+```typescript
+// lib/csrf.ts - csrfProtectionMiddleware()
+const authEndpoints = [
+  '/api/admin/login',       // Admin authentication
+  '/api/page-passwords',    // Page-specific password authentication (employees)
+];
+
+if (authEndpoints.includes(request.nextUrl.pathname)) {
+  return null; // Skip CSRF check
+}
+```
+
+### Security Layers for Authentication Endpoints
+
+| Endpoint | Rate Limiting | CSRF Protection | Logging |
+|----------|---------------|-----------------|----------|
+| `/api/admin/login` | ✅ 5 req/15min | ❌ Excluded | ✅ Full |
+| `/api/page-passwords` | ✅ 5 req/15min | ❌ Excluded | ✅ Full |
+| Other API routes | ✅ 30 req/min | ✅ Enabled | ✅ Full |
+
+**Rationale**:
+- **Rate limiting** prevents brute-force attacks (5 attempts per 15 minutes)
+- **CSRF exclusion** allows authentication without existing session
+- **Logging** tracks all authentication attempts for audit
+
+### Employee Access Flow
+
+**Step 1: Admin generates password**
+```bash
+curl -X POST https://messmass.com/api/page-passwords \
+  -H "Content-Type: application/json" \
+  -H "Cookie: admin-session=..." \
+  -d '{
+    "pageId": "my-event-slug",
+    "pageType": "stats"
+  }'
+
+# Response
+{
+  "success": true,
+  "shareableLink": {
+    "url": "https://messmass.com/stats/my-event-slug",
+    "password": "a1b2c3d4e5f6789..."
+  }
+}
+```
+
+**Step 2: Employee uses password (NO CSRF TOKEN REQUIRED)**
+```bash
+curl -X PUT https://messmass.com/api/page-passwords \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pageId": "my-event-slug",
+    "pageType": "stats",
+    "password": "a1b2c3d4e5f6789..."
+  }'
+
+# Response
+{
+  "success": true,
+  "isValid": true,
+  "isAdmin": false,
+  "message": "Page password accepted"
+}
+```
+
+**Step 3: Employee accesses page content**
+- Client stores authentication in session storage
+- Subsequent API requests include session data
+- Access granted for 24 hours (configurable)
+
+### Critical Fix (v6.22.3)
+
+**Issue**: Employees reported "Invalid CSRF token" errors when using generated passwords
+
+**Root Cause**: `/api/page-passwords` was incorrectly requiring CSRF tokens
+
+**Fix**: Added `/api/page-passwords` to CSRF exclusion list
+
+**Verification**:
+```typescript
+// lib/csrf.ts
+export async function csrfProtectionMiddleware(request: NextRequest) {
+  const method = request.method.toUpperCase();
+  
+  // Skip safe methods
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+    return null;
+  }
+  
+  // Skip authentication endpoints
+  const authEndpoints = [
+    '/api/admin/login',
+    '/api/page-passwords',  // ✅ Added in v6.22.3
+  ];
+  
+  if (authEndpoints.includes(request.nextUrl.pathname)) {
+    return null; // No CSRF check
+  }
+  
+  // Validate CSRF token for other POST/PUT/DELETE requests
+  const isValid = validateCsrfToken(request);
+  if (!isValid) {
+    return NextResponse.json(
+      { error: 'Invalid CSRF token' },
+      { status: 403 }
+    );
+  }
+  
+  return null;
+}
+```
+
+### Testing Employee Access
+
+**Test 1: Password generation (Admin only)**
+```bash
+# Should succeed with valid admin session
+curl -X POST http://localhost:3000/api/page-passwords \
+  -H "Content-Type: application/json" \
+  -H "Cookie: admin-session=VALID_SESSION" \
+  -d '{"pageId":"test","pageType":"stats"}'
+
+# Expected: 200 OK with password
+```
+
+**Test 2: Password validation (No CSRF required)**
+```bash
+# Should succeed without CSRF token
+curl -X PUT http://localhost:3000/api/page-passwords \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pageId":"test",
+    "pageType":"stats",
+    "password":"generated-password-here"
+  }'
+
+# Expected: 200 OK if password is valid
+```
+
+**Test 3: Rate limiting (5 attempts)**
+```bash
+# Should block after 5 attempts
+for i in {1..10}; do
+  curl -X PUT http://localhost:3000/api/page-passwords \
+    -H "Content-Type: application/json" \
+    -d '{"pageId":"test","pageType":"stats","password":"wrong"}'
+  echo "Attempt $i"
+done
+
+# Expected: First 5 return 401, attempts 6-10 return 429
+```
+
+### Troubleshooting
+
+**Symptom**: "Invalid CSRF token" error
+- ❌ **Bad**: Employee trying to use page password
+- ✅ **Fixed**: Upgraded to v6.22.3 (CSRF exclusion added)
+
+**Symptom**: "Rate limit exceeded"
+- ⚠️ **Cause**: Too many failed password attempts (5 per 15 minutes)
+- ✅ **Solution**: Wait 15 minutes or verify correct password
+
+**Symptom**: Password works for admin but not employee
+- ⚠️ **Cause**: Admin session bypasses password validation
+- ✅ **Solution**: Test in incognito/private browsing (no admin session)
+
+### Security Considerations
+
+**Why exclude from CSRF?**
+- Authentication endpoints CREATE sessions, they don't use them
+- CSRF tokens require existing sessions to work
+- Rate limiting provides adequate brute-force protection
+
+**Why 5 attempts per 15 minutes?**
+- Balances security (prevents brute-force) with usability (allows typos)
+- 15-minute window resets automatically
+- Stricter than typical (10 attempts) for password authentication
+
+**What about DDoS?**
+- Rate limiting blocks excessive requests per IP
+- 5 requests per 15 minutes = max 20 requests per hour per IP
+- Sufficient for legitimate use, too low for attack effectiveness
+
+---
+
 ## Migration Plan
 
 ### Phase 1: Implementation ✅ COMPLETE
