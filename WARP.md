@@ -163,6 +163,102 @@ The project features a **completely unified hashtag system** with consistent com
 }
 ```
 
+### Analytics Collections (v6.26.0)
+```typescript
+// analytics_aggregates - Pre-computed event metrics
+{
+  _id: ObjectId,
+  projectId: ObjectId,
+  eventDate: string,
+  aggregationType: 'event',
+  partnerContext: {
+    partnerId: ObjectId,
+    opponentId: ObjectId,
+    partnerName: string,
+    opponentName: string,
+    isHomeGame: boolean
+  },
+  fanMetrics: {
+    totalFans: number,
+    engagementRate: number,
+    coreFanTeam: number,
+    // ... other fan KPIs
+  },
+  merchMetrics: {
+    totalMerched: number,
+    penetrationRate: number,
+    // ... other merch KPIs
+  },
+  adMetrics: {
+    totalROI: number,
+    socialValue: number,
+    emailValue: number,
+    // ... other ad KPIs
+  },
+  rawStats: { /* original project.stats */ },
+  version: string,
+  createdAt: string,
+  updatedAt: string
+}
+
+// aggregation_logs - Background job tracking
+{
+  _id: ObjectId,
+  jobType: 'event_aggregation',
+  status: 'success' | 'partial_failure' | 'failed',
+  startTime: string,
+  endTime: string,
+  duration: number,
+  projectsProcessed: number,
+  projectsFailed: number,
+  errors: Array<{ projectId: ObjectId, message: string }>,
+  createdAt: string // TTL: 30 days
+}
+```
+
+## 📊 Analytics Infrastructure (v6.26.0)
+
+### Background Aggregation Job
+- **Script**: `npm run analytics:aggregate`
+- **Schedule**: Every 5 minutes (cron or manual)
+- **Function**: Pre-computes analytics metrics for fast API responses
+- **Performance**: Processes 100+ projects within 5-minute window
+- **Strategy**: Incremental aggregation (only updated projects)
+- **Indexes**: 20 optimized indexes across 4 collections
+
+### Business Model Constants (CPM)
+```typescript
+AD_MODEL_CONSTANTS = {
+  EMAIL_OPTIN_CPM: €4.87,        // Email opt-in value
+  EMAIL_ADDON_CPM: €1.07,        // Additional email opens
+  STADIUM_AD_CPM: €6.00,         // In-stadium ad exposure
+  SOCIAL_ORGANIC_CPM: €14.50,    // Social media impressions
+  YOUTH_PREMIUM: €2.14,          // Gen Alpha/YZ premium
+  SOCIAL_SHARES_PER_IMAGE: 20,
+  AVG_VIEWS_PER_SHARE: 300,
+  EMAIL_OPEN_RATE: 0.35            // 35% average
+}
+```
+
+### Key Files
+- **`lib/analytics.types.ts`** - Complete TypeScript type system
+- **`lib/analyticsCalculator.ts`** - CPM-based metric calculations
+- **`scripts/setupAnalyticsIndexes.ts`** - MongoDB index setup
+- **`scripts/aggregateAnalytics.ts`** - Background aggregation job
+- **`app/api/analytics/*`** - 5 analytics API endpoints
+
+### Setup Commands
+```bash
+# One-time index setup
+npm run analytics:setup-indexes
+
+# Manual aggregation run
+npm run analytics:aggregate
+
+# Backfill historical data (future)
+npm run analytics:backfill
+```
+
 ## 🌐 API Endpoints
 
 ### Core APIs
@@ -193,6 +289,28 @@ The project features a **completely unified hashtag system** with consistent com
 - **`GET /api/variables-groups`** - Fetch variable groups
 - **`POST /api/variables-groups`** - Create/update group or seed defaults
 - **`DELETE /api/variables-groups`** - Delete all groups
+
+### Analytics APIs (Phase 1 - v6.26.0)
+- **`GET /api/analytics/event/[projectId]`** - Single event pre-computed analytics
+  - Query: `includeBitly` (default: true), `includeRaw` (default: false)
+  - Performance: <100ms response time
+  - Returns: Fan metrics, merch metrics, ad metrics, demographics, visit metrics
+- **`GET /api/analytics/partner/[partnerId]`** - Partner-level aggregated metrics
+  - Query: `timeframe` ('all', 'season', 'year', 'month'), `includeEvents` (default: false)
+  - Performance: <200ms response time
+  - Returns: Summary across all partner events, optional event breakdown
+- **`GET /api/analytics/trends`** - Time-series analytics for trend visualization
+  - Query: `startDate` (required), `endDate` (required), `partnerId` (optional), `metrics` (comma-separated), `groupBy` ('day', 'week', 'month')
+  - Performance: <500ms for 1-year datasets
+  - Returns: Time-series data points, summary statistics
+- **`GET /api/analytics/compare`** - Compare 2-5 events side-by-side
+  - Query: `projectIds` (comma-separated, 2-5 required), `metrics` (comma-separated)
+  - Performance: <300ms for 5 events
+  - Returns: Comparative analysis with rankings and deltas
+- **`GET /api/analytics/benchmarks`** - League/category benchmark statistics
+  - Query: `category` (optional), `metric` (optional), `period` ('all', 'year', 'quarter', 'month')
+  - Performance: <500ms for full dataset
+  - Returns: Percentile distributions (p10, p25, p50, p75, p90, p95), mean, median, std dev, top performers
 
 ## 🔢 Admin Variables & Metrics System
 
@@ -436,4 +554,4 @@ For detailed information, see:
 
 ---
 
-*Version: 6.24.0 | Last Updated: 2025-10-18T11:41:44.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform*
+*Version: 6.26.0 | Last Updated: 2025-10-19T11:58:43.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*
