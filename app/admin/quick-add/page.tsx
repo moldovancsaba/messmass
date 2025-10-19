@@ -7,6 +7,7 @@ import ColoredCard from '@/components/ColoredCard';
 import PartnerSelector from '@/components/PartnerSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 import styles from '@/app/admin/projects/PartnerLogos.module.css';
+import { apiPost } from '@/lib/apiClient';
 
 /* What: Quick Add from Sheet page for bulk event import
    Why: Streamline creating projects from Google Sheets data */
@@ -235,43 +236,38 @@ export default function QuickAddPage() {
     setSuccess('');
     
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventName: preview.eventName,
-          eventDate: preview.eventDate,
-          hashtags: preview.hashtags,
-          stats: {
-            // Initialize with zeros
-            remoteImages: 0,
-            hostessImages: 0,
-            selfies: 0,
-            female: 0,
-            male: 0,
-            genAlpha: 0,
-            genYZ: 0,
-            genX: 0,
-            boomer: 0,
-            indoor: 0,
-            outdoor: 0,
-            stadium: 0,
-            merched: 0,
-            jersey: 0,
-            scarf: 0,
-            flags: 0,
-            baseballCap: 0,
-            other: 0,
-          },
-        }),
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/projects', {
+        eventName: preview.eventName,
+        eventDate: preview.eventDate,
+        hashtags: preview.hashtags,
+        stats: {
+          // Initialize with zeros
+          remoteImages: 0,
+          hostessImages: 0,
+          selfies: 0,
+          female: 0,
+          male: 0,
+          genAlpha: 0,
+          genYZ: 0,
+          genX: 0,
+          boomer: 0,
+          indoor: 0,
+          outdoor: 0,
+          stadium: 0,
+          merched: 0,
+          jersey: 0,
+          scarf: 0,
+          flags: 0,
+          baseballCap: 0,
+          other: 0,
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create project');
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create project');
       }
 
-      const data = await response.json();
       setSuccess(`Project created successfully! ID: ${data.project._id}`);
       
       // Reset form after 2 seconds and redirect
@@ -390,46 +386,40 @@ export default function QuickAddPage() {
     setSuccess('');
     
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventName: matchPreview.eventName,
-          eventDate: matchPreview.eventDate,
-          hashtags: matchPreview.hashtags,
-          categorizedHashtags: matchPreview.categorizedHashtags,
-          partner1Id: matchPreview.partner1._id,  // WHAT: Home team reference
-          partner2Id: matchPreview.partner2._id,  // WHAT: Away team reference
-          stats: {
-            // Initialize with zeros
-            remoteImages: 0,
-            hostessImages: 0,
-            selfies: 0,
-            female: 0,
-            male: 0,
-            genAlpha: 0,
-            genYZ: 0,
-            genX: 0,
-            boomer: 0,
-            indoor: 0,
-            outdoor: 0,
-            stadium: 0,
-            merched: 0,
-            jersey: 0,
-            scarf: 0,
-            flags: 0,
-            baseballCap: 0,
-            other: 0,
-          },
-        }),
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/projects', {
+        eventName: matchPreview.eventName,
+        eventDate: matchPreview.eventDate,
+        hashtags: matchPreview.hashtags,
+        categorizedHashtags: matchPreview.categorizedHashtags,
+        partner1Id: matchPreview.partner1._id,  // WHAT: Home team reference
+        partner2Id: matchPreview.partner2._id,  // WHAT: Away team reference
+        stats: {
+          // Initialize with zeros
+          remoteImages: 0,
+          hostessImages: 0,
+          selfies: 0,
+          female: 0,
+          male: 0,
+          genAlpha: 0,
+          genYZ: 0,
+          genX: 0,
+          boomer: 0,
+          indoor: 0,
+          outdoor: 0,
+          stadium: 0,
+          merched: 0,
+          jersey: 0,
+          scarf: 0,
+          flags: 0,
+          baseballCap: 0,
+          other: 0,
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create project');
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create project');
       }
-
-      const data = await response.json();
       setSuccess(`Match created successfully! ${matchPreview.eventName}`);
       
       // Reset form after 2 seconds and redirect
