@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
@@ -68,7 +69,7 @@ export default function BitlyAdminPage() {
   // WHAT: Search state with debouncing
   // WHY: Allow users to filter through thousands of links
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const debouncedTerm = useDebouncedValue(searchTerm, 300);
   
   // WHAT: Sorting state
   // WHY: Enable user-controlled table sorting like projects page
@@ -83,14 +84,8 @@ export default function BitlyAdminPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [customTitle, setCustomTitle] = useState('');
 
-  // WHAT: Debounce search input (300ms delay)
-  // WHY: Reduce API calls while user types
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm.trim());
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+  // WHAT: Debounced search value via centralized hook
+  // WHY: Consistent debounce behavior across admin pages
 
   // WHAT: Hydrate sort state from URL (if present)
   // WHY: Allow shareable sorted views via URL parameters

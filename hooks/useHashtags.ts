@@ -12,6 +12,7 @@
 
 import { useCallback } from 'react';
 import { useHashtagData } from '@/contexts/HashtagDataProvider';
+import { apiPost } from '@/lib/apiClient';
 import type {
   HashtagColor,
   HashtagCategory,
@@ -108,13 +109,9 @@ export default function useHashtags(): UseHashtagsReturn {
   // Validate and clean hashtag
   const validateHashtag = useCallback(async (hashtag: string) => {
     try {
-      const response = await fetch('/api/hashtags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hashtag })
-      });
-
-      const data = await response.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/hashtags', { hashtag });
       return data; // { success, hashtag?, error? }
     } catch (error) {
       console.error('Failed to validate hashtag:', error);

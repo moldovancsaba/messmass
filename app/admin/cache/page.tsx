@@ -137,7 +137,7 @@ Then select "Cached images and files" and click Clear.`);
             Routes Cache
           </h3>
           <p className="text-gray-600 mb-4">
-            Revalidates all routes. Use this when you've updated content and want it to show immediately.
+            Revalidates all routes. Use this when you&apos;ve updated content and want it to show immediately.
           </p>
           <button
             onClick={() => clearCache('routes')}

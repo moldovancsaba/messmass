@@ -121,13 +121,23 @@ Quick reference for reusable React components in MessMass v6.0.0.
 {
   title: string;
   subtitle?: string;
+  badges?: { text: string; variant: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' }[];
+  backLink?: string;
+  showSearch?: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-  actions?: ReactNode; // Action buttons
+  onSearchKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void; // Use to prevent Enter-submit
+  searchPlaceholder?: string;
+  actionButtons?: Array<{ label: string; onClick: () => void; variant?: 'primary'|'secondary'|'success'|'danger'|'info'; icon?: string; disabled?: boolean; title?: string }>;
 }
 ```
 
-**Usage**: All admin pages (`/admin/projects`, `/admin/partners`, `/admin/bitly`)
+**Usage**: All admin pages (`/admin/projects`, `/admin/partners`, `/admin/bitly`, `/admin/hashtags`)  
+**Search UX Standard**:
+- Debounce with `useDebouncedValue(value, 300)` from `hooks/useDebouncedValue.ts`
+- Prevent Enter key default: pass `onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}`
+- Avoid full-page loaders during search; use `isSearching` state for inline updates
+- Use `fetch(..., { cache: 'no-store' })` for search requests
 
 ---
 

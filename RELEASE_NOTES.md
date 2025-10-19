@@ -1,5 +1,32 @@
 # MessMass Release Notes
 
+## [v6.24.0] — 2025-10-18T11:41:44.000Z
+
+### 🔎 Centralized Admin Search UX + Partners Search Fix
+
+What Changed
+- Introduced centralized debounce hook: hooks/useDebouncedValue.ts (300ms standard)
+- Unified AdminHero search behavior: Enter key prevention via onSearchKeyDown
+- Partners page search refactor: removed full-page reload; added isSearching state; fetch with cache: 'no-store'
+- Bitly admin page migrated to useDebouncedValue for consistent search
+- Documentation updated: COMPONENTS_REFERENCE.md, PARTNERS_SYSTEM_GUIDE.md, README.md (added hook), WARP.md footer version/timestamp
+
+Why
+- Ensure identical, predictable search UX across admin modules (Projects, Partners, Bitly, Hashtags)
+- Eliminate page reload while typing and provide smooth inline updates
+
+Files Modified/Created
+- NEW: hooks/useDebouncedValue.ts
+- UPDATED: app/admin/partners/page.tsx, app/admin/bitly/page.tsx
+- UPDATED Docs: COMPONENTS_REFERENCE.md, PARTNERS_SYSTEM_GUIDE.md, README.md, WARP.md
+
+Validation
+- Type-check ✅, Lint ✅ (warnings only), Production build ✅
+
+---
+
+# MessMass Release Notes
+
 ## [v6.22.3] — 2025-10-18T09:11:58.000Z
 
 ### 🔒 Security Enhancements — API Protection & Observability

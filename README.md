@@ -254,9 +254,9 @@ BITLY_GROUP_GUID=your_group_guid
 - **CDN**: Vercel Edge Network
 - **Monitoring**: Built-in error handling and logging
 
-### Reusable Components
+### Reusable Components & Hooks
 
-| Component | Purpose | Pattern |
+| Item | Purpose | Pattern |
 |-----------|---------|----------|
 | `PartnerSelector` | Partner selection with search | Chip-based selector |
 | `ProjectSelector` | Project selection with search | Chip-based selector |
@@ -267,6 +267,7 @@ BITLY_GROUP_GUID=your_group_guid
 | `ColoredCard` | Content container | Accent border card |
 | `NotificationPanel` | Activity notifications | Slide-in panel |
 | `StatsCharts` | KPI visualizations | SVG pie + bar charts |
+| `useDebouncedValue` | Debounced value for search inputs | Centralized 300ms debounce |
 
 ## Utility Classes (Quick Reference)
 
@@ -368,6 +369,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-**MessMass v6.0.0** — Built with ❤️ by Csaba Moldovan  
+**MessMass v6.24.0** — Built with ❤️ by Csaba Moldovan
 **Repository**: https://github.com/moldovancsaba/messmass  
 **Contact**: moldovancsaba@gmail.com

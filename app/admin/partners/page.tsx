@@ -15,6 +15,8 @@ import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 import { countryToFlag } from '@/lib/countryToFlag';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import styles from './PartnerManager.module.css';
 import logoStyles from '../projects/PartnerLogos.module.css';
 
@@ -35,6 +37,7 @@ export default function PartnersAdminPage() {
   const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
@@ -47,7 +50,7 @@ export default function PartnersAdminPage() {
   // WHAT: Search state with debouncing
   // WHY: Allow users to filter partners by name or hashtags
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const debouncedTerm = useDebouncedValue(searchTerm, 300);
   
   // WHAT: Sorting state
   // WHY: Enable user-controlled table sorting
@@ -101,14 +104,10 @@ export default function PartnersAdminPage() {
     logoUrl: '',
   });
 
-  // WHAT: Debounce search input (300ms delay)
-  // WHY: Reduce API calls while user types
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm.trim());
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+  // WHAT: Debounced search value via centralized hook
+  // WHY: Consistent debounce behavior across admin pages
+  // NOTE: Hook trims and delays updates by 300ms
+  
 
   // WHAT: Hydrate sort state from URL (if present)
   // WHY: Allow shareable sorted views via URL parameters
@@ -124,7 +123,7 @@ export default function PartnersAdminPage() {
   // WHAT: Load first page when search/sort changes
   // WHY: Fresh search or sort requires restarting pagination
   useEffect(() => {
-    loadData();
+    loadData(!!debouncedTerm); // Pass true if searching
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTerm, sortField, sortOrder]);
 
@@ -151,11 +150,17 @@ export default function PartnersAdminPage() {
 
   // WHAT: Load first page of partners with search and sorting
   // WHY: Start fresh pagination when search/sort changes
-  async function loadData() {
+  async function loadData(isSearch = false) {
     try {
-      setLoading(true);
+      if (isSearch) {
+        setIsSearching(true);
+      } else {
+        setLoading(true);
+      }
       setError('');
-      setPartners([]); // Clear existing partners
+      if (!isSearch) {
+        setPartners([]); // Clear existing partners only for non-search loads
+      }
 
       // WHAT: Build partners API URL with pagination, search, and sorting
       // WHY: Load only 20 partners at a time for performance
@@ -173,7 +178,7 @@ export default function PartnersAdminPage() {
       }
       
       // WHAT: Fetch first page of partners
-      const partnersRes = await fetch(`/api/partners?${params.toString()}`);
+      const partnersRes = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
       const partnersData = await partnersRes.json();
 
       if (partnersData.success && partnersData.partners) {
@@ -186,6 +191,7 @@ export default function PartnersAdminPage() {
       console.error('Load error:', err);
     } finally {
       setLoading(false);
+      setIsSearching(false);
     }
   }
 
@@ -211,7 +217,7 @@ export default function PartnersAdminPage() {
         params.set('sortOrder', sortOrder);
       }
 
-      const res = await fetch(`/api/partners?${params.toString()}`);
+      const res = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
       const data = await res.json();
 
       if (data.success && data.partners) {
@@ -274,13 +280,7 @@ export default function PartnersAdminPage() {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch('/api/partners', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newPartnerData),
-      });
-
-      const data = await res.json();
+      const data = await apiPost('/api/partners', newPartnerData);
 
       if (data.success) {
         setSuccessMessage(`✓ Partner "${newPartnerData.name}" created successfully!`);
@@ -560,17 +560,10 @@ export default function PartnersAdminPage() {
         console.log('🖼️ Uploading logo to ImgBB...');
         console.log('Badge URL:', team.strBadge);
         try {
-          const imgbbRes = await fetch('/api/partners/upload-logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              badgeUrl: team.strBadge,
-              partnerName: editingPartner.name,
-            }),
+          const imgbbData = await apiPost('/api/partners/upload-logo', {
+            badgeUrl: team.strBadge,
+            partnerName: editingPartner.name,
           });
-          
-          console.log('ImgBB Response Status:', imgbbRes.status);
-          const imgbbData = await imgbbRes.json();
           console.log('ImgBB Response Data:', imgbbData);
           
           if (imgbbData.success && imgbbData.logoUrl) {
@@ -595,19 +588,12 @@ export default function PartnersAdminPage() {
       console.log('SportsDB Data:', sportsDbData);
       console.log('Logo URL:', logoUrl);
       
-      const updateRes = await fetch('/api/partners', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partnerId: editingPartner._id,
-          sportsDb: sportsDbData,
-          logoUrl: logoUrl, // Add ImgBB logo URL
-          categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
-        }),
+      const updateData = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: sportsDbData,
+        logoUrl: logoUrl, // Add ImgBB logo URL
+        categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
       });
-
-      console.log('Database Update Response Status:', updateRes.status);
-      const updateData = await updateRes.json();
       console.log('Database Update Response Data:', updateData);
 
       if (updateData.success) {
@@ -760,16 +746,10 @@ export default function PartnersAdminPage() {
       let logoUrl: string | undefined;
       if (team.strBadge) {
         try {
-          const imgbbRes = await fetch('/api/partners/upload-logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              badgeUrl: team.strBadge,
-              partnerName: editingPartner.name,
-            }),
+          const imgbbData = await apiPost('/api/partners/upload-logo', {
+            badgeUrl: team.strBadge,
+            partnerName: editingPartner.name,
           });
-          
-          const imgbbData = await imgbbRes.json();
           if (imgbbData.success && imgbbData.logoUrl) {
             logoUrl = imgbbData.logoUrl;
           }
@@ -778,18 +758,12 @@ export default function PartnersAdminPage() {
         }
       }
 
-      const updateRes = await fetch('/api/partners', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partnerId: editingPartner._id,
-          sportsDb: sportsDbData,
-          logoUrl: logoUrl, // Update logo URL
-          categorizedHashtags: enrichedHashtags, // Update auto-generated hashtags
-        }),
+      const updateData = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: sportsDbData,
+        logoUrl: logoUrl, // Update logo URL
+        categorizedHashtags: enrichedHashtags, // Update auto-generated hashtags
       });
-
-      const updateData = await updateRes.json();
 
       if (updateData.success) {
         setSuccessMessage(`✓ Successfully re-synced data from TheSportsDB`);
@@ -842,16 +816,10 @@ export default function PartnersAdminPage() {
       if (manualEntryData.logoUrl) {
         console.log('🖼️ Uploading manually provided logo to ImgBB...');
         try {
-          const imgbbRes = await fetch('/api/partners/upload-logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              badgeUrl: manualEntryData.logoUrl,
-              partnerName: editingPartner.name,
-            }),
+          const imgbbData = await apiPost('/api/partners/upload-logo', {
+            badgeUrl: manualEntryData.logoUrl,
+            partnerName: editingPartner.name,
           });
-          
-          const imgbbData = await imgbbRes.json();
           if (imgbbData.success && imgbbData.logoUrl) {
             logoUrl = imgbbData.logoUrl;
             console.log('✅ Logo uploaded to ImgBB:', logoUrl);
@@ -862,17 +830,11 @@ export default function PartnersAdminPage() {
       }
       
       // WHAT: Save to database
-      const updateRes = await fetch('/api/partners', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partnerId: editingPartner._id,
-          sportsDb: sportsDbData,
-          logoUrl: logoUrl,
-        }),
+      const updateData = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: sportsDbData,
+        logoUrl: logoUrl,
       });
-      
-      const updateData = await updateRes.json();
       
       if (updateData.success) {
         setSuccessMessage('✓ Successfully added manual sports data');
@@ -957,16 +919,10 @@ export default function PartnersAdminPage() {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch('/api/partners', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partnerId: editingPartner._id,
-          ...editPartnerData,
-        }),
+      const data = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        ...editPartnerData,
       });
-
-      const data = await res.json();
 
       if (data.success) {
         setSuccessMessage(`✓ Partner "${editPartnerData.name}" updated successfully!`);
@@ -995,11 +951,7 @@ export default function PartnersAdminPage() {
     setSuccessMessage('');
 
     try {
-      const res = await fetch(`/api/partners?partnerId=${partnerId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
+      const data = await apiDelete(`/api/partners?partnerId=${partnerId}`);
 
       if (data.success) {
         setSuccessMessage(`✓ Partner "${partnerName}" deleted successfully`);
@@ -1044,6 +996,7 @@ export default function PartnersAdminPage() {
         searchValue={searchTerm}
         onSearchChange={(value) => setSearchTerm(value)}
         searchPlaceholder="Search partners..."
+        onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
         actionButtons={[
           {
             label: 'Add Partner',

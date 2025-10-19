@@ -794,24 +794,17 @@ The match is played in Manchester, so only `location: manchester` should be incl
 
 ## Algorithms
 
-### Algorithm 1: Partner Search with Debouncing
+### Algorithm 1: Partner Search with Debouncing (Centralized)
 
 **Purpose**: Prevent excessive API calls during rapid typing.
 
-**Implementation**:
+**Standard Implementation** (shared across admin pages):
 
 ```typescript path=null start=null
-const [searchTerm, setSearchTerm] = useState('');
-const [debouncedTerm, setDebouncedTerm] = useState('');
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
-// Debounce effect
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setDebouncedTerm(searchTerm.trim());
-  }, 300);  // 300ms delay
-  
-  return () => clearTimeout(timer);
-}, [searchTerm]);
+const [searchTerm, setSearchTerm] = useState('');
+const debouncedTerm = useDebouncedValue(searchTerm, 300);
 
 // Fetch when debounced term changes
 useEffect(() => {
@@ -819,10 +812,24 @@ useEffect(() => {
 }, [debouncedTerm]);
 ```
 
+- Prevent Enter key submitting the form/search input via AdminHero:
+```tsx path=null start=null
+<AdminHero
+  showSearch
+  searchValue={searchTerm}
+  onSearchChange={setSearchTerm}
+  onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+/>
+```
+
+- Avoid full-page loaders during search; use an `isSearching` boolean to show inline loading indicators only.
+- Use `fetch(..., { cache: 'no-store' })` for search requests to avoid stale results.
+
 **Benefits**:
 - Reduces API load by 90%+ during typing
 - Improves UI responsiveness
 - Prevents rate limiting issues
+- Ensures identical search UX across Projects, Partners, Bitly, and Hashtags
 
 ---
 

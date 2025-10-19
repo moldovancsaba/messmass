@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { PageType } from '@/lib/pagePassword';
+import { apiPost } from '@/lib/apiClient';
 
 interface SharePopupProps {
   isOpen: boolean;
@@ -42,18 +43,13 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
     setError(null);
 
     try {
-      const response = await fetch('/api/page-passwords', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pageId,
-          pageType,
-          regenerate: false // Don't regenerate existing passwords
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/page-passwords', {
+        pageId,
+        pageType,
+        regenerate: false // Don't regenerate existing passwords
       });
-
-      const data = await response.json();
 
       if (data.success) {
         setShareableData({

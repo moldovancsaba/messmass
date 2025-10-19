@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Categories.module.css';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
 interface HashtagCategory {
   _id: string;
@@ -152,17 +153,14 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch('/api/hashtag-categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          color: formData.color,
-          order: formData.order
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/hashtag-categories', {
+        name: formData.name.trim(),
+        color: formData.color,
+        order: formData.order
       });
 
-      const data = await response.json();
       if (data.success) {
         resetForm();
         setShowCreateForm(false);
@@ -184,18 +182,15 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch('/api/hashtag-categories', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: editingCategory._id,
-          name: formData.name.trim(),
-          color: formData.color,
-          order: formData.order
-        })
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPut('/api/hashtag-categories', {
+        id: editingCategory._id,
+        name: formData.name.trim(),
+        color: formData.color,
+        order: formData.order
       });
 
-      const data = await response.json();
       if (data.success) {
         resetForm();
         setShowEditForm(false);
@@ -229,11 +224,10 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch(`/api/hashtag-categories?id=${categoryId}`, {
-        method: 'DELETE'
-      });
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiDelete(`/api/hashtag-categories?id=${categoryId}`);
 
-      const data = await response.json();
       if (data.success) {
         await refreshCategories();
       } else {

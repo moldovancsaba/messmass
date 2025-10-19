@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './BitlyLinksEditor.module.css';
+import { apiPost, apiDelete } from '@/lib/apiClient';
 
 interface BitlyLinksEditorProps {
   projectId: string;
@@ -87,16 +88,12 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
     }
 
     try {
-      const res = await fetch('/api/bitly/links', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId,
-          bitlinkOrLongUrl: newBitlink.trim(),
-        }),
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/bitly/links', {
+        projectId,
+        bitlinkOrLongUrl: newBitlink.trim(),
       });
-
-      const data = await res.json();
 
       if (data.success) {
         setSuccess('✓ Link added!');
@@ -120,13 +117,9 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
     }
 
     try {
-      // WHAT: Delete association from junction table
+      // WHAT: Delete association from junction table using apiDelete() with CSRF token
       // WHY: Many-to-many system - only removes this specific project connection
-      const res = await fetch(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
+      const data = await apiDelete(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`);
 
       if (data.success) {
         setSuccess('✓ Link removed from this project');
@@ -178,7 +171,7 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
         <div className={styles.loading}>Loading links...</div>
       ) : links.length === 0 ? (
         <div className={styles.empty}>
-          No Bitly links yet. Click "+ Add Link" to connect one!
+          No Bitly links yet. Click &quot;+ Add Link&quot; to connect one!
         </div>
       ) : (
         <div className={styles.linksList}>
