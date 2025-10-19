@@ -10,6 +10,7 @@ import {
   getAllHashtagRepresentations,
   expandHashtagsWithCategories 
 } from '@/lib/hashtagCategoryUtils';
+import { apiPut } from '@/lib/apiClient';
 
 // WHAT: Variable config type loaded from /api/variables-config to control Editor UI visibility.
 // WHY: Admin decides which variables appear in clicker vs. manual; we respect flags at render-time.
@@ -118,7 +119,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     return () => { mounted = false };
   }, []);
 
-  // Auto-save function
+  // WHAT: Auto-save function with CSRF token support
+  // WHY: Persist stats changes to database immediately after user action
+  // HOW: Use apiPut() which automatically includes CSRF token in request headers
   const saveProject = async (
     updatedStats?: typeof project.stats, 
     updatedHashtags?: string[], 
@@ -126,27 +129,30 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   ) => {
     setSaveStatus('saving');
     try {
-      const response = await fetch('/api/projects', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: project._id,
-          eventName: project.eventName,
-          eventDate: project.eventDate,
-          hashtags: updatedHashtags !== undefined ? updatedHashtags : hashtags,
-          categorizedHashtags: updatedCategorizedHashtags !== undefined ? updatedCategorizedHashtags : categorizedHashtags,
-          stats: updatedStats || project.stats
-        })
+      // WHAT: Use apiPut() instead of raw fetch() for CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
+      const result = await apiPut('/api/projects', {
+        projectId: project._id,
+        eventName: project.eventName,
+        eventDate: project.eventDate,
+        hashtags: updatedHashtags !== undefined ? updatedHashtags : hashtags,
+        categorizedHashtags: updatedCategorizedHashtags !== undefined ? updatedCategorizedHashtags : categorizedHashtags,
+        stats: updatedStats || project.stats
       });
 
-      if (response.ok) {
+      // WHAT: Handle successful save response
+      // WHY: Provide user feedback that changes were persisted
+      if (result.success) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus('idle'), 2000);
       } else {
+        console.error('Save failed:', result.error || 'Unknown error');
         setSaveStatus('error');
         setTimeout(() => setSaveStatus('idle'), 3000);
       }
     } catch (error) {
+      // WHAT: Handle network or CSRF token errors
+      // WHY: Show error state to user if save fails
       console.error('Failed to save project:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);

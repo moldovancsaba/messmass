@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './NotificationPanel.module.css';
+import { apiPut } from '@/lib/apiClient';
 
 /* WHAT: Notification panel component to display project activity notifications
  * WHY: Users need to see who created/edited projects and when, with links to the projects
@@ -89,12 +90,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // WHAT: Mark notification as read when clicked
   // WHY: Dismiss notifications and clear badge count
+  // HOW: Use apiPut() for automatic CSRF token handling
   const markAsRead = async (notificationId: string) => {
     try {
-      await fetch('/api/notifications/mark-read', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notificationIds: [notificationId], action: 'read' })
+      await apiPut('/api/notifications/mark-read', {
+        notificationIds: [notificationId],
+        action: 'read'
       });
 
       // Update local state - add current user to readBy array
@@ -109,14 +110,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // WHAT: Archive notification to remove from main list
   // WHY: Allow users to hide notifications they don't want to see anymore
+  // HOW: Use apiPut() for automatic CSRF token handling
   const archiveNotification = async (notificationId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent notification click
     
     try {
-      await fetch('/api/notifications/mark-read', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notificationIds: [notificationId], action: 'archive' })
+      await apiPut('/api/notifications/mark-read', {
+        notificationIds: [notificationId],
+        action: 'archive'
       });
 
       // Remove from local state immediately
@@ -134,12 +135,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // WHAT: Mark all notifications as read
   // WHY: Bulk action for clearing all notifications
+  // HOW: Use apiPut() for automatic CSRF token handling
   const markAllAsRead = async () => {
     try {
-      await fetch('/api/notifications/mark-read', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markAll: true, action: 'read' })
+      await apiPut('/api/notifications/mark-read', {
+        markAll: true,
+        action: 'read'
       });
 
       // Update local state - add current user to readBy arrays

@@ -15,6 +15,7 @@ import {
   expandHashtagsWithCategories 
 } from '@/lib/hashtagCategoryUtils';
 import partnerStyles from './PartnerLogos.module.css';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 // WHAT: Server-driven sorting implementation for full-dataset ordering
 // WHY: Clicking table headers must sort ALL projects, not just the visible page.
 // This replaces client-only sorting with backend sort & offset pagination in search/sort modes.
@@ -302,17 +303,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       
       console.log('Sending POST request to /api/projects with:', requestBody);
       
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log('Response status:', response.status, response.statusText);
-      const result = await response.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const result = await apiPost('/api/projects', requestBody);
       console.log('Response data:', result);
 
-      if (response.ok && result.success) {
+      if (result.success) {
         setProjects(prev => [result.project, ...prev]);
         setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
         setShowNewProjectForm(false);
@@ -364,17 +360,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       
       console.log('Sending PUT request to /api/projects with:', requestBody);
       
-      const response = await fetch('/api/projects', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log('Response status:', response.status, response.statusText);
-      const result = await response.json();
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const result = await apiPut('/api/projects', requestBody);
       console.log('Response data:', result);
 
-      if (response.ok && result.success) {
+      if (result.success) {
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
             ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleId: editProjectData.styleId || null }
@@ -401,11 +392,11 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     if (!confirm('Are you sure you want to delete this project?')) return;
 
     try {
-      const response = await fetch(`/api/projects?projectId=${projectId}`, {
-        method: 'DELETE'
-      });
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const result = await apiDelete(`/api/projects?projectId=${projectId}`);
 
-      if (response.ok) {
+      if (result.success) {
         setProjects(prev => prev.filter(p => p._id !== projectId));
       }
     } catch (error) {
@@ -430,12 +421,12 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   // WHY: Align UX between Project Management hashtag clicks and Filter page sharing.
   const shareSingleHashtag = async (hashtagValue: string, styleId: string | null) => {
     try {
-      const response = await fetch('/api/filter-slug', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hashtags: [hashtagValue], styleId: styleId || null })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/filter-slug', {
+        hashtags: [hashtagValue],
+        styleId: styleId || null
       });
-      const data = await response.json();
       if (data.success) {
         setSharePageId(data.slug);
         setSharePageType('filter');
