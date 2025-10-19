@@ -1,5 +1,32 @@
 # MessMass Release Notes
 
+## [v6.31.0] — 2025-10-19T16:14:00.000Z
+
+### 🔧 Next.js Route Conflict Resolution — Analytics Insights API
+
+What Changed
+- Removed duplicate analytics insights route `/api/analytics/insights/[eventId]/route.ts`
+- Kept canonical insights endpoint at `/api/analytics/insights/[projectId]/route.ts`
+- Fixed Next.js dev server startup error caused by conflicting dynamic route parameters
+
+Why
+- Next.js requires consistent dynamic parameter names at the same folder level
+- Having both `[eventId]` and `[projectId]` in the same directory prevented server compilation
+- Login and authentication now work correctly with dev server running
+
+Validation
+- Type-check ✅, Lint ✅ (warnings only), Dev server ✅
+- Login flow validated: authentication, logout, re-login all functional
+- Admin pages, project editing, stats pages all accessible
+- Cookie persistence and session management working correctly
+
+Files Modified
+- DELETED: `app/api/analytics/insights/[eventId]/route.ts`
+- UPDATED: `package.json` (version bump to 6.31.0)
+- UPDATED: `RELEASE_NOTES.md`
+
+---
+
 ## [v6.30.0] — 2025-10-19T13:44:58.000Z
 
 ### 🔐 Login cookie reliability (www/apex) and admin runtime
