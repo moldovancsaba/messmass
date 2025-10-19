@@ -312,6 +312,105 @@ npm run analytics:backfill
   - Performance: <500ms for full dataset
   - Returns: Percentile distributions (p10, p25, p50, p75, p90, p95), mean, median, std dev, top performers
 
+### Insights API (Phase 2 - v6.27.0)
+- **`GET /api/analytics/insights/[projectId]`** - AI-generated actionable insights
+  - Query: `includeRecommendations` (default: true), `severity` (filter by priority)
+  - Performance: <300ms response time
+  - Returns: 5-10 prioritized insights with categories, confidence scores, and recommendations
+  - Features: Anomaly detection, trend analysis, benchmarking, opportunity identification
+
+## 🧠 Insights Engine & Intelligence Layer (v6.27.0)
+
+### Core Intelligence Libraries
+
+**Anomaly Detection** (`lib/anomalyDetection.ts`):
+- **Z-Score Method**: Statistical outlier detection (>2σ from mean)
+- **IQR Method**: Interquartile range for robust outlier identification
+- **Percent Change**: Detect significant deviations from baseline
+- **Multi-Method Consensus**: Combine methods for high-confidence detection
+- Use case: Identify unusual spikes/drops in attendance, merch sales, ad value
+
+**Trend Analysis** (`lib/trendAnalysis.ts`):
+- **Moving Averages**: Simple and exponential moving averages
+- **Linear Regression**: Fit trend lines and predict future values
+- **Growth Rate**: MoM, QoQ, YoY calculations with annualization
+- **Seasonality Detection**: Autocorrelation analysis for recurring patterns
+- **Volatility Analysis**: Coefficient of variation for trend reliability
+- Use case: Identify growth trajectories, forecast next event performance
+
+**Benchmarking Engine** (`lib/benchmarkEngine.ts`):
+- **Percentile Ranking**: Compare against league/venue/historical distributions
+- **Performance Rating**: Excellent (>p75), Good (>p50), Average, Below Average (<p25)
+- **Multi-Metric Benchmarking**: Compare multiple KPIs simultaneously
+- **Historical Comparisons**: Event-over-event performance tracking
+- **Outlier Identification**: Flag statistically exceptional performances
+- Use case: Understand event performance relative to peers and history
+
+**Insights Engine** (`lib/insightsEngine.ts`):
+- **Anomaly Insights**: Auto-generate explanations for detected outliers
+- **Trend Insights**: Natural language descriptions of growth patterns
+- **Benchmark Insights**: Performance positioning with recommendations
+- **Opportunity Insights**: Identify untapped potential and improvement areas
+- **Prioritization**: Sort by impact (critical > high > medium > low) and confidence
+- Use case: Generate 5-10 actionable insights per event for stakeholder reports
+
+### Insight Structure
+
+```typescript
+interface Insight {
+  id: string;
+  category: 'anomaly' | 'trend' | 'benchmark' | 'opportunity';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  title: string; // Short headline
+  message: string; // Detailed explanation
+  metrics: string[]; // Affected metrics
+  confidence: number; // 0-1, how reliable the insight is
+  impact: 'positive' | 'negative' | 'neutral';
+  recommendation: string; // Actionable advice
+  context: Record<string, unknown>; // Supporting data
+}
+```
+
+### Insight Generation Flow
+
+1. **Fetch Data**: Current event aggregate + 50 historical events (same partner) + 500 league benchmarks
+2. **Run Analyses**: Anomaly detection → Trend analysis → Benchmarking → Opportunity identification
+3. **Generate Insights**: Each analysis produces 0-3 insights with natural language
+4. **Prioritize**: Sort by priority (critical first) and confidence (high first)
+5. **Return Top 10**: Most important and actionable insights for decision-making
+
+### Key Files
+- **`lib/anomalyDetection.ts`** (389 lines) - Statistical outlier detection
+- **`lib/trendAnalysis.ts`** (459 lines) - Trend fitting and forecasting
+- **`lib/benchmarkEngine.ts`** (383 lines) - Percentile-based comparisons
+- **`lib/insightsEngine.ts`** (437 lines) - Rule-based insight generation
+- **`app/api/analytics/insights/[projectId]/route.ts`** (224 lines) - Insights API endpoint
+
+### Performance Targets (Phase 2)
+- **Anomaly Detection**: <10ms per metric
+- **Trend Analysis**: <50ms per metric with 50 data points
+- **Benchmarking**: <100ms per metric with 500 benchmarks
+- **Insights Generation**: <200ms for complete report (5-10 insights)
+- **API Response Time**: <300ms total (including database queries)
+
+### Example Use Cases
+
+**Anomaly Insight**:
+> "🚨 Total Fans spike: 2,531 fans (+127% vs. avg 1,113) — highest in 12 months"
+> Recommendation: "Analyze what drove attendance surge (opponent, promotion, timing) and replicate for future events."
+
+**Trend Insight**:
+> "📈 Merchandise Sales upward trend (strong confidence: 82%) — +45.3% change"
+> Recommendation: "Merchandise momentum is strong. Expand product variety to capitalize on growing demand."
+
+**Benchmark Insight**:
+> "⭐ Ad Value: €14,790 ranks at 78th percentile — above league average"
+> Recommendation: "Leverage high ad value performance in marketing materials"
+
+**Opportunity Insight**:
+> "💡 Merchandise penetration at 38% — growth potential. Only 38% of 2,531 fans purchased merchandise. Industry average is 50-60%."
+> Recommendation: "Improve merchandise visibility and variety. Potential revenue uplift: €15,186 (20% increase at €30/fan)"
+
 ## 🔢 Admin Variables & Metrics System
 
 ### Key Files
@@ -554,4 +653,4 @@ For detailed information, see:
 
 ---
 
-*Version: 6.26.0 | Last Updated: 2025-10-19T11:58:43.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*
+*Version: 6.27.0 | Last Updated: 2025-10-19T12:50:00.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure and AI-Powered Insights Engine*
