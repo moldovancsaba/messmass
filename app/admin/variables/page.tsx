@@ -6,6 +6,7 @@ import { buildReferenceToken } from '@/lib/variableRefs';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import variablesStyles from './Variables.module.css';
+import { apiPost, apiDelete } from '@/lib/apiClient';
 
 interface VariableFlags {
   visibleInClicker: boolean;
@@ -103,8 +104,8 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
   const saveGroup = async (g: any) => {
     try {
       setLoading(true); setError(null)
-      const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ group: g }) })
-      const data = await res.json()
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/variables-groups', { group: g })
       if (!data?.success) throw new Error('Save failed')
       await reload()
     } catch (e:any) { setError(e?.message || 'Failed to save') } finally { setLoading(false) }
@@ -112,8 +113,8 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
 
   const seedDefaults = async () => {
     try { setLoading(true); setError(null)
-      const res = await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
-      const data = await res.json()
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/variables-groups', { seedDefault: true })
       if (!data?.success) throw new Error('Seed failed')
       await reload()
     } catch (e:any) { setError(e?.message || 'Failed to seed') } finally { setLoading(false) }
@@ -146,8 +147,9 @@ function GroupsManager({ variables }: { variables: Variable[] }) {
         <button className="btn btn-small btn-secondary" onClick={seedDefaults} disabled={loading}>Initialize default groups</button>
         <button className="btn btn-small btn-warning" onClick={async () => {
           try { setLoading(true); setError(null)
-            await fetch('/api/variables-groups', { method: 'DELETE' })
-            await fetch('/api/variables-groups', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seedDefault: true }) })
+            // WHAT: Use apiDelete() and apiPost() for automatic CSRF token handling
+            await apiDelete('/api/variables-groups')
+            await apiPost('/api/variables-groups', { seedDefault: true })
             await reload()
           } catch (e:any) { setError(e?.message || 'Failed to replace groups') } finally { setLoading(false) }
         }} disabled={loading}>Replace with default groups</button>
@@ -217,22 +219,18 @@ function EditVariableForm({ variable, allCategories, onSaved, onCancel }: { vari
   const handleSave = async () => {
     setSaving(true); setError(null)
     try {
-      // Persist meta via variables-config; API will treat same-name registry as override (label/category)
-      const res = await fetch('/api/variables-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: canRename ? name : variable.name,
-          label,
-          type: variable.type,
-          category,
-          description: variable.description,
-          derived: !!variable.derived,
-          formula: variable.formula,
-        }),
+      // WHAT: Persist meta via variables-config using apiPost() with CSRF token
+      // WHY: API will treat same-name registry as override (label/category)
+      const data = await apiPost('/api/variables-config', {
+        name: canRename ? name : variable.name,
+        label,
+        type: variable.type,
+        category,
+        description: variable.description,
+        derived: !!variable.derived,
+        formula: variable.formula,
       })
-      const data = await res.json()
-      if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to save variable')
+      if (!data?.success) throw new Error(data?.error || 'Failed to save variable')
       onSaved({ originalName: variable.name, nextVar: { name: canRename ? name : variable.name, label, category } })
     } catch (e: any) {
       setError(e?.message || 'Failed to save variable')
@@ -387,13 +385,12 @@ const [createForm, setCreateForm] = useState({
 
   const persistFlags = async (name: string, nextFlags: VariableFlags) => {
     try {
-      const res = await fetch('/api/variables-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, flags: nextFlags }),
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/variables-config', {
+        name,
+        flags: nextFlags
       });
-      const data = await res.json();
-      if (!res.ok || !data?.success) {
+      if (!data?.success) {
         throw new Error(data?.error || 'Failed to save flags');
       }
       // Update state in-place
@@ -602,23 +599,19 @@ const [createForm, setCreateForm] = useState({
                   }
                   try {
                     setCreateForm(prev => ({ ...prev, saving: true, error: '' }))
-                    const res = await fetch('/api/variables-config', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        name: createForm.name,
-                        label: createForm.label,
-                        type: createForm.type,
-                        category: createForm.category,
-                        description: createForm.description || undefined,
-                        flags: {
-                          visibleInClicker: createForm.visibleInClicker,
-                          editableInManual: createForm.editableInManual,
-                        }
-                      })
+                    // WHAT: Use apiPost() for automatic CSRF token handling
+                    const data = await apiPost('/api/variables-config', {
+                      name: createForm.name,
+                      label: createForm.label,
+                      type: createForm.type,
+                      category: createForm.category,
+                      description: createForm.description || undefined,
+                      flags: {
+                        visibleInClicker: createForm.visibleInClicker,
+                        editableInManual: createForm.editableInManual,
+                      }
                     })
-                    const data = await res.json()
-                    if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to create variable')
+                    if (!data?.success) throw new Error(data?.error || 'Failed to create variable')
                     // Refresh list
                     const reload = await fetch('/api/variables-config', { cache: 'no-store' })
                     const rdata = await reload.json()
@@ -703,11 +696,8 @@ function ReorderClickerLists({ variables, onClose, onSaved }: { variables: Varia
     })
     for (const u of updates) {
       try {
-        await fetch('/api/variables-config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(u)
-        })
+        // WHAT: Use apiPost() for automatic CSRF token handling
+        await apiPost('/api/variables-config', u)
       } catch {}
     }
     // Refresh variables-config
