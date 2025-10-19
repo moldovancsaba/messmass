@@ -95,7 +95,11 @@ export default function ExecutiveDashboard() {
 
       if (trendsRes.ok) {
         const data = await trendsRes.json();
-        setTrends(data.data);
+        const points = Array.isArray(data?.data?.dataPoints) ? data.data.dataPoints : [];
+        const labels = points.map((p: any) => p.date);
+        const fans = points.map((p: any) => (typeof p.fans === 'number' ? p.fans : 0));
+        const revenue = points.map((p: any) => (typeof p.adValue === 'number' ? p.adValue : 0));
+        setTrends({ labels, fans, revenue });
       }
 
       if (topEventsRes.ok) {
@@ -115,13 +119,13 @@ export default function ExecutiveDashboard() {
   }
 
   // WHAT: Prepare trend chart datasets
-  const trendDatasets: LineChartDataset[] = trends
+  const trendDatasets: LineChartDataset[] = trends && trends.labels?.length
     ? [
         {
           label: 'Total Fans',
           data: trends.labels.map((label, i) => ({
             label,
-            value: trends.fans[i],
+            value: trends.fans[i] ?? 0,
           })),
           color: '#3b82f6',
           fill: true,
@@ -129,13 +133,13 @@ export default function ExecutiveDashboard() {
       ]
     : [];
 
-  const revenueDatasets: LineChartDataset[] = trends
+  const revenueDatasets: LineChartDataset[] = trends && trends.labels?.length
     ? [
         {
           label: 'Revenue',
           data: trends.labels.map((label, i) => ({
             label,
-            value: trends.revenue[i],
+            value: trends.revenue[i] ?? 0,
           })),
           color: '#10b981',
           fill: true,
