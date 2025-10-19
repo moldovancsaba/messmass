@@ -1,0 +1,265 @@
+/**
+ * InsightCard Styles
+ * 
+ * WHAT: Styles for AI-generated insight cards
+ * WHY: Visual hierarchy by priority with expandable content
+ * HOW: CSS modules with design tokens and priority-based colors
+ * 
+ * Version: 6.28.0
+ */
+
+.insightCard {
+  background: var(--mm-surface-primary);
+  border: 2px solid var(--mm-border-light);
+  border-left-width: 4px;
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-4);
+  transition: all var(--mm-transition-normal);
+}
+
+.insightCard:hover {
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* Priority-based border colors */
+.priority--critical {
+  border-left-color: var(--mm-danger);
+}
+
+.priority--high {
+  border-left-color: var(--mm-warning);
+}
+
+.priority--medium {
+  border-left-color: var(--mm-info);
+}
+
+.priority--low {
+  border-left-color: var(--mm-text-tertiary);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--mm-space-3);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--mm-text-secondary);
+}
+
+.categoryIcon {
+  font-size: 1rem;
+}
+
+.category {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.dot {
+  color: var(--mm-text-tertiary);
+}
+
+.priority {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.confidence {
+  color: var(--mm-text-tertiary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--mm-space-1);
+}
+
+.actionButton,
+.dismissButton {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--mm-border-medium);
+  background: var(--mm-surface-secondary);
+  border-radius: var(--mm-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all var(--mm-transition-fast);
+}
+
+.actionButton:hover {
+  background: var(--mm-success);
+  color: white;
+  border-color: var(--mm-success);
+}
+
+.dismissButton:hover {
+  background: var(--mm-danger);
+  color: white;
+  border-color: var(--mm-danger);
+}
+
+/* Content */
+.content {
+  margin-bottom: var(--mm-space-3);
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--mm-text-primary);
+  margin: 0 0 var(--mm-space-2) 0;
+  line-height: 1.4;
+}
+
+.message {
+  font-size: 0.9375rem;
+  color: var(--mm-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--mm-space-3) 0;
+}
+
+/* Metrics */
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.metricsLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--mm-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metricTag {
+  display: inline-block;
+  padding: var(--mm-space-1) var(--mm-space-2);
+  background: var(--mm-surface-secondary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--mm-text-secondary);
+}
+
+/* Recommendation */
+.recommendation {
+  border-top: 1px solid var(--mm-border-light);
+  padding-top: var(--mm-space-3);
+  margin-top: var(--mm-space-3);
+}
+
+.recommendationToggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--mm-space-2);
+  background: var(--mm-surface-secondary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-sm);
+  cursor: pointer;
+  transition: all var(--mm-transition-fast);
+}
+
+.recommendationToggle:hover {
+  background: var(--mm-surface-tertiary);
+  border-color: var(--mm-border-medium);
+}
+
+.recommendationLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--mm-text-primary);
+}
+
+.expandIcon {
+  font-size: 0.75rem;
+  color: var(--mm-text-secondary);
+  transition: transform var(--mm-transition-fast);
+}
+
+.recommendationContent {
+  margin-top: var(--mm-space-3);
+  padding: var(--mm-space-3);
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid var(--mm-info);
+  border-radius: var(--mm-radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--mm-text-secondary);
+}
+
+/* Context */
+.context {
+  margin-top: var(--mm-space-3);
+  padding-top: var(--mm-space-3);
+  border-top: 1px dashed var(--mm-border-light);
+}
+
+.contextItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--mm-space-1) 0;
+  font-size: 0.75rem;
+}
+
+.contextKey {
+  color: var(--mm-text-tertiary);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.contextValue {
+  color: var(--mm-text-secondary);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* Compact variant */
+.compact {
+  padding: var(--mm-space-3);
+}
+
+.compact .title {
+  font-size: 1rem;
+}
+
+.compact .message {
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .insightCard {
+    padding: var(--mm-space-3);
+  }
+  
+  .title {
+    font-size: 1rem;
+  }
+  
+  .message {
+    font-size: 0.875rem;
+  }
+  
+  .meta {
+    font-size: 0.6875rem;
+  }
+}
