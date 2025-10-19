@@ -78,13 +78,39 @@ export interface Partner {
     badge?: string;                    // Alias for strTeamBadge
   };
   
+  // WHAT: Football-Data.org enrichment data (team profile and competition associations)
+  // WHY: Store Football-Data.org team metadata for fixture matching and KYC enrichment
+  footballData?: {
+    teamId: number;                    // Football-Data.org team ID (e.g., 81)
+    name: string;                      // Official team name (e.g., "FC Barcelona")
+    shortName: string;                 // Short name (e.g., "Barcelona")
+    tla: string;                       // Three-letter acronym (e.g., "FCB")
+    crest: string;                     // Team logo URL from Football-Data.org
+    
+    // Competition associations
+    competitions?: Array<{
+      id: number;                      // Competition ID (e.g., 2014 for La Liga)
+      name: string;                    // Competition name (e.g., "Primera Division")
+      code: string;                    // Competition code (e.g., "PD")
+      type: string;                    // "LEAGUE" or "CUP"
+      emblem?: string;                 // Competition logo URL
+    }>;
+    
+    // Sync metadata
+    lastSynced: string;                // ISO 8601 timestamp of last sync
+  };
+  
   // WHAT: Partner logo hosted on ImgBB
-  // WHY: Permanent CDN-hosted logo for display in UI (uploaded from sportsDb.badge)
+  // WHY: Permanent CDN-hosted logo for display in UI (uploaded from sportsDb.badge or footballData.crest)
   logoUrl?: string;
   
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
+  
+  // WHAT: Draft flag for auto-created partners
+  // WHY: Identify entities created by automation for later review
+  isDraft?: boolean;
 }
 
 /**

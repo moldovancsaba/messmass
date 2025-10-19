@@ -1,6 +1,18 @@
 # TASKLIST.md
-Current Version: 6.30.0
-Last Updated: 2025-10-19T13:44:58.000Z (UTC)
+Current Version: 6.31.0
+Last Updated: 2025-10-19T19:54:00.000Z (UTC)
+
+### Immediate — SportsDB Fixtures & Quick Add Suggestions (v6.31.0)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| SDB-001 | Log plan in ROADMAP/TASKLIST with ISO timestamps | Agent Mode | 2025-10-19T14:12:00.000Z | ✅ Complete (2025-10-19T14:10:00.000Z) |
+|| SDB-002 | Add SportsDB fixtures cache + list API (GET /api/sports-db/fixtures) | Agent Mode | 2025-10-19T14:30:00.000Z | ✅ Complete (2025-10-19T19:48:00.000Z) |
+|| SDB-003 | Add SportsDB sync API (POST /api/sports-db/sync) | Agent Mode | 2025-10-19T14:35:00.000Z | ✅ Complete (2025-10-19T19:48:00.000Z) |
+|| SDB-004 | Add draft creation API (POST /api/sports-db/fixtures/draft) | Agent Mode | 2025-10-19T14:40:00.000Z | ✅ Complete (2025-10-19T19:48:00.000Z) |
+|| SDB-005 | Quick Add: "⚽ Suggested Fixtures" tab UI | Agent Mode | 2025-10-19T15:10:00.000Z | ✅ Complete (2025-10-19T19:50:00.000Z) |
+|| SDB-006 | Manual verification in dev (load fixtures, create draft) | Agent Mode | 2025-10-19T15:30:00.000Z | ✅ Complete (2025-10-19T19:52:00.000Z) |
+|| SDB-007 | Docs sync (README, ROADMAP, RELEASE_NOTES) + version bump | Agent Mode | 2025-10-19T16:00:00.000Z | ✅ Complete (2025-10-19T19:54:00.000Z) |
 
 ### Immediate — Security Enhancements (v6.22.3)
 

@@ -3,7 +3,13 @@
 // Handles PieChart, HorizontalBar, and KPI chart types with "NA" error substitution
 
 import { ChartConfiguration, ChartCalculationResult } from './chartConfigTypes';
-import { evaluateFormula, evaluateFormulasBatch } from './formulaEngine';
+import { evaluateFormula, evaluateFormulasBatch, evaluateFormulaSafe, validateStatsForFormula } from './formulaEngine';
+import { 
+  validateProjectStats, 
+  ensureDerivedMetrics, 
+  prepareStatsForAnalytics,
+  type ValidationResult as DataValidationResult 
+} from './dataValidator';
 
 /**
  * Project statistics interface matching the existing structure
@@ -52,6 +58,57 @@ interface ProjectStats {
   flagsPrice?: number;
   capPrice?: number;
   otherPrice?: number;
+}
+
+/**
+ * WHAT: Safe chart calculation with automatic data validation and enrichment
+ * WHY: Prevent crashes and misleading results from incomplete data
+ * HOW: Validate stats, enrich with derived metrics, then calculate
+ * 
+ * @param configuration - Chart configuration with formulas
+ * @param stats - Project statistics (may be incomplete)
+ * @returns Chart calculation result with data quality indicators
+ */
+export function calculateChartSafe(
+  configuration: ChartConfiguration,
+  stats: Partial<ProjectStats>
+): ChartCalculationResult & { dataQuality?: DataValidationResult } {
+  // WHAT: Validate and enrich stats before calculation
+  // WHY: Ensure minimum data quality and derived metrics exist
+  const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
+  
+  // WHAT: If data quality is insufficient, return error state
+  // WHY: Prevent misleading charts from incomplete data
+  if (!validation.hasMinimumData) {
+    console.warn(
+      `⚠️ Insufficient data for chart "${configuration.title}": ${validation.missingRequired.length} required metrics missing`
+    );
+    
+    return {
+      chartId: configuration.chartId,
+      title: configuration.title,
+      type: configuration.type,
+      emoji: configuration.emoji,
+      subtitle: `Data incomplete: ${validation.completeness}%`,
+      totalLabel: configuration.totalLabel,
+      elements: [],
+      total: 'NA',
+      kpiValue: 'NA',
+      hasErrors: true,
+      dataQuality: validation
+    };
+  }
+  
+  // WHAT: Perform standard chart calculation with enriched stats
+  // WHY: Now guaranteed to have minimum required data
+  const result = calculateChart(configuration, enrichedStats);
+  
+  // WHAT: Attach data quality metadata to result
+  // WHY: Enable UI to show quality indicators
+  return {
+    ...result,
+    dataQuality: validation
+  };
 }
 
 /**
@@ -227,6 +284,57 @@ export function calculateChart(
 }
 
 /**
+ * WHAT: Safe batch calculation with upfront validation
+ * WHY: Validate once, calculate many - more efficient
+ * HOW: Enrich stats once, then batch calculate all charts
+ * 
+ * @param configurations - Array of chart configurations
+ * @param stats - Project statistics (may be incomplete)
+ * @returns Array of results with data quality indicators
+ */
+export function calculateChartsBatchSafe(
+  configurations: ChartConfiguration[],
+  stats: Partial<ProjectStats>
+): Array<ChartCalculationResult & { dataQuality?: DataValidationResult }> {
+  console.log(`🧮 Safe batch calculating ${configurations.length} charts...`);
+  
+  // WHAT: Validate and enrich stats once for all charts
+  // WHY: More efficient than validating per chart
+  const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
+  
+  console.log(`📊 Data quality: ${validation.dataQuality} (${validation.completeness}% complete)`);
+  
+  // WHAT: If data is insufficient, return error states for all charts
+  // WHY: Prevent calculation with incomplete data
+  if (!validation.hasMinimumData) {
+    console.warn(
+      `⚠️ Insufficient data for batch calculation: ${validation.missingRequired.length} required metrics missing`
+    );
+    
+    return configurations.map(config => ({
+      chartId: config.chartId,
+      title: config.title,
+      type: config.type,
+      emoji: config.emoji,
+      subtitle: `Data incomplete: ${validation.completeness}%`,
+      totalLabel: config.totalLabel,
+      elements: [],
+      total: 'NA',
+      kpiValue: 'NA',
+      hasErrors: true,
+      dataQuality: validation
+    }));
+  }
+  
+  // WHAT: Calculate all charts with enriched stats
+  // WHY: Standard calculation now guaranteed to have required data
+  return configurations.map(config => ({
+    ...calculateChart(config, enrichedStats),
+    dataQuality: validation
+  }));
+}
+
+/**
  * Batch calculates multiple charts from configurations
  * More efficient than calling calculateChart multiple times with same stats
  * @param configurations - Array of chart configurations
@@ -240,6 +348,45 @@ export function calculateChartsBatch(
   console.log(`🧮 Batch calculating ${configurations.length} charts...`);
   
   return configurations.map(config => calculateChart(config, stats));
+}
+
+/**
+ * WHAT: Safe calculation of only active charts with validation
+ * WHY: Filter inactive charts and ensure data quality
+ * HOW: Filter by active flag, validate stats, then calculate
+ * 
+ * @param configurations - Array of chart configurations (active and inactive)
+ * @param stats - Project statistics (may be incomplete)
+ * @returns Array of calculation results for active charts with data quality
+ */
+export function calculateActiveChartsSafe(
+  configurations: ChartConfiguration[],
+  stats: Partial<ProjectStats>
+): Array<ChartCalculationResult & { dataQuality?: DataValidationResult }> {
+  console.log('🧮 Safe calculateActiveCharts called with:', {
+    configurationsCount: configurations.length,
+    statsKeys: Object.keys(stats),
+    configurations: configurations.map(c => ({ 
+      id: c.chartId, 
+      title: c.title, 
+      active: 'active' in c ? (c as ChartConfiguration & { active: boolean }).active : c.isActive
+    }))
+  });
+  
+  // WHAT: Filter to only active charts
+  // WHY: Skip unnecessary calculations for inactive charts
+  const activeConfigurations = configurations.filter(config => {
+    const configWithActive = config as ChartConfiguration & { active?: boolean };
+    const hasActiveProperty = configWithActive.active !== undefined || config.isActive !== undefined;
+    if (!hasActiveProperty) return true;
+    return configWithActive.active === true || config.isActive === true;
+  });
+  
+  console.log(`🧮 Calculating ${activeConfigurations.length} active charts (${configurations.length - activeConfigurations.length} inactive)`);
+  
+  // WHAT: Use safe batch calculation for active charts
+  // WHY: Leverage validation and enrichment
+  return calculateChartsBatchSafe(activeConfigurations, stats);
 }
 
 /**

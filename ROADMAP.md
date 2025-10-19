@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 6.30.0
-Last Updated: 2025-10-19T13:44:58.000Z (UTC)
+Current Version: 6.31.0
+Last Updated: 2025-10-19T19:54:00.000Z (UTC)
 
 ---
 
@@ -25,6 +25,27 @@ Last Updated: 2025-10-19T13:44:58.000Z (UTC)
 **Implementation Phases**: See detailed breakdown in Milestones section below
 
 ---
+
+### SportsDB-First Fixtures Sync & Suggested Drafts (Q4 2025)
+Priority: High
+Status: ✅ Completed (v6.31.0 — 2025-10-19T19:54:00.000Z)
+Dependencies: Partners with sportsDb.teamId, existing Football-Data cache
+
+Plan:
+- Implement TheSportsDB fixtures cache and sync for all known teams (every 6h or manual via API)
+- Match fixtures to partners by sportsDb.teamId
+- Enforce draft creation only when home team exists as partner
+- Enrich with Football-Data metadata as secondary source
+- Add Quick Add "⚽ Suggested Fixtures" tab for one-click draft creation
+
+Acceptance:
+- Admin API to sync and list cached fixtures ✅
+- Quick Add UI lists upcoming fixtures for selected home partner ✅
+- One-click draft event creation links project to fixture ✅
+
+Logged at: 2025-10-19T14:10:00.000Z
+Completed at: 2025-10-19T19:54:00.000Z
+Author: Agent Mode
 
 ## 🔧 Operational Tasks
 

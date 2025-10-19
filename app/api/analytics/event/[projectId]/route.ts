@@ -16,6 +16,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
+import { validateProjectStats } from '@/lib/dataValidator';
 import type { AnalyticsAPIResponse, AnalyticsAggregate } from '@/lib/analytics.types';
 
 /**
@@ -100,6 +101,10 @@ export async function GET(
       delete responseData.rawStats;
     }
     
+    // WHAT: Validate source data quality
+    // WHY: Inform frontend if analytics are based on incomplete data
+    const validation = validateProjectStats(aggregate.rawStats || {});
+    
     // Convert ObjectId to string for JSON serialization
     const serializedData = {
       ...responseData,
@@ -110,6 +115,14 @@ export async function GET(
         partnerId: responseData.partnerContext.partnerId?.toString(),
         opponentId: responseData.partnerContext.opponentId?.toString(),
       } : undefined,
+      // WHAT: Include data quality metadata
+      // WHY: Frontend can show warnings for analytics based on incomplete data
+      dataQuality: {
+        completeness: validation.completeness,
+        quality: validation.dataQuality,
+        hasMinimumData: validation.hasMinimumData,
+        warnings: validation.warnings.length > 0 ? validation.warnings : undefined
+      }
     };
     
     logRequestEnd(startTime, { method: 'GET', pathname: `/api/analytics/event/${projectId}` }, 200);

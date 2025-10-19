@@ -66,10 +66,20 @@ export default function KPICard({
 }: KPICardProps) {
   const chartRef = useRef<ChartJS<'line'>>(null);
 
+  /* WHAT: Validate value before rendering
+     WHY: Handle missing, null, undefined, or 'NA' values gracefully
+     HOW: Check for valid numeric or string value */
+  const isValueValid = value !== null && value !== undefined && value !== 'NA' && value !== '';
+  const isNumericValue = typeof value === 'number' && !isNaN(value);
+
   /* What: Format the value based on type
      Why: Different metrics need different formatting */
   const formatValue = (val: number | string): string => {
     if (typeof val === 'string') return val;
+    
+    // WHAT: Handle invalid numeric values
+    // WHY: Prevent NaN or Infinity from being displayed
+    if (isNaN(val) || !isFinite(val)) return 'N/A';
 
     switch (format) {
       case 'currency':
@@ -188,8 +198,17 @@ export default function KPICard({
     info: styles.colorInfo,
   }[color];
 
-  const formattedValue = formatValue(value);
+  /* WHAT: Handle invalid value display
+     WHY: Show 'N/A' instead of empty or broken state */
+  const formattedValue = isValueValid ? formatValue(value) : 'N/A';
   const displayValue = `${prefix || ''}${formattedValue}${suffix || ''}`;
+
+  /* WHAT: Validate sparkline data if provided
+     WHY: Prevent chart crashes from invalid sparkline arrays */
+  const hasValidSparkline = sparklineData && 
+    Array.isArray(sparklineData) && 
+    sparklineData.length > 0 &&
+    sparklineData.some(val => typeof val === 'number' && !isNaN(val));
 
   return (
     <div className={`${styles.kpiCard} ${sizeClass} ${colorClass} ${className || ''}`}>
@@ -220,7 +239,7 @@ export default function KPICard({
 
         {/* What: Optional sparkline chart
             Why: Visual representation of trend over time */}
-        {sparklineChartData && (
+        {hasValidSparkline && sparklineChartData && (
           <div className={styles.sparkline}>
             <Line
               ref={chartRef}

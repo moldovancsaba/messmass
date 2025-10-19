@@ -80,12 +80,28 @@ export async function calculatePercentiles(
   const client = await clientPromise;
   const db = client.db(config.dbName);
 
-  // WHAT: Fetch all events with this metric
+  // WHAT: Fetch all events with this metric OR ability to compute it
   // WHY: Need complete dataset to calculate percentile position
+  // For base metrics like eventAttendees, we require the field to exist
+  // For derived metrics (allImages, totalFans), we can compute them from components
+  const query: any = {};
+  if (metric === 'allImages') {
+    // Can compute from remoteImages + hostessImages + selfies
+    query['stats.remoteImages'] = { $exists: true };
+    query['stats.hostessImages'] = { $exists: true };
+    query['stats.selfies'] = { $exists: true };
+  } else if (metric === 'totalFans') {
+    // Can compute from stadium + (remoteFans OR indoor+outdoor)
+    query['stats.stadium'] = { $exists: true };
+  } else {
+    // Base metrics must exist
+    query[`stats.${metric}`] = { $exists: true, $ne: null };
+  }
+  
   const allEvents = await db
     .collection('projects')
-    .find({ [`stats.${metric}`]: { $exists: true, $ne: null } })
-    .project({ _id: 1, [`stats.${metric}`]: 1 })
+    .find(query)
+    .project({ _id: 1, stats: 1 })
     .toArray();
 
   // WHAT: Get current event's value
@@ -94,19 +110,46 @@ export async function calculatePercentiles(
     .collection('projects')
     .findOne(
       { _id: new ObjectId(eventId) },
-      { projection: { [`stats.${metric}`]: 1 } }
+      { projection: { stats: 1 } }
     );
 
-  if (!currentEvent || !currentEvent.stats || currentEvent.stats[metric] === undefined) {
-    throw new Error(`Metric ${metric} not found for event ${eventId}`);
+  if (!currentEvent || !currentEvent.stats) {
+    throw new Error(`Event ${eventId} has no stats - cannot benchmark`);
   }
 
-  const value = currentEvent.stats[metric];
+  // Fallback: compute derived metrics if missing on legacy events
+  let value = (currentEvent.stats as any)[metric];
+  if (value === undefined || value === null) {
+    if (metric === 'allImages') {
+      const s: any = currentEvent.stats;
+      value = Number(s.remoteImages || 0) + Number(s.hostessImages || 0) + Number(s.selfies || 0);
+    } else if (metric === 'totalFans') {
+      const s: any = currentEvent.stats;
+      const remoteFans = s.remoteFans !== undefined ? Number(s.remoteFans || 0) : (Number(s.indoor || 0) + Number(s.outdoor || 0));
+      value = remoteFans + Number(s.stadium || 0);
+    }
+  }
+
+  if (value === undefined || value === null) {
+    throw new Error(`Metric ${metric} not found for event ${eventId} - base metrics incomplete`);
+  }
 
   // WHAT: Sort events by metric value (ascending)
   // WHY: Ranking requires ordered list
   const sortedEvents = allEvents
-    .map((e) => e.stats?.[metric] || 0)
+    .map((e) => {
+      const s: any = e.stats || {};
+      let v = s[metric];
+      if (v === undefined) {
+        if (metric === 'allImages') {
+          v = Number(s.remoteImages || 0) + Number(s.hostessImages || 0) + Number(s.selfies || 0);
+        } else if (metric === 'totalFans') {
+          const remoteFans = s.remoteFans !== undefined ? Number(s.remoteFans || 0) : (Number(s.indoor || 0) + Number(s.outdoor || 0));
+          v = remoteFans + Number(s.stadium || 0);
+        }
+      }
+      return v;
+    })
     .filter((v) => v !== null && v !== undefined)
     .sort((a, b) => a - b);
 

@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "6.32.0",
+  "version": "6.31.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -40,7 +40,13 @@
     "migrate-stats-v2.13.0": "node scripts/migrate-stats-v2.13.0.js",
     "analytics:setup-indexes": "tsx scripts/setupAnalyticsIndexes.ts",
     "analytics:aggregate": "tsx scripts/aggregateAnalytics.ts",
-    "analytics:backfill": "tsx scripts/backfillAnalytics.ts"
+    "analytics:backfill": "tsx scripts/backfillAnalytics.ts",
+    "data:audit": "tsx scripts/validateDataQuality.ts --audit",
+    "data:audit:verbose": "tsx scripts/validateDataQuality.ts --audit --verbose",
+    "data:fix": "tsx scripts/validateDataQuality.ts --fix",
+    "data:fix:verbose": "tsx scripts/validateDataQuality.ts --fix --verbose",
+    "football-data:setup-indexes": "tsx scripts/setupFootballDataIndexes.ts",
+    "football-data:sync": "tsx scripts/syncFootballDataFixtures.ts"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

@@ -2,10 +2,10 @@
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and modern flat design system.**
 
-- **Version**: v6.30.0
-- **Last Updated**: 2025-10-19T13:44:58.000Z
+- **Version**: v6.31.0
+- **Last Updated**: 2025-10-19T19:54:00.000Z
 - **Website**: https://messmass.doneisbetter.com
-- **Status**: Production-Ready — Full-featured event management platform with partner ecosystem
+- **Status**: Production-Ready — Full-featured event management platform with partner ecosystem and automated fixture suggestions
 
 ## Overview
 
@@ -14,6 +14,7 @@ MessMass is an enterprise-grade event analytics platform designed for sports org
 **Core Capabilities**:
 - 📊 Real-time event statistics with WebSocket collaboration
 - 🤝 Partner management system (clubs, federations, venues, brands)
+- ⚽ Automated fixture suggestions via TheSportsDB integration
 - ⚡ Sports Match Builder for rapid event creation
 - 🔗 Advanced Bitly integration with many-to-many event associations
 - 🎨 Professional TailAdmin V2 flat design (zero gradients)
@@ -70,6 +71,10 @@ ADMIN_PASSWORD=your_secure_password
 BITLY_ACCESS_TOKEN=your_bitly_token
 BITLY_ORGANIZATION_GUID=your_org_guid
 BITLY_GROUP_GUID=your_group_guid
+
+# TheSportsDB Integration (v6.31.0+)
+SPORTSDB_API_KEY=your_api_key
+SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 ```
 
 ## Documentation
@@ -121,6 +126,13 @@ BITLY_GROUP_GUID=your_group_guid
   - Partner profiles with emoji identifiers, hashtags, and Bitly links
   - Searchable partner directory with pagination and sorting
   - Reusable partner selector components with predictive search
+
+- **⚽ Automated Fixture Suggestions** (TheSportsDB Integration)
+  - Background fixture sync for all partners with `sportsDb.teamId`
+  - Suggested Fixtures tab in Quick Add with one-click draft creation
+  - Automatic partner matching and opponent creation (as draft when allowed)
+  - Enforces home partner existence rule for draft projects
+  - Links fixtures to projects with `sportsDbFixture` metadata
 
 - **⚡ Sports Match Builder** (Quick Add)
   - Rapid event creation from partner selection
@@ -369,6 +381,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-**MessMass v6.24.0** — Built with ❤️ by Csaba Moldovan
+**MessMass v6.31.0** — Built with ❤️ by Csaba Moldovan
 **Repository**: https://github.com/moldovancsaba/messmass  
 **Contact**: moldovancsaba@gmail.com

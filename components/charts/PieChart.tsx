@@ -64,9 +64,50 @@ export default function PieChart({
 }: PieChartProps) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
 
-  /* What: Calculate total for percentage display
-     Why: Show relative proportions in tooltips and legend */
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  /* WHAT: Validate data before rendering
+     WHY: Prevent crashes from empty, null, or invalid data
+     HOW: Check if data exists and has valid numeric values */
+  const isDataValid = data && Array.isArray(data) && data.length > 0;
+  const hasValidValues = isDataValid && data.some(item => 
+    typeof item.value === 'number' && !isNaN(item.value) && item.value > 0
+  );
+
+  /* WHAT: Calculate total for percentage display
+     WHY: Show relative proportions in tooltips and legend */
+  const total = isDataValid ? data.reduce((sum, item) => {
+    const value = typeof item.value === 'number' && !isNaN(item.value) ? item.value : 0;
+    return sum + value;
+  }, 0) : 0;
+
+  /* WHAT: Show "Insufficient Data" state if data is invalid
+     WHY: Provide clear feedback instead of rendering broken chart */
+  if (!isDataValid || !hasValidValues || total === 0) {
+    return (
+      <ChartBase
+        title={title}
+        subtitle={subtitle || 'No data available'}
+        chartRef={chartRef}
+        filename={filename}
+        className={className}
+        height={height}
+        showExport={false}
+      >
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          color: 'var(--mm-gray-500)',
+          gap: 'var(--mm-space-3)'
+        }}>
+          <div style={{ fontSize: '48px', opacity: 0.5 }}>📊</div>
+          <div style={{ fontSize: '16px', fontWeight: 500 }}>Insufficient Data</div>
+          <div style={{ fontSize: '14px', opacity: 0.7 }}>Chart requires at least one valid data point</div>
+        </div>
+      </ChartBase>
+    );
+  }
 
   /* What: Prepare chart data in Chart.js format
      Why: Chart.js requires specific data structure for pie/donut charts */

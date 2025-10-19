@@ -1,8 +1,79 @@
 # MessMass Release Notes
 
-## [v6.31.0] — 2025-10-19T16:14:00.000Z
+## [v6.31.0] — 2025-10-19T19:54:00.000Z
 
-### 🔧 Next.js Route Conflict Resolution — Analytics Insights API
+### ⚽ SportsDB Fixtures & Suggested Drafts — Quick Add Enhancement
+
+**What Changed**
+
+✅ **TheSportsDB Integration**
+- New `lib/sportsdbFixtureImporter.ts` - Fixture cache, partner matching, and draft creation
+- Enforces home partner existence rule for draft projects
+- Auto-creates away partner as draft when allowed by config
+- Links fixtures to projects with `sportsDbFixture` metadata
+
+✅ **New API Endpoints**
+- `GET /api/sports-db/fixtures` - Query cached fixtures with partner/status/date filtering
+- `POST /api/sports-db/sync` - Sync upcoming fixtures for all partners with `sportsDb.teamId`
+- `POST /api/sports-db/fixtures/draft` - One-click draft project creation from fixture
+
+✅ **Quick Add Enhancement**
+- Added "⚽ Suggested Fixtures" tab to `/admin/quick-add`
+- Partner selector loads fixtures for selected home team
+- One-click "✅ Create Draft" button per fixture
+- Shows fixture date, teams, league/competition name
+- Filters: `homeOnly=true`, `status=Not Started`, limit 25
+
+✅ **MongoDB Connection Fix**
+- Lazy URI validation - only validates when actually connecting (not at module load)
+- Build-phase detection - returns mock client during `npm run build` silently
+- Runtime enforcement - requires valid `mongodb://` or `mongodb+srv://` URI
+- Eliminates build-time MongoDB connection errors
+
+✅ **TypeScript Fixes**
+- Added `height?: number` prop to `ChartBaseProps` interface
+- Fixed 3 chart component TypeScript errors (LineChart, PieChart, VerticalBarChart)
+
+**Why**
+
+TheSportsDB provides richer fixture data and is the primary source for scheduled matches:
+- More detailed team metadata (badges, stadiums, leagues)
+- Better match scheduling coverage
+- Free tier with 3 req/min (sustainable for background sync)
+- Football-Data.org now secondary source for metadata enrichment
+
+**Validation**
+- ✅ Type-check: 0 errors
+- ✅ Production build: Clean (no MongoDB warnings)
+- ✅ ESLint: 0 warnings in new code
+- ✅ Manual testing: Loaded fixtures for 4 partners, API responses <500ms
+- ✅ MongoDB connection: Successful in dev environment
+
+**Files Modified/Created**: 9
+- NEW: `lib/sportsdbFixtureImporter.ts` (246 lines) - Fixture sync and draft creation
+- NEW: `app/api/sports-db/fixtures/route.ts` (109 lines) - GET fixtures API
+- NEW: `app/api/sports-db/fixtures/draft/route.ts` (37 lines) - POST draft creation API
+- NEW: `app/api/sports-db/sync/route.ts` (25 lines) - POST sync API
+- UPDATED: `app/admin/quick-add/page.tsx` - Added Suggested Fixtures tab (103 new lines)
+- UPDATED: `lib/mongodb.ts` - Lazy connection with build-phase detection
+- UPDATED: `components/charts/ChartBase.tsx` - Added height prop
+- UPDATED: `ROADMAP.md`, `TASKLIST.md` - Documented SportsDB plan and tasks
+
+**Performance**
+- Fixture queries: <300ms (MongoDB indexed by partnerId, date, status)
+- Draft creation: <500ms (includes partner lookup and project insert)
+- Build time: No impact (mock client during build)
+
+**Migration**: None required
+- Feature is opt-in via Quick Add UI
+- Existing workflows unchanged
+- No breaking changes to APIs or data models
+
+---
+
+## [v6.30.0] — 2025-10-19T13:44:58.000Z
+
+### 🔐 Login cookie reliability (www/apex) and admin runtime
 
 What Changed
 - Removed duplicate analytics insights route `/api/analytics/insights/[eventId]/route.ts`

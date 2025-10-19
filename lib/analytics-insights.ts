@@ -69,13 +69,32 @@ export interface InsightsReport {
 // ============================================================================
 
 /**
+ * WHAT: Validate event has minimum required metrics for insights
+ * WHY: Prevent errors by checking data completeness before processing
+ */
+function hasMinimumMetrics(event: any): boolean {
+  if (!event || !event.stats) return false;
+  
+  const s = event.stats;
+  
+  // Required base metrics for insights generation
+  const hasEventAttendees = typeof s.eventAttendees === 'number' && s.eventAttendees > 0;
+  const hasImages = typeof s.remoteImages === 'number' || typeof s.hostessImages === 'number' || typeof s.selfies === 'number';
+  const hasFans = typeof s.stadium === 'number' || typeof s.remoteFans === 'number' || typeof s.indoor === 'number' || typeof s.outdoor === 'number';
+  
+  return hasEventAttendees && hasImages && hasFans;
+}
+
+/**
  * WHAT: Generate all insights for a specific event
  * WHY: Single function to get complete analytics picture
  * 
+ * FAIL-PROOF: Returns null if event has insufficient data instead of throwing errors
+ * 
  * @param eventId - Event to analyze
- * @returns Complete insights report
+ * @returns Complete insights report or null if data insufficient
  */
-export async function generateInsights(eventId: string): Promise<InsightsReport> {
+export async function generateInsights(eventId: string): Promise<InsightsReport | null> {
   const client = await clientPromise;
   const db = client.db(config.dbName);
 
@@ -84,19 +103,39 @@ export async function generateInsights(eventId: string): Promise<InsightsReport>
   const event = await db.collection('projects').findOne({ _id: new ObjectId(eventId) });
 
   if (!event) {
-    throw new Error(`Event ${eventId} not found`);
+    console.warn(`Event ${eventId} not found - skipping insights`);
+    return null;
+  }
+  
+  // WHAT: Validate event has minimum required metrics
+  // WHY: Fail-proof - skip events with incomplete data instead of throwing errors
+  if (!hasMinimumMetrics(event)) {
+    console.warn(`Event ${eventId} (${event.eventName}) lacks minimum metrics - skipping insights`);
+    return null;
   }
 
   const insights: Insight[] = [];
 
-  // WHAT: Run all insight generators in parallel
-  // WHY: Efficient - don't wait for each sequentially
+  // WHAT: Run all insight generators in parallel with error handling
+  // WHY: Fail-proof - if one insight type fails, others still work
   const [anomalyInsights, trendInsights, benchmarkInsights, predictionInsights] =
     await Promise.all([
-      generateAnomalyInsights(event),
-      generateTrendInsights(event),
-      generateBenchmarkInsights(event),
-      generatePredictionInsights(event),
+      generateAnomalyInsights(event).catch((err) => {
+        console.warn(`Anomaly insights failed for ${eventId}:`, err.message);
+        return [];
+      }),
+      generateTrendInsights(event).catch((err) => {
+        console.warn(`Trend insights failed for ${eventId}:`, err.message);
+        return [];
+      }),
+      generateBenchmarkInsights(event).catch((err) => {
+        console.warn(`Benchmark insights failed for ${eventId}:`, err.message);
+        return [];
+      }),
+      generatePredictionInsights(event).catch((err) => {
+        console.warn(`Prediction insights failed for ${eventId}:`, err.message);
+        return [];
+      }),
     ]);
 
   // WHAT: Combine all insights
@@ -533,8 +572,10 @@ function formatMetricName(metric: string): string {
 /**
  * WHAT: Generate partner-level insights across all events
  * WHY: Strategic overview for partners
+ * 
+ * FAIL-PROOF: Returns null if no valid events or insufficient data
  */
-export async function generatePartnerInsights(partnerId: string): Promise<InsightsReport> {
+export async function generatePartnerInsights(partnerId: string): Promise<InsightsReport | null> {
   const client = await clientPromise;
   const db = client.db(config.dbName);
 
@@ -547,11 +588,21 @@ export async function generatePartnerInsights(partnerId: string): Promise<Insigh
     .toArray();
 
   if (partnerEvents.length === 0) {
-    throw new Error(`No events found for partner ${partnerId}`);
+    console.warn(`No events found for partner ${partnerId}`);
+    return null;
   }
 
   // WHAT: Generate insights for most recent event
   // WHY: Representative sample of partner performance
   const latestEvent = partnerEvents[0];
-  return generateInsights(latestEvent._id.toString());
+  const insights = await generateInsights(latestEvent._id.toString());
+  
+  // WHAT: Return null if latest event has insufficient data
+  // WHY: Fail-proof - don't throw errors for incomplete data
+  if (!insights) {
+    console.warn(`Partner ${partnerId} latest event has insufficient data for insights`);
+    return null;
+  }
+  
+  return insights;
 }

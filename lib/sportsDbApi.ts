@@ -268,6 +268,28 @@ export async function lookupLeague(leagueId: string): Promise<SportsDbLeague | n
 }
 
 /**
+ * WHAT: Fetch upcoming events for a team
+ * WHY: Seed fixture cache for planning and drafts
+ */
+export async function fetchTeamUpcomingEvents(teamId: string) {
+  const endpoint = `eventsnext.php?id=${encodeURIComponent(teamId)}`;
+  const cacheKey = `events:team:next:${teamId}`;
+  const res = await fetchWithRateLimit<import('./sportsDbTypes').SportsDbEventsResponse>(endpoint, cacheKey, 5 * 60 * 1000);
+  return res.events || [];
+}
+
+/**
+ * WHAT: Fetch past events for a team
+ * WHY: Optional enrichment or backfill
+ */
+export async function fetchTeamPastEvents(teamId: string) {
+  const endpoint = `eventslast.php?id=${encodeURIComponent(teamId)}`;
+  const cacheKey = `events:team:last:${teamId}`;
+  const res = await fetchWithRateLimit<import('./sportsDbTypes').SportsDbEventsResponse>(endpoint, cacheKey, 10 * 60 * 1000);
+  return res.events || [];
+}
+
+/**
  * WHAT: Clear all cached data
  * WHY: Allow manual cache invalidation if needed
  */

@@ -76,12 +76,16 @@ export async function PUT(
       ...updateData.stats
     }
     
+    // Ensure derived metrics are present and up-to-date
+    const { addDerivedMetrics } = await import('@/lib/projectStatsUtils');
+    const statsWithDerived = addDerivedMetrics(updatedStats);
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
       { 
         $set: { 
           ...updateData,
-          stats: updatedStats,
+          stats: statsWithDerived,
           updatedAt: new Date()
         }
       }

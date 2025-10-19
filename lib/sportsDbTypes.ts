@@ -123,3 +123,31 @@ export interface RateLimiterState {
   limit: number;       // Max requests allowed
   window: number;      // Time window in ms (60000 = 1 minute)
 }
+
+/**
+ * WHAT: Event (fixture) from TheSportsDB API
+ * WHY: Primary source for scheduling; used to seed drafts
+ */
+export interface SportsDbEvent {
+  idEvent: string;
+  strEvent: string;            // e.g., "Barcelona vs Real Madrid"
+  strLeague?: string;
+  idLeague?: string;
+  strSeason?: string;
+  dateEvent?: string;          // YYYY-MM-DD
+  strTime?: string;            // HH:mm:ss
+  strTimestamp?: string;       // ISO timestamp
+  idHomeTeam?: string;
+  idAwayTeam?: string;
+  strHomeTeam?: string;
+  strAwayTeam?: string;
+  intHomeScore?: string | null;
+  intAwayScore?: string | null;
+  strStatus?: string | null;   // e.g., "Not Started"
+  idVenue?: string | null;
+  strVenue?: string | null;
+}
+
+export interface SportsDbEventsResponse {
+  events: SportsDbEvent[] | null;
+}

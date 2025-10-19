@@ -175,18 +175,22 @@ export default function QuickAddPage() {
   
   // WHAT: Sports Match Quick Add state
   // WHY: New feature for creating events from partner selection
-  const [activeTab, setActiveTab] = useState<'sheet' | 'partners'>('sheet');
+const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('sheet');
   const [partners, setPartners] = useState<PartnerResponse[]>([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
   const [partner1Id, setPartner1Id] = useState<string>('');
   const [partner2Id, setPartner2Id] = useState<string>('');
   const [matchDate, setMatchDate] = useState<string>('');
   const [matchPreview, setMatchPreview] = useState<any>(null);
+  // Suggested Fixtures state
+  const [suggestHomePartnerId, setSuggestHomePartnerId] = useState<string>('');
+  const [suggestFixtures, setSuggestFixtures] = useState<any[]>([]);
+  const [loadingFixtures, setLoadingFixtures] = useState(false);
   
   // WHAT: Load partners for sports match builder
   // WHY: Need partner data for dropdown selection
   useEffect(() => {
-    if (activeTab === 'partners' && partners.length === 0) {
+    if ((activeTab === 'partners' || activeTab === 'suggested') && partners.length === 0) {
       loadPartners();
     }
   }, [activeTab]);
@@ -467,6 +471,12 @@ export default function QuickAddPage() {
           className={`${styles.tabButton} ${activeTab === 'partners' ? styles.active : ''}`}
         >
           🤝 Sports Match
+        </button>
+        <button
+          onClick={() => setActiveTab('suggested' as any)}
+          className={`${styles.tabButton} ${activeTab === 'suggested' ? styles.active : ''}`}
+        >
+          ⚽ Suggested Fixtures
         </button>
       </div>
 
@@ -825,6 +835,109 @@ export default function QuickAddPage() {
         </>
       )}
       
+      {/* Suggested Fixtures Tab Content */}
+      {activeTab === 'suggested' && (
+        <>
+          <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-6 border-left-accent">
+            <h3 className="section-subtitle mb-4">⚽ Suggested Fixtures</h3>
+            <p className="text-sm text-gray-600 mb-2">Select a home partner to see upcoming fixtures from TheSportsDB. Create draft events in one click.</p>
+            <ul className="text-sm text-gray-600 list-disc-padded">
+              <li className="mb-2">Requires the home team to exist in partners.</li>
+              <li className="mb-2">Opponent will be created as draft partner if missing (when allowed).</li>
+              <li>Fixtures are cached locally and refreshed via admin sync.</li>
+            </ul>
+          </ColoredCard>
+
+          <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
+            <div className="form-group mb-4">
+              <label className="form-label">Home Partner:</label>
+              <PartnerSelector
+                selectedPartnerId={suggestHomePartnerId}
+                partners={partners}
+                onChange={(id) => {
+                  setSuggestHomePartnerId(id || '');
+                  setSuggestFixtures([]);
+                }}
+                placeholder="Search home team..."
+                disabled={loadingPartners}
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                className="btn btn-small btn-primary"
+                disabled={!suggestHomePartnerId || loadingPartners}
+                onClick={async () => {
+                  setError(''); setSuccess(''); setLoadingFixtures(true);
+                  try {
+                    const partner = partners.find(p => p._id === suggestHomePartnerId);
+                    const teamId = partner?.sportsDb?.teamId;
+                    const res = await fetch(`/api/sports-db/fixtures?partnerId=${encodeURIComponent(suggestHomePartnerId)}&homeOnly=true&status=Not%20Started&limit=25`);
+                    const data = await res.json();
+                    if (data.success) setSuggestFixtures(data.fixtures);
+                    else setError(data.error || 'Failed to load fixtures');
+                  } catch (e) {
+                    setError('Failed to load fixtures');
+                  } finally {
+                    setLoadingFixtures(false);
+                  }
+                }}
+              >
+                🔄 Load Fixtures
+              </button>
+              {suggestFixtures.length > 0 && (
+                <button className="btn btn-small btn-secondary" onClick={() => setSuggestFixtures([])}>Clear</button>
+              )}
+            </div>
+          </ColoredCard>
+
+          {loadingFixtures && (
+            <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6">
+              <p className="m-0 text-sm text-gray-600">Loading fixtures…</p>
+            </ColoredCard>
+          )}
+
+          {suggestFixtures.length > 0 && (
+            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+              <h3 className="section-subtitle mb-4">Upcoming Fixtures</h3>
+              <div className="flex flex-col gap-3">
+                {suggestFixtures.map((fx: any) => (
+                  <div key={fx.eventId} className="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white">
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-700 text-sm w-28">{fx.date}</span>
+                      <span className="text-gray-900 font-medium">{fx.homeTeam?.name || 'Home'} x {fx.awayTeam?.name || 'Away'}</span>
+                      {fx.leagueName && (
+                        <span className="text-xs text-gray-500">{fx.leagueName}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="btn btn-tiny btn-success"
+                        onClick={async () => {
+                          setIsCreating(true); setError(''); setSuccess('');
+                          try {
+                            const resp = await apiPost('/api/sports-db/fixtures/draft', { eventId: fx.eventId });
+                            if (!resp.success) throw new Error(resp.error || 'Failed');
+                            setSuccess('Draft event created');
+                            setTimeout(() => { router.push('/admin/projects'); }, 1200);
+                          } catch (e: any) {
+                            setError(e.message || 'Failed to create draft');
+                          } finally {
+                            setIsCreating(false);
+                          }
+                        }}
+                      >
+                        ✅ Create Draft
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ColoredCard>
+          )}
+        </>
+      )}
+
       {/* Error and Success Messages (shared across tabs) */}
       {error && (
         <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="mb-6 error-box">

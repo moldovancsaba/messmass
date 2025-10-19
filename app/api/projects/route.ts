@@ -11,6 +11,8 @@ import {
   expandHashtagsWithCategories,
   getAllHashtagRepresentations 
 } from '@/lib/hashtagCategoryUtils';
+import { addDerivedMetrics } from '@/lib/projectStatsUtils';
+import { validateProjectStats, prepareStatsForAnalytics, type ValidationResult } from '@/lib/dataValidator';
 
 // Import Bitly recalculation services for many-to-many link management
 import { recalculateProjectLinks, handleProjectDeletion } from '@/lib/bitly-recalculator';
@@ -335,6 +337,10 @@ export async function GET(request: NextRequest) {
     );
     
     const formatted = projects.map(project => {
+      // WHAT: Validate project data quality
+      // WHY: Inform frontend about incomplete data for UI indicators
+      const validation = validateProjectStats(project.stats || {});
+      
       const result: any = {
         _id: project._id.toString(),
         eventName: project.eventName,
@@ -346,7 +352,15 @@ export async function GET(request: NextRequest) {
         editSlug: project.editSlug,
         styleId: project.styleId || null,               // Project-specific style reference
         createdAt: project.createdAt,
-        updatedAt: project.updatedAt
+        updatedAt: project.updatedAt,
+        // WHAT: Add data quality metadata for frontend consumption
+        // WHY: Enable UI to show quality badges and warnings
+        dataQuality: {
+          completeness: validation.completeness,
+          quality: validation.dataQuality,
+          hasMinimumData: validation.hasMinimumData,
+          missingRequired: validation.missingRequired
+        }
       };
       
       // Add partner data if available
@@ -411,9 +425,20 @@ export async function POST(request: NextRequest) {
 
     if (!eventName || !eventDate || !stats) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'Missing required fields: eventName, eventDate, stats' },
         { status: 400 }
       );
+    }
+
+    // WHAT: Validate and enrich stats before saving
+    // WHY: Ensure data quality and add derived metrics
+    const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
+    
+    // WHAT: Warn if data quality is poor (but don't reject)
+    // WHY: Allow creation with incomplete data but flag for admin attention
+    if (!validation.hasMinimumData) {
+      console.warn(`⚠️ Creating project with insufficient data quality: ${validation.dataQuality} (${validation.completeness}%)`);
+      console.warn(`Missing required metrics: ${validation.missingRequired.join(', ')}`);
     }
 
     console.log('💾 Creating new project:', eventName);
@@ -457,7 +482,7 @@ export async function POST(request: NextRequest) {
       eventDate,
       hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
       categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
-      stats,
+      stats: enrichedStats, // Already enriched with derived metrics
       viewSlug,
       editSlug,
       createdAt: now,
@@ -542,6 +567,16 @@ export async function POST(request: NextRequest) {
       project: {
         _id: result.insertedId.toString(),
         ...project
+      },
+      // WHAT: Include data quality validation in response
+      // WHY: Frontend can show warnings immediately after creation
+      dataQuality: {
+        completeness: validation.completeness,
+        quality: validation.dataQuality,
+        hasMinimumData: validation.hasMinimumData,
+        warnings: validation.warnings,
+        missingRequired: validation.missingRequired,
+        missingOptional: validation.missingOptional
       }
     });
 
@@ -609,13 +644,24 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // WHAT: Validate and enrich stats before updating
+    // WHY: Ensure data quality and add derived metrics
+    const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
+    
+    // WHAT: Warn if data quality is poor (but don't reject)
+    // WHY: Allow updates with incomplete data but flag for admin attention
+    if (!validation.hasMinimumData) {
+      console.warn(`⚠️ Updating project with insufficient data quality: ${validation.dataQuality} (${validation.completeness}%)`);
+      console.warn(`Missing required metrics: ${validation.missingRequired.join(', ')}`);
+    }
+    
     // Enhanced update data to include categorized hashtags
     const setData: any = {
       eventName,
       eventDate,
       hashtags: hashtags || [],                        // Traditional hashtags (backward compatibility)
       categorizedHashtags: categorizedHashtags || {},  // New categorized hashtags field
-      stats,
+      stats: enrichedStats, // Already enriched with derived metrics
       updatedAt: new Date().toISOString()
     };
     

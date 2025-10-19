@@ -27,6 +27,7 @@ interface ChartBaseProps {
   filename?: string;
   showExport?: boolean;
   className?: string;
+  height?: number; // WHAT: Optional chart container height in pixels; WHY: Allow custom chart heights for different layouts
 }
 
 export default function ChartBase({
@@ -37,6 +38,7 @@ export default function ChartBase({
   filename = 'chart',
   showExport = true,
   className = '',
+  height,
 }: ChartBaseProps) {
   const { exportChartAsPNG, copyChartToClipboard } = useChartExport();
 
@@ -92,7 +94,10 @@ export default function ChartBase({
 
       {/* What: Chart content area
          Why: Render the actual chart component */}
-      <div className={styles.chartContent}>
+      <div 
+        className={styles.chartContent}
+        style={height ? { height: `${height}px` } : undefined}
+      >
         {children}
       </div>
     </div>

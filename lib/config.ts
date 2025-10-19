@@ -31,6 +31,14 @@ export type AppConfig = {
   // WHAT: Group GUID for fetching links from specific Bitly group
   // WHY: Required for /groups/{guid}/bitlinks endpoint (some accounts don't support /user/bitlinks)
   bitlyGroupGuid?: string;
+  // Football-Data.org integration (server-only)
+  // WHAT: Token and base URL for Football-Data.org API
+  // WHY: Enable fixture scheduling and team enrichment
+  footballDataApiToken?: string;
+  footballDataBaseUrl?: string;
+  footballDataSyncIntervalHours?: number;
+  footballDataAutoCreateProjects?: boolean;
+  footballDataAutoCreatePartners?: boolean;
 };
 
 function getEnv(name: string): string | undefined {
@@ -88,6 +96,12 @@ function initializeConfig(): AppConfig {
     bitlyAccessToken: getEnv('BITLY_ACCESS_TOKEN'),
     bitlyOrganizationGuid: getEnv('BITLY_ORGANIZATION_GUID'),
     bitlyGroupGuid: getEnv('BITLY_GROUP_GUID'),
+    // Football-Data.org integration (server-only)
+    footballDataApiToken: getEnv('FOOTBALL_DATA_API_TOKEN'),
+    footballDataBaseUrl: getEnv('FOOTBALL_DATA_BASE_URL') || 'https://api.football-data.org/v4',
+    footballDataSyncIntervalHours: getEnv('FOOTBALL_DATA_SYNC_INTERVAL_HOURS') ? Number(getEnv('FOOTBALL_DATA_SYNC_INTERVAL_HOURS')) : 6,
+    footballDataAutoCreateProjects: getEnv('FOOTBALL_DATA_AUTO_CREATE_PROJECTS') ? getEnv('FOOTBALL_DATA_AUTO_CREATE_PROJECTS') === 'true' : true,
+    footballDataAutoCreatePartners: getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') ? getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') === 'true' : true,
   };
 
   return cachedConfig;

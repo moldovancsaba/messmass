@@ -3,6 +3,12 @@
 // Returns 'NA' for division by zero, missing variables, or invalid expressions
 
 import { AVAILABLE_VARIABLES, FormulaValidationResult } from './chartConfigTypes';
+import { 
+  validateRequiredFields, 
+  ensureDerivedMetrics, 
+  type ProjectStats as ValidatedProjectStats,
+  type ValidationResult as DataValidationResult
+} from './dataValidator';
 
 // WHAT: Normalization helpers to accept both legacy tokens (e.g., [TOTAL_FANS]) and new org-prefixed tokens
 //       you requested (e.g., [SEYUTOTALFANS], [SEYUPROPOSITIONVISIT]).
@@ -573,6 +579,160 @@ export function isValidVariable(variableName: string): boolean {
 export function getVariableExample(variableName: string): string | null {
   const variable = AVAILABLE_VARIABLES.find(v => v.name === variableName);
   return variable ? variable.exampleUsage : null;
+}
+
+/**
+ * WHAT: Validates if stats contain all variables required by a formula
+ * WHY: Pre-flight check to prevent 'NA' results from missing data
+ * HOW: Extract variables from formula, check if stats has them
+ * 
+ * @param formula - Formula string to validate
+ * @param stats - Project statistics to check
+ * @returns Validation result with missing variables list
+ */
+export function validateStatsForFormula(
+  formula: string,
+  stats: Partial<ProjectStats>
+): {
+  valid: boolean;
+  missingVariables: string[];
+  availableVariables: string[];
+  canEvaluate: boolean;
+} {
+  // WHAT: Extract all variables used in the formula
+  // WHY: Need to know what data the formula depends on
+  const usedVariables = extractVariablesFromFormula(formula);
+  
+  // WHAT: Filter out special tokens (PARAM, MANUAL) - handled externally
+  // WHY: These are not part of stats and resolved at runtime
+  const statsVariables = usedVariables.filter(
+    v => !v.startsWith('PARAM:') && !v.startsWith('MANUAL:')
+  );
+  
+  // WHAT: Map formula variables to stats field names
+  // WHY: Formula uses [VARIABLE_NAME], stats uses camelCase
+  const requiredFields: string[] = [];
+  const availableFields: string[] = [];
+  
+  for (const variable of statsVariables) {
+    const normalized = normalizeTokenRaw(variable);
+    
+    // WHAT: Handle computed/derived metrics separately
+    // WHY: These can be calculated if base metrics exist
+    const isComputed = [
+      'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 
+      'REMOTEFANS', 'TOTALUNDER40', 'TOTALOVER40'
+    ].includes(normalized);
+    
+    if (isComputed) {
+      // WHAT: For derived metrics, check if base components exist
+      // WHY: Can compute totalFans if indoor, outdoor, stadium exist
+      if (normalized === 'TOTALFANS' || normalized === 'REMOTEFANS') {
+        const hasBase = 
+          (stats as any).indoor !== undefined && 
+          (stats as any).outdoor !== undefined && 
+          (stats as any).stadium !== undefined;
+        if (hasBase) availableFields.push(normalized);
+        else requiredFields.push(normalized);
+      } else if (normalized === 'TOTALIMAGES' || normalized === 'ALLIMAGES') {
+        const hasBase = 
+          (stats as any).remoteImages !== undefined && 
+          (stats as any).hostessImages !== undefined && 
+          (stats as any).selfies !== undefined;
+        if (hasBase) availableFields.push(normalized);
+        else requiredFields.push(normalized);
+      } else {
+        // totalUnder40, totalOver40
+        availableFields.push(normalized);
+      }
+    } else {
+      // WHAT: Regular variable - resolve to stats field name
+      // WHY: Check if actual stats object has this field
+      const fieldName = resolveFieldNameByNormalizedToken(normalized);
+      if (fieldName) {
+        const value = (stats as any)[fieldName];
+        if (value !== undefined && value !== null) {
+          availableFields.push(variable);
+        } else {
+          requiredFields.push(fieldName);
+        }
+      }
+    }
+  }
+  
+  const missingVariables = requiredFields;
+  const valid = missingVariables.length === 0;
+  
+  // WHAT: Determine if formula can be evaluated despite missing vars
+  // WHY: Some formulas can still work with defaults (0) for missing fields
+  const canEvaluate = true; // formulaEngine uses 0 for missing vars
+  
+  return {
+    valid,
+    missingVariables,
+    availableVariables: availableFields,
+    canEvaluate
+  };
+}
+
+/**
+ * WHAT: Safe formula evaluation with automatic data enrichment
+ * WHY: Ensure derived metrics exist before evaluation to prevent errors
+ * HOW: Enrich stats with derived fields, then evaluate formula
+ * 
+ * @param formula - Formula string to evaluate
+ * @param stats - Project statistics (may be incomplete)
+ * @param parameters - Optional parameters for [PARAM:x] tokens
+ * @param manualData - Optional manual data for [MANUAL:x] tokens
+ * @returns Evaluation result or 'NA' on error
+ */
+export function evaluateFormulaSafe(
+  formula: string,
+  stats: Partial<ProjectStats>,
+  parameters?: Record<string, number>,
+  manualData?: Record<string, number>
+): number | 'NA' {
+  try {
+    // WHAT: Ensure derived metrics exist
+    // WHY: Prevent 'NA' from missing totalFans, allImages, remoteFans
+    const enriched = ensureDerivedMetrics(stats);
+    
+    // WHAT: Standard formula evaluation with enriched stats
+    // WHY: Now guaranteed to have derived fields
+    return evaluateFormula(formula, enriched, parameters, manualData);
+  } catch (error) {
+    console.error('Safe formula evaluation error:', error);
+    return 'NA';
+  }
+}
+
+/**
+ * WHAT: Batch formula evaluation with validation
+ * WHY: Efficient multi-formula evaluation with pre-flight checks
+ * HOW: Enrich stats once, validate formulas, then batch evaluate
+ * 
+ * @param formulas - Array of formula strings
+ * @param stats - Project statistics
+ * @returns Array of results with validation status
+ */
+export function evaluateFormulaBatchSafe(
+  formulas: string[],
+  stats: Partial<ProjectStats>
+): Array<{ result: number | 'NA'; valid: boolean; formula: string }> {
+  // WHAT: Enrich stats once for all formulas
+  // WHY: More efficient than enriching per formula
+  const enriched = ensureDerivedMetrics(stats);
+  
+  return formulas.map(formula => {
+    const validation = validateStatsForFormula(formula, enriched);
+    const result = evaluateFormula(formula, enriched);
+    
+    return {
+      result,
+      valid: validation.valid,
+      formula
+    };
+  });
 }
 
 /**

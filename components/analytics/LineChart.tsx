@@ -93,6 +93,46 @@ export default function LineChart({
 }: LineChartProps) {
   const chartRef = useRef<ChartJS<'line'>>(null);
 
+  /* WHAT: Validate datasets before rendering
+     WHY: Prevent crashes from empty, null, or invalid data
+     HOW: Check if datasets exist and have valid data points */
+  const isDatasetsValid = datasets && Array.isArray(datasets) && datasets.length > 0;
+  const hasValidData = isDatasetsValid && datasets.some(dataset => 
+    dataset.data && 
+    Array.isArray(dataset.data) && 
+    dataset.data.length > 0 &&
+    dataset.data.some(point => typeof point.value === 'number' && !isNaN(point.value))
+  );
+
+  /* WHAT: Show "Insufficient Data" state if data is invalid
+     WHY: Provide clear feedback instead of rendering broken chart */
+  if (!isDatasetsValid || !hasValidData) {
+    return (
+      <ChartBase
+        title={title}
+        subtitle={subtitle || 'No data available'}
+        chartRef={chartRef}
+        filename={filename}
+        height={height}
+        showExport={false}
+      >
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          color: 'var(--mm-gray-500)',
+          gap: 'var(--mm-space-3)'
+        }}>
+          <div style={{ fontSize: '48px', opacity: 0.5 }}>📈</div>
+          <div style={{ fontSize: '16px', fontWeight: 500 }}>Insufficient Data</div>
+          <div style={{ fontSize: '14px', opacity: 0.7 }}>Chart requires at least one dataset with valid data points</div>
+        </div>
+      </ChartBase>
+    );
+  }
+
   // WHAT: Extract labels from first dataset (all datasets share same x-axis)
   const labels = datasets[0]?.data.map(d => d.label) || [];
 
