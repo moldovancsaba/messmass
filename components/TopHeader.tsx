@@ -26,18 +26,20 @@ export default function TopHeader({ user }: TopHeaderProps) {
   /* What: Fetch unread notification count on mount and periodically
      Why: Display badge with current unread count */
   useEffect(() => {
+    // Only fetch if user is present (authenticated context)
+    if (!user) return;
     fetchUnreadCount();
     
     // Poll every 30 seconds for new notifications
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
   
   /* What: Fetch unread notification count from API
      Why: Update badge without opening the panel */
   const fetchUnreadCount = async () => {
     try {
-      const response = await fetch('/api/notifications?limit=1');
+      const response = await fetch('/api/notifications?limit=1', { credentials: 'include' });
       const data = await response.json();
       if (data.success) {
         setUnreadCount(data.unreadCount);

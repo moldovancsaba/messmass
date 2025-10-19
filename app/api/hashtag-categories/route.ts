@@ -12,6 +12,8 @@
  * - Uses ISO 8601 timestamps per project standards
  */
 
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient, ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
@@ -79,14 +81,7 @@ async function validateAdminAccess(request: NextRequest): Promise<boolean> {
  */
 export async function GET(request: NextRequest): Promise<NextResponse<HashtagCategoryApiResponse>> {
   try {
-    // Validate admin access
-    const hasAccess = await validateAdminAccess(request);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 401 }
-      );
-    }
+    // NOTE: GET is public — categories are needed on public/login screens
 
     // WHAT: Parse pagination and search parameters from query string
     // WHY: Follows established pattern from /api/hashtags and /api/projects
