@@ -2,6 +2,8 @@
 // WHAT: Authenticates against local MongoDB Users collection; preserves legacy admin master fallback
 // WHY: Enable multiple admin users while keeping existing simple cookie session model
 
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
@@ -83,27 +85,33 @@ export async function POST(request: NextRequest) {
     })
     console.log('🗑️  Cleared old cookie')
     
-    // Now set the new cookie
-    cookieStore.set('admin-session', signedToken, {
+    // Now set the new cookie on response (more reliable across runtimes)
+    const response = NextResponse.json({ success: true, token: signedToken, message: 'Login successful' })
+
+    // Determine cookie domain for production (supports apex and www)
+    const host = request.headers.get('host') || ''
+    const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined
+
+    response.cookies.set('admin-session', signedToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: '/'
+      path: '/',
+      domain,
     })
-    
-    console.log('✅ Cookie set successfully')
+
+    console.log('✅ Cookie set successfully (response.cookies)')
 
     // CORS: Echo allowed origin and credentials for cross-origin admin consoles
     const origin = request.headers.get('origin') || ''
-    const headers: Record<string, string> = {}
     if (origin) {
-      headers['Access-Control-Allow-Credentials'] = 'true'
-      headers['Vary'] = 'Origin'
-      headers['Access-Control-Allow-Origin'] = origin
+      response.headers.set('Access-Control-Allow-Credentials', 'true')
+      response.headers.set('Vary', 'Origin')
+      response.headers.set('Access-Control-Allow-Origin', origin)
     }
 
-    return NextResponse.json({ success: true, token: signedToken, message: 'Login successful' }, { headers })
+    return response
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

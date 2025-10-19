@@ -1,5 +1,22 @@
 # MessMass Release Notes
 
+## [v6.30.0] — 2025-10-19T13:44:58.000Z
+
+### 🔐 Login cookie reliability (www/apex) and admin runtime
+
+What Changed
+- Forced Node.js runtime for /api/admin/login
+- Switched to response.cookies.set for Set-Cookie reliability across runtimes
+- Set cookie domain to .messmass.com in production (supports www and apex)
+
+Validation
+- Type-check ✅, Build ✅
+
+Files Modified
+- UPDATED: `app/api/admin/login/route.ts`
+
+---
+
 ## [v6.29.0] — 2025-10-19T13:34:15.000Z
 
 ### 🛡️ Edge vs Node Runtime Fix — Mongo-backed API stability

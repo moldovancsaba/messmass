@@ -1,7 +1,7 @@
 # AUTHENTICATION_AND_ACCESS.md
 
-**Version:** 6.29.0  
-**Last Updated:** 2025-10-19T13:34:15.000Z (UTC)
+**Version:** 6.30.0  
+**Last Updated:** 2025-10-19T13:44:58.000Z (UTC)
 **Status:** Production
 
 Zero-Trust Authentication and Page Access for MessMass
