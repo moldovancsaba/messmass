@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AdminHero from '@/components/AdminHero'
 import ColoredCard from '@/components/ColoredCard'
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient'
 
 interface ListedUser {
   id: string
@@ -157,13 +158,13 @@ export default function AdminUsersPage() {
     setCreating(true)
     setGeneratedPassword(null)
     try {
-      const res = await fetch('/api/admin/local-users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), name: name.trim() })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPost('/api/admin/local-users', {
+        email: email.trim(),
+        name: name.trim()
       })
-      const data = await res.json()
-      if (res.ok && data.success) {
+      if (data.success) {
         setEmail('')
         setName('')
         setGeneratedPassword(data.password)
@@ -182,13 +183,12 @@ export default function AdminUsersPage() {
     const confirm = window.confirm('Regenerate password for this user? Old password will no longer work.')
     if (!confirm) return
     try {
-      const res = await fetch(`/api/admin/local-users/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ regeneratePassword: true })
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPut(`/api/admin/local-users/${id}`, {
+        regeneratePassword: true
       })
-      const data = await res.json()
-      if (res.ok && data.success) {
+      if (data.success) {
         setGeneratedPassword(data.password)
         await refreshUsers()
       } else {
@@ -203,9 +203,10 @@ export default function AdminUsersPage() {
     const confirm = window.confirm('Are you sure you want to delete this user? This cannot be undone.')
     if (!confirm) return
     try {
-      const res = await fetch(`/api/admin/local-users/${id}`, { method: 'DELETE' })
-      const data = await res.json().catch(() => ({}))
-      if (res.ok && data.success !== false) {
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiDelete(`/api/admin/local-users/${id}`)
+      if (data.success !== false) {
         await refreshUsers()
       } else {
         alert(data.error || 'Failed to delete user')
