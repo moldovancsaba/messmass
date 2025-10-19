@@ -8,6 +8,7 @@ import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import { apiPost } from '@/lib/apiClient';
 
 interface ProjectStats {
   remoteImages: number;
@@ -419,12 +420,12 @@ function HashtagFilterPageContent() {
                         // We use the admin POST endpoint that upserts in filter_slugs.
                         try {
                           if (selectedHashtags.length > 0) {
-                            const res = await fetch('/api/admin/filter-style', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ hashtags: selectedHashtags, styleId: newId || null })
+                            // WHAT: Use apiPost() for automatic CSRF token handling
+                            const data = await apiPost('/api/admin/filter-style', {
+                              hashtags: selectedHashtags,
+                              styleId: newId || null
                             });
-                            if (!res.ok) throw new Error('Failed to save');
+                            if (!data.success) throw new Error('Failed to save');
                             setSaveStatus('saved');
                             setTimeout(() => setSaveStatus('idle'), 1200);
                           } else {
@@ -458,14 +459,11 @@ function HashtagFilterPageContent() {
                     <button 
                       onClick={async () => {
                         try {
-                          // Generate filter slug for hashtag combination with style
-                          const response = await fetch('/api/filter-slug', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ hashtags: selectedHashtags, styleId: selectedStyleId || null })
+                          // WHAT: Generate filter slug using apiPost() for automatic CSRF token handling
+                          const data = await apiPost('/api/filter-slug', {
+                            hashtags: selectedHashtags,
+                            styleId: selectedStyleId || null
                           });
-                          
-                          const data = await response.json();
                           
                           if (data.success) {
                             setShareSlug(data.slug);

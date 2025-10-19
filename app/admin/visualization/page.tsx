@@ -9,6 +9,7 @@ import { calculateActiveCharts } from '@/lib/chartCalculator';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import vizStyles from './Visualization.module.css';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -114,19 +115,15 @@ export default function VisualizationPage() {
     }
     
     try {
-      // Add default gridColumns for backward compatibility
+      // WHAT: Add default gridColumns for backward compatibility
       const blockData = {
         ...blockForm,
         gridColumns: 4 // Default to 4 columns for PC layout
       };
       
-      const response = await fetch('/api/data-blocks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(blockData)
-      });
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/data-blocks', blockData);
       
-      const data = await response.json();
       if (data.success) {
         await loadDataBlocks();
         setShowCreateBlock(false);
@@ -148,13 +145,9 @@ export default function VisualizationPage() {
   
   const handleUpdateBlock = async (block: DataVisualizationBlock) => {
     try {
-      const response = await fetch('/api/data-blocks', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(block)
-      });
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      const data = await apiPut('/api/data-blocks', block);
       
-      const data = await response.json();
       if (data.success) {
         await loadDataBlocks();
         setEditingBlock(null);
@@ -174,11 +167,9 @@ export default function VisualizationPage() {
     }
     
     try {
-      const response = await fetch(`/api/data-blocks?id=${blockId}`, {
-        method: 'DELETE'
-      });
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
       
-      const data = await response.json();
       if (data.success) {
         await loadDataBlocks();
         alert('Block deleted successfully!');
@@ -357,16 +348,12 @@ export default function VisualizationPage() {
               className="btn-create"
               onClick={async () => {
                 try {
-                  const res = await fetch('/api/grid-settings', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      desktopUnits: gridForm.desktop,
-                      tabletUnits: gridForm.tablet,
-                      mobileUnits: gridForm.mobile,
-                    })
+                  // WHAT: Use apiPut() for automatic CSRF token handling
+                  const data = await apiPut('/api/grid-settings', {
+                    desktopUnits: gridForm.desktop,
+                    tabletUnits: gridForm.tablet,
+                    mobileUnits: gridForm.mobile,
                   });
-                  const data = await res.json();
                   if (data.success) {
                     const gs = data.settings;
                     setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });

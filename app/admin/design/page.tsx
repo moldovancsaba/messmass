@@ -6,6 +6,7 @@ import { PageStyle } from '@/lib/pageStyleTypes';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Design.module.css';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
 export default function AdminDesignPage() {
   const router = useRouter();
@@ -71,13 +72,9 @@ export default function AdminDesignPage() {
   const saveFont = async (font: 'inter' | 'roboto' | 'poppins') => {
     setFontLoading(true);
     try {
-      const response = await fetch('/api/admin/ui-settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fontFamily: font }),
-      });
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      const data = await apiPut('/api/admin/ui-settings', { fontFamily: font });
       
-      const data = await response.json();
       if (data.success) {
         setSelectedFont(font);
         
@@ -144,13 +141,9 @@ export default function AdminDesignPage() {
   
   const handleCreateStyle = async () => {
     try {
-      const response = await fetch('/api/page-styles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(styleForm)
-      });
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/page-styles', styleForm);
       
-      const data = await response.json();
       if (data.success) {
         await loadPageStyles();
         // Reset form
@@ -191,12 +184,8 @@ export default function AdminDesignPage() {
   const saveEdit = async () => {
     if (!editingId) return;
     try {
-      const res = await fetch('/api/page-styles', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: editingId, ...editForm })
-      });
-      const data = await res.json();
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      const data = await apiPut('/api/page-styles', { _id: editingId, ...editForm });
       if (data.success) {
         setEditingId(null);
         await loadPageStyles();
@@ -213,8 +202,8 @@ export default function AdminDesignPage() {
     if (!id) return;
     if (!confirm('Delete this style?')) return;
     try {
-      const res = await fetch(`/api/page-styles?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
-      const data = await res.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      const data = await apiDelete(`/api/page-styles?id=${encodeURIComponent(id)}`);
       if (data.success) {
         await loadPageStyles();
       } else {
@@ -230,12 +219,8 @@ export default function AdminDesignPage() {
   const setAsGlobal = async (id?: string) => {
     if (!id) return;
     try {
-      const res = await fetch('/api/admin/global-style', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ styleId: id })
-      });
-      const data = await res.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/admin/global-style', { styleId: id });
       if (!data.success) return alert('Failed to set global style');
       setGlobalStyleId(id);
     } catch (e) {
@@ -247,12 +232,8 @@ export default function AdminDesignPage() {
   const setAsAdmin = async (id?: string) => {
     if (!id) return;
     try {
-      const res = await fetch('/api/admin/admin-style', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ styleId: id })
-      });
-      const data = await res.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      const data = await apiPost('/api/admin/admin-style', { styleId: id });
       if (!data.success) return alert('Failed to set admin style');
       setAdminStyleId(id);
     } catch (e) {
@@ -262,44 +243,28 @@ export default function AdminDesignPage() {
   };
 
   const saveGlobalStyle = async () => {
-    const res = await fetch('/api/admin/global-style', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ styleId: globalStyleId || 'null' })
-    });
-    const data = await res.json();
+    // WHAT: Use apiPost() for automatic CSRF token handling
+    const data = await apiPost('/api/admin/global-style', { styleId: globalStyleId || 'null' });
     if (!data.success) alert('Failed to save global style');
   };
 
   const saveAdminStyle = async () => {
-    const res = await fetch('/api/admin/admin-style', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ styleId: adminStyleId || 'null' })
-    });
-    const data = await res.json();
+    // WHAT: Use apiPost() for automatic CSRF token handling
+    const data = await apiPost('/api/admin/admin-style', { styleId: adminStyleId || 'null' });
     if (!data.success) alert('Failed to save admin style');
   };
 
   const saveProjectStyle = async () => {
     if (!projectIdentifier) return alert('Provide a project ID or slug');
-    const res = await fetch('/api/projects', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectId: projectIdentifier, styleId: projectStyleId || 'null' })
-    });
-    const data = await res.json();
+    // WHAT: Use apiPut() for automatic CSRF token handling
+    const data = await apiPut('/api/projects', { projectId: projectIdentifier, styleId: projectStyleId || 'null' });
     if (!data.success) alert('Failed to save project style: ' + (data.error || ''));
   };
 
   const saveHashtagStyle = async () => {
     if (!hashtag) return alert('Provide a hashtag');
-    const res = await fetch('/api/admin/hashtag-style', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hashtag, styleId: hashtagStyleId || 'null' })
-    });
-    const data = await res.json();
+    // WHAT: Use apiPost() for automatic CSRF token handling
+    const data = await apiPost('/api/admin/hashtag-style', { hashtag, styleId: hashtagStyleId || 'null' });
     if (data.success) loadHashtagAssignments();
     else alert('Failed to save hashtag style');
   };

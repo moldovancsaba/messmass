@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminHero from "@/components/AdminHero";
 import ColoredCard from "@/components/ColoredCard";
+import { apiPost } from "@/lib/apiClient";
 
 // WHAT: KYC Variables Admin Page
 // WHY: Centralized catalog of all variables (manual/system/derived) powering analytics and clicker
@@ -352,18 +353,16 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
           if (!form.label || !form.category) { setForm({ ...form, error: 'Label and Category are required' }); return; }
           try {
             setForm(prev => ({ ...prev, saving: true, error: '' }));
-            const res = await fetch('/api/variables-config', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-                name: form.name,
-                label: form.label,
-                type: form.type,
-                category: form.category,
-                description: form.description || undefined,
-                flags: { visibleInClicker: form.visibleInClicker, editableInManual: form.editableInManual },
-              })
+            // WHAT: Use apiPost() for automatic CSRF token handling
+            const data = await apiPost('/api/variables-config', {
+              name: form.name,
+              label: form.label,
+              type: form.type,
+              category: form.category,
+              description: form.description || undefined,
+              flags: { visibleInClicker: form.visibleInClicker, editableInManual: form.editableInManual },
             });
-            const data = await res.json();
-            if (!res.ok || !data?.success) throw new Error(data?.error || 'Failed to create variable');
+            if (!data?.success) throw new Error(data?.error || 'Failed to create variable');
             onCreated();
           } catch (e: any) {
             setForm(prev => ({ ...prev, saving: false, error: e?.message || 'Failed to create variable' }));
@@ -415,21 +414,17 @@ function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: 
           onClick={async () => {
             try {
               setSaving(true); setError(null);
-              const res = await fetch("/api/variables-config", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  name: canRename ? name : variable.name,
-                  label,
-                  type: variable.type,
-                  category,
-                  description: variable.description,
-                  derived: !!variable.derived,
-                  formula: variable.formula,
-                }),
+              // WHAT: Use apiPost() for automatic CSRF token handling
+              const data = await apiPost("/api/variables-config", {
+                name: canRename ? name : variable.name,
+                label,
+                type: variable.type,
+                category,
+                description: variable.description,
+                derived: !!variable.derived,
+                formula: variable.formula,
               });
-              const data = await res.json();
-              if (!res.ok || !data?.success) throw new Error(data?.error || "Failed to save");
+              if (!data?.success) throw new Error(data?.error || "Failed to save");
               onClose();
             } catch (e: any) {
               setError(e?.message || "Failed to save");
