@@ -1,5 +1,21 @@
 # MessMass Release Notes
 
+## [v6.29.0] — 2025-10-19T13:34:15.000Z
+
+### 🛡️ Edge vs Node Runtime Fix — Mongo-backed API stability
+
+What Changed
+- Forced Node.js runtime for MongoDB-backed routes: `/api/hashtag-colors`, `/api/notifications`
+- Prevented "TypeError: Load failed" caused by Edge runtime limitations
+
+Validation
+- Type-check ✅, Build ✅; endpoints respond under Node runtime
+
+Files Modified
+- UPDATED: `app/api/hashtag-colors/route.ts`, `app/api/notifications/route.ts`
+
+---
+
 ## [v6.28.0] — 2025-10-19T13:25:21.000Z
 
 ### 🔐 Authentication Reliability & CORS Hardening
