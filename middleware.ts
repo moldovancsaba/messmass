@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimitMiddleware, getRateLimitConfig } from '@/lib/rateLimit';
 import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from '@/lib/csrf';
 import { logRequestEnd, logRateLimitExceeded, logCsrfViolation } from '@/lib/logger';
+import { buildCorsHeaders } from '@/lib/cors';
 
 // WHAT: Main middleware function (runs on every request)
 // WHY: Apply security controls before request reaches route handlers
@@ -45,8 +46,19 @@ export async function middleware(request: NextRequest) {
     return csrfResponse;
   }
   
+  // WHAT: Handle CORS preflight early
+  if (request.method === 'OPTIONS') {
+    const headers = buildCorsHeaders(request);
+    // Always respond to preflight with 204 (no content)
+    return new NextResponse(null, { status: 204, headers });
+  }
+
   // WHAT: 3. Continue to route handler
   const response = NextResponse.next();
+
+  // WHAT: Attach CORS headers to downstream response
+  const corsHeaders = buildCorsHeaders(request);
+  corsHeaders.forEach((v, k) => response.headers.set(k, v));
   
   // WHAT: 4. Add CSRF token to response if not present
   // WHY: Ensure client has valid token for subsequent requests

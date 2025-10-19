@@ -1,5 +1,34 @@
 # MessMass Release Notes
 
+## [v6.28.0] — 2025-10-19T13:25:21.000Z
+
+### 🔐 Authentication Reliability & CORS Hardening
+
+What Changed
+- Implemented centralized CORS utilities (`lib/cors.ts`) with allowlist (ALLOWED_ORIGINS), credentials support, and Vary: Origin
+- Middleware now handles OPTIONS preflight with 204 and attaches CORS headers to all responses
+- Admin login route echoes Origin and enables credentials to ensure HttpOnly cookie persistence cross-origin
+- Login UI now uses `credentials: 'include'` to persist session cookies
+- Adopted lazy configuration pattern in `lib/config.ts` to eliminate dotenv timing issues in scripts
+- Analytics scripts now run with `tsx` and explicit dotenv loading for stable CLI behavior
+
+Why
+- Resolve production login failures (403/CORS/access-control) after deployment
+- Ensure secure, predictable cross-origin behavior for admin consoles and API consumers
+- Decouple environment loading from module import timing for Node scripts
+
+Validation
+- Type-check ✅, Build ✅, Dev ✅
+- Aggregation job runs successfully; indexes created; API endpoints responsive
+
+Files Modified/Created
+- NEW: `lib/cors.ts`
+- UPDATED: `middleware.ts`, `app/api/admin/login/route.ts`, `app/admin/login/page.tsx`
+- UPDATED: `lib/config.ts` (lazy init), `package.json` scripts (tsx)
+- Docs synced: README.md, ROADMAP.md, TASKLIST.md, AUTHENTICATION_AND_ACCESS.md, WARP.md
+
+---
+
 ## [v6.24.0] — 2025-10-18T11:41:44.000Z
 
 ### 🔎 Centralized Admin Search UX + Partners Search Fix

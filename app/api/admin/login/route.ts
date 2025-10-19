@@ -94,7 +94,16 @@ export async function POST(request: NextRequest) {
     
     console.log('✅ Cookie set successfully')
 
-    return NextResponse.json({ success: true, token: signedToken, message: 'Login successful' })
+    // CORS: Echo allowed origin and credentials for cross-origin admin consoles
+    const origin = request.headers.get('origin') || ''
+    const headers: Record<string, string> = {}
+    if (origin) {
+      headers['Access-Control-Allow-Credentials'] = 'true'
+      headers['Vary'] = 'Origin'
+      headers['Access-Control-Allow-Origin'] = origin
+    }
+
+    return NextResponse.json({ success: true, token: signedToken, message: 'Login successful' }, { headers })
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

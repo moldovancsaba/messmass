@@ -1,0 +1,270 @@
+/**
+ * Executive Dashboard Styles
+ * 
+ * WHAT: Comprehensive dashboard layout for executive analytics
+ * WHY: Professional, responsive design for high-level KPI presentation
+ * HOW: CSS Grid + Flexbox with design tokens
+ * 
+ * Version: 6.28.0
+ */
+
+.executiveDashboard {
+  padding: var(--mm-space-6);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--mm-space-6);
+  padding-bottom: var(--mm-space-4);
+  border-bottom: 2px solid var(--mm-border-light);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--mm-text-primary);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--mm-text-secondary);
+  margin: 0;
+}
+
+/* Period Selector */
+.periodSelector {
+  display: flex;
+  gap: var(--mm-space-2);
+  background: var(--mm-surface-secondary);
+  padding: var(--mm-space-1);
+  border-radius: var(--mm-radius-md);
+}
+
+.periodButton,
+.periodActive {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--mm-transition-fast);
+}
+
+.periodButton {
+  background: transparent;
+  color: var(--mm-text-secondary);
+}
+
+.periodButton:hover {
+  background: var(--mm-surface-tertiary);
+  color: var(--mm-text-primary);
+}
+
+.periodActive {
+  background: var(--mm-primary);
+  color: white;
+}
+
+/* Metrics Grid (6 KPI cards in 3x2 grid) */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-6);
+}
+
+/* Charts Grid (2 charts side by side) */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-6);
+}
+
+.chartCard {
+  background: var(--mm-surface-primary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-md);
+  padding: 0; /* Chart component handles its own padding */
+  overflow: hidden;
+}
+
+/* Two Column Grid (Top Events + Insights) */
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+}
+
+.section {
+  background: var(--mm-surface-primary);
+  border: 1px solid var(--mm-border-light);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-5);
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--mm-text-primary);
+  margin: 0 0 var(--mm-space-4) 0;
+}
+
+/* Top Events Table */
+.eventsTable {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead {
+  background: var(--mm-surface-secondary);
+}
+
+.table th {
+  padding: var(--mm-space-3) var(--mm-space-2);
+  text-align: left;
+  font-weight: 600;
+  color: var(--mm-text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--mm-border-medium);
+}
+
+.table td {
+  padding: var(--mm-space-3) var(--mm-space-2);
+  color: var(--mm-text-primary);
+  border-bottom: 1px solid var(--mm-border-light);
+}
+
+.table tbody tr {
+  transition: background-color var(--mm-transition-fast);
+}
+
+.table tbody tr:hover {
+  background: var(--mm-surface-secondary);
+}
+
+.eventName {
+  font-weight: 500;
+  color: var(--mm-primary);
+}
+
+/* Insights Feed */
+.insightsFeed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: var(--mm-space-2);
+}
+
+/* Scrollbar styling for insights feed */
+.insightsFeed::-webkit-scrollbar {
+  width: 6px;
+}
+
+.insightsFeed::-webkit-scrollbar-track {
+  background: var(--mm-surface-secondary);
+  border-radius: var(--mm-radius-sm);
+}
+
+.insightsFeed::-webkit-scrollbar-thumb {
+  background: var(--mm-border-medium);
+  border-radius: var(--mm-radius-sm);
+}
+
+.insightsFeed::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-text-tertiary);
+}
+
+/* Loading and Empty States */
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-text-secondary);
+  font-size: 0.875rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-text-secondary);
+}
+
+.emptyState p {
+  margin: 0 0 var(--mm-space-2) 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.emptySubtext {
+  font-size: 0.875rem;
+  color: var(--mm-text-tertiary);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .metricsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .executiveDashboard {
+    padding: var(--mm-space-4);
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--mm-space-4);
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mm-space-3);
+  }
+
+  .twoColumnGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .periodSelector {
+    width: 100%;
+  }
+
+  .periodButton,
+  .periodActive {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}
