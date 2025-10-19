@@ -75,7 +75,7 @@
     "tsx": "^4.20.6"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": "18.x || 20.x",
     "npm": ">=8.0.0"
   },
   "browserslist": {
