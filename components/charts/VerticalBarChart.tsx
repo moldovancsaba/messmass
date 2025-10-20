@@ -13,6 +13,7 @@ import {
   ChartOptions,
 } from 'chart.js';
 import ChartBase from './ChartBase';
+import styles from './ChartShared.module.css';
 
 /* What: Register Chart.js components
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -92,18 +93,10 @@ export default function VerticalBarChart({
         height={height}
         showExport={false}
       >
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          color: 'var(--mm-gray-500)',
-          gap: 'var(--mm-space-3)'
-        }}>
-          <div style={{ fontSize: '48px', opacity: 0.5 }}>📊</div>
-          <div style={{ fontSize: '16px', fontWeight: 500 }}>Insufficient Data</div>
-          <div style={{ fontSize: '14px', opacity: 0.7 }}>Chart requires at least one valid data point</div>
+        <div className={styles.insufficientData}>
+          <div className={styles.insufficientDataIcon}>📊</div>
+          <div className={styles.insufficientDataTitle}>Insufficient Data</div>
+          <div className={styles.insufficientDataDescription}>Chart requires at least one valid data point</div>
         </div>
       </ChartBase>
     );
@@ -259,15 +252,8 @@ export default function VerticalBarChart({
      Why: Better UX than blank chart */
   if (!data || data.length === 0) {
     return (
-      <div className={className} style={{ 
-        background: 'var(--mm-white)',
-        border: '1px solid var(--mm-border-color-default)',
-        borderRadius: 'var(--mm-radius-lg)',
-        padding: 'var(--mm-space-8)',
-        textAlign: 'center',
-        color: 'var(--mm-gray-500)',
-      }}>
-        <p style={{ margin: 0 }}>No data available for chart</p>
+      <div className={`${className} ${styles.emptyState}`}>
+        <p className={styles.emptyStateMessage}>No data available for chart</p>
       </div>
     );
   }
@@ -280,7 +266,7 @@ export default function VerticalBarChart({
       filename={filename}
       className={className}
     >
-      <div style={{ height: `${height}px`, width: '100%' }}>
+      <div className={styles.barChartContainer} style={{ height: `${height}px` }}>
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
     </ChartBase>

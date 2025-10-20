@@ -3,6 +3,7 @@ import ColoredCard from './ColoredCard';
 import { DynamicChart, ChartContainer } from './DynamicChart';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
+import styles from './UnifiedDataVisualization.module.css';
 
 interface UnifiedDataVisualizationProps {
   blocks: DataVisualizationBlock[];
@@ -98,97 +99,42 @@ export default function UnifiedDataVisualization({
 
   if (loading) {
     return (
-      <ColoredCard style={{
-        padding: '2rem',
-        marginBottom: '2rem',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem'
-        }}>
-          <div style={{
-            width: '50px',
-            height: '50px',
-            border: '4px solid rgba(99, 102, 241, 0.3)',
-            borderTop: '4px solid #6366f1',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#6b7280', margin: 0 }}>Loading charts...</p>
+      <ColoredCard className={styles.loadingCard}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.spinner}></div>
+          <p className={styles.loadingText}>Loading charts...</p>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </ColoredCard>
     );
   }
 
   if (blocks.length === 0 || chartResults.length === 0) {
     return (
-      <ColoredCard style={{
-        padding: '2rem',
-        marginBottom: '2rem',
-        textAlign: 'center'
-      }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: '600',
-          color: '#1f2937',
-          margin: '0 0 1rem 0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.5rem'
-        }}>
+      <ColoredCard className={styles.emptyCard}>
+        <h2 className={styles.emptyHeading}>
           📊 Data Visualization
         </h2>
-        <p style={{ color: '#6b7280', margin: 0 }}>No data visualization blocks configured</p>
+        <p className={styles.emptyText}>No data visualization blocks configured</p>
       </ColoredCard>
     );
   }
 
   return (
-    <div style={{ marginBottom: '2rem' }}>
+    <div className={styles.container}>
       {visibleBlocks
         .map((block, blockIndex) => {
           // Stable class suffix for CSS and keys: prefer _id, fall back to index
           const idSuffix = block._id || `i${blockIndex}`;
           return (
-            <ColoredCard key={block._id || `block-${blockIndex}`} style={{
-              padding: '2rem',
-              marginBottom: '2rem'
-            }}>
+            <ColoredCard key={block._id || `block-${blockIndex}`} className={styles.blockCard}>
               {/* Block Title */}
-              <h2 style={{
-                fontSize: '1.875rem',
-                fontWeight: '700',
-                color: '#1f2937',
-                margin: '0 0 2rem 0',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem'
-              }}>
+              <h2 className={styles.blockTitle}>
                 📊 {block.name}
               </h2>
 
               {/* Responsive Charts Grid (per-block columns) */}
               <div 
-                className={`udv-grid udv-grid-${idSuffix}`}
-                style={{
-                  display: 'grid',
-                  gap: '1.5rem',
-                  width: '100%',
-                  gridAutoFlow: 'row',
-                  justifyItems: 'stretch'
-                }}
+                className={`udv-grid udv-grid-${idSuffix} ${styles.gridBase}`}
               >
                 {block.charts
                   .sort((a, b) => a.order - b.order)
@@ -219,7 +165,7 @@ export default function UnifiedDataVisualization({
                             <DynamicChart result={result} chartWidth={chart.width} />
                           </ChartContainer>
                         ) : (
-                          <div className="unified-chart-item" style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+                          <div className={`unified-chart-item ${styles.chartItemDirect}`}>
                             <DynamicChart result={result} chartWidth={chart.width} />
                           </div>
                         )}
@@ -235,11 +181,7 @@ export default function UnifiedDataVisualization({
                 const result = getChartResult(chart.chartId);
                 return result && hasValidData(result);
               }).length === 0 && (
-                <div style={{
-                  textAlign: 'center',
-                  color: '#6b7280',
-                  padding: '2rem'
-                }}>
+                <div className={styles.noChartsMessage}>
                   <p>No charts with valid data in this block</p>
                 </div>
               )}

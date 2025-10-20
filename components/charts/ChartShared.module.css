@@ -1,0 +1,60 @@
+/* Shared Chart Component Styles
+   WHAT: Common styles for all chart components (Pie, Bar, etc.)
+   WHY: Eliminates duplicate inline styles across chart components */
+
+/* WHAT: Insufficient data state container */
+.insufficientData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--mm-gray-500);
+  gap: var(--mm-space-3);
+}
+
+/* WHAT: Insufficient data icon */
+.insufficientDataIcon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+/* WHAT: Insufficient data title */
+.insufficientDataTitle {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* WHAT: Insufficient data description */
+.insufficientDataDescription {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* WHAT: Empty state container */
+.emptyState {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-8);
+  text-align: center;
+  color: var(--mm-gray-500);
+}
+
+/* WHAT: Empty state message */
+.emptyStateMessage {
+  margin: 0;
+}
+
+/* WHAT: Pie chart container with flex layout */
+.pieChartContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* WHAT: Bar chart container */
+.barChartContainer {
+  width: 100%;
+}

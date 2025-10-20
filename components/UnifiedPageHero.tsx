@@ -3,6 +3,7 @@ import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 import { PageStyle } from '@/lib/pageStyleTypes';
+import styles from './UnifiedPageHero.module.css';
 
 interface UnifiedPageHeroProps {
   title: string;
@@ -35,22 +36,15 @@ export default function UnifiedPageHero({
   ` : '';
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className={styles.container}>
       {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
-      <ColoredCard className="admin-header" style={{ margin: 0 }}>
+      <ColoredCard className={`admin-header ${styles.headerCard}`}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{title}</h1>
             {pageStyle?.name && (
-              <div style={{ marginTop: '0.5rem' }}>
-                <span style={{
-                  background: 'rgba(99, 102, 241, 0.12)',
-                  color: '#4f46e5',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '12px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600
-                }}>
+              <div className={styles.styleNameContainer}>
+                <span className={styles.styleNameBadge}>
                   Using style: {pageStyle.name}
                 </span>
               </div>
@@ -114,14 +108,7 @@ export default function UnifiedPageHero({
               console.log('Total displayHashtags created:', displayHashtags.length);
               
               return displayHashtags.length > 0 ? (
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                  marginTop: '1rem'
-                }}>
+                <div className={styles.hashtagsWrapper}>
                   {displayHashtags}
                 </div>
               ) : null;
@@ -143,34 +130,18 @@ export default function UnifiedPageHero({
         
         {/* Additional Content (like dates) */}
         {children && (
-          <div style={{
-            marginTop: '1.5rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(68, 68, 68, 0.2)'
-          }}>
+          <div className={styles.additionalContent}>
             {children}
           </div>
         )}
         
         {/* Export Buttons */}
         {(onExportCSV || onExportPDF) && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 'var(--mm-space-3)',
-            marginTop: 'var(--mm-space-4)',
-            paddingTop: 'var(--mm-space-4)',
-            borderTop: '1px solid rgba(68, 68, 68, 0.2)'
-          }}>
+          <div className={styles.exportButtons}>
             {onExportCSV && (
               <button 
                 onClick={onExportCSV}
-                className="btn btn-primary btn-small"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'var(--mm-space-2)'
-                }}
+                className={`btn btn-primary btn-small ${styles.exportButton}`}
               >
                 📊 Export CSV
               </button>
@@ -178,12 +149,7 @@ export default function UnifiedPageHero({
             {onExportPDF && (
               <button 
                 onClick={onExportPDF}
-                className="btn btn-secondary btn-small"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 'var(--mm-space-2)'
-                }}
+                className={`btn btn-secondary btn-small ${styles.exportButton}`}
               >
                 📄 Export PDF
               </button>

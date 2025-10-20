@@ -5,6 +5,7 @@ import ColoredCard from './ColoredCard';
 import { ChartConfiguration, AVAILABLE_VARIABLES, AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
+import styles from './ChartAlgorithmManager.module.css';
 
 // Props type for the Chart Algorithm Manager component
 // This component doesn't require any props as it manages its own state
@@ -299,10 +300,10 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
   return (
     <div className="chart-algorithm-manager">
       {/* Header */}
-      <ColoredCard style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.875rem', fontWeight: 700, color: 'var(--color-gray-800)' }}>Chart Algorithm Manager</h2>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <ColoredCard className={styles.headerCard}>
+        <div className={styles.headerFlex}>
+          <h2 className={styles.pageHeading}>Chart Algorithm Manager</h2>
+          <div className={styles.buttonGroup}>
             <button 
               className="btn btn-small btn-secondary"
               onClick={() => validateAllFormulas()}
@@ -319,7 +320,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
           </div>
         </div>
         
-        <div className="charts-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div className={`charts-grid ${styles.statsGrid}`}>
           <div className="stat-card">
             <div className="stat-value">{configurations.length}</div>
             <div className="stat-label">Total Charts</div>
@@ -346,7 +347,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 
       {/* Chart Configurations List */}
       <ColoredCard>
-          <h3 style={{ margin: '0 0 1.5rem 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--color-gray-800)' }}>Chart Configurations</h3>
+          <h3 className={styles.sectionHeading}>Chart Configurations</h3>
           <table className="data-table">
             <thead>
               <tr>
@@ -361,10 +362,10 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
             <tbody>
               {configurations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-gray-600)' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-                    <div style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--color-gray-700)' }}>No Chart Configurations Found</div>
-                    <div style={{ fontSize: '0.875rem' }}>
+                  <td colSpan={6} className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>📊</div>
+                    <div className={styles.emptyTitle}>No Chart Configurations Found</div>
+                    <div className={styles.emptyDescription}>
                       Create your first chart configuration to get started.
                     </div>
                   </td>
@@ -658,7 +659,7 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
 
   return (
     <div className="modal-overlay">
-      <ColoredCard className="modal-content" style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
+      <ColoredCard className={`modal-content ${styles.modalContent}`}>
         <div className="modal-header">
           <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
           <button className="btn btn-secondary" onClick={onCancel}>✕</button>

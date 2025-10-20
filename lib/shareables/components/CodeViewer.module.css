@@ -1,0 +1,193 @@
+/* CodeViewer Component Styles
+   WHAT: Syntax-highlighted code viewer with glass-morphism
+   WHY: Eliminates inline styles from CodeViewer.tsx */
+
+/* Base container */
+.container {
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  /* WHAT: Theme colors set via CSS variables
+     WHY: Support both dark and light themes dynamically */
+  background: var(--viewer-bg, rgba(26, 32, 44, 0.95));
+  color: var(--viewer-text, #e2e8f0);
+  border: var(--viewer-border, 1px solid rgba(255, 255, 255, 0.1));
+}
+
+/* Header section */
+.header {
+  padding: 0.75rem 1rem;
+  /* WHAT: Header background set via CSS variable
+     WHY: Different for dark/light themes */
+  background: var(--viewer-header-bg, rgba(45, 55, 72, 0.6));
+  border-bottom: var(--viewer-header-border, 1px solid rgba(255, 255, 255, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filename {
+  color: var(--viewer-filename-color, #a0aec0);
+  font-family: Monaco, Consolas, "Ubuntu Mono", monospace;
+}
+
+.title {
+  color: var(--viewer-title-color, #cbd5e0);
+}
+
+.language {
+  color: #718096;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+  background: none;
+  border: none;
+  color: var(--viewer-btn-color, #a0aec0);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn:hover {
+  background: var(--viewer-btn-hover-bg, rgba(255, 255, 255, 0.1));
+}
+
+.copyBtn.copied {
+  background: rgba(72, 187, 120, 0.2);
+  color: #48bb78;
+}
+
+.copyBtn.copied:hover {
+  background: rgba(72, 187, 120, 0.2);
+}
+
+/* Code content wrapper */
+.codeWrapper {
+  /* WHAT: Display controlled by isExpanded state
+     WHY: Toggle between collapsed and expanded */
+  max-height: var(--viewer-max-height, 400px);
+  overflow: auto;
+  transition: max-height 0.3s ease;
+}
+
+.codeWrapperHidden {
+  display: none;
+}
+
+/* Pre element */
+.pre {
+  margin: 0;
+  padding: 1rem;
+  font-family: Monaco, Consolas, "Ubuntu Mono", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow: auto;
+  background: transparent;
+}
+
+/* Line numbers container */
+.lineNumbers {
+  color: var(--viewer-line-number-color, #4a5568);
+  margin-right: 1rem;
+  text-align: right;
+  user-select: none;
+  min-width: 2.5rem;
+}
+
+.lineNumber {
+  /* WHAT: Background for highlighted lines
+     WHY: Visual emphasis on specific lines */
+  background: var(--line-bg, transparent);
+  padding-left: var(--line-padding, 0);
+}
+
+/* Code content */
+.codeContent {
+  flex: 1;
+  display: flex;
+}
+
+/* Collapsed preview */
+.collapsedPreview {
+  padding: 1rem;
+  cursor: pointer;
+  /* WHAT: Background set via CSS variable
+     WHY: Different for dark/light themes */
+  background: var(--viewer-collapsed-bg, rgba(45, 55, 72, 0.3));
+  border-top: var(--viewer-collapsed-border, 1px solid rgba(255, 255, 255, 0.1));
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--viewer-collapsed-color, #a0aec0);
+  transition: background 0.2s ease;
+}
+
+.collapsedPreview:hover {
+  background: var(--viewer-collapsed-hover-bg, rgba(45, 55, 72, 0.5));
+}
+
+/* Syntax highlighting classes (injected dynamically) */
+.codeComment { 
+  font-style: italic; 
+  color: var(--syntax-comment, #68d391);
+}
+
+.codeString { 
+  color: var(--syntax-string, #fbb6ce);
+}
+
+.codeKeyword { 
+  font-weight: 600; 
+  color: var(--syntax-keyword, #90cdf4);
+}
+
+.codeLiteral { 
+  color: var(--syntax-literal, #f6ad55);
+}
+
+.codeNumber { 
+  color: var(--syntax-number, #f6ad55);
+}
+
+.codeTag { 
+  color: var(--syntax-tag, #68d391);
+}
+
+.codeSelector { 
+  color: var(--syntax-selector, #90cdf4);
+}
+
+.codeProperty { 
+  color: var(--syntax-property, #fbb6ce);
+}
+
+.codeValue { 
+  color: var(--syntax-value, #f6ad55);
+}
+
+.codeKey { 
+  color: var(--syntax-key, #90cdf4);
+}

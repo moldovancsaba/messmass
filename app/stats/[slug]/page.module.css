@@ -1,0 +1,81 @@
+/* Stats Page Styles
+   WHAT: Styles for public statistics page
+   WHY: Eliminates inline styles from page.tsx */
+
+/* WHAT: Loading/search state container */
+.searchContainer {
+  padding: 1rem;
+}
+
+/* WHAT: Error state full-screen centered container */
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--mm-space-6);
+  background-color: var(--mm-gray-50);
+}
+
+/* WHAT: Error card with clean design */
+.errorCard {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-lg);
+  text-align: center;
+  padding: var(--mm-space-8);
+  max-width: 32rem;
+  width: 100%;
+}
+
+/* WHAT: Error heading */
+.errorHeading {
+  color: var(--mm-error);
+  margin-bottom: var(--mm-space-4);
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+}
+
+/* WHAT: Error message text */
+.errorMessage {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-md);
+}
+
+/* WHAT: Main page container with gray background */
+.pageContainer {
+  min-height: 100vh;
+  background-color: var(--mm-gray-50);
+  padding: var(--mm-space-4);
+}
+
+/* WHAT: Content wrapper with max width */
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* WHAT: Checkbox label for derived metrics toggle */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  cursor: pointer;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+/* WHAT: Checkbox input styling */
+.checkboxInput {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* WHAT: Data visualization section wrapper */
+.dataVisualization {
+  width: 100%;
+  margin-top: var(--mm-space-6);
+}

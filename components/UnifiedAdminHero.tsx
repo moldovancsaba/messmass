@@ -109,7 +109,7 @@ export default function UnifiedAdminHero({
           {resultsSummary && (
             <div className="mt-2 admin-subtitle-center">
               {resultsSummary.additionalInfo && (
-                <div className="info-note" style={{ marginBottom: '0.5rem' }}>
+                <div className="info-note mb-2">
                   {resultsSummary.additionalInfo}
                 </div>
               )}

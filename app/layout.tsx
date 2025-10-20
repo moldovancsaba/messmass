@@ -62,11 +62,7 @@ export default async function RootLayout({
       lang="en" 
       className={`${inter.variable} ${roboto.variable} ${poppins.variable}`}
       data-font={selectedFont}
-      style={{
-        /* What: Set active font family from cookie selection
-           Why: CSS variables enable instant font switching without reload */
-        fontFamily: fontMap[selectedFont] || fontMap.inter,
-      }}
+      style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >
       <head>
         <GoogleAnalytics />

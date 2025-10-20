@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { PageStyle } from '@/lib/pageStyleTypes';
+import styles from './page.module.css';
 
 interface Project {
   _id: string;
@@ -129,26 +130,10 @@ export default function EditPage() {
      Why: Show user-friendly loading indicator during auth check */
   if (checkingAuth) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center'
-        }}>
+      <div className={styles.centerContainer}>
+        <div className={styles.stateCard}>
           <div className="curve-spinner"></div>
-          <p style={{ 
-            marginTop: 'var(--mm-space-4)',
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-sm)'
-          }}>Checking authentication...</p>
+          <p className={styles.stateMessage}>Checking authentication...</p>
         </div>
       </div>
     );
@@ -169,26 +154,10 @@ export default function EditPage() {
      Why: Show user-friendly loading indicator with context */
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center'
-        }}>
+      <div className={styles.centerContainer}>
+        <div className={styles.stateCard}>
           <div className="curve-spinner"></div>
-          <p style={{ 
-            marginTop: 'var(--mm-space-4)',
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-sm)'
-          }}>Loading project editor...</p>
+          <p className={styles.stateMessage}>Loading project editor...</p>
         </div>
       </div>
     );
@@ -198,68 +167,16 @@ export default function EditPage() {
      Why: Modern, clean error card without glass-morphism effects */
   if (error) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center', 
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: 'var(--mm-space-6)',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{ 
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          padding: 'var(--mm-space-8)',
-          textAlign: 'center',
-          maxWidth: '40rem',
-          width: '100%',
-          borderTop: '4px solid var(--mm-error)'
-        }}>
-          <h1 style={{ 
-            margin: '0 0 var(--mm-space-4) 0', 
-            fontSize: 'var(--mm-font-size-2xl)',
-            fontWeight: 'var(--mm-font-weight-bold)',
-            color: 'var(--mm-error)'
-          }}>❌ Access Error</h1>
-          <p style={{ 
-            margin: 'var(--mm-space-2) 0', 
-            fontSize: 'var(--mm-font-size-lg)',
-            color: 'var(--mm-gray-700)',
-            lineHeight: 'var(--mm-line-height-md)'
-          }}>{error}</p>
-          <p style={{ 
-            margin: 'var(--mm-space-2) 0',
-            fontSize: 'var(--mm-font-size-base)',
-            color: 'var(--mm-gray-600)',
-            lineHeight: 'var(--mm-line-height-md)'
-          }}>
+      <div className={styles.centerContainerColumn}>
+        <div className={styles.errorCard}>
+          <h1 className={styles.errorHeading}>❌ Access Error</h1>
+          <p className={styles.errorTextPrimary}>{error}</p>
+          <p className={styles.errorTextSecondary}>
             The editing link you&apos;re trying to access might not exist or may have been removed.
           </p>
           <button 
             onClick={() => window.close()}
-            style={{
-              background: 'var(--mm-error)',
-              border: 'none',
-              color: 'var(--mm-white)',
-              padding: 'var(--mm-space-3) var(--mm-space-6)',
-              borderRadius: 'var(--mm-radius-md)',
-              cursor: 'pointer',
-              fontSize: 'var(--mm-font-size-base)',
-              fontWeight: 'var(--mm-font-weight-medium)',
-              marginTop: 'var(--mm-space-6)',
-              transition: 'all 0.2s ease',
-              boxShadow: 'var(--mm-shadow-sm)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--mm-shadow-md)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'var(--mm-shadow-sm)';
-            }}
+            className={styles.closeButton}
           >
             ✕ Close Editor
           </button>

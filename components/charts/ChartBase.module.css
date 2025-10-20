@@ -112,6 +112,9 @@
   align-items: center;
   justify-content: center;
   min-height: 300px;
+  /* WHAT: Use CSS variable for dynamic height
+     WHY: Avoids inline style prop, set via style attribute as CSS variable */
+  height: var(--chart-height, auto);
   position: relative;
 }
 

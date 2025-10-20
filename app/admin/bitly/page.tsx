@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
 import ProjectSelector from '@/components/ProjectSelector';
+import styles from './page.module.css';
 
 // WHAT: Type definitions for links and projects
 // WHY: Maintains type safety for Bitly integration with MessMass events
@@ -720,8 +721,8 @@ export default function BitlyAdminPage() {
       {/* WHAT: Pagination stats header showing X of Y items
        * WHY: Consistent format matching projects page design */}
       {!loading && links.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+        <div className={styles.paginationHeader}>
+          <div className={styles.statsText}>
             Showing {links.length} of {totalMatched} links
           </div>
         </div>
@@ -752,8 +753,7 @@ export default function BitlyAdminPage() {
                    * WHY: Enable user-controlled sorting matching projects page behavior */}
                   <th 
                     onClick={() => handleSort('bitlink')} 
-                    className="sortable-th" 
-                    style={{ width: '18%', minWidth: '150px' }}
+                    className={`sortable-th ${styles.colBitlink}`}
                   >
                     Bitly Link
                     {sortField === 'bitlink' && (
@@ -764,8 +764,7 @@ export default function BitlyAdminPage() {
                   </th>
                   <th 
                     onClick={() => handleSort('title')} 
-                    className="sortable-th" 
-                    style={{ width: '22%', minWidth: '150px' }}
+                    className={`sortable-th ${styles.colTitle}`}
                   >
                     Title
                     {sortField === 'title' && (
@@ -774,11 +773,10 @@ export default function BitlyAdminPage() {
                       </span>
                     )}
                   </th>
-                  <th style={{ width: '25%', minWidth: '200px' }}>Associated Projects</th>
+                  <th className={styles.colProjects}>Associated Projects</th>
                   <th 
                     onClick={() => handleSort('clicks')} 
-                    className="sortable-th" 
-                    style={{ width: '10%', minWidth: '80px' }}
+                    className={`sortable-th ${styles.colClicks}`}
                   >
                     Clicks
                     {sortField === 'clicks' && (
@@ -789,8 +787,7 @@ export default function BitlyAdminPage() {
                   </th>
                   <th 
                     onClick={() => handleSort('lastSyncAt')} 
-                    className="sortable-th" 
-                    style={{ width: '15%', minWidth: '120px' }}
+                    className={`sortable-th ${styles.colSynced}`}
                   >
                     Last Synced
                     {sortField === 'lastSyncAt' && (
@@ -799,16 +796,16 @@ export default function BitlyAdminPage() {
                       </span>
                     )}
                   </th>
-                  <th style={{ width: '10%', minWidth: '150px' }}>Actions</th>
+                  <th className={styles.colActions}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {links.map(link => (
                   <tr key={link._id}>
-                    <td style={{ wordBreak: 'break-all', maxWidth: '200px' }}>
+                    <td className={styles.cellBreakAll}>
                       {/* WHAT: Bitly link as clickable external link with word-break
                        * WHY: Prevents long URLs from overflowing table, allows verification */}
-                      <a 
+                      <a
                         href={`https://${link.bitlink}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
@@ -817,45 +814,23 @@ export default function BitlyAdminPage() {
                         {link.bitlink}
                       </a>
                     </td>
-                    <td style={{ wordBreak: 'break-word', maxWidth: '250px' }}>{link.title}</td>
-                    <td style={{ maxWidth: '280px' }}>
+                    <td className={styles.cellBreakWord}>{link.title}</td>
+                    <td className={styles.cellProjects}>
                       {/* WHAT: Display associated projects as chips/bubbles
                        * WHY: Show which events this link is connected to (many-to-many) */}
                       {link.associations && link.associations.length > 0 && (
-                        <div style={{ marginBottom: '8px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                        <div className={styles.associationsWrapper}>
                           {link.associations.map((assoc) => (
                             <span
                               key={assoc.projectId}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '2px 8px',
-                                fontSize: '12px',
-                                backgroundColor: '#e3f2fd',
-                                color: '#1976d2',
-                                borderRadius: '12px',
-                                border: '1px solid #90caf9'
-                              }}
+                              className={styles.associationChip}
                               title={`Clicks: ${assoc.clicks || 0} | ${assoc.autoCalculated ? 'Auto-calculated date range' : 'Manual date range'}`}
                             >
                               <span>{assoc.projectName || 'Unknown Project'}</span>
                               <button
                                 type="button"
                                 onClick={() => handleRemoveAssociation(link._id, link.bitlink, assoc.projectId, assoc.projectName)}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  color: '#1976d2',
-                                  cursor: 'pointer',
-                                  padding: '0',
-                                  fontSize: '14px',
-                                  lineHeight: '1',
-                                  fontWeight: 'bold',
-                                  opacity: 0.7
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                                className={styles.removeButton}
                                 title={`Remove ${assoc.projectName} from this link`}
                               >
                                 ✕

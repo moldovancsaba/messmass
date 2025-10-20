@@ -1,0 +1,112 @@
+/* UnifiedDataVisualization Component Styles
+   WHAT: Styles for unified data visualization blocks
+   WHY: Eliminates inline styles from UnifiedDataVisualization.tsx */
+
+/* WHAT: Outer container spacing */
+.container {
+  margin-bottom: 2rem;
+}
+
+/* WHAT: Block card padding */
+.blockCard {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* WHAT: Loading state card */
+.loadingCard {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* WHAT: Loading spinner container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* WHAT: Spinner element */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(99, 102, 241, 0.3);
+  border-top: 4px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* WHAT: Loading message text */
+.loadingText {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* WHAT: Empty state card */
+.emptyCard {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* WHAT: Empty state heading */
+.emptyHeading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* WHAT: Empty state text */
+.emptyText {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* WHAT: Block title styling */
+.blockTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* WHAT: Base grid styling (per-block columns set via dynamic CSS) */
+.gridBase {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  grid-auto-flow: row;
+  justify-items: stretch;
+}
+
+/* WHAT: Chart item without container wrapper */
+.chartItemDirect {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* WHAT: No charts message */
+.noChartsMessage {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+}

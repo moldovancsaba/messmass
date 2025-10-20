@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PageType } from '@/lib/pagePassword';
+import styles from './PagePasswordLogin.module.css';
 
 interface PagePasswordLoginProps {
   pageId: string;
@@ -171,91 +172,32 @@ export default function PagePasswordLogin({
   const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} page is password protected. Please enter the admin password or the page-specific password to continue.`;
 
   return (
-    <div className="login-container" style={{ 
-      /* What: Use global login-container class which now respects --page-bg.
-         Why: Ensures password overlay adopts Admin → Design page styles. */
-      minHeight: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column',
-      alignItems: 'center', 
-      justifyContent: 'center',
-      color: 'white',
-      fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif',
-      padding: '2rem'
-    }}>
-      <div style={{ 
-        background: 'rgba(255, 255, 255, 0.1)', 
-        backdropFilter: 'blur(10px)',
-        padding: '3rem',
-        borderRadius: '16px',
-        textAlign: 'center',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        maxWidth: '500px',
-        width: '100%'
-      }}>
-        <div style={{
-          fontSize: '3rem',
-          marginBottom: '1.5rem'
-        }}>🔐</div>
+    <div className={`login-container ${styles.container}`}>
+      <div className={styles.card}>
+        <div className={styles.icon}>🔐</div>
         
-        <h1 style={{ 
-          margin: '0 0 1rem 0', 
-          fontSize: '2rem',
-          fontWeight: '700'
-        }}>
+        <h1 className={styles.title}>
           {defaultTitle}
         </h1>
         
-        <p style={{ 
-          margin: '0 0 2rem 0', 
-          opacity: 0.9,
-          fontSize: '1.125rem',
-          lineHeight: '1.6'
-        }}>
+        <p className={styles.description}>
           {defaultDescription}
         </p>
 
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <div style={{ marginBottom: '1.5rem' }}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.inputWrapper}>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password..."
               disabled={isLoading}
-              style={{
-                width: '100%',
-                padding: '1rem',
-                fontSize: '1.125rem',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                outline: 'none',
-                transition: 'all 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.6)';
-                e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-              }}
+              className={styles.input}
             />
           </div>
 
           {error && (
-            <div style={{
-              background: 'rgba(220, 38, 38, 0.2)',
-              border: '1px solid rgba(220, 38, 38, 0.3)',
-              borderRadius: '8px',
-              padding: '0.75rem',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem',
-              color: '#fca5a5'
-            }}>
+            <div className={styles.error}>
               {error}
             </div>
           )}
@@ -263,46 +205,13 @@ export default function PagePasswordLogin({
           <button
             type="submit"
             disabled={isLoading || !password.trim()}
-            style={{
-              width: '100%',
-              padding: '1rem',
-              fontSize: '1.125rem',
-              fontWeight: '600',
-              border: 'none',
-              borderRadius: '8px',
-              background: isLoading || !password.trim() 
-                ? 'rgba(255, 255, 255, 0.2)' 
-                : 'rgba(255, 255, 255, 0.9)',
-              color: isLoading || !password.trim() ? 'rgba(255, 255, 255, 0.5)' : '#4f46e5',
-              cursor: isLoading || !password.trim() ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s ease',
-              backdropFilter: 'blur(10px)'
-            }}
-            onMouseOver={(e) => {
-              if (!isLoading && password.trim()) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!isLoading && password.trim()) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }
-            }}
+            className={styles.submitBtn}
           >
             {isLoading ? '🔄 Checking...' : '🔓 Access Page'}
           </button>
         </form>
 
-        <div style={{
-          marginTop: '2rem',
-          padding: '1rem',
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '8px',
-          fontSize: '0.875rem',
-          opacity: 0.8
-        }}>
+        <div className={styles.hint}>
           <p style={{ margin: '0 0 0.5rem 0', fontWeight: '600' }}>💡 Password Types:</p>
           <p style={{ margin: '0 0 0.25rem 0' }}>• <strong>Admin Password:</strong> Global access to all pages</p>
           <p style={{ margin: '0' }}>• <strong>Page Password:</strong> Access to this specific page only</p>

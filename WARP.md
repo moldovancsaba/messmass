@@ -105,6 +105,7 @@ The project features a **completely unified hashtag system** with consistent com
 - **TypeScript strict mode** enforced
 - **ESLint validation** required before commits
 - **No test files** - MVP factory approach (tests prohibited)
+- **No inline styles** - The `style` prop is PROHIBITED on DOM elements (see `CODING_STANDARDS.md`)
 
 ### Timestamp Format (Mandatory)
 **All timestamps MUST use:** `YYYY-MM-DDTHH:MM:SS.sssZ`
@@ -591,6 +592,7 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 - **No manual timestamps** - Must use ISO 8601 with milliseconds format
 - **No component duplication** - Search and reuse before creating
 - **No backup file suffixes** - Never commit files like `*2.tsx`, `*2.ts`, `page 3.tsx`, etc.
+- **No inline styles** - `style` prop forbidden on DOM elements; use CSS modules or utility classes
 
 ### File Naming and Version Control
 - **Use git branches** for experimental work, not file copies
@@ -604,6 +606,7 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 
 For detailed information, see:
 - **`ARCHITECTURE.md`** - Complete system architecture and component relationships
+- **`CODING_STANDARDS.md`** - **MANDATORY** coding standards including inline style prohibition
 - **`HASHTAG_SYSTEM.md`** - Unified hashtag system documentation
 - **`ADMIN_VARIABLES_SYSTEM.md`** - Variables & metrics management system
 - **`TASKLIST.md`** - Current active tasks and project status

@@ -1,0 +1,351 @@
+/* DynamicChart Component Styles
+   WHAT: Styles for dynamic chart rendering (pie, bar, KPI)
+   WHY: Eliminates inline styles from DynamicChart.tsx */
+
+/* Layout containers */
+.landscapeLayout {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+}
+
+.portraitLayout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pie chart specific */
+.pieChartSide {
+  flex: 1 1 65%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.pieChartWrapper {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pieChartSvg {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.legendSide {
+  flex: 1 1 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.chartLegend {
+  text-align: left;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.chartLegendPortrait {
+  font-size: 0.8rem;
+  padding: 0.5rem 0;
+}
+
+.chartTotal {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.chartTotalPortrait {
+  font-size: 0.8rem;
+  padding: 0.25rem 0;
+}
+
+.pieChartContainerPortrait {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.pieChartInnerPortrait {
+  width: 80%;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pieChartSvgPortrait {
+  width: 100%;
+  height: 100%;
+}
+
+/* Legend items */
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  /* WHAT: backgroundColor set via inline style with --legend-color CSS variable
+     WHY: Each legend item has a different color from data */
+}
+
+/* Bar chart specific */
+.barChartSide {
+  flex: 1 1 65%;
+  width: 100%;
+}
+
+.barChartTwoColumns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.legendsColumn {
+  font-size: 0.85rem;
+}
+
+.barsColumn {
+  width: 100%;
+}
+
+.barOnlyRow {
+  margin-bottom: 0.75rem;
+}
+
+.barContainer {
+  width: 100%;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+  /* WHAT: width and background color set via CSS variables
+     WHY: Each bar has different width/color from data */
+  width: var(--bar-width, 0%);
+  background: var(--bar-color, #667eea);
+}
+
+.legendTextRow {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* Total value box (landscape bar chart) */
+.totalBoxLandscape {
+  flex: 0 0 35%;
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 1rem;
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+}
+
+.totalValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.totalLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Total box (portrait bar chart) */
+.totalBoxPortrait {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 1rem;
+  border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.totalValuePortrait {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+/* KPI chart specific */
+.kpiContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.kpiBox {
+  text-align: center;
+  /* WHAT: padding set via CSS variable --kpi-padding
+     WHY: Responsive sizing based on landscape vs portrait */
+  padding: var(--kpi-padding, 2rem);
+  /* WHAT: background set via CSS variable --kpi-bg
+     WHY: Dynamic color gradient based on data */
+  background: var(--kpi-bg, linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%));
+  border-radius: 1rem;
+  /* WHAT: border set via CSS variable --kpi-border
+     WHY: Dynamic color based on data */
+  border: var(--kpi-border, 2px solid rgba(16, 185, 129, 0.15));
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.kpiEmoji {
+  /* WHAT: font-size set via CSS variable --kpi-emoji-size
+     WHY: Responsive sizing based on layout */
+  font-size: var(--kpi-emoji-size, 3.5rem);
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.kpiValue {
+  /* WHAT: font-size set via CSS variable --kpi-value-size
+     WHY: Responsive sizing */
+  font-size: var(--kpi-value-size, 4rem);
+  font-weight: 700;
+  /* WHAT: color set via CSS variable --kpi-color
+     WHY: Dynamic color based on data */
+  color: var(--kpi-color, #10b981);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  /* WHAT: text-shadow set via CSS variable --kpi-shadow
+     WHY: Dynamic shadow based on color */
+  text-shadow: var(--kpi-shadow, 0 2px 4px rgba(16, 185, 129, 0.1));
+}
+
+.kpiLabel {
+  /* WHAT: font-size set via CSS variable --kpi-label-size
+     WHY: Responsive sizing */
+  font-size: var(--kpi-label-size, 1.1rem);
+  font-weight: 500;
+  color: #4a5568;
+  margin-top: 0.5rem;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Chart container (export wrapper) */
+.chartWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.downloadBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.downloadBtn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.chartContainerExport {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chartTitleExport {
+  margin-bottom: 1.5rem;
+}
+
+.chartTitleExportH3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.chartSubtitleExport {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Messages */
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.chartError {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #ef4444;
+  font-weight: 500;
+}

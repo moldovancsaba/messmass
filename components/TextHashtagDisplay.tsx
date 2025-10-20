@@ -2,18 +2,17 @@
 
 import React from 'react';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
+import styles from './TextHashtagDisplay.module.css';
 
 interface TextHashtagDisplayProps {
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
-  style?: React.CSSProperties;
   separator?: string;
 }
 
 export default function TextHashtagDisplay({
   hashtags = [],
   categorizedHashtags = {},
-  style = {},
   separator = '\n'
 }: TextHashtagDisplayProps) {
   
@@ -41,22 +40,8 @@ export default function TextHashtagDisplay({
     }
   });
   
-  const defaultStyle: React.CSSProperties = {
-    fontFamily: 'monospace',
-    fontSize: '1rem',
-    color: '#374151',
-    background: 'rgba(249, 250, 251, 0.8)',
-    padding: '1rem',
-    borderRadius: '8px',
-    border: '1px solid rgba(209, 213, 219, 0.5)',
-    whiteSpace: 'pre-line',
-    lineHeight: '1.6',
-    margin: '1rem 0',
-    ...style
-  };
-  
   return (
-    <div style={defaultStyle}>
+    <div className={styles.container}>
       {displayLines.join(separator)}
     </div>
   );

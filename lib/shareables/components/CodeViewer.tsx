@@ -4,6 +4,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import styles from './CodeViewer.module.css'
 
 /**
  * CodeViewer Component Props
@@ -19,7 +20,6 @@ export interface CodeViewerProps {
   maxHeight?: string          // Maximum height (CSS value)
   theme?: 'dark' | 'light'   // Color theme
   className?: string          // Additional CSS classes
-  style?: React.CSSProperties // Additional inline styles
   
   // Features
   copyable?: boolean          // Enable copy button
@@ -144,7 +144,6 @@ export default function CodeViewer({
   maxHeight = '400px',
   theme = 'dark',
   className = '',
-  style = {},
   copyable = true,
   collapsible = false,
   expandable = false,
@@ -189,20 +188,36 @@ export default function CodeViewer({
   }
 
   /**
-   * Get theme-specific styles
+   * Get theme-specific CSS variables
    */
-  const getThemeStyles = () => {
-    const baseStyles = {
-      background: theme === 'dark' 
-        ? 'rgba(26, 32, 44, 0.95)' 
-        : 'rgba(255, 255, 255, 0.95)',
-      color: theme === 'dark' ? '#e2e8f0' : '#2d3748',
-      border: theme === 'dark' 
-        ? '1px solid rgba(255, 255, 255, 0.1)' 
-        : '1px solid rgba(0, 0, 0, 0.1)'
-    }
-
-    return baseStyles
+  const getThemeVars = () => {
+    return {
+      ['--viewer-bg' as string]: theme === 'dark' ? 'rgba(26, 32, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+      ['--viewer-text' as string]: theme === 'dark' ? '#e2e8f0' : '#2d3748',
+      ['--viewer-border' as string]: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+      ['--viewer-header-bg' as string]: theme === 'dark' ? 'rgba(45, 55, 72, 0.6)' : 'rgba(247, 250, 252, 0.8)',
+      ['--viewer-header-border' as string]: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+      ['--viewer-filename-color' as string]: theme === 'dark' ? '#a0aec0' : '#4a5568',
+      ['--viewer-title-color' as string]: theme === 'dark' ? '#cbd5e0' : '#2d3748',
+      ['--viewer-btn-color' as string]: theme === 'dark' ? '#a0aec0' : '#4a5568',
+      ['--viewer-btn-hover-bg' as string]: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+      ['--viewer-collapsed-bg' as string]: theme === 'dark' ? 'rgba(45, 55, 72, 0.3)' : 'rgba(247, 250, 252, 0.5)',
+      ['--viewer-collapsed-border' as string]: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+      ['--viewer-collapsed-color' as string]: theme === 'dark' ? '#a0aec0' : '#4a5568',
+      ['--viewer-collapsed-hover-bg' as string]: theme === 'dark' ? 'rgba(45, 55, 72, 0.5)' : 'rgba(247, 250, 252, 0.8)',
+      ['--viewer-line-number-color' as string]: theme === 'dark' ? '#4a5568' : '#a0aec0',
+      ['--viewer-max-height' as string]: maxHeight,
+      ['--syntax-comment' as string]: theme === 'dark' ? '#68d391' : '#38a169',
+      ['--syntax-string' as string]: theme === 'dark' ? '#fbb6ce' : '#d53f8c',
+      ['--syntax-keyword' as string]: theme === 'dark' ? '#90cdf4' : '#3182ce',
+      ['--syntax-literal' as string]: theme === 'dark' ? '#f6ad55' : '#dd6b20',
+      ['--syntax-number' as string]: theme === 'dark' ? '#f6ad55' : '#dd6b20',
+      ['--syntax-tag' as string]: theme === 'dark' ? '#68d391' : '#38a169',
+      ['--syntax-selector' as string]: theme === 'dark' ? '#90cdf4' : '#3182ce',
+      ['--syntax-property' as string]: theme === 'dark' ? '#fbb6ce' : '#d53f8c',
+      ['--syntax-value' as string]: theme === 'dark' ? '#f6ad55' : '#dd6b20',
+      ['--syntax-key' as string]: theme === 'dark' ? '#90cdf4' : '#3182ce'
+    } as React.CSSProperties
   }
 
   // Prepare highlighted code
@@ -212,82 +227,33 @@ export default function CodeViewer({
 
   return (
     <div 
-      className={`code-viewer ${className}`}
-      style={{
-        borderRadius: '12px',
-        overflow: 'hidden',
-        ...getThemeStyles(),
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-        ...style
-      }}
+      className={`${styles.container} code-viewer ${className}`}
+      style={getThemeVars()}
     >
       {/* Header */}
       {(filename || title || copyable || shouldShowExpanded) && (
-        <div 
-          style={{
-            padding: '0.75rem 1rem',
-            background: theme === 'dark' 
-              ? 'rgba(45, 55, 72, 0.6)' 
-              : 'rgba(247, 250, 252, 0.8)',
-            borderBottom: theme === 'dark' 
-              ? '1px solid rgba(255, 255, 255, 0.1)' 
-              : '1px solid rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '0.875rem',
-            fontWeight: '500'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
             {filename && (
-              <span style={{ 
-                color: theme === 'dark' ? '#a0aec0' : '#4a5568',
-                fontFamily: 'Monaco, Consolas, "Ubuntu Mono", monospace'
-              }}>
+              <span className={styles.filename}>
                 {filename}
               </span>
             )}
             {title && (
-              <span style={{ color: theme === 'dark' ? '#cbd5e0' : '#2d3748' }}>
+              <span className={styles.title}>
                 {title}
               </span>
             )}
-            <span 
-              style={{ 
-                color: theme === 'dark' ? '#718096' : '#718096',
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}
-            >
+            <span className={styles.language}>
               {language}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className={styles.headerRight}>
             {shouldShowExpanded && (
               <button
                 onClick={handleToggle}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: theme === 'dark' ? '#a0aec0' : '#4a5568',
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme === 'dark' 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(0, 0, 0, 0.05)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none'
-                }}
+                className={styles.btn}
               >
                 {isExpanded ? '▼' : '▶'} {isExpanded ? 'Collapse' : 'Expand'}
               </button>
@@ -296,35 +262,7 @@ export default function CodeViewer({
             {copyable && (
               <button
                 onClick={handleCopy}
-                style={{
-                  background: copied 
-                    ? 'rgba(72, 187, 120, 0.2)' 
-                    : 'none',
-                  border: 'none',
-                  color: copied 
-                    ? '#48bb78' 
-                    : (theme === 'dark' ? '#a0aec0' : '#4a5568'),
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '4px',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.25rem'
-                }}
-                onMouseEnter={(e) => {
-                  if (!copied) {
-                    e.currentTarget.style.background = theme === 'dark' 
-                      ? 'rgba(255, 255, 255, 0.1)' 
-                      : 'rgba(0, 0, 0, 0.05)'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!copied) {
-                    e.currentTarget.style.background = 'none'
-                  }
-                }}
+                className={`${styles.btn} ${styles.copyBtn} ${copied ? styles.copied : ''}`}
               >
                 {copied ? (
                   <>
@@ -342,56 +280,33 @@ export default function CodeViewer({
       )}
 
       {/* Code Content */}
-      <div 
-        style={{
-          display: isExpanded ? 'block' : 'none',
-          maxHeight: isExpanded ? maxHeight : '80px',
-          overflow: 'auto',
-          transition: 'max-height 0.3s ease'
-        }}
-      >
-        <pre
-          ref={codeRef}
-          style={{
-            margin: 0,
-            padding: '1rem',
-            fontFamily: 'Monaco, Consolas, "Ubuntu Mono", monospace',
-            fontSize: '0.875rem',
-            lineHeight: '1.5',
-            overflow: 'auto',
-            background: 'transparent'
-          }}
-        >
+      <div className={`${styles.codeWrapper} ${!isExpanded ? styles.codeWrapperHidden : ''}`}>
+        <pre ref={codeRef} className={styles.pre}>
           {showLineNumbers ? (
-            <div style={{ display: 'flex' }}>
+            <div className={styles.codeContent}>
               {/* Line Numbers */}
-              <div 
-                style={{
-                  color: theme === 'dark' ? '#4a5568' : '#a0aec0',
-                  marginRight: '1rem',
-                  textAlign: 'right',
-                  userSelect: 'none',
-                  minWidth: '2.5rem'
-                }}
-              >
-                {codeLines.map((_, index) => (
-                  <div 
-                    key={index}
-                    style={{
-                      background: highlightLines.includes(index + 1) 
-                        ? (theme === 'dark' ? 'rgba(66, 153, 225, 0.2)' : 'rgba(66, 153, 225, 0.1)')
-                        : 'transparent',
-                      paddingLeft: highlightLines.includes(index + 1) ? '0.25rem' : '0'
-                    }}
-                  >
-                    {index + 1}
-                  </div>
-                ))}
+              <div className={styles.lineNumbers}>
+                {codeLines.map((_, index) => {
+                  const isHighlighted = highlightLines.includes(index + 1);
+                  return (
+                    <div 
+                      key={index}
+                      className={styles.lineNumber}
+                      style={{
+                        ['--line-bg' as string]: isHighlighted 
+                          ? (theme === 'dark' ? 'rgba(66, 153, 225, 0.2)' : 'rgba(66, 153, 225, 0.1)')
+                          : 'transparent',
+                        ['--line-padding' as string]: isHighlighted ? '0.25rem' : '0'
+                      } as React.CSSProperties}
+                    >
+                      {index + 1}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Code */}
               <div 
-                style={{ flex: 1 }}
                 dangerouslySetInnerHTML={{
                   __html: highlightedCode
                 }}
@@ -409,50 +324,13 @@ export default function CodeViewer({
 
       {/* Collapsed Preview */}
       {!isExpanded && (collapsible || expandable) && (
-        <div 
-          onClick={handleToggle}
-          style={{
-            padding: '1rem',
-            cursor: 'pointer',
-            background: theme === 'dark' 
-              ? 'rgba(45, 55, 72, 0.3)' 
-              : 'rgba(247, 250, 252, 0.5)',
-            borderTop: theme === 'dark' 
-              ? '1px solid rgba(255, 255, 255, 0.1)' 
-              : '1px solid rgba(0, 0, 0, 0.1)',
-            textAlign: 'center',
-            fontSize: '0.875rem',
-            color: theme === 'dark' ? '#a0aec0' : '#4a5568',
-            transition: 'background 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = theme === 'dark' 
-              ? 'rgba(45, 55, 72, 0.5)' 
-              : 'rgba(247, 250, 252, 0.8)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = theme === 'dark' 
-              ? 'rgba(45, 55, 72, 0.3)' 
-              : 'rgba(247, 250, 252, 0.5)'
-          }}
-        >
+        <div onClick={handleToggle} className={styles.collapsedPreview}>
           Click to expand {codeLines.length} lines of {language} code ▼
         </div>
       )}
 
-      {/* Syntax Highlighting Styles */}
-      <style jsx>{`
-        .code-comment { color: ${theme === 'dark' ? '#68d391' : '#38a169'}; font-style: italic; }
-        .code-string { color: ${theme === 'dark' ? '#fbb6ce' : '#d53f8c'}; }
-        .code-keyword { color: ${theme === 'dark' ? '#90cdf4' : '#3182ce'}; font-weight: 600; }
-        .code-literal { color: ${theme === 'dark' ? '#f6ad55' : '#dd6b20'}; }
-        .code-number { color: ${theme === 'dark' ? '#f6ad55' : '#dd6b20'}; }
-        .code-tag { color: ${theme === 'dark' ? '#68d391' : '#38a169'}; }
-        .code-selector { color: ${theme === 'dark' ? '#90cdf4' : '#3182ce'}; }
-        .code-property { color: ${theme === 'dark' ? '#fbb6ce' : '#d53f8c'}; }
-        .code-value { color: ${theme === 'dark' ? '#f6ad55' : '#dd6b20'}; }
-        .code-key { color: ${theme === 'dark' ? '#90cdf4' : '#3182ce'}; }
-      `}</style>
+      {/* WHAT: Syntax highlighting now handled via CSS variables in module
+           WHY: Removed jsx style tag, colors applied through CSS module */}
     </div>
   )
 }
@@ -463,14 +341,12 @@ export default function CodeViewer({
  * Pre-configured CodeViewer with MessMass branding.
  */
 export function MessMassCodeViewer(props: Omit<CodeViewerProps, 'theme'>) {
+  // WHAT: MessMass branded version with dark theme
+  // WHY: Provides consistent branding for documentation
   return (
     <CodeViewer
       {...props}
       theme="dark"
-      style={{
-        background: 'linear-gradient(135deg, rgba(26, 32, 44, 0.95) 0%, rgba(45, 55, 72, 0.9) 100%)',
-        ...props.style
-      }}
     />
   )
 }

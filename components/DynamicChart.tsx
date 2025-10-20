@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
+import styles from './DynamicChart.module.css';
 
 interface DynamicChartProps {
   result: ChartCalculationResult;
@@ -19,7 +20,7 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
   // Handle empty or error cases
   if (!result || !result.elements || result.elements.length === 0) {
     return (
-      <div className={`no-data-message ${className}`}>
+      <div className={`${styles.noDataMessage} ${className}`}>
         <p>No data available for {result?.title || 'this chart'}</p>
       </div>
     );
@@ -32,7 +33,7 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
   // If all values are NA or zero, show no data message
   if (validElements.length === 0 || totalValue === 0) {
     return (
-      <div className={`no-data-message ${className}`}>
+      <div className={`${styles.noDataMessage} ${className}`}>
         <p>No data available for {result.title}</p>
       </div>
     );
@@ -47,7 +48,7 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
   }
 
   return (
-    <div className={`chart-error ${className}`}>
+    <div className={`${styles.chartError} ${className}`}>
       <p>Unsupported chart type: {result.type}</p>
     </div>
   );
@@ -122,8 +123,8 @@ const PieChart: React.FC<{
   const legend = validElements.map((element) => {
     const percentage = ((element.value / totalValue) * 100).toFixed(1);
     return (
-      <div key={element.id} className="legend-item">
-        <div className="legend-color" style={{ backgroundColor: element.color }}></div>
+      <div key={element.id} className={styles.legendItem}>
+        <div className={styles.legendColor} style={{ ['--legend-color' as string]: element.color, backgroundColor: element.color } as React.CSSProperties}></div>
         <span>{element.label}: {formatChartValue(element.value)} ({percentage}%)</span>
       </div>
     );
@@ -132,10 +133,10 @@ const PieChart: React.FC<{
   if (isLandscape) {
     // Landscape layout: chart on left, legend on right - COMPLETELY FILLS 2 units width
     return (
-      <div className={className} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width: '100%', height: '100%' }}>
-        <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div style={{ width: '100%', aspectRatio: '1', maxWidth: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <svg viewBox="0 0 220 220" className="pie-chart" style={{ width: '100%', height: '100%', maxWidth: 'none' }}>
+      <div className={`${className} ${styles.landscapeLayout}`}>
+        <div className={styles.pieChartSide}>
+          <div className={styles.pieChartWrapper}>
+            <svg viewBox="0 0 220 220" className={`pie-chart ${styles.pieChartSvg}`}>
               {landscapeSegments}
               <circle
                 cx="110"
@@ -158,13 +159,13 @@ const PieChart: React.FC<{
             </svg>
           </div>
           {result.total !== undefined && (
-            <div className="chart-total" style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.9rem', width: '100%' }}>
+            <div className={styles.chartTotal}>
               <strong>Total: {formatChartValue(result.total)}</strong>
             </div>
           )}
         </div>
-        <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', minWidth: 0 }}>
-          <div className="chart-legend" style={{ textAlign: 'left', fontSize: '0.85rem', width: '100%' }}>
+        <div className={styles.legendSide}>
+          <div className={styles.chartLegend}>
             {legend}
           </div>
         </div>
@@ -173,10 +174,10 @@ const PieChart: React.FC<{
   } else {
     // Portrait layout: traditional stacked layout - COMPLETELY FILLS 1 unit width
     return (
-      <div className={className} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div className="pie-chart-container" style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-          <div style={{ width: '80%', aspectRatio: '1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <svg viewBox="0 0 180 180" className="pie-chart" style={{ width: '100%', height: '100%' }}>
+      <div className={`${className} ${styles.portraitLayout}`}>
+        <div className={styles.pieChartContainerPortrait}>
+          <div className={styles.pieChartInnerPortrait}>
+            <svg viewBox="0 0 180 180" className={`pie-chart ${styles.pieChartSvgPortrait}`}>
               {portraitSegments}
               <circle
                 cx="90"
@@ -199,11 +200,11 @@ const PieChart: React.FC<{
             </svg>
           </div>
         </div>
-        <div className="chart-legend" style={{ fontSize: '0.8rem', padding: '0.5rem 0' }}>
+        <div className={styles.chartLegendPortrait}>
           {legend}
         </div>
         {result.total !== undefined && (
-          <div className="chart-total" style={{ fontSize: '0.8rem', padding: '0.25rem 0' }}>
+          <div className={styles.chartTotalPortrait}>
             <strong>Total: {formatChartValue(result.total)}</strong>
           </div>
         )}
@@ -231,7 +232,7 @@ const BarChart: React.FC<{
   // If no valid data, show message
   if (validElements.length === 0 || maxValue === 0) {
     return (
-      <div className={`no-data-message ${className}`}>
+      <div className={`${styles.noDataMessage} ${className}`}>
         <p>No data available for {result.title}</p>
       </div>
     );
@@ -242,7 +243,7 @@ const BarChart: React.FC<{
     const value = element.value;
     const isValid = typeof value === 'number';
     return (
-      <div key={element.id} className="legend-text-row">
+      <div key={element.id} className={styles.legendTextRow}>
         <span>{element.label}: {isValid ? formatChartValue(value as number) : 'N/A'}</span>
       </div>
     );
@@ -254,13 +255,13 @@ const BarChart: React.FC<{
     const barWidth = isValid ? ((value as number) / maxValue) * 100 : 0;
     
     return (
-      <div key={element.id} className="bar-only-row">
-        <div className="bar-container">
+      <div key={element.id} className={styles.barOnlyRow}>
+        <div className={styles.barContainer}>
           <div 
-            className="bar-fill" 
+            className={styles.barFill} 
             style={{ 
-              width: `${barWidth}%`, 
-              '--bar-color': element.color
+              ['--bar-width' as string]: `${barWidth}%`, 
+              ['--bar-color' as string]: element.color
             } as React.CSSProperties}
           />
         </div>
@@ -297,50 +298,26 @@ const BarChart: React.FC<{
   if (isLandscape) {
     // Landscape layout: total on left, chart on right - FILLS 2 units width
     return (
-      <div className={className} style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', width: '100%', height: '100%' }}>
+      <div className={`${className} ${styles.landscapeLayout}`}>
         {/* Total value display on the left */}
         {result.total !== undefined && (
-          <div style={{
-            flex: '0 0 35%',
-            textAlign: 'center',
-            padding: '1.5rem',
-            background: 'rgba(102, 126, 234, 0.05)',
-            borderRadius: '1rem',
-            border: '2px solid rgba(102, 126, 234, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '180px'
-          }}>
-            <div style={{
-              fontSize: '2rem',
-              fontWeight: '700',
-              color: '#667eea',
-              marginBottom: '0.5rem',
-              lineHeight: 1
-            }}>
+          <div className={styles.totalBoxLandscape}>
+            <div className={styles.totalValue}>
               {formatTotal(result.total)}
             </div>
-            <div style={{
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              color: '#4a5568',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em'
-            }}>
+            <div className={styles.totalLabel}>
               {result.totalLabel || 'Total'}
             </div>
           </div>
         )}
         
         {/* Bar chart on the right */}
-        <div style={{ flex: '1 1 65%', width: '100%' }}>
-          <div className="bar-chart-two-columns" style={{ width: '100%' }}>
-            <div className="legends-column" style={{ fontSize: '0.85rem' }}>
+        <div className={styles.barChartSide}>
+          <div className={styles.barChartTwoColumns}>
+            <div className={styles.legendsColumn}>
               {legends}
             </div>
-            <div className="bars-column" style={{ width: '100%' }}>
+            <div className={styles.barsColumn}>
               {bars}
             </div>
           </div>
@@ -350,41 +327,22 @@ const BarChart: React.FC<{
   } else {
     // Portrait layout: traditional stacked layout - FILLS 1 unit width
     return (
-      <div className={className} style={{ width: '100%', height: '100%' }}>
+      <div className={`${className} ${styles.portraitLayout}`}>
         {result.total !== undefined && (
-          <div style={{
-            textAlign: 'center',
-            marginBottom: '1.5rem',
-            padding: '1.25rem',
-            background: 'rgba(102, 126, 234, 0.05)',
-            borderRadius: '1rem',
-            border: '2px solid rgba(102, 126, 234, 0.1)'
-          }}>
-            <div style={{
-              fontSize: '2.25rem',
-              fontWeight: '700',
-              color: '#667eea',
-              marginBottom: '0.5rem',
-              lineHeight: 1
-            }}>
+          <div className={styles.totalBoxPortrait}>
+            <div className={styles.totalValuePortrait}>
               {formatTotal(result.total)}
             </div>
-            <div style={{
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              color: '#4a5568',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em'
-            }}>
+            <div className={styles.totalLabel}>
               {result.totalLabel || 'Total'}
             </div>
           </div>
         )}
-        <div className="bar-chart-two-columns" style={{ width: '100%' }}>
-          <div className="legends-column" style={{ fontSize: '0.85rem' }}>
+        <div className={styles.barChartTwoColumns}>
+          <div className={styles.legendsColumn}>
             {legends}
           </div>
-          <div className="bars-column" style={{ width: '100%' }}>
+          <div className={styles.barsColumn}>
             {bars}
           </div>
         </div>
@@ -444,57 +402,43 @@ const KPIChart: React.FC<{
   const padding = isLandscape ? '3rem' : '2rem';
   
   return (
-    <div className={className} style={{ width: '100%', height: '100%' }}>
-      <div style={{
-        textAlign: 'center',
-        padding,
-        background: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
-        borderRadius: '1rem',
-        border: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        boxSizing: 'border-box'
-      }}>
+    <div className={`${className} ${styles.kpiContainer}`}>
+      <div 
+        className={styles.kpiBox}
+        style={{
+          ['--kpi-padding' as string]: padding,
+          ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
+          ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+        } as React.CSSProperties}
+      >
         {/* Large emoji at the top */}
         {result.emoji && (
-          <div style={{
-            fontSize: emojiSize,
-            marginBottom: '1rem',
-            lineHeight: 1
-          }}>
+          <div 
+            className={styles.kpiEmoji}
+            style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
+          >
             {result.emoji}
           </div>
         )}
         
         {/* Large KPI value */}
-        <div style={{
-          fontSize: valueSize,
-          fontWeight: '700',
-          color: kpiColor,
-          marginBottom: '0.5rem',
-          lineHeight: 1,
-          textShadow: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
-        }}>
+        <div 
+          className={styles.kpiValue}
+          style={{
+            ['--kpi-value-size' as string]: valueSize,
+            ['--kpi-color' as string]: kpiColor,
+            ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+          } as React.CSSProperties}
+        >
           {formatKPIValue(kpiValue)}
         </div>
         
         {/* Label with description */}
         {result.elements[0]?.label && (
-          <div style={{
-            fontSize: labelSize,
-            fontWeight: '500',
-            color: '#4a5568',
-            marginTop: '0.5rem',
-            maxWidth: '90%',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
+          <div 
+            className={styles.kpiLabel}
+            style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
+          >
             {result.elements[0].label}
           </div>
         )}
@@ -551,46 +495,23 @@ export const ChartContainer: React.FC<{
   };
   
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className={styles.chartWrapper}>
       {/* Download button positioned outside the container */}
       <button 
-        className="btn btn-small btn-primary chart-download-btn"
+        className={`btn btn-small btn-primary chart-download-btn ${styles.downloadBtn}`}
         onClick={exportChartAsPNG}
         title="Download chart as PNG"
-        style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          fontSize: '0.75rem',
-          padding: '0.25rem 0.5rem',
-          zIndex: 10,
-          background: 'rgba(255, 255, 255, 0.95)',
-          border: '1px solid rgba(99, 102, 241, 0.2)',
-          borderRadius: '6px',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          color: '#4f46e5'
-        }}
       >
         📥 Download PNG
       </button>
       
       {/* Beautiful rounded container that will be captured */}
-      <div className={`chart-container ${className}`} ref={chartRef} style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '0.75rem',
-        padding: '2rem',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden'
-      }}>
-        <div className="chart-title-for-export" style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
+      <div className={`chart-container ${className} ${styles.chartContainerExport}`} ref={chartRef}>
+        <div className={styles.chartTitleExport}>
+          <h3 className={styles.chartTitleExportH3}>
             {title}
           </h3>
-          {subtitle && <p style={{ margin: '0 0 0', fontSize: '0.9rem', color: '#6b7280' }}>{subtitle}</p>}
+          {subtitle && <p className={styles.chartSubtitleExport}>{subtitle}</p>}
         </div>
         {children}
       </div>

@@ -219,6 +219,9 @@
 .confidenceProgress {
   height: 100%;
   background: linear-gradient(90deg, var(--warning), var(--success));
+  /* WHAT: Use CSS variable for dynamic width
+     WHY: Avoids inline style prop, set via style attribute as CSS variable */
+  width: var(--confidence-width, 0%);
   transition: width 0.3s ease;
 }
 

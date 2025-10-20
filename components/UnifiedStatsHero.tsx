@@ -1,6 +1,7 @@
 import React from 'react';
 import UnifiedPageHero from './UnifiedPageHero';
 import { PageStyle } from '@/lib/pageStyleTypes';
+import styles from './UnifiedStatsHero.module.css';
 
 interface UnifiedStatsHeroProps {
   title: string;
@@ -48,46 +49,24 @@ export default function UnifiedStatsHero({
       pageStyle={pageStyle}
     >
       {/* Creation and Update Dates + Extra Controls */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        maxWidth: '100%',
-        fontSize: '0.9rem',
-        color: '#4a5568',
-        fontWeight: '500',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div className={styles.datesContainer}>
+        <div className={styles.dateWrapper}>
           <span>Created:</span>
-          <span style={{ 
-            background: 'rgba(16, 185, 129, 0.1)',
-            color: '#059669',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '12px',
-            fontWeight: '600'
-          }}>
+          <span className={styles.createdDateBadge}>
             📅 {formatDate(createdDate)}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className={styles.dateWrapper}>
           <span>Last Updated:</span>
-          <span style={{ 
-            background: 'rgba(68, 68, 68, 0.1)',
-            color: '#444444',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '12px',
-            fontWeight: '600'
-          }}>
+          <span className={styles.updatedDateBadge}>
             📅 {formatDate(lastUpdatedDate)}
           </span>
         </div>
 
         {/* Extra controls injected by pages, e.g., export toggles */}
         {extraContent && (
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className={styles.extraContent}>
             {extraContent}
           </div>
         )}

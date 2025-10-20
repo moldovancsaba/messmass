@@ -11,6 +11,7 @@ import {
   LegendItem,
 } from 'chart.js';
 import ChartBase from './ChartBase';
+import styles from './ChartShared.module.css';
 
 /* What: Register Chart.js components for pie/donut charts
    Why: Chart.js requires explicit registration of components to reduce bundle size */
@@ -92,18 +93,10 @@ export default function PieChart({
         height={height}
         showExport={false}
       >
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          color: 'var(--mm-gray-500)',
-          gap: 'var(--mm-space-3)'
-        }}>
-          <div style={{ fontSize: '48px', opacity: 0.5 }}>📊</div>
-          <div style={{ fontSize: '16px', fontWeight: 500 }}>Insufficient Data</div>
-          <div style={{ fontSize: '14px', opacity: 0.7 }}>Chart requires at least one valid data point</div>
+        <div className={styles.insufficientData}>
+          <div className={styles.insufficientDataIcon}>📊</div>
+          <div className={styles.insufficientDataTitle}>Insufficient Data</div>
+          <div className={styles.insufficientDataDescription}>Chart requires at least one valid data point</div>
         </div>
       </ChartBase>
     );
@@ -248,28 +241,11 @@ export default function PieChart({
      Why: Better UX than blank chart */
   if (!data || data.length === 0) {
     return (
-      <div className={className} style={{ 
-        background: 'var(--mm-white)',
-        border: '1px solid var(--mm-border-color-default)',
-        borderRadius: 'var(--mm-radius-lg)',
-        padding: 'var(--mm-space-8)',
-        textAlign: 'center',
-        color: 'var(--mm-gray-500)',
-      }}>
-        <p style={{ margin: 0 }}>No data available for chart</p>
+      <div className={`${className} ${styles.emptyState}`}>
+        <p className={styles.emptyStateMessage}>No data available for chart</p>
       </div>
     );
   }
-
-  /* What: Calculate appropriate container width based on legend position
-     Why: Ensure proper chart and legend layout in different configurations */
-  const containerStyle: React.CSSProperties = {
-    height: `${height}px`,
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
 
   return (
     <ChartBase
@@ -279,7 +255,7 @@ export default function PieChart({
       filename={filename}
       className={className}
     >
-      <div style={containerStyle}>
+      <div className={styles.pieChartContainer} style={{ height: `${height}px` }}>
         <Doughnut ref={chartRef} data={chartData} options={options} />
       </div>
     </ChartBase>

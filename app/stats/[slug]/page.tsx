@@ -10,6 +10,7 @@ import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTyp
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import { exportPageToPDF } from '@/lib/export/pdf';
+import styles from './page.module.css';
 
 interface ProjectStats {
   remoteImages: number;
@@ -310,7 +311,7 @@ export default function StatsPage() {
   // Searching state while resolving project by slug
   if (resolving || (!project && !error)) {
     return (
-      <div className="admin-container" style={{ padding: '1rem' }}>
+      <div className={`admin-container ${styles.searchContainer}`}>
         <StandardState
           variant="loading"
           title="📊 Searching the Project page"
@@ -324,34 +325,10 @@ export default function StatsPage() {
      Why: Modern card styling without glass-morphism effects */
   if (error) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: 'var(--mm-space-6)',
-        backgroundColor: 'var(--mm-gray-50)'
-      }}>
-        <div style={{
-          background: 'var(--mm-white)',
-          borderRadius: 'var(--mm-radius-lg)',
-          boxShadow: 'var(--mm-shadow-lg)',
-          textAlign: 'center',
-          padding: 'var(--mm-space-8)',
-          maxWidth: '32rem',
-          width: '100%'
-        }}>
-          <h1 style={{ 
-            color: 'var(--mm-error)', 
-            marginBottom: 'var(--mm-space-4)',
-            fontSize: 'var(--mm-font-size-2xl)',
-            fontWeight: 'var(--mm-font-weight-bold)'
-          }}>❌ Error</h1>
-          <p style={{ 
-            color: 'var(--mm-gray-600)',
-            fontSize: 'var(--mm-font-size-base)',
-            lineHeight: 'var(--mm-line-height-md)'
-          }}>{error}</p>
+      <div className={styles.errorContainer}>
+        <div className={styles.errorCard}>
+          <h1 className={styles.errorHeading}>❌ Error</h1>
+          <p className={styles.errorMessage}>{error}</p>
         </div>
       </div>
     );
@@ -370,11 +347,7 @@ export default function StatsPage() {
      - Optional custom page style gradients
      - Responsive padding for different screen sizes */
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: 'var(--mm-gray-50)',
-      padding: 'var(--mm-space-4)'
-    }}>
+    <div className={styles.pageContainer}>
       {/* Inject resolved page style for custom gradients (optional) */}
       {pageStyle && (
         <style
@@ -393,11 +366,7 @@ export default function StatsPage() {
           Why: Constrain content width on large screens, enable PDF export of entire page */}
       <div 
         id="stats-page-content"
-        style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          width: '100%'
-        }}
+        className={styles.contentWrapper}
       >
         {/* Unified Hero Section with CSV and PDF export */}
         <UnifiedStatsHero
@@ -410,23 +379,12 @@ export default function StatsPage() {
           onExportCSV={exportCSV}
           onExportPDF={handleExportPDF}
           extraContent={(
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 'var(--mm-space-2)', 
-              cursor: 'pointer',
-              fontSize: 'var(--mm-font-size-sm)',
-              color: 'var(--mm-gray-700)'
-            }}>
+            <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
                 checked={includeDerived}
                 onChange={(e) => setIncludeDerived(e.target.checked)}
-                style={{
-                  cursor: 'pointer',
-                  width: '16px',
-                  height: '16px'
-                }}
+                className={styles.checkboxInput}
               />
               <span>Include derived metrics</span>
             </label>
@@ -435,10 +393,7 @@ export default function StatsPage() {
 
         {/* What: Data visualization section with modern spacing
             Why: Unified component handles all chart rendering with proper grid layout */}
-        <div style={{ 
-          width: '100%', 
-          marginTop: 'var(--mm-space-6)'
-        }}>
+        <div className={styles.dataVisualization}>
           <UnifiedDataVisualization
             blocks={dataBlocks}
             chartResults={chartResults}

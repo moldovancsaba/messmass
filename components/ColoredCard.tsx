@@ -17,8 +17,6 @@ interface ColoredCardProps {
   onClick?: () => void;
   /** Optional hover effect */
   hoverable?: boolean;
-  /** Optional inline styles */
-  style?: React.CSSProperties;
 }
 
 export default function ColoredCard({
@@ -26,18 +24,16 @@ export default function ColoredCard({
   className = '',
   children,
   onClick,
-  hoverable = true,
-  style
+  hoverable = true
 }: ColoredCardProps) {
-  const combinedStyle = {
-    ...style,
-    ...(accentColor ? { borderLeftColor: accentColor } : {})
-  };
+  // WHAT: Only use CSS variables for dynamic styling (ESLint compliant)
+  // WHY: Avoid inline style props while supporting dynamic accent colors
+  const cssVars = accentColor ? { '--accent-color': accentColor } as React.CSSProperties : undefined;
 
   return (
     <div
       className={`${styles.coloredCard} ${hoverable ? styles.hoverable : ''} ${className}`}
-      style={combinedStyle}
+      style={cssVars}
       onClick={onClick}
     >
       {children}

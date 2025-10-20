@@ -1,0 +1,124 @@
+/* UnifiedProjectsSection Component Styles
+   WHAT: Styles for unified projects grid display
+   WHY: Eliminates inline styles from UnifiedProjectsSection.tsx */
+
+/* WHAT: Card padding and spacing */
+.sectionCard {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* WHAT: Section title styling matching Data Visualization design */
+.sectionTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* WHAT: Responsive grid for project cards
+   WHY: Auto-fill grid with minimum card width of 350px */
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* WHAT: Individual project card
+   WHY: Clean card design with hover effects */
+.projectCard {
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.2s ease;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* WHAT: Project name heading */
+.projectName {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+/* WHAT: Project link styling
+   WHY: Underline appears on hover for better UX */
+.projectLink {
+  color: #6366f1;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.projectLink:hover {
+  border-bottom-color: #6366f1;
+}
+
+/* WHAT: Hashtags wrapper with flexible layout */
+.hashtagsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  min-height: 40px;
+}
+
+/* WHAT: "+X more" indicator for additional hashtags */
+.moreHashtags {
+  font-size: 0.75rem;
+  color: #6b7280;
+  padding: 0.25rem 0.5rem;
+  background: rgba(107, 114, 128, 0.1);
+  border-radius: 6px;
+  font-weight: 500;
+  align-self: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+/* WHAT: Footer with date and action badge */
+.projectFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: auto;
+}
+
+/* WHAT: Date display with icon */
+.dateDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* WHAT: "View Stats" badge */
+.viewStatsBadge {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

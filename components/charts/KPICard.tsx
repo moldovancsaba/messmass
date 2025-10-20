@@ -228,7 +228,7 @@ export default function KPICard({
           {/* What: Trend indicator
               Why: Show change over time */}
           {trend && (
-            <div className={styles.trend} style={{ color: getTrendColor() }}>
+            <div className={styles.trend} style={{ ['--trend-color' as string]: getTrendColor() } as React.CSSProperties}>
               <span className={styles.trendIcon}>{getTrendIcon()}</span>
               <span className={styles.trendValue}>
                 {Math.abs(trend.value).toFixed(1)}%

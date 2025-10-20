@@ -31,6 +31,9 @@
 html {
   height: 100%;
   scroll-behavior: smooth;
+  /* WHAT: Apply selected font from server-side cookie via CSS variable
+     WHY: Enables instant font switching without page reload */
+  font-family: var(--active-font, var(--mm-font-family-sans));
 }
 
 body {

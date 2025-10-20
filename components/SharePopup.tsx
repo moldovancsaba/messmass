@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageType } from '@/lib/pagePassword';
 import { apiPost } from '@/lib/apiClient';
+import styles from './SharePopup.module.css';
 
 interface SharePopupProps {
   isOpen: boolean;
@@ -108,211 +109,73 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   if (!isOpen) return null;
 
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-        padding: '1rem'
-      }}
-      onClick={onClose}
-    >
-      <div 
-        style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '2rem',
-          maxWidth: '600px',
-          width: '100%',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          position: 'relative'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         {/* Close button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            color: '#6b7280',
-            padding: '0.5rem',
-            borderRadius: '8px',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = '#f3f4f6';
-            e.currentTarget.style.color = '#374151';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = 'none';
-            e.currentTarget.style.color = '#6b7280';
-          }}
-        >
+        <button onClick={onClose} className={styles.closeBtn}>
           ×
         </button>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔗</div>
-          <h2 style={{ 
-            margin: '0 0 0.5rem 0', 
-            fontSize: '1.5rem', 
-            fontWeight: '700',
-            color: '#1f2937'
-          }}>
+        <div className={styles.header}>
+          <div className={styles.headerEmoji}>🔗</div>
+          <h2 className={styles.title}>
             {getTitle()}
           </h2>
-          <p style={{ 
-            margin: 0, 
-            color: '#6b7280',
-            fontSize: '0.875rem'
-          }}>
+          <p className={styles.subtitle}>
             Share this protected {getPageTypeDisplay().toLowerCase()} with the password below
           </p>
         </div>
 
         {isLoading ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '3rem',
-            color: '#6b7280'
-          }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingEmoji}>⏳</div>
             <p>Generating shareable link...</p>
           </div>
         ) : error ? (
-          <div style={{
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '8px',
-            padding: '1rem',
-            textAlign: 'center',
-            color: '#dc2626'
-          }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
-            <p style={{ margin: 0 }}>{error}</p>
-            <button
-              onClick={generateShareableLink}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                background: '#dc2626',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '0.875rem'
-              }}
-            >
+          <div className={styles.errorContainer}>
+            <div className={styles.errorEmoji}>❌</div>
+            <p className={styles.errorText}>{error}</p>
+            <button onClick={generateShareableLink} className={styles.retryBtn}>
               Try Again
             </button>
           </div>
         ) : shareableData ? (
-          <div>
+          <div className={styles.content}>
             {/* WHAT: Optional recipient name/email input field
                 WHY: Allows user to note who they're sharing with before copying URL/password */}
             {/* Recipient Info Section */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                👤 Recipient Name or Email <span style={{ color: '#9ca3af', fontWeight: '400' }}>(optional)</span>
+            <div className={styles.section}>
+              <label className={styles.label}>
+                👤 Recipient Name or Email <span className={styles.labelOptional}>(optional)</span>
               </label>
               <input
                 type="text"
                 value={recipientInfo}
                 onChange={(e) => setRecipientInfo(e.target.value)}
                 placeholder="e.g., John Doe or john@example.com"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  background: 'white',
-                  color: '#374151',
-                  transition: 'border-color 0.2s ease',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#4f46e5';
-                  e.currentTarget.style.outline = 'none';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                }}
+                className={`${styles.input} ${styles.inputEditable}`}
               />
-              <p style={{ 
-                margin: '0.5rem 0 0 0', 
-                fontSize: '0.75rem', 
-                color: '#6b7280',
-                fontStyle: 'italic'
-              }}>
+              <p className={styles.helpText}>
                 For your reference only - helps you remember who you shared this link with
               </p>
             </div>
 
             {/* URL Section */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className={styles.section}>
+              <label className={styles.label}>
                 🔗 Shareable URL
               </label>
-              <div style={{ 
-                display: 'flex', 
-                gap: '0.5rem',
-                alignItems: 'stretch'
-              }}>
+              <div className={styles.inputGroup}>
                 <input
                   type="text"
                   value={shareableData.url}
                   readOnly
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    background: '#f9fafb',
-                    color: '#374151'
-                  }}
+                  className={styles.input}
                 />
                 <button
                   onClick={() => copyToClipboard(shareableData.url, 'url')}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    background: copiedField === 'url' ? '#10b981' : '#4f46e5',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    transition: 'all 0.2s ease',
-                    minWidth: '80px'
-                  }}
+                  className={`${styles.copyBtn} ${copiedField === 'url' ? styles.copyBtnCopied : ''}`}
                 >
                   {copiedField === 'url' ? '✅ Copied!' : '📋 Copy'}
                 </button>
@@ -327,17 +190,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                       window.location.href = shareableData.url;
                     }
                   }}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    background: '#059669',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    transition: 'all 0.2s ease'
-                  }}
+                  className={styles.visitBtn}
                   title="Open the shared page in a new tab"
                 >
                   🔎 Visit
@@ -346,50 +199,20 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
             </div>
 
             {/* Password Section */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
+            <div className={styles.section}>
+              <label className={styles.label}>
                 🔐 Access Password
               </label>
-              <div style={{ 
-                display: 'flex', 
-                gap: '0.5rem',
-                alignItems: 'stretch'
-              }}>
+              <div className={styles.inputGroup}>
                 <input
                   type="text"
                   value={shareableData.password}
                   readOnly
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    background: '#f9fafb',
-                    color: '#374151',
-                    fontFamily: 'monospace'
-                  }}
+                  className={`${styles.input} ${styles.inputMonospace}`}
                 />
                 <button
                   onClick={() => copyToClipboard(shareableData.password, 'password')}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    background: copiedField === 'password' ? '#10b981' : '#f59e0b',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    transition: 'all 0.2s ease',
-                    minWidth: '80px'
-                  }}
+                  className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copiedField === 'password' ? styles.copyBtnCopied : ''}`}
                 >
                   {copiedField === 'password' ? '✅ Copied!' : '📋 Copy'}
                 </button>
@@ -397,18 +220,11 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
             </div>
 
             {/* Instructions */}
-            <div style={{
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              borderRadius: '8px',
-              padding: '1rem',
-              fontSize: '0.875rem',
-              color: '#1e40af'
-            }}>
-              <p style={{ margin: '0 0 0.5rem 0', fontWeight: '600' }}>📝 Instructions:</p>
-              <ol style={{ margin: 0, paddingLeft: '1.5rem' }}>
-                <li style={{ marginBottom: '0.25rem' }}>Share the URL with the intended recipient</li>
-                <li style={{ marginBottom: '0.25rem' }}>Provide them with the password separately (for security)</li>
+            <div className={styles.instructions}>
+              <p className={styles.instructionsTitle}>📝 Instructions:</p>
+              <ol className={styles.instructionsList}>
+                <li className={styles.instructionItem}>Share the URL with the intended recipient</li>
+                <li className={styles.instructionItem}>Provide them with the password separately (for security)</li>
                 <li>They can use either this password or the admin password to access the page</li>
               </ol>
             </div>

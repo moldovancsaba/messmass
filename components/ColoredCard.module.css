@@ -8,7 +8,7 @@
 .coloredCard {
   background: var(--mm-white);
   border: 1px solid var(--mm-border-color-light);
-  border-left: 4px solid; /* Color set via inline style for dynamic colors */
+  border-left: 4px solid var(--accent-color, transparent); /* Dynamic color via CSS variable */
   border-radius: var(--mm-radius-lg);
   padding: var(--mm-space-4);
   box-shadow: var(--mm-shadow-sm);

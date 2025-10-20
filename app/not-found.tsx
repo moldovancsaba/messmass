@@ -10,6 +10,7 @@
 
 import { Metadata } from 'next';
 import Link from 'next/link';
+import styles from './not-found.module.css';
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found | Messmass',
@@ -27,7 +28,7 @@ export default function NotFound() {
           <h1 className="text-2xl font-bold text-gray-900 mb-md">
             Page Not Found
           </h1>
-          <p className="text-gray-600 text-lg mb-lg" style={{lineHeight: '1.6'}}>
+          <p className={`text-gray-600 text-lg mb-lg ${styles.description}`}>
             The page you are looking for could not be found. It might have been moved, deleted, or you entered the wrong URL.
           </p>
           <div className="flex gap-md justify-center flex-wrap">

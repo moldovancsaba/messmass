@@ -1,0 +1,27 @@
+/* StandardState Component Styles
+   WHAT: Styles for unified state component (loading, empty, error)
+   WHY: Eliminates inline styles from StandardState.tsx */
+
+/* WHAT: Card container with centered content */
+.stateCard {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* WHAT: State icon/emoji */
+.stateIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* WHAT: State title */
+.stateTitle {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+}
+
+/* WHAT: State message */
+.stateMessage {
+  margin: 0;
+  color: #6b7280;
+}

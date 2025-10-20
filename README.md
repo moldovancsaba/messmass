@@ -84,6 +84,7 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 | Document | Description |
 |----------|-------------|
 | **ARCHITECTURE.md** | Complete system architecture, database schemas, component hierarchy |
+| **CODING_STANDARDS.md** | **MANDATORY** coding standards, inline style prohibition, style guide |
 | **DESIGN_SYSTEM.md** | Design tokens, utility classes, UI patterns (authoritative source) |
 | **WARP.md** | Development rules, protocols, and AI agent guidelines |
 | **RELEASE_NOTES.md** | Versioned changelog with implementation details |

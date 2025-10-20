@@ -147,7 +147,7 @@ export default function InsightCard({ insight, compact = false, onClick }: Insig
           <div className={styles.confidenceBar}>
             <div
               className={styles.confidenceProgress}
-              style={{ width: `${insight.confidence}%` }}
+              style={{ ['--confidence-width' as string]: `${insight.confidence}%` } as React.CSSProperties}
             />
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import styles from './AdminPageHero.module.css';
 
 interface Badge {
   text: string;
@@ -43,47 +44,30 @@ export default function AdminPageHero({
   children
 }: AdminPageHeroProps) {
   return (
-    <div className="admin-container" style={{ padding: '2rem', minHeight: 'auto' }}>
-      <ColoredCard className="admin-header" style={{ margin: 0 }}>
+    <div className={`admin-container ${styles.container}`}>
+      <ColoredCard className={`admin-header ${styles.header}`}>
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">
-              {icon && <span style={{ marginRight: '0.5rem' }}>{icon}</span>}
+              {icon && <span className={styles.iconWrapper}>{icon}</span>}
               {title}
             </h1>
             
             {subtitle && (
-              <p style={{
-                color: '#6b7280',
-                fontSize: '1.1rem',
-                marginTop: '0.5rem',
-                marginBottom: '1rem'
-              }}>
+              <p className={styles.subtitle}>
                 {subtitle}
               </p>
             )}
             
             {description && (
-              <p style={{
-                color: '#6b7280',
-                fontSize: '1rem',
-                marginTop: '0.5rem',
-                marginBottom: '1rem'
-              }}>
+              <p className={styles.description}>
                 {description}
               </p>
             )}
             
             {/* Hashtags Display */}
             {hashtags.length > 0 && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.75rem',
-                marginTop: '1rem'
-              }}>
+              <div className={styles.hashtagsWrapper}>
                 {hashtags.map((hashtag) => (
                   <ColoredHashtagBubble 
                     key={hashtag}
@@ -100,43 +84,21 @@ export default function AdminPageHero({
             
             {/* Search Bar */}
             {(showSearch && onSearchChange) && (
-              <div style={{
-                marginTop: '1.5rem',
-                maxWidth: '400px'
-              }}>
+              <div className={styles.searchWrapper}>
                 <input
                   type="text"
                   value={searchValue || ''}
                   onChange={(e) => onSearchChange(e.target.value)}
                   placeholder={searchPlaceholder}
-                  style={{
-                    width: '100%',
-                    padding: '0.875rem 1.25rem',
-                    fontSize: '1rem',
-                    border: '2px solid rgba(68, 68, 68, 0.2)',
-                    borderRadius: '12px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.2s ease',
-                    outline: 'none'
-                  }}
+                  className={styles.searchInput}
                 />
               </div>
             )}
           </div>
           
-          <div className="admin-user-info" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            flexDirection: 'column'
-          }}>
+          <div className={`admin-user-info ${styles.userInfo}`}>
             {badges.length > 0 && (
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                flexWrap: 'wrap'
-              }}>
+              <div className={styles.badgesWrapper}>
                 {badges.map((badge, index) => {
                   const getBadgeColor = (variant: string) => {
                     switch (variant) {
@@ -153,15 +115,11 @@ export default function AdminPageHero({
                   return (
                     <span 
                       key={index}
+                      className={styles.badge}
                       style={{
-                        background: colors.bg,
-                        color: colors.text,
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '12px',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap'
-                      }}
+                        '--badge-bg': colors.bg,
+                        '--badge-text': colors.text
+                      } as React.CSSProperties}
                     >
                       {badge.text}
                     </span>
@@ -180,25 +138,14 @@ export default function AdminPageHero({
         
         {/* Additional Content */}
         {children && (
-          <div style={{
-            marginTop: '1.5rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(68, 68, 68, 0.2)'
-          }}>
+          <div className={styles.additionalContent}>
             {children}
           </div>
         )}
         
         {/* Action Buttons */}
         {(onExportCSV || onAction) && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '1rem',
-            marginTop: '1rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(68, 68, 68, 0.2)'
-          }}>
+          <div className={styles.actionsWrapper}>
             {onAction && (
               <button 
                 onClick={onAction}

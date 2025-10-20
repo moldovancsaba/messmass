@@ -96,6 +96,9 @@
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
   line-height: 1;
+  /* WHAT: Use CSS variable for dynamic color
+     WHY: Avoids inline style prop, set via style attribute as CSS variable */
+  color: var(--trend-color, inherit);
 }
 
 .trendIcon {

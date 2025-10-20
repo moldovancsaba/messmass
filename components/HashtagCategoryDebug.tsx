@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { getAllHashtagsWithCategories, formatHashtagWithCategory, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
+import styles from './HashtagCategoryDebug.module.css';
 
 interface HashtagCategoryDebugProps {
   projectData: ProjectHashtagData;
@@ -24,15 +25,7 @@ export default function HashtagCategoryDebug({
   if (compact) {
     // Simple text format like: time:2025, sport:soccer
     return (
-      <div style={{
-        fontFamily: 'monospace',
-        fontSize: '0.875rem',
-        color: '#374151',
-        background: 'rgba(243, 244, 246, 0.5)',
-        padding: '0.5rem',
-        borderRadius: '6px',
-        border: '1px solid rgba(209, 213, 219, 0.5)'
-      }}>
+      <div className={styles.compact}>
         {hashtagsWithCategories.map((hashtagData, index) => {
           const categories = hashtagData.categories.filter(cat => cat !== 'general');
           if (categories.length === 0) {
@@ -45,76 +38,39 @@ export default function HashtagCategoryDebug({
   }
   
   return (
-    <div style={{
-      background: 'rgba(255, 255, 255, 0.9)',
-      border: '1px solid rgba(229, 231, 235, 0.8)',
-      borderRadius: '8px',
-      padding: '1rem',
-      marginBottom: '1rem'
-    }}>
-      <h4 style={{
-        margin: '0 0 0.75rem 0',
-        fontSize: '0.875rem',
-        fontWeight: '600',
-        color: '#374151',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px'
-      }}>
+    <div className={styles.container}>
+      <h4 className={styles.title}>
         {title}
       </h4>
       
-      <div style={{
-        display: 'grid',
-        gap: '0.5rem',
-        fontSize: '0.875rem'
-      }}>
+      <div className={styles.grid}>
         {hashtagsWithCategories.map((hashtagData, index) => (
           <div
             key={index}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.5rem',
-              background: 'rgba(249, 250, 251, 0.8)',
-              borderRadius: '6px',
-              fontFamily: 'monospace'
-            }}
+            className={styles.hashtagRow}
           >
             {/* Hashtag */}
-            <div style={{
-              fontWeight: '600',
-              color: '#1f2937',
-              minWidth: '100px'
-            }}>
+            <div className={styles.hashtagLabel}>
               #{hashtagData.hashtag}
             </div>
             
             {/* Categories */}
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.375rem'
-            }}>
+            <div className={styles.categories}>
               {hashtagData.categories.map((category, catIndex) => (
                 <span
                   key={catIndex}
+                  className={styles.categoryBadge}
                   style={{
-                    padding: '0.125rem 0.375rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    backgroundColor: category === 'general' 
+                    '--badge-bg': category === 'general' 
                       ? 'rgba(107, 114, 128, 0.1)' 
                       : 'rgba(59, 130, 246, 0.1)',
-                    color: category === 'general' 
+                    '--badge-color': category === 'general' 
                       ? '#6b7280' 
                       : '#2563eb',
-                    border: `1px solid ${category === 'general' 
+                    '--badge-border': category === 'general' 
                       ? 'rgba(107, 114, 128, 0.2)' 
-                      : 'rgba(59, 130, 246, 0.2)'}`,
-                    textTransform: 'capitalize'
-                  }}
+                      : 'rgba(59, 130, 246, 0.2)'
+                  } as React.CSSProperties}
                 >
                   {category}
                 </span>
@@ -122,11 +78,7 @@ export default function HashtagCategoryDebug({
             </div>
             
             {/* Formatted Display */}
-            <div style={{
-              marginLeft: 'auto',
-              color: '#6b7280',
-              fontStyle: 'italic'
-            }}>
+            <div className={styles.formatted}>
               {formatHashtagWithCategory(hashtagData.hashtag, hashtagData.categories)}
             </div>
           </div>
@@ -134,12 +86,7 @@ export default function HashtagCategoryDebug({
       </div>
       
       {hashtagsWithCategories.length === 0 && (
-        <div style={{
-          color: '#9ca3af',
-          fontStyle: 'italic',
-          textAlign: 'center',
-          padding: '1rem'
-        }}>
+        <div className={styles.empty}>
           No hashtags found
         </div>
       )}

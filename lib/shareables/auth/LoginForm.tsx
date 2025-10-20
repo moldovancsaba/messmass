@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { LoginCredentials, LoginResponse, AuthConfig, DEFAULT_AUTH_CONFIG } from './types'
 import { authenticateUser } from './passwordAuth'
 import { setSessionCookie } from './session'
+import styles from './LoginForm.module.css'
 
 /**
  * Login Form Component Props
@@ -177,48 +178,13 @@ export default function LoginForm({
 
   return (
     <div 
-      className={`login-form-container ${className}`}
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        ...style
-      }}
+      className={`${styles.container} login-form-container ${className}`}
     >
-      <div 
-        className="login-form-card"
-        style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '20px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          padding: '2rem',
-          width: '100%',
-          maxWidth: '400px',
-          transition: 'all 0.3s ease'
-        }}
-      >
+      <div className={`${styles.card} login-form-card`}>
         {/* Logo/Header Section */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div className={styles.header}>
           {logoElement || (
-            <div 
-              className="login-form-logo"
-              style={{
-                width: '64px',
-                height: '64px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1.5rem',
-                color: 'white'
-              }}
-            >
+            <div className={`${styles.logo} login-form-logo`}>
               <svg 
                 width="32" 
                 height="32" 
@@ -237,50 +203,21 @@ export default function LoginForm({
             </div>
           )}
           
-          <h1 
-            className="login-form-title"
-            style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              fontSize: '2.5rem',
-              fontWeight: '700',
-              textAlign: 'center',
-              marginBottom: '0.5rem',
-              lineHeight: '1.2'
-            }}
-          >
+          <h1 className={`${styles.title} login-form-title`}>
             {title}
           </h1>
           
-          <p 
-            className="login-form-subtitle"
-            style={{
-              color: '#6b7280',
-              textAlign: 'center',
-              fontSize: '1rem',
-              marginBottom: '2rem',
-              lineHeight: '1.5'
-            }}
-          >
+          <p className={`${styles.subtitle} login-form-subtitle`}>
             {subtitle}
           </p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-          <div className="login-form-group" style={{ marginBottom: '1.5rem' }}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={`${styles.formGroup} login-form-group`}>
             <label 
               htmlFor="password" 
-              className="login-form-label"
-              style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                color: '#374151',
-                fontWeight: '500',
-                fontSize: '0.875rem'
-              }}
+              className={`${styles.label} login-form-label`}
             >
               Admin Password
             </label>
@@ -294,26 +231,7 @@ export default function LoginForm({
               onChange={(e) => setPassword(e.target.value)}
               placeholder={placeholder}
               disabled={loading}
-              className="login-form-input"
-              style={{
-                width: '100%',
-                padding: '0.875rem 1rem',
-                border: '2px solid #e5e7eb',
-                borderRadius: '12px',
-                fontSize: '1rem',
-                transition: 'all 0.2s ease',
-                background: 'white',
-                textAlign: 'center',
-                fontFamily: 'inherit'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#667eea'
-                e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)'
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#e5e7eb'
-                e.target.style.boxShadow = 'none'
-              }}
+              className={`${styles.input} login-form-input`}
               aria-describedby={error ? "password-error" : undefined}
             />
           </div>
@@ -322,25 +240,15 @@ export default function LoginForm({
           {error && (
             <div 
               id="password-error"
-              className="login-form-error"
+              className={`${styles.error} login-form-error`}
               role="alert"
-              style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '12px',
-                padding: '1rem',
-                marginBottom: '1.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem'
-              }}
             >
               <svg 
                 width="20" 
                 height="20" 
                 fill="currentColor" 
                 viewBox="0 0 20 20"
-                style={{ color: '#ef4444', flexShrink: 0 }}
+                className={styles.errorIcon}
                 aria-hidden="true"
               >
                 <path 
@@ -349,13 +257,7 @@ export default function LoginForm({
                   clipRule="evenodd" 
                 />
               </svg>
-              <span 
-                style={{ 
-                  color: '#ef4444', 
-                  fontWeight: '500', 
-                  fontSize: '0.875rem' 
-                }}
-              >
+              <span className={styles.errorText}>
                 {error}
               </span>
             </div>
@@ -365,36 +267,7 @@ export default function LoginForm({
           <button
             type="submit"
             disabled={loading || !password.trim()}
-            className="login-form-button"
-            style={{
-              width: '100%',
-              padding: '1rem 2rem',
-              background: loading || !password.trim() 
-                ? '#9ca3af' 
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '15px',
-              fontSize: '1.1rem',
-              fontWeight: '500',
-              cursor: loading || !password.trim() ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              marginBottom: '1rem'
-            }}
-            onMouseEnter={(e) => {
-              if (!loading && password.trim()) {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(102, 126, 234, 0.3)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
+            className={`${styles.submitBtn} login-form-button`}
           >
             {loading ? loadingText : buttonText}
           </button>
@@ -402,30 +275,11 @@ export default function LoginForm({
 
         {/* Back Button */}
         {showBackButton && (
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div className={styles.backBtnContainer}>
             <button
               type="button"
               onClick={handleBackClick}
-              className="login-form-back-button"
-              style={{
-                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                color: 'white',
-                padding: '0.5rem 1rem',
-                fontSize: '0.875rem',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                fontWeight: '500'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)'
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(240, 147, 251, 0.3)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
+              className={`${styles.backBtn} login-form-back-button`}
             >
               {backButtonText}
             </button>
@@ -433,20 +287,8 @@ export default function LoginForm({
         )}
 
         {/* Footer */}
-        <div 
-          style={{ 
-            textAlign: 'center', 
-            paddingTop: '1.5rem', 
-            borderTop: '1px solid rgba(107, 114, 128, 0.2)' 
-          }}
-        >
-          <p 
-            style={{ 
-              color: '#6b7280', 
-              fontSize: '0.75rem', 
-              lineHeight: '1.5' 
-            }}
-          >
+        <div className={styles.footer}>
+          <p className={styles.footerText}>
             Secure Authentication System<br />
             Powered by MessMass Auth
           </p>

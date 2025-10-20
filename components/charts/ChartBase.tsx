@@ -96,7 +96,7 @@ export default function ChartBase({
          Why: Render the actual chart component */}
       <div 
         className={styles.chartContent}
-        style={height ? { height: `${height}px` } : undefined}
+        style={height ? { ['--chart-height' as string]: `${height}px` } as React.CSSProperties : undefined}
       >
         {children}
       </div>

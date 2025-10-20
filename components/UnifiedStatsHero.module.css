@@ -1,0 +1,49 @@
+/* UnifiedStatsHero Component Styles
+   WHAT: Styles for unified stats hero with dates
+   WHY: Eliminates inline styles from UnifiedStatsHero.tsx */
+
+/* WHAT: Main container for dates and extra content */
+.datesContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 500;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* WHAT: Date wrapper with icon */
+.dateWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* WHAT: Created date badge */
+.createdDateBadge {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* WHAT: Last updated date badge */
+.updatedDateBadge {
+  background: rgba(68, 68, 68, 0.1);
+  color: #444444;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* WHAT: Extra content wrapper (aligned to right) */
+.extraContent {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

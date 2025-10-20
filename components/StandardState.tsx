@@ -1,5 +1,6 @@
 import React from 'react';
 import ColoredCard from './ColoredCard';
+import styles from './StandardState.module.css';
 
 interface StandardStateProps {
   variant: 'loading' | 'empty' | 'error';
@@ -21,13 +22,10 @@ export default function StandardState({ variant, title, message, icon, children 
   }[variant];
 
   return (
-    <ColoredCard accentColor={accentColor} style={{
-      padding: '2rem',
-      textAlign: 'center'
-    }}>
-      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{icon || (variant === 'error' ? '❌' : variant === 'empty' ? '📭' : '⏳')}</div>
-      {title && <h2 style={{ margin: '0 0 0.5rem 0', color: '#1f2937' }}>{title}</h2>}
-      {message && <p style={{ margin: 0, color: '#6b7280' }}>{message}</p>}
+    <ColoredCard accentColor={accentColor} className={styles.stateCard}>
+      <div className={styles.stateIcon}>{icon || (variant === 'error' ? '❌' : variant === 'empty' ? '📭' : '⏳')}</div>
+      {title && <h2 className={styles.stateTitle}>{title}</h2>}
+      {message && <p className={styles.stateMessage}>{message}</p>}
       {children}
     </ColoredCard>
   );

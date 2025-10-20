@@ -4,6 +4,7 @@
 
 import React from 'react';
 import type { FootballDataFixtureDoc } from '@/lib/footballData.types';
+import styles from './FootballDataFixtureCard.module.css';
 
 interface Props {
   fixture: FootballDataFixtureDoc;
@@ -12,7 +13,7 @@ interface Props {
 
 export default function FootballDataFixtureCard({ fixture, onUse }: Props) {
   return (
-    <div className="card border-left-accent mb-3" style={{ padding: 12 }}>
+    <div className={`card border-left-accent mb-3 ${styles.fixtureCard}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="text-sm text-gray-600">
           <strong>{fixture.competition.name}</strong> · Matchday {fixture.matchday ?? '-'} · {fixture.status}

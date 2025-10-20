@@ -1,0 +1,76 @@
+/* ChartAlgorithmManager Component Styles
+   WHAT: Styles for chart configuration management interface
+   WHY: Eliminates inline styles from ChartAlgorithmManager.tsx */
+
+/* WHAT: Header card spacing */
+.headerCard {
+  margin-bottom: 2rem;
+}
+
+/* WHAT: Header flex container */
+.headerFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* WHAT: Page heading */
+.pageHeading {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-gray-800);
+}
+
+/* WHAT: Button group container */
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* WHAT: Stats grid with responsive columns */
+.statsGrid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* WHAT: Section heading */
+.sectionHeading {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+/* WHAT: Empty state table cell */
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-gray-600);
+}
+
+/* WHAT: Empty state icon */
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* WHAT: Empty state title */
+.emptyTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-700);
+}
+
+/* WHAT: Empty state description */
+.emptyDescription {
+  font-size: 0.875rem;
+}
+
+/* WHAT: Modal content sizing */
+.modalContent {
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: auto;
+}

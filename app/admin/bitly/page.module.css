@@ -1,0 +1,106 @@
+/* Bitly Admin Page Styles
+   WHAT: Styles for Bitly link management interface
+   WHY: Eliminates inline styles from page.tsx */
+
+/* WHAT: Pagination stats header */
+.paginationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* WHAT: Stats text styling */
+.statsText {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* WHAT: Table column widths for consistent layout
+   WHY: Prevents table reflow and maintains readable columns */
+.colBitlink {
+  width: 18%;
+  min-width: 150px;
+}
+
+.colTitle {
+  width: 22%;
+  min-width: 150px;
+}
+
+.colProjects {
+  width: 25%;
+  min-width: 200px;
+}
+
+.colClicks {
+  width: 10%;
+  min-width: 80px;
+}
+
+.colSynced {
+  width: 15%;
+  min-width: 120px;
+}
+
+.colActions {
+  width: 10%;
+  min-width: 150px;
+}
+
+/* WHAT: Cell content styling for preventing overflow
+   WHY: Long URLs and titles can break table layout */
+.cellBreakAll {
+  word-break: break-all;
+  max-width: 200px;
+}
+
+.cellBreakWord {
+  word-break: break-word;
+  max-width: 250px;
+}
+
+.cellProjects {
+  max-width: 280px;
+}
+
+/* WHAT: Associated projects wrapper */
+.associationsWrapper {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* WHAT: Association chip/badge styling
+   WHY: Visual chips for project associations with remove button */
+.associationChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  border: 1px solid #90caf9;
+}
+
+/* WHAT: Remove association button inside chip */
+.removeButton {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: bold;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.removeButton:hover {
+  opacity: 1;
+}
