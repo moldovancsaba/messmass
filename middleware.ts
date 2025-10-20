@@ -60,14 +60,11 @@ export async function middleware(request: NextRequest) {
   const corsHeaders = buildCorsHeaders(request);
   corsHeaders.forEach((v, k) => response.headers.set(k, v));
   
-  // WHAT: 4. Add CSRF token to response if not present
-  // WHY: Ensure client has valid token for subsequent requests
-  if (!request.cookies.get('csrf-token')) {
-    const newToken = generateCsrfToken();
-    setCsrfTokenCookie(response, newToken);
-  }
+  // NOTE: Cookie setting removed from middleware - Next.js middleware cannot reliably set cookies
+  // CSRF tokens are now set via /api/csrf-token endpoint, which clients must call on first load
+  // See: lib/apiClient.ts ensureCsrfToken() for automatic token fetching
   
-  // WHAT: 5. Log request completion
+  // WHAT: 4. Log request completion
   // WHY: Track performance and API usage
   logRequestEnd(startTime, {
     method: request.method,

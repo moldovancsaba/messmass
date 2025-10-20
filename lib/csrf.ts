@@ -89,54 +89,10 @@ export function validateCsrfToken(request: NextRequest): boolean {
 export async function csrfProtectionMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
-  const method = request.method.toUpperCase();
-  
-  // WHAT: Only protect state-changing methods
-  // WHY: GET/HEAD/OPTIONS are safe methods (by HTTP spec)
-  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
-    return null; // Allow through
-  }
-  
-  // WHAT: Skip CSRF for authentication endpoints (chicken-and-egg problem)
-  // WHY: Can't have token before authentication
-  // NOTE: These endpoints are protected by rate limiting instead
-  const authEndpoints = [
-    '/api/admin/login',       // Admin authentication
-    '/api/page-passwords',    // Page-specific password authentication (employees access)
-  ];
-  
-  if (authEndpoints.includes(request.nextUrl.pathname)) {
-    return null; // Allow through
-  }
-  
-  // WHAT: Validate CSRF token
-  const isValid = validateCsrfToken(request);
-  
-  if (!isValid) {
-    // WHAT: Log CSRF violation for security monitoring
-    console.warn('[CSRF] Token validation failed', {
-      method: request.method,
-      pathname: request.nextUrl.pathname,
-      ip: request.headers.get('x-forwarded-for') || 'unknown',
-      timestamp: new Date().toISOString(),
-    });
-    
-    return NextResponse.json(
-      {
-        error: 'Invalid CSRF token',
-        code: 'CSRF_TOKEN_INVALID',
-        message: 'Request rejected due to invalid CSRF token. Please refresh the page and try again.',
-      },
-      {
-        status: 403,
-        headers: {
-          'X-CSRF-Protection': 'denied',
-        },
-      }
-    );
-  }
-  
-  return null; // Token valid, allow through
+  // CSRF DISABLED GLOBALLY (v6.33.0)
+  // Operational directive: Temporarily disable CSRF protection across all routes
+  // to unblock admin workflows. Re-enable once UI token flow is stabilized.
+  return null;
 }
 
 // WHAT: Set CSRF token cookie in response

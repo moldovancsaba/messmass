@@ -44,7 +44,7 @@ export const RATE_LIMITS = {
   // Read operations (GET) - generous limits
   READ: {
     windowMs: 60 * 1000,        // 1 minute
-    maxRequests: 100,           // 100 reads per minute
+    maxRequests: 500,           // 500 reads per minute (TEMPORARY - increased for testing)
     message: 'Too many requests. Please slow down.',
   },
   
