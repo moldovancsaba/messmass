@@ -141,10 +141,12 @@ export async function csrfProtectionMiddleware(
 
 // WHAT: Set CSRF token cookie in response
 // WHY: Client needs cookie to include in subsequent requests
-// HOW: HttpOnly, SameSite=Lax for security
+// HOW: NOT HttpOnly (JavaScript must read it), SameSite=Lax for security
+// NOTE: CSRF tokens should NOT be HttpOnly - the double-submit pattern requires
+//       JavaScript to read the token from cookie and send in header
 export function setCsrfTokenCookie(response: NextResponse, token: string): NextResponse {
   response.cookies.set(CSRF_COOKIE_NAME, token, {
-    httpOnly: true,          // Prevent JavaScript access (XSS protection)
+    httpOnly: false,         // CSRF tokens MUST be readable by JavaScript (double-submit pattern)
     secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     sameSite: 'lax',         // Prevent CSRF while allowing normal navigation
     maxAge: 60 * 60 * 24,    // 24 hours

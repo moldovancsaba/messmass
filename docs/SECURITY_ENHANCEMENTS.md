@@ -154,7 +154,7 @@ Without CSRF protection, if admin is logged in, this form submission would succe
 **Key Features**:
 - ✅ Cryptographically secure token generation (256-bit entropy)
 - ✅ Timing-safe string comparison (prevents timing attacks)
-- ✅ HttpOnly cookies (XSS protection)
+- ✅ Regular (non-HttpOnly) cookies (required for double-submit pattern)
 - ✅ SameSite=Lax (basic CSRF protection)
 - ✅ Automatic token rotation (24-hour expiry)
 - ✅ Exemptions for safe methods (GET, HEAD, OPTIONS)
@@ -162,10 +162,12 @@ Without CSRF protection, if admin is logged in, this form submission would succe
 ### How It Works
 
 1. **Token Generation**: Server generates random 64-character hex token
-2. **Cookie Storage**: Token stored in `csrf-token` cookie (HttpOnly, SameSite=Lax)
-3. **Header Requirement**: Client must include token in `X-CSRF-Token` header
+2. **Cookie Storage**: Token stored in `csrf-token` cookie (NOT HttpOnly - JavaScript must read it, SameSite=Lax)
+3. **Header Requirement**: Client must include token in `X-CSRF-Token` header (read from cookie)
 4. **Validation**: Server compares cookie token with header token (timing-safe)
 5. **Allow/Deny**: Match → Allow request, Mismatch → 403 Forbidden
+
+**Security Note**: CSRF tokens are NOT HttpOnly because the double-submit pattern requires JavaScript to read the token from the cookie and send it in the request header. Session tokens (like `admin-session`) SHOULD be HttpOnly to prevent XSS attacks.
 
 ### Configuration
 
