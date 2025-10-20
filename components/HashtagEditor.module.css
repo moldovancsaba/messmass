@@ -199,6 +199,45 @@
   margin-top: auto;
 }
 
+.hashtagCardActions button {
+  min-width: 80px;
+}
+
+/* WHAT: Pagination header for "Showing X of Y" text
+ * WHY: Replaces inline styles for consistency */
+.paginationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+}
+
+.paginationText {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Card layout wrapper for content + actions
+ * WHY: Replaces inline flex styles */
+.cardLayout {
+  display: flex;
+  gap: var(--mm-space-4);
+  justify-content: space-between;
+}
+
+.cardContent {
+  flex: 1;
+  min-width: 0;
+}
+
+/* WHAT: Load more button container
+ * WHY: Replaces inline centering styles */
+.loadMoreContainer {
+  text-align: center;
+  margin-top: var(--mm-space-4);
+}
+
 .defaultBadge {
   display: inline-block;
   background: var(--mm-gray-100);

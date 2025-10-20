@@ -653,4 +653,4 @@ For detailed information, see:
 
 ---
 
-*Version: 6.34.0 | Last Updated: 2025-10-20T11:53:24.000Z (UTC) | Status: Production-Ready — CSRF temporarily disabled globally; Node 22.x alignment; npm fund silenced*
+*Version: 6.35.0 | Last Updated: 2025-10-20T13:11:16.000Z (UTC) | Status: Production-Ready*

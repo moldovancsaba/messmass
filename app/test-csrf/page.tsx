@@ -98,9 +98,9 @@ export default function TestCSRFPage() {
         <ol>
           <li>Test 1 should show the csrf-token cookie value</li>
           <li>Test 2 should show the token from API</li>
-          <li>Click "Test CSRF Protection" button</li>
+          <li>Click &quot;Test CSRF Protection&quot; button</li>
           <li>Expected: Status 401 (CSRF passed, auth failed)</li>
-          <li>If Status 403 with "CSRF": Token not working</li>
+          <li>If Status 403 with &quot;CSRF&quot;: Token not working</li>
         </ol>
       </div>
     </div>

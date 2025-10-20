@@ -146,24 +146,94 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const hashtag = searchParams.get('hashtag');
-    
-    if (!hashtag) {
+    const rawHashtag = searchParams.get('hashtag');
+    const mode = (searchParams.get('mode') || '').toLowerCase(); // 'cascade' to remove everywhere
+
+    if (!rawHashtag) {
       return NextResponse.json(
         { success: false, error: 'Hashtag parameter is required' },
         { status: 400 }
       );
     }
-    
+
+    // Normalize incoming value: strip leading '#', lower-case
+    const hashtag = rawHashtag.replace(/^#/, '').toLowerCase().trim();
+
     const client = await clientPromise;
     const db = client.db(config.dbName);
-    
-    // Check if hashtag is still being used in either format
-    const projectsUsingHashtagOld = await db.collection('projects').countDocuments({
-      hashtags: hashtag
-    });
-    
-    const projectsUsingHashtagCategorized = await db.collection('projects').countDocuments({
+
+    // If not cascade mode, only verify that the hashtag is unused
+    if (mode !== 'cascade') {
+      // Check if hashtag is still being used in either format
+      const projectsUsingHashtagOld = await db.collection('projects').countDocuments({
+        hashtags: hashtag
+      });
+
+      const projectsUsingHashtagCategorized = await db.collection('projects').countDocuments({
+        $expr: {
+          $gt: [
+            {
+              $size: {
+                $filter: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  cond: { $in: [hashtag, "$$this.v"] }
+                }
+              }
+            },
+            0
+          ]
+        }
+      });
+
+      const projectsUsingHashtag = projectsUsingHashtagOld + projectsUsingHashtagCategorized;
+
+      if (projectsUsingHashtag > 0) {
+        return NextResponse.json(
+          { success: false, error: 'Cannot delete hashtag that is still in use' },
+          { status: 400 }
+        );
+      }
+
+      // Also check partners
+      const partnersUsingHashtagOld = await db.collection('partners').countDocuments({ hashtags: hashtag });
+      const partnersUsingHashtagCategorized = await db.collection('partners').countDocuments({
+        $expr: {
+          $gt: [
+            {
+              $size: {
+                $filter: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  cond: { $in: [hashtag, "$$this.v"] }
+                }
+              }
+            },
+            0
+          ]
+        }
+      });
+
+      const partnersUsingHashtag = partnersUsingHashtagOld + partnersUsingHashtagCategorized;
+      if (partnersUsingHashtag > 0) {
+        return NextResponse.json(
+          { success: false, error: 'Cannot delete hashtag that is still in use by partners' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({ success: true, message: 'Hashtag cleanup verified' });
+    }
+
+    // CASCADE MODE — remove hashtag from everywhere (projects, partners, configs, counts)
+    const nowIso = new Date().toISOString();
+
+    // 1) Projects: pull from traditional array
+    const projPullResult = await db.collection('projects').updateMany(
+      { hashtags: hashtag },
+      ({ $pull: { hashtags: hashtag }, $set: { updatedAt: nowIso } } as any)
+    );
+
+    // 1b) Projects: remove from all categorized arrays via aggregation pipeline update
+    const projCategorizedFilter = {
       $expr: {
         $gt: [
           {
@@ -177,22 +247,126 @@ export async function DELETE(request: NextRequest) {
           0
         ]
       }
+    } as any;
+
+    const projCategorizedResult = await db.collection('projects').updateMany(
+      projCategorizedFilter,
+      [
+        {
+          $set: {
+            categorizedHashtags: {
+              $arrayToObject: {
+                $map: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  as: "kv",
+                  in: {
+                    k: "$$kv.k",
+                    v: {
+                      $filter: {
+                        input: "$$kv.v",
+                        as: "tag",
+                        cond: { $ne: ["$$tag", hashtag] }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            updatedAt: nowIso
+          }
+        }
+      ]
+    );
+
+    // 2) Partners: same operations
+    const partnerPullResult = await db.collection('partners').updateMany(
+      { hashtags: hashtag },
+      ({ $pull: { hashtags: hashtag }, $set: { updatedAt: nowIso } } as any)
+    );
+
+    const partnerCategorizedResult = await db.collection('partners').updateMany(
+      {
+        $expr: {
+          $gt: [
+            {
+              $size: {
+                $filter: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  cond: { $in: [hashtag, "$$this.v"] }
+                }
+              }
+            },
+            0
+          ]
+        }
+      },
+      [
+        {
+          $set: {
+            categorizedHashtags: {
+              $arrayToObject: {
+                $map: {
+                  input: { $objectToArray: { $ifNull: ["$categorizedHashtags", {}] } },
+                  as: "kv",
+                  in: {
+                    k: "$$kv.k",
+                    v: {
+                      $filter: {
+                        input: "$$kv.v",
+                        as: "tag",
+                        cond: { $ne: ["$$tag", hashtag] }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            updatedAt: nowIso
+          }
+        }
+      ]
+    );
+
+    // 3) Delete individual color config if exists
+    const colorDeleteResult = await db.collection('hashtagColors').deleteOne({ name: hashtag });
+
+    // 4) Clean counts/aux collections
+    // 4a) Remove any hashtag count docs for this tag (plain and any category-prefixed forms)
+    const countsDeleteResult = await db.collection('hashtags').deleteMany({
+      $or: [
+        { hashtag: hashtag },
+        { hashtag: { $regex: new RegExp(`^[^:]+:${hashtag}$`, 'i') } }
+      ]
     });
-    
-    const projectsUsingHashtag = projectsUsingHashtagOld + projectsUsingHashtagCategorized;
-    
-    if (projectsUsingHashtag > 0) {
-      return NextResponse.json(
-        { success: false, error: 'Cannot delete hashtag that is still in use' },
-        { status: 400 }
-      );
-    }
-    
+
+    // 4b) Remove any stored slugs for this hashtag (plain and category-prefixed)
+    const slugDeleteResult = await db.collection('hashtag_slugs').deleteMany({
+      $or: [
+        { hashtag: hashtag },
+        { hashtag: { $regex: new RegExp(`^[^:]+:${hashtag}$`, 'i') } }
+      ]
+    });
+
     return NextResponse.json({
       success: true,
-      message: 'Hashtag cleanup verified'
+      message: `Removed hashtag "${hashtag}" from projects, partners, configs and counts`,
+      result: {
+        projects: {
+          pulledGeneral: projPullResult.modifiedCount,
+          cleanedCategorized: projCategorizedResult.modifiedCount
+        },
+        partners: {
+          pulledGeneral: partnerPullResult.modifiedCount,
+          cleanedCategorized: partnerCategorizedResult.modifiedCount
+        },
+        deleted: {
+          hashtagColors: colorDeleteResult.deletedCount,
+          hashtagsCountDocs: countsDeleteResult.deletedCount,
+          hashtagSlugs: slugDeleteResult.deletedCount
+        }
+      }
     });
-    
+
   } catch (error) {
     console.error('Hashtag cleanup error:', error);
     return NextResponse.json(

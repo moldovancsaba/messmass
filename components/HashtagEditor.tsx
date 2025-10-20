@@ -221,6 +221,36 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
     }
   };
 
+  // WHAT: Remove a hashtag from the entire system (projects, partners, colors, counts)
+  // WHY: Admin needs a single action to fully deprecate a hashtag everywhere
+  const handleRemoveEverywhere = async (hashtagName: string) => {
+    const tag = hashtagName.trim();
+    if (!tag) return;
+
+    if (!confirm(`This will remove "${tag}" from all projects/partners and delete its color config. Continue?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/hashtags?hashtag=${encodeURIComponent(tag)}&mode=cascade`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Optimistically remove from current list and adjust totals
+        setProjectHashtags(prev => prev.filter(h => h.hashtag.toLowerCase() !== tag.toLowerCase()));
+        setTotalMatched(t => Math.max(0, (t || 1) - 1));
+        await refreshColors();
+        alert(`Hashtag "${tag}" has been removed everywhere.`);
+      } else {
+        alert(data.error || 'Failed to remove hashtag everywhere');
+      }
+    } catch (err) {
+      console.error('Failed to remove hashtag everywhere:', err);
+      alert('Failed to remove hashtag. Please try again.');
+    }
+  };
+
   const resetForm = () => {
     setFormData({ name: '', color: '#667eea' });
     setEditingHashtag(null);
@@ -328,8 +358,8 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
       {/* WHAT: Pagination stats header showing X of Y items
        * WHY: Consistent format across all admin pages (Categories, Users, Projects, Filter) */}
       {!loading && projectHashtags.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+        <div className={styles.paginationHeader}>
+          <div className={styles.paginationText}>
             Showing {projectHashtags.length} of {totalMatched} hashtags
           </div>
         </div>
@@ -359,9 +389,9 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                 
                 return (
                   <ColoredCard key={projectHashtag.hashtag} accentColor={displayColor} className={styles.hashtagCardContent}>
-                    <div style={{ display: 'flex', gap: 'var(--mm-space-4)', justifyContent: 'space-between' }}>
+                    <div className={styles.cardLayout}>
                       {/* Left side: Content */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className={styles.cardContent}>
                         {/* WHAT: Hashtag display with usage count using ColoredHashtagBubble component
                          * WHY: Centralized component ensures consistent styling across all admin pages */}
                         <div className={styles.hashtagCardHeader}>
@@ -385,7 +415,6 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                             <button
                               className="btn btn-small btn-primary"
                               onClick={() => handleEdit(projectHashtag.hashtag)}
-                              style={{ minWidth: '80px' }}
                             >
                               ✏️ Edit
                             </button>
@@ -393,24 +422,29 @@ export default function HashtagEditor({ className = '', searchTerm = '' }: Hasht
                               <button
                                 className="btn btn-small btn-danger"
                                 onClick={() => handleDelete(projectHashtag.hashtag)}
-                                style={{ minWidth: '80px' }}
                               >
-                                🗑️ Delete
+                                🗑️ Delete Color
                               </button>
                             )}
+                            <button
+                              className="btn btn-small btn-danger"
+                              onClick={() => handleRemoveEverywhere(projectHashtag.hashtag)}
+                            >
+                              🧹 Remove Everywhere
+                            </button>
                           </div>
                     </div>
                   </ColoredCard>
                 );
               })}
             </div>
-            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <div className={styles.loadMoreContainer}>
               {nextOffset != null ? (
                 <button className="btn btn-secondary" disabled={loadingMore} onClick={loadMore}>
                   {loadingMore ? 'Loading…' : `Load ${PAGE_SIZE} more`}
                 </button>
               ) : (
-                <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>No more items</span>
+                <span className={styles.paginationText}>No more items</span>
               )}
             </div>
           </>
