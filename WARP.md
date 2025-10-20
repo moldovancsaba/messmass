@@ -653,4 +653,4 @@ For detailed information, see:
 
 ---
 
-*Version: 6.32.0 | Last Updated: 2025-10-20T10:44:00.000Z (UTC) | Status: Production-Ready — Enterprise Event Analytics Platform with Security Fix: CSRF Token HttpOnly Resolved*
+*Version: 6.33.0 | Last Updated: 2025-10-20T11:47:13.000Z (UTC) | Status: Production-Ready — CSRF temporarily disabled globally; Node 22.x alignment*
