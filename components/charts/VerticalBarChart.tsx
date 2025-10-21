@@ -73,16 +73,17 @@ export default function VerticalBarChart({
     typeof item.value === 'number' && !isNaN(item.value) && item.value > 0
   );
 
-  /* What: Calculate total for percentage display
+  /* WHAT: Filter out zero or invalid values to avoid clutter
+     WHY: Hide entries with value 0 from bars and legend */
+  const filtered = isDataValid ? data.filter(item => typeof item.value === 'number' && !isNaN(item.value) && item.value > 0) : [];
+
+  /* WHAT: Calculate total for percentage display
      Why: Show relative proportions in tooltips */
-  const total = isDataValid ? data.reduce((sum, item) => {
-    const value = typeof item.value === 'number' && !isNaN(item.value) ? item.value : 0;
-    return sum + value;
-  }, 0) : 0;
+  const total = filtered.length > 0 ? filtered.reduce((sum, item) => sum + (item.value as number), 0) : 0;
 
   /* WHAT: Show "Insufficient Data" state if data is invalid
      WHY: Provide clear feedback instead of rendering broken chart */
-  if (!isDataValid || !hasValidValues) {
+  if (!isDataValid || !hasValidValues || filtered.length === 0) {
     return (
       <ChartBase
         title={title}
@@ -105,12 +106,12 @@ export default function VerticalBarChart({
   /* What: Prepare chart data in Chart.js format
      Why: Chart.js requires specific data structure */
   const chartData = {
-    labels: data.map(item => item.label),
+    labels: filtered.map(item => item.label),
     datasets: [
       {
         label: title,
-        data: data.map(item => item.value),
-        backgroundColor: data.map((item, index) => {
+        data: filtered.map(item => item.value),
+        backgroundColor: filtered.map((item, index) => {
           /* What: Use custom color or fall back to theme colors
              Why: Allow chart-specific colors while maintaining consistency */
           if (item.color) return item.color;
@@ -130,7 +131,7 @@ export default function VerticalBarChart({
           ];
           return colors[index % colors.length];
         }),
-        borderColor: data.map((item, index) => {
+        borderColor: filtered.map((item, index) => {
           if (item.color) return item.color;
           
           const colors = [

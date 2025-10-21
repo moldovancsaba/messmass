@@ -26,8 +26,10 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     );
   }
 
-  // Filter out NA values and calculate totals
-  const validElements = result.elements.filter(element => typeof element.value === 'number');
+  // Filter out NA values and zero/empty entries, then calculate totals
+  const validElements = result.elements.filter(
+    element => typeof element.value === 'number' && (element.value as number) > 0
+  );
   const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
 
   // If all values are NA or zero, show no data message
@@ -238,21 +240,19 @@ const BarChart: React.FC<{
     );
   }
 
-  // Create separate legends and bars
-  const legends = result.elements.map((element) => {
-    const value = element.value;
-    const isValid = typeof value === 'number';
+  // Create separate legends and bars (hide zero or NA values)
+  const legends = validElements.map((element) => {
+    const value = element.value as number;
     return (
       <div key={element.id} className={styles.legendTextRow}>
-        <span>{element.label}: {isValid ? formatChartValue(value as number) : 'N/A'}</span>
+        <span>{element.label}: {formatChartValue(value)}</span>
       </div>
     );
   });
 
-  const bars = result.elements.map((element) => {
-    const value = element.value;
-    const isValid = typeof value === 'number';
-    const barWidth = isValid ? ((value as number) / maxValue) * 100 : 0;
+  const bars = validElements.map((element) => {
+    const value = element.value as number;
+    const barWidth = ((value) / maxValue) * 100;
     
     return (
       <div key={element.id} className={styles.barOnlyRow}>
