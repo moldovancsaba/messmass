@@ -127,6 +127,16 @@ export default function PartnersAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTerm, sortField, sortOrder]);
 
+  // WHAT: Debug logging for partners state changes
+  // WHY: Track when and how partners array is updated
+  useEffect(() => {
+    console.log('🔵 Partners state changed:', partners.length, 'partners');
+    if (partners.length > 0) {
+      console.log('First 3 partner IDs:', partners.slice(0, 3).map(p => p._id));
+      console.log('Last 3 partner IDs:', partners.slice(-3).map(p => p._id));
+    }
+  }, [partners]);
+
   // WHAT: Lazy load Bitly links only when needed
   // WHY: Fetching 3000+ links on page load is slow - only load when opening modals
   async function loadBitlyLinks() {
@@ -200,6 +210,10 @@ export default function PartnersAdminPage() {
   async function loadMore() {
     if (nextOffset === null || loadingMore) return;
 
+    console.log('🔄 === LOAD MORE STARTED ===');
+    console.log('Current partners count:', partners.length);
+    console.log('Next offset:', nextOffset);
+
     try {
       setLoadingMore(true);
       setError('');
@@ -217,18 +231,35 @@ export default function PartnersAdminPage() {
         params.set('sortOrder', sortOrder);
       }
 
+      console.log('📡 Fetching partners from API...');
       const res = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
       const data = await res.json();
+      console.log('✅ API Response:', data);
+      console.log('New partners received:', data.partners?.length);
 
       if (data.success && data.partners) {
-        setPartners(prev => [...prev, ...data.partners]);
-        setNextOffset(data.pagination.hasMore ? nextOffset + PAGE_SIZE : null);
+        console.log('📝 Updating partners state...');
+        console.log('Previous partners:', partners.length);
+        
+        setPartners(prev => {
+          const updated = [...prev, ...data.partners];
+          console.log('🎯 Partners after merge:', updated.length);
+          console.log('Sample new partner IDs:', data.partners.slice(0, 3).map((p: any) => p._id));
+          return updated;
+        });
+        
+        const newOffset = data.pagination.hasMore ? nextOffset + PAGE_SIZE : null;
+        console.log('📌 New offset:', newOffset);
+        setNextOffset(newOffset);
+        
+        console.log('✅ State updates complete');
       }
     } catch (err) {
       setError('Failed to load more partners.');
-      console.error('Load more error:', err);
+      console.error('❌ Load more error:', err);
     } finally {
       setLoadingMore(false);
+      console.log('🏁 === LOAD MORE COMPLETED ===');
     }
   }
 
@@ -887,6 +918,7 @@ export default function PartnersAdminPage() {
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values including SportsDB enrichment
   function openEditForm(partner: PartnerResponse) {
+    console.log('✏️ Opening edit form for partner:', partner._id, partner.name);
     loadBitlyLinks(); // Lazy load links when opening form
     setEditingPartner(partner);
     setEditPartnerData({
@@ -943,7 +975,9 @@ export default function PartnersAdminPage() {
   // WHAT: Handle deleting a partner
   // WHY: Remove organizations from system
   async function handleDeletePartner(partnerId: string, partnerName: string) {
+    console.log('🗑️ Delete button clicked for:', partnerId, partnerName);
     if (!confirm(`Delete partner "${partnerName}"? This action cannot be undone.`)) {
+      console.log('❌ Delete cancelled by user');
       return;
     }
 
@@ -1080,7 +1114,12 @@ export default function PartnersAdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {partners.map(partner => (
+                {partners.map((partner, index) => {
+                  // Debug: Log button rendering for first and last 3 items
+                  if (index < 3 || index >= partners.length - 3) {
+                    console.log(`🔳 Rendering row ${index} for partner:`, partner._id, partner.name);
+                  }
+                  return (
                   <tr key={partner._id}>
                     <td className={styles.emojiCell}>{partner.emoji}</td>
                     <td className={styles.flagCell}>
@@ -1161,14 +1200,20 @@ export default function PartnersAdminPage() {
                     <td className="actions-cell">
                       <div className="action-buttons-container">
                         <button
-                          onClick={() => openEditForm(partner)}
+                          onClick={() => {
+                            console.log('🔵 Edit button clicked (inline) for:', partner._id);
+                            openEditForm(partner);
+                          }}
                           className="btn btn-small btn-primary action-button"
                           title="Edit partner"
                         >
                           ✏️ Edit
                         </button>
                         <button
-                          onClick={() => handleDeletePartner(partner._id, partner.name)}
+                          onClick={() => {
+                            console.log('🔴 Delete button clicked (inline) for:', partner._id);
+                            handleDeletePartner(partner._id, partner.name);
+                          }}
                           className="btn btn-small btn-danger action-button"
                           title="Delete partner"
                         >
@@ -1177,7 +1222,8 @@ export default function PartnersAdminPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
