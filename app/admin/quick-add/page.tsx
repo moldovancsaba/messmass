@@ -175,7 +175,7 @@ export default function QuickAddPage() {
   
   // WHAT: Sports Match Quick Add state
   // WHY: New feature for creating events from partner selection
-const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('sheet');
+  const [activeTab, setActiveTab] = useState<'partners' | 'partnerEvent' | 'suggested'>('partners');
   const [partners, setPartners] = useState<PartnerResponse[]>([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
   const [partner1Id, setPartner1Id] = useState<string>('');
@@ -187,10 +187,17 @@ const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('
   const [suggestFixtures, setSuggestFixtures] = useState<any[]>([]);
   const [loadingFixtures, setLoadingFixtures] = useState(false);
   
+  // WHAT: Partner Event state
+  // WHY: Simple single-partner event creation
+  const [partnerId, setPartnerId] = useState<string>('');
+  const [eventName, setEventName] = useState<string>('');
+  const [eventDate, setEventDate] = useState<string>('');
+  const [partnerEventPreview, setPartnerEventPreview] = useState<any>(null);
+  
   // WHAT: Load partners for sports match builder
   // WHY: Need partner data for dropdown selection
   useEffect(() => {
-    if ((activeTab === 'partners' || activeTab === 'suggested') && partners.length === 0) {
+    if ((activeTab === 'partners' || activeTab === 'partnerEvent' || activeTab === 'suggested') && partners.length === 0) {
       loadPartners();
     }
   }, [activeTab]);
@@ -448,29 +455,144 @@ const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('
     setError('');
     setSuccess('');
   };
+  
+  // WHAT: Preview partner event
+  // WHY: Show generated event before creating
+  const handlePartnerEventPreview = () => {
+    setError('');
+    setSuccess('');
+    setPartnerEventPreview(null);
+    
+    if (!partnerId || !eventName.trim() || !eventDate) {
+      setError('Please select partner, enter event name, and choose a date');
+      return;
+    }
+    
+    const partner = partners.find(p => p._id === partnerId);
+    
+    if (!partner) {
+      setError('Selected partner not found');
+      return;
+    }
+    
+    // WHAT: Collect hashtags from partner
+    const allHashtags: string[] = [];
+    const categorizedHashtags: { [key: string]: string[] } = {};
+    
+    if (partner.hashtags) {
+      allHashtags.push(...partner.hashtags);
+    }
+    if (partner.categorizedHashtags) {
+      Object.entries(partner.categorizedHashtags).forEach(([category, tags]) => {
+        if (!categorizedHashtags[category]) {
+          categorizedHashtags[category] = [];
+        }
+        categorizedHashtags[category].push(...tags);
+      });
+    }
+    
+    // WHAT: Collect Bitly links from partner
+    const bitlyLinks = partner.bitlyLinks || [];
+    
+    setPartnerEventPreview({
+      eventName: eventName.trim(),
+      eventDate,
+      hashtags: allHashtags,
+      categorizedHashtags,
+      bitlyLinks,
+      partner,
+    });
+  };
+  
+  // WHAT: Create project from partner event
+  // WHY: Save generated event to database
+  const handlePartnerEventCreate = async () => {
+    if (!partnerEventPreview) return;
+    
+    setIsCreating(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const data = await apiPost('/api/projects', {
+        eventName: partnerEventPreview.eventName,
+        eventDate: partnerEventPreview.eventDate,
+        hashtags: partnerEventPreview.hashtags,
+        categorizedHashtags: partnerEventPreview.categorizedHashtags,
+        partner1Id: partnerEventPreview.partner._id,  // WHAT: Organizer reference
+        stats: {
+          // Initialize with zeros
+          remoteImages: 0,
+          hostessImages: 0,
+          selfies: 0,
+          female: 0,
+          male: 0,
+          genAlpha: 0,
+          genYZ: 0,
+          genX: 0,
+          boomer: 0,
+          indoor: 0,
+          outdoor: 0,
+          stadium: 0,
+          merched: 0,
+          jersey: 0,
+          scarf: 0,
+          flags: 0,
+          baseballCap: 0,
+          other: 0,
+        },
+      });
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create project');
+      }
+      setSuccess(`Event created successfully! ${partnerEventPreview.eventName}`);
+      
+      // Reset form after 2 seconds and redirect
+      setTimeout(() => {
+        router.push('/admin/projects');
+      }, 2000);
+      
+    } catch (err: any) {
+      setError(err.message || 'Failed to create event');
+      console.error(err);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+  
+  // WHAT: Reset partner event form
+  const handlePartnerEventReset = () => {
+    setPartnerId('');
+    setEventName('');
+    setEventDate('');
+    setPartnerEventPreview(null);
+    setError('');
+    setSuccess('');
+  };
 
   return (
     <div className="page-container">
       <AdminHero
         title="⚡ Quick Add"
-        subtitle="Quickly create events from Google Sheets or by selecting partners"
+        subtitle="Quickly create events: Sports Matches, Partner Events, or Suggested Fixtures"
         backLink="/admin/projects"
       />
       
       {/* WHAT: Tab navigation for different quick add methods
-       * WHY: Support both sheet import and partner-based creation */}
+       * WHY: Support partner-based creation methods */}
       <div className={styles.tabNavigation}>
-        <button
-          onClick={() => setActiveTab('sheet')}
-          className={`${styles.tabButton} ${activeTab === 'sheet' ? styles.active : ''}`}
-        >
-          📋 From Sheet
-        </button>
         <button
           onClick={() => setActiveTab('partners')}
           className={`${styles.tabButton} ${activeTab === 'partners' ? styles.active : ''}`}
         >
           🤝 Sports Match
+        </button>
+        <button
+          onClick={() => setActiveTab('partnerEvent')}
+          className={`${styles.tabButton} ${activeTab === 'partnerEvent' ? styles.active : ''}`}
+        >
+          🎯 Partner Event
         </button>
         <button
           onClick={() => setActiveTab('suggested' as any)}
@@ -480,152 +602,6 @@ const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('
         </button>
       </div>
 
-      {/* WHAT: Sheet Import Tab Content
-       * WHY: Original Google Sheets import functionality */}
-      {activeTab === 'sheet' && (
-        <>
-      {/* Instructions */}
-      <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6 border-left-accent">
-        <h3 className="section-subtitle mb-4">
-          📋 Expected Format:
-        </h3>
-        <div className="bg-gray-900 text-white overflow-auto p-4 rounded-lg mb-4">
-          <code className="font-mono text-sm whitespace-nowrap">
-            ⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga
-          </code>
-        </div>
-        <ul className="text-sm text-gray-600 list-disc-padded">
-          <li className="mb-2"><strong>Sport emoji:</strong> ⚽ 🏒 🤾 🏐 🤽🏻‍♂️ 🏀 🎮</li>
-          <li className="mb-2"><strong>Date:</strong> Hungarian format (e.g., &quot;péntek, 17 október 2025&quot;)</li>
-          <li><strong>Home Team | Visitor Team | Location | League</strong></li>
-        </ul>
-      </ColoredCard>
-
-      {/* Input Section */}
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
-        <div className="form-group">
-          <label htmlFor="rawInput" className="form-label">
-            Paste Sheet Data:
-          </label>
-          <textarea
-            id="rawInput"
-            className="form-input font-mono text-sm"
-            value={rawInput}
-            onChange={(e) => setRawInput(e.target.value)}
-            placeholder="⚽	péntek, 17 október 2025   kezdés:  18:00 	Mezőkövesd Zsóry FC	|	Budafoki MTE	|	Mezőkövesd Városi Stadionja	|	Labdarúgó NB2 - Merkantil Bank Liga"
-            rows={5}
-          />
-        </div>
-        
-        <div className="flex gap-3">
-          <button 
-            onClick={handlePreview}
-            className="btn btn-small btn-primary"
-            disabled={!rawInput.trim()}
-          >
-            Preview
-          </button>
-          {preview && (
-            <button 
-              onClick={handleReset}
-              className="btn btn-small btn-secondary"
-            >
-              Clear
-            </button>
-          )}
-        </div>
-      </ColoredCard>
-
-      {/* Error Message */}
-      {error && (
-        <ColoredCard accentColor="var(--mm-color-error-500)" hoverable={false} className="mb-6 error-box">
-          <p className="m-0 font-medium text-error">❌ {error}</p>
-        </ColoredCard>
-      )}
-
-      {/* Success Message */}
-      {success && (
-        <ColoredCard accentColor="var(--mm-color-success-500)" hoverable={false} className="mb-6 success-box">
-          <p className="m-0 font-medium text-success">✅ {success}</p>
-        </ColoredCard>
-      )}
-
-      {/* Preview Section */}
-      {preview && (
-        <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
-          <h3 className="section-subtitle mb-4">
-            👀 Preview:
-          </h3>
-          
-          <div className="bg-gray-50 p-6 rounded-lg mb-6">
-            <div className="mb-4 pb-4 border-bottom-default">
-              <strong className="inline-block min-w-120 text-gray-700">Event Name:</strong>
-              <span className="text-gray-900">{preview.eventName}</span>
-            </div>
-            
-            <div className="mb-4 pb-4 border-bottom-default">
-              <strong className="inline-block min-w-120 text-gray-700">Event Date:</strong>
-              <span className="text-gray-900">{preview.eventDate}</span>
-            </div>
-            
-            <div className="mb-4 pb-4 border-bottom-default">
-              <strong className="block mb-2 text-gray-700">Hashtags:</strong>
-              <div className="flex flex-wrap gap-2">
-                {preview.hashtags.map((tag: string) => (
-                  <span key={tag} className="hashtag-badge">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-4 border-top-default">
-              <h4 className="mb-3 text-base font-semibold text-gray-900">
-                Parsed Data:
-              </h4>
-              <ul className="list-none p-0 m-0">
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Sport:</strong> {preview.rawData.sport} ({preview.rawData.sportHashtag})
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Home Team:</strong> {preview.rawData.homeTeam}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Visitor Team:</strong> {preview.rawData.visitorTeam}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Location:</strong> {preview.rawData.location}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>League:</strong> {preview.rawData.league}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Original Date:</strong> {preview.rawData.dateStr}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Year:</strong> {preview.rawData.year}
-                </li>
-                <li className="mb-2 text-sm text-gray-600">
-                  <strong>Month:</strong> {preview.rawData.month}
-                </li>
-                <li className="text-sm text-gray-600">
-                  <strong>Season:</strong> {preview.rawData.season}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <button 
-            onClick={handleCreate}
-            className="btn btn-small btn-success"
-            disabled={isCreating}
-          >
-            {isCreating ? 'Creating...' : '✅ Create Project'}
-          </button>
-        </ColoredCard>
-      )}
-        </>
-      )}
       
       {/* WHAT: Sports Match Tab Content
        * WHY: Partner-based event creation for sports matches */}
@@ -829,6 +805,201 @@ const [activeTab, setActiveTab] = useState<'sheet' | 'partners' | 'suggested'>('
                 disabled={isCreating}
               >
                 {isCreating ? 'Creating...' : '✅ Create Match Event'}
+              </button>
+            </ColoredCard>
+          )}
+        </>
+      )}
+      
+      {/* WHAT: Partner Event Tab Content
+       * WHY: Simple single-partner event creation for non-match events */}
+      {activeTab === 'partnerEvent' && (
+        <>
+          {/* Instructions */}
+          <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-6 border-left-accent">
+            <h3 className="section-subtitle mb-4">
+              🎯 Partner Event Builder
+            </h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Create an event organized by a single partner (concerts, festivals, exhibitions, etc.).
+            </p>
+            <ul className="text-sm text-gray-600 list-disc-padded">
+              <li className="mb-2"><strong>Partner (Organizer):</strong> The organization hosting the event</li>
+              <li className="mb-2"><strong>Event Name:</strong> Custom name for the event</li>
+              <li><strong>Inherits:</strong> Hashtags and Bitly links from the selected partner</li>
+            </ul>
+          </ColoredCard>
+          
+          {/* Partner Event Form */}
+          <ColoredCard accentColor="#6366f1" hoverable={false} className="mb-6">
+            <div className="form-group mb-4">
+              <label htmlFor="partnerEventPartner" className="form-label">
+                Partner (Organizer): *
+              </label>
+              <PartnerSelector
+                selectedPartnerId={partnerId}
+                partners={partners}
+                onChange={(id) => setPartnerId(id || '')}
+                placeholder="Search partner..."
+                disabled={loadingPartners}
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label htmlFor="partnerEventName" className="form-label">
+                Event Name: *
+              </label>
+              <input
+                id="partnerEventName"
+                type="text"
+                className="form-input"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                placeholder="e.g., Summer Music Festival 2025"
+              />
+            </div>
+            
+            <div className="form-group mb-4">
+              <label htmlFor="partnerEventDate" className="form-label">
+                Event Date: *
+              </label>
+              <input
+                id="partnerEventDate"
+                type="date"
+                className="form-input"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={handlePartnerEventPreview}
+                className="btn btn-small btn-primary"
+                disabled={!partnerId || !eventName.trim() || !eventDate || loadingPartners}
+              >
+                👀 Preview Event
+              </button>
+              {partnerEventPreview && (
+                <button 
+                  onClick={handlePartnerEventReset}
+                  className="btn btn-small btn-secondary"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </ColoredCard>
+          
+          {/* Partner Event Preview */}
+          {partnerEventPreview && (
+            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6 border-left-accent">
+              <h3 className="section-subtitle mb-4">
+                👀 Event Preview:
+              </h3>
+              
+              <div className="bg-gray-50 p-6 rounded-lg mb-6">
+                <div className="mb-4 pb-4 border-bottom-default">
+                  <strong className="block mb-2 text-gray-700">Event Name:</strong>
+                  {/* WHAT: Event display with partner emoji and logo */}
+                  <div className={styles.previewRow}>
+                    {/* Partner emoji */}
+                    <span className={styles.previewEmoji}>
+                      {partnerEventPreview.partner.emoji}
+                    </span>
+                    
+                    {/* Partner logo */}
+                    {partnerEventPreview.partner.logoUrl ? (
+                      <img
+                        src={partnerEventPreview.partner.logoUrl}
+                        alt={`${partnerEventPreview.partner.name} logo`}
+                        className={styles.previewLogo}
+                        title={partnerEventPreview.partner.name}
+                      />
+                    ) : (
+                      <div className={styles.previewLogoPlaceholder} />
+                    )}
+                    
+                    {/* Event name */}
+                    <span className={styles.previewEventName}>
+                      {partnerEventPreview.eventName}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="mb-4 pb-4 border-bottom-default">
+                  <strong className="inline-block min-w-120 text-gray-700">Event Date:</strong>
+                  <span className="text-gray-900">{partnerEventPreview.eventDate}</span>
+                </div>
+                
+                {partnerEventPreview.hashtags.length > 0 && (
+                  <div className="mb-4 pb-4 border-bottom-default">
+                    <strong className="block mb-2 text-gray-700">Hashtags (from {partnerEventPreview.partner.name}):</strong>
+                    <div className="flex flex-wrap gap-2">
+                      {partnerEventPreview.hashtags.map((tag: string) => (
+                        <span key={tag} className="hashtag-badge">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {Object.keys(partnerEventPreview.categorizedHashtags).length > 0 && (
+                  <div className="mb-4 pb-4 border-bottom-default">
+                    <strong className="block mb-2 text-gray-700">Categorized Hashtags:</strong>
+                    {Object.entries(partnerEventPreview.categorizedHashtags).map(([category, tags]: [string, any]) => (
+                      <div key={category} className="mb-2">
+                        <span className="text-sm font-semibold text-gray-600">{category}:</span>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {tags.map((tag: string) => (
+                            <span key={`${category}-${tag}`} className="hashtag-badge">
+                              {category}:{tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {partnerEventPreview.bitlyLinks && partnerEventPreview.bitlyLinks.length > 0 && (
+                  <div className="mb-4 pb-4 border-bottom-default">
+                    <strong className="block mb-2 text-gray-700">Bitly Links (from {partnerEventPreview.partner.name}):</strong>
+                    <div className="flex flex-col gap-1">
+                      {partnerEventPreview.bitlyLinks.map((link: any) => (
+                        <a
+                          key={link._id}
+                          href={`https://${link.bitlink}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          {link.bitlink} - {link.title}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="pt-4 border-top-default">
+                  <h4 className="mb-3 text-base font-semibold text-gray-900">
+                    Event Details:
+                  </h4>
+                  <ul className="list-none p-0 m-0">
+                    <li className="mb-2 text-sm text-gray-600">
+                      <strong>Organizer:</strong> {partnerEventPreview.partner.emoji} {partnerEventPreview.partner.name}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <button 
+                onClick={handlePartnerEventCreate}
+                className="btn btn-small btn-success"
+                disabled={isCreating}
+              >
+                {isCreating ? 'Creating...' : '✅ Create Event'}
               </button>
             </ColoredCard>
           )}
