@@ -157,6 +157,18 @@ export async function exportPageWithSmartPagination(
       throw new Error(`Content element with id "${contentId}" not found`);
     }
 
+    /* What: Add PDF capture attribute to hide export buttons and style info
+       Why: These elements are not relevant for PDF export */
+    heroElement.setAttribute('data-pdf-capture', 'true');
+    
+    /* What: Hide "Live Data" status badge for PDF
+       Why: PDFs are static snapshots, not live data */
+    const liveBadge = heroElement.querySelector('.admin-level');
+    const originalLiveBadgeDisplay = liveBadge ? (liveBadge as HTMLElement).style.display : '';
+    if (liveBadge) {
+      (liveBadge as HTMLElement).style.display = 'none';
+    }
+
     /* What: Capture hero as canvas
        Why: Will be repeated on every page */
     const heroCanvas = await html2canvas(heroElement, {
@@ -164,20 +176,38 @@ export async function exportPageWithSmartPagination(
       logging: false,
     });
 
-    /* What: Find all chart cards/blocks within content
-       Why: Capture each separately to prevent splitting */
-    const chartElements = contentElement.querySelectorAll('.unified-chart-item, .blockCard, [data-pdf-block]');
-    const chartCanvases: HTMLCanvasElement[] = [];
+    /* What: Find all block cards (not individual charts) for 3-column layout
+       Why: Capture blocks to maintain desktop 3-column grid layout
+       Note: Blocks contain multiple charts in rows */
+    const blockElements = contentElement.querySelectorAll('.blockCard, [data-pdf-block="true"]');
+    const blockCanvases: HTMLCanvasElement[] = [];
     
-    for (const element of Array.from(chartElements)) {
+    /* What: Set wider capture width for 3-column desktop layout
+       Why: Default capture is too narrow, need desktop width */
+    const originalContentWidth = (contentElement as HTMLElement).style.width;
+    (contentElement as HTMLElement).style.width = '1200px';
+    
+    for (const element of Array.from(blockElements)) {
       const canvas = await html2canvas(element as HTMLElement, {
         useCORS: true,
         logging: false,
+        width: 1200, // Desktop width for 3-column layout
       });
-      chartCanvases.push(canvas);
+      blockCanvases.push(canvas);
+    }
+    
+    /* What: Restore original width
+       Why: Don't affect page display after capture */
+    (contentElement as HTMLElement).style.width = originalContentWidth;
+
+    /* What: Restore hero to normal state
+       Why: Remove PDF capture styling after capture complete */
+    heroElement.removeAttribute('data-pdf-capture');
+    if (liveBadge) {
+      (liveBadge as HTMLElement).style.display = originalLiveBadgeDisplay;
     }
 
-    console.log(`✅ Captured ${chartCanvases.length} chart elements`);
+    console.log(`✅ Captured ${blockCanvases.length} block elements with 3-column layout`);
 
     /* What: Calculate PDF dimensions
        Why: A4 and Letter have different dimensions */
@@ -233,21 +263,21 @@ export async function exportPageWithSmartPagination(
     // Add hero to first page
     addHeroToPage();
 
-    /* What: Place charts with intelligent pagination
+    /* What: Place blocks with intelligent pagination
        Why: Prevent splitting, move to next page if doesn't fit */
-    for (let i = 0; i < chartCanvases.length; i++) {
-      const canvas = chartCanvases[i];
+    for (let i = 0; i < blockCanvases.length; i++) {
+      const canvas = blockCanvases[i];
       const imgData = canvas.toDataURL('image/png', quality);
       
-      // Calculate chart dimensions
-      const chartRatio = canvas.width / canvas.height;
-      const chartWidth = contentWidth;
-      const chartHeight = chartWidth / chartRatio;
+      // Calculate block dimensions (maintaining aspect ratio for 3-column layout)
+      const blockRatio = canvas.width / canvas.height;
+      const blockWidth = contentWidth;
+      const blockHeight = blockWidth / blockRatio;
       
-      /* What: Check if chart fits on current page
+      /* What: Check if block fits on current page
          Why: Move to next page if it doesn't fit */
-      if (currentYPosition + chartHeight > contentHeight + margin) {
-        // Chart doesn't fit, move to next page
+      if (currentYPosition + blockHeight > contentHeight + margin) {
+        // Block doesn't fit, move to next page
         pdf.addPage();
         currentPage++;
         
@@ -258,21 +288,21 @@ export async function exportPageWithSmartPagination(
         currentYPosition = margin + heroHeightMM + 5;
       }
       
-      /* What: Add chart to current position
-         Why: Place chart on page */
+      /* What: Add block to current position
+         Why: Place block on page with 3-column layout preserved */
       pdf.addImage(
         imgData,
         'PNG',
         margin,
         currentYPosition,
-        chartWidth,
-        chartHeight,
+        blockWidth,
+        blockHeight,
         undefined,
         'FAST'
       );
       
-      // Move Y position down for next chart (with spacing)
-      currentYPosition += chartHeight + 5; // 5mm gap between charts
+      // Move Y position down for next block (with spacing)
+      currentYPosition += blockHeight + 5; // 5mm gap between blocks
     }
 
     /* What: Generate filename with timestamp

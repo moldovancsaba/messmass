@@ -123,6 +123,14 @@
   padding: var(--space-8);
 }
 
+/* WHAT: Reduce header margin when capturing for PDF
+ * WHY: Eliminate empty space at top of first page
+ * HOW: Override margin-bottom when data-pdf-capture attribute present */
+[data-pdf-capture] .admin-header,
+[data-pdf-capture="true"] .admin-header {
+  margin-bottom: 0 !important;
+}
+
 .admin-header-content {
   display: flex;
   justify-content: space-between;

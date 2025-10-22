@@ -83,3 +83,30 @@
     padding: var(--mm-space-3);
   }
 }
+
+/* ========================================
+   PDF/PRINT EXPORT STYLES
+======================================== */
+
+/* WHAT: Hide elements not relevant for PDF export
+ * WHY: Export buttons, style badges irrelevant in static PDFs
+ * HOW: Use attribute selector for PDF capture context */
+
+/* Hide export buttons when capturing for PDF */
+[data-pdf-capture] .exportButtons,
+[data-pdf-capture="true"] .exportButtons {
+  display: none !important;
+}
+
+/* Hide "Using style" badge when capturing for PDF */
+[data-pdf-capture] .styleNameContainer,
+[data-pdf-capture="true"] .styleNameContainer {
+  display: none !important;
+}
+
+/* Reduce padding for PDF to save space */
+[data-pdf-capture] .container,
+[data-pdf-capture="true"] .container {
+  padding: var(--mm-space-4) var(--mm-space-6) !important;
+  margin-bottom: 0 !important;
+}
