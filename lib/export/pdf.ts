@@ -162,7 +162,6 @@ export async function exportPageWithSmartPagination(
     const heroCanvas = await html2canvas(heroElement, {
       useCORS: true,
       logging: false,
-      scale: 2, // Higher quality
     });
 
     /* What: Find all chart cards/blocks within content
@@ -174,7 +173,6 @@ export async function exportPageWithSmartPagination(
       const canvas = await html2canvas(element as HTMLElement, {
         useCORS: true,
         logging: false,
-        scale: 2,
       });
       chartCanvases.push(canvas);
     }
