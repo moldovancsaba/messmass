@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import PageStyleEditor from '@/components/PageStyleEditor';
 import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
@@ -31,6 +32,12 @@ export default function AdminDesignPage() {
   const [pageStyles, setPageStyles] = useState<PageStyleEnhanced[]>([]);
   const [stylesLoading, setStylesLoading] = useState(false);
   const [stylesError, setStylesError] = useState<string>('');
+  
+  /* WHAT: Modal state for style editor
+   * WHY: Control visibility and editing mode of PageStyleEditor */
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingStyle, setEditingStyle] = useState<PageStyleEnhanced | undefined>(undefined);
+  const [editorLoading, setEditorLoading] = useState(false);
 
   useEffect(() => {
     loadTypographySettings();
@@ -103,6 +110,80 @@ export default function AdminDesignPage() {
       setStylesError('Network error loading styles');
     } finally {
       setStylesLoading(false);
+    }
+  };
+  
+  /* WHAT: Open editor for creating new style
+   * WHY: Allow admin to add new theme */
+  const handleCreateStyle = () => {
+    setEditingStyle(undefined);
+    setIsEditorOpen(true);
+  };
+  
+  /* WHAT: Open editor for editing existing style
+   * WHY: Allow admin to modify theme configuration */
+  const handleEditStyle = (style: PageStyleEnhanced) => {
+    setEditingStyle(style);
+    setIsEditorOpen(true);
+  };
+  
+  /* WHAT: Save style (create or update)
+   * WHY: Persist theme configuration to database */
+  const handleSaveStyle = async (styleData: Omit<PageStyleEnhanced, '_id' | 'createdAt' | 'updatedAt' | 'projectIds'>) => {
+    setEditorLoading(true);
+    try {
+      const url = editingStyle 
+        ? `/api/page-styles-enhanced?styleId=${editingStyle._id}`
+        : '/api/page-styles-enhanced';
+      const method = editingStyle ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(styleData)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(editingStyle ? '✅ Style updated!' : '✅ Style created!');
+        setIsEditorOpen(false);
+        setEditingStyle(undefined);
+        loadPageStyles(); // Reload list
+      } else {
+        alert('❌ Error: ' + (data.error || 'Failed to save style'));
+      }
+    } catch (error) {
+      console.error('Failed to save style:', error);
+      alert('❌ Network error saving style');
+    } finally {
+      setEditorLoading(false);
+    }
+  };
+  
+  /* WHAT: Delete style
+   * WHY: Remove unused themes */
+  const handleDeleteStyle = async (styleId: string, styleName: string) => {
+    if (!confirm(`Are you sure you want to delete "${styleName}"?`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/page-styles-enhanced?styleId=${styleId}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('✅ Style deleted!');
+        loadPageStyles();
+      } else {
+        alert('❌ Error: ' + (data.error || 'Failed to delete style'));
+      }
+    } catch (error) {
+      console.error('Failed to delete style:', error);
+      alert('❌ Network error deleting style');
     }
   };
 
@@ -416,7 +497,7 @@ export default function AdminDesignPage() {
                   {pageStyles.length} {pageStyles.length === 1 ? 'style' : 'styles'} configured
                 </p>
               </div>
-              <button className="btn btn-primary">
+              <button className="btn btn-primary" onClick={handleCreateStyle}>
                 ➕ Create New Style
               </button>
             </div>
@@ -453,7 +534,7 @@ export default function AdminDesignPage() {
                 <p className="text-sm text-gray-600 mb-4">
                   Create your first custom theme to personalize your project pages
                 </p>
-                <button className="btn btn-primary">
+                <button className="btn btn-primary" onClick={handleCreateStyle}>
                   ➕ Create First Style
                 </button>
               </div>
@@ -521,14 +602,23 @@ export default function AdminDesignPage() {
                   
                   {/* Actions */}
                   <div className="flex gap-2 mt-4">
-                    <button className="btn btn-small btn-secondary flex-1">
+                    <button 
+                      className="btn btn-small btn-secondary flex-1"
+                      onClick={() => handleEditStyle(style)}
+                    >
                       ✏️ Edit
                     </button>
-                    <button className="btn btn-small btn-secondary">
+                    <button 
+                      className="btn btn-small btn-secondary"
+                      title="Preview (coming soon)"
+                    >
                       👁️
                     </button>
                     {!style.isGlobalDefault && (
-                      <button className="btn btn-small btn-danger">
+                      <button 
+                        className="btn btn-small btn-danger"
+                        onClick={() => style._id && handleDeleteStyle(style._id, style.name)}
+                      >
                         🗑️
                       </button>
                     )}
@@ -545,6 +635,19 @@ export default function AdminDesignPage() {
         <div className={styles.copyToast}>
           ✓ Copied to clipboard!
         </div>
+      )}
+      
+      {/* Page Style Editor Modal */}
+      {isEditorOpen && (
+        <PageStyleEditor
+          style={editingStyle}
+          onSave={handleSaveStyle}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setEditingStyle(undefined);
+          }}
+          isLoading={editorLoading}
+        />
       )}
     </div>
   );
