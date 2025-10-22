@@ -18,13 +18,14 @@
 }
 
 /* WHAT: Modal container
- * WHY: Card-like appearance with proper sizing and scrolling */
+ * WHY: Card-like appearance with proper sizing and scrolling
+ * NOTE: Increased max-width to 1400px for split layout with preview */
 .modalContent {
   background: var(--mm-white);
   border-radius: var(--mm-radius-xl);
   box-shadow: var(--mm-shadow-2xl);
   width: 100%;
-  max-width: 800px;
+  max-width: 1400px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -123,13 +124,37 @@
 }
 
 /* ========================================
-   MODAL BODY
+   SPLIT LAYOUT (FORM + PREVIEW)
+======================================== */
+
+/* WHAT: Side-by-side layout for form and preview
+ * WHY: Show live preview while editing */
+.splitLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-4);
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ========================================
+   MODAL BODY (LEFT PANE)
 ======================================== */
 
 .modalBody {
   flex: 1;
   overflow-y: auto;
   padding: var(--mm-space-6);
+  border-right: 1px solid var(--mm-gray-200);
+}
+
+/* WHAT: Preview pane (right side)
+ * WHY: Contain live preview component */
+.previewPane {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--mm-space-6);
+  background: var(--mm-gray-50);
 }
 
 .section {
@@ -307,6 +332,19 @@
    RESPONSIVE
 ======================================== */
 
+@media (max-width: 1200px) {
+  /* WHAT: Stack layout vertically on smaller screens
+   * WHY: Preview takes too much space in split view */
+  .splitLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .modalBody {
+    border-right: none;
+    border-bottom: 1px solid var(--mm-gray-200);
+  }
+}
+
 @media (max-width: 768px) {
   .modalContent {
     max-height: 95vh;
@@ -315,7 +353,8 @@
 
   .modalHeader,
   .modalBody,
-  .modalFooter {
+  .modalFooter,
+  .previewPane {
     padding: var(--mm-space-4);
   }
 

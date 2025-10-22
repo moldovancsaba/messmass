@@ -1,0 +1,195 @@
+/* StylePreview.module.css - Live preview styles */
+
+/* WHAT: Container for entire preview section
+ * WHY: Organize preview with label and frame */
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  height: 100%;
+}
+
+/* ========================================
+   PREVIEW LABEL
+======================================== */
+
+.previewLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-md);
+}
+
+.previewIcon {
+  font-size: var(--mm-text-lg);
+}
+
+.previewText {
+  font-size: var(--mm-text-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+}
+
+/* ========================================
+   PREVIEW FRAME
+======================================== */
+
+/* WHAT: Frame containing the mini page
+ * WHY: Simulate browser window with proper aspect ratio */
+.previewFrame {
+  flex: 1;
+  background: var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  overflow: hidden;
+  min-height: 400px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* WHAT: Mini page mockup
+ * WHY: Show actual page appearance with applied styles */
+.mockPage {
+  height: 100%;
+  border-radius: var(--mm-radius-md);
+  overflow: hidden;
+  box-shadow: var(--mm-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+   HERO SECTION
+======================================== */
+
+.mockHero {
+  padding: var(--mm-space-6);
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mockTitle {
+  font-size: var(--mm-text-xl);
+  font-weight: var(--mm-font-weight-bold);
+  margin: 0 0 var(--mm-space-2) 0;
+  transition: all 0.3s ease;
+}
+
+.mockSubtitle {
+  font-size: var(--mm-text-sm);
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+   CONTENT SECTION
+======================================== */
+
+.mockContent {
+  flex: 1;
+  padding: var(--mm-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  overflow-y: auto;
+}
+
+.mockBox {
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-md);
+  transition: all 0.3s ease;
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.mockBoxTitle {
+  font-size: var(--mm-text-base);
+  font-weight: var(--mm-font-weight-semibold);
+  margin: 0 0 var(--mm-space-2) 0;
+  transition: all 0.3s ease;
+}
+
+.mockBoxText {
+  font-size: var(--mm-text-sm);
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+   COLOR SCHEME SWATCHES
+======================================== */
+
+.mockColorScheme {
+  display: flex;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3);
+  background: rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mockSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--mm-radius-sm);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  box-shadow: var(--mm-shadow-sm);
+  cursor: help;
+}
+
+.mockSwatch:hover {
+  transform: scale(1.1);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* ========================================
+   PREVIEW INFO
+======================================== */
+
+.previewInfo {
+  display: flex;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-3);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.infoText {
+  font-size: var(--mm-text-xs);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+.infoText strong {
+  color: var(--mm-gray-800);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .previewFrame {
+    min-height: 300px;
+  }
+
+  .mockHero {
+    padding: var(--mm-space-4);
+  }
+
+  .mockContent {
+    padding: var(--mm-space-3);
+  }
+
+  .mockBox {
+    padding: var(--mm-space-3);
+  }
+
+  .previewInfo {
+    flex-direction: column;
+    gap: var(--mm-space-2);
+  }
+}

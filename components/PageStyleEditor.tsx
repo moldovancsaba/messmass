@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ColoredCard from './ColoredCard';
+import StylePreview from './StylePreview';
 import styles from './PageStyleEditor.module.css';
 import { 
   PageStyleEnhanced, 
@@ -147,8 +148,10 @@ export default function PageStyleEditor({
             ))}
           </div>
 
-          {/* Form Content */}
-          <div className={styles.modalBody}>
+          {/* Split Layout: Form + Preview */}
+          <div className={styles.splitLayout}>
+            {/* Form Content */}
+            <div className={styles.modalBody}>
             {/* GENERAL SECTION */}
             {activeSection === 'general' && (
               <div className={styles.section}>
@@ -529,6 +532,12 @@ export default function PageStyleEditor({
                 </div>
               </div>
             )}
+            </div>
+            
+            {/* Preview Pane */}
+            <div className={styles.previewPane}>
+              <StylePreview style={formData} />
+            </div>
           </div>
 
           {/* Footer Actions */}
