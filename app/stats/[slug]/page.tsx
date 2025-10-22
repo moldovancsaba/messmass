@@ -394,17 +394,6 @@ export default function StatsPage() {
           pageStyle={pageStyle || undefined}
           onExportCSV={exportCSV}
           onExportPDF={handleExportPDF}
-          extraContent={(
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={includeDerived}
-                onChange={(e) => setIncludeDerived(e.target.checked)}
-                className={styles.checkboxInput}
-              />
-              <span>Include derived metrics</span>
-            </label>
-          )}
           />
         </div>
 

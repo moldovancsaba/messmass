@@ -392,17 +392,6 @@ export default function FilterPage() {
           pageStyle={pageStyle || undefined}
           onExportCSV={exportFilteredCSV}
           onExportPDF={handleExportPDF}
-          extraContent={(
-            <label className="flex items-center gap-sm text-sm text-gray-700" style={{ cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={includeDerived}
-                onChange={(e) => setIncludeDerived(e.target.checked)}
-                style={{ cursor: 'pointer', width: '16px', height: '16px' }}
-              />
-              <span>Include derived metrics</span>
-            </label>
-          )}
           />
         </div>
 
