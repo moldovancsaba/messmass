@@ -17,6 +17,8 @@ interface ColoredCardProps {
   onClick?: () => void;
   /** Optional hover effect */
   hoverable?: boolean;
+  /** Optional data attributes (e.g., data-pdf-block) */
+  [key: string]: any;
 }
 
 export default function ColoredCard({
@@ -24,17 +26,25 @@ export default function ColoredCard({
   className = '',
   children,
   onClick,
-  hoverable = true
+  hoverable = true,
+  ...rest
 }: ColoredCardProps) {
   // WHAT: Only use CSS variables for dynamic styling (ESLint compliant)
   // WHY: Avoid inline style props while supporting dynamic accent colors
   const cssVars = accentColor ? { '--accent-color': accentColor } as React.CSSProperties : undefined;
+
+  // WHAT: Filter out data attributes from rest props
+  // WHY: Pass through data-* attributes for PDF export and other purposes
+  const dataAttrs = Object.keys(rest)
+    .filter(key => key.startsWith('data-'))
+    .reduce((obj, key) => ({ ...obj, [key]: rest[key] }), {});
 
   return (
     <div
       className={`${styles.coloredCard} ${hoverable ? styles.hoverable : ''} ${className}`}
       style={cssVars}
       onClick={onClick}
+      {...dataAttrs}
     >
       {children}
     </div>
