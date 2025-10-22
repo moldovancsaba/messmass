@@ -369,11 +369,12 @@ export default function FilterPage() {
       )}
 
       {/* What: Main content container with id for PDF export
-          Why: Constrain content width on large screens, enable PDF export of entire page */}
+          Why: Constrain content width on large screens, enable PDF export of entire page
+          HOW: Uses 1200px max-width to match admin dashboard and UnifiedPageHero */}
       <div 
         id="filter-page-content"
         className="w-full"
-        style={{ maxWidth: '1400px', margin: '0 auto' }}
+        style={{ maxWidth: '1200px', margin: '0 auto' }}
       >
         {/* Unified Hero Section with CSV and PDF export */}
         <UnifiedStatsHero

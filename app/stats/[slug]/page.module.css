@@ -50,9 +50,11 @@
   padding: var(--mm-space-4);
 }
 
-/* WHAT: Content wrapper with max width */
+/* WHAT: Content wrapper with max width matching admin pages and hero
+ * WHY: Ensures consistent width and alignment with UnifiedPageHero
+ * HOW: Uses same 1200px max-width as .page-container in layout.css */
 .contentWrapper {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
