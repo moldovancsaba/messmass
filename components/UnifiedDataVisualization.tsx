@@ -126,7 +126,11 @@ export default function UnifiedDataVisualization({
           // Stable class suffix for CSS and keys: prefer _id, fall back to index
           const idSuffix = block._id || `i${blockIndex}`;
           return (
-            <ColoredCard key={block._id || `block-${blockIndex}`} className={styles.blockCard}>
+            <ColoredCard 
+              key={block._id || `block-${blockIndex}`} 
+              className={styles.blockCard}
+              data-pdf-block="true"
+            >
               {/* Block Title */}
               <h2 className={styles.blockTitle}>
                 📊 {block.name}

@@ -10,7 +10,7 @@ import DataQualityInsights from '@/components/DataQualityInsights';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
-import { exportPageToPDF } from '@/lib/export/pdf';
+import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import { generateDataQualityInsights } from '@/lib/dataValidator';
 import styles from './page.module.css';
 
@@ -229,17 +229,23 @@ export default function StatsPage() {
   const totalAge = totalUnder40 + totalOver40;
   const totalMerch = project ? project.stats.merched + project.stats.jersey + project.stats.scarf + project.stats.flags + project.stats.baseballCap + project.stats.other : 0;
 
-  /* What: PDF export function for full page
-     Why: Allow users to save complete stats page as PDF document */
+  /* What: Enhanced PDF export with smart pagination
+     Why: Hero on every page, no element splitting, intelligent pagination */
   const handleExportPDF = useCallback(async () => {
     try {
-      await exportPageToPDF('stats-page-content', {
-        filename: project ? `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_stats` : 'messmass-stats',
-        orientation: 'portrait',
-        quality: 0.95
-      });
+      await exportPageWithSmartPagination(
+        'stats-hero-section',
+        'stats-content-section',
+        {
+          filename: project ? `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_stats` : 'messmass-stats',
+          orientation: 'portrait',
+          quality: 0.95
+        }
+      );
+      alert('PDF exported successfully! 📄');
     } catch (error) {
       console.error('PDF export failed:', error);
+      alert('Failed to export PDF. Please try again.');
     }
   }, [project]);
 
@@ -372,14 +378,14 @@ export default function StatsPage() {
         />
       )}
 
-      {/* What: Main content container with id for PDF export
-          Why: Constrain content width on large screens, enable PDF export of entire page */}
-      <div 
-        id="stats-page-content"
-        className={styles.contentWrapper}
-      >
-        {/* Unified Hero Section with CSV and PDF export */}
-        <UnifiedStatsHero
+      {/* What: Main content container wrapper for PDF export
+          Why: Contains hero and content sections separately for smart pagination */}
+      <div className={styles.contentWrapper}>
+        {/* WHAT: Hero section with unique ID for PDF export
+            WHY: Will be captured separately and repeated on every PDF page */}
+        <div id="stats-hero-section">
+          {/* Unified Hero Section with CSV and PDF export */}
+          <UnifiedStatsHero
           title={project.eventName}
           hashtags={project.hashtags || []}
           categorizedHashtags={project.categorizedHashtags || {}}
@@ -399,7 +405,8 @@ export default function StatsPage() {
               <span>Include derived metrics</span>
             </label>
           )}
-        />
+          />
+        </div>
 
         {/* WHAT: Data Quality Insights Section
             WHY: Show KYC-based insights for data completeness, consistency, and enrichment opportunities
@@ -433,9 +440,9 @@ export default function StatsPage() {
           </div>
         )}
 
-        {/* What: Data visualization section with modern spacing
-            Why: Unified component handles all chart rendering with proper grid layout */}
-        <div className={styles.dataVisualization}>
+        {/* WHAT: Content section with unique ID for PDF export
+            WHY: Contains all charts/blocks that will be paginated intelligently */}
+        <div id="stats-content-section" className={styles.dataVisualization}>
           <UnifiedDataVisualization
             blocks={dataBlocks}
             chartResults={chartResults}

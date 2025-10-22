@@ -9,7 +9,7 @@ import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTyp
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
-import { exportPageToPDF } from '@/lib/export/pdf';
+import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 
 interface ProjectStats {
   remoteImages: number;
@@ -209,18 +209,24 @@ export default function FilterPage() {
     }
   }, [project, chartConfigurations]);
 
-  /* What: PDF export function for full filter page
-     Why: Allow users to save aggregated stats page as PDF document */
+  /* What: Enhanced PDF export with smart pagination
+     Why: Hero on every page, no element splitting, intelligent pagination */
   const handleExportPDF = useCallback(async () => {
     try {
       const hashtagsStr = hashtags.join('_');
-      await exportPageToPDF('filter-page-content', {
-        filename: `messmass_filter_${hashtagsStr}_stats`,
-        orientation: 'portrait',
-        quality: 0.95
-      });
+      await exportPageWithSmartPagination(
+        'filter-hero-section',
+        'filter-content-section',
+        {
+          filename: `messmass_filter_${hashtagsStr}_stats`,
+          orientation: 'portrait',
+          quality: 0.95
+        }
+      );
+      alert('PDF exported successfully! 📄');
     } catch (error) {
       console.error('PDF export failed:', error);
+      alert('Failed to export PDF. Please try again.');
     }
   }, [hashtags]);
 
@@ -368,16 +374,17 @@ export default function FilterPage() {
         />
       )}
 
-      {/* What: Main content container with id for PDF export
-          Why: Constrain content width on large screens, enable PDF export of entire page
-          HOW: Uses 1200px max-width to match admin dashboard and UnifiedPageHero */}
+      {/* What: Main content container wrapper for PDF export
+          Why: Contains hero and content sections separately for smart pagination */}
       <div 
-        id="filter-page-content"
         className="w-full"
         style={{ maxWidth: '1200px', margin: '0 auto' }}
       >
-        {/* Unified Hero Section with CSV and PDF export */}
-        <UnifiedStatsHero
+        {/* WHAT: Hero section with unique ID for PDF export
+            WHY: Will be captured separately and repeated on every PDF page */}
+        <div id="filter-hero-section">
+          {/* Unified Hero Section with CSV and PDF export */}
+          <UnifiedStatsHero
           title={`Aggregated Statistics - ${project.dateRange.formatted}`}
           hashtags={hashtags}
           createdDate={project.createdAt}
@@ -396,12 +403,12 @@ export default function FilterPage() {
               <span>Include derived metrics</span>
             </label>
           )}
-        />
+          />
+        </div>
 
-        {/* What: Data visualization section with modern spacing
-            Why: Unified component handles all chart rendering with proper grid layout */}
-        {/* WHAT: Chart section wrapper using utility classes */}
-        <div className="w-full mt-lg">
+        {/* WHAT: Content section with unique ID for PDF export
+            WHY: Contains all charts/blocks that will be paginated intelligently */}
+        <div id="filter-content-section" className="w-full mt-lg">
           <UnifiedDataVisualization
             blocks={dataBlocks}
             chartResults={chartResults}

@@ -3,11 +3,14 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-/* What: PDF export utility for full stats pages
+/* What: Enhanced PDF export utility with intelligent pagination
    Why: Allow users to save complete stats pages as PDF documents
    
-   Strategy: Capture DOM elements with html2canvas, then convert to PDF with jsPDF
-   Multi-page support for long content */
+   Strategy:
+   - Capture hero separately and repeat on every page
+   - Capture chart cards individually to prevent splitting
+   - Intelligent pagination: move elements to next page if they don't fit
+   - Hero block always at top of each page */
 
 export interface PDFExportOptions {
   filename?: string;
@@ -123,7 +126,174 @@ export async function exportElementToPDF(
   }
 }
 
-/* What: Export current page to PDF with error handling
+/* What: Enhanced PDF export with smart pagination and hero repetition
+   Why: Prevent element splitting and ensure hero appears on every page
+   How: Capture elements separately, manage pagination intelligently */
+export async function exportPageWithSmartPagination(
+  heroId: string,
+  contentId: string,
+  options: PDFExportOptions = {}
+): Promise<void> {
+  const {
+    filename = 'messmass-stats',
+    format = 'a4',
+    orientation = 'portrait',
+    quality = 0.95,
+    margin = 10,
+  } = options;
+
+  try {
+    console.log('📄 Starting enhanced PDF export with smart pagination...');
+
+    /* What: Find hero and content containers
+       Why: Need to capture them separately for smart layout */
+    const heroElement = document.getElementById(heroId);
+    const contentElement = document.getElementById(contentId);
+    
+    if (!heroElement) {
+      throw new Error(`Hero element with id "${heroId}" not found`);
+    }
+    if (!contentElement) {
+      throw new Error(`Content element with id "${contentId}" not found`);
+    }
+
+    /* What: Capture hero as canvas
+       Why: Will be repeated on every page */
+    const heroCanvas = await html2canvas(heroElement, {
+      useCORS: true,
+      logging: false,
+      scale: 2, // Higher quality
+    });
+
+    /* What: Find all chart cards/blocks within content
+       Why: Capture each separately to prevent splitting */
+    const chartElements = contentElement.querySelectorAll('.unified-chart-item, .blockCard, [data-pdf-block]');
+    const chartCanvases: HTMLCanvasElement[] = [];
+    
+    for (const element of Array.from(chartElements)) {
+      const canvas = await html2canvas(element as HTMLElement, {
+        useCORS: true,
+        logging: false,
+        scale: 2,
+      });
+      chartCanvases.push(canvas);
+    }
+
+    console.log(`✅ Captured ${chartCanvases.length} chart elements`);
+
+    /* What: Calculate PDF dimensions
+       Why: A4 and Letter have different dimensions */
+    const pdfWidth = format === 'a4' ? 210 : 215.9; // mm
+    const pdfHeight = format === 'a4' ? 297 : 279.4; // mm
+    const contentWidth = pdfWidth - (margin * 2);
+    const contentHeight = pdfHeight - (margin * 2);
+
+    /* What: Calculate hero dimensions
+       Why: Hero will be at top of every page */
+    const heroRatio = heroCanvas.width / heroCanvas.height;
+    const heroWidth = contentWidth;
+    const heroHeight = heroWidth / heroRatio;
+    const heroHeightMM = Math.min(heroHeight, 60); // Cap hero at 60mm
+    const heroScaleFactor = heroHeightMM / heroHeight;
+    const heroWidthMM = heroWidth * heroScaleFactor;
+
+    /* What: Calculate available space per page after hero
+       Why: Charts must fit below hero */
+    const availableHeightPerPage = contentHeight - heroHeightMM - 5; // 5mm gap
+
+    /* What: Create PDF document
+       Why: jsPDF generates the PDF file */
+    const pdf = new jsPDF({
+      orientation,
+      unit: 'mm',
+      format,
+      compress: true,
+    });
+
+    /* What: Convert hero to image data once
+       Why: Reuse on every page */
+    const heroImgData = heroCanvas.toDataURL('image/png', quality);
+
+    let currentPage = 0;
+    let currentYPosition = margin + heroHeightMM + 5; // Start below hero + gap
+
+    /* What: Helper to add hero to current page
+       Why: DRY principle for hero rendering */
+    const addHeroToPage = () => {
+      pdf.addImage(
+        heroImgData,
+        'PNG',
+        margin,
+        margin,
+        heroWidthMM,
+        heroHeightMM,
+        undefined,
+        'FAST'
+      );
+    };
+
+    // Add hero to first page
+    addHeroToPage();
+
+    /* What: Place charts with intelligent pagination
+       Why: Prevent splitting, move to next page if doesn't fit */
+    for (let i = 0; i < chartCanvases.length; i++) {
+      const canvas = chartCanvases[i];
+      const imgData = canvas.toDataURL('image/png', quality);
+      
+      // Calculate chart dimensions
+      const chartRatio = canvas.width / canvas.height;
+      const chartWidth = contentWidth;
+      const chartHeight = chartWidth / chartRatio;
+      
+      /* What: Check if chart fits on current page
+         Why: Move to next page if it doesn't fit */
+      if (currentYPosition + chartHeight > contentHeight + margin) {
+        // Chart doesn't fit, move to next page
+        pdf.addPage();
+        currentPage++;
+        
+        // Add hero to new page
+        addHeroToPage();
+        
+        // Reset Y position below hero
+        currentYPosition = margin + heroHeightMM + 5;
+      }
+      
+      /* What: Add chart to current position
+         Why: Place chart on page */
+      pdf.addImage(
+        imgData,
+        'PNG',
+        margin,
+        currentYPosition,
+        chartWidth,
+        chartHeight,
+        undefined,
+        'FAST'
+      );
+      
+      // Move Y position down for next chart (with spacing)
+      currentYPosition += chartHeight + 5; // 5mm gap between charts
+    }
+
+    /* What: Generate filename with timestamp
+       Why: Avoid filename conflicts */
+    const timestamp = new Date().toISOString().split('T')[0];
+    const fullFilename = `${filename}_${timestamp}.pdf`;
+
+    /* What: Save PDF file
+       Why: Trigger browser download */
+    pdf.save(fullFilename);
+
+    const totalPages = currentPage + 1;
+    console.log(`✅ PDF exported: ${fullFilename} (${totalPages} page${totalPages > 1 ? 's' : ''})`);  } catch (error) {
+    console.error('Failed to export enhanced PDF:', error);
+    throw error;
+  }
+}
+
+/* What: Export current page to PDF with error handling (legacy)
    Why: Wrapper with user-friendly error messages */
 export async function exportPageToPDF(
   elementId: string = 'pdf-export-content',
