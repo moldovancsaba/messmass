@@ -176,10 +176,18 @@ export async function exportPageWithSmartPagination(
       logging: false,
     });
 
-    /* What: Find all block cards (not individual charts) for 3-column layout
+    /* What: Find all block cards using data-pdf-block attribute
        Why: Capture blocks to maintain desktop 3-column grid layout
        Note: Blocks contain multiple charts in rows */
-    const blockElements = contentElement.querySelectorAll('.blockCard, [data-pdf-block="true"]');
+    const blockElements = contentElement.querySelectorAll('[data-pdf-block="true"]');
+    
+    console.log(`🔍 Found ${blockElements.length} blocks to capture`);
+    
+    if (blockElements.length === 0) {
+      console.warn('⚠️ No blocks found! Check that data-pdf-block="true" is set on block elements');
+      throw new Error('No chart blocks found to export. Please ensure charts are loaded before exporting.');
+    }
+    
     const blockCanvases: HTMLCanvasElement[] = [];
     
     /* What: Set wider capture width for 3-column desktop layout
@@ -187,13 +195,17 @@ export async function exportPageWithSmartPagination(
     const originalContentWidth = (contentElement as HTMLElement).style.width;
     (contentElement as HTMLElement).style.width = '1200px';
     
-    for (const element of Array.from(blockElements)) {
-      const canvas = await html2canvas(element as HTMLElement, {
+    for (let i = 0; i < blockElements.length; i++) {
+      const element = blockElements[i] as HTMLElement;
+      console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
+      
+      const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
         width: 1200, // Desktop width for 3-column layout
       });
       blockCanvases.push(canvas);
+      console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px`);
     }
     
     /* What: Restore original width
@@ -315,8 +327,15 @@ export async function exportPageWithSmartPagination(
     pdf.save(fullFilename);
 
     const totalPages = currentPage + 1;
-    console.log(`✅ PDF exported: ${fullFilename} (${totalPages} page${totalPages > 1 ? 's' : ''})`);  } catch (error) {
+    console.log(`✅ PDF exported: ${fullFilename} (${totalPages} page${totalPages > 1 ? 's' : ''})`);  
+  } catch (error) {
     console.error('Failed to export enhanced PDF:', error);
+    
+    // Show user-friendly error message
+    if (error instanceof Error && error.message.includes('No chart blocks found')) {
+      alert('⚠️ Unable to export PDF: No charts found to export. Please wait for charts to load and try again.');
+    }
+    
     throw error;
   }
 }
