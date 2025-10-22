@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import StandardState from '@/components/StandardState';
+import DataQualityInsights from '@/components/DataQualityInsights';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import { exportPageToPDF } from '@/lib/export/pdf';
+import { generateDataQualityInsights } from '@/lib/dataValidator';
 import styles from './page.module.css';
 
 interface ProjectStats {
@@ -83,6 +85,14 @@ export default function StatsPage() {
   const [error, setError] = useState<string | null>(null);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
   const [resolving, setResolving] = useState(true);
+  const [showInsights, setShowInsights] = useState(false); // Toggle for data quality insights (default hidden)
+  
+  // WHAT: Generate data quality insights at top level (React hooks rule)
+  // WHY: useMemo must be called unconditionally, not inside conditional rendering
+  const dataQualityInsights = useMemo(() => {
+    if (!project) return null;
+    return generateDataQualityInsights(project.stats as Partial<ProjectStats>, project);
+  }, [project]);
 
   // Function to force refresh data
   const refreshData = async () => {
@@ -390,6 +400,38 @@ export default function StatsPage() {
             </label>
           )}
         />
+
+        {/* WHAT: Data Quality Insights Section
+            WHY: Show KYC-based insights for data completeness, consistency, and enrichment opportunities
+            HOW: Use pre-computed insights from top-level useMemo hook */}
+        {dataQualityInsights && showInsights && (
+          <div className={styles.insightsSection}>
+            <div className={styles.insightsSectionHeader}>
+              <h2 className={styles.insightsSectionTitle}>📊 Data Quality Insights</h2>
+              <button 
+                className={styles.toggleInsightsButton}
+                onClick={() => setShowInsights(false)}
+                aria-label="Hide insights"
+              >
+                Hide Insights
+              </button>
+            </div>
+            <DataQualityInsights insights={dataQualityInsights} variant="stats" />
+          </div>
+        )}
+        
+        {/* WHAT: Show insights button when hidden
+            WHY: Allow users to toggle insights visibility */}
+        {!showInsights && (
+          <div className={styles.showInsightsContainer}>
+            <button
+              className={styles.showInsightsButton}
+              onClick={() => setShowInsights(true)}
+            >
+              📊 Show Data Quality Insights
+            </button>
+          </div>
+        )}
 
         {/* What: Data visualization section with modern spacing
             Why: Unified component handles all chart rendering with proper grid layout */}

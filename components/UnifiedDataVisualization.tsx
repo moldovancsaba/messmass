@@ -166,6 +166,14 @@ export default function UnifiedDataVisualization({
                           </ChartContainer>
                         ) : (
                           <div className={`unified-chart-item ${styles.chartItemDirect}`}>
+                            {/* WHAT: Render title/subtitle even without ChartContainer
+                                WHY: Users need context for what each chart represents */}
+                            {(result.title || result.subtitle) && (
+                              <div className={styles.chartTitleDirect}>
+                                {result.title && <h3 className={styles.chartTitleH3}>{result.title}</h3>}
+                                {result.subtitle && <p className={styles.chartSubtitle}>{result.subtitle}</p>}
+                              </div>
+                            )}
                             <DynamicChart result={result} chartWidth={chart.width} />
                           </div>
                         )}
@@ -286,15 +294,18 @@ export default function UnifiedDataVisualization({
           display: flex;
           flex-direction: column;
           width: 100%;
-          /* Enforce a uniform chart tile height across all chart types and spans */
-          height: var(--chart-tile-height, 360px);
+          /* WHAT: Increased height for better legend visibility
+             WHY: Previous 360px was cutting off legends at bottom */
+          height: var(--chart-tile-height, 450px);
           min-height: 0;
           /* Remove any global max-width and force items to fill their grid track */
           max-width: none;
           justify-self: stretch;
           min-width: 0;
           position: relative;
-          overflow: hidden; /* final guard */
+          /* WHAT: Changed to overflow: visible for legends
+             WHY: Allow legends to be fully visible even if they extend slightly */
+          overflow: visible;
         }
         
         /* Ensure all chart content fills the available space */

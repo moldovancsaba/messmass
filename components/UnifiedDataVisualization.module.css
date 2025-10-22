@@ -104,6 +104,26 @@
   height: 100%;
 }
 
+/* WHAT: Chart title for direct rendering (without ChartContainer) */
+.chartTitleDirect {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.chartTitleH3 {
+  margin: 0 0 0.25rem 0;
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.chartSubtitle {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
 /* WHAT: No charts message */
 .noChartsMessage {
   text-align: center;

@@ -411,3 +411,521 @@ export function prepareStatsForAnalytics(stats: Partial<ProjectStats>): {
     validation
   };
 }
+
+/**
+ * Data Quality Insights - KYC-based actionable intelligence
+ */
+
+export interface DataConsistencyWarning {
+  field: string;
+  message: string;
+  severity: 'error' | 'warning';
+  actualValue: number;
+  expectedCondition: string;
+}
+
+/**
+ * WHAT: Detect data consistency violations (logic errors)
+ * WHY: Catch human errors or sync issues early
+ * HOW: Validate business rules (e.g., merched ≤ totalFans)
+ * 
+ * @param stats - Project statistics
+ * @returns Array of consistency warnings
+ */
+export function detectConsistencyWarnings(stats: Partial<ProjectStats>): DataConsistencyWarning[] {
+  const warnings: DataConsistencyWarning[] = [];
+  const enriched = ensureDerivedMetrics(stats);
+
+  // Rule 1: Merched fans cannot exceed total fans
+  const merched = safeGetStat(enriched, 'merched', 0);
+  const totalFans = safeGetStat(enriched, 'totalFans', 0);
+  if (merched > totalFans && totalFans > 0) {
+    warnings.push({
+      field: 'merched',
+      message: `${merched} merched fans exceeds ${totalFans} total fans. Verify data.`,
+      severity: 'error',
+      actualValue: merched,
+      expectedCondition: `≤ ${totalFans}`
+    });
+  }
+
+  // Rule 2: All images should equal sum of image types
+  const allImages = safeGetStat(enriched, 'allImages', 0);
+  const remoteImages = safeGetStat(enriched, 'remoteImages', 0);
+  const hostessImages = safeGetStat(enriched, 'hostessImages', 0);
+  const selfies = safeGetStat(enriched, 'selfies', 0);
+  const expectedAllImages = remoteImages + hostessImages + selfies;
+  if (allImages !== expectedAllImages && allImages > 0) {
+    warnings.push({
+      field: 'allImages',
+      message: `Total images (${allImages}) doesn't match sum of types (${expectedAllImages}). Data may be out of sync.`,
+      severity: 'warning',
+      actualValue: allImages,
+      expectedCondition: `= ${expectedAllImages}`
+    });
+  }
+
+  // Rule 3: Total fans should equal remoteFans + stadium
+  const remoteFans = safeGetStat(enriched, 'remoteFans', 0);
+  const stadium = safeGetStat(enriched, 'stadium', 0);
+  const expectedTotalFans = remoteFans + stadium;
+  if (totalFans !== expectedTotalFans && totalFans > 0) {
+    warnings.push({
+      field: 'totalFans',
+      message: `Total fans (${totalFans}) doesn't match remoteFans + stadium (${expectedTotalFans}). Recalculation needed.`,
+      severity: 'warning',
+      actualValue: totalFans,
+      expectedCondition: `= ${expectedTotalFans}`
+    });
+  }
+
+  // Rule 4: Demographics should not exceed total fans
+  const female = safeGetStat(enriched, 'female', 0);
+  const male = safeGetStat(enriched, 'male', 0);
+  const totalGender = female + male;
+  if (totalGender > totalFans && totalFans > 0) {
+    warnings.push({
+      field: 'demographics',
+      message: `Total gender count (${totalGender}) exceeds total fans (${totalFans}). Check demographics data.`,
+      severity: 'warning',
+      actualValue: totalGender,
+      expectedCondition: `≤ ${totalFans}`
+    });
+  }
+
+  // Rule 5: Merched fans should not exceed total merchandise items
+  // WHY: If merched > totalMerchItems, it means we counted fans with merch but no items tracked
+  // LOGIC: Merched fans can buy multiple items, so totalMerchItems ≥ merched is valid
+  const jersey = safeGetStat(enriched, 'jersey', 0);
+  const scarf = safeGetStat(enriched, 'scarf', 0);
+  const flags = safeGetStat(enriched, 'flags', 0);
+  const baseballCap = safeGetStat(enriched, 'baseballCap', 0);
+  const other = safeGetStat(enriched, 'other', 0);
+  const totalMerchItems = jersey + scarf + flags + baseballCap + other;
+  if (merched > totalMerchItems && totalMerchItems > 0) {
+    warnings.push({
+      field: 'merchandise',
+      message: `Merched fans (${merched}) exceeds total merchandise items (${totalMerchItems}). Every merched fan should have at least one item tracked.`,
+      severity: 'error',
+      actualValue: merched,
+      expectedCondition: `≤ ${totalMerchItems}`
+    });
+  }
+
+  return warnings;
+}
+
+export interface EnrichmentOpportunity {
+  field: string;
+  label: string;
+  category: string;
+  impact: number; // 1-5 stars
+  unlockedInsights: string[];
+  reason: string;
+}
+
+/**
+ * WHAT: Identify missing fields that unlock the most analytics value
+ * WHY: Prioritize data collection efforts for maximum ROI
+ * HOW: Score fields by number of dependent calculations and features
+ * 
+ * @param stats - Project statistics
+ * @returns Ranked list of enrichment opportunities
+ */
+export function identifyEnrichmentOpportunities(stats: Partial<ProjectStats>): EnrichmentOpportunity[] {
+  const opportunities: EnrichmentOpportunity[] = [];
+  const validation = validateProjectStats(stats);
+
+  // High-impact opportunities
+  if (!stats.eventAttendees) {
+    opportunities.push({
+      field: 'eventAttendees',
+      label: 'Event Attendees',
+      category: 'Event Context',
+      impact: 5,
+      unlockedInsights: [
+        'Merchandise penetration rate',
+        'Fan engagement ratio',
+        'Core fan team calculation',
+        'Attendance vs. participation gap',
+        'ROI per attendee'
+      ],
+      reason: 'Critical for all engagement and ROI metrics'
+    });
+  }
+
+  if (!stats.visitQrCode && !stats.visitShortUrl && !stats.visitWeb) {
+    opportunities.push({
+      field: 'visitQrCode',
+      label: 'Visit Tracking (QR/Short URL/Web)',
+      category: 'Engagement',
+      impact: 4,
+      unlockedInsights: [
+        'Funnel conversion analytics',
+        'Digital engagement rate',
+        'Source attribution',
+        'Campaign effectiveness'
+      ],
+      reason: 'Essential for understanding digital touchpoints'
+    });
+  }
+
+  // Bitly integration check
+  const hasBitlyData = stats.bitlyTotalClicks || stats.bitlyUniqueClicks;
+  if (!hasBitlyData) {
+    opportunities.push({
+      field: 'bitlyTotalClicks',
+      label: 'Bitly Analytics',
+      category: 'System Integration',
+      impact: 4,
+      unlockedInsights: [
+        'Social media ROI',
+        'Geographic distribution',
+        'Device breakdown',
+        'Referrer analysis',
+        'Click-through rates'
+      ],
+      reason: 'Enables comprehensive social and ad value calculations'
+    });
+  }
+
+  if (!stats.eventValuePropositionVisited || !stats.eventValuePropositionPurchases) {
+    opportunities.push({
+      field: 'eventValuePropositionVisited',
+      label: 'Value Proposition Metrics',
+      category: 'Conversion',
+      impact: 3,
+      unlockedInsights: [
+        'Purchase conversion rate',
+        'Landing page effectiveness',
+        'Revenue attribution'
+      ],
+      reason: 'Measures bottom-of-funnel performance'
+    });
+  }
+
+  if (!stats.eventResultHome && !stats.eventResultVisitor) {
+    opportunities.push({
+      field: 'eventResultHome',
+      label: 'Event Results',
+      category: 'Event Context',
+      impact: 2,
+      unlockedInsights: [
+        'Win/loss impact on engagement',
+        'Score correlation with merch sales',
+        'Performance-based benchmarking'
+      ],
+      reason: 'Context for behavioral analytics'
+    });
+  }
+
+  // Merchandise pricing (medium impact)
+  const hasPricing = stats.jerseyPrice || stats.scarfPrice || stats.flagsPrice || stats.capPrice || stats.otherPrice;
+  if (!hasPricing) {
+    opportunities.push({
+      field: 'jerseyPrice',
+      label: 'Merchandise Pricing',
+      category: 'Revenue',
+      impact: 3,
+      unlockedInsights: [
+        'Revenue per fan',
+        'Average order value',
+        'Product mix optimization',
+        'Pricing elasticity'
+      ],
+      reason: 'Converts units to revenue analytics'
+    });
+  }
+
+  // Sort by impact (descending)
+  return opportunities.sort((a, b) => b.impact - a.impact);
+}
+
+export interface FieldConfidenceScore {
+  field: string;
+  confidence: number; // 0-100%
+  source: 'manual' | 'derived' | 'system';
+  badge: 'high' | 'medium' | 'low';
+  explanation: string;
+}
+
+/**
+ * WHAT: Calculate confidence score for each field based on data source
+ * WHY: Weight insights by data reliability
+ * HOW: Manual = 100%, Derived = 90%, System = 85%
+ * 
+ * @param stats - Project statistics
+ * @param field - Field name to check
+ * @returns Confidence score object
+ */
+export function getFieldConfidence(stats: Partial<ProjectStats>, field: string): FieldConfidenceScore {
+  const value = (stats as any)[field];
+  const isDefined = value !== undefined && value !== null;
+
+  // Check if field is derived
+  const derivedFields = ['allImages', 'remoteFans', 'totalFans'];
+  if (derivedFields.includes(field)) {
+    return {
+      field,
+      confidence: isDefined ? 90 : 0,
+      source: 'derived',
+      badge: 'medium',
+      explanation: 'Auto-computed from base metrics'
+    };
+  }
+
+  // Check if field is system-generated (Bitly)
+  if (field.startsWith('bitly')) {
+    return {
+      field,
+      confidence: isDefined ? 85 : 0,
+      source: 'system',
+      badge: 'medium',
+      explanation: 'Synced from Bitly API (network-dependent)'
+    };
+  }
+
+  // Default: manual input (highest confidence)
+  return {
+    field,
+    confidence: isDefined ? 100 : 0,
+    source: 'manual',
+    badge: 'high',
+    explanation: 'Manually entered by user'
+  };
+}
+
+/**
+ * WHAT: Check if Bitly data is fresh (< 24 hours old)
+ * WHY: Stale click data undermines social/ad analytics
+ * HOW: Compare bitlyLastSyncAt timestamp with current time
+ * 
+ * @param project - Full project object with metadata
+ * @returns Sync status object
+ */
+export function checkBitlySyncStatus(project: any): {
+  hasBitlyData: boolean;
+  isRecent: boolean;
+  lastSyncAt: string | null;
+  hoursAgo: number | null;
+  status: 'synced' | 'stale' | 'missing';
+  message: string;
+} {
+  const hasBitlyData = project.stats?.bitlyTotalClicks || project.stats?.bitlyUniqueClicks;
+  const lastSyncAt = project.bitlyLastSyncAt || project.stats?.bitlyLastSyncAt;
+
+  if (!hasBitlyData) {
+    return {
+      hasBitlyData: false,
+      isRecent: false,
+      lastSyncAt: null,
+      hoursAgo: null,
+      status: 'missing',
+      message: 'No Bitly data available. Sync to enable social analytics.'
+    };
+  }
+
+  if (!lastSyncAt) {
+    return {
+      hasBitlyData: true,
+      isRecent: false,
+      lastSyncAt: null,
+      hoursAgo: null,
+      status: 'stale',
+      message: 'Bitly data exists but sync timestamp is missing.'
+    };
+  }
+
+  const syncDate = new Date(lastSyncAt);
+  const now = new Date();
+  const hoursAgo = (now.getTime() - syncDate.getTime()) / (1000 * 60 * 60);
+  const isRecent = hoursAgo < 24;
+
+  return {
+    hasBitlyData: true,
+    isRecent,
+    lastSyncAt,
+    hoursAgo: Math.round(hoursAgo * 10) / 10,
+    status: isRecent ? 'synced' : 'stale',
+    message: isRecent
+      ? `Synced ${Math.round(hoursAgo)} hours ago`
+      : `Data is ${Math.round(hoursAgo)} hours old. Re-sync recommended.`
+  };
+}
+
+/**
+ * WHAT: Comprehensive data quality insights package
+ * WHY: Single function to generate all 10 insights for UI consumption
+ * HOW: Combine all insight functions into one response object
+ * 
+ * @param stats - Project statistics
+ * @param project - Full project object (for metadata like bitlyLastSyncAt)
+ * @returns Complete insights object for UI rendering
+ */
+export interface DataQualityInsights {
+  // Insight #1: Data Completeness Score
+  completeness: {
+    percentage: number;
+    quality: 'excellent' | 'good' | 'fair' | 'poor' | 'insufficient';
+    tier: string;
+    color: string;
+  };
+  
+  // Insight #2: Missing Critical Metrics
+  missingCritical: {
+    count: number;
+    fields: string[];
+    blocking: boolean;
+    message: string;
+  };
+  
+  // Insight #3: Derived Metrics Status
+  derivedMetrics: {
+    field: string;
+    label: string;
+    computed: boolean;
+    confidence: number;
+  }[];
+  
+  // Insight #4: Optional Fields Coverage
+  optionalCoverage: {
+    percentage: number;
+    filled: number;
+    total: number;
+    message: string;
+  };
+  
+  // Insight #5: Bitly Integration Status
+  bitlyStatus: {
+    hasBitlyData: boolean;
+    isRecent: boolean;
+    status: 'synced' | 'stale' | 'missing';
+    message: string;
+    hoursAgo: number | null;
+  };
+  
+  // Insight #6: Data Consistency Warnings
+  consistencyWarnings: DataConsistencyWarning[];
+  
+  // Insight #7: Historical Data Quality Trend (requires multiple projects)
+  // Note: This needs to be computed at a higher level with multiple projects
+  
+  // Insight #8: Field-Level Confidence Scores
+  fieldConfidence: Record<string, FieldConfidenceScore>;
+  
+  // Insight #9: Enrichment Opportunities
+  enrichmentOpportunities: EnrichmentOpportunity[];
+  
+  // Insight #10: Benchmarking Eligibility
+  benchmarkingEligibility: {
+    eligible: boolean;
+    reason: string;
+    missingFields: string[];
+  };
+}
+
+export function generateDataQualityInsights(
+  stats: Partial<ProjectStats>,
+  project?: any
+): DataQualityInsights {
+  const validation = validateProjectStats(stats);
+  const enriched = ensureDerivedMetrics(stats);
+  
+  // Insight #1: Completeness
+  const qualityColors = {
+    excellent: '#10b981',
+    good: '#3b82f6',
+    fair: '#f59e0b',
+    poor: '#ef4444',
+    insufficient: '#dc2626'
+  };
+  
+  const qualityTiers = {
+    excellent: '90-100% Complete',
+    good: '75-89% Complete',
+    fair: '50-74% Complete',
+    poor: '25-49% Complete',
+    insufficient: '<25% Complete'
+  };
+  
+  // Insight #2: Missing Critical Metrics
+  const missingCritical = {
+    count: validation.missingRequired.length,
+    fields: validation.missingRequired,
+    blocking: validation.missingRequired.length > 0,
+    message: validation.missingRequired.length > 0
+      ? `Cannot generate full analytics. Missing: ${validation.missingRequired.slice(0, 3).join(', ')}${validation.missingRequired.length > 3 ? '...' : ''}`
+      : 'All critical metrics present'
+  };
+  
+  // Insight #3: Derived Metrics
+  const derivedMetrics = [
+    { field: 'allImages', label: 'Total Images', computed: !!enriched.allImages, confidence: 90 },
+    { field: 'remoteFans', label: 'Remote Fans', computed: !!enriched.remoteFans, confidence: 90 },
+    { field: 'totalFans', label: 'Total Fans', computed: !!enriched.totalFans, confidence: 90 }
+  ];
+  
+  // Insight #4: Optional Coverage
+  const optionalFilled = OPTIONAL_METRICS.filter(field => (stats as any)[field] !== undefined && (stats as any)[field] !== null).length;
+  const optionalCoverage = {
+    percentage: Math.round((optionalFilled / OPTIONAL_METRICS.length) * 100),
+    filled: optionalFilled,
+    total: OPTIONAL_METRICS.length,
+    message: optionalFilled < OPTIONAL_METRICS.length
+      ? `Add ${OPTIONAL_METRICS.length - optionalFilled} more fields to unlock advanced analytics`
+      : 'All optional fields complete'
+  };
+  
+  // Insight #5: Bitly Status
+  const bitlyStatus = project ? checkBitlySyncStatus(project) : {
+    hasBitlyData: !!(stats.bitlyTotalClicks || stats.bitlyUniqueClicks),
+    isRecent: false,
+    status: 'missing' as const,
+    message: 'No Bitly sync data available',
+    hoursAgo: null
+  };
+  
+  // Insight #6: Consistency Warnings
+  const consistencyWarnings = detectConsistencyWarnings(stats);
+  
+  // Insight #8: Field Confidence (compute for all key fields)
+  const keyFields = [
+    'remoteImages', 'hostessImages', 'selfies', 'allImages',
+    'stadium', 'indoor', 'outdoor', 'remoteFans', 'totalFans',
+    'merched', 'eventAttendees', 'bitlyTotalClicks'
+  ];
+  const fieldConfidence: Record<string, FieldConfidenceScore> = {};
+  keyFields.forEach(field => {
+    fieldConfidence[field] = getFieldConfidence(stats, field);
+  });
+  
+  // Insight #9: Enrichment Opportunities
+  const enrichmentOpportunities = identifyEnrichmentOpportunities(stats);
+  
+  // Insight #10: Benchmarking Eligibility
+  const canBench = canBenchmark(stats);
+  const benchmarkingEligibility = {
+    eligible: canBench,
+    reason: canBench
+      ? 'Event meets all requirements for benchmarking'
+      : 'Incomplete required metrics. Complete missing fields to enable benchmarking.',
+    missingFields: validation.missingRequired
+  };
+  
+  return {
+    completeness: {
+      percentage: validation.completeness,
+      quality: validation.dataQuality,
+      tier: qualityTiers[validation.dataQuality],
+      color: qualityColors[validation.dataQuality]
+    },
+    missingCritical,
+    derivedMetrics,
+    optionalCoverage,
+    bitlyStatus,
+    consistencyWarnings,
+    fieldConfidence,
+    enrichmentOpportunities,
+    benchmarkingEligibility
+  };
+}

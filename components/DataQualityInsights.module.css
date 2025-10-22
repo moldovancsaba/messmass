@@ -1,0 +1,339 @@
+/* DataQualityInsights Component Styles */
+/* WHAT: Styles for data quality and KYC insights visualization */
+/* WHY: Centralized styling using design system tokens, no inline styles */
+
+.insightsContainer {
+  display: grid;
+  gap: var(--mm-space-4);
+}
+
+.insightCard {
+  /* Card styling handled by ColoredCard component */
+}
+
+.insightHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-3);
+}
+
+.insightTitle {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  color: var(--mm-gray-900);
+}
+
+.qualityBadge {
+  padding: var(--mm-space-1) var(--mm-space-3);
+  border-radius: var(--mm-radius-xl);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-white);
+}
+
+/* Completeness Bar */
+.completenessBar {
+  width: 100%;
+  height: 24px;
+  background: var(--mm-gray-200);
+  border-radius: var(--mm-radius-xl);
+  overflow: hidden;
+  position: relative;
+}
+
+.completenessFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-white);
+}
+
+.completenessText {
+  margin-top: var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* Warning List */
+.warningList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.warningItem {
+  padding: var(--mm-space-3);
+  margin-bottom: var(--mm-space-2);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-warning-light);
+  border-left: 4px solid var(--mm-warning);
+}
+
+.warningItem.error {
+  background: var(--mm-error-light);
+  border-left-color: var(--mm-error);
+}
+
+.warningField {
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-1);
+}
+
+.warningMessage {
+  font-size: var(--mm-font-size-sm);
+}
+
+.warningDetails {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  margin-top: var(--mm-space-1);
+}
+
+/* Opportunity List */
+.opportunityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.opportunityItem {
+  padding: var(--mm-space-4);
+  margin-bottom: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-gray-100);
+  border-left: 4px solid var(--mm-chart-blue);
+}
+
+.opportunityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mm-space-2);
+}
+
+.opportunityLabel {
+  font-weight: var(--mm-font-weight-semibold);
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-900);
+}
+
+.starRating {
+  font-size: var(--mm-font-size-base);
+}
+
+.opportunityReason {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-2);
+}
+
+.opportunityInsightTitle {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-chart-blue);
+  margin-bottom: var(--mm-space-1);
+}
+
+.insightList {
+  margin: var(--mm-space-2) 0 0 0;
+  padding-left: var(--mm-space-5);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.insightList li {
+  margin-bottom: var(--mm-space-1);
+}
+
+/* Derived Metrics Grid */
+.derivedMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-3);
+}
+
+.derivedMetric {
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.metricLabel {
+  font-weight: var(--mm-font-weight-semibold);
+  font-size: var(--mm-font-size-sm);
+  margin-bottom: var(--mm-space-1);
+  color: var(--mm-gray-900);
+}
+
+.metricStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
+.confidenceBadge {
+  display: inline-block;
+  padding: 0.125rem var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.confidenceBadge.high {
+  background: var(--mm-success-light);
+  color: var(--mm-color-secondary-800);
+}
+
+.confidenceBadge.medium {
+  background: var(--mm-warning-light);
+  color: var(--mm-warning);
+}
+
+.confidenceBadge.low {
+  background: var(--mm-error-light);
+  color: var(--mm-error);
+}
+
+/* Coverage Stats */
+.coverageStats {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-3);
+}
+
+.coverageNumber {
+  font-size: var(--mm-font-size-4xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-chart-blue);
+}
+
+.coverageLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.coverageMessage {
+  margin-top: var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* Bitly Status */
+.bitlyStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+}
+
+.bitlyStatus.synced {
+  background: var(--mm-success-light);
+  border-left: 4px solid var(--mm-success);
+}
+
+.bitlyStatus.stale {
+  background: var(--mm-warning-light);
+  border-left: 4px solid var(--mm-warning);
+}
+
+.bitlyStatus.missing {
+  background: var(--mm-error-light);
+  border-left: 4px solid var(--mm-error);
+}
+
+.statusIcon {
+  font-size: var(--mm-font-size-2xl);
+}
+
+.statusTitle {
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-1);
+  color: var(--mm-gray-900);
+}
+
+.statusMessage {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* Eligibility Status */
+.eligibilityStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+}
+
+.eligibilityStatus.eligible {
+  background: var(--mm-success-light);
+  border: 2px solid var(--mm-success);
+}
+
+.eligibilityStatus.ineligible {
+  background: var(--mm-error-light);
+  border: 2px solid var(--mm-error);
+}
+
+.eligibilityIcon {
+  font-size: var(--mm-font-size-4xl);
+}
+
+.eligibilityText {
+  flex: 1;
+}
+
+.eligibilityTitle {
+  font-weight: var(--mm-font-weight-semibold);
+  margin-bottom: var(--mm-space-1);
+  color: var(--mm-gray-900);
+}
+
+.eligibilityReason {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.missingFieldsContainer {
+  margin-top: var(--mm-space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-1);
+}
+
+.missingFieldCode {
+  font-size: var(--mm-font-size-xs);
+  padding: 0.125rem var(--mm-space-2);
+  background: var(--mm-white);
+  borderRadius: var(--mm-radius-md);
+  font-family: var(--font-mono);
+}
+
+.missingFieldBadge {
+  padding: var(--mm-space-1) var(--mm-space-2);
+  background: var(--mm-error-light);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-family: var(--font-mono);
+}
+
+.introText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-4);
+}

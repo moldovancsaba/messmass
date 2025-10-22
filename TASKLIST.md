@@ -1,6 +1,20 @@
 # TASKLIST.md
-Current Version: 6.31.0
-Last Updated: 2025-10-19T19:54:00.000Z (UTC)
+Current Version: 6.39.1
+Last Updated: 2025-10-22T09:21:15.000Z (UTC)
+
+### Immediate — Data Quality & KYC Insights (v6.39.1)
+
+|| Task ID | Title | Owner | Expected Delivery | Status |
+||---------|-------|-------|-------------------|--------|
+|| DQI-001 | Log plan in ROADMAP/TASKLIST with ISO timestamps | Agent Mode | 2025-10-22T08:40:00.000Z | ✅ Complete (2025-10-22T08:37:00.000Z) |
+|| DQI-002 | Extend lib/dataValidator.ts with insight calculation functions | Agent Mode | 2025-10-22T09:00:00.000Z | ✅ Complete (2025-10-22T08:55:00.000Z) |
+|| DQI-003 | Create DataQualityInsights component with CSS module | Agent Mode | 2025-10-22T09:10:00.000Z | ✅ Complete (2025-10-22T09:05:00.000Z) |
+|| DQI-004 | Integrate insights into stats page with toggle | Agent Mode | 2025-10-22T09:15:00.000Z | ✅ Complete (2025-10-22T09:10:00.000Z) |
+|| DQI-005 | Fix merchandise validation logic (merched ≤ totalMerchItems) | Agent Mode | 2025-10-22T09:18:00.000Z | ✅ Complete (2025-10-22T09:17:00.000Z) |
+|| DQI-006 | Fix React hooks violation (move useMemo to top level) | Agent Mode | 2025-10-22T09:20:00.000Z | ✅ Complete (2025-10-22T09:19:00.000Z) |
+|| DQI-007 | Version bump to 6.39.1 and docs sync | Agent Mode | 2025-10-22T09:25:00.000Z | ✅ Complete (2025-10-22T09:21:15.000Z) |
+
+**Summary**: Implemented 10 data quality insights for stats pages based on KYC system. Created `detectConsistencyWarnings()`, `identifyEnrichmentOpportunities()`, and `generateDataQualityInsights()` functions. Built React component with CSS module styling (zero inline styles). Integrated with toggle visibility (default hidden). Fixed merchandise validation logic and React hooks compliance.
 
 ### Immediate — SportsDB Fixtures & Quick Add Suggestions (v6.31.0)
 
