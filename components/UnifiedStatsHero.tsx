@@ -39,11 +39,7 @@ export default function UnifiedStatsHero({
       title={title}
       hashtags={hashtags}
       categorizedHashtags={categorizedHashtags}
-      statusBadge={{
-        role: 'Event Statistics',
-        level: 'Live Data',
-        status: '✅ Active'
-      }}
+      statusBadge={undefined}
       onExportCSV={onExportCSV}
       onExportPDF={onExportPDF}
       pageStyle={pageStyle}

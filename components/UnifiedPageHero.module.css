@@ -32,10 +32,12 @@
   font-weight: 600;
 }
 
-/* WHAT: Hashtags display wrapper */
+/* WHAT: Hashtags display wrapper - center aligned
+ * WHY: Visual consistency with centered title
+ * HOW: justify-content center for horizontal alignment */
 .hashtagsWrapper {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
