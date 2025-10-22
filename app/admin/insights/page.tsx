@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
 import InsightCard from '@/components/InsightCard';
 import styles from './page.module.css';
 
@@ -245,86 +246,111 @@ export default function InsightsDashboard() {
         </div>
       )}
 
-      {/* WHAT: Filters section */}
-      {/* WHY: Allow users to filter insights by type and severity */}
-      <div className={styles.filters}>
-        <div className={styles.filterGroup}>
-          <label htmlFor="typeFilter">Type:</label>
-          <select
-            id="typeFilter"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className={styles.select}
-          >
-            <option value="">All Types</option>
-            <option value="anomaly">⚠️ Anomalies</option>
-            <option value="trend">📈 Trends</option>
-            <option value="benchmark">🏆 Benchmarks</option>
-            <option value="prediction">🔮 Predictions</option>
-            <option value="recommendation">💡 Recommendations</option>
-          </select>
+      {/* WHAT: Filters section with prominent card design */}
+      {/* WHY: Make filters highly visible and easy to understand */}
+      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <div className={styles.filtersHeader}>
+          <h3 className={styles.filtersTitle}>🎛️ Filter Insights</h3>
+          <p className={styles.filtersSubtitle}>Narrow down insights by type, severity, and event count</p>
         </div>
+        
+        <div className={styles.filters}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="typeFilter" className={styles.filterLabel}>
+              <span className={styles.labelIcon}>📊</span>
+              Type
+            </label>
+            <select
+              id="typeFilter"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="form-input"
+            >
+              <option value="">All Types</option>
+              <option value="anomaly">⚠️ Anomalies</option>
+              <option value="trend">📈 Trends</option>
+              <option value="benchmark">🏆 Benchmarks</option>
+              <option value="prediction">🔮 Predictions</option>
+              <option value="recommendation">💡 Recommendations</option>
+            </select>
+          </div>
 
-        <div className={styles.filterGroup}>
-          <label htmlFor="severityFilter">Severity:</label>
-          <select
-            id="severityFilter"
-            value={severityFilter}
-            onChange={(e) => setSeverityFilter(e.target.value)}
-            className={styles.select}
-          >
-            <option value="">All Severities</option>
-            <option value="critical">🔴 Critical</option>
-            <option value="warning">🟡 Warning</option>
-            <option value="info">🔵 Info</option>
-          </select>
+          <div className={styles.filterGroup}>
+            <label htmlFor="severityFilter" className={styles.filterLabel}>
+              <span className={styles.labelIcon}>🚦</span>
+              Severity
+            </label>
+            <select
+              id="severityFilter"
+              value={severityFilter}
+              onChange={(e) => setSeverityFilter(e.target.value)}
+              className="form-input"
+            >
+              <option value="">All Severities</option>
+              <option value="critical">🔴 Critical</option>
+              <option value="warning">🟡 Warning</option>
+              <option value="info">🔵 Info</option>
+            </select>
+          </div>
+
+          <div className={styles.filterGroup}>
+            <label htmlFor="limitFilter" className={styles.filterLabel}>
+              <span className={styles.labelIcon}>🔢</span>
+              Events Analyzed
+            </label>
+            <select
+              id="limitFilter"
+              value={limit}
+              onChange={(e) => setLimit(parseInt(e.target.value, 10))}
+              className="form-input"
+            >
+              <option value="5">5 Recent Events</option>
+              <option value="10">10 Recent Events</option>
+              <option value="20">20 Recent Events</option>
+              <option value="50">50 Recent Events</option>
+            </select>
+          </div>
         </div>
+      </ColoredCard>
 
-        <div className={styles.filterGroup}>
-          <label htmlFor="limitFilter">Events:</label>
-          <select
-            id="limitFilter"
-            value={limit}
-            onChange={(e) => setLimit(parseInt(e.target.value, 10))}
-            className={styles.select}
-          >
-            <option value="5">5 Recent</option>
-            <option value="10">10 Recent</option>
-            <option value="20">20 Recent</option>
-            <option value="50">50 Recent</option>
-          </select>
-        </div>
-      </div>
-
-      {/* WHAT: Summary statistics */}
+      {/* WHAT: Summary statistics with visual hierarchy */}
       {/* WHY: Quick overview of insights distribution */}
       {metadata && (
-        <div className={styles.summary}>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.totalInsights}</span>
-            <span className={styles.statLabel}>Total Insights</span>
+        <ColoredCard accentColor="#10b981" hoverable={false}>
+          <h3 className={styles.summaryTitle}>📈 Insights Overview</h3>
+          <div className={styles.summary}>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📊</span>
+              <span className={styles.statValue}>{metadata.totalInsights}</span>
+              <span className={styles.statLabel}>Total Insights</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>⚠️</span>
+              <span className={styles.statValue}>{metadata.anomalies}</span>
+              <span className={styles.statLabel}>Anomalies</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>📈</span>
+              <span className={styles.statValue}>{metadata.trends}</span>
+              <span className={styles.statLabel}>Trends</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>🏆</span>
+              <span className={styles.statValue}>{metadata.benchmarks}</span>
+              <span className={styles.statLabel}>Benchmarks</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>🔮</span>
+              <span className={styles.statValue}>{metadata.predictions}</span>
+              <span className={styles.statLabel}>Predictions</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statIcon}>💡</span>
+              <span className={styles.statValue}>{metadata.recommendations}</span>
+              <span className={styles.statLabel}>Recommendations</span>
+            </div>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.anomalies}</span>
-            <span className={styles.statLabel}>⚠️ Anomalies</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.trends}</span>
-            <span className={styles.statLabel}>📈 Trends</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.benchmarks}</span>
-            <span className={styles.statLabel}>🏆 Benchmarks</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.predictions}</span>
-            <span className={styles.statLabel}>🔮 Predictions</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>{metadata.recommendations}</span>
-            <span className={styles.statLabel}>💡 Recommendations</span>
-          </div>
-        </div>
+        </ColoredCard>
       )}
 
       {/* WHAT: Loading state */}
