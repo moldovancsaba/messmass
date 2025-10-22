@@ -4,7 +4,7 @@
  * AUTH: Requires admin authentication */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 /* WHAT: POST - Set a style as global default
@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Check if style exists
     const style = await db

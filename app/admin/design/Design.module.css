@@ -261,6 +261,27 @@
 }
 
 /* ========================================
+   PAGE STYLES COMPONENTS
+======================================== */
+
+/* WHAT: Mini color swatches for style preview cards
+ * WHY: Compact visual preview of color schemes in the styles list */
+.miniColorSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);
+  flex-shrink: 0;
+  cursor: help;
+  transition: all var(--transition-fast);
+}
+
+.miniColorSwatch:hover {
+  transform: scale(1.1);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* ========================================
    RESPONSIVE DESIGN
 ======================================== */
 

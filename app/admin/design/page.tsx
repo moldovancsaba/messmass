@@ -10,6 +10,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
+import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
 export default function AdminDesignPage() {
   /* WHAT: Typography font selection state
@@ -24,10 +25,19 @@ export default function AdminDesignPage() {
   /* WHAT: Copy feedback state
    * WHY: Show visual confirmation when user copies token/code to clipboard */
   const [copiedText, setCopiedText] = useState<string>('');
+  
+  /* WHAT: Page Styles state
+   * WHY: Manage customizable theming system with list of styles and CRUD operations */
+  const [pageStyles, setPageStyles] = useState<PageStyleEnhanced[]>([]);
+  const [stylesLoading, setStylesLoading] = useState(false);
+  const [stylesError, setStylesError] = useState<string>('');
 
   useEffect(() => {
     loadTypographySettings();
-  }, []);
+    if (activeTab === 'page-styles') {
+      loadPageStyles();
+    }
+  }, [activeTab]);
   
   const loadTypographySettings = async () => {
     try {
@@ -73,6 +83,28 @@ export default function AdminDesignPage() {
       console.error('Failed to copy:', error);
     }
   };
+  
+  /* WHAT: Load page styles from API
+   * WHY: Fetch all custom theme configurations for management */
+  const loadPageStyles = async () => {
+    setStylesLoading(true);
+    setStylesError('');
+    try {
+      const response = await fetch('/api/page-styles-enhanced');
+      const data = await response.json();
+      
+      if (data.success) {
+        setPageStyles(data.styles || []);
+      } else {
+        setStylesError(data.error || 'Failed to load styles');
+      }
+    } catch (error) {
+      console.error('Failed to load page styles:', error);
+      setStylesError('Network error loading styles');
+    } finally {
+      setStylesLoading(false);
+    }
+  };
 
   /* WHAT: Design token catalog from theme.css
    * WHY: Centralized reference for all CSS variables */
@@ -108,6 +140,7 @@ export default function AdminDesignPage() {
     { id: 'components', label: '🧩 Components', color: '#10b981' },
     { id: 'utilities', label: '⚡ Utilities', color: '#f59e0b' },
     { id: 'standards', label: '📋 Standards', color: '#ef4444' },
+    { id: 'page-styles', label: '🎨 Page Styles', color: '#ec4899' },
   ];
 
   return (
@@ -365,6 +398,145 @@ export default function AdminDesignPage() {
               </div>
             </div>
           </ColoredCard>
+        </>
+      )}
+      
+      {/* PAGE STYLES TAB */}
+      {activeTab === 'page-styles' && (
+        <>
+          <ColoredCard accentColor="#ec4899" hoverable={false} className="mb-6">
+            <h2 className={styles.sectionTitle}>🎨 Page Styles Configuration</h2>
+            <p className={styles.sectionDesc}>
+              Create and manage custom themes for different projects. Customize backgrounds, typography, and color schemes.
+            </p>
+            
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <p className="text-sm text-gray-600">
+                  {pageStyles.length} {pageStyles.length === 1 ? 'style' : 'styles'} configured
+                </p>
+              </div>
+              <button className="btn btn-primary">
+                ➕ Create New Style
+              </button>
+            </div>
+          </ColoredCard>
+          
+          {/* Loading State */}
+          {stylesLoading && (
+            <ColoredCard accentColor="#3b82f6" hoverable={false}>
+              <div className="text-center py-8">
+                <p className="text-lg">Loading styles...</p>
+              </div>
+            </ColoredCard>
+          )}
+          
+          {/* Error State */}
+          {stylesError && (
+            <ColoredCard accentColor="#ef4444" hoverable={false}>
+              <div className={styles.warningBox}>
+                <h3 className={styles.warningTitle}>⚠️ Error Loading Styles</h3>
+                <p>{stylesError}</p>
+                <button onClick={loadPageStyles} className="btn btn-secondary mt-4">
+                  🔄 Retry
+                </button>
+              </div>
+            </ColoredCard>
+          )}
+          
+          {/* Styles List */}
+          {!stylesLoading && !stylesError && pageStyles.length === 0 && (
+            <ColoredCard accentColor="#6b7280" hoverable={false}>
+              <div className="text-center py-12">
+                <p className="text-xl mb-2">🎨</p>
+                <p className="text-lg font-medium mb-2">No custom styles yet</p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Create your first custom theme to personalize your project pages
+                </p>
+                <button className="btn btn-primary">
+                  ➕ Create First Style
+                </button>
+              </div>
+            </ColoredCard>
+          )}
+          
+          {!stylesLoading && !stylesError && pageStyles.length > 0 && (
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {pageStyles.map((style) => (
+                <ColoredCard
+                  key={style._id}
+                  accentColor={style.colorScheme.primary}
+                  hoverable
+                >
+                  <div className="mb-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-lg">{style.name}</h3>
+                      {style.isGlobalDefault && (
+                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">
+                          🌐 Global
+                        </span>
+                      )}
+                    </div>
+                    {style.description && (
+                      <p className="text-sm text-gray-600 mb-3">{style.description}</p>
+                    )}
+                  </div>
+                  
+                  {/* Color Scheme Preview */}
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 mb-2">Color Scheme:</p>
+                    <div className="flex gap-2">
+                      <div
+                        className={styles.miniColorSwatch}
+                        style={{ backgroundColor: style.colorScheme.primary }}
+                        title="Primary"
+                      />
+                      <div
+                        className={styles.miniColorSwatch}
+                        style={{ backgroundColor: style.colorScheme.secondary }}
+                        title="Secondary"
+                      />
+                      <div
+                        className={styles.miniColorSwatch}
+                        style={{ backgroundColor: style.colorScheme.success }}
+                        title="Success"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Typography */}
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 mb-1">Typography:</p>
+                    <p className="text-sm font-medium capitalize">{style.typography.fontFamily}</p>
+                  </div>
+                  
+                  {/* Projects Count */}
+                  {style.projectIds && style.projectIds.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs text-gray-500">
+                        📊 Used by {style.projectIds.length} {style.projectIds.length === 1 ? 'project' : 'projects'}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Actions */}
+                  <div className="flex gap-2 mt-4">
+                    <button className="btn btn-small btn-secondary flex-1">
+                      ✏️ Edit
+                    </button>
+                    <button className="btn btn-small btn-secondary">
+                      👁️
+                    </button>
+                    {!style.isGlobalDefault && (
+                      <button className="btn btn-small btn-danger">
+                        🗑️
+                      </button>
+                    )}
+                  </div>
+                </ColoredCard>
+              ))}
+            </div>
+          )}
         </>
       )}
 

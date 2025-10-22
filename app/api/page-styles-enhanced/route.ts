@@ -4,7 +4,7 @@
  * AUTH: Requires admin authentication for all mutations */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
@@ -13,7 +13,8 @@ import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
  * RETURNS: Array of PageStyleEnhanced objects */
 export async function GET(request: NextRequest) {
   try {
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     const styles = await db
       .collection('page_styles_enhanced')
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      styles: styles.map(s => ({
+      styles: styles.map((s: any) => ({
         ...s,
         _id: s._id.toString()
       }))
@@ -44,7 +45,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Validation: name is required and must be unique
     if (!body.name || body.name.trim() === '') {
@@ -121,7 +123,8 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Check if style exists
     const existing = await db
@@ -206,7 +209,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Check if style exists
     const existing = await db

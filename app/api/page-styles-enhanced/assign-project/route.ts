@@ -4,7 +4,7 @@
  * AUTH: Requires admin authentication */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 /* WHAT: POST - Assign style to project
@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Validate style exists
     const style = await db
@@ -115,7 +116,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    const { db } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db();
     
     // Get project to find current styleId
     const project = await db
