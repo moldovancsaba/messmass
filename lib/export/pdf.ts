@@ -161,12 +161,18 @@ export async function exportPageWithSmartPagination(
        Why: These elements are not relevant for PDF export */
     heroElement.setAttribute('data-pdf-capture', 'true');
     
-    /* What: Hide "Live Data" status badge for PDF
+    /* What: Hide status badges for PDF (Live Data and Active status)
        Why: PDFs are static snapshots, not live data */
     const liveBadge = heroElement.querySelector('.admin-level');
+    const activeBadge = heroElement.querySelector('.admin-status');
     const originalLiveBadgeDisplay = liveBadge ? (liveBadge as HTMLElement).style.display : '';
+    const originalActiveBadgeDisplay = activeBadge ? (activeBadge as HTMLElement).style.display : '';
+    
     if (liveBadge) {
       (liveBadge as HTMLElement).style.display = 'none';
+    }
+    if (activeBadge) {
+      (activeBadge as HTMLElement).style.display = 'none';
     }
 
     /* What: Capture hero as canvas
@@ -218,6 +224,9 @@ export async function exportPageWithSmartPagination(
     if (liveBadge) {
       (liveBadge as HTMLElement).style.display = originalLiveBadgeDisplay;
     }
+    if (activeBadge) {
+      (activeBadge as HTMLElement).style.display = originalActiveBadgeDisplay;
+    }
 
     console.log(`✅ Captured ${blockCanvases.length} block elements with 3-column layout`);
 
@@ -256,6 +265,7 @@ export async function exportPageWithSmartPagination(
 
     let currentPage = 0;
     let currentYPosition = margin + heroHeightMM + 5; // Start below hero + gap
+    let heroAddedToCurrentPage = false; // Track if hero was added to current page
 
     /* What: Helper to add hero to current page
        Why: DRY principle for hero rendering */
@@ -270,13 +280,12 @@ export async function exportPageWithSmartPagination(
         undefined,
         'FAST'
       );
+      heroAddedToCurrentPage = true;
     };
 
-    // Add hero to first page
-    addHeroToPage();
-
     /* What: Place blocks with intelligent pagination
-       Why: Prevent splitting, move to next page if doesn't fit */
+       Why: Prevent splitting, move to next page if doesn't fit
+       Note: Hero is added lazily when first block is placed */
     for (let i = 0; i < blockCanvases.length; i++) {
       const canvas = blockCanvases[i];
       const imgData = canvas.toDataURL('image/png', quality);
@@ -292,12 +301,16 @@ export async function exportPageWithSmartPagination(
         // Block doesn't fit, move to next page
         pdf.addPage();
         currentPage++;
+        heroAddedToCurrentPage = false;
         
-        // Add hero to new page
-        addHeroToPage();
-        
-        // Reset Y position below hero
+        // Reset Y position below hero (will be added below)
         currentYPosition = margin + heroHeightMM + 5;
+      }
+      
+      /* What: Add hero if not yet added to current page
+         Why: Ensures hero appears before content on each page */
+      if (!heroAddedToCurrentPage) {
+        addHeroToPage();
       }
       
       /* What: Add block to current position

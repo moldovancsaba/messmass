@@ -42,13 +42,8 @@ export default function UnifiedPageHero({
         <div className="admin-header-content">
           <div className="admin-branding">
             <h1 className="admin-title">{title}</h1>
-            {pageStyle?.name && (
-              <div className={styles.styleNameContainer}>
-                <span className={styles.styleNameBadge}>
-                  Using style: {pageStyle.name}
-                </span>
-              </div>
-            )}
+            {/* WHAT: Style name badge removed - not relevant for viewers
+                WHY: Internal configuration detail not needed in public view */}
             
             {/* Beautiful Bubble Hashtags Display with Category Prefixes */}
             {(() => {
