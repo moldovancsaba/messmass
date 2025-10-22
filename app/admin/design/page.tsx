@@ -186,6 +186,34 @@ export default function AdminDesignPage() {
       alert('❌ Network error deleting style');
     }
   };
+  
+  /* WHAT: Set style as global default
+   * WHY: Apply theme to all projects without specific style */
+  const handleSetGlobalDefault = async (styleId: string, styleName: string) => {
+    if (!confirm(`Set "${styleName}" as the global default theme?\n\nThis will apply to all projects that don't have a specific style assigned.`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/page-styles-enhanced/set-global', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ styleId })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('✅ Global default updated!');
+        loadPageStyles(); // Refresh to show updated badges
+      } else {
+        alert('❌ Error: ' + (data.error || 'Failed to set global default'));
+      }
+    } catch (error) {
+      console.error('Failed to set global default:', error);
+      alert('❌ Network error setting global default');
+    }
+  };
 
   /* WHAT: Design token catalog from theme.css
    * WHY: Centralized reference for all CSS variables */
@@ -601,25 +629,30 @@ export default function AdminDesignPage() {
                   )}
                   
                   {/* Actions */}
-                  <div className="flex gap-2 mt-4">
-                    <button 
-                      className="btn btn-small btn-secondary flex-1"
-                      onClick={() => handleEditStyle(style)}
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button 
-                      className="btn btn-small btn-secondary"
-                      title="Preview (coming soon)"
-                    >
-                      👁️
-                    </button>
-                    {!style.isGlobalDefault && (
+                  <div className="flex flex-col gap-2 mt-4">
+                    <div className="flex gap-2">
                       <button 
-                        className="btn btn-small btn-danger"
-                        onClick={() => style._id && handleDeleteStyle(style._id, style.name)}
+                        className="btn btn-small btn-secondary flex-1"
+                        onClick={() => handleEditStyle(style)}
                       >
-                        🗑️
+                        ✏️ Edit
+                      </button>
+                      {!style.isGlobalDefault && style._id && (
+                        <button 
+                          className="btn btn-small btn-danger"
+                          onClick={() => handleDeleteStyle(style._id!, style.name)}
+                          title="Delete style"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                    {!style.isGlobalDefault && style._id && (
+                      <button 
+                        className="btn btn-small btn-info"
+                        onClick={() => handleSetGlobalDefault(style._id!, style.name)}
+                      >
+                        🌐 Set as Global Default
                       </button>
                     )}
                   </div>
