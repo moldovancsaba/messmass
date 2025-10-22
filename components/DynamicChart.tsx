@@ -9,14 +9,16 @@ interface DynamicChartProps {
   result: ChartCalculationResult;
   className?: string;
   chartWidth?: number; // 1 = portrait, 2+ = landscape
+  showTitleInCard?: boolean; // WHAT: Whether to show title/subtitle inside the chart card
 }
 
 /**
  * Dynamic Chart Component
- * Renders charts based on ChartCalculationResult from the chart configuration system
- * Supports both pie charts and horizontal bar charts with consistent styling
+ * WHAT: Renders charts with consistent card structure: title area, graphic area, legend area
+ * WHY: Ensures all chart types (KPI, PIE, BAR) have aligned heights and proper spacing
+ * HOW: Fixed-height sections prevent overlap and content clipping
  */
-export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '', chartWidth = 1 }) => {
+export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '', chartWidth = 1, showTitleInCard = true }) => {
   // Handle empty or error cases
   if (!result || !result.elements || result.elements.length === 0) {
     return (
@@ -41,12 +43,44 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     );
   }
 
+  // WHAT: Unified card structure wrapper for all chart types
+  // WHY: Ensures consistent layout with title, graphic, and legend areas
+  const ChartCard = ({ children }: { children: React.ReactNode }) => (
+    <div className={`${styles.chartCard} ${className}`}>
+      {/* WHAT: Title area with fixed height
+          WHY: Prevents overlap with graphic area below */}
+      {showTitleInCard && (result.title || result.subtitle) && (
+        <div className={styles.chartTitleArea}>
+          {result.title && <h3 className={styles.chartTitle}>{result.title}</h3>}
+          {result.subtitle && <p className={styles.chartSubtitle}>{result.subtitle}</p>}
+        </div>
+      )}
+      {/* WHAT: Graphic area with fixed height
+          WHY: All chart types render in same vertical space for alignment */}
+      <div className={styles.chartGraphicArea}>
+        {children}
+      </div>
+    </div>
+  );
+
   if (result.type === 'pie') {
-    return <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} className={className} chartWidth={chartWidth} />;
+    return (
+      <ChartCard>
+        <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} chartWidth={chartWidth} />
+      </ChartCard>
+    );
   } else if (result.type === 'bar') {
-    return <BarChart result={result} className={className} chartWidth={chartWidth} />;
+    return (
+      <ChartCard>
+        <BarChart result={result} chartWidth={chartWidth} />
+      </ChartCard>
+    );
   } else if (result.type === 'kpi') {
-    return <KPIChart result={result} className={className} chartWidth={chartWidth} />;
+    return (
+      <ChartCard>
+        <KPIChart result={result} chartWidth={chartWidth} />
+      </ChartCard>
+    );
   }
 
   return (

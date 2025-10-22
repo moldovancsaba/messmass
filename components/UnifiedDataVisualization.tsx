@@ -149,34 +149,19 @@ export default function UnifiedDataVisualization({
                     const maxDesktopUnits = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
                     const safeWidth = Math.min(Math.max(chart.width ?? 1, 1), maxDesktopUnits);
 
+                    // WHAT: Single clean card wrapper, no double-boxing
+                    // WHY: DynamicChart now handles its own card structure with title area
+                    // HOW: Direct rendering with unified chart item styling
                     return (
                       <div
                         key={`${idSuffix}-${chart.chartId}`}
-                        className={`chart-item chart-width-${safeWidth}`}
+                        className={`chart-item chart-width-${safeWidth} unified-chart-item`}
                       >
-                        {useChartContainer ? (
-                          <ChartContainer
-                            title={result.title}
-                            subtitle={result.subtitle}
-                            emoji={result.emoji}
-                            className="unified-chart-item"
-                            chartWidth={chart.width}
-                          >
-                            <DynamicChart result={result} chartWidth={chart.width} />
-                          </ChartContainer>
-                        ) : (
-                          <div className={`unified-chart-item ${styles.chartItemDirect}`}>
-                            {/* WHAT: Render title/subtitle even without ChartContainer
-                                WHY: Users need context for what each chart represents */}
-                            {(result.title || result.subtitle) && (
-                              <div className={styles.chartTitleDirect}>
-                                {result.title && <h3 className={styles.chartTitleH3}>{result.title}</h3>}
-                                {result.subtitle && <p className={styles.chartSubtitle}>{result.subtitle}</p>}
-                              </div>
-                            )}
-                            <DynamicChart result={result} chartWidth={chart.width} />
-                          </div>
-                        )}
+                        <DynamicChart 
+                          result={result} 
+                          chartWidth={chart.width}
+                          showTitleInCard={true}
+                        />
                       </div>
                     );
                   })
@@ -265,47 +250,46 @@ export default function UnifiedDataVisualization({
         .chart-width-5 { grid-column: span 5 !important; }
         .chart-width-6 { grid-column: span 6 !important; }
 
+        /* WHAT: Unified chart item with improved spacing and height
+         * WHY: Single clean card container without double-boxing
+         * HOW: Flex layout with proper padding and overflow handling */
         .unified-chart-item {
-          background: rgba(248, 250, 252, 0.8);
-          border-radius: 12px;
-          padding: 1.5rem;
-          border: 1px solid rgba(226, 232, 240, 0.8);
+          background: var(--mm-white);
+          border-radius: var(--mm-radius-lg);
+          padding: var(--mm-space-6);
+          border: 1px solid var(--mm-border-color-light);
           transition: all 0.2s ease;
           height: 100%;
-          /* Strategic: include border-box so padding doesn't reduce usable width */
           box-sizing: border-box;
-          /* Ensure inner content cannot overflow and overlap neighbors */
           overflow: hidden;
           position: relative;
           display: flex;
           flex-direction: column;
-          isolation: isolate; /* create stacking context to avoid overlay bleeding */
+          box-shadow: var(--mm-shadow-sm);
         }
         /* Prevent flex children from expanding beyond container height */
         .unified-chart-item > * { min-height: 0; }
         
         .unified-chart-item:hover {
-          /* Remove translateY to prevent tiles from sliding and overlapping */
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-          border-color: rgba(99, 102, 241, 0.3);
+          box-shadow: var(--mm-shadow-md);
+          border-color: var(--mm-color-primary-300);
         }
         
+        /* WHAT: Chart item container with fixed height for consistent alignment
+         * WHY: All charts must have same height regardless of content
+         * HOW: Fixed height with proper overflow handling */
         .chart-item {
           display: flex;
           flex-direction: column;
           width: 100%;
-          /* WHAT: Increased height for better legend visibility
-             WHY: Previous 360px was cutting off legends at bottom */
-          height: var(--chart-tile-height, 450px);
-          min-height: 0;
-          /* Remove any global max-width and force items to fill their grid track */
+          height: 480px;
+          min-height: 480px;
+          max-height: 480px;
           max-width: none;
           justify-self: stretch;
           min-width: 0;
           position: relative;
-          /* WHAT: Changed to overflow: visible for legends
-             WHY: Allow legends to be fully visible even if they extend slightly */
-          overflow: visible;
+          overflow: hidden;
         }
         
         /* Ensure all chart content fills the available space */
