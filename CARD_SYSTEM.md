@@ -197,12 +197,23 @@ import ColoredCard from '@/components/ColoredCard';
 
 ---
 
+## 🎨 Interactive Reference
+
+**See ColoredCard in action**: Visit `/admin/design` (Components Tab) for:
+- Live ColoredCard examples with different accent colors
+- Interactive hover states
+- Copy-to-clipboard code snippets
+- Visual comparison of card variants
+
+---
+
 ## 📖 Related Docs
 
+- **[/admin/design](./app/admin/design/page.tsx)** — Interactive Design System Manager with live ColoredCard showcase
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Complete design system
 - [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) — Admin layout
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — System architecture
 
 ---
 
-*Version: 5.53.0 | Last Updated: 2025-10-13T11:23:00.000Z*
+*Version: 6.39.2 | Last Updated: 2025-10-22T17:35:32.000Z (UTC)*

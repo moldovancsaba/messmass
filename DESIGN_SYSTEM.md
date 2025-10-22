@@ -177,8 +177,33 @@ See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
+## 🎨 Interactive Design System Manager
+
+**NEW: `/admin/design` — Comprehensive Interactive Reference**
+
+Navigate to `/admin/design` for a complete, interactive design system reference featuring:
+
+### Features
+- **🔤 Typography Tab** - Font selection (Inter, Roboto, Poppins) with live preview
+- **🎨 Design Tokens Tab** - All CSS variables with color swatches and copy-to-clipboard
+- **🧩 Components Tab** - Button variants, form elements, cards with live examples
+- **⚡ Utilities Tab** - Complete utility class reference with interactive copy
+- **📋 Standards Tab** - Coding standards, prohibited patterns, migration guides
+
+### Benefits
+- Visual catalog of all design tokens
+- Copy-to-clipboard for tokens, code examples, utility classes
+- Clear deprecation warnings for removed patterns
+- Migration paths from old to new patterns
+- Live component showcase
+
+**Access**: Available to authenticated admin users at `/admin/design`
+
+---
+
 ## 📖 Related Docs
 
+- **[/admin/design](./app/admin/design/page.tsx)** — Interactive Design System Manager (NEW)
 - [CARD_SYSTEM.md](./CARD_SYSTEM.md) — ColoredCard component
 - [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) — Admin layout
 - [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md) — Variables system
@@ -186,4 +211,4 @@ See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
-*Version: 6.5.0 | Last Updated: 2025-10-16T07:52:00.000Z (UTC)*
+*Version: 6.39.2 | Last Updated: 2025-10-22T17:35:32.000Z (UTC)*

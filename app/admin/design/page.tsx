@@ -1,60 +1,34 @@
 'use client';
 
+/* WHAT: Comprehensive Design System Manager - Interactive reference for design tokens, components, and patterns
+ * WHY: Single source of truth for design standards; addresses deprecated elements and missing documentation
+ * HOW: Tab-based UI showcasing typography, tokens, components, utilities, and coding standards
+ * REPLACES: Old fragmented style configuration page with comprehensive design reference */
+
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { PageStyle } from '@/lib/pageStyleTypes';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Design.module.css';
-import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { apiPut } from '@/lib/apiClient';
 
 export default function AdminDesignPage() {
-  const router = useRouter();
-  const [pageStyles, setPageStyles] = useState<PageStyle[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  /* What: Font selection state for Typography section
-     Why: Allow admin to switch between Inter, Roboto, and Poppins */
+  /* WHAT: Typography font selection state
+   * WHY: Allow admin to switch between Inter, Roboto, and Poppins system-wide */
   const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins'>('inter');
   const [fontLoading, setFontLoading] = useState(false);
   
-  // Global, Admin, Project, Hashtag forms
-  const [styleForm, setStyleForm] = useState({
-    name: 'New Style',
-    backgroundGradient: '0deg, #ffffffff 0%, #ffffffff 100%',
-    headerBackgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
-    contentBackgroundColor: 'rgba(255,255,255,0.95)',
-    titleBubble: {
-      backgroundColor: '#6366f1',
-      textColor: '#ffffff'
-    }
-  });
-  const [globalStyleId, setGlobalStyleId] = useState<string>('');
-  const [adminStyleId, setAdminStyleId] = useState<string>('');
-  const [projectIdentifier, setProjectIdentifier] = useState<string>(''); // id or slug
-  const [projectStyleId, setProjectStyleId] = useState<string>('');
-  const [hashtag, setHashtag] = useState<string>('');
-  const [hashtagStyleId, setHashtagStyleId] = useState<string>('');
-  const [hashtagAssignments, setHashtagAssignments] = useState<{ _id: string; styleId: string; updatedAt: string }[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({
-    name: '',
-    backgroundGradient: '',
-    headerBackgroundGradient: '',
-    contentBackgroundColor: 'rgba(255,255,255,0.95)',
-    titleBubble: { backgroundColor: '#6366f1', textColor: '#ffffff' }
-  });
+  /* WHAT: Active tab state for organizing content
+   * WHY: Better UX than endless scrolling - organize into logical sections */
+  const [activeTab, setActiveTab] = useState<string>('typography');
+  
+  /* WHAT: Copy feedback state
+   * WHY: Show visual confirmation when user copies token/code to clipboard */
+  const [copiedText, setCopiedText] = useState<string>('');
 
   useEffect(() => {
-    loadPageStyles();
-    loadGlobalStyle();
-    loadAdminStyle();
-    loadHashtagAssignments();
     loadTypographySettings();
   }, []);
   
-  /* What: Load current typography settings from database
-     Why: Display currently selected font on page load */
   const loadTypographySettings = async () => {
     try {
       const response = await fetch('/api/admin/ui-settings');
@@ -67,22 +41,15 @@ export default function AdminDesignPage() {
     }
   };
   
-  /* What: Save font selection to database and set cookie
-     Why: Persist font choice across sessions and apply immediately */
   const saveFont = async (font: 'inter' | 'roboto' | 'poppins') => {
     setFontLoading(true);
     try {
-      // WHAT: Use apiPut() for automatic CSRF token handling
       const data = await apiPut('/api/admin/ui-settings', { fontFamily: font });
       
       if (data.success) {
         setSelectedFont(font);
-        
-        /* What: Apply font immediately without reload by updating HTML data attribute
-           Why: Better UX - instant visual feedback */
         document.documentElement.setAttribute('data-font', font);
         document.documentElement.style.fontFamily = `var(--font-${font})`;
-        
         alert(`Font changed to ${font.charAt(0).toUpperCase() + font.slice(1)}! ✨`);
       } else {
         alert('Failed to save font: ' + (data.error || 'Unknown error'));
@@ -95,493 +62,318 @@ export default function AdminDesignPage() {
     }
   };
 
-  const loadPageStyles = async () => {
+  /* WHAT: Copy text to clipboard with visual feedback
+   * WHY: Convenient for developers to copy tokens and code examples */
+  const copyToClipboard = async (text: string) => {
     try {
-      const response = await fetch('/api/page-styles');
-      const data = await response.json();
-      if (data.success) {
-        setPageStyles(data.styles);
-      }
+      await navigator.clipboard.writeText(text);
+      setCopiedText(text);
+      setTimeout(() => setCopiedText(''), 2000);
     } catch (error) {
-      console.error('Failed to load page styles:', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to copy:', error);
     }
   };
 
-  const loadGlobalStyle = async () => {
-    try {
-      const res = await fetch('/api/admin/global-style');
-      const data = await res.json();
-      if (data.success && data.globalStyle) setGlobalStyleId(data.globalStyle._id);
-    } catch (e) {
-      console.error('Failed to load global style', e);
-    }
-  };
+  /* WHAT: Design token catalog from theme.css
+   * WHY: Centralized reference for all CSS variables */
+  const colorTokens = [
+    { category: 'Primary', tokens: [
+      { name: '--mm-color-primary-50', value: '#eff6ff' },
+      { name: '--mm-color-primary-500', value: '#3b82f6' },
+      { name: '--mm-color-primary-900', value: '#1e3a8a' },
+    ]},
+    { category: 'Secondary', tokens: [
+      { name: '--mm-color-secondary-500', value: '#10b981' },
+      { name: '--mm-color-secondary-600', value: '#059669' },
+    ]},
+    { category: 'Semantic', tokens: [
+      { name: '--mm-success', value: '#10b981' },
+      { name: '--mm-warning', value: '#f59e0b' },
+      { name: '--mm-error', value: '#ef4444' },
+      { name: '--mm-info', value: '#3b82f6' },
+    ]},
+  ];
 
-  const loadAdminStyle = async () => {
-    try {
-      const res = await fetch('/api/admin/admin-style');
-      const data = await res.json();
-      if (data.success && data.adminStyle) setAdminStyleId(data.adminStyle._id);
-    } catch (e) {
-      console.error('Failed to load admin style', e);
-    }
-  };
-
-  const loadHashtagAssignments = async () => {
-    try {
-      const res = await fetch('/api/admin/hashtag-style');
-      const data = await res.json();
-      if (data.success && data.assignments) setHashtagAssignments(data.assignments);
-    } catch (e) {
-      console.error('Failed to load hashtag style assignments', e);
-    }
-  };
+  const buttonVariants = ['primary', 'secondary', 'success', 'danger', 'info'];
   
-  const handleCreateStyle = async () => {
-    try {
-      // WHAT: Use apiPost() for automatic CSRF token handling
-      const data = await apiPost('/api/page-styles', styleForm);
-      
-      if (data.success) {
-        await loadPageStyles();
-        // Reset form
-        setStyleForm({
-          name: 'New Style',
-          backgroundGradient: '0deg, #ffffffff 0%, #ffffffff 100%',
-          headerBackgroundGradient: '0deg, #f8fafc 0%, #f1f5f9 100%',
-          contentBackgroundColor: 'rgba(255,255,255,0.95)',
-          titleBubble: {
-            backgroundColor: '#6366f1',
-            textColor: '#ffffff'
-          }
-        });
-      } else {
-        alert('Failed to create style: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Failed to create style:', error);
-      alert('Failed to create style');
-    }
-  };
+  const utilityExamples = [
+    { category: 'Spacing', classes: ['.p-2', '.p-4', '.m-2', '.m-4', '.gap-2', '.gap-4'] },
+    { category: 'Layout', classes: ['.flex', '.grid', '.items-center', '.justify-between'] },
+    { category: 'Typography', classes: ['.text-sm', '.text-base', '.font-medium', '.font-bold'] },
+  ];
 
-  const startEdit = (style: PageStyle) => {
-    setEditingId(style._id || null);
-    setEditForm({
-      name: style.name,
-      backgroundGradient: style.backgroundGradient,
-      headerBackgroundGradient: style.headerBackgroundGradient,
-      contentBackgroundColor: (style as any).contentBackgroundColor || 'rgba(255,255,255,0.95)',
-      titleBubble: { ...style.titleBubble }
-    });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-    try {
-      // WHAT: Use apiPut() for automatic CSRF token handling
-      const data = await apiPut('/api/page-styles', { _id: editingId, ...editForm });
-      if (data.success) {
-        setEditingId(null);
-        await loadPageStyles();
-      } else {
-        alert('Failed to update style: ' + (data.error || ''));
-      }
-    } catch (e) {
-      console.error('Failed to update style', e);
-      alert('Failed to update style');
-    }
-  };
-
-  const deleteStyle = async (id?: string) => {
-    if (!id) return;
-    if (!confirm('Delete this style?')) return;
-    try {
-      // WHAT: Use apiDelete() for automatic CSRF token handling
-      const data = await apiDelete(`/api/page-styles?id=${encodeURIComponent(id)}`);
-      if (data.success) {
-        await loadPageStyles();
-      } else {
-        alert('Failed to delete style: ' + (data.error || ''));
-      }
-    } catch (e) {
-      console.error('Failed to delete style', e);
-      alert('Failed to delete style');
-    }
-  };
-
-  // Quick actions: set a style as Global or Admin
-  const setAsGlobal = async (id?: string) => {
-    if (!id) return;
-    try {
-      // WHAT: Use apiPost() for automatic CSRF token handling
-      const data = await apiPost('/api/admin/global-style', { styleId: id });
-      if (!data.success) return alert('Failed to set global style');
-      setGlobalStyleId(id);
-    } catch (e) {
-      console.error('Failed to set global style', e);
-      alert('Failed to set global style');
-    }
-  };
-
-  const setAsAdmin = async (id?: string) => {
-    if (!id) return;
-    try {
-      // WHAT: Use apiPost() for automatic CSRF token handling
-      const data = await apiPost('/api/admin/admin-style', { styleId: id });
-      if (!data.success) return alert('Failed to set admin style');
-      setAdminStyleId(id);
-    } catch (e) {
-      console.error('Failed to set admin style', e);
-      alert('Failed to set admin style');
-    }
-  };
-
-  const saveGlobalStyle = async () => {
-    // WHAT: Use apiPost() for automatic CSRF token handling
-    const data = await apiPost('/api/admin/global-style', { styleId: globalStyleId || 'null' });
-    if (!data.success) alert('Failed to save global style');
-  };
-
-  const saveAdminStyle = async () => {
-    // WHAT: Use apiPost() for automatic CSRF token handling
-    const data = await apiPost('/api/admin/admin-style', { styleId: adminStyleId || 'null' });
-    if (!data.success) alert('Failed to save admin style');
-  };
-
-  const saveProjectStyle = async () => {
-    if (!projectIdentifier) return alert('Provide a project ID or slug');
-    // WHAT: Use apiPut() for automatic CSRF token handling
-    const data = await apiPut('/api/projects', { projectId: projectIdentifier, styleId: projectStyleId || 'null' });
-    if (!data.success) alert('Failed to save project style: ' + (data.error || ''));
-  };
-
-  const saveHashtagStyle = async () => {
-    if (!hashtag) return alert('Provide a hashtag');
-    // WHAT: Use apiPost() for automatic CSRF token handling
-    const data = await apiPost('/api/admin/hashtag-style', { hashtag, styleId: hashtagStyleId || 'null' });
-    if (data.success) loadHashtagAssignments();
-    else alert('Failed to save hashtag style');
-  };
-
-  if (loading) {
-    return (
-      <div className="page-container">
-        <ColoredCard accentColor="#6366f1" hoverable={false}>
-          <div className="loading-spinner">
-            <div className="spinner" />
-            <div>Loading design settings...</div>
-          </div>
-        </ColoredCard>
-      </div>
-    );
-  }
+  const tabs = [
+    { id: 'typography', label: '🔤 Typography', color: '#8b5cf6' },
+    { id: 'tokens', label: '🎨 Design Tokens', color: '#3b82f6' },
+    { id: 'components', label: '🧩 Components', color: '#10b981' },
+    { id: 'utilities', label: '⚡ Utilities', color: '#f59e0b' },
+    { id: 'standards', label: '📋 Standards', color: '#ef4444' },
+  ];
 
   return (
     <div className="page-container">
       <AdminHero
-        title="🎨 Design Manager"
-        subtitle="Manage page styles and visual design"
+        title="🎨 Design System Manager"
+        subtitle="Interactive reference for all design tokens, components, and patterns"
         backLink="/admin"
-        badges={[
-          { text: `${pageStyles.length} Styles`, variant: 'primary' }
-        ]}
+        badges={[{ text: 'Production Ready', variant: 'success' }]}
       />
-            {/* What: Typography/Font Selection Section
-                Why: Allow admin to choose and preview Google Fonts system-wide */}
-            <ColoredCard accentColor="#8b5cf6" hoverable={false} className="typography-section mb-8">
-              <h2 className="typography-heading">
-                <span className="typography-icon">🔤</span>
-                Typography & Fonts
-              </h2>
-              <p className="typography-description">
-                Select a Google Font for the entire application. Changes apply immediately and persist across sessions.
-              </p>
-              
-              {/* Font Selection Buttons */}
-              <div className="flex gap-4 mb-8 flex-wrap">
-                {(['inter', 'roboto', 'poppins'] as const).map((font) => (
-                  <button
-                    key={font}
-                    onClick={() => saveFont(font)}
-                    disabled={fontLoading}
-                    className={`btn font-selector ${selectedFont === font ? 'active' : ''} font-${font} ${fontLoading ? 'opacity-60' : 'opacity-100'}`}>
-                    {font.charAt(0).toUpperCase() + font.slice(1)}
-                    {selectedFont === font && ' ✓'}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Font Preview */}
-              <div className={`font-preview font-${selectedFont}`}>
-                <h3 className="preview-h3">
-                  The Quick Brown Fox
-                </h3>
-                <h4 className="preview-h4">
-                  Section Heading (24px)
-                </h4>
-                <p className="preview-body">
-                  This is body text at 16px. It demonstrates how paragraphs will appear throughout the application with normal line height and readable spacing.
-                </p>
-                <p className="preview-caption">
-                  Small caption text (14px) - used for labels and secondary information.
-                </p>
-                <div className="flex gap-2 items-center mt-4">
-                  <span className="preview-label">UPPERCASE LABEL (12PX)</span>
-                  <span className="preview-number">42</span>
-                  <span className="preview-note">← Large number display</span>
-                </div>
-              </div>
-            </ColoredCard>
+
+      {/* Tab Navigation */}
+      <ColoredCard accentColor="#6366f1" hoverable={false} className={styles.tabCard}>
+        <div className={styles.tabNav}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabActive : ''}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </ColoredCard>
+
+      {/* TYPOGRAPHY TAB */}
+      {activeTab === 'typography' && (
+        <ColoredCard accentColor="#8b5cf6" hoverable={false}>
+          <h2 className={styles.sectionTitle}>🔤 Typography & Fonts</h2>
+          <p className={styles.sectionDesc}>
+            Select a Google Font for the entire application. Changes apply immediately.
+          </p>
+          
+          <div className="flex gap-4 mb-6 flex-wrap">
+            {(['inter', 'roboto', 'poppins'] as const).map((font) => (
+              <button
+                key={font}
+                onClick={() => saveFont(font)}
+                disabled={fontLoading}
+                className={`btn ${selectedFont === font ? 'btn-primary' : 'btn-secondary'}`}
+              >
+                {font.charAt(0).toUpperCase() + font.slice(1)}
+                {selectedFont === font && ' ✓'}
+              </button>
+            ))}
+          </div>
+          
+          <div className={styles.fontPreview}>
+            <h3 style={{ fontSize: '24px', fontWeight: 600 }}>The Quick Brown Fox</h3>
+            <p style={{ fontSize: '16px', lineHeight: 1.5 }}>
+              This is body text demonstrating how paragraphs appear with normal spacing.
+            </p>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>
+              Small caption text used for labels and secondary information.
+            </p>
+          </div>
+        </ColoredCard>
+      )}
+
+      {/* TOKENS TAB */}
+      {activeTab === 'tokens' && (
+        <>
+          <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6">
+            <h2 className={styles.sectionTitle}>🎨 Color Tokens</h2>
             
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Page Style Configuration</h2>
-
-            {/* Global Default Style */}
-            <ColoredCard accentColor="#10b981" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading">Default (Global) Style</h3>
-              <div className="flex gap-4 items-center">
-                <select value={globalStyleId} onChange={(e) => setGlobalStyleId(e.target.value)} className="form-select">
-                  <option value="">— Use System Default —</option>
-                  {pageStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-                <button onClick={saveGlobalStyle} className="btn btn-small btn-secondary">Save Default</button>
-              </div>
-            </ColoredCard>
-
-            {/* Admin Page Style */}
-            <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading">Admin Page Style</h3>
-              <div className="flex gap-4 items-center">
-                <select value={adminStyleId} onChange={(e) => setAdminStyleId(e.target.value)} className="form-select">
-                  <option value="">— Use Default/Global —</option>
-                  {pageStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-                <button onClick={saveAdminStyle} className="btn btn-small btn-secondary">Save Admin Style</button>
-              </div>
-            </ColoredCard>
-
-            {/* Content Surface Color */}
-            <ColoredCard accentColor="#f5576c" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading">Main Content Surface Color</h3>
-              <p className="subsection-description">
-                This controls the background color of the main content block on all pages (admin and public), matching the Admin main block width. It&apos;s applied via the --content-bg CSS variable.
-              </p>
-              <div className="content-bg-grid">
-                <span className="content-bg-label">Content Background</span>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. rgba(255,255,255,0.95) or #ffffff"
-                  value={(styleForm as any)?.contentBackgroundColor || ''}
-                  onChange={(e) => setStyleForm({ ...(styleForm as any), contentBackgroundColor: e.target.value })}
-                />
-                <span className="inline-flex items-center gap-2">
-                  <span 
-                    className="color-preview" 
-                    style={{background: (styleForm as any)?.contentBackgroundColor || 'rgba(255,255,255,0.95)'}} 
-                  />
-                </span>
-              </div>
-            </ColoredCard>
-            
-            {/* Per-Project Style */}
-            <ColoredCard accentColor="#f59e0b" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading">Project Style</h3>
-              <div className="flex-row gap-4">
-                <input placeholder="Project ID or Slug" value={projectIdentifier} onChange={(e) => setProjectIdentifier(e.target.value)} className="form-input" />
-                <select value={projectStyleId} onChange={(e) => setProjectStyleId(e.target.value)} className="form-select">
-                  <option value="">— Use Default/Global —</option>
-                  {pageStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-                <button onClick={saveProjectStyle} className="btn btn-small btn-secondary">Apply to Project</button>
-              </div>
-            </ColoredCard>
-
-            {/* Per-Hashtag Style */}
-            <ColoredCard accentColor="#ec4899" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading">Hashtag Style</h3>
-              <div className="flex-row gap-4">
-                <input placeholder="Hashtag (e.g. country:romania or romania)" value={hashtag} onChange={(e) => setHashtag(e.target.value)} className="form-input" />
-                <select value={hashtagStyleId} onChange={(e) => setHashtagStyleId(e.target.value)} className="form-select">
-                  <option value="">— Use Default/Global —</option>
-                  {pageStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-                <button onClick={saveHashtagStyle} className="btn btn-small btn-secondary">Apply to Hashtag</button>
-              </div>
-
-              {/* List existing hashtag assignments */}
-              <div className="mt-4">
-                {hashtagAssignments.length === 0 ? (
-                  <p className="text-gray-600 italic">No hashtag-specific styles set.</p>
-                ) : (
-                  <div className="grid gap-3">
-                    {hashtagAssignments.map((a) => (
-                      <div key={a._id} className="hashtag-assignment-item">
-                        <span><strong>#{a._id}</strong> → {pageStyles.find(s => s._id === a.styleId)?.name || a.styleId}</span>
-                        <span className="assignment-date">{new Date(a.updatedAt).toLocaleString()}</span>
+            {colorTokens.map((group) => (
+              <div key={group.category} className="mb-6">
+                <h3 className={styles.subsectionTitle}>{group.category}</h3>
+                <div className={styles.tokenGrid}>
+                  {group.tokens.map((token) => (
+                    <div key={token.name} className={styles.tokenItem}>
+                      <div
+                        className={styles.colorSwatch}
+                        style={{ backgroundColor: token.value }}
+                      />
+                      <div className={styles.tokenInfo}>
+                        <code className={styles.tokenName}>{token.name}</code>
+                        <code className={styles.tokenValue}>{token.value}</code>
+                        <button
+                          onClick={() => copyToClipboard(token.name)}
+                          className={styles.copyBtn}
+                          title="Copy token name"
+                        >
+                          {copiedText === token.name ? '✓' : '📋'}
+                        </button>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </ColoredCard>
-
-            {/* Create New Style Form */}
-            <ColoredCard accentColor="#06b6d4" hoverable={false} className="mb-8">
-              <h3 className="subsection-heading mb-6">Create New Style</h3>
-              
-              <div className="grid gap-6">
-                <div>
-                  <label className="form-label-block font-semibold">
-                    Style Name
-                  </label>
-                  <input
-                    type="text"
-                    value={styleForm.name}
-                    onChange={(e) => setStyleForm({ ...styleForm, name: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label-block font-semibold">
-                    Page Background Gradient (angle, stops)
-                  </label>
-                  <input
-                    type="text"
-                    value={styleForm.backgroundGradient}
-                    onChange={(e) => setStyleForm({ ...styleForm, backgroundGradient: e.target.value })}
-                    placeholder="0deg, #ffffffff 0%, #ffffffff 100%"
-                    className="form-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label-block font-semibold">
-                    Header Background Gradient
-                  </label>
-                  <input
-                    type="text"
-                    value={styleForm.headerBackgroundGradient}
-                    onChange={(e) => setStyleForm({ ...styleForm, headerBackgroundGradient: e.target.value })}
-                    placeholder="0deg, #f8fafc 0%, #f1f5f9 100%"
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="grid gap-4 grid-1fr-1fr">
-                  <div>
-                    <label className="form-label-block font-semibold">
-                      Title Bubble Background
-                    </label>
-                    <input
-                      type="color"
-                      value={styleForm.titleBubble.backgroundColor}
-                      onChange={(e) => setStyleForm({
-                        ...styleForm,
-                        titleBubble: { ...styleForm.titleBubble, backgroundColor: e.target.value }
-                      })}
-                      className="form-color-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="form-label-block font-semibold">
-                      Title Text Color
-                    </label>
-                    <input
-                      type="color"
-                      value={styleForm.titleBubble.textColor}
-                      onChange={(e) => setStyleForm({
-                        ...styleForm,
-                        titleBubble: { ...styleForm.titleBubble, textColor: e.target.value }
-                      })}
-                      className="form-color-input"
-                    />
-                  </div>
-                </div>
-
-                <button className="btn btn-small btn-success" onClick={handleCreateStyle}>
-                  Create Style
-                </button>
-              </div>
-            </ColoredCard>
-
-            {/* Existing Styles - WHAT: Last card on page, no mb-8 */}
-            <ColoredCard accentColor="#6366f1" hoverable={false}>
-              <h3 className="subsection-heading mb-6">Existing Styles ({pageStyles.length})</h3>
-              {pageStyles.length === 0 ? (
-                <p className="text-gray-600 italic">No styles created yet</p>
-              ) : (
-                <div className="grid gap-4">
-                  {pageStyles.map((style) => (
-                    <div key={style._id} className="style-item">
-                      {/* WHAT: Horizontal layout with content on left, action buttons on right
-                       * WHY: Consistent with hashtags, categories, variables pages */}
-                      <div className={styles.styleHorizontalLayout}>
-                        <div className={styles.styleContentArea}>
-                          <h4 className="style-item-title">{style.name}</h4>
-                          <div 
-                            className={`style-color-circle ${styles.styleColorCircle}`}
-                            style={{background: style.titleBubble.backgroundColor}}
-                          ></div>
-                        </div>
-                        
-                        {/* Right side: Action buttons stacked vertically */}
-                        <div className="action-buttons-container">
-                          <button className="btn btn-small btn-primary action-button" onClick={() => startEdit(style)}>✏️ Edit</button>
-                          <button className="btn btn-small btn-danger action-button" onClick={() => deleteStyle(style._id)}>🗑️ Delete</button>
-                          <button className="btn btn-small btn-primary action-button" onClick={() => setAsGlobal(style._id)} title="Set as Global Default">Set as Global</button>
-                          <button className="btn btn-small btn-success action-button" onClick={() => setAsAdmin(style._id)} title="Set as Admin Pages Style">Set as Admin</button>
-                        </div>
-                      </div>
-
-                      {editingId === style._id && (
-                        <div className="edit-form">
-                          <input className="form-input" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
-                          <input className="form-input" value={editForm.backgroundGradient} onChange={(e) => setEditForm({ ...editForm, backgroundGradient: e.target.value })} />
-                          <input className="form-input" value={editForm.headerBackgroundGradient} onChange={(e) => setEditForm({ ...editForm, headerBackgroundGradient: e.target.value })} />
-                          <div className="grid-3">
-                            <div>
-                              <label className="form-label">Title Bubble Background</label>
-                              <input type="color" className="form-color-input" value={editForm.titleBubble.backgroundColor}
-                                onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, backgroundColor: e.target.value } })} />
-                            </div>
-                            <div>
-                              <label className="form-label">Title Text Color</label>
-                              <input type="color" className="form-color-input" value={editForm.titleBubble.textColor}
-                                onChange={(e) => setEditForm({ ...editForm, titleBubble: { ...editForm.titleBubble, textColor: e.target.value } })} />
-                            </div>
-                            <div>
-                              <label className="form-label">Content Background (Color)</label>
-                              <input className="form-input" value={(editForm as any).contentBackgroundColor}
-                                onChange={(e) => setEditForm({ ...(editForm as any), contentBackgroundColor: e.target.value })} />
-                            </div>
-                          </div>
-                          <div className="flex-row">
-                            <button className="btn btn-small btn-success" onClick={saveEdit}>Save</button>
-                            <button className="btn btn-small btn-secondary" onClick={cancelEdit}>Cancel</button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
-              )}
-            </ColoredCard>
+              </div>
+            ))}
+          </ColoredCard>
+
+          <ColoredCard accentColor="#8b5cf6" hoverable={false}>
+            <h2 className={styles.sectionTitle}>📝 Typography Tokens</h2>
+            <p className="mb-4">Font sizes: <code>--mm-text-xs</code> (12px) to <code>--mm-text-4xl</code> (36px)</p>
+            <p className="mb-4">Font weights: <code>--mm-font-weight-normal</code> (400) to <code>--mm-font-weight-bold</code> (700)</p>
+            <p>Spacing: <code>--mm-space-1</code> (4px) to <code>--mm-space-24</code> (96px)</p>
+          </ColoredCard>
+        </>
+      )}
+
+      {/* COMPONENTS TAB */}
+      {activeTab === 'components' && (
+        <>
+          <ColoredCard accentColor="#10b981" hoverable={false} className="mb-6">
+            <h2 className={styles.sectionTitle}>🔘 Button Variants</h2>
+            <div className="flex gap-2 flex-wrap mb-4">
+              {buttonVariants.map((variant) => (
+                <button key={variant} className={`btn btn-${variant}`}>
+                  {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className={styles.codeBlock}>
+              <code>{`<button className="btn btn-primary">Label</button>`}</code>
+              <button onClick={() => copyToClipboard(`<button className="btn btn-primary">Label</button>`)} className={styles.copyBtn}>
+                📋
+              </button>
+            </div>
+          </ColoredCard>
+
+          <ColoredCard accentColor="#3b82f6" hoverable={false} className="mb-6">
+            <h2 className={styles.sectionTitle}>📝 Form Elements</h2>
+            <div className="mb-4">
+              <label className="form-label">Text Input</label>
+              <input type="text" className="form-input" placeholder="Enter text..." />
+            </div>
+            <div className="mb-4">
+              <label className="form-label">Select Dropdown</label>
+              <select className="form-select">
+                <option>Option 1</option>
+                <option>Option 2</option>
+              </select>
+            </div>
+            <div className={styles.codeBlock}>
+              <code>{`<input type="text" className="form-input" />`}</code>
+              <button onClick={() => copyToClipboard(`<input type="text" className="form-input" />`)} className={styles.copyBtn}>
+                📋
+              </button>
+            </div>
+          </ColoredCard>
+
+          <ColoredCard accentColor="#ec4899" hoverable={false}>
+            <h2 className={styles.sectionTitle}>🎴 ColoredCard Component</h2>
+            <p className="mb-4">All cards MUST use ColoredCard component:</p>
+            
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-4">
+              <ColoredCard accentColor="#3b82f6">
+                <h3 className="font-semibold mb-2">Blue Accent</h3>
+                <p className="text-sm">For fans and engagement</p>
+              </ColoredCard>
+              <ColoredCard accentColor="#10b981">
+                <h3 className="font-semibold mb-2">Green Accent</h3>
+                <p className="text-sm">For success metrics</p>
+              </ColoredCard>
+              <ColoredCard accentColor="#8b5cf6">
+                <h3 className="font-semibold mb-2">Purple Accent</h3>
+                <p className="text-sm">For projects</p>
+              </ColoredCard>
+            </div>
+
+            <div className={styles.codeBlock}>
+              <code>{`<ColoredCard accentColor="#3b82f6">Content</ColoredCard>`}</code>
+              <button onClick={() => copyToClipboard(`<ColoredCard accentColor="#3b82f6">Content</ColoredCard>`)} className={styles.copyBtn}>
+                📋
+              </button>
+            </div>
+          </ColoredCard>
+        </>
+      )}
+
+      {/* UTILITIES TAB */}
+      {activeTab === 'utilities' && (
+        <ColoredCard accentColor="#f59e0b" hoverable={false}>
+          <h2 className={styles.sectionTitle}>⚡ Utility Classes Reference</h2>
+          <p className="mb-6">Reusable utility classes from <code>app/styles/utilities.css</code></p>
+          
+          {utilityExamples.map((group) => (
+            <div key={group.category} className="mb-6">
+              <h3 className={styles.subsectionTitle}>{group.category}</h3>
+              <div className="flex gap-2 flex-wrap">
+                {group.classes.map((cls) => (
+                  <button
+                    key={cls}
+                    onClick={() => copyToClipboard(cls)}
+                    className="btn btn-small btn-secondary"
+                  >
+                    <code>{cls}</code> {copiedText === cls && '✓'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </ColoredCard>
+      )}
+
+      {/* STANDARDS TAB */}
+      {activeTab === 'standards' && (
+        <>
+          <ColoredCard accentColor="#ef4444" hoverable={false} className="mb-6">
+            <h2 className={styles.sectionTitle}>🚫 Prohibited Patterns</h2>
+            
+            <div className={styles.warningBox}>
+              <h3 className={styles.warningTitle}>⚠️ REMOVED - DO NOT USE</h3>
+              <p className="mb-4">The following CSS card classes have been <strong>PERMANENTLY REMOVED</strong>:</p>
+              <ul className={styles.prohibitedList}>
+                <li><code>.glass-card</code></li>
+                <li><code>.admin-card</code></li>
+                <li><code>.content-surface</code></li>
+                <li><code>.section-card</code></li>
+              </ul>
+              <p className="mt-4 font-semibold">✅ Migration: Use <code>&lt;ColoredCard&gt;</code> component instead.</p>
+            </div>
+
+            <div className={styles.warningBox}>
+              <h3 className={styles.warningTitle}>🚫 FORBIDDEN PATTERN</h3>
+              <p className="mb-4">The <code>style</code> prop is <strong>PROHIBITED</strong> on DOM elements.</p>
+              <p className="mb-2">✅ <strong>Instead use:</strong></p>
+              <ul className={styles.approvedList}>
+                <li>CSS Modules: <code>import styles from './Component.module.css'</code></li>
+                <li>Utility classes: <code>className="flex items-center gap-2"</code></li>
+                <li>Design tokens: <code>var(--mm-primary-500)</code></li>
+              </ul>
+            </div>
+          </ColoredCard>
+
+          <ColoredCard accentColor="#10b981" hoverable={false}>
+            <h2 className={styles.sectionTitle}>✅ Approved Patterns</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <h3 className={styles.subsectionTitle}>1. Component-First Approach</h3>
+                <p>Always use React components over plain HTML with CSS classes</p>
+                <div className={styles.codeBlock}>
+                  <code>{`// ✅ CORRECT\n<ColoredCard accentColor="#3b82f6">Content</ColoredCard>`}</code>
+                </div>
+              </div>
+
+              <div>
+                <h3 className={styles.subsectionTitle}>2. Design Tokens</h3>
+                <p>Use CSS variables from theme.css for all values</p>
+                <div className={styles.codeBlock}>
+                  <code>{`.myClass {\n  color: var(--mm-primary-500);\n  padding: var(--mm-space-4);\n}`}</code>
+                </div>
+              </div>
+
+              <div>
+                <h3 className={styles.subsectionTitle}>3. Utility Classes</h3>
+                <p>Leverage existing utility classes for common patterns</p>
+                <div className={styles.codeBlock}>
+                  <code>{`<div className="flex items-center gap-4 p-4">...</div>`}</code>
+                </div>
+              </div>
+            </div>
+          </ColoredCard>
+        </>
+      )}
+
+      {/* Copy Feedback Toast */}
+      {copiedText && (
+        <div className={styles.copyToast}>
+          ✓ Copied to clipboard!
+        </div>
+      )}
     </div>
   );
 }

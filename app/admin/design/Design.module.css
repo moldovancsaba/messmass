@@ -1,31 +1,290 @@
-/* Design.module.css - Design System Management Page Styles */
+/* Design.module.css - Design System Manager Styles */
 
-/* WHAT: Centralized styles for design management page
- * WHY: Replace inline styles with proper CSS module using design tokens
- * HOW: Consistent layout patterns matching other admin pages */
+/* WHAT: Comprehensive styles for Design System Manager page
+ * WHY: Support tab navigation, token display, component showcase, and deprecation warnings
+ * HOW: Uses design tokens (--mm-*) throughout for consistency */
 
-/* WHAT: Horizontal layout container for style items
- * WHY: Replaces inline style for display:flex, justifyContent:space-between
- * HOW: Flex row layout with space-between, top-aligned items */
-.styleHorizontalLayout {
-  display: flex;
-  gap: var(--mm-space-4);
-  justify-content: space-between;
-  align-items: flex-start;
+/* ========================================
+   TAB NAVIGATION
+======================================== */
+
+.tabCard {
+  margin-bottom: var(--mm-space-6);
 }
 
-/* WHAT: Content area on left side with flexible width
- * WHY: Replaces inline style for flex:1, minWidth:0
- * HOW: Flex grow to fill available space, min-width prevents overflow */
-.styleContentArea {
+.tabNav {
+  display: flex;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+}
+
+.tabButton {
+  padding: var(--mm-space-3) var(--mm-space-6);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  font-weight: var(--mm-font-weight-medium);
+  font-size: var(--mm-text-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.tabButton:hover {
+  background: var(--mm-gray-200);
+  transform: translateY(-1px);
+}
+
+.tabActive {
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+}
+
+.tabActive:hover {
+  background: var(--mm-color-primary-700);
+}
+
+/* ========================================
+   SECTION HEADINGS
+======================================== */
+
+.sectionTitle {
+  font-size: var(--mm-text-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+}
+
+.sectionDesc {
+  font-size: var(--mm-text-base);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-6);
+  line-height: var(--mm-line-height-md);
+}
+
+.subsectionTitle {
+  font-size: var(--mm-text-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-800);
+  margin-bottom: var(--mm-space-3);
+  margin-top: var(--mm-space-4);
+}
+
+/* ========================================
+   TYPOGRAPHY PREVIEW
+======================================== */
+
+.fontPreview {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  margin-top: var(--mm-space-4);
+}
+
+/* ========================================
+   DESIGN TOKENS DISPLAY
+======================================== */
+
+.tokenGrid {
+  display: grid;
+  gap: var(--mm-space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.tokenItem {
+  display: flex;
+  gap: var(--mm-space-3);
+  align-items: center;
+  padding: var(--mm-space-3);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.colorSwatch {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);
+  flex-shrink: 0;
+}
+
+.tokenInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
   flex: 1;
   min-width: 0;
 }
 
-/* WHAT: Color preview circle for style display
- * WHY: Replaces inline style for background display
- * HOW: Inline-block circle with consistent spacing */
-.styleColorCircle {
-  display: inline-block;
-  margin-top: var(--mm-space-2);
+.tokenName {
+  font-family: var(--font-mono);
+  font-size: var(--mm-text-sm);
+  color: var(--mm-color-primary-600);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.tokenValue {
+  font-family: var(--font-mono);
+  font-size: var(--mm-text-xs);
+  color: var(--mm-gray-600);
+}
+
+.copyBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--mm-text-base);
+  padding: var(--mm-space-1);
+  border-radius: var(--mm-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.copyBtn:hover {
+  background: var(--mm-gray-200);
+}
+
+/* ========================================
+   CODE BLOCKS
+======================================== */
+
+.codeBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-2);
+  background: var(--mm-gray-900);
+  color: var(--mm-white);
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+  font-family: var(--font-mono);
+  font-size: var(--mm-text-sm);
+  margin-top: var(--mm-space-4);
+  overflow-x: auto;
+}
+
+.codeBlock code {
+  flex: 1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.codeBlock .copyBtn {
+  flex-shrink: 0;
+  color: var(--mm-white);
+}
+
+.codeBlock .copyBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   WARNING BOXES
+======================================== */
+
+.warningBox {
+  background: var(--mm-error-light);
+  border: 2px solid var(--mm-error);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+}
+
+.warningTitle {
+  font-size: var(--mm-text-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-error);
+  margin-bottom: var(--mm-space-3);
+}
+
+.prohibitedList {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--mm-space-4) 0;
+}
+
+.prohibitedList li {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  margin-bottom: var(--mm-space-2);
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--mm-error);
+  border-radius: var(--mm-radius-sm);
+}
+
+.approvedList {
+  list-style: disc;
+  padding-left: var(--mm-space-6);
+  margin: var(--mm-space-3) 0;
+}
+
+.approvedList li {
+  margin-bottom: var(--mm-space-2);
+  color: var(--mm-gray-700);
+}
+
+.approvedList code {
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--mm-radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--mm-text-sm);
+}
+
+/* ========================================
+   COPY FEEDBACK TOAST
+======================================== */
+
+.copyToast {
+  position: fixed;
+  bottom: var(--mm-space-8);
+  right: var(--mm-space-8);
+  background: var(--mm-success);
+  color: var(--mm-white);
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-radius: var(--mm-radius-lg);
+  font-weight: var(--mm-font-weight-medium);
+  box-shadow: var(--mm-shadow-lg);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 768px) {
+  .tabNav {
+    flex-direction: column;
+  }
+  
+  .tabButton {
+    width: 100%;
+  }
+  
+  .tokenGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .codeBlock {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .copyToast {
+    bottom: var(--mm-space-4);
+    right: var(--mm-space-4);
+    left: var(--mm-space-4);
+  }
 }
