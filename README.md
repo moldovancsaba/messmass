@@ -2,8 +2,8 @@
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
 
-- **Version**: v6.42.0
-- **Last Updated**: 2025-01-22T19:45:00.000Z
+- **Version**: v6.44.0
+- **Last Updated**: 2025-10-24T09:50:22.000Z
 - **Website**: https://messmass.doneisbetter.com
 - **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
 
@@ -173,16 +173,17 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 
 ### User Experience
 
-- **🎨 Page Styles System** (Custom Theming Engine)
+- **🎨 Page Styles System** (Custom Theming Engine - Unified `page_styles_enhanced`)
   - Visual theme editor with live preview (split-screen modal)
   - Background customization: solid colors or CSS gradients
   - Typography control: font family, size, colors, weight
   - Color schemes: primary, secondary, accent, success, warning, error
-  - Global default theme for system-wide consistency
-  - Project-specific style assignment (many-to-many)
+  - Global default theme for system-wide consistency with dedicated edit button
+  - Project-specific style assignment via `styleIdEnhanced` field
   - Dynamic CSS injection without page reload
   - 5 professional themes included (Clean Light, Dark Mode, Sports Blue, Vibrant Gradient, Minimal Gray)
   - White-label deployment support with per-client branding
+  - **Migrated** from deprecated `pageStyles` to unified `page_styles_enhanced` system (v6.44.0)
 
 - **🎨 Modern Flat Design System**
   - TailAdmin V2 design language (zero gradients)

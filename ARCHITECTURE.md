@@ -1052,6 +1052,11 @@ interface ColorScheme {
 - `DELETE /api/page-styles-enhanced?styleId=X` - Delete style
   - Removes style from all assigned projects
   - Returns: `{ success: true, deletedCount: 1 }`
+  
+**Migration Note** (v6.44.0):
+- **Database Field**: Projects use `styleIdEnhanced` field (migrated from deprecated `styleId`)
+- **API Parameter**: Endpoints still accept `styleId` param for backward compatibility
+- **Internal Conversion**: Backend converts `styleId` → `styleIdEnhanced` before database operations
 
 **Global Default Management**
 - `POST /api/page-styles-enhanced/set-global` - Set style as global default
@@ -1063,7 +1068,7 @@ interface ColorScheme {
 - `POST /api/page-styles-enhanced/assign-project` - Assign style to project
   - Body: `{ styleId: ObjectId, projectId: ObjectId }`
   - Bidirectional linking: Updates both collections
-  - Updates: `style.projectIds[]` and `project.styleIdEnhanced`
+  - Updates: `style.projectIds[]` and `project.styleIdEnhanced` (database field name)
   
 - `DELETE /api/page-styles-enhanced/assign-project` - Remove assignment
   - Body: `{ styleId: ObjectId, projectId: ObjectId }`
@@ -1071,9 +1076,10 @@ interface ColorScheme {
 
 **Public Endpoint**
 - `GET /api/page-style?projectId=X` - Fetch style for public page (no auth)
-  - Logic: project.styleIdEnhanced → global default → hardcoded fallback
+  - Logic: `project.styleIdEnhanced` → global default → hardcoded fallback
   - Returns: Complete `PageStyleEnhanced` object
   - Performance: <200ms response time
+  - **Note**: Uses `styleIdEnhanced` field from projects collection
 
 #### 3. Admin UI Components
 
