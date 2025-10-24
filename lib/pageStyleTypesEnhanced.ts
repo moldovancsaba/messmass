@@ -264,3 +264,12 @@ export const DARK_THEME_SAMPLE: PageStyleEnhanced = {
     error: '#ef4444'
   }
 };
+
+/**
+ * WHAT: Get default page style function
+ * WHY: Provide consistent fallback when no styles exist in database
+ * HOW: Returns the system default enhanced page style
+ */
+export function getDefaultPageStyle(): PageStyleEnhanced {
+  return DEFAULT_PAGE_STYLE_ENHANCED;
+}

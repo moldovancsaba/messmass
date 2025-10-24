@@ -47,7 +47,8 @@
     "data:fix:verbose": "tsx scripts/validateDataQuality.ts --fix --verbose",
     "football-data:setup-indexes": "tsx scripts/setupFootballDataIndexes.ts",
     "football-data:sync": "tsx scripts/syncFootballDataFixtures.ts",
-    "seed:page-styles": "tsx scripts/seedPageStyles.ts"
+    "seed:page-styles": "tsx scripts/seedPageStyles.ts",
+    "cleanup:old-styles": "npx tsx scripts/cleanupOldStyleSystem.ts"
   },
   "dependencies": {
     "chart.js": "^4.5.0",
