@@ -725,7 +725,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                   interactive={true}
                                   onClick={(hashtag) => {
                                     // Open share popup for single-hashtag filter (same flow as Admin → Filter)
-                                    shareSingleHashtag(hashtag, project.styleId || null);
+                                    shareSingleHashtag(hashtag, project.styleIdEnhanced || null);
                                   }}
                                   projectCategorizedHashtags={project.categorizedHashtags}
                                   autoResolveColor={true}
@@ -747,7 +747,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                                     interactive={true}
                                     onClick={(hashtag) => {
                                       // Open share popup for category-prefixed single-hashtag filter
-                                      shareSingleHashtag(hashtag, project.styleId || null);
+                                      shareSingleHashtag(hashtag, project.styleIdEnhanced || null);
                                     }}
                                     projectCategorizedHashtags={project.categorizedHashtags}
                                     autoResolveColor={true}
