@@ -28,7 +28,8 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] };
   viewSlug?: string;
   editSlug?: string;
-  styleId?: string | null;
+  styleIdEnhanced?: string | null; // WHAT: Migrated from styleId to styleIdEnhanced
+                                    // WHY: Align with page_styles_enhanced system
   partner1?: {
     _id: string;
     name: string;
@@ -182,16 +183,17 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   useEffect(() => {
     loadProjects();
-    // Load styles for selection
+    // WHAT: Load styles from page_styles_enhanced API
+    // WHY: Migrated from old /api/page-styles to new enhanced system
     (async () => {
       try {
-        const res = await fetch('/api/page-styles');
+        const res = await fetch('/api/page-styles-enhanced');
         const data = await res.json();
         if (data.success) {
           setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
         }
       } catch (e) {
-        console.error('Failed to load styles', e);
+        console.error('Failed to load enhanced styles', e);
       }
     })();
   }, [loadProjects]);
@@ -298,7 +300,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         hashtags: newProjectData.hashtags,
         categorizedHashtags: newProjectData.categorizedHashtags,
         stats: defaultStats,
-        styleId: newProjectData.styleId || null
+        styleId: newProjectData.styleId || null // WHAT: API param still named styleId (backend converts to styleIdEnhanced)
       };
       
       console.log('Sending POST request to /api/projects with:', requestBody);
@@ -332,7 +334,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       eventDate: project.eventDate,
       hashtags: project.hashtags || [],
       categorizedHashtags: project.categorizedHashtags || {},
-      styleId: project.styleId || ''
+      styleId: project.styleIdEnhanced || '' // WHAT: Read from styleIdEnhanced field
+                                             // WHY: Migrated to page_styles_enhanced system
     });
     setShowEditProjectForm(true);
   };
@@ -355,7 +358,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
         stats: editingProject.stats,
-        styleId: editProjectData.styleId || null
+        styleId: editProjectData.styleId || null // WHAT: API param still named styleId (backend converts to styleIdEnhanced)
       };
       
       console.log('Sending PUT request to /api/projects with:', requestBody);
@@ -368,7 +371,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
       if (result.success) {
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
-            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleId: editProjectData.styleId || null }
+            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleIdEnhanced: editProjectData.styleId || null }
             : p
         ));
         

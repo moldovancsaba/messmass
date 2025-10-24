@@ -531,6 +531,32 @@ export default function AdminDesignPage() {
             </div>
           </ColoredCard>
           
+          {/* WHAT: Edit Global Default Button - Direct access to edit the global theme
+              WHY: User requested dedicated button for easier access */}
+          {!stylesLoading && pageStyles.some(s => s.isGlobalDefault) && (
+            <div className="mb-6">
+              <ColoredCard accentColor="#3b82f6" hoverable={false}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">🌐 Global Default Style</h3>
+                    <p className="text-sm text-gray-600">
+                      This style is applied to all projects that don't have a specific style assigned.
+                    </p>
+                  </div>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => {
+                      const globalStyle = pageStyles.find(s => s.isGlobalDefault);
+                      if (globalStyle) handleEditStyle(globalStyle);
+                    }}
+                  >
+                    ✏️ Edit Global Default
+                  </button>
+                </div>
+              </ColoredCard>
+            </div>
+          )}
+          
           {/* Loading State */}
           {stylesLoading && (
             <ColoredCard accentColor="#3b82f6" hoverable={false}>

@@ -448,7 +448,8 @@ export async function POST(request: NextRequest) {
     const { viewSlug, editSlug } = await generateProjectSlugs();
     console.log('✅ Generated slugs:', { viewSlug: viewSlug.substring(0, 8) + '...', editSlug: editSlug.substring(0, 8) + '...' });
 
-    // Validate styleId if provided
+    // WHAT: Validate styleId against page_styles_enhanced collection
+    // WHY: Migrated from old pageStyles system to new enhanced system
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     
@@ -460,8 +461,8 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Validate that the style exists
-      const pageStylesCollection = db.collection('pageStyles');
+      // Validate that the style exists in page_styles_enhanced collection
+      const pageStylesCollection = db.collection('page_styles_enhanced');
       const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
@@ -489,9 +490,10 @@ export async function POST(request: NextRequest) {
       updatedAt: now
     };
     
-    // Add styleId if provided
+    // WHAT: Add styleIdEnhanced field for page_styles_enhanced system integration
+    // WHY: Migrated from old styleId to new styleIdEnhanced field name
     if (styleId && styleId !== null && styleId !== 'null') {
-      project.styleId = styleId;
+      project.styleIdEnhanced = styleId;
     }
     
     // WHAT: Add partner references for Sports Match projects
@@ -608,7 +610,8 @@ export async function PUT(request: NextRequest) {
 
     console.log('🔄 Updating project:', projectId, { styleId });
 
-    // Validate styleId if provided
+    // WHAT: Validate styleId against page_styles_enhanced collection
+    // WHY: Migrated from old pageStyles system to new enhanced system
     if (styleId && styleId !== null && styleId !== 'null') {
       if (!ObjectId.isValid(styleId)) {
         return NextResponse.json(
@@ -622,9 +625,9 @@ export async function PUT(request: NextRequest) {
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
     
-    // If styleId is provided, validate it exists in pageStyles collection
+    // If styleId is provided, validate it exists in page_styles_enhanced collection
     if (styleId && styleId !== null && styleId !== 'null') {
-      const pageStylesCollection = db.collection('pageStyles');
+      const pageStylesCollection = db.collection('page_styles_enhanced');
       const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
@@ -665,17 +668,18 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
     
-    // Handle styleId assignment/removal strategically
+    // WHAT: Handle styleIdEnhanced assignment/removal strategically
+    // WHY: Migrated from old styleId to new styleIdEnhanced field name
     let unsetData: any = {};
     
     if (styleId === null || styleId === 'null') {
-      // Remove styleId to use global/default style
-      unsetData.styleId = '';
+      // Remove styleIdEnhanced to use global/default style
+      unsetData.styleIdEnhanced = '';
     } else if (styleId && styleId !== undefined) {
-      // Set specific styleId
-      setData.styleId = styleId;
+      // Set specific styleIdEnhanced
+      setData.styleIdEnhanced = styleId;
     }
-    // If styleId is not provided in the request, don't modify existing styleId
+    // If styleId is not provided in the request, don't modify existing styleIdEnhanced
     
     // Build the update operation object
     const updateOperation: any = { $set: setData };
