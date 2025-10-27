@@ -28,7 +28,7 @@ const chartConfig = {
     {
       id: 'bitly-top-country-kpi-element',
       label: '{{bitlyTopCountry}}', // Dynamic label: resolved from stats.bitlyTopCountry
-      formula: '[bitlyTopCountry]',
+      formula: '[SEYUBITLYTOPCOUNTRY]',
       color: '#FF6B35'
     }
   ]

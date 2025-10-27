@@ -28,7 +28,7 @@ const chartConfig = {
     {
       id: 'bitly-countries-reached-kpi-element',
       label: 'Countries Reached', // Static label (this is a count, not a country name)
-      formula: '[bitlyCountryCount]',
+      formula: '[SEYUBITLYCOUNTRYCOUNT]',
       color: '#4ECDC4'
     }
   ]

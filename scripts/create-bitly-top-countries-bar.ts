@@ -28,31 +28,31 @@ const chartConfig = {
     {
       id: 'bitly-country-1',
       label: '{{bitlyCountry1}}', // Dynamic label: resolved from stats.bitlyCountry1
-      formula: '[bitlyCountry1Clicks]',
+      formula: '[SEYUBITLYCOUNTRY1CLICKS]',
       color: '#FF6B35'
     },
     {
       id: 'bitly-country-2',
       label: '{{bitlyCountry2}}', // Dynamic label: resolved from stats.bitlyCountry2
-      formula: '[bitlyCountry2Clicks]',
+      formula: '[SEYUBITLYCOUNTRY2CLICKS]',
       color: '#4ECDC4'
     },
     {
       id: 'bitly-country-3',
       label: '{{bitlyCountry3}}', // Dynamic label: resolved from stats.bitlyCountry3
-      formula: '[bitlyCountry3Clicks]',
+      formula: '[SEYUBITLYCOUNTRY3CLICKS]',
       color: '#95E1D3'
     },
     {
       id: 'bitly-country-4',
       label: '{{bitlyCountry4}}', // Dynamic label: resolved from stats.bitlyCountry4
-      formula: '[bitlyCountry4Clicks]',
+      formula: '[SEYUBITLYCOUNTRY4CLICKS]',
       color: '#FFD93D'
     },
     {
       id: 'bitly-country-5',
       label: '{{bitlyCountry5}}', // Dynamic label: resolved from stats.bitlyCountry5
-      formula: '[bitlyCountry5Clicks]',
+      formula: '[SEYUBITLYCOUNTRY5CLICKS]',
       color: '#D4A5A5'
     }
   ]
