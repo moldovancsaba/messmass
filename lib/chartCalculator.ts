@@ -153,9 +153,28 @@ export function calculateChart(
         console.warn(`⚠️ Formula evaluation returned NA for element "${element.label}": ${element.formula}`);
       }
       
+      // WHAT: Dynamic label resolution from stats fields
+      // WHY: Charts like "Top Countries" need labels from dynamic data (e.g., country names)
+      // HOW: If label contains {{fieldName}}, replace with value from stats[fieldName]
+      // EXAMPLE: label "{{bitlyCountry1}}" becomes "United States" from stats.bitlyCountry1
+      let resolvedLabel = element.label;
+      if (resolvedLabel.includes('{{') && resolvedLabel.includes('}}')) {
+        const fieldMatch = resolvedLabel.match(/\{\{([^}]+)\}\}/);
+        if (fieldMatch && fieldMatch[1]) {
+          const fieldName = fieldMatch[1].trim();
+          const fieldValue = (stats as any)[fieldName];
+          if (fieldValue !== undefined && fieldValue !== null) {
+            resolvedLabel = fieldValue.toString();
+          } else {
+            // Fallback if field doesn't exist
+            resolvedLabel = element.label.replace(/\{\{[^}]+\}\}/, 'N/A');
+          }
+        }
+      }
+      
       return {
         id: element.id,
-        label: element.label,
+        label: resolvedLabel,
         value: value,
         color: element.color
       };
@@ -187,11 +206,29 @@ export function calculateChart(
   // Special handling for KPI charts
   if (configuration.type === 'kpi') {
     // KPI charts should have exactly one element with the calculation formula
-    if (elements.length > 0) {
+    if (elements.length > 0 && configuration.elements.length > 0) {
       kpiValue = elements[0].value;
       
-      // For KPI charts, if the value is NA, it's likely due to division by zero or missing data
-      if (kpiValue === 'NA') {
+      // WHAT: Check if this is a string-value KPI (formula references string field directly)
+      // WHY: Some KPIs display text values (e.g., country names) not numbers
+      // HOW: If formula is simple [fieldName] and stats[fieldName] is string, use it directly
+      if (kpiValue === 'NA' && configuration.elements[0].formula) {
+        const simpleFieldMatch = configuration.elements[0].formula.match(/^\[([a-zA-Z0-9]+)\]$/);
+        if (simpleFieldMatch) {
+          const fieldName = simpleFieldMatch[1];
+          // Convert to camelCase (e.g., bitlyTopCountry)
+          const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+          const fieldValue = (stats as any)[camelFieldName];
+          if (typeof fieldValue === 'string') {
+            kpiValue = fieldValue as any; // Allow string KPI values
+            console.log(`✅ String KPI value for "${configuration.title}": ${fieldValue}`);
+          } else {
+            console.warn(`⚠️ KPI calculation returned NA for "${configuration.title}"`);
+          }
+        } else {
+          console.warn(`⚠️ KPI calculation returned NA for "${configuration.title}"`);
+        }
+      } else if (kpiValue === 'NA') {
         console.warn(`⚠️ KPI calculation returned NA for "${configuration.title}"`);
       }
     } else {

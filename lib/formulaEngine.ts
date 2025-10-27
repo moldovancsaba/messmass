@@ -84,6 +84,18 @@ const VARIABLE_MAPPINGS: Record<string, string> = {
   'BITLY_TOP_COUNTRY': 'bitlyTopCountry',
   'BITLY_COUNTRY_COUNT': 'bitlyCountryCount',
   
+  // Bitly - Top 5 Countries (for chart display)
+  'BITLY_COUNTRY_1': 'bitlyCountry1',
+  'BITLY_COUNTRY_1_CLICKS': 'bitlyCountry1Clicks',
+  'BITLY_COUNTRY_2': 'bitlyCountry2',
+  'BITLY_COUNTRY_2_CLICKS': 'bitlyCountry2Clicks',
+  'BITLY_COUNTRY_3': 'bitlyCountry3',
+  'BITLY_COUNTRY_3_CLICKS': 'bitlyCountry3Clicks',
+  'BITLY_COUNTRY_4': 'bitlyCountry4',
+  'BITLY_COUNTRY_4_CLICKS': 'bitlyCountry4Clicks',
+  'BITLY_COUNTRY_5': 'bitlyCountry5',
+  'BITLY_COUNTRY_5_CLICKS': 'bitlyCountry5Clicks',
+  
   // Bitly - Traffic Sources (Platform-level)
   'BITLY_DIRECT_CLICKS': 'bitlyDirectClicks',
   'BITLY_SOCIAL_CLICKS': 'bitlySocialClicks',

@@ -64,6 +64,18 @@ export const BASE_STATS_VARIABLES: VariableDefinition[] = [
   { name: 'bitlyTopCountry', label: 'Top Country', type: 'text', category: 'Bitly', description: 'Country with most clicks' },
   { name: 'bitlyCountryCount', label: 'Countries Reached', type: 'count', category: 'Bitly', description: 'Number of unique countries' },
   
+  // Bitly - Top 5 Countries (for chart display)
+  { name: 'bitlyCountry1', label: 'Country #1 Name', type: 'text', category: 'Bitly / Top Countries', description: 'Name of #1 country by clicks' },
+  { name: 'bitlyCountry1Clicks', label: 'Country #1 Clicks', type: 'count', category: 'Bitly / Top Countries', description: 'Click count for #1 country' },
+  { name: 'bitlyCountry2', label: 'Country #2 Name', type: 'text', category: 'Bitly / Top Countries', description: 'Name of #2 country by clicks' },
+  { name: 'bitlyCountry2Clicks', label: 'Country #2 Clicks', type: 'count', category: 'Bitly / Top Countries', description: 'Click count for #2 country' },
+  { name: 'bitlyCountry3', label: 'Country #3 Name', type: 'text', category: 'Bitly / Top Countries', description: 'Name of #3 country by clicks' },
+  { name: 'bitlyCountry3Clicks', label: 'Country #3 Clicks', type: 'count', category: 'Bitly / Top Countries', description: 'Click count for #3 country' },
+  { name: 'bitlyCountry4', label: 'Country #4 Name', type: 'text', category: 'Bitly / Top Countries', description: 'Name of #4 country by clicks' },
+  { name: 'bitlyCountry4Clicks', label: 'Country #4 Clicks', type: 'count', category: 'Bitly / Top Countries', description: 'Click count for #4 country' },
+  { name: 'bitlyCountry5', label: 'Country #5 Name', type: 'text', category: 'Bitly / Top Countries', description: 'Name of #5 country by clicks' },
+  { name: 'bitlyCountry5Clicks', label: 'Country #5 Clicks', type: 'count', category: 'Bitly / Top Countries', description: 'Click count for #5 country' },
+  
   // Bitly - Traffic Sources (Platform-level)
   { name: 'bitlyDirectClicks', label: 'Direct Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks with no referrer' },
   { name: 'bitlySocialClicks', label: 'Social Media Clicks', type: 'count', category: 'Bitly / Traffic Sources', description: 'Clicks from social platforms' },

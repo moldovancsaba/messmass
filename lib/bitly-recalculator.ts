@@ -414,5 +414,22 @@ export async function refreshLinkMetrics(bitlyLinkId: ObjectId): Promise<number>
     await junctionCollection.bulkWrite(bulkOperations);
   }
 
+  // WHAT: Enrich project.stats with updated Bitly country data
+  // WHY: Charts read from project.stats, not junction table
+  // HOW: After updating cachedMetrics, sync top 5 countries to project.stats
+  // PATTERN: Follows established stats enrichment pattern (see projectStatsUtils.ts)
+  const { batchEnrichProjectsWithBitlyCountries } = await import('./bitlyStatsEnricher');
+  const uniqueProjectIds = Array.from(
+    new Set(associations.map((assoc) => assoc.projectId))
+  );
+  
+  try {
+    await batchEnrichProjectsWithBitlyCountries(uniqueProjectIds);
+  } catch (error) {
+    // WHAT: Log error but don't fail the entire refresh
+    // WHY: Cached metrics are still updated, stats enrichment is supplementary
+    console.error('[Bitly Recalculator] Failed to enrich project.stats:', error);
+  }
+
   return associations.length;
 }

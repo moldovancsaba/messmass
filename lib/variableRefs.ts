@@ -41,6 +41,52 @@ const EXPLICIT_SUFFIX_MAP: Record<string, string> = {
   baseballCap: 'MERCHBASEBALLCAP',
   other: 'MERCHOTHER',
 
+  // Bitly - Core Metrics
+  bitlyTotalClicks: 'BITLYTOTALCLICKS',
+  bitlyUniqueClicks: 'BITLYUNIQUECLICKS',
+  
+  // Bitly - Geographic
+  bitlyClicksByCountry: 'BITLYCLICKSBYCOUNTRY',
+  bitlyTopCountry: 'BITLYTOPCOUNTRY',
+  bitlyCountryCount: 'BITLYCOUNTRYCOUNT',
+  
+  // Bitly - Top 5 Countries
+  bitlyCountry1: 'BITLYCOUNTRY1',
+  bitlyCountry1Clicks: 'BITLYCOUNTRY1CLICKS',
+  bitlyCountry2: 'BITLYCOUNTRY2',
+  bitlyCountry2Clicks: 'BITLYCOUNTRY2CLICKS',
+  bitlyCountry3: 'BITLYCOUNTRY3',
+  bitlyCountry3Clicks: 'BITLYCOUNTRY3CLICKS',
+  bitlyCountry4: 'BITLYCOUNTRY4',
+  bitlyCountry4Clicks: 'BITLYCOUNTRY4CLICKS',
+  bitlyCountry5: 'BITLYCOUNTRY5',
+  bitlyCountry5Clicks: 'BITLYCOUNTRY5CLICKS',
+  
+  // Bitly - Traffic Sources
+  bitlyDirectClicks: 'BITLYDIRECTCLICKS',
+  bitlySocialClicks: 'BITLYSOCIALCLICKS',
+  bitlyTopReferrer: 'BITLYTOPREFERRER',
+  bitlyReferrerCount: 'BITLYREFERRERCOUNT',
+  bitlyTopDomain: 'BITLYTOPDOMAIN',
+  bitlyDomainCount: 'BITLYDOMAINCOUNT',
+  bitlyQrCodeClicks: 'BITLYQRCODECLICKS',
+  bitlyInstagramMobileClicks: 'BITLYINSTAGRAMMOBILECLICKS',
+  bitlyInstagramWebClicks: 'BITLYINSTAGRAMWEBCLICKS',
+  bitlyFacebookMobileClicks: 'BITLYFACEBOOKMOBILECLICKS',
+  bitlyFacebookMessengerClicks: 'BITLYFACEBOOKMESSENGERCLICKS',
+  
+  // Bitly - Device & Platform
+  bitlyMobileClicks: 'BITLYMOBILECLICKS',
+  bitlyDesktopClicks: 'BITLYDESKTOPCLICKS',
+  bitlyTabletClicks: 'BITLYTABLETCLICKS',
+  bitlyiOSClicks: 'BITLYIOSCLICKS',
+  bitlyAndroidClicks: 'BITLYANDROIDCLICKS',
+  
+  // Bitly - Browsers
+  bitlyChromeClicks: 'BITLYCHROMECLICKS',
+  bitlySafariClicks: 'BITLYSAFARICLICKS',
+  bitlyFirefoxClicks: 'BITLYFIREFOXCLICKS',
+
   // SportsDB / Venue
   sportsDbIntStadiumCapacity: 'STADIUMCAPACITY',
   sportsDbStrStadium: 'STADIUMNAME',
