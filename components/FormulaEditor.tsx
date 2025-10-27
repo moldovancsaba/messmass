@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { validateFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
-import { AVAILABLE_VARIABLES } from '@/lib/chartConfigTypes';
+import { buildReferenceToken } from '@/lib/variableRefs';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -22,6 +22,16 @@ interface FormulaEditorProps {
   onValidate?: (result: ValidationResult) => void;
   placeholder?: string;
   disabled?: boolean;
+}
+
+interface KYCVariable {
+  name: string;
+  label: string;
+  type: 'count' | 'percentage' | 'currency' | 'numeric' | 'text' | 'boolean' | 'date';
+  category: string;
+  description?: string;
+  derived?: boolean;
+  isCustom?: boolean;
 }
 
 /**
@@ -48,6 +58,8 @@ export default function FormulaEditor({
   const [showVariablePicker, setShowVariablePicker] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [kycVariables, setKycVariables] = useState<KYCVariable[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +77,25 @@ export default function FormulaEditor({
 
     return () => clearTimeout(timer);
   }, [formula]);
+
+  useEffect(() => {
+    // Load KYC variables on mount
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/variables-config', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.variables)) {
+          setKycVariables(data.variables as KYCVariable[]);
+        }
+      } catch (e) {
+        console.error('Failed to load KYC variables', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const validateCurrentFormula = () => {
     try {
@@ -108,7 +139,7 @@ export default function FormulaEditor({
 
   // Filter variables for picker
   const getFilteredVariables = () => {
-    let filtered = AVAILABLE_VARIABLES;
+    let filtered = kycVariables;
 
     if (selectedCategory !== 'All') {
       filtered = filtered.filter(v => v.category === selectedCategory);
@@ -118,19 +149,21 @@ export default function FormulaEditor({
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(v => 
         v.name.toLowerCase().includes(term) ||
-        v.displayName.toLowerCase().includes(term) ||
-        v.description.toLowerCase().includes(term)
+        (v.label || '').toLowerCase().includes(term) ||
+        (v.description || '').toLowerCase().includes(term)
       );
     }
 
     return filtered;
   };
 
-  const insertVariable = (variableName: string) => {
+  const insertVariable = (variable: KYCVariable) => {
+    // Generate proper org-prefixed token from variable meta
+    const token = buildReferenceToken(variable as any);
     const cursorPos = inputRef.current?.selectionStart || formula.length;
     const newFormula = 
       formula.substring(0, cursorPos) + 
-      `[${variableName}]` + 
+      token + 
       formula.substring(cursorPos);
     
     onChange(newFormula);
@@ -141,7 +174,7 @@ export default function FormulaEditor({
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        const newCursorPos = cursorPos + variableName.length + 2;
+        const newCursorPos = cursorPos + token.length;
         inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
     }, 0);
@@ -163,7 +196,7 @@ export default function FormulaEditor({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const categories = ['All', ...Array.from(new Set(AVAILABLE_VARIABLES.map(v => v.category)))];
+  const categories = ['All', ...Array.from(new Set(kycVariables.map(v => v.category)))];
   const filteredVariables = getFilteredVariables();
 
   return (
@@ -241,24 +274,31 @@ export default function FormulaEditor({
           </div>
 
           <div className="variable-list">
-            {filteredVariables.length === 0 ? (
+            {loading ? (
+              <div className="no-variables">Loading variables...</div>
+            ) : filteredVariables.length === 0 ? (
               <div className="no-variables">No variables found</div>
             ) : (
-              filteredVariables.map(variable => (
-                <button
-                  key={variable.name}
-                  type="button"
-                  className="variable-item"
-                  onClick={() => insertVariable(variable.name)}
-                >
-                  <div className="variable-item-header">
-                    <span className="variable-name">[{variable.name}]</span>
-                    <span className="variable-display-name">{variable.displayName}</span>
-                  </div>
-                  <div className="variable-description">{variable.description}</div>
-                  <div className="variable-example">Example: {variable.exampleUsage}</div>
-                </button>
-              ))
+              filteredVariables.map(variable => {
+                const token = buildReferenceToken(variable as any);
+                return (
+                  <button
+                    key={variable.name}
+                    type="button"
+                    className="variable-item"
+                    onClick={() => insertVariable(variable)}
+                  >
+                    <div className="variable-item-header">
+                      <span className="variable-name">{token}</span>
+                      <span className="variable-display-name">{variable.label}</span>
+                    </div>
+                    {variable.description && (
+                      <div className="variable-description">{variable.description}</div>
+                    )}
+                    <div className="variable-example">{variable.category} • {variable.type}</div>
+                  </button>
+                );
+              })
             )}
           </div>
         </div>
