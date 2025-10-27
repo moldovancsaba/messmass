@@ -127,6 +127,21 @@ export default function PartnersAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTerm, sortField, sortOrder]);
 
+  // WHAT: Reload data when page becomes visible
+  // WHY: Ensure fresh data after user navigates back from Bitly page where they modified partner associations
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('🔄 Page became visible, reloading partners data...');
+        loadData(!!debouncedTerm);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm, sortField, sortOrder]);
+
   // WHAT: Debug logging for partners state changes
   // WHY: Track when and how partners array is updated
   useEffect(() => {

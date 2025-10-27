@@ -201,6 +201,7 @@ export async function POST(request: NextRequest) {
  *   - projectId: Filter links by project (omit to get all links)
  *   - includeAnalytics: Include analytics data (default: false)
  *   - includeUnassigned: Include links with no projectId (default: false)
+ *   - favorite: Filter by favorite status (default: false)
  *   - limit: Pagination limit (default: 50)
  *   - offset: Pagination offset (default: 0)
  *   - sortField: Field to sort by (bitlink | title | clicks | lastSyncAt)
@@ -224,6 +225,7 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get('projectId');
     const includeAnalytics = searchParams.get('includeAnalytics') === 'true';
     const includeUnassigned = searchParams.get('includeUnassigned') === 'true';
+    const favorite = searchParams.get('favorite');
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const sortField = searchParams.get('sortField');
@@ -242,6 +244,12 @@ export async function GET(request: NextRequest) {
         { long_url: searchRegex },
         { title: searchRegex }
       ];
+    }
+
+    // WHAT: Add favorite filter if requested
+    // WHY: Allow admins to filter and show only favorited links
+    if (favorite === 'true') {
+      filter.favorite = true;
     }
 
     if (projectId) {
@@ -336,9 +344,22 @@ export async function GET(request: NextRequest) {
           ])
           .toArray();
         
+        // WHAT: Perform inverse lookup to find partners where bitlyLinkIds contains this link's _id
+        // WHY: Enable display of partner associations in UI (bidirectional relationship)
+        const associatedPartners = await db
+          .collection('partners')
+          .find({ bitlyLinkIds: link._id })
+          .project({ _id: 1, name: 1, emoji: 1 })
+          .toArray();
+        
         return {
           ...link,
-          associations
+          associations,
+          associatedPartners: associatedPartners.map(p => ({
+            _id: p._id.toString(),
+            name: p.name,
+            emoji: p.emoji || '🤝'
+          }))
         };
       })
     );

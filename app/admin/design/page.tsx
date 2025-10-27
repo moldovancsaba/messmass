@@ -45,6 +45,21 @@ export default function AdminDesignPage() {
       loadPageStyles();
     }
   }, [activeTab]);
+
+  // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
+  // WHY: Ensures any changes made elsewhere are synced without manual refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadTypographySettings();
+        if (activeTab === 'page-styles') {
+          loadPageStyles();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [activeTab]);
   
   const loadTypographySettings = async () => {
     try {

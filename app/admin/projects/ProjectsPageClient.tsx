@@ -198,6 +198,18 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
     })();
   }, [loadProjects]);
 
+  // WHAT: Auto-reload projects when page becomes visible (e.g., returning from another tab)
+  // WHY: Ensures bidirectional updates (e.g., partner associations) are synced without manual refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadProjects();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadProjects]);
+
 
   // Server-side search across all projects
   useEffect(() => {

@@ -52,7 +52,7 @@ export async function PUT(
 
     // WHAT: Parse and validate request body
     const body = await request.json() as UpdateLinkInput;
-    const { projectId, title, tags, archived } = body;
+    const { projectId, title, tags, archived, favorite } = body;
 
     // WHAT: Build update object dynamically
     // WHY: Only update fields that are explicitly provided
@@ -95,6 +95,9 @@ export async function PUT(
     if (title !== undefined) update.title = title;
     if (tags !== undefined) update.tags = tags;
     if (archived !== undefined) update.archived = archived;
+    // WHAT: Allow toggling favorite status
+    // WHY: Users can mark/unmark links as favorites from UI
+    if (typeof favorite === 'boolean') update.favorite = favorite;
 
     // WHAT: Apply update to database
     const client = await clientPromise;

@@ -117,6 +117,19 @@ export default function EditPage() {
     }
   }, [slug, fetchPageConfig, loadProjectForEditing]);
 
+  // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
+  // WHY: Ensures project data and page style are synced without manual refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isAuthorized) {
+        loadProjectForEditing();
+        fetchPageConfig(slug);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isAuthorized, loadProjectForEditing, fetchPageConfig, slug]);
+
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
     setIsAuthorized(true);

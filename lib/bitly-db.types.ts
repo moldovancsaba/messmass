@@ -95,6 +95,10 @@ export interface BitlyLinkDocument {
   lastSyncAt: string; // ISO 8601 with milliseconds - last successful sync timestamp
   lastClicksSyncedUntil?: string; // ISO 8601 date - boundary of latest synced daily data
   
+  // WHAT: Favorite flag for quick filtering
+  // WHY: Allows admins to mark important links for priority viewing
+  favorite?: boolean;
+  
   // WHAT: Soft delete flag
   // WHY: Allows archiving links without losing historical data
   archived?: boolean;
@@ -183,6 +187,7 @@ export interface UpdateLinkInput {
   title?: string; // Update custom title
   tags?: string[]; // Update tags
   archived?: boolean; // Archive/unarchive link
+  favorite?: boolean; // Mark/unmark link as favorite
 }
 
 /**

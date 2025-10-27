@@ -12,9 +12,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
 import ProjectSelector from '@/components/ProjectSelector';
+import PartnerSelector from '@/components/PartnerSelector';
 import styles from './page.module.css';
 
-// WHAT: Type definitions for links and projects
+// WHAT: Type definitions for links, projects, and partners
 // WHY: Maintains type safety for Bitly integration with MessMass events
 interface BitlyLink {
   _id: string;
@@ -30,6 +31,7 @@ interface BitlyLink {
   };
   lastSyncAt: string;
   createdAt: string;
+  favorite?: boolean; // Favorite status for filtering
   // Many-to-many junction data (if available)
   associations?: Array<{
     projectId: string;
@@ -40,12 +42,24 @@ interface BitlyLink {
     clicks: number;
     lastSyncedAt: string | null;
   }>;
+  // Associated partners (inverse lookup from partners.bitlyLinkIds)
+  associatedPartners?: Array<{
+    _id: string;
+    name: string;
+    emoji: string;
+  }>;
 }
 
 interface Project {
   _id: string;
   eventName: string;
   eventDate: string;
+}
+
+interface Partner {
+  _id: string;
+  name: string;
+  emoji: string;
 }
 
 export default function BitlyAdminPage() {
@@ -55,6 +69,7 @@ export default function BitlyAdminPage() {
   const searchParams = useSearchParams();
   const [links, setLinks] = useState<BitlyLink[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -79,6 +94,10 @@ export default function BitlyAdminPage() {
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
   
+  // WHAT: Favorite filter state
+  // WHY: Allow users to show only favorited links
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  
   // WHAT: Form state for adding new links
   const [showAddForm, setShowAddForm] = useState(false);
   const [newBitlink, setNewBitlink] = useState('');
@@ -99,17 +118,47 @@ export default function BitlyAdminPage() {
     if (so && allowedOrders.includes(so)) setSortOrder(so);
   }, [searchParams]);
 
-  // WHAT: Load first page when search/sort changes
+  // WHAT: Load partners on mount
+  // WHY: Needed for PartnerSelector dropdown in each row
+  useEffect(() => {
+    fetch('/api/partners?limit=1000&sortField=name&sortOrder=asc')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.partners) {
+          setPartners(data.partners);
+        }
+      })
+      .catch(err => console.error('Failed to load partners:', err));
+  }, []);
+
+  // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
+  // WHY: Ensures bidirectional updates (e.g., partner associations) are synced without manual refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Reload appropriate function based on current mode
+        if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
+          loadSearch();
+        } else {
+          loadInitialData();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
+
+  // WHAT: Load first page when search/sort/favorite changes
   // WHY: Fresh search or sort requires restarting pagination
   useEffect(() => {
     // WHAT: Use different loading function based on whether this is initial load or search
     // WHY: Prevents full page loading screen during search - matches Projects page UX
-    if (debouncedTerm || sortField || sortOrder) {
+    if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
       loadSearch();
     } else {
       loadInitialData();
     }
-  }, [debouncedTerm, sortField, sortOrder]);
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
 
   // WHAT: Load initial page of links (first mount only)
   // WHY: Shows full loading screen on initial page load
@@ -138,6 +187,12 @@ export default function BitlyAdminPage() {
       if (sortField && sortOrder) {
         params.set('sortField', sortField);
         params.set('sortOrder', sortOrder);
+      }
+      
+      // WHAT: Add favorite filter if enabled
+      // WHY: Show only favorited links when checkbox is checked
+      if (showFavoritesOnly) {
+        params.set('favorite', 'true');
       }
       
       // WHAT: Fetch first page of Bitly links
@@ -191,6 +246,12 @@ export default function BitlyAdminPage() {
         params.set('sortOrder', sortOrder);
       }
       
+      // WHAT: Add favorite filter if enabled
+      // WHY: Show only favorited links when checkbox is checked
+      if (showFavoritesOnly) {
+        params.set('favorite', 'true');
+      }
+      
       // WHAT: Fetch first page of Bitly links
       const linksRes = await fetch(`/api/bitly/links?${params.toString()}`);
       const linksData = await linksRes.json();
@@ -233,6 +294,11 @@ export default function BitlyAdminPage() {
       if (sortField && sortOrder) {
         params.set('sortField', sortField);
         params.set('sortOrder', sortOrder);
+      }
+      
+      // WHAT: Add favorite filter if enabled
+      if (showFavoritesOnly) {
+        params.set('favorite', 'true');
       }
 
       const res = await fetch(`/api/bitly/links?${params.toString()}`);
@@ -631,10 +697,114 @@ export default function BitlyAdminPage() {
     return `${startDate} to ${endDate}`;
   }
 
+  // WHAT: Toggle favorite status for a Bitly link
+  // WHY: Optimistic UI update for better UX
+  async function handleToggleFavorite(linkId: string, newFavoriteStatus: boolean) {
+    try {
+      // Optimistic update
+      setLinks(prev => prev.map(link => 
+        link._id === linkId ? { ...link, favorite: newFavoriteStatus } : link
+      ));
+      
+      const response = await fetch(`/api/bitly/links/${linkId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ favorite: newFavoriteStatus })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update favorite status');
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      setLinks(prev => prev.map(link => 
+        link._id === linkId ? { ...link, favorite: !newFavoriteStatus } : link
+      ));
+      setError('Failed to update favorite status');
+      console.error('Toggle favorite error:', error);
+    }
+  }
+
+  // WHAT: Add partner association to Bitly link
+  // WHY: Bidirectional sync - updates partners.bitlyLinkIds array
+  async function handleAddPartnerAssociation(bitlyLinkId: string, partnerId: string | null) {
+    if (!partnerId) return;
+    
+    try {
+      // Optimistic update
+      setLinks(prev => prev.map(link => {
+        if (link._id === bitlyLinkId) {
+          const partner = partners.find(p => p._id === partnerId);
+          return {
+            ...link,
+            associatedPartners: [...(link.associatedPartners || []), {
+              _id: partnerId,
+              name: partner?.name || '',
+              emoji: partner?.emoji || '🤝'
+            }]
+          };
+        }
+        return link;
+      }));
+      
+      const response = await fetch('/api/bitly/partners/associate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bitlyLinkId, partnerId })
+      });
+      
+      if (!response.ok) throw new Error('Failed to add partner association');
+      
+      const data = await response.json();
+      if (data.success) {
+        setSuccessMessage(data.message);
+      }
+    } catch (error) {
+      // Revert optimistic update
+      reloadLinks();
+      setError('Failed to add partner association');
+      console.error('Add partner association error:', error);
+    }
+  }
+
+  // WHAT: Remove partner association from Bitly link
+  // WHY: Bidirectional sync - removes from partners.bitlyLinkIds array
+  async function handleRemovePartnerAssociation(bitlyLinkId: string, partnerId: string) {
+    try {
+      // Optimistic update
+      setLinks(prev => prev.map(link => {
+        if (link._id === bitlyLinkId) {
+          return {
+            ...link,
+            associatedPartners: (link.associatedPartners || []).filter(p => p._id !== partnerId)
+          };
+        }
+        return link;
+      }));
+      
+      const response = await fetch(
+        `/api/bitly/partners/associate?bitlyLinkId=${bitlyLinkId}&partnerId=${partnerId}`,
+        { method: 'DELETE' }
+      );
+      
+      if (!response.ok) throw new Error('Failed to remove partner association');
+      
+      const data = await response.json();
+      if (data.success) {
+        setSuccessMessage(data.message);
+      }
+    } catch (error) {
+      // Revert optimistic update
+      reloadLinks();
+      setError('Failed to remove partner association');
+      console.error('Remove partner association error:', error);
+    }
+  }
+
   // WHAT: Helper to determine which load function to use
   // WHY: After mutations (add/delete/sync), reload without full loading screen if search/sort active
   function reloadLinks() {
-    if (debouncedTerm || sortField || sortOrder) {
+    if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
       loadSearch();
     } else {
       loadInitialData();
@@ -705,6 +875,19 @@ export default function BitlyAdminPage() {
         ]}
       />
 
+      {/* WHAT: Favorite filter checkbox
+       * WHY: Allow users to filter and show only favorited links */}
+      <div className={styles.paginationHeader}>
+        <label className={styles.favoriteFilter}>
+          <input
+            type="checkbox"
+            checked={showFavoritesOnly}
+            onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+          />
+          <span>⭐ Show favorites only</span>
+        </label>
+      </div>
+
       {/* WHAT: Status messages with proper spacing
        * WHY: Consistent alert styling matching admin pages */}
       {error && (
@@ -749,6 +932,10 @@ export default function BitlyAdminPage() {
             <table className="projects-table table-full-width table-inherit-radius">
               <thead>
                 <tr>
+                  {/* WHAT: Favorite star column for quick filtering
+                   * WHY: Allow users to mark/unmark links as favorites */}
+                  <th className={styles.colFavorite}>⭐</th>
+                  
                   {/* WHAT: Sortable column headers with click handlers and indicators
                    * WHY: Enable user-controlled sorting matching projects page behavior */}
                   <th 
@@ -774,6 +961,7 @@ export default function BitlyAdminPage() {
                     )}
                   </th>
                   <th className={styles.colProjects}>Associated Projects</th>
+                  <th className={styles.colPartners}>Associated Partners</th>
                   <th 
                     onClick={() => handleSort('clicks')} 
                     className={`sortable-th ${styles.colClicks}`}
@@ -802,6 +990,18 @@ export default function BitlyAdminPage() {
               <tbody>
                 {links.map(link => (
                   <tr key={link._id}>
+                    {/* WHAT: Favorite star icon for quick toggle
+                     * WHY: Visual indicator and clickable button to mark favorites */}
+                    <td className={styles.colFavorite}>
+                      <button
+                        className={styles.favoriteButton}
+                        onClick={() => handleToggleFavorite(link._id, !link.favorite)}
+                        title={link.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        {link.favorite ? '⭐' : '☆'}
+                      </button>
+                    </td>
+                    
                     <td className={styles.cellBreakAll}>
                       {/* WHAT: Bitly link as clickable external link with word-break
                        * WHY: Prevents long URLs from overflowing table, allows verification */}
@@ -859,6 +1059,44 @@ export default function BitlyAdminPage() {
                         placeholder="+ Add to event..."
                       />
                     </td>
+                    
+                    {/* WHAT: Associated Partners column - mirrors Associated Projects
+                     * WHY: Display partner associations with same chip-based UI */}
+                    <td className={styles.cellProjects}>
+                      <div className={styles.associationsWrapper}>
+                        {/* Display existing partner associations as chips */}
+                        {link.associatedPartners && link.associatedPartners.length > 0 && (
+                          link.associatedPartners.map((partner) => (
+                            <span
+                              key={partner._id}
+                              className={styles.associationChip}
+                              title={`Remove ${partner.name} from this link`}
+                            >
+                              <span>{partner.emoji} {partner.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemovePartnerAssociation(link._id, partner._id)}
+                                className={styles.removeButton}
+                                title="Remove partner association"
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          ))
+                        )}
+                        
+                        {/* WHAT: Always-active PartnerSelector for adding to multiple partners
+                         * WHY: Bidirectional sync - users can quickly add link to any partner
+                         * PATTERN: Search and select to create new association */}
+                        <PartnerSelector
+                          selectedPartnerId={null}
+                          partners={partners}
+                          onChange={(partnerId) => handleAddPartnerAssociation(link._id, partnerId)}
+                          placeholder="+ Add to partner..."
+                        />
+                      </div>
+                    </td>
+                    
                     <td className="stat-number">{link.click_summary.total.toLocaleString()}</td>
                     <td className="text-sm text-gray-600">
                       {formatDate(link.lastSyncAt)}
