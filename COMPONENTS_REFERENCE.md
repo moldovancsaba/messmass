@@ -1,6 +1,6 @@
 # 🧩 Components Reference
 
-**Version:** 6.0.0  
+**Version:** 8.0.0  
 **Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
 **Status:** Production
 

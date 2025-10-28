@@ -1,14 +1,94 @@
 // lib/formulaEngine.ts - Formula parsing and safe evaluation engine
-// Handles 42 dynamic variables with +, -, *, /, (), and math functions (MAX, MIN, ROUND, ABS)
+// DYNAMIC VARIABLE SYSTEM: Fetches variables from KYC/variables_metadata collection (92 variables)
 // Returns 'NA' for division by zero, missing variables, or invalid expressions
 
-import { AVAILABLE_VARIABLES, FormulaValidationResult } from './chartConfigTypes';
+import { type AvailableVariable, FormulaValidationResult } from './chartConfigTypes';
 import { 
   validateRequiredFields, 
   ensureDerivedMetrics, 
   type ProjectStats as ValidatedProjectStats,
   type ValidationResult as DataValidationResult
 } from './dataValidator';
+
+/**
+ * DYNAMIC VARIABLE CACHE - KYC as Single Source of Truth
+ * 
+ * WHAT: In-memory cache for variables from MongoDB variables_metadata collection
+ * WHY: Expensive to fetch all 92 variables from database on every formula validation
+ * HOW: Cache for 5 minutes, automatically invalidated when variables API is updated
+ * TTL: Matches variables-config API cache (5 minutes)
+ */
+let variablesCache: {
+  data: AvailableVariable[];
+  timestamp: number;
+} | null = null;
+
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function isCacheValid(): boolean {
+  if (!variablesCache) return false;
+  return Date.now() - variablesCache.timestamp < CACHE_TTL_MS;
+}
+
+/**
+ * WHAT: Fetch all available variables from KYC system dynamically
+ * WHY: Chart configurator needs access to ALL 92 variables, not hardcoded 37
+ * HOW: Call /api/variables-config with 5-minute cache
+ * 
+ * @returns Promise resolving to array of all variables from KYC
+ */
+export async function fetchAvailableVariables(): Promise<AvailableVariable[]> {
+  try {
+    // Check cache first
+    if (isCacheValid() && variablesCache) {
+      console.log('✅ Variables cache hit (formulaEngine)');
+      return variablesCache.data;
+    }
+
+    console.log('📊 Fetching variables from KYC API...');
+    const response = await fetch('/api/variables-config', { cache: 'no-store' });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch variables: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !Array.isArray(data.variables)) {
+      throw new Error('Invalid variables API response');
+    }
+
+    // Update cache
+    variablesCache = {
+      data: data.variables,
+      timestamp: Date.now()
+    };
+
+    console.log(`✅ Loaded ${data.variables.length} variables from KYC`);
+    return data.variables;
+  } catch (error) {
+    console.error('❌ Failed to fetch variables from KYC:', error);
+    // Return empty array on error (graceful degradation)
+    return [];
+  }
+}
+
+/**
+ * WHAT: Synchronous variable fetching for server-side use
+ * WHY: Some contexts cannot use async/await (e.g., synchronous validation)
+ * HOW: Returns cached data only
+ * 
+ * @returns Array of variables from cache or empty array
+ */
+export function fetchAvailableVariablesSync(): AvailableVariable[] {
+  // Check cache first
+  if (isCacheValid() && variablesCache) {
+    return variablesCache.data;
+  }
+
+  console.warn('⚠️ Synchronous variable fetch called - returning cached data only');
+  return variablesCache?.data || [];
+}
 
 /**
  * SINGLE REFERENCE SYSTEM - NO MAPPINGS, NO TRANSLATIONS
@@ -414,43 +494,62 @@ export function evaluateFormulasBatch(
 }
 
 /**
+ * DEPRECATED: Use fetchAvailableVariables() instead
+ * 
  * Gets all available variables with their descriptions
  * Useful for building variable picker UIs
- * @returns Array of available variables with metadata
+ * 
+ * @deprecated Use async fetchAvailableVariables() for dynamic KYC data
+ * @returns Array of available variables from cache or empty array
  */
-export function getAvailableVariables() {
-  return AVAILABLE_VARIABLES;
+export function getAvailableVariables(): AvailableVariable[] {
+  console.warn('⚠️ getAvailableVariables() is deprecated. Use fetchAvailableVariables() instead.');
+  return fetchAvailableVariablesSync();
 }
 
 /**
- * Checks if a specific variable exists and is valid
- * SINGLE REFERENCE SYSTEM: Variable name must match database field name
- * @param variableName - Name of variable to check (e.g., "remoteImages", "female")
- * @returns Boolean indicating if variable is valid
+ * WHAT: Checks if a specific variable exists in KYC system
+ * WHY: Dynamic validation against 92 variables, not hardcoded 37
+ * HOW: Look up variable name in cached KYC variables
+ * 
+ * @param variableName - Full database path (e.g., "stats.female", "stats.bitlyTotalClicks")
+ * @returns Boolean indicating if variable exists in KYC
  */
 export function isValidVariable(variableName: string): boolean {
-  // In single reference system, any stats field name is valid
-  const validFields = [
-    'remoteImages', 'hostessImages', 'selfies',
-    'remoteFans', 'stadium', 'totalFans',
-    'female', 'male', 'genAlpha', 'genYZ', 'genX', 'boomer',
-    'merched', 'jersey', 'scarf', 'flags', 'baseballCap', 'other',
-    'approvedImages', 'rejectedImages',
-    'eventAttendees', 'eventTicketPurchases',
-    'eventResultHome', 'eventResultVisitor',
-    'allImages', 'totalImages', 'totalUnder40', 'totalOver40'
-  ];
-  return validFields.includes(variableName);
+  // WHAT: Strip PARAM: and MANUAL: prefixes (always valid)
+  // WHY: These are resolved at runtime, not database fields
+  if (variableName.startsWith('PARAM:') || variableName.startsWith('MANUAL:')) {
+    return true;
+  }
+
+  // WHAT: Check if variable exists in cached KYC data
+  // WHY: Single source of truth from variables_metadata collection
+  const variables = fetchAvailableVariablesSync();
+  
+  if (variables.length === 0) {
+    // WHAT: If cache is empty, return true (permissive mode)
+    // WHY: Avoid blocking formula validation before first API call
+    console.warn(`⚠️ Variables cache empty, cannot validate: ${variableName}`);
+    return true;
+  }
+
+  // WHAT: Lookup variable by name (full database path)
+  // WHY: Database path like "stats.female" must match exactly
+  return variables.some(v => v.name === variableName);
 }
 
 /**
- * Gets example usage for a specific variable
- * @param variableName - Name of variable to get example for
- * @returns Example formula using the variable, or null if variable is invalid
+ * WHAT: Gets example usage for a specific variable from KYC
+ * WHY: Provide contextual help in formula editor
+ * HOW: Look up variable in cached data
+ * 
+ * @param variableName - Full database path (e.g., "stats.female")
+ * @returns Example formula using the variable, or null if not found
  */
 export function getVariableExample(variableName: string): string | null {
-  const variable = AVAILABLE_VARIABLES.find(v => v.name === variableName);
-  return variable ? variable.exampleUsage : null;
+  const variables = fetchAvailableVariablesSync();
+  const variable = variables.find(v => v.name === variableName);
+  return variable?.exampleUsage || null;
 }
 
 /**

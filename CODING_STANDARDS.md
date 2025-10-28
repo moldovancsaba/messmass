@@ -1,6 +1,6 @@
 # MessMass Coding Standards
 
-**Version:** 6.35.0  
+**Version:** 8.0.0  
 **Last Updated:** 2025-10-20T13:49:00.000Z
 
 ---

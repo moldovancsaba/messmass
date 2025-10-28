@@ -58,71 +58,69 @@ export interface ChartConfiguration {
 }
 
 /**
- * Available variables that can be used in formulas
- * Each variable corresponds to a field in the ProjectStats interface
+ * DYNAMIC VARIABLE SYSTEM - KYC as Single Source of Truth
+ * 
+ * WHAT: Variables are stored in MongoDB variables_metadata collection (92 variables)
+ * WHY: Enable dynamic variable creation without code changes, support white-label customization
+ * HOW: Chart system fetches variables from /api/variables-config (KYC system)
+ * 
+ * BREAKING CHANGE v7.0.0:
+ * - Removed hardcoded AVAILABLE_VARIABLES array (was only 37 variables)
+ * - All variables now fetched dynamically from KYC/variables_metadata (92 variables)
+ * - Chart Configurator loads variables via API, not code imports
+ */
+
+/**
+ * Available variable interface - matches KYC variable structure
+ * Each variable corresponds to a field in variables_metadata collection
  */
 export interface AvailableVariable {
-  name: string; // Variable name (e.g., "INDOOR", "FEMALE")
-  displayName: string; // Human-readable name (e.g., "Indoor Fans", "Female Attendees")
-  category: string; // Category for organization (e.g., "Demographics", "Location", "Images")
-  description: string; // Detailed description
-  exampleUsage: string; // Example formula using this variable
+  name: string; // Full database path: "stats.female", "stats.remoteImages", "hashtags"
+  label: string; // Display label (can be customized via KYC alias)
+  displayName?: string; // Backward compatibility - use label instead
+  category: string; // Category for organization ("Images", "Demographics", "Bitly", etc.)
+  type: 'count' | 'percentage' | 'currency' | 'numeric' | 'text' | 'boolean' | 'date';
+  description?: string; // Detailed description
+  unit?: string; // "€", "%", "clicks"
+  derived?: boolean; // True for computed fields (totalFans, allImages)
+  formula?: string; // For derived variables
+  exampleUsage?: string; // Example formula using this variable
+  flags?: {
+    visibleInClicker: boolean;
+    editableInManual: boolean;
+  };
+  isSystem?: boolean; // True for schema fields, false for custom
+  order?: number; // Sort order within category
+  alias?: string; // User-defined display alias for white-labeling
 }
 
 /**
- * All 42 available variables from ProjectStats interface
- * Used for formula validation and variable picker UI
+ * DEPRECATED: Use fetchAvailableVariables() from formulaEngine.ts
+ * 
+ * This constant is kept for backward compatibility only.
+ * All new code MUST fetch variables dynamically from KYC system.
+ * 
+ * @deprecated Use `await fetchAvailableVariables()` instead
  */
-// ABSOLUTE DATABASE PATH SYSTEM: Variable names = FULL MongoDB paths
-// RULE: Database has stats.female → use 'stats.female' EVERYWHERE (code, charts, UI)
-// ALIAS: UI can display "Female Attendees" but reference is always 'stats.female'
-export const AVAILABLE_VARIABLES: AvailableVariable[] = [
-  // Image Statistics
-  { name: 'stats.remoteImages', displayName: 'stats.remoteImages', category: 'Images', description: 'Number of images taken remotely', exampleUsage: '[stats.remoteImages] * 2' },
-  { name: 'stats.hostessImages', displayName: 'stats.hostessImages', category: 'Images', description: 'Number of images taken by hostess', exampleUsage: '[stats.hostessImages] + [stats.selfies]' },
-  { name: 'stats.selfies', displayName: 'stats.selfies', category: 'Images', description: 'Number of selfie images', exampleUsage: '[stats.selfies] / 2' },
-  { name: 'stats.approvedImages', displayName: 'stats.approvedImages', category: 'Images', description: 'Number of approved images', exampleUsage: '[stats.approvedImages] - [stats.rejectedImages]' },
-  { name: 'stats.rejectedImages', displayName: 'stats.rejectedImages', category: 'Images', description: 'Number of rejected images', exampleUsage: '[stats.rejectedImages] * 0.5' },
-  
-  // Location Statistics
-  { name: 'stats.remoteFans', displayName: 'stats.remoteFans', category: 'Location', description: 'Fans engaging remotely (not at venue)', exampleUsage: '[stats.remoteFans] + [stats.stadium]' },
-  { name: 'stats.stadium', displayName: 'stats.stadium', category: 'Location', description: 'On-site fans at venue/stadium', exampleUsage: '[stats.stadium] / [stats.totalFans]' },
-  { name: 'stats.totalFans', displayName: 'stats.totalFans', category: 'Location', description: 'Computed: remoteFans + stadium', exampleUsage: '[stats.totalFans] - [stats.merched]' },
-  
-  // Demographics
-  { name: 'stats.female', displayName: 'stats.female', category: 'Demographics', description: 'Number of female attendees', exampleUsage: '[stats.female] / ([stats.female] + [stats.male])' },
-  { name: 'stats.male', displayName: 'stats.male', category: 'Demographics', description: 'Number of male attendees', exampleUsage: '[stats.male] * 100' },
-  { name: 'stats.genAlpha', displayName: 'stats.genAlpha', category: 'Demographics', description: 'Number of Generation Alpha attendees', exampleUsage: '[stats.genAlpha] + [stats.genYZ]' },
-  { name: 'stats.genYZ', displayName: 'stats.genYZ', category: 'Demographics', description: 'Number of Generation Y+Z attendees', exampleUsage: '[stats.genYZ] * 1.5' },
-  { name: 'stats.genX', displayName: 'stats.genX', category: 'Demographics', description: 'Number of Generation X attendees', exampleUsage: '[stats.genX] + [stats.boomer]' },
-  { name: 'stats.boomer', displayName: 'stats.boomer', category: 'Demographics', description: 'Number of Boomer attendees', exampleUsage: '[stats.boomer] / 2' },
-  
-  // Merchandise
-  { name: 'stats.merched', displayName: 'stats.merched', category: 'Merchandise', description: 'Number of fans with merchandise', exampleUsage: '[stats.merched] / [stats.totalFans]' },
-  { name: 'stats.jersey', displayName: 'stats.jersey', category: 'Merchandise', description: 'Number of jersey merchandise items', exampleUsage: '[stats.jersey] * 25' },
-  { name: 'stats.scarf', displayName: 'stats.scarf', category: 'Merchandise', description: 'Number of scarf merchandise items', exampleUsage: '[stats.scarf] + [stats.flags]' },
-  { name: 'stats.flags', displayName: 'stats.flags', category: 'Merchandise', description: 'Number of flag merchandise items', exampleUsage: '[stats.flags] * 15' },
-  { name: 'stats.baseballCap', displayName: 'stats.baseballCap', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[stats.baseballCap] * 20' },
-  { name: 'stats.other', displayName: 'stats.other', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[stats.other] * 10' },
-  
-  // Social Media Visits
-  { name: 'stats.visitFacebook', displayName: 'stats.visitFacebook', category: 'Social Media', description: 'Number of Facebook visits', exampleUsage: '[stats.visitFacebook] * 1.5' },
-  { name: 'stats.visitInstagram', displayName: 'stats.visitInstagram', category: 'Social Media', description: 'Number of Instagram visits', exampleUsage: '[stats.visitInstagram] + [stats.visitTiktok]' },
-  { name: 'stats.visitYoutube', displayName: 'stats.visitYoutube', category: 'Social Media', description: 'Number of YouTube visits', exampleUsage: '[stats.visitYoutube] / 2' },
-  { name: 'stats.visitTiktok', displayName: 'stats.visitTiktok', category: 'Social Media', description: 'Number of TikTok visits', exampleUsage: '[stats.visitTiktok] * 3' },
-  { name: 'stats.visitX', displayName: 'stats.visitX', category: 'Social Media', description: 'Number of X (Twitter) visits', exampleUsage: '[stats.visitX] + [stats.visitFacebook]' },
-  { name: 'stats.visitTrustpilot', displayName: 'stats.visitTrustpilot', category: 'Engagement', description: 'Number of Trustpilot visits', exampleUsage: '[stats.visitTrustpilot] * 10' },
-  
-  // Event Metrics
-  { name: 'stats.eventAttendees', displayName: 'stats.eventAttendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[stats.eventAttendees] * 0.1' },
-  { name: 'stats.eventResultHome', displayName: 'stats.eventResultHome', category: 'Event', description: 'Home team result/score', exampleUsage: '[stats.eventResultHome] - [stats.eventResultVisitor]' },
-  { name: 'stats.eventResultVisitor', displayName: 'stats.eventResultVisitor', category: 'Event', description: 'Visitor team result/score', exampleUsage: '[stats.eventResultVisitor] + [stats.eventResultHome]' },
-  
-  // Computed Fields
-  { name: 'stats.allImages', displayName: 'stats.allImages', category: 'Images', description: 'Computed: remoteImages + hostessImages + selfies', exampleUsage: '[stats.allImages] / [stats.totalFans]' },
-  { name: 'stats.totalUnder40', displayName: 'stats.totalUnder40', category: 'Demographics', description: 'Computed: genAlpha + genYZ', exampleUsage: '[stats.totalUnder40] / [stats.totalFans]' },
-  { name: 'stats.totalOver40', displayName: 'stats.totalOver40', category: 'Demographics', description: 'Computed: genX + boomer', exampleUsage: '[stats.totalOver40] / [stats.totalFans]' }
-];
+export const AVAILABLE_VARIABLES: AvailableVariable[] = [];
+
+/**
+ * RULE: Chart system MUST fetch variables from KYC
+ * 
+ * Correct usage in Chart Configurator:
+ * ```typescript
+ * const response = await fetch('/api/variables-config');
+ * const { variables } = await response.json();
+ * // Use `variables` array for variable picker dropdown
+ * ```
+ * 
+ * Correct usage in formula validation:
+ * ```typescript
+ * import { fetchAvailableVariables } from '@/lib/formulaEngine';
+ * const variables = await fetchAvailableVariables();
+ * const isValid = variables.some(v => v.name === variableName);
+ * ```
+ */
 
 /**
  * Formula validation result

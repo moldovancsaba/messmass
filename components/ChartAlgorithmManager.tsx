@@ -2,10 +2,18 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ColoredCard from './ColoredCard';
-import { ChartConfiguration, AVAILABLE_VARIABLES, AvailableVariable } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 import styles from './ChartAlgorithmManager.module.css';
+
+/**
+ * DYNAMIC VARIABLE SYSTEM - KYC as Single Source of Truth
+ * 
+ * WHAT: Fetch all 92 variables from KYC /api/variables-config
+ * WHY: Chart configurator must show ALL variables, not hardcoded 37
+ * HOW: Load on component mount, cache for session
+ */
 
 // Props type for the Chart Algorithm Manager component
 // This component doesn't require any props as it manages its own state
@@ -54,10 +62,40 @@ export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
   const [showEditor, setShowEditor] = useState(false);
   const [editingConfig, setEditingConfig] = useState<ChartConfigFormData | null>(null);
   
-  // Load configurations on mount
+  // WHAT: Dynamic variable state from KYC system
+  // WHY: Replace hardcoded AVAILABLE_VARIABLES with live data
+  const [availableVariables, setAvailableVariables] = useState<AvailableVariable[]>([]);
+  const [variablesLoading, setVariablesLoading] = useState(true);
+  
+  // Load configurations AND variables on mount
   useEffect(() => {
     loadConfigurations();
+    loadVariablesFromKYC();
   }, []);
+  
+  // WHAT: Fetch all variables from KYC system
+  // WHY: Chart configurator needs access to all 92 variables
+  // HOW: Call /api/variables-config once on mount
+  const loadVariablesFromKYC = async () => {
+    try {
+      console.log('📊 Loading variables from KYC...');
+      const response = await fetch('/api/variables-config', { cache: 'no-store' });
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.variables)) {
+        console.log(`✅ Loaded ${data.variables.length} variables from KYC`);
+        setAvailableVariables(data.variables);
+      } else {
+        console.error('❌ Failed to load variables from KYC:', data.error);
+        setAvailableVariables([]);
+      }
+    } catch (error) {
+      console.error('❌ Error loading variables from KYC:', error);
+      setAvailableVariables([]);
+    } finally {
+      setVariablesLoading(false);
+    }
+  };
 
   const loadConfigurations = async () => {
     try {
@@ -445,6 +483,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
       {showEditor && editingConfig && (
         <ChartConfigurationEditor
           config={editingConfig}
+          availableVariables={availableVariables}
           onSave={saveConfiguration}
           onCancel={() => {
             setShowEditor(false);
@@ -488,11 +527,12 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 // Chart Configuration Editor Component (simplified - full implementation would be larger)
 interface ChartConfigurationEditorProps {
   config: ChartConfigFormData;
+  availableVariables: AvailableVariable[]; // WHAT: Dynamic variables from KYC
   onSave: (config: ChartConfigFormData) => void;
   onCancel: () => void;
 }
 
-function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurationEditorProps) {
+function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel }: ChartConfigurationEditorProps) {
   const [formData, setFormData] = useState<ChartConfigFormData>(config);
   const [showVariablePicker, setShowVariablePicker] = useState<{ elementIndex: number } | null>(null);
   const [variableSearchTerm, setVariableSearchTerm] = useState('');
@@ -578,19 +618,22 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
     }
   };
 
-  // Filter variables for picker
+  // WHAT: Filter variables for picker from KYC data
+  // WHY: Variable picker must show all 92 variables from KYC
+  // HOW: Use availableVariables state instead of hardcoded AVAILABLE_VARIABLES
   const getFilteredVariablesForPicker = () => {
-    let filtered = AVAILABLE_VARIABLES;
+    let filtered = availableVariables;
     
     if (selectedVariableCategory !== 'All') {
       filtered = filtered.filter(variable => variable.category === selectedVariableCategory);
     }
     
     if (variableSearchTerm) {
+      const term = variableSearchTerm.toLowerCase();
       filtered = filtered.filter(variable => 
-        variable.name.toLowerCase().includes(variableSearchTerm.toLowerCase()) ||
-        variable.displayName.toLowerCase().includes(variableSearchTerm.toLowerCase()) ||
-        variable.description.toLowerCase().includes(variableSearchTerm.toLowerCase())
+        variable.name.toLowerCase().includes(term) ||
+        (variable.label || variable.displayName || '').toLowerCase().includes(term) ||
+        (variable.description || '').toLowerCase().includes(term)
       );
     }
     
@@ -608,7 +651,9 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
     }
   };
   
-  const variableCategories = ['All', ...Array.from(new Set(AVAILABLE_VARIABLES.map(v => v.category)))];
+  // WHAT: Dynamic category list from KYC variables
+  // WHY: Categories include Bitly, SportsDB, etc. not in hardcoded list
+  const variableCategories = ['All', ...Array.from(new Set(availableVariables.map(v => v.category)))];
   
   // Test function for formulas (moved to component scope)
   const testConfigurationFormula = (formula: string) => {
@@ -625,14 +670,14 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
       variables.push(match[1]);
     }
     
-    // WHAT: Check if all variables exist in AVAILABLE_VARIABLES
+    // WHAT: Check if all variables exist in KYC system
     // WHY: Prevent invalid formulas from being saved
     // NOTE: PARAM: and MANUAL: tokens are always valid (handled separately)
     const invalidVariables = variables.filter(variable => {
       // Skip special tokens
       if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) return false;
-      // Check if variable exists in registry
-      return !AVAILABLE_VARIABLES.some(v => v.name === variable);
+      // Check if variable exists in KYC (dynamic from database)
+      return !availableVariables.some(v => v.name === variable);
     });
     
     if (invalidVariables.length > 0) {

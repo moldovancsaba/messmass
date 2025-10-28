@@ -1,6 +1,6 @@
 # AUTHENTICATION_AND_ACCESS.md
 
-**Version:** 6.30.0  
+**Version:** 8.0.0  
 **Last Updated:** 2025-10-19T13:44:58.000Z (UTC)
 **Status:** Production
 
