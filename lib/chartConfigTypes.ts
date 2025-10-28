@@ -73,56 +73,55 @@ export interface AvailableVariable {
  * All 42 available variables from ProjectStats interface
  * Used for formula validation and variable picker UI
  */
+// ABSOLUTE DATABASE PATH SYSTEM: Variable names = FULL MongoDB paths
+// RULE: Database has stats.female → use 'stats.female' EVERYWHERE (code, charts, UI)
+// ALIAS: UI can display "Female Attendees" but reference is always 'stats.female'
 export const AVAILABLE_VARIABLES: AvailableVariable[] = [
   // Image Statistics
-{ name: 'REMOTE_IMAGES', displayName: 'Remote Images', category: 'Images', description: 'Number of images taken remotely', exampleUsage: '[SEYUREMOTEIMAGES] * 2' },
-{ name: 'HOSTESS_IMAGES', displayName: 'Hostess Images', category: 'Images', description: 'Number of images taken by hostess', exampleUsage: '[SEYUHOSTESSIMAGES] + [SEYUSELFIES]' },
-{ name: 'SELFIES', displayName: 'Selfies', category: 'Images', description: 'Number of selfie images', exampleUsage: '[SEYUSELFIES] / 2' },
-{ name: 'APPROVED_IMAGES', displayName: 'Approved Images', category: 'Images', description: 'Number of approved images', exampleUsage: '[SEYUAPPROVEDIMAGES] - [SEYUREJECTEDIMAGES]' },
-{ name: 'REJECTED_IMAGES', displayName: 'Rejected Images', category: 'Images', description: 'Number of rejected images', exampleUsage: '[SEYUREJECTEDIMAGES] * 0.5' },
+  { name: 'stats.remoteImages', displayName: 'stats.remoteImages', category: 'Images', description: 'Number of images taken remotely', exampleUsage: '[stats.remoteImages] * 2' },
+  { name: 'stats.hostessImages', displayName: 'stats.hostessImages', category: 'Images', description: 'Number of images taken by hostess', exampleUsage: '[stats.hostessImages] + [stats.selfies]' },
+  { name: 'stats.selfies', displayName: 'stats.selfies', category: 'Images', description: 'Number of selfie images', exampleUsage: '[stats.selfies] / 2' },
+  { name: 'stats.approvedImages', displayName: 'stats.approvedImages', category: 'Images', description: 'Number of approved images', exampleUsage: '[stats.approvedImages] - [stats.rejectedImages]' },
+  { name: 'stats.rejectedImages', displayName: 'stats.rejectedImages', category: 'Images', description: 'Number of rejected images', exampleUsage: '[stats.rejectedImages] * 0.5' },
   
   // Location Statistics
-{ name: 'INDOOR', displayName: 'Indoor Fans', category: 'Location', description: 'Number of indoor fans', exampleUsage: '[SEYUINDOOR] + [SEYUOUTDOOR]' },
-{ name: 'OUTDOOR', displayName: 'Outdoor Fans', category: 'Location', description: 'Number of outdoor fans', exampleUsage: '[SEYUOUTDOOR] * 1.2' },
-{ name: 'STADIUM', displayName: 'Stadium Fans', category: 'Location', description: 'Number of stadium fans', exampleUsage: '[SEYUSTADIUMFANS] / ([SEYUREMOTEFANS] + [SEYUSTADIUMFANS])' },
-{ name: 'REMOTE_FANS', displayName: 'Remote Fans', category: 'Location', description: 'Indoor + Outdoor (aggregated)', exampleUsage: '[SEYUREMOTEFANS] + [SEYUSTADIUMFANS]' },
-{ name: 'TOTAL_FANS', displayName: 'Total Fans', category: 'Location', description: 'Remote Fans (indoor + outdoor) + Stadium', exampleUsage: '[SEYUTOTALFANS] - [SEYUMERCHEDFANS]' },
+  { name: 'stats.remoteFans', displayName: 'stats.remoteFans', category: 'Location', description: 'Fans engaging remotely (not at venue)', exampleUsage: '[stats.remoteFans] + [stats.stadium]' },
+  { name: 'stats.stadium', displayName: 'stats.stadium', category: 'Location', description: 'On-site fans at venue/stadium', exampleUsage: '[stats.stadium] / [stats.totalFans]' },
+  { name: 'stats.totalFans', displayName: 'stats.totalFans', category: 'Location', description: 'Computed: remoteFans + stadium', exampleUsage: '[stats.totalFans] - [stats.merched]' },
   
   // Demographics
-{ name: 'FEMALE', displayName: 'Female Attendees', category: 'Demographics', description: 'Number of female attendees', exampleUsage: '[SEYUFEMALE] / ([SEYUFEMALE] + [SEYUMALE])' },
-{ name: 'MALE', displayName: 'Male Attendees', category: 'Demographics', description: 'Number of male attendees', exampleUsage: '[SEYUMALE] * 100' },
-{ name: 'GEN_ALPHA', displayName: 'Gen Alpha', category: 'Demographics', description: 'Number of Generation Alpha attendees', exampleUsage: '[SEYUGENALPHA] + [SEYUGENYZ]' },
-{ name: 'GEN_YZ', displayName: 'Gen Y+Z', category: 'Demographics', description: 'Number of Generation Y+Z attendees', exampleUsage: '[SEYUGENYZ] * 1.5' },
-{ name: 'GEN_X', displayName: 'Gen X', category: 'Demographics', description: 'Number of Generation X attendees', exampleUsage: '[SEYUGENX] + [SEYUBOOMER]' },
-{ name: 'BOOMER', displayName: 'Boomer', category: 'Demographics', description: 'Number of Boomer attendees', exampleUsage: '[SEYUBOOMER] / 2' },
+  { name: 'stats.female', displayName: 'stats.female', category: 'Demographics', description: 'Number of female attendees', exampleUsage: '[stats.female] / ([stats.female] + [stats.male])' },
+  { name: 'stats.male', displayName: 'stats.male', category: 'Demographics', description: 'Number of male attendees', exampleUsage: '[stats.male] * 100' },
+  { name: 'stats.genAlpha', displayName: 'stats.genAlpha', category: 'Demographics', description: 'Number of Generation Alpha attendees', exampleUsage: '[stats.genAlpha] + [stats.genYZ]' },
+  { name: 'stats.genYZ', displayName: 'stats.genYZ', category: 'Demographics', description: 'Number of Generation Y+Z attendees', exampleUsage: '[stats.genYZ] * 1.5' },
+  { name: 'stats.genX', displayName: 'stats.genX', category: 'Demographics', description: 'Number of Generation X attendees', exampleUsage: '[stats.genX] + [stats.boomer]' },
+  { name: 'stats.boomer', displayName: 'stats.boomer', category: 'Demographics', description: 'Number of Boomer attendees', exampleUsage: '[stats.boomer] / 2' },
   
   // Merchandise
-{ name: 'MERCHED', displayName: 'Merched Fans', category: 'Merchandise', description: 'Number of fans with merchandise', exampleUsage: '[SEYUMERCHEDFANS] / ([SEYUINDOOR] + [SEYUOUTDOOR] + [SEYUSTADIUMFANS])' },
-{ name: 'JERSEY', displayName: 'Jersey Sales', category: 'Merchandise', description: 'Number of jersey merchandise items', exampleUsage: '[SEYUMERCHJERSEY] * 25' },
-{ name: 'SCARF', displayName: 'Scarf Sales', category: 'Merchandise', description: 'Number of scarf merchandise items', exampleUsage: '[SEYUMERCHSCARF] + [SEYUFLAGS]' },
-{ name: 'FLAGS', displayName: 'Flag Sales', category: 'Merchandise', description: 'Number of flag merchandise items', exampleUsage: '[SEYUMERCHFLAGS] * 15' },
-{ name: 'BASEBALL_CAP', displayName: 'Baseball Cap Sales', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[SEYUMERCHBASEBALLCAP] * 20' },
-{ name: 'OTHER', displayName: 'Other Merchandise', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[SEYUMERCHOTHER] * 10' },
+  { name: 'stats.merched', displayName: 'stats.merched', category: 'Merchandise', description: 'Number of fans with merchandise', exampleUsage: '[stats.merched] / [stats.totalFans]' },
+  { name: 'stats.jersey', displayName: 'stats.jersey', category: 'Merchandise', description: 'Number of jersey merchandise items', exampleUsage: '[stats.jersey] * 25' },
+  { name: 'stats.scarf', displayName: 'stats.scarf', category: 'Merchandise', description: 'Number of scarf merchandise items', exampleUsage: '[stats.scarf] + [stats.flags]' },
+  { name: 'stats.flags', displayName: 'stats.flags', category: 'Merchandise', description: 'Number of flag merchandise items', exampleUsage: '[stats.flags] * 15' },
+  { name: 'stats.baseballCap', displayName: 'stats.baseballCap', category: 'Merchandise', description: 'Number of baseball cap merchandise items', exampleUsage: '[stats.baseballCap] * 20' },
+  { name: 'stats.other', displayName: 'stats.other', category: 'Merchandise', description: 'Number of other merchandise items', exampleUsage: '[stats.other] * 10' },
   
   // Social Media Visits
-{ name: 'VISIT_FACEBOOK', displayName: 'Facebook Visits', category: 'Social Media', description: 'Number of Facebook visits', exampleUsage: '[SEYUFACEBOOKVISIT] * 1.5' },
-{ name: 'VISIT_INSTAGRAM', displayName: 'Instagram Visits', category: 'Social Media', description: 'Number of Instagram visits', exampleUsage: '[SEYUINSTAGRAMVISIT] + [SEYUTIKTOKVISIT]' },
-{ name: 'VISIT_YOUTUBE', displayName: 'YouTube Visits', category: 'Social Media', description: 'Number of YouTube visits', exampleUsage: '[SEYUYOUTUBEVISIT] / 2' },
-{ name: 'VISIT_TIKTOK', displayName: 'TikTok Visits', category: 'Social Media', description: 'Number of TikTok visits', exampleUsage: '[SEYUTIKTOKVISIT] * 3' },
-{ name: 'VISIT_X', displayName: 'X (Twitter) Visits', category: 'Social Media', description: 'Number of X (Twitter) visits', exampleUsage: '[SEYUXVISIT] + [SEYUFACEBOOKVISIT]' },
-{ name: 'VISIT_TRUSTPILOT', displayName: 'Trustpilot Visits', category: 'Engagement', description: 'Number of Trustpilot visits', exampleUsage: '[SEYUTRUSTPILOTVISIT] * 10' },
+  { name: 'stats.visitFacebook', displayName: 'stats.visitFacebook', category: 'Social Media', description: 'Number of Facebook visits', exampleUsage: '[stats.visitFacebook] * 1.5' },
+  { name: 'stats.visitInstagram', displayName: 'stats.visitInstagram', category: 'Social Media', description: 'Number of Instagram visits', exampleUsage: '[stats.visitInstagram] + [stats.visitTiktok]' },
+  { name: 'stats.visitYoutube', displayName: 'stats.visitYoutube', category: 'Social Media', description: 'Number of YouTube visits', exampleUsage: '[stats.visitYoutube] / 2' },
+  { name: 'stats.visitTiktok', displayName: 'stats.visitTiktok', category: 'Social Media', description: 'Number of TikTok visits', exampleUsage: '[stats.visitTiktok] * 3' },
+  { name: 'stats.visitX', displayName: 'stats.visitX', category: 'Social Media', description: 'Number of X (Twitter) visits', exampleUsage: '[stats.visitX] + [stats.visitFacebook]' },
+  { name: 'stats.visitTrustpilot', displayName: 'stats.visitTrustpilot', category: 'Engagement', description: 'Number of Trustpilot visits', exampleUsage: '[stats.visitTrustpilot] * 10' },
   
   // Event Metrics
-{ name: 'EVENT_ATTENDEES', displayName: 'Event Attendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[SEYUATTENDEES] * 0.1' },
-{ name: 'EVENT_RESULT_HOME', displayName: 'Home Team Result', category: 'Event', description: 'Home team result/score', exampleUsage: '[SEYURESULTHOME] - [SEYURESULTVISITOR]' },
-{ name: 'EVENT_RESULT_VISITOR', displayName: 'Visitor Team Result', category: 'Event', description: 'Visitor team result/score', exampleUsage: '[SEYURESULTVISITOR] + [SEYURESULTHOME]' },
+  { name: 'stats.eventAttendees', displayName: 'stats.eventAttendees', category: 'Event', description: 'Total number of event attendees', exampleUsage: '[stats.eventAttendees] * 0.1' },
+  { name: 'stats.eventResultHome', displayName: 'stats.eventResultHome', category: 'Event', description: 'Home team result/score', exampleUsage: '[stats.eventResultHome] - [stats.eventResultVisitor]' },
+  { name: 'stats.eventResultVisitor', displayName: 'stats.eventResultVisitor', category: 'Event', description: 'Visitor team result/score', exampleUsage: '[stats.eventResultVisitor] + [stats.eventResultHome]' },
   
-  // Merchandise Pricing Variables for Sales Calculations
-{ name: 'JERSEY_PRICE', displayName: 'Jersey Unit Price', category: 'Merchandise Pricing', description: 'Price per jersey in EUR', exampleUsage: '[SEYUMERCHJERSEY] * [SEYUJERSEYPRICE]' },
-{ name: 'SCARF_PRICE', displayName: 'Scarf Unit Price', category: 'Merchandise Pricing', description: 'Price per scarf in EUR', exampleUsage: '[SEYUMERCHSCARF] * [SEYUSCARFPRICE]' },
-{ name: 'FLAGS_PRICE', displayName: 'Flag Unit Price', category: 'Merchandise Pricing', description: 'Price per flag in EUR', exampleUsage: '[SEYUFLAGS] * [SEYUFLAGSPRICE]' },
-{ name: 'CAP_PRICE', displayName: 'Baseball Cap Unit Price', category: 'Merchandise Pricing', description: 'Price per baseball cap in EUR', exampleUsage: '[SEYUBASEBALLCAP] * [SEYUCAPPRICE]' },
-{ name: 'OTHER_PRICE', displayName: 'Other Merchandise Unit Price', category: 'Merchandise Pricing', description: 'Average price for other merchandise items in EUR', exampleUsage: '[SEYUOTHER] * [SEYUOTHERPRICE]' }
+  // Computed Fields
+  { name: 'stats.allImages', displayName: 'stats.allImages', category: 'Images', description: 'Computed: remoteImages + hostessImages + selfies', exampleUsage: '[stats.allImages] / [stats.totalFans]' },
+  { name: 'stats.totalUnder40', displayName: 'stats.totalUnder40', category: 'Demographics', description: 'Computed: genAlpha + genYZ', exampleUsage: '[stats.totalUnder40] / [stats.totalFans]' },
+  { name: 'stats.totalOver40', displayName: 'stats.totalOver40', category: 'Demographics', description: 'Computed: genX + boomer', exampleUsage: '[stats.totalOver40] / [stats.totalFans]' }
 ];
 
 /**
@@ -172,8 +171,8 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     isActive: true,
     emoji: '👥',
     elements: [
-{ id: 'female', label: 'Female', formula: '[SEYUFEMALE]', color: '#ff6b9d', description: 'Female attendees' },
-{ id: 'male', label: 'Male', formula: '[SEYUMALE]', color: '#4a90e2', description: 'Male attendees' }
+      { id: 'female', label: 'Female', formula: '[stats.female]', color: '#ff6b9d', description: 'Female attendees' },
+      { id: 'male', label: 'Male', formula: '[stats.male]', color: '#4a90e2', description: 'Male attendees' }
     ]
   },
   
@@ -186,8 +185,8 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     isActive: true,
     emoji: '📍',
     elements: [
-{ id: 'remote', label: 'Remote', formula: '[SEYUREMOTEFANS]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
-{ id: 'event', label: 'Event', formula: '[SEYUSTADIUMFANS]', color: '#f59e0b', description: 'Stadium fans' }
+      { id: 'remote', label: 'Remote', formula: '[stats.remoteFans]', color: '#3b82f6', description: 'Remote fans (indoor + outdoor)' },
+      { id: 'event', label: 'Event', formula: '[stats.stadium]', color: '#f59e0b', description: 'Stadium fans' }
     ]
   },
   
@@ -200,8 +199,8 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     isActive: true,
     emoji: '👥',
     elements: [
-{ id: 'under-40', label: 'Under 40', formula: '[SEYUGENALPHA] + [SEYUGENYZ]', color: '#06b6d4', description: 'Gen Alpha + Gen Y/Z' },
-{ id: 'over-40', label: 'Over 40', formula: '[SEYUGENX] + [SEYUBOOMER]', color: '#f97316', description: 'Gen X + Boomer' }
+      { id: 'under-40', label: 'Under 40', formula: '[stats.genAlpha] + [stats.genYZ]', color: '#06b6d4', description: 'Gen Alpha + Gen Y/Z' },
+      { id: 'over-40', label: 'Over 40', formula: '[stats.genX] + [stats.boomer]', color: '#f97316', description: 'Gen X + Boomer' }
     ]
   },
   
@@ -214,8 +213,8 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     isActive: true,
     emoji: '🌐',
     elements: [
-{ id: 'qr-short', label: 'QR + Short URL', formula: '[SEYUQRCODEVISIT] + [SEYUSHORTURLVISIT]', color: '#3b82f6', description: 'QR code and short URL visits' },
-{ id: 'other', label: 'Other', formula: '[SEYUWEBVISIT]', color: '#f59e0b', description: 'Other web visits' }
+      { id: 'qr-short', label: 'QR + Short URL', formula: '[stats.visitQrCode] + [stats.visitShortUrl]', color: '#3b82f6', description: 'QR code and short URL visits' },
+      { id: 'other', label: 'Other', formula: '[stats.visitWeb]', color: '#f59e0b', description: 'Other web visits' }
     ]
   },
   
@@ -230,11 +229,11 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     totalLabel: 'possible merch sales',
     emoji: '🛍️',
     elements: [
-{ id: 'jersey-sales', label: 'Jersey', formula: '[SEYUMERCHJERSEY] * [SEYUJERSEYPRICE]', color: '#7b68ee', description: 'Jersey sales in EUR' },
-{ id: 'scarf-sales', label: 'Scarf', formula: '[SEYUMERCHSCARF] * [SEYUSCARFPRICE]', color: '#ff6b9d', description: 'Scarf sales in EUR' },
-{ id: 'flags-sales', label: 'Flags', formula: '[SEYUMERCHFLAGS] * [SEYUFLAGSPRICE]', color: '#ffa726', description: 'Flag sales in EUR' },
-{ id: 'cap-sales', label: 'Baseball Cap', formula: '[SEYUMERCHBASEBALLCAP] * [SEYUCAPPRICE]', color: '#66bb6a', description: 'Baseball cap sales in EUR' },
-{ id: 'other-sales', label: 'Other', formula: '[SEYUMERCHOTHER] * [SEYUOTHERPRICE]', color: '#ef5350', description: 'Other merchandise sales in EUR' }
+      { id: 'jersey-sales', label: 'Jersey', formula: '[stats.jersey] * [PARAM:jerseyPrice]', color: '#7b68ee', description: 'Jersey sales in EUR' },
+      { id: 'scarf-sales', label: 'Scarf', formula: '[stats.scarf] * [PARAM:scarfPrice]', color: '#ff6b9d', description: 'Scarf sales in EUR' },
+      { id: 'flags-sales', label: 'Flags', formula: '[stats.flags] * [PARAM:flagsPrice]', color: '#ffa726', description: 'Flag sales in EUR' },
+      { id: 'cap-sales', label: 'Baseball Cap', formula: '[stats.baseballCap] * [PARAM:capPrice]', color: '#66bb6a', description: 'Baseball cap sales in EUR' },
+      { id: 'other-sales', label: 'Other', formula: '[stats.other] * [PARAM:otherPrice]', color: '#ef5350', description: 'Other merchandise sales in EUR' }
     ]
   },
   
@@ -253,28 +252,28 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
       { 
         id: 'marketing-optin', 
         label: 'Marketing Opt-in Users', 
-formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 4.87',
+        formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 4.87',
         color: '#3b82f6', 
         description: 'Every image corresponds to a GDPR-compliant opt-in fan. Each contact has measurable acquisition cost in digital marketing (€4.87 avg market cost per email opt-in in Europe, 2025)' 
       },
       { 
         id: 'value-prop-emails', 
         label: 'Value Proposition Emails', 
-formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 1.07',
+        formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 1.07',
         color: '#10b981', 
         description: 'Every email delivered includes branded fan photo plus sponsor offer. Add-on ad space valued at €1.07 avg CPM email value add per send' 
       },
       { 
         id: 'giant-screen-ads', 
         label: 'Ads on Giant Screen', 
-formula: '([SEYUATTENDEES] / 1000) * 6 * 0.2 * ([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES])',
+        formula: '([stats.eventAttendees] / 1000) * 6 * 0.2 * ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies])',
         color: '#f59e0b', 
         description: 'Fans + brands shown on stadium big screen = in-stadium advertising equivalent. Stadium advertising CPM ≈ €6.00 per 1,000 attendees per 30s slot. 6s exposure = 0.2 of CPM' 
       },
       { 
         id: 'under40-engagement', 
         label: 'Under-40 Engagement', 
-formula: '([SEYUGENALPHA] + [SEYUGENYZ]) * 2.14',
+        formula: '([stats.genAlpha] + [stats.genYZ]) * 2.14',
         color: '#8b5cf6', 
         description: '80% of engaged fans are under 40 - critical target for most brands. Each identified contact carries premium value (€2.14 avg value of youth contact vs older groups)' 
       },
@@ -298,11 +297,11 @@ formula: '([SEYUGENALPHA] + [SEYUGENYZ]) * 2.14',
     showTotal: true,
     totalLabel: 'Core Fan Team',
     elements: [
-{ id: 'engaged', label: 'Engaged', formula: '([SEYUREMOTEFANS] + [SEYUSTADIUMFANS]) / [SEYUATTENDEES] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
-{ id: 'interactive', label: 'Interactive', formula: '([SEYUSOCIALVISIT] + [SEYUPROPOSITIONVISIT] + [SEYUPROPOSITIONPURCHASE]) / ([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 100', color: '#f59e0b', description: 'Fan Interaction %' },
-{ id: 'front-runners', label: 'Front-runners', formula: '[SEYUMERCHEDFANS] / ([SEYUREMOTEFANS] + [SEYUSTADIUMFANS]) * 100', color: '#10b981', description: 'Merched fans %' },
-{ id: 'fanaticals', label: 'Fanaticals', formula: '([SEYUFLAGS] + [SEYUMERCHSCARF]) / [SEYUMERCHEDFANS] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %' },
-{ id: 'casuals', label: 'Casuals', formula: '(([SEYUREMOTEFANS] + [SEYUSTADIUMFANS]) - [SEYUMERCHEDFANS]) / ([SEYUREMOTEFANS] + [SEYUSTADIUMFANS]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
+      { id: 'engaged', label: 'Engaged', formula: '([stats.remoteFans] + [stats.stadium]) / [stats.eventAttendees] * 100', color: '#8b5cf6', description: 'Fan Engagement %' },
+      { id: 'interactive', label: 'Interactive', formula: '([stats.socialVisit] + [stats.eventValuePropositionVisited] + [stats.eventValuePropositionPurchases]) / ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 100', color: '#f59e0b', description: 'Fan Interaction %' },
+      { id: 'front-runners', label: 'Front-runners', formula: '[stats.merched] / ([stats.remoteFans] + [stats.stadium]) * 100', color: '#10b981', description: 'Merched fans %' },
+      { id: 'fanaticals', label: 'Fanaticals', formula: '([stats.flags] + [stats.scarf]) / [stats.merched] * 100', color: '#ef4444', description: 'Flags & scarfs of merched %' },
+      { id: 'casuals', label: 'Casuals', formula: '(([stats.remoteFans] + [stats.stadium]) - [stats.merched]) / ([stats.remoteFans] + [stats.stadium]) * 100', color: '#06b6d4', description: 'Non-merched fans %' }
     ]
   },
   
@@ -318,7 +317,7 @@ formula: '([SEYUGENALPHA] + [SEYUGENYZ]) * 2.14',
       { 
         id: 'faces-per-image-value', 
         label: 'Average faces per approved image', 
-formula: '([SEYUFEMALE] + [SEYUMALE]) / [SEYUAPPROVEDIMAGES]',
+        formula: '([stats.female] + [stats.male]) / [stats.approvedImages]',
         color: '#10b981', 
         description: 'Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure.' 
       }
@@ -337,7 +336,7 @@ formula: '([SEYUFEMALE] + [SEYUMALE]) / [SEYUAPPROVEDIMAGES]',
       { 
         id: 'image-density-value', 
         label: 'Images per 100 fans', 
-formula: '([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) / ([SEYUFEMALE] + [SEYUMALE]) * 100',
+        formula: '([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) / ([stats.female] + [stats.male]) * 100',
         color: '#3b82f6', 
         description: 'Show how actively fans created content. Help venues and rights holders benchmark activation performance. Derived from your counts - a simple, comparable index across events. Target audience: Event ops, sponsorship sales, client success.' 
       }

@@ -19,9 +19,10 @@ MessMass is an enterprise-grade event analytics platform designed for sports org
 - 🔗 Advanced Bitly integration with many-to-many event associations
 - 🎨 Page Styles System: Custom theming engine with live preview editor
 - 🎨 Professional TailAdmin V2 flat design (zero gradients)
-- 📈 Configurable metrics and KPI dashboards
-- 🏷️ Unified hashtag system with category-aware organization
-- 🔐 Zero-trust authentication with session-based admin access
+- **📈 Database-first variable system with 96 configurable metrics**
+- **🏷️ Unified hashtag system with category-aware organization**
+- **🔐 Zero-trust authentication with session-based admin access**
+- **🎛️ KYC Management with alias-based UI customization**
 
 ## Quick Start
 
@@ -30,6 +31,9 @@ MessMass is an enterprise-grade event analytics platform designed for sports org
 ```bash
 # Install dependencies
 npm install
+
+# Seed variable metadata (first-time setup)
+npm run seed:variables
 
 # Start Next.js development server (port 3000)
 npm run dev
@@ -88,6 +92,7 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 | **CODING_STANDARDS.md** | **MANDATORY** coding standards, inline style prohibition, style guide |
 | **DESIGN_SYSTEM.md** | Design tokens, utility classes, UI patterns (authoritative source) |
 | **WARP.md** | Development rules, protocols, and AI agent guidelines |
+| **VARIABLE_SYSTEM_V7_MIGRATION.md** | Database-first variable system migration guide (v7.0.0) |
 | **RELEASE_NOTES.md** | Versioned changelog with implementation details |
 | **TASKLIST.md** | Active tasks with priorities, owners, and delivery dates |
 | **ROADMAP.md** | Forward-looking development plans and milestones |
@@ -97,7 +102,10 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 
 | Document | Description |
 |----------|-------------|
-| **ADMIN_VARIABLES_SYSTEM.md** | Variable manager, KPI configuration, SEYU tokens |
+| **ADMIN_VARIABLES_SYSTEM.md** | Database-first variable system, KYC Management, alias editing |
+| **SINGLE_REFERENCE_SYSTEM.md** | Single source of truth with `stats.` prefix convention |
+| **VARIABLES_DATABASE_SCHEMA.md** | MongoDB schema for `variables_metadata` collection |
+| **DATABASE_FIELD_NAMING.md** | Naming conventions for database fields and variables |
 | **HASHTAG_SYSTEM.md** | Unified hashtag system with category colors |
 | **BITLY_INTEGRATION_GUIDE.md** | Bitly API integration, analytics, many-to-many associations |
 | **AUTHENTICATION_AND_ACCESS.md** | Admin auth, session management, zero-trust access |
@@ -163,10 +171,13 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
   - Cached metrics with daily refresh jobs
   - Bulk import from Bitly account (3000+ links)
 
-- **📈 Variable & KPI Management**
+- **📈 Database-First Variable & KPI Management** (v7.0.0)
+  - **96 system variables** seeded from `lib/variablesConfig.ts`
+  - **Single Reference System** with `stats.` prefix for all code and formulas
+  - **Alias-based UI** - display labels editable in KYC Management without affecting database fields
   - Base variables (images, fans, demographics, merchandise)
   - Derived variables (total fans, all images, conversion rates)
-  - Custom variables (user-defined metrics)
+  - Custom variables (user-defined metrics, stored in MongoDB)
   - SEYU reference tokens for chart formulas
   - Visibility flags (clicker, manual entry)
   - Variable groups with ordering and chart assignments

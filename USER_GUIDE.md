@@ -759,51 +759,73 @@ All Bitly metrics are available as variables in the [Variables & Metrics](#varia
 
 ---
 
-## Variables & Metrics
+## Variables & Metrics (v7.0.0 - Database-First System)
 
-MessMass provides a flexible, extensible system for defining and tracking custom metrics.
+MessMass uses a **database-first variable management system** where all variables are stored in MongoDB and seeded on server initialization. This ensures consistency and centralized control.
 
 ### What is a Variable?
 
-A **variable** is a named metric that can be:
+A **variable** is a named metric stored in the `variables_metadata` collection and referenced in code using the **Single Reference System** (`stats.` prefix).
+
+Variables can be:
 - **Tracked**: Manually entered or clicker-incremented
 - **Derived**: Auto-calculated from other variables
 - **Displayed**: Shown in editors, charts, and reports
+- **Customized**: UI labels (aliases) editable without changing database fields
 
 ### Variable Types
 
-#### Base Variables
+#### System Variables (96 total)
 
-Core metrics tracked per event. Examples:
-- `remoteImages`: Photos taken remotely
-- `female`: Female fans counted
-- `merched`: Fans wearing merchandise
+Pre-configured variables seeded from `lib/variablesConfig.ts`. All system variables have `isSystemVariable: true` in the database.
+
+**Categories:**
+- **Images**: `remoteImages`, `hostessImages`, `selfies`
+- **Fans**: `remoteFans`, `stadium`
+- **Demographics**: `female`, `male`, `genAlpha`, `genYZ`, `genX`, `boomer`
+- **Merchandise**: `merched`, `jersey`, `scarf`, `flags`, `baseballCap`, `other`
+- **Visits**: `visitQrCode`, `visitShortUrl`, `visitWeb`, `socialVisit`
+- **Event**: `eventAttendees`, `eventResultHome`, `eventResultVisitor`
+- **Bitly**: `totalBitlyClicks`, `uniqueBitlyClicks`, and 80+ country/referrer/device metrics
 
 #### Derived Variables
 
-Auto-calculated from base variables. Examples:
+Auto-calculated from other variables. Examples:
 - `allImages`: `remoteImages + hostessImages + selfies`
 - `totalFans`: `remoteFans + stadium`
 - `totalVisit`: Sum of all visit sources
 
+**Important**: Derived variables are marked with `type: 'derived'` and have `editableInManual: false` to prevent manual editing.
+
 #### Custom Variables
 
-User-defined metrics created via Admin UI. Examples:
+User-created metrics via KYC Management interface. 
+
+**Characteristics**:
+- `isSystemVariable: false` in database
+- Stored in `project.stats` just like system variables
+- Full control over name, alias, type, category, and visibility flags
+
+**Examples**:
 - `vipGuests`: VIP attendees
 - `pressCount`: Media representatives
 - `sponsorBooth`: Sponsor booth visitors
 
 #### Text Variables
 
-Non-numeric metadata. Examples:
+Non-numeric metadata (type: `text`). Examples:
 - `eventResultHome`: Home team score
 - `eventResultVisitor`: Away team score
 
-### Managing Variables
+**Important**: Text variables have `editableInManual: true` but `visibleInClicker: false` (clicker is numeric-only).
+
+### Managing Variables via KYC Management
+
+**KYC Management** is the admin interface for configuring variables. Access it at `/admin/kyc`.
 
 #### Viewing All Variables
 
-1. Navigate to **Variables** from dashboard
+1. Navigate to **KYC Management** from admin dashboard
 2. Variables are organized by category:
    - Images
    - Fans (Location)
@@ -813,37 +835,79 @@ Non-numeric metadata. Examples:
    - Event
    - Bitly
    - Custom
+3. Each card displays:
+   - **Name**: Database field name (immutable for system variables)
+   - **Alias**: UI display label (editable for all variables)
+   - **Type**: `number`, `text`, or `derived`
+   - **Category**: Grouping label
+   - **System Badge**: Green "System" badge if `isSystemVariable: true`
+   - **Visibility Flags**: Checkboxes for Clicker and Manual
+
+#### Understanding Aliases vs. Names
+
+**Critical Concept**: The `alias` field is ONLY a UI display label. It does NOT affect:
+- Database field names (always use `name` field, e.g., `remoteImages`)
+- Code references (always use `stats.name`, e.g., `stats.remoteImages`)
+- Formula syntax (always use `stats.name` or SEYU tokens)
+
+**What Alias Controls**:
+- Button labels in Clicker Mode
+- Field labels in Manual Input Mode
+- Chart legends and axis labels
+- Admin UI display text
+
+**Example**:
+- **Name**: `remoteImages` (immutable, used in code)
+- **Alias**: "Remote Photos" (editable, shown to users)
+- **Database Access**: `project.stats.remoteImages` (uses name, not alias)
+
+#### Editing an Alias (Display Label)
+
+1. Find the variable card in KYC Management
+2. Click into the **"Alias"** field
+3. Type a new display name (e.g., change "Remote Images" to "Remote Photos")
+4. Press Enter or click outside the field
+5. Changes save automatically
+
+**Result**: UI labels update immediately; database field name unchanged.
 
 #### Creating a Custom Variable
 
-1. Scroll to the bottom of the Variables page
-2. Click **"+ New Variable"** button
+1. Scroll to the bottom of KYC Management page
+2. Click **"Add Variable"** button
 3. Fill in the form:
    - **Variable Name**: Camelcase, no spaces (e.g., `vipGuests`)
-   - **Display Label**: Human-readable (e.g., "VIP Guests")
+   - **Alias (Display Label)**: Human-readable (e.g., "VIP Guests")
    - **Variable Type**: `number` or `text`
    - **Category**: Select from dropdown or type new category
    - **Visible in Clicker**: Show as button in editor? (checkbox)
    - **Editable in Manual**: Allow manual input? (checkbox)
 4. Click **"Create Variable"**
 
-**Result**: Variable is immediately available in the project editor.
+**Result**: 
+- Variable is added to `variables_metadata` collection with `isSystemVariable: false`
+- Immediately available in project editor
+- Stored in `project.stats` when values are entered
 
-#### Editing a Variable
+#### Editing Variable Flags
 
 1. Find the variable card
-2. Modify any field directly
+2. Toggle checkboxes:
+   - **Visible in Clicker**: Show in Clicker Mode buttons
+   - **Editable in Manual**: Show in Manual Input fields
 3. Changes auto-save
 
-**Note**: You cannot edit the name of built-in base variables, only custom variables.
+**Note**: Derived variables always have `editableInManual: false` (enforced by system).
 
 #### Deleting a Custom Variable
 
-1. Find the variable card
-2. Click **"Delete"** button
+**Restriction**: Only custom variables (`isSystemVariable: false`) can be deleted.
+
+1. Find the custom variable card
+2. Click **"Delete"** button (only visible for custom variables)
 3. Confirm deletion
 
-**⚠️ Warning**: Deleting a variable does NOT delete its data from existing projects. The data remains in the database but is no longer accessible via the UI.
+**⚠️ Warning**: Deleting a variable removes it from `variables_metadata` but does NOT delete existing data in `project.stats`. Historical data remains but is no longer visible/editable in the UI.
 
 ### Variable Flags
 
@@ -898,9 +962,27 @@ For quick button reordering within categories without touching groups:
 
 **Result**: Button order updates immediately in all project editors.
 
+### Single Reference System
+
+All code and formulas MUST use the `stats.` prefix when accessing variables:
+
+**Correct Pattern**:
+```typescript
+const value = project.stats.remoteImages; // ✅
+const formula = 'stats.remoteImages + stats.hostessImages'; // ✅
+```
+
+**Incorrect Pattern**:
+```typescript
+const value = project.remoteImages; // ❌ Wrong: bypasses single source of truth
+const formula = 'remoteImages + hostessImages'; // ❌ Wrong: no stats. prefix
+```
+
+**Why?** All variables are stored in MongoDB under `project.stats`, ensuring a single source of truth and preventing data inconsistencies.
+
 ### SEYU Reference Tokens
 
-Variables can be referenced in chart formulas using **SEYU tokens**.
+For **legacy chart formulas**, variables can be referenced using **SEYU tokens**.
 
 **Format**: `[SEYUVARIABLENAME]`
 
@@ -915,7 +997,9 @@ Variables can be referenced in chart formulas using **SEYU tokens**.
 - Location vars → Add `FANS` suffix (e.g., `stadium` → `[SEYUSTADIUMFANS]`)
 - Merch vars → Add `MERCH` prefix (e.g., `jersey` → `[SEYUMERCHERSEY]`)
 
-**Where to Use**: Chart definition formulas in the chart configuration system.
+**Important**: SEYU tokens use the variable **name** field, NOT the alias. Changing an alias does NOT change the SEYU token.
+
+**Where to Use**: Chart definition formulas in the chart configuration system (legacy support).
 
 ---
 

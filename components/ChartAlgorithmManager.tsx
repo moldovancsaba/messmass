@@ -614,8 +614,10 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
   const testConfigurationFormula = (formula: string) => {
     if (!formula.trim()) return null;
     
-    // Simple validation - check for balanced brackets and valid variable names
-    const variablePattern = /\[([A-Z_]+)\]/g;
+    // WHAT: Validate formulas with full database paths like [stats.female]
+    // WHY: Support Single Reference System with dotted notation
+    // HOW: Match [a-zA-Z0-9_.] pattern (letters, numbers, underscores, dots)
+    const variablePattern = /\[([a-zA-Z0-9_.]+)\]/g;
     const variables: string[] = [];
     let match;
     
@@ -623,10 +625,15 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
       variables.push(match[1]);
     }
     
-    // Check if all variables are valid
-    const invalidVariables = variables.filter(variable => 
-      !AVAILABLE_VARIABLES.some(v => v.name === variable)
-    );
+    // WHAT: Check if all variables exist in AVAILABLE_VARIABLES
+    // WHY: Prevent invalid formulas from being saved
+    // NOTE: PARAM: and MANUAL: tokens are always valid (handled separately)
+    const invalidVariables = variables.filter(variable => {
+      // Skip special tokens
+      if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) return false;
+      // Check if variable exists in registry
+      return !AVAILABLE_VARIABLES.some(v => v.name === variable);
+    });
     
     if (invalidVariables.length > 0) {
       return { error: `Unknown variables: ${invalidVariables.join(', ')}`, result: null };
@@ -635,18 +642,23 @@ function ChartConfigurationEditor({ config, onSave, onCancel }: ChartConfigurati
     // Simple test calculation with sample data
     try {
       let testFormula = formula;
-      const sampleData = {
-        FEMALE: 120, MALE: 160, INDOOR: 50, OUTDOOR: 30, STADIUM: 200,
-        GEN_ALPHA: 20, GEN_YZ: 100, GEN_X: 80, BOOMER: 80,
-        JERSEY: 15, SCARF: 8, FLAGS: 12, BASEBALL_CAP: 5, OTHER: 3,
-        REMOTE_IMAGES: 10, HOSTESS_IMAGES: 25, SELFIES: 15,
-        APPROVED_IMAGES: 45, REJECTED_IMAGES: 5
+      // WHAT: Sample data using full database paths (stats.fieldName)
+      // WHY: Match Single Reference System format
+      const sampleData: Record<string, number> = {
+        'stats.female': 120, 'stats.male': 160, 'stats.remoteFans': 80, 'stats.stadium': 200,
+        'stats.genAlpha': 20, 'stats.genYZ': 100, 'stats.genX': 80, 'stats.boomer': 80,
+        'stats.jersey': 15, 'stats.scarf': 8, 'stats.flags': 12, 'stats.baseballCap': 5, 'stats.other': 3,
+        'stats.remoteImages': 10, 'stats.hostessImages': 25, 'stats.selfies': 15,
+        'stats.approvedImages': 45, 'stats.rejectedImages': 5, 'stats.merched': 43,
+        'stats.eventAttendees': 280, 'stats.allImages': 50, 'stats.totalFans': 280
       };
       
       // Replace variables with sample values
       variables.forEach(variable => {
-        const value = sampleData[variable as keyof typeof sampleData] || 1;
-        testFormula = testFormula.replace(new RegExp(`\\[${variable}\\]`, 'g'), value.toString());
+        const value = sampleData[variable] || 1;
+        // Escape dots in variable name for regex
+        const escapedVariable = variable.replace(/\./g, '\\.');
+        testFormula = testFormula.replace(new RegExp(`\\[${escapedVariable}\\]`, 'g'), value.toString());
       });
       
       // Evaluate the formula safely

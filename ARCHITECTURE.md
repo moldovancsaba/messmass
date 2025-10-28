@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-01-22T19:35:00.000Z
-Version: 6.42.0
+Last Updated: 2025-10-28T11:22:00.000Z
+Version: 7.0.0
 
 ## Project Overview
 
@@ -9,6 +9,7 @@ MessMass is an enterprise-grade event analytics platform built with Next.js 15, 
 
 ## Version History
 
+- **Version 7.0.0** — 🚀 **DATABASE-FIRST VARIABLE SYSTEM**: Complete migration to MongoDB-driven variables with Single Reference System (`stats.` prefix)
 - **Version 6.42.0** — Page Styles System: Complete custom theming engine with admin UI and live preview
 - **Version 6.10.0** — Chart System Enhancement Phase B (Parameterization, Bitly Charts, Manual Tokens)
 - **Version 6.9.2** — Real-Time Formula Validator in Admin Charts
@@ -1569,42 +1570,145 @@ See [SECURITY_MIGRATION_GUIDE.md](./docs/SECURITY_MIGRATION_GUIDE.md) for step-b
 
 ---
 
-## Admin Variables & Metrics Management System (Version 5.52.0)
+## Admin Variables & Metrics Management System (Version 7.0.0)
 
 ### Overview
 
-The Admin Variables System is a centralized configuration layer that controls which metrics appear in the Editor's rapid-counting interface (Clicker), which metrics are manually editable, how variables are grouped and ordered, and how they're referenced in formulas and chart configurations.
+**🚀 MAJOR ARCHITECTURE CHANGE**: The Variable System has been completely migrated to a **database-first architecture** with **Single Reference System** using full database paths.
+
+**Key Changes**:
+- ✅ ALL variables stored in MongoDB `variables_metadata` collection
+- ✅ Full database paths used everywhere: `stats.female`, `stats.remoteImages`
+- ✅ No code changes needed to add variables - fully dynamic via admin UI
+- ✅ UI aliases for display names (e.g., "Women" for `stats.female`)
+- ✅ System variables (schema fields) protected from deletion
+- ✅ In-memory caching for performance (5-minute TTL)
 
 **Status**: Production-Ready  
-**Documentation**: See [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md) for complete documentation
+**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md](./VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md)
 
-### Key Components
+### Core Principles
 
-#### 1. Variable Registry (`lib/variablesRegistry.ts`)
-- **Role**: Single source of truth for base and derived variables
-- **Base Variables**: Stats fields (images, fans, demographics, merchandise, visits, event)
-- **Derived Variables**: Auto-computed metrics (totalImages, totalFans, totalVisit)
-- **Text Variables**: Dynamic hashtag category variables
-- **Type Safety**: TypeScript interfaces for `VariableDefinition`
+#### Single Reference System
 
-#### 2. SEYU Reference Tokens (`lib/variableRefs.ts`)
-- **Role**: Organization-prefixed token generation for multi-tenancy readiness
-- **Format**: `[SEYUSUFFIX]` with normalization rules
-- **Normalization**: ALL→TOTAL, VISITED→VISIT, VISIT*→*VISIT, FANS suffix, MERCH prefix
-- **Usage**: Chart formulas reference variables as `[SEYUMERCHEDFANS]`, `[SEYUTOTALIMAGES]`
+**WHAT**: Use full MongoDB document paths as canonical reference everywhere  
+**WHY**: Zero translation layer = zero confusion, one source of truth  
+**HOW**: Database path `stats.female` = Formula token `[stats.female]` = Code reference `stats.female`
 
-#### 3. Variables Configuration API (`/api/variables-config`)
-- **Role**: Merge registry with MongoDB overrides and flags
-- **GET**: Fetch all variables with flags and ordering
-- **POST**: Create/update variable metadata and flags
-- **DELETE**: Remove custom or overridden variables
-- **Collection**: `variablesConfig` in MongoDB
+**Rules**:
+- ✅ **Code/Formulas**: Always use full path `stats.female`
+- ✅ **Database**: Store as `{ stats: { female: 120 } }`
+- ✅ **UI Display**: Show alias "Women" OR full path "stats.female" (user choice in KYC)
+- ❌ **Never**: Use short aliases in code or formulas
 
-#### 4. Variables Admin UI (`/app/admin/variables/page.tsx`)
-- **Features**: CRUD operations, search/filter, drag-and-drop ordering
-- **Groups Manager**: Control Editor layout with variable grouping
-- **Flags Management**: Toggle visibleInClicker / editableInManual per variable
-- **Custom Variables**: Create project-specific metrics via modal
+### Architecture Components
+
+#### 1. Variables Metadata Collection (`variables_metadata`)
+
+**Role**: Single source of truth for ALL variables (system + custom)
+
+**Schema**:
+```typescript
+interface VariableMetadata {
+  _id: ObjectId;
+  name: string;                    // Full DB path: "stats.female", "stats.remoteImages"
+  label: string;                   // Display name: "Female", "Remote Images"
+  type: 'count' | 'percentage' | 'currency' | 'numeric' | 'text' | 'boolean' | 'date';
+  category: string;                // "Images", "Demographics", etc.
+  description?: string;
+  unit?: string;                   // "€", "%", "clicks"
+  derived: boolean;                // True for computed variables
+  formula?: string;                // Formula using full paths: "stats.female + stats.male"
+  flags: {
+    visibleInClicker: boolean;     // Show in Editor clicker buttons
+    editableInManual: boolean;     // Allow manual editing
+  };
+  isSystem: boolean;               // True = cannot delete (schema fields)
+  order: number;                   // Sort order within category
+  alias?: string;                  // User-defined display alias (UI only)
+  createdAt: string;               // ISO 8601 with milliseconds (UTC)
+  updatedAt: string;
+  createdBy?: string;              // "system" or user ID
+  updatedBy?: string;
+}
+```
+
+**System vs Custom Variables**:
+- **System** (`isSystem: true`): Schema fields, cannot delete, can edit metadata
+- **Custom** (`isSystem: false`): User-created, full CRUD control
+
+#### 2. Variables Configuration API (`/api/variables-config`)
+
+**Endpoint**: `GET /POST /api/variables-config`
+
+**GET Response**:
+```json
+{
+  "success": true,
+  "variables": [
+    {
+      "name": "stats.female",
+      "label": "Female",
+      "type": "count",
+      "category": "Demographics",
+      "derived": false,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": true,
+      "order": 0
+    }
+  ],
+  "count": 92,
+  "cached": true
+}
+```
+
+**Features**:
+- In-memory cache (5-minute TTL)
+- Cache invalidation on variable mutations
+- Sorted by category → order → label
+
+#### 3. Variable Seeding System
+
+**Command**: `npm run seed:variables`
+
+**Purpose**: Migrate all base/derived variables from code registry to MongoDB
+
+**Process**:
+1. Read `lib/variablesRegistry.ts` (BASE_STATS_VARIABLES + DERIVED_VARIABLES)
+2. Upsert each to `variables_metadata` with `isSystem: true`
+3. Create performance indexes
+4. Verify seeding success
+
+**Idempotency**: Can run multiple times safely (uses upsert)
+
+#### 4. KYC Variables Admin (`/app/admin/kyc/page.tsx`)
+
+**Features**:
+- View all variables (system + custom) with metadata
+- Search and filter by source (manual/system/derived/text), flags, categories
+- Edit variable metadata (label, category, description)
+- Create custom variables via modal
+- Export to CSV/JSON
+- **Alias Management**: Set user-friendly display names
+
+**UI Display**:
+- Shows full database path: `stats.female` in `<code>` block
+- Shows display label: "Female"
+- Shows alias if set: "Women" (badge)
+- Lock icon for system variables (cannot delete)
+
+#### 5. Clicker Variables Manager (`/app/admin/variables/page.tsx`)
+
+**Purpose**: Control which variables appear in Editor clicker and their button order
+
+**Features**:
+- Drag-and-drop button reordering within categories
+- Toggle visibleInClicker / editableInManual flags
+- Group management for Editor layout
+- Integration with KPI charts
 
 ### Data Model
 

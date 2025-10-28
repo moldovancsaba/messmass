@@ -108,10 +108,14 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         const res = await fetch('/api/variables-config', { cache: 'no-store' });
         const data = await res.json();
         if (mounted && data?.success && Array.isArray(data.variables)) {
+          console.log('✅ Loaded variables:', data.variables.length, 'variables');
+          console.log('Sample variable names:', data.variables.slice(0, 5).map((v: any) => v.name));
           setVarsConfig(data.variables);
+        } else {
+          console.warn('⚠️ Failed to load variables:', data);
         }
       } catch (e) {
-        console.error('Failed to load variables-config', e);
+        console.error('❌ Failed to load variables-config', e);
       } finally {
         setVarsLoading(false);
       }
@@ -182,18 +186,30 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     }
   };
 
-  // Dynamic accessors for custom variables (and safe access for known ones)
+  // WHAT: Dynamic accessors for variables - handle both 'female' and 'stats.female' formats
+  // WHY: Variables in database use stats. prefix for Single Reference System
+  // HOW: Strip 'stats.' prefix when accessing project.stats object
+  const normalizeKey = (key: string): string => {
+    // WHAT: Remove 'stats.' prefix if present
+    // WHY: MongoDB stores as { stats: { female: 120 } }, not { stats: { stats.female: 120 } }
+    return key.startsWith('stats.') ? key.slice(6) : key;
+  };
+  
   const getStat = (key: string): number => {
-    const raw = (project.stats as any)[key]
-    return typeof raw === 'number' ? raw : 0
-  }
+    const normalized = normalizeKey(key);
+    const raw = (project.stats as any)[normalized];
+    return typeof raw === 'number' ? raw : 0;
+  };
+  
   const setStat = (key: string, value: number) => {
-    const newStats: any = { ...project.stats, [key]: Math.max(0, value) }
-    setProject(prev => ({ ...prev, stats: newStats }))
-    saveProject(newStats)
-  }
-  const incrementDynamic = (key: string) => setStat(key, getStat(key) + 1)
-  const decrementDynamic = (key: string) => setStat(key, Math.max(0, getStat(key) - 1))
+    const normalized = normalizeKey(key);
+    const newStats: any = { ...project.stats, [normalized]: Math.max(0, value) };
+    setProject(prev => ({ ...prev, stats: newStats }));
+    saveProject(newStats);
+  };
+  
+  const incrementDynamic = (key: string) => setStat(key, getStat(key) + 1);
+  const decrementDynamic = (key: string) => setStat(key, Math.max(0, getStat(key) - 1));
 
   // Success Manager input field update (on blur/leave)
   const updateSuccessManagerField = (field: keyof typeof project.stats, value: number) => {
@@ -229,8 +245,18 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
       try {
         const res = await fetch('/api/variables-groups', { cache: 'no-store' })
         const data = await res.json()
-        if (data?.success && Array.isArray(data.groups)) setGroups(data.groups)
-      } catch {}
+        if (data?.success && Array.isArray(data.groups)) {
+          console.log('✅ Loaded groups:', data.groups.length, 'groups');
+          if (data.groups.length > 0) {
+            console.log('Sample group variables:', data.groups[0].variables?.slice(0, 5));
+          }
+          setGroups(data.groups)
+        } else {
+          console.warn('⚠️ No groups found or failed to load');
+        }
+      } catch (e) {
+        console.error('❌ Failed to load groups:', e);
+      }
       try {
         const res2 = await fetch('/api/chart-config', { cache: 'no-store' })
         const data2 = await res2.json()
@@ -469,8 +495,29 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           const chart = chartById(g.chartId)
           const kpi = computeKpiValue(chart)
           const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)
+          
+          // WHAT: Flexible variable lookup - handle both 'female' and 'stats.female' formats
+          // WHY: Groups may have old names (female) but varsConfig has new names (stats.female)
+          // HOW: Try exact match first, then try with stats. prefix, then try without prefix
           const items = g.variables
-            .map(name => varsConfig.find(v => v.name === name))
+            .map(name => {
+              // Try exact match
+              let found = varsConfig.find(v => v.name === name);
+              if (found) return found;
+              
+              // Try adding stats. prefix
+              found = varsConfig.find(v => v.name === `stats.${name}`);
+              if (found) return found;
+              
+              // Try removing stats. prefix
+              const withoutStats = name.startsWith('stats.') ? name.slice(6) : null;
+              if (withoutStats) {
+                found = varsConfig.find(v => v.name === withoutStats);
+                if (found) return found;
+              }
+              
+              return null;
+            })
             .filter((v): v is VariableWithFlags => !!v && !v.derived && v.type !== 'text')
           const filtered = editMode === 'clicker'
             ? items.filter(v => v.flags.visibleInClicker)
@@ -486,9 +533,14 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 </h2>
               )}
               <div className="stats-cards-row">
-                {filtered.map(v => (
-                  editMode === 'clicker' ? (
-                    v.name === 'remoteFans' ? (
+                {filtered.map(v => {
+                  // WHAT: Normalize variable key (strip stats. prefix)
+                  // WHY: Variables are stored as stats.female but MongoDB structure is { stats: { female: 120 } }
+                  const normalizedName = normalizeKey(v.name);
+                  const isRemoteFans = normalizedName === 'remoteFans' || v.name === 'remoteFans';
+                  
+                  return editMode === 'clicker' ? (
+                    isRemoteFans ? (
                       <StatCard key={v.name}
                         label={v.label}
                         value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)}
@@ -507,16 +559,16 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                         }}
                       />
                     ) : (
-                      <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                      <StatCard key={v.name} label={v.label} value={getStat(v.name)} statKey={normalizedName as keyof typeof project.stats} />
                     )
                   ) : (
-                    v.name === 'remoteFans' ? (
+                    isRemoteFans ? (
                       <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} />
                     ) : (
-                      <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={v.name as keyof typeof project.stats} />
+                      <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={normalizedName as keyof typeof project.stats} />
                     )
-                  )
-                ))}
+                  );
+                })}
               </div>
             </ColoredCard>
           )
@@ -525,6 +577,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           <ColoredCard>
             <h2 className="section-title">No groups configured</h2>
             <p style={{ color: '#6b7280' }}>Go to Admin → Variables → Groups to initialize default groups.</p>
+            {varsConfig.length > 0 && (
+              <p style={{ color: '#10b981', marginTop: '1rem' }}>✅ {varsConfig.length} variables loaded from database</p>
+            )}
+            {varsConfig.length === 0 && varsLoading && (
+              <p style={{ color: '#f59e0b', marginTop: '1rem' }}>⏳ Loading variables...</p>
+            )}
           </ColoredCard>
         )}
         

@@ -15,14 +15,19 @@ import type { PieChartData, VerticalBarChartData, KPICardProps } from './charts'
    - Maintain backward compatibility with existing props
    - Keep performance optimizations (memoization) */
 
-// Interface for project statistics - matches the structure used across the app
+// Interface for project statistics - SINGLE REFERENCE SYSTEM with BACKWARD COMPATIBILITY
+// WHAT: Supports both old (indoor/outdoor) and new (remoteFans) schemas
+// WHY: Transparent migration - works with any data state
 interface ProjectStats {
   remoteImages: number;
   hostessImages: number;
   selfies: number;
-  indoor: number;
-  outdoor: number;
-  stadium: number;
+  // SINGLE REFERENCE SYSTEM: remoteFans (preferred)
+  remoteFans?: number;  // New: Fans engaging remotely (not at venue)
+  stadium: number;      // On-site fans at venue/stadium
+  // LEGACY FIELDS: For backward compatibility during migration
+  indoor?: number;      // Legacy: Will be removed after migration
+  outdoor?: number;     // Legacy: Will be removed after migration
   female: number;
   male: number;
   genAlpha: number;
@@ -53,6 +58,46 @@ interface ProjectStats {
   eventResultVisitor?: number;
   eventValuePropositionVisited?: number;
   eventValuePropositionPurchases?: number;
+}
+
+/**
+ * TRANSPARENT MIGRATION HELPER
+ * 
+ * WHAT: Safely get remoteFans value from either new or legacy schema
+ * WHY: System works transparently during migration period
+ * HOW: 
+ *   - If remoteFans exists, use it
+ *   - Otherwise, calculate from indoor + outdoor (legacy)
+ *   - If neither exists, return 0
+ * 
+ * @param stats - Project stats (any schema version)
+ * @returns Remote fans count
+ */
+function getRemoteFans(stats: ProjectStats): number {
+  // New schema: remoteFans field exists
+  if (stats.remoteFans !== undefined && stats.remoteFans !== null) {
+    return stats.remoteFans;
+  }
+  
+  // Legacy schema: calculate from indoor + outdoor
+  const indoor = stats.indoor || 0;
+  const outdoor = stats.outdoor || 0;
+  return indoor + outdoor;
+}
+
+/**
+ * TRANSPARENT TOTAL FANS CALCULATOR
+ * 
+ * WHAT: Get total fans from any schema version
+ * WHY: Works with both new and legacy data
+ * 
+ * @param stats - Project stats (any schema version)
+ * @returns Total fans count (remote + stadium)
+ */
+function getTotalFans(stats: ProjectStats): number {
+  const remoteFans = getRemoteFans(stats);
+  const stadium = stats.stadium || 0;
+  return remoteFans + stadium;
 }
 
 // Props interface for chart components
@@ -94,17 +139,17 @@ const GenderCircleChartComponent: React.FC<ChartProps> = ({ stats, eventName }) 
  * Location Distribution Pie Chart
  * Modernized with Chart.js donut chart
  * 
- * WHAT: Shows where fans are located: Remote (Indoor + Outdoor), Event (Stadium)
+ * WHAT: Shows where fans are located: Remote vs Stadium
  * WHY: Chart.js provides better interactivity, export, and consistent styling
+ * SINGLE REFERENCE SYSTEM: Uses remoteFans directly (not indoor+outdoor)
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const FansLocationPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  /* What: Prepare data for PieChart component with location-based colors
-     Why: Transform stats into PieChartData format with MessMass color scheme */
-  const remoteTotal = stats.indoor + stats.outdoor;
+  /* TRANSPARENT MIGRATION: Works with both old and new schema */
+  const remoteFans = getRemoteFans(stats);
   const locationData: PieChartData[] = [
-    { label: 'Remote', value: remoteTotal, color: '#3b82f6' },
-    { label: 'Event', value: stats.stadium, color: '#f59e0b' }
+    { label: 'Remote Fans', value: remoteFans, color: '#3b82f6' },
+    { label: 'Stadium Fans', value: stats.stadium, color: '#f59e0b' }
   ];
   
   return (
@@ -162,9 +207,8 @@ const AgeGroupsPieChartComponent: React.FC<ChartProps> = ({ stats, eventName }) 
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const MerchandiseHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  /* What: Calculate potential merchandise sales and prepare chart data
-     Why: Show merchandising opportunity: (Fans - Merched) × €10 per item */
-  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  /* TRANSPARENT MIGRATION: Works with both old and new schema */
+  const totalFans = getTotalFans(stats);
   const merched = stats.merched;
   const potentialSales = (totalFans - merched) * 10;
   
@@ -237,10 +281,9 @@ const VisitorSourcesPieChartComponent: React.FC<ChartProps> = ({ stats, eventNam
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const ValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  /* What: Calculate advertisement values for different engagement metrics
-     Why: Show total advertising value broken down by channel/interaction type */
+  /* TRANSPARENT MIGRATION: Works with both old and new schema */
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
-  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const totalFans = getTotalFans(stats);
   const under40Fans = stats.genAlpha + stats.genYZ;
   const totalVisitors = (
     (stats.visitQrCode || 0) + 
@@ -343,9 +386,8 @@ const ValuePropositionHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, 
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const EngagementHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  /* What: Calculate fan engagement percentages and core fan team size
-     Why: Show engagement levels across different fan segments */
-  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  /* TRANSPARENT MIGRATION: Works with both old and new schema */
+  const totalFans = getTotalFans(stats);
   const eventAttendees = stats.eventAttendees || 0;
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
   
@@ -413,10 +455,9 @@ const EngagementHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventN
  * PERFORMANCE: Memoized to prevent re-renders when stats haven't changed
  */
 const AdvertisementValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }) => {
-  /* What: Calculate advertisement values based on engagement multipliers
-     Why: Show monetary value of different advertising channels */
+  /* TRANSPARENT MIGRATION: Works with both old and new schema */
   const totalImages = stats.remoteImages + stats.hostessImages + stats.selfies;
-  const totalFans = stats.indoor + stats.outdoor + stats.stadium;
+  const totalFans = getTotalFans(stats);
   const totalVisitors = (
     (stats.visitQrCode || 0) + 
     (stats.visitShortUrl || 0) + 

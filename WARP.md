@@ -133,6 +133,7 @@ The project features a **completely unified hashtag system** with consistent com
     [categoryName: string]: string[]
   },
   stats: {
+    // ALL variables stored here (system + custom)
     // Image tracking
     remoteImages: number, hostessImages: number, selfies: number,
     // Demographics  
@@ -143,13 +144,34 @@ The project features a **completely unified hashtag system** with consistent com
     // Merchandise
     merched: number, jersey: number, scarf: number, flags: number,
     baseballCap: number, other: number,
-    // Success Manager metrics (optional)
+    // Event metrics
     eventAttendees?: number,
     eventTicketPurchases?: number,
-    // ... other optional success manager fields
+    // Bitly metrics
+    totalBitlyClicks?: number,
+    uniqueBitlyClicks?: number,
+    // ... all 96 system variables + user-created custom variables
+    // Access pattern: project.stats.variableName (Single Reference System)
   },
   createdAt: string, // ISO 8601 with milliseconds
   updatedAt: string  // ISO 8601 with milliseconds
+}
+```
+
+### Variables Metadata Collection (v7.0.0)
+```typescript
+{
+  _id: ObjectId,
+  name: string,               // Database field name (camelCase)
+  alias: string,              // UI display label (editable in KYC Management)
+  type: 'number' | 'text' | 'derived',
+  category: string,           // e.g., 'images', 'demographics'
+  visibleInClicker: boolean,  // Show in Clicker UI
+  editableInManual: boolean,  // Allow manual editing
+  isSystemVariable: boolean,  // true for seeded variables, false for custom
+  clickerOrder?: number,      // Button display order
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
@@ -412,13 +434,27 @@ interface Insight {
 > "💡 Merchandise penetration at 38% — growth potential. Only 38% of 2,531 fans purchased merchandise. Industry average is 50-60%."
 > Recommendation: "Improve merchandise visibility and variety. Potential revenue uplift: €15,186 (20% increase at €30/fan)"
 
-## 🔢 Admin Variables & Metrics System
+## 🔢 Database-First Variables & Metrics System (v7.0.0)
+
+### System Overview
+
+MessMass uses a **database-first variable management system** where all variables are stored in MongoDB and seeded on server initialization. Variables are accessed via the **Single Reference System** using the `stats.` prefix.
 
 ### Key Files
-- **`lib/variablesRegistry.ts`** - Base and derived variable definitions
+- **`lib/variablesConfig.ts`** - System variables seed data (96 variables)
+- **`scripts/seedVariables.ts`** - Database seeding script
 - **`lib/variableRefs.ts`** - SEYU token generation with normalization
-- **`app/admin/variables/page.tsx`** - Variables management UI
+- **`app/admin/kyc/page.tsx`** - KYC Management UI (alias editing)
 - **`app/api/variables-config/route.ts`** - Configuration API
+
+### Seeding Variables
+
+**First-time setup or after schema changes:**
+```bash
+npm run seed:variables
+```
+
+This populates the `variables_metadata` collection with all system variables.
 
 ### SEYU Reference Tokens
 
@@ -438,22 +474,23 @@ interface Insight {
 
 ### Variable Types
 
-**Base Variables** (defined in registry):
+**System Variables** (96 total, seeded from `lib/variablesConfig.ts`):
 - **Images**: `remoteImages`, `hostessImages`, `selfies`
 - **Fans**: `remoteFans`, `stadium`
 - **Demographics**: `female`, `male`, `genAlpha`, `genYZ`, `genX`, `boomer`
 - **Merchandise**: `merched`, `jersey`, `scarf`, `flags`, `baseballCap`, `other`
-- **Visits**: `visitQrCode`, `visitShortUrl`, `visitWeb`, `socialVisit`, `eventValuePropositionVisited`, `eventValuePropositionPurchases`
+- **Visits**: `visitQrCode`, `visitShortUrl`, `visitWeb`, `socialVisit`
 - **Event**: `eventAttendees`, `eventResultHome`, `eventResultVisitor`
+- **Bitly**: `totalBitlyClicks`, `uniqueBitlyClicks`, `bitlyClicksByCountryUS`, etc.
 
 **Derived Variables** (auto-computed):
-- `allImages` (Total Images): `remoteImages + hostessImages + selfies`
+- `allImages`: `remoteImages + hostessImages + selfies`
 - `totalFans`: `remoteFans + stadium`
 - `totalVisit`: Sum of all visit sources
 
 **Custom Variables**:
-- User-defined metrics (e.g., `vipGuests`, `pressAttendees`)
-- Created via Admin UI, stored in `project.stats`
+- User-created via Admin UI → stored in `variables_metadata` collection
+- Stored in `project.stats` with camelCase naming
 
 ### Visibility Flags
 
@@ -480,30 +517,45 @@ Control Editor layout via groups:
 3. Demographics (female, male, genAlpha, genYZ, genX, boomer)
 4. Merchandise (merched, jersey, scarf, flags, baseballCap, other)
 
+### Single Reference System
+
+All code and formulas MUST reference variables using the `stats.` prefix:
+
+```typescript
+// ✅ CORRECT: Single Reference System
+const value = project.stats.remoteImages;
+const formula = 'stats.remoteImages + stats.hostessImages';
+
+// ❌ WRONG: Direct field access
+const value = project.remoteImages;
+```
+
+**Why?** All variables are stored in MongoDB under `project.stats`, ensuring a single source of truth.
+
 ### Common Patterns
 
-**Adding a New Variable**:
-1. Add to `BASE_STATS_VARIABLES` in `lib/variablesRegistry.ts`
+**Adding a New System Variable**:
+1. Add to `VARIABLES_CONFIG` in `lib/variablesConfig.ts`
 2. Add SEYU mapping to `EXPLICIT_SUFFIX_MAP` in `lib/variableRefs.ts` (if needed)
-3. Variable appears in Admin UI with default flags based on category
+3. Run `npm run seed:variables` to update database
 
-**Creating Custom Variable**:
-1. Go to `/admin/variables`
-2. Click "New Variable"
-3. Fill form: name (camelCase), label, type, category, flags
+**Creating Custom Variable (User)**:
+1. Go to `/admin/kyc`
+2. Click "Add Variable"
+3. Fill form: name (camelCase), alias (display label), type, category, flags
 4. Variable persists in MongoDB and appears in Editor
 
+**Editing Alias (Display Name)**:
+1. Go to `/admin/kyc`
+2. Find variable card
+3. Edit "Alias" field (UI label only, does NOT affect database field)
+4. Changes save automatically
+
 **Hiding Variable from Clicker**:
-1. Go to `/admin/variables`
+1. Go to `/admin/kyc`
 2. Find variable card
 3. Uncheck "Visible in Clicker"
 4. Save automatically persists flag
-
-**Reordering Clicker Buttons**:
-1. Go to `/admin/variables`
-2. Click "Reorder Clicker" button
-3. Drag-and-drop within categories
-4. Click "Save order"
 
 ## 🔒 Authentication System
 

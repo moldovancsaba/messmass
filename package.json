@@ -41,6 +41,10 @@
     "analytics:setup-indexes": "tsx scripts/setupAnalyticsIndexes.ts",
     "analytics:aggregate": "tsx scripts/aggregateAnalytics.ts",
     "analytics:backfill": "tsx scripts/backfillAnalytics.ts",
+    "migrate:remoteFans": "node scripts/migrate-to-remoteFans.js",
+    "migrate:chart-formulas": "node scripts/migrate-chart-formulas.js",
+    "migrate:chart-lowercase": "tsx -r dotenv/config scripts/migrateChartFormulasToLowercase.ts dotenv_config_path=.env.local",
+    "migrate:absolute-paths": "npx tsx -r dotenv/config scripts/migrateToAbsoluteDbPaths.ts dotenv_config_path=.env.local",
     "data:audit": "tsx scripts/validateDataQuality.ts --audit",
     "data:audit:verbose": "tsx scripts/validateDataQuality.ts --audit --verbose",
     "data:fix": "tsx scripts/validateDataQuality.ts --fix",
@@ -49,7 +53,8 @@
     "football-data:sync": "tsx scripts/syncFootballDataFixtures.ts",
     "seed:page-styles": "tsx scripts/seedPageStyles.ts",
     "cleanup:old-styles": "npx tsx scripts/cleanupOldStyleSystem.ts",
-    "migrate:style-fields": "tsx -r dotenv/config scripts/migrateStyleIdToEnhanced.ts dotenv_config_path=.env.local"
+    "migrate:style-fields": "tsx -r dotenv/config scripts/migrateStyleIdToEnhanced.ts dotenv_config_path=.env.local",
+    "seed:variables": "tsx -r dotenv/config scripts/seedVariablesFromRegistry.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

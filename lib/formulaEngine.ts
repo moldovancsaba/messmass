@@ -10,159 +10,15 @@ import {
   type ValidationResult as DataValidationResult
 } from './dataValidator';
 
-// WHAT: Normalization helpers to accept both legacy tokens (e.g., [TOTAL_FANS]) and new org-prefixed tokens
-//       you requested (e.g., [SEYUTOTALFANS], [SEYUPROPOSITIONVISIT]).
-// WHY: This preserves backward compatibility for existing chart configs while enabling the new naming scheme.
-
-function stripOrgPrefix(token: string): string {
-  const t = token.toUpperCase()
-  return t.startsWith('SEYU') ? t.slice(4) : t
-}
-
-function normalizeTokenRaw(token: string): string {
-  // Remove org prefix and underscores; keep alphanumerics only
-  const noOrg = stripOrgPrefix(token)
-  return noOrg.replace(/_/g, '')
-}
-
 /**
-* Variable mapping from display names to project stats field names
-* Examples use SEYU tokens: [SEYUINDOOR] → stats.indoor, [SEYUFEMALE] → stats.female, etc. (Legacy tokens like [INDOOR] are still accepted for compatibility).
+ * SINGLE REFERENCE SYSTEM - NO MAPPINGS, NO TRANSLATIONS
+ * 
+ * WHAT: Use database field names directly in formulas
+ * WHY: If database has "female", use [female] in charts. If database has "Woman", use [Woman] in charts.
+ * HOW: Token [fieldName] resolves directly to stats.fieldName - zero translation layer
+ * 
+ * RULE: Database field name = Chart token = UI display = Everything
  */
-const VARIABLE_MAPPINGS: Record<string, string> = {
-  // Image Statistics
-  'REMOTE_IMAGES': 'remoteImages',
-  'HOSTESS_IMAGES': 'hostessImages',
-  'SELFIES': 'selfies',
-  'APPROVED_IMAGES': 'approvedImages',
-  'REJECTED_IMAGES': 'rejectedImages',
-  
-  // Location Statistics
-  'INDOOR': 'indoor',
-  'OUTDOOR': 'outdoor',
-  'STADIUM': 'stadium',
-'REMOTE_FANS': 'remoteFans', // New aggregated remote fans (indoor + outdoor)
-  'TOTAL_FANS': 'totalFans', // Computed: remoteFans (or indoor+outdoor) + stadium
-  
-  // Demographics
-  'FEMALE': 'female',
-  'MALE': 'male',
-  'GEN_ALPHA': 'genAlpha',
-  'GEN_YZ': 'genYZ',
-  'GEN_X': 'genX',
-  'BOOMER': 'boomer',
-  
-  // Merchandise
-  'MERCHED': 'merched',
-  'JERSEY': 'jersey',
-  'SCARF': 'scarf',
-  'FLAGS': 'flags',
-  'BASEBALL_CAP': 'baseballCap',
-  'OTHER': 'other',
-  
-  // Event Metrics
-'EVENT_ATTENDEES': 'eventAttendees',
-  'EVENT_RESULT_HOME': 'eventResultHome',
-  'EVENT_RESULT_VISITOR': 'eventResultVisitor',
-  
-  // Merchandise Pricing Variables (configurable values for sales calculations)
-  'JERSEY_PRICE': 'jerseyPrice',
-  'SCARF_PRICE': 'scarfPrice',
-  'FLAGS_PRICE': 'flagsPrice',
-  'CAP_PRICE': 'capPrice',
-  'OTHER_PRICE': 'otherPrice',
-  
-  // WHAT: Bitly Analytics Variables (links, traffic sources, devices, geography)
-  // WHY: Enable Bitly enrichment charts with clickstream data from Bitly API
-  
-  // Bitly - Core Metrics
-  'BITLY_TOTAL_CLICKS': 'bitlyTotalClicks',
-  'BITLY_UNIQUE_CLICKS': 'bitlyUniqueClicks',
-  
-  // Bitly - Geographic
-  'BITLY_CLICKS_BY_COUNTRY': 'bitlyClicksByCountry',
-  'BITLY_TOP_COUNTRY': 'bitlyTopCountry',
-  'BITLY_COUNTRY_COUNT': 'bitlyCountryCount',
-  
-  // Bitly - Top 5 Countries (for chart display)
-  'BITLY_COUNTRY_1': 'bitlyCountry1',
-  'BITLY_COUNTRY_1_CLICKS': 'bitlyCountry1Clicks',
-  'BITLY_COUNTRY_2': 'bitlyCountry2',
-  'BITLY_COUNTRY_2_CLICKS': 'bitlyCountry2Clicks',
-  'BITLY_COUNTRY_3': 'bitlyCountry3',
-  'BITLY_COUNTRY_3_CLICKS': 'bitlyCountry3Clicks',
-  'BITLY_COUNTRY_4': 'bitlyCountry4',
-  'BITLY_COUNTRY_4_CLICKS': 'bitlyCountry4Clicks',
-  'BITLY_COUNTRY_5': 'bitlyCountry5',
-  'BITLY_COUNTRY_5_CLICKS': 'bitlyCountry5Clicks',
-  
-  // Bitly - Traffic Sources (Platform-level)
-  'BITLY_DIRECT_CLICKS': 'bitlyDirectClicks',
-  'BITLY_SOCIAL_CLICKS': 'bitlySocialClicks',
-  'BITLY_TOP_REFERRER': 'bitlyTopReferrer',
-  'BITLY_REFERRER_COUNT': 'bitlyReferrerCount',
-  
-  // Bitly - Referring Domains (Domain-level granular)
-  'BITLY_TOP_DOMAIN': 'bitlyTopDomain',
-  'BITLY_DOMAIN_COUNT': 'bitlyDomainCount',
-  'BITLY_QR_CODE_CLICKS': 'bitlyQrCodeClicks',
-  'BITLY_INSTAGRAM_MOBILE_CLICKS': 'bitlyInstagramMobileClicks',
-  'BITLY_INSTAGRAM_WEB_CLICKS': 'bitlyInstagramWebClicks',
-  'BITLY_FACEBOOK_MOBILE_CLICKS': 'bitlyFacebookMobileClicks',
-  'BITLY_FACEBOOK_MESSENGER_CLICKS': 'bitlyFacebookMessengerClicks',
-  
-  // Bitly - Device & Platform
-  'BITLY_MOBILE_CLICKS': 'bitlyMobileClicks',
-  'BITLY_DESKTOP_CLICKS': 'bitlyDesktopClicks',
-  'BITLY_TABLET_CLICKS': 'bitlyTabletClicks',
-  'BITLY_IOS_CLICKS': 'bitlyiOSClicks',
-  'BITLY_ANDROID_CLICKS': 'bitlyAndroidClicks',
-  
-  // Bitly - Browsers
-  'BITLY_CHROME_CLICKS': 'bitlyChromeClicks',
-  'BITLY_SAFARI_CLICKS': 'bitlySafariClicks',
-  'BITLY_FIREFOX_CLICKS': 'bitlyFirefoxClicks'
-};
-
-// Build normalized mapping: keys without underscores, values are stats field names
-const NORMALIZED_VARIABLE_MAPPINGS: Record<string, string> = {}
-for (const [key, field] of Object.entries(VARIABLE_MAPPINGS)) {
-  NORMALIZED_VARIABLE_MAPPINGS[key.replace(/_/g, '')] = field
-}
-
-// Aliases to support new concise tokens (no underscores, reordered terms)
-// Map alias (normalized) → canonical variable key (normalized)
-const ALIAS_NORMALIZED_KEYS: Record<string, string> = {
-  // Fans and Images
-  STADIUMFANS: 'STADIUM',
-  TOTALIMAGES: 'TOTALIMAGES', // computed (not in VARIABLE_MAPPINGS)
-  ALLIMAGES: 'TOTALIMAGES',   // legacy -> computed
-  TOTALFANS: 'TOTALFANS',     // computed
-  REMOTEFANS: 'REMOTEFANS',   // computed
-  TOTALUNDER40: 'TOTALUNDER40', // computed
-  TOTALOVER40: 'TOTALOVER40',   // computed
-
-  // Merchandise
-  MERCHSCARF: 'SCARF',
-  MERCHJERSEY: 'JERSEY',
-  MERCHEDFANS: 'MERCHED',
-
-  // Event
-  ATTENDEES: 'EVENTATTENDEES',
-  RESULTHOME: 'EVENTRESULTHOME',
-  RESULTVISITOR: 'EVENTRESULTVISITOR'
-}
-
-function resolveFieldNameByNormalizedToken(normalizedToken: string): string | undefined {
-  // Computed aliases handled separately
-  const computedSet = new Set([
-    'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 'REMOTEFANS', 'TOTALUNDER40', 'TOTALOVER40'
-  ])
-  if (computedSet.has(normalizedToken)) return undefined
-
-  const canonicalKey = ALIAS_NORMALIZED_KEYS[normalizedToken] ?? normalizedToken
-  return NORMALIZED_VARIABLE_MAPPINGS[canonicalKey]
-}
 
 /**
  * Safe mathematical functions that can be used in formulas
@@ -250,12 +106,16 @@ interface ProjectStats {
 
 /**
  * Extracts all variable names used in a formula
- * Variables are identified by the pattern [VARIABLE_NAME] or [PARAM:key] or [MANUAL:key]
+ * Variables are identified by the pattern [variableName] or [PARAM:key] or [MANUAL:key]
+ * SINGLE REFERENCE SYSTEM: Lowercase field names match database exactly
  * @param formula - The formula string to analyze
  * @returns Array of variable names found in the formula
  */
 export function extractVariablesFromFormula(formula: string): string[] {
-  const variableRegex = /\[([A-Z_:]+)\]/g;
+  // WHAT: Match [stats.fieldName], [PARAM:key], [MANUAL:key] with full database paths
+  // WHY: Database paths include dots (e.g., stats.female, stats.remoteImages)
+  // REGEX: Allow letters, numbers, underscores, colons, AND DOTS
+  const variableRegex = /\[([a-zA-Z0-9_:.]+)\]/g;
   const variables: string[] = [];
   let match;
   
@@ -280,29 +140,8 @@ export function validateFormula(formula: string): FormulaValidationResult {
     // Extract variables from formula
     const usedVariables = extractVariablesFromFormula(formula);
     
-    // Check if all variables are valid (including PARAM and MANUAL tokens)
-    const invalidVariables = usedVariables.filter(
-      variable => {
-        // PARAM and MANUAL tokens are always valid (resolved externally)
-        if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) {
-          return false;
-        }
-        
-        const normalized = normalizeTokenRaw(variable)
-        // If not a known field and not a supported computed alias → invalid
-        const field = resolveFieldNameByNormalizedToken(normalized)
-        const isComputed = ['TOTALIMAGES','ALLIMAGES','TOTALFANS','REMOTEFANS','TOTALVISIT','TOTALUNDER40','TOTALOVER40'].includes(normalized)
-        return !field && !isComputed
-      }
-    );
-    
-    if (invalidVariables.length > 0) {
-      return {
-        isValid: false,
-        error: `Invalid variables: ${invalidVariables.join(', ')}`,
-        usedVariables
-      };
-    }
+    // PARAM and MANUAL tokens are always valid (resolved externally)
+    // All other tokens map directly to stats fields (single reference system)
     
     // Check for balanced parentheses
     let openParens = 0;
@@ -323,13 +162,20 @@ export function validateFormula(formula: string): FormulaValidationResult {
         isValid: false,
         error: 'Unbalanced parentheses: unclosed opening parenthesis',
         usedVariables
-      };
+        };
     }
     
-    // Test evaluation with sample data (all variables set to 1)
-    const testStats = Object.fromEntries(
-      Object.values(VARIABLE_MAPPINGS).map(field => [field, 1])
-    ) as unknown as ProjectStats;
+    // Test evaluation with sample data (all fields set to 1)
+    const testStats: ProjectStats = {
+      remoteImages: 1, hostessImages: 1, selfies: 1,
+      indoor: 1, outdoor: 1, stadium: 1,
+      female: 1, male: 1,
+      genAlpha: 1, genYZ: 1, genX: 1, boomer: 1,
+      merched: 1, jersey: 1, scarf: 1, flags: 1, baseballCap: 1, other: 1,
+      approvedImages: 1, rejectedImages: 1,
+      eventAttendees: 1, eventTicketPurchases: 1,
+      eventResultHome: 1, eventResultVisitor: 1
+    };
     
     const testResult = evaluateFormula(formula, testStats);
     
@@ -349,14 +195,19 @@ export function validateFormula(formula: string): FormulaValidationResult {
 }
 
 /**
- * Substitutes variables in a formula with their actual values from project stats
- * Also supports [PARAM:key] and [MANUAL:key] tokens (resolved externally)
- * Replaces [VARIABLE_NAME] with the corresponding numeric value
- * @param formula - The formula string with variables
- * @param stats - Project statistics containing actual values
- * @param parameters - Optional parameters object for [PARAM:x] token resolution
- * @param manualData - Optional manual data object for [MANUAL:x] token resolution (aggregated analytics)
- * @returns Formula string with variables replaced by numbers
+ * ABSOLUTE DATABASE PATH SYSTEM - Full MongoDB Path Resolution
+ * 
+ * WHAT: Use FULL database paths in formulas: [stats.female] not [female]
+ * WHY: Single source of truth = database structure. No aliases, no translation.
+ * HOW: Token [stats.female] resolves to stats.female via JavaScript object access
+ * 
+ * RULE: Database path = Chart token = Code reference = Everything
+ * 
+ * @param formula - Formula with [stats.fieldName] tokens
+ * @param stats - Project statistics object
+ * @param parameters - Optional [PARAM:key] tokens
+ * @param manualData - Optional [MANUAL:key] tokens  
+ * @returns Formula with tokens replaced by values
  */
 function substituteVariables(
   formula: string, 
@@ -366,8 +217,7 @@ function substituteVariables(
 ): string {
   let processedFormula = formula;
 
-  // WHAT: Support [PARAM:key] tokens for parameterized values
-  // WHY: Enable configurable marketing multipliers without hardcoding in formulas
+  // Support [PARAM:key] tokens for parameterized values
   if (parameters) {
     processedFormula = processedFormula.replace(/\[PARAM:([a-zA-Z0-9_]+)\]/g, (_match, paramKey) => {
       const value = parameters[paramKey];
@@ -375,8 +225,7 @@ function substituteVariables(
     });
   }
 
-  // WHAT: Support [MANUAL:key] tokens for manually computed aggregated data
-  // WHY: Enable hashtag analytics charts with aggregated seasonality/partner data
+  // Support [MANUAL:key] tokens for aggregated analytics
   if (manualData) {
     processedFormula = processedFormula.replace(/\[MANUAL:([a-zA-Z0-9_]+)\]/g, (_match, manualKey) => {
       const value = manualData[manualKey];
@@ -384,64 +233,63 @@ function substituteVariables(
     });
   }
 
-  // Single-pass replacement function to support both legacy and SEYU tokens
-  processedFormula = processedFormula.replace(/\[([A-Z_]+)\]/g, (_match, rawToken) => {
-    const normalized = normalizeTokenRaw(rawToken)
-
-    // Pre-compute common composites
-    const indoor = (stats as any).indoor || 0
-    const outdoor = (stats as any).outdoor || 0
-    const stadium = (stats as any).stadium || 0
-
-    const approvedImages = (stats as any).approvedImages || 0
-    const rejectedImages = (stats as any).rejectedImages || 0
-
-    const remoteImages = (stats as any).remoteImages || 0
-    const hostessImages = (stats as any).hostessImages || 0
-    const selfies = (stats as any).selfies || 0
-
-    const female = (stats as any).female || 0
-    const male = (stats as any).male || 0
-    const genAlpha = (stats as any).genAlpha || 0
-    const genYZ = (stats as any).genYZ || 0
-    const genX = (stats as any).genX || 0
-    const boomer = (stats as any).boomer || 0
-
-    // Computed tokens
-    if (normalized === 'TOTALFANS') {
-      const remoteFansComputed = (stats as any).remoteFans ?? (indoor + outdoor)
-      const totalFansComputed = remoteFansComputed + stadium
-      return String(totalFansComputed)
+  // ABSOLUTE DATABASE PATH SYSTEM: [stats.fieldName] → value from stats.fieldName
+  // WHAT: Parse stats.fieldName path and access the nested value
+  // WHY: Formula references must match database structure exactly
+  processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
+    // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages"
+    // Parse the path and access nested values
+    
+    // Handle special derived/computed fields
+    if (fullPath === 'stats.totalFans') {
+      const remoteFans = (stats as any).remoteFans ?? 
+                        ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
+      const stadium = (stats as any).stadium || 0;
+      return String(remoteFans + stadium);
     }
-    if (normalized === 'REMOTEFANS') {
-      const remoteFansComputed = (stats as any).remoteFans ?? (indoor + outdoor)
-      return String(remoteFansComputed)
+    
+    if (fullPath === 'stats.remoteFans') {
+      const remoteFans = (stats as any).remoteFans ?? 
+                        ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
+      return String(remoteFans);
     }
-    if (normalized === 'TOTALIMAGES' || normalized === 'ALLIMAGES') {
-      return String(remoteImages + hostessImages + selfies)
+    
+    if (fullPath === 'stats.allImages') {
+      const remoteImages = (stats as any).remoteImages || 0;
+      const hostessImages = (stats as any).hostessImages || 0;
+      const selfies = (stats as any).selfies || 0;
+      return String(remoteImages + hostessImages + selfies);
     }
-    if (normalized === 'TOTALUNDER40') {
-      return String(genAlpha + genYZ)
+    
+    if (fullPath === 'stats.totalUnder40') {
+      const genAlpha = (stats as any).genAlpha || 0;
+      const genYZ = (stats as any).genYZ || 0;
+      return String(genAlpha + genYZ);
     }
-    if (normalized === 'TOTALOVER40') {
-      return String(genX + boomer)
+    
+    if (fullPath === 'stats.totalOver40') {
+      const genX = (stats as any).genX || 0;
+      const boomer = (stats as any).boomer || 0;
+      return String(genX + boomer);
     }
-
-    // Resolve aliases and direct mappings
-    const fieldName = resolveFieldNameByNormalizedToken(normalized)
-
-    if (!fieldName) {
-      // Unknown variable → treat as 0 for safety
-      return '0'
+    
+    // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
+    const pathParts = fullPath.split('.');
+    
+    // Navigate through the object path
+    let value: any = stats as any;
+    for (const part of pathParts) {
+      if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
+      value = value?.[part];
     }
-
-    let value = (stats as any)[fieldName]
-
-    // Special fallback for STADIUMFANS alias already resolved to stadium via alias
-    if (value === undefined || value === null) value = 0
-
-    return String(value)
-  })
+    
+    if (value !== undefined && value !== null) {
+      return String(value);
+    }
+    
+    // Field doesn't exist → return 0
+    return '0';
+  });
 
   return processedFormula;
 }
@@ -576,11 +424,23 @@ export function getAvailableVariables() {
 
 /**
  * Checks if a specific variable exists and is valid
- * @param variableName - Name of variable to check (e.g., "INDOOR", "FEMALE")
+ * SINGLE REFERENCE SYSTEM: Variable name must match database field name
+ * @param variableName - Name of variable to check (e.g., "remoteImages", "female")
  * @returns Boolean indicating if variable is valid
  */
 export function isValidVariable(variableName: string): boolean {
-  return VARIABLE_MAPPINGS.hasOwnProperty(variableName);
+  // In single reference system, any stats field name is valid
+  const validFields = [
+    'remoteImages', 'hostessImages', 'selfies',
+    'remoteFans', 'stadium', 'totalFans',
+    'female', 'male', 'genAlpha', 'genYZ', 'genX', 'boomer',
+    'merched', 'jersey', 'scarf', 'flags', 'baseballCap', 'other',
+    'approvedImages', 'rejectedImages',
+    'eventAttendees', 'eventTicketPurchases',
+    'eventResultHome', 'eventResultVisitor',
+    'allImages', 'totalImages', 'totalUnder40', 'totalOver40'
+  ];
+  return validFields.includes(variableName);
 }
 
 /**
@@ -627,47 +487,22 @@ export function validateStatsForFormula(
   const availableFields: string[] = [];
   
   for (const variable of statsVariables) {
-    const normalized = normalizeTokenRaw(variable);
+    // SINGLE REFERENCE SYSTEM: variable name = stats field name
+    const fieldName = variable;
     
-    // WHAT: Handle computed/derived metrics separately
-    // WHY: These can be calculated if base metrics exist
-    const isComputed = [
-      'TOTALIMAGES', 'ALLIMAGES', 'TOTALFANS', 
-      'REMOTEFANS', 'TOTALUNDER40', 'TOTALOVER40'
-    ].includes(normalized);
+    // Handle computed/derived metrics
+    const derivedFields = ['totalFans', 'allImages', 'totalImages', 'totalUnder40', 'totalOver40'];
     
-    if (isComputed) {
-      // WHAT: For derived metrics, check if base components exist
-      // WHY: Can compute totalFans if indoor, outdoor, stadium exist
-      if (normalized === 'TOTALFANS' || normalized === 'REMOTEFANS') {
-        const hasBase = 
-          (stats as any).indoor !== undefined && 
-          (stats as any).outdoor !== undefined && 
-          (stats as any).stadium !== undefined;
-        if (hasBase) availableFields.push(normalized);
-        else requiredFields.push(normalized);
-      } else if (normalized === 'TOTALIMAGES' || normalized === 'ALLIMAGES') {
-        const hasBase = 
-          (stats as any).remoteImages !== undefined && 
-          (stats as any).hostessImages !== undefined && 
-          (stats as any).selfies !== undefined;
-        if (hasBase) availableFields.push(normalized);
-        else requiredFields.push(normalized);
-      } else {
-        // totalUnder40, totalOver40
-        availableFields.push(normalized);
-      }
+    if (derivedFields.includes(fieldName)) {
+      // Derived fields are always available (computed on-the-fly)
+      availableFields.push(variable);
     } else {
-      // WHAT: Regular variable - resolve to stats field name
-      // WHY: Check if actual stats object has this field
-      const fieldName = resolveFieldNameByNormalizedToken(normalized);
-      if (fieldName) {
-        const value = (stats as any)[fieldName];
-        if (value !== undefined && value !== null) {
-          availableFields.push(variable);
-        } else {
-          requiredFields.push(fieldName);
-        }
+      // Direct stats field - check if it exists
+      const value = (stats as any)[fieldName];
+      if (value !== undefined && value !== null) {
+        availableFields.push(variable);
+      } else {
+        requiredFields.push(fieldName);
       }
     }
   }
