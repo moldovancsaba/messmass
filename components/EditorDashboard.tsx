@@ -576,7 +576,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         {groups.length === 0 && (
           <ColoredCard>
             <h2 className="section-title">No groups configured</h2>
-            <p style={{ color: '#6b7280' }}>Go to Admin → Variables → Groups to initialize default groups.</p>
+            <p style={{ color: '#6b7280' }}>Go to Admin → KYC Variables to configure variable groups.</p>
             {varsConfig.length > 0 && (
               <p style={{ color: '#10b981', marginTop: '1rem' }}>✅ {varsConfig.length} variables loaded from database</p>
             )}

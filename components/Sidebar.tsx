@@ -66,7 +66,6 @@ export default function Sidebar() {
       title: 'Settings',
       items: [
         { label: 'KYC Variables', path: '/admin/kyc', icon: '🔐' },
-        { label: 'Clicker Manager', path: '/admin/variables', icon: '🖱️' },
         { label: 'Visualization Manager', path: '/admin/visualization', icon: '👁️' },
         { label: 'Design Manager', path: '/admin/design', icon: '🎨' },
         { label: 'Bitly Management', path: '/admin/bitly', icon: '🔗' },

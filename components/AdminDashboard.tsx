@@ -102,10 +102,10 @@ const navCards: NavCard[] = [
     accentColor: '#f59e0b', // var(--mm-chart-yellow)
   },
   {
-    href: '/admin/variables',
-    icon: '🔢',
-    title: 'Variable Manager',
-    description: 'Manage dynamic variables and formulas',
+    href: '/admin/kyc',
+    icon: '🔐',
+    title: 'KYC Variables',
+    description: 'Manage variables, aliases, and data collection fields',
     accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
   },
   {
