@@ -156,12 +156,19 @@ export function calculateChart(
       // WHAT: Dynamic label resolution from stats fields
       // WHY: Charts like "Top Countries" need labels from dynamic data (e.g., country names)
       // HOW: If label contains {{fieldName}}, replace with value from stats[fieldName]
-      // EXAMPLE: label "{{bitlyCountry1}}" becomes "United States" from stats.bitlyCountry1
+      // EXAMPLE: label "{{stats.bitlyCountry1}}" becomes "United States" from stats.bitlyCountry1
       let resolvedLabel = element.label;
       if (resolvedLabel.includes('{{') && resolvedLabel.includes('}}')) {
         const fieldMatch = resolvedLabel.match(/\{\{([^}]+)\}\}/);
         if (fieldMatch && fieldMatch[1]) {
-          const fieldName = fieldMatch[1].trim();
+          let fieldName = fieldMatch[1].trim();
+          
+          // WHAT: Handle {{stats.fieldName}} syntax from chart editor
+          // WHY: Chart editor uses "stats." prefix, but we need to access stats[fieldName]
+          if (fieldName.startsWith('stats.')) {
+            fieldName = fieldName.substring(6); // Remove "stats." prefix
+          }
+          
           const fieldValue = (stats as any)[fieldName];
           if (fieldValue !== undefined && fieldValue !== null) {
             resolvedLabel = fieldValue.toString();
