@@ -15,6 +15,8 @@ interface VariableGroup {
   chartId?: string;
   titleOverride?: string;
   variables: string[];
+  visibleInClicker?: boolean;
+  visibleInManual?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -157,6 +159,55 @@ export default function ClickerManagerPage() {
                         <span className="badge badge-success">📊 {group.chartId}</span>
                       )}
                     </div>
+                    
+                    {/* WHAT: Mode visibility checkboxes */}
+                    {/* WHY: Control which groups appear in clicker vs manual mode */}
+                    <div className="flex items-center gap-4 mt-2 mb-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={group.visibleInClicker !== false}
+                          onChange={async (e) => {
+                            setSaving(true);
+                            try {
+                              await apiPost('/api/variables-groups', {
+                                group: {
+                                  ...group,
+                                  visibleInClicker: e.target.checked,
+                                },
+                              });
+                              await loadData();
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          className="form-checkbox"
+                        />
+                        <span className="text-sm font-medium">↔️ Clicker</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={group.visibleInManual !== false}
+                          onChange={async (e) => {
+                            setSaving(true);
+                            try {
+                              await apiPost('/api/variables-groups', {
+                                group: {
+                                  ...group,
+                                  visibleInManual: e.target.checked,
+                                },
+                              });
+                              await loadData();
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          className="form-checkbox"
+                        />
+                        <span className="text-sm font-medium">✏️ Manual</span>
+                      </label>
+                    </div>
 
                     <div className="flex flex-wrap gap-2 mt-3">
                       {groupVars.map((v) => (
@@ -245,6 +296,8 @@ function GroupForm({
     chartId: group.chartId || '',
     titleOverride: group.titleOverride || '',
     variables: group.variables || [],
+    visibleInClicker: group.visibleInClicker !== false,
+    visibleInManual: group.visibleInManual !== false,
     saving: false,
     error: null as string | null,
   });
@@ -301,6 +354,8 @@ function GroupForm({
           chartId: form.chartId || undefined,
           titleOverride: form.titleOverride || undefined,
           variables: form.variables,
+          visibleInClicker: form.visibleInClicker,
+          visibleInManual: form.visibleInManual,
         },
       });
 
@@ -347,6 +402,32 @@ function GroupForm({
             onChange={(e) => setForm({ ...form, titleOverride: e.target.value })}
             placeholder="e.g. Images"
           />
+        </div>
+      </div>
+      
+      {/* WHAT: Mode visibility controls */}
+      {/* WHY: Determine which edit modes show this group */}
+      <div className="mt-4">
+        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Visibility in Edit Modes</label>
+        <div className="flex gap-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.visibleInClicker}
+              onChange={(e) => setForm({ ...form, visibleInClicker: e.target.checked })}
+              className="form-checkbox"
+            />
+            <span className="text-sm font-medium">↔️ Show in Clicker Mode</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.visibleInManual}
+              onChange={(e) => setForm({ ...form, visibleInManual: e.target.checked })}
+              className="form-checkbox"
+            />
+            <span className="text-sm font-medium">✏️ Show in Manual Mode</span>
+          </label>
         </div>
       </div>
 

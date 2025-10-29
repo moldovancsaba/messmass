@@ -237,7 +237,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   // Calculate totals
   const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
   // Groups
-  const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables: string[] }[]>([])
+  const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables: string[]; visibleInClicker?: boolean; visibleInManual?: boolean }[]>([])
   const [charts, setCharts] = useState<any[]>([])
 
   useEffect(() => {
@@ -250,6 +250,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           if (data.groups.length > 0) {
             console.log('Sample group variables:', data.groups[0].variables?.slice(0, 5));
           }
+          // WHAT: Store all groups (filtering happens in render based on edit mode)
+          // WHY: Groups have visibleInClicker and visibleInManual flags
           setGroups(data.groups)
         } else {
           console.warn('⚠️ No groups found or failed to load');
@@ -491,7 +493,20 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
       <div className="content-grid">
         {/* Groups-driven rendering only (no legacy sections) */}
-        {groups.sort((a,b)=>a.groupOrder-b.groupOrder).map((g, idx) => {
+        {groups
+          .filter(g => {
+            // WHAT: Filter groups by visibility flags based on current edit mode
+            // WHY: Admin controls which groups appear in clicker vs manual mode
+            // HOW: Check visibleInClicker for clicker mode, visibleInManual for manual mode
+            // Default to true if flags are undefined (backward compatibility)
+            if (editMode === 'clicker') {
+              return g.visibleInClicker !== false;
+            } else {
+              return g.visibleInManual !== false;
+            }
+          })
+          .sort((a,b)=>a.groupOrder-b.groupOrder)
+          .map((g, idx) => {
           const chart = chartById(g.chartId)
           const kpi = computeKpiValue(chart)
           const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)

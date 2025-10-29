@@ -13,6 +13,8 @@ interface VariableGroupDoc {
   chartId?: string
   titleOverride?: string
   variables: string[] // variable names in order
+  visibleInClicker?: boolean
+  visibleInManual?: boolean
   createdAt?: string
   updatedAt?: string
 }
@@ -45,14 +47,14 @@ export async function POST(req: NextRequest) {
       const existingCount = await db.collection(COLLECTION).countDocuments({})
       if (existingCount === 0) {
         const seed: VariableGroupDoc[] = [
-          { groupOrder: 1, chartId: 'all-images-taken', titleOverride: undefined, variables: ['remoteImages','hostessImages','selfies'], createdAt: now, updatedAt: now },
-          { groupOrder: 2, chartId: undefined, titleOverride: undefined, variables: ['remoteFans','stadium'], createdAt: now, updatedAt: now },
-          { groupOrder: 3, chartId: undefined, titleOverride: undefined, variables: ['female','male'], createdAt: now, updatedAt: now },
-          { groupOrder: 4, chartId: undefined, titleOverride: undefined, variables: ['genAlpha','genYZ','genX','boomer'], createdAt: now, updatedAt: now },
-          { groupOrder: 5, chartId: undefined, titleOverride: undefined, variables: ['merched','jersey','scarf','flags','baseballCap','other'], createdAt: now, updatedAt: now },
-          { groupOrder: 6, chartId: undefined, titleOverride: undefined, variables: ['approvedImages','rejectedImages'], createdAt: now, updatedAt: now },
-          { groupOrder: 7, chartId: undefined, titleOverride: undefined, variables: ['visitQrCode','visitShortUrl','socialVisit','visitWeb','eventValuePropositionVisited','eventValuePropositionPurchases'], createdAt: now, updatedAt: now },
-          { groupOrder: 8, chartId: undefined, titleOverride: undefined, variables: ['eventAttendees','eventResultHome','eventResultVisitor'], createdAt: now, updatedAt: now },
+          { groupOrder: 1, chartId: 'all-images-taken', titleOverride: undefined, variables: ['remoteImages','hostessImages','selfies'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 2, chartId: undefined, titleOverride: undefined, variables: ['remoteFans','stadium'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 3, chartId: undefined, titleOverride: undefined, variables: ['female','male'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 4, chartId: undefined, titleOverride: undefined, variables: ['genAlpha','genYZ','genX','boomer'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 5, chartId: undefined, titleOverride: undefined, variables: ['merched','jersey','scarf','flags','baseballCap','other'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 6, chartId: undefined, titleOverride: undefined, variables: ['approvedImages','rejectedImages'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 7, chartId: undefined, titleOverride: undefined, variables: ['visitQrCode','visitShortUrl','socialVisit','visitWeb','eventValuePropositionVisited','eventValuePropositionPurchases'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
+          { groupOrder: 8, chartId: undefined, titleOverride: undefined, variables: ['eventAttendees','eventResultHome','eventResultVisitor'], visibleInClicker: true, visibleInManual: true, createdAt: now, updatedAt: now },
         ]
         await db.collection(COLLECTION).insertMany(seed as any)
       }
@@ -72,6 +74,8 @@ export async function POST(req: NextRequest) {
       chartId: group.chartId || undefined,
       titleOverride: group.titleOverride || undefined,
       variables: group.variables,
+      visibleInClicker: group.visibleInClicker !== undefined ? group.visibleInClicker : true,
+      visibleInManual: group.visibleInManual !== undefined ? group.visibleInManual : true,
       updatedAt: now,
     }
     const result = await db.collection(COLLECTION).updateOne(
