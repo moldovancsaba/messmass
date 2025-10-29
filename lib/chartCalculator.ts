@@ -183,7 +183,8 @@ export function calculateChart(
         id: element.id,
         label: resolvedLabel,
         value: value,
-        color: element.color
+        color: element.color,
+        type: element.type // WHAT: Pass through type for proper formatting (currency, percentage, number)
       };
     } catch (error) {
       hasErrors = true;
@@ -196,7 +197,8 @@ export function calculateChart(
         id: element.id,
         label: element.label,
         value: 'NA' as const,
-        color: element.color
+        color: element.color,
+        type: element.type // WHAT: Pass through type for proper formatting (currency, percentage, number)
       };
     }
   });

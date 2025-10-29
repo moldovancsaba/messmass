@@ -7,6 +7,8 @@ import Link from 'next/link'
 import AdminHero from '@/components/AdminHero'
 import ColoredCard from '@/components/ColoredCard'
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient'
+import PasswordModal from '@/components/PasswordModal'
+import ConfirmModal from '@/components/ConfirmModal'
 
 interface ListedUser {
   id: string
@@ -36,7 +38,24 @@ export default function AdminUsersPage() {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [creating, setCreating] = useState(false)
-  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null)
+  
+  // WHAT: Modal state for password display and confirmations
+  // WHY: Replace window.confirm() and inline password display with proper modals
+  const [passwordModal, setPasswordModal] = useState<{
+    isOpen: boolean;
+    password: string;
+    userEmail: string;
+    title: string;
+  }>({ isOpen: false, password: '', userEmail: '', title: '' })
+  
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    onConfirm: () => void;
+    title: string;
+    message: string;
+    confirmText?: string;
+    isDangerous?: boolean;
+  }>({ isOpen: false, onConfirm: () => {}, title: '', message: '' })
 
   // WHAT: Debounce search input to reduce API calls
   // WHY: Prevents excessive requests while user is typing
@@ -156,7 +175,6 @@ export default function AdminUsersPage() {
     e.preventDefault()
     if (!email.trim() || !name.trim()) return
     setCreating(true)
-    setGeneratedPassword(null)
     try {
       // WHAT: Use apiPost() for automatic CSRF token handling
       // WHY: Production middleware requires X-CSRF-Token header
@@ -165,9 +183,17 @@ export default function AdminUsersPage() {
         name: name.trim()
       })
       if (data.success) {
+        const userEmail = email.trim()
         setEmail('')
         setName('')
-        setGeneratedPassword(data.password)
+        // WHAT: Show password in modal instead of inline card
+        // WHY: Better UX with copy button and secure display
+        setPasswordModal({
+          isOpen: true,
+          password: data.password,
+          userEmail: userEmail,
+          title: 'User Created Successfully'
+        })
         await refreshUsers()
       } else {
         setError(data.error || 'Failed to create user')
@@ -179,41 +205,66 @@ export default function AdminUsersPage() {
     }
   }
 
-  const onRegenerate = async (id: string) => {
-    const confirm = window.confirm('Regenerate password for this user? Old password will no longer work.')
-    if (!confirm) return
-    try {
-      // WHAT: Use apiPut() for automatic CSRF token handling
-      // WHY: Production middleware requires X-CSRF-Token header
-      const data = await apiPut(`/api/admin/local-users/${id}`, {
-        regeneratePassword: true
-      })
-      if (data.success) {
-        setGeneratedPassword(data.password)
-        await refreshUsers()
-      } else {
-        alert(data.error || 'Failed to regenerate password')
+  const onRegenerate = async (id: string, userEmail: string) => {
+    // WHAT: Show confirmation modal instead of window.confirm
+    // WHY: Better UX with styled modal
+    setConfirmModal({
+      isOpen: true,
+      title: 'Regenerate Password',
+      message: 'Regenerate password for this user? Old password will no longer work.',
+      confirmText: 'Regenerate',
+      isDangerous: true,
+      onConfirm: async () => {
+        try {
+          // WHAT: Use apiPut() for automatic CSRF token handling
+          // WHY: Production middleware requires X-CSRF-Token header
+          const data = await apiPut(`/api/admin/local-users/${id}`, {
+            regeneratePassword: true
+          })
+          if (data.success) {
+            // WHAT: Show new password in modal with copy button
+            // WHY: Easy to copy and share with user
+            setPasswordModal({
+              isOpen: true,
+              password: data.password,
+              userEmail: userEmail,
+              title: 'Password Regenerated'
+            })
+            await refreshUsers()
+          } else {
+            setError(data.error || 'Failed to regenerate password')
+          }
+        } catch {
+          setError('Failed to regenerate password')
+        }
       }
-    } catch {
-      alert('Failed to regenerate password')
-    }
+    })
   }
 
   const onDelete = async (id: string) => {
-    const confirm = window.confirm('Are you sure you want to delete this user? This cannot be undone.')
-    if (!confirm) return
-    try {
-      // WHAT: Use apiDelete() for automatic CSRF token handling
-      // WHY: Production middleware requires X-CSRF-Token header
-      const data = await apiDelete(`/api/admin/local-users/${id}`)
-      if (data.success !== false) {
-        await refreshUsers()
-      } else {
-        alert(data.error || 'Failed to delete user')
+    // WHAT: Show confirmation modal instead of window.confirm
+    // WHY: Better UX with styled modal
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete User',
+      message: 'Are you sure you want to delete this user? This cannot be undone.',
+      confirmText: 'Delete',
+      isDangerous: true,
+      onConfirm: async () => {
+        try {
+          // WHAT: Use apiDelete() for automatic CSRF token handling
+          // WHY: Production middleware requires X-CSRF-Token header
+          const data = await apiDelete(`/api/admin/local-users/${id}`)
+          if (data.success !== false) {
+            await refreshUsers()
+          } else {
+            setError(data.error || 'Failed to delete user')
+          }
+        } catch {
+          setError('Failed to delete user')
+        }
       }
-    } catch {
-      alert('Failed to delete user')
-    }
+    })
   }
 
   const sortedUsers = useMemo(() => users.slice().sort((a, b) => a.email.localeCompare(b.email)), [users])
@@ -251,17 +302,6 @@ export default function AdminUsersPage() {
             {creating ? 'Creating…' : 'Create'}
           </button>
         </form>
-        {generatedPassword && (
-          <ColoredCard accentColor="#6366f1" hoverable={false} className="password-generated">
-            <div className="password-generated-content">
-              <div>
-                <div className="password-label">One-time password (copy and share securely)</div>
-                <code className="password-code">{generatedPassword}</code>
-              </div>
-              <button className="btn btn-small btn-secondary" onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button>
-            </div>
-          </ColoredCard>
-        )}
       </ColoredCard>
 
       <ColoredCard accentColor="#3b82f6" hoverable={false} className="mt-6">
@@ -308,7 +348,7 @@ export default function AdminUsersPage() {
                       <td className="font-mono">{u.createdAt}</td>
                       <td className="font-mono">{u.updatedAt}</td>
                       <td className="actions-cell">
-                        <button className="btn btn-small btn-secondary" onClick={() => onRegenerate(u.id)}>Regenerate</button>
+                        <button className="btn btn-small btn-secondary" onClick={() => onRegenerate(u.id, u.email)}>Regenerate</button>
                         <button className="btn btn-small btn-danger" onClick={() => onDelete(u.id)}>Delete</button>
                       </td>
                     </tr>
@@ -331,6 +371,29 @@ export default function AdminUsersPage() {
           </>
         )}
       </ColoredCard>
+
+      {/* WHAT: Modal for displaying generated passwords with copy button
+          WHY: Replaces window.alert() and inline cards with better UX */}
+      <PasswordModal
+        isOpen={passwordModal.isOpen}
+        onClose={() => setPasswordModal({ isOpen: false, password: '', userEmail: '', title: '' })}
+        password={passwordModal.password}
+        title={passwordModal.title}
+        userEmail={passwordModal.userEmail}
+        subtitle="Copy this password and share it securely with the user"
+      />
+
+      {/* WHAT: Modal for confirmation dialogs
+          WHY: Replaces window.confirm() with styled modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, onConfirm: () => {}, title: '', message: '' })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        isDangerous={confirmModal.isDangerous}
+      />
     </div>
   )
 }

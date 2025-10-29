@@ -95,6 +95,7 @@ interface ValidPieElement {
   label: string;
   value: number;
   color: string;
+  type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for proper formatting
 }
 
 /**
@@ -145,7 +146,7 @@ const PieChart: React.FC<{
             stroke="white"
             strokeWidth="2"
           >
-            <title>{`${element.label}: ${formatChartValue(element.value)} (${percentage.toFixed(1)}%)`}</title>
+            <title>{`${element.label}: ${formatChartValue(element.value, { type: element.type })} (${percentage.toFixed(1)}%)`}</title>
           </path>
         </g>
       );
@@ -161,7 +162,7 @@ const PieChart: React.FC<{
     return (
       <div key={element.id} className={styles.legendItem}>
         <div className={styles.legendColor} style={{ ['--legend-color' as string]: element.color, backgroundColor: element.color } as React.CSSProperties}></div>
-        <span>{element.label}: {formatChartValue(element.value)} ({percentage}%)</span>
+        <span>{element.label}: {formatChartValue(element.value, { type: element.type })} ({percentage}%)</span>
       </div>
     );
   });
@@ -196,7 +197,7 @@ const PieChart: React.FC<{
           </div>
           {result.total !== undefined && (
             <div className={styles.chartTotal}>
-              <strong>Total: {formatChartValue(result.total)}</strong>
+              <strong>Total: {formatChartValue(result.total, { type: result.elements[0]?.type })}</strong>
             </div>
           )}
         </div>
@@ -241,7 +242,7 @@ const PieChart: React.FC<{
         </div>
         {result.total !== undefined && (
           <div className={styles.chartTotalPortrait}>
-            <strong>Total: {formatChartValue(result.total)}</strong>
+            <strong>Total: {formatChartValue(result.total, { type: result.elements[0]?.type })}</strong>
           </div>
         )}
       </div>
@@ -279,7 +280,7 @@ const BarChart: React.FC<{
     const value = element.value as number;
     return (
       <div key={element.id} className={styles.legendTextRow}>
-        <span>{element.label}: {formatChartValue(value)}</span>
+        <span>{element.label}: {formatChartValue(value, { type: element.type })}</span>
       </div>
     );
   });

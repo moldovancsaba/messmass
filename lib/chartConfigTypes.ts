@@ -11,6 +11,8 @@ export interface ChartElement {
   label: string; // Display label (e.g., "Female", "CPM", "Jersey")
   formula: string; // Mathematical formula using variables (e.g., "[FEMALE]", "[INDOOR] + [OUTDOOR]")
   color: string; // Hex color code (e.g., "#ff6b9d")
+  type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for formatting (e.g., currency shows €, percentage shows %)
+  // WHY: Enables proper display formatting without hardcoding currency detection logic
   description?: string; // Optional description for documentation
   
   // WHAT: Optional per-element parameters used by the formula via [PARAM:key] tokens
@@ -149,6 +151,7 @@ export interface ChartCalculationResult {
     label: string;
     value: number | 'NA';
     color: string;
+    type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for formatting
   }[];
   total?: number | 'NA'; // Total value for bar charts
   kpiValue?: number | 'NA'; // Single value for KPI charts
