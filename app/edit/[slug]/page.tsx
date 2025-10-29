@@ -59,19 +59,33 @@ export default function EditPage() {
   const loadProjectForEditing = useCallback(async () => {
     try {
       console.log('🔍 Fetching project for editing with slug:', slug);
+      
+      if (!slug) {
+        console.error('❌ No slug provided to edit page');
+        setError('Invalid edit link - missing project identifier');
+        setLoading(false);
+        return;
+      }
+      
       const response = await fetch(`/api/projects/edit/${slug}`, { cache: 'no-store' });
+      console.log('📡 API response status:', response.status);
+      
       const data = await response.json();
+      console.log('📦 API response data:', data);
 
       if (data.success) {
         console.log('✅ Found project for editing:', data.project.eventName);
+        console.log('📄 Project data keys:', Object.keys(data.project));
+        console.log('📄 Stats keys:', Object.keys(data.project.stats || {}));
         setProject(data.project);
         setLoading(false);
       } else {
+        console.error('❌ API returned error:', data.error);
         setError(data.error || 'Project not found');
         setLoading(false);
       }
     } catch (err) {
-      console.error('Failed to fetch project:', err);
+      console.error('🔥 Exception in loadProjectForEditing:', err);
       setError('Failed to load project for editing');
       setLoading(false);
     }
