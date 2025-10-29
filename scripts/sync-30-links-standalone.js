@@ -5,74 +5,28 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: '.env.local' });
 
-// Country code to name mapping (ISO 3166-1 alpha-2)
-const COUNTRY_NAMES = {
-  'US': 'United States',
-  'GB': 'United Kingdom',
-  'DE': 'Germany',
-  'FR': 'France',
-  'ES': 'Spain',
-  'IT': 'Italy',
-  'CA': 'Canada',
-  'AU': 'Australia',
-  'NL': 'Netherlands',
-  'BE': 'Belgium',
-  'CH': 'Switzerland',
-  'AT': 'Austria',
-  'SE': 'Sweden',
-  'NO': 'Norway',
-  'DK': 'Denmark',
-  'FI': 'Finland',
-  'PL': 'Poland',
-  'CZ': 'Czech Republic',
-  'PT': 'Portugal',
-  'IE': 'Ireland',
-  'RO': 'Romania',
-  'HU': 'Hungary',
-  'GR': 'Greece',
-  'BR': 'Brazil',
-  'MX': 'Mexico',
-  'AR': 'Argentina',
-  'CL': 'Chile',
-  'CO': 'Colombia',
-  'IN': 'India',
-  'JP': 'Japan',
-  'CN': 'China',
-  'KR': 'South Korea',
-  'SG': 'Singapore',
-  'HK': 'Hong Kong',
-  'TW': 'Taiwan',
-  'MY': 'Malaysia',
-  'TH': 'Thailand',
-  'ID': 'Indonesia',
-  'PH': 'Philippines',
-  'VN': 'Vietnam',
-  'NZ': 'New Zealand',
-  'ZA': 'South Africa',
-  'RU': 'Russia',
-  'UA': 'Ukraine',
-  'TR': 'Turkey',
-  'IL': 'Israel',
-  'AE': 'United Arab Emirates',
-  'SA': 'Saudi Arabia',
-  'EG': 'Egypt',
-  'NG': 'Nigeria',
-  'KE': 'Kenya',
-  'LU': 'Luxembourg',
-  'HR': 'Croatia',
-  'SI': 'Slovenia',
-  'SK': 'Slovakia',
-  'BG': 'Bulgaria',
-  'LT': 'Lithuania',
-  'LV': 'Latvia',
-  'EE': 'Estonia',
-  'IS': 'Iceland',
-  'MT': 'Malta',
-  'CY': 'Cyprus',
-};
+// WHAT: Load country mappings from MongoDB instead of hardcoding
+// WHY: Single source of truth for geographic data
+let countryMap = null;
+
+async function loadCountries(db) {
+  if (countryMap) return countryMap;
+  
+  const countries = await db.collection('countries').find({ active: true }).toArray();
+  countryMap = new Map();
+  
+  countries.forEach(c => {
+    countryMap.set(c.code.toUpperCase(), c);
+  });
+  
+  console.log(`Loaded ${countries.length} countries from MongoDB\n`);
+  return countryMap;
+}
 
 function getCountryName(code) {
-  return COUNTRY_NAMES[code?.toUpperCase()] || code || 'Unknown';
+  if (!countryMap) return 'Unknown';
+  const country = countryMap.get(code?.toUpperCase());
+  return country?.name || code || 'Unknown';
 }
 
 // Bitly API helper
@@ -199,6 +153,9 @@ async function main() {
   try {
     await client.connect();
     const db = client.db(process.env.MONGODB_DB || 'messmass');
+    
+    // Load countries from MongoDB
+    await loadCountries(db);
     
     console.log('🔍 Fetching last 30 Bitly links...\n');
     

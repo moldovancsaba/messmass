@@ -14,7 +14,7 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
-import { countryToFlag } from '@/lib/countryToFlag';
+import { countryToFlag } from '@/lib/countryService';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import styles from './PartnerManager.module.css';

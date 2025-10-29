@@ -6,7 +6,7 @@
 
 import { ObjectId } from 'mongodb';
 import { getDb } from './db';
-import { isoToCountryName } from './isoCountryToName';
+import { isoToCountryName } from './countryService';
 
 /**
  * WHAT: Type definition for Bitly cached country metrics
@@ -130,13 +130,19 @@ export async function aggregateBitlyCountries(
 
   // WHAT: Convert Map to sorted array with full country names
   // WHY: Charts need ordered data with display-ready labels
-  const sortedCountries = Array.from(countryClickMap.entries())
-    .map(([isoCode, clicks]) => ({
+  const countryEntries = Array.from(countryClickMap.entries());
+  
+  // WHAT: Convert ISO codes to country names (async)
+  // WHY: countryService uses MongoDB with async queries
+  const sortedCountries = await Promise.all(
+    countryEntries.map(async ([isoCode, clicks]) => ({
       isoCode,
-      countryName: isoToCountryName(isoCode), // Convert "US" → "United States"
+      countryName: await isoToCountryName(isoCode), // Convert "US" → "United States"
       clicks
     }))
-    .sort((a, b) => b.clicks - a.clicks); // Sort descending by clicks
+  );
+  
+  sortedCountries.sort((a, b) => b.clicks - a.clicks); // Sort descending by clicks
 
   // WHAT: Extract top 5 for bar charts
   // WHY: Bar charts are limited to 5 elements per existing chart system
