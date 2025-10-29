@@ -13,7 +13,11 @@ interface Project {
   eventDate: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  // WHAT: Flexible stats object to support all variables including new ones
+  // WHY: Variables are dynamic and managed in database (variables_metadata)
+  // HOW: Use index signature to allow any numeric stat field
   stats: {
+    // Core required fields
     remoteImages: number;
     hostessImages: number;
     selfies: number;
@@ -32,23 +36,8 @@ interface Project {
     flags: number;
     baseballCap: number;
     other: number;
-    approvedImages?: number;
-    rejectedImages?: number;
-    visitQrCode?: number;
-    visitShortUrl?: number;
-    visitWeb?: number;
-    visitFacebook?: number;
-    visitInstagram?: number;
-    visitYoutube?: number;
-    visitTiktok?: number;
-    visitX?: number;
-    visitTrustpilot?: number;
-    eventAttendees?: number;
-    eventTicketPurchases?: number;
-    eventResultHome?: number;
-    eventResultVisitor?: number;
-    eventValuePropositionVisited?: number;
-    eventValuePropositionPurchases?: number;
+    // All other stats are optional and dynamic
+    [key: string]: number | undefined;
   };
   createdAt: string;
   updatedAt: string;
