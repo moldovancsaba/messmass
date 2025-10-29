@@ -88,8 +88,16 @@ export default function UnifiedDataVisualization({
 
   // Check if chart has valid data to display
   const hasValidData = (result: ChartCalculationResult): boolean => {
-    // Functional: A chart is considered valid only if it has numeric elements and their sum > 0.
-    // Strategic: Ensures charts that would render "No data available" are hidden on stats pages.
+    // WHAT: Check if chart has calculable data (not 'NA')
+    // WHY: KPI charts can have 0% (valid), pie charts need sum > 0
+    // HOW: For KPI, check if value is not 'NA'. For pie/bar, check sum > 0
+    
+    if (result.type === 'kpi') {
+      // KPI charts: valid if kpiValue is a number (even 0 is valid)
+      return result.kpiValue !== 'NA' && result.kpiValue !== undefined;
+    }
+    
+    // Pie/Bar charts: valid only if they have numeric elements with sum > 0
     const validElements = result.elements.filter(element => 
       typeof element.value === 'number'
     );
