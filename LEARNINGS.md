@@ -1,5 +1,169 @@
 # MessMass Development Learnings
 
+## 2025-10-29T14:15:00.000Z — Remove Hardcoded Patterns: Database as Single Source of Truth
+
+**What**: Found and removed hardcoded currency detection logic in chart rendering code. Replaced with database-driven `type` field that was already added by migration script.
+
+**Why**: The `formatTotal()` function in `DynamicChart.tsx` had hardcoded string matching to detect currency charts:
+- Checking if `totalLabel` contained "sales", "value", "euro", "eur", "€"
+- Special case exclusion for "core fan team"
+- This violated "Database as Single Source of Truth" principle
+
+**Impact**: 
+- ❌ Hardcoded patterns are fragile and require code changes
+- ❌ Adding new currency charts meant updating code, not just database
+- ❌ Business logic scattered between database and code
+- ✅ Now all chart type info comes from database `type` field
+
+---
+
+### Problem Analysis
+
+**Discovery**: After implementing currency formatting system with database `type` field, noticed `DynamicChart.tsx` still had legacy hardcoded detection:
+
+```javascript
+// ❌ HARDCODED ANTI-PATTERN
+const isCurrencyValue = result.totalLabel && (
+  result.totalLabel.toLowerCase().includes('sales') ||
+  result.totalLabel.toLowerCase().includes('value') ||
+  result.totalLabel.toLowerCase().includes('euro') ||
+  result.totalLabel.toLowerCase().includes('eur') ||
+  result.totalLabel.toLowerCase().includes('€')
+);
+
+const isEngagementChart = result.chartId === 'engagement' || 
+  (result.totalLabel && result.totalLabel.toLowerCase().includes('core fan team'));
+
+if (isCurrencyValue && !isEngagementChart) {
+  return `€${total.toLocaleString()}`;
+}
+```
+
+**Why This Was Wrong**:
+1. **Duplication**: We already had `type: 'currency'` in database from migration
+2. **Code Dependency**: Changing chart behavior required code deployment
+3. **Pattern Matching**: Fragile string matching (what if label changes?)
+4. **Special Cases**: Hardcoded exclusions for specific charts
+5. **Not Scalable**: Adding new currency metrics = code change
+
+---
+
+### Solution Implemented
+
+**Phase 1: Identify Hardcoded Patterns**
+Searched recent commits (last 2 days) for hardcoded patterns:
+```bash
+grep -r "totalLabel.*includes.*value" components/
+grep -r "toLowerCase().*includes" components/
+```
+
+**Phase 2: Replace with Database Field**
+```javascript
+// ✅ DATABASE-DRIVEN APPROACH
+const formatTotal = (total: number | 'NA') => {
+  if (total === 'NA') return 'N/A';
+  
+  // WHAT: Use type from first element to determine formatting
+  // WHY: Type is set in database, no hardcoding needed
+  const firstElementType = result.elements[0]?.type;
+  
+  if (firstElementType === 'currency') {
+    return `€${total.toLocaleString()}`;
+  }
+  
+  return total.toLocaleString();
+};
+```
+
+**Why This Is Better**:
+- ✅ **Single Source of Truth**: Chart type lives in database only
+- ✅ **No Code Changes**: Add new currency charts via admin UI
+- ✅ **Type Safe**: Uses proper TypeScript types
+- ✅ **Simple**: 3 lines instead of 15 lines of pattern matching
+- ✅ **Maintainable**: No special cases or exclusions needed
+
+---
+
+### Migration Script Context
+
+**Note**: The migration script `add-currency-type-to-charts.js` DOES have hardcoded patterns, but this is acceptable because:
+1. **One-Time Use**: Migration scripts run once to populate database
+2. **Explicit Purpose**: Converting legacy data to new schema
+3. **Not Runtime**: Patterns don't affect production code behavior
+4. **Future-Proof**: Once database has `type` field, patterns not needed
+
+**Pattern Acceptance Criteria**:
+- ✅ Migration scripts (one-time data transformation)
+- ✅ Seed scripts (initial data population)
+- ❌ Runtime application code
+- ❌ API endpoints
+- ❌ UI components
+- ❌ Business logic
+
+---
+
+### Files Modified
+
+1. **`components/DynamicChart.tsx`**
+   - Removed 15 lines of hardcoded currency detection
+   - Replaced with 3 lines using database `type` field
+   - Simplified `formatTotal()` function
+
+---
+
+### Lessons Learned
+
+**1. Check for Hardcoded Patterns After Adding Database Fields**
+- When implementing new database fields, search codebase for old patterns
+- Legacy code may still use hardcoded detection even when database has the data
+- Pattern: Add field → Migrate data → Remove hardcoded logic
+
+**2. Database as Single Source of Truth**
+- Business logic ("is this currency?") belongs in database, not code
+- Code should READ behavior from database, not DECIDE behavior
+- Pattern matching = smell of missing database field
+
+**3. Migration Scripts vs Runtime Code**
+- Migration scripts can have hardcoded patterns (one-time use)
+- Runtime code must NEVER have hardcoded business logic
+- Clear separation: Scripts populate database, code reads database
+
+**4. Type Field Pattern**
+- Adding `type` field to categorize data is powerful pattern
+- Replaces conditional logic with data-driven behavior
+- Examples: `type: 'currency' | 'percentage' | 'number'`
+- Enables admin UI to control behavior without code changes
+
+**5. Search Recent Commits for Patterns**
+```bash
+# Find recent changes that might have hardcoded logic
+git log --since="2 days ago" --oneline --name-only
+grep -r "hardcoded" lib/ components/
+grep -r "TODO.*hardcode" .
+```
+
+---
+
+### Future Prevention
+
+**Hardcoding Detection Checklist**:
+```
+☐ Search for .includes() string matching in business logic
+☐ Look for multiple if/else conditions based on string values
+☐ Check for special case exclusions (e.g., "except for X")
+☐ Verify all categorical data comes from database
+☐ Ensure admin UI can change behavior without code deployment
+```
+
+**Database-First Design**:
+1. Add field to database schema
+2. Create migration script to populate existing records
+3. Update admin UI to allow editing the field
+4. Remove any hardcoded logic that duplicates the field
+5. Deploy database field → then deploy code that uses it
+
+---
+
 ## 2025-10-29T15:45:00.000Z — PageStyle Gradients Not Applied: Type System Mismatch Between API and Frontend
 
 **What**: Fixed page style gradients not applying to any pages. All pages were using old `PageStyle` type but the API was returning `PageStyleEnhanced` with completely different structure.

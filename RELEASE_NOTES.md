@@ -1,5 +1,136 @@
 # MessMass Release Notes
 
+## [v8.4.1] — 2025-10-29T14:10:00.000Z
+
+### 🔧 Remove Hardcoded Currency Detection — Use Database-Driven Type System
+
+**What Changed**
+
+✅ **Removed Legacy String Matching**
+- Removed hardcoded currency detection in `DynamicChart.tsx` `formatTotal()` function
+- Replaced string matching (`totalLabel.includes('sales')`) with database-driven `type` field
+- Now uses `result.elements[0]?.type === 'currency'` from chart configuration
+
+**Why**
+
+The `formatTotal()` function had hardcoded logic checking if `totalLabel` contained keywords like:
+- "sales", "value", "euro", "eur", "€"
+- Special case for "core fan team" to exclude from currency formatting
+
+This violated our "Database as Single Source of Truth" principle because:
+- Chart type information should come from the database, not hardcoded patterns
+- The migration script already added `type: 'currency'` to all currency charts
+- Hardcoded patterns are fragile and require code changes to update
+
+**Solution**
+
+```javascript
+// BEFORE (hardcoded)
+const isCurrencyValue = result.totalLabel && (
+  result.totalLabel.toLowerCase().includes('sales') ||
+  result.totalLabel.toLowerCase().includes('value') // ...
+);
+
+// AFTER (database-driven)
+const firstElementType = result.elements[0]?.type;
+if (firstElementType === 'currency') {
+  return `€${total.toLocaleString()}`;
+}
+```
+
+**Files Modified**: 1 file, 17 lines changed
+- MODIFIED: `components/DynamicChart.tsx` - Replaced hardcoded currency detection
+
+**Validation**
+- ✅ TypeScript type-check: PASSED
+- ✅ Next.js build: PASSED
+- ✅ Currency charts still format correctly
+- ✅ Non-currency charts unaffected
+
+---
+
+## [v8.4.0] — 2025-10-29T13:57:00.000Z
+
+### 🎨 Modal UX for Password Management + 💰 Currency Formatting
+
+**What Changed**
+
+✅ **Password Management Modals (Critical UX Fix)**
+- Created `PasswordModal.tsx` - Beautiful modal for displaying generated passwords with copy button
+- Created `ConfirmModal.tsx` - Styled confirmation dialogs to replace `window.confirm()`
+- Updated Users Management page to use modal system
+- Replaced native browser alerts with in-page modals matching SharePopup design
+
+✅ **User Password Workflow**
+- **Create User**: Password now appears in modal (not inline card)
+- **Regenerate Password**: Shows confirmation modal, then password modal with copy button
+- **Delete User**: Styled confirmation modal instead of native dialog
+- All modals include user email for context
+
+✅ **Chart Currency Formatting**
+- Added `type?: 'currency' | 'percentage' | 'number'` field to `ChartElement` interface
+- Updated `ChartCalculationResult` to pass through type information
+- Modified `formatChartValue()` calls throughout `DynamicChart.tsx` to use type parameter
+- Created migration script `add-currency-type-to-charts.js` to mark currency charts
+
+✅ **Database Integration**
+- Migration script identifies currency charts by:
+  - Chart IDs: `advertisement-value`, `value`, `merch-sales`
+  - Title keywords: "value", "sales", "euro", "eur", "€"
+  - Element labels: "cpm", "social", "email", "stadium"
+- Automatically added `type: 'currency'` to "Calculated Marketing Value" chart
+
+**Why**
+
+**Password Management Problem:**
+- Admin users couldn't easily copy regenerated passwords
+- Native `window.confirm()` and `window.alert()` dialogs were:
+  - Not user-friendly
+  - Inconsistent with app design
+  - No copy button for passwords
+  - Poor mobile experience
+
+**Currency Formatting Problem:**
+- Chart values displayed as plain numbers: `14790` instead of `€14,790`
+- No way to distinguish currency values from counts
+- Formatting logic was hardcoded in components
+
+**Solution Benefits:**
+- 🔐 One-click copy for passwords
+- 👤 User email shown for reference
+- 📝 Clear instructions in modals
+- 💰 Automatic € symbol for monetary values
+- 🎨 Consistent design across entire app
+- ♿ Better accessibility and mobile support
+
+**Files Created**: 3 files, 337 lines
+- CREATED: `components/PasswordModal.tsx` (122 lines)
+- CREATED: `components/ConfirmModal.tsx` (93 lines)
+- CREATED: `scripts/add-currency-type-to-charts.js` (172 lines)
+
+**Files Modified**: 5 files, 172 lines changed
+- MODIFIED: `app/admin/users/page.tsx` - Integrated modal system
+- MODIFIED: `components/DynamicChart.tsx` - Added type parameter to formatChartValue
+- MODIFIED: `lib/chartCalculator.ts` - Pass through type field
+- MODIFIED: `lib/chartConfigTypes.ts` - Enhanced interfaces with type field
+- MODIFIED: `package.json` - Version bump to 8.4.0
+
+**Validation**
+- ✅ TypeScript type-check: PASSED
+- ✅ Next.js build: PASSED
+- ✅ Password modals: TESTED
+- ✅ Currency formatting: WORKING
+- ✅ Migration script: SUCCESS (1 chart updated)
+
+**User Experience Improvements**
+1. Password regeneration now feels professional and secure
+2. Easy copy-paste workflow for sharing credentials
+3. Confirmation dialogs prevent accidental actions
+4. Currency values immediately recognizable with € symbol
+5. Consistent modal design across SharePopup, PasswordModal, ConfirmModal
+
+---
+
 ## [v6.44.0] — 2025-10-24T09:50:22.000Z
 
 ### 🔄 Page Styles Migration — Complete System Integration & Database Migration

@@ -304,29 +304,21 @@ const BarChart: React.FC<{
     );
   });
 
-  // Format total value based on chart type and total label
+  // WHAT: Format total value using type from first element
+  // WHY: Use database-driven type field instead of hardcoded string matching
+  // HOW: Check first element's type since bar chart elements should all be same type
   const formatTotal = (total: number | 'NA') => {
     if (total === 'NA') return 'N/A';
     
-    // Check if this is a currency value based on totalLabel
-    const isCurrencyValue = result.totalLabel && (
-      result.totalLabel.toLowerCase().includes('sales') ||
-      result.totalLabel.toLowerCase().includes('value') ||
-      result.totalLabel.toLowerCase().includes('euro') ||
-      result.totalLabel.toLowerCase().includes('eur') ||
-      result.totalLabel.toLowerCase().includes('€')
-    );
+    // WHAT: Use type from first element to determine formatting
+    // WHY: Type is set in database, no hardcoding needed
+    const firstElementType = result.elements[0]?.type;
     
-    // Check if this is the engagement chart specifically (Core Fan Team)
-    const isEngagementChart = result.chartId === 'engagement' || 
-      (result.totalLabel && result.totalLabel.toLowerCase().includes('core fan team'));
-    
-    // Format as currency only if it's explicitly a currency value
-    if (isCurrencyValue && !isEngagementChart) {
+    if (firstElementType === 'currency') {
       return `€${total.toLocaleString()}`;
     }
     
-    // For engagement chart and other person counts, just show the number
+    // For other types, just show the number
     return total.toLocaleString();
   };
 
