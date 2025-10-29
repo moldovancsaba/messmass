@@ -266,9 +266,32 @@ The `style` prop rule **cannot be auto-fixed** by ESLint. Manual migration requi
 
 ## ✋ Exceptions
 
-**There are NO exceptions** to the inline style prohibition in this codebase.
+### PageStyle Dynamic Gradients (Exception)
 
-If you encounter a legitimate need for inline styles:
+**The ONLY exception** to the inline style prohibition is for dynamic page style gradients that come from the database.
+
+**Why:** Page styles are stored in MongoDB and loaded at runtime. These custom gradients cannot be predefined in CSS modules.
+
+**Allowed Pattern:**
+```tsx
+// ✅ EXCEPTION: Dynamic page style gradients from database
+<div 
+  className={styles.pageContainer}
+  style={pageStyle?.backgroundGradient ? {
+    background: `linear-gradient(${pageStyle.backgroundGradient})`
+  } : undefined}
+>
+```
+
+**Important:** 
+- Only apply to top-level page containers
+- Only use for `background` property from `pageStyle` object
+- Always check for existence with optional chaining
+- Always provide `undefined` fallback for when no style is set
+
+**Forbidden:** Using inline styles for any other purpose, even with dynamic values.
+
+If you encounter any other legitimate need for inline styles:
 1. Refactor to use CSS variables
 2. Create a new CSS module
 3. Extend the design system with new utilities

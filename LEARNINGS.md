@@ -1,5 +1,159 @@
 # MessMass Development Learnings
 
+## 2025-10-29T15:45:00.000Z — PageStyle Gradients Not Applied: CSS Class Definition Without Usage
+
+**What**: Fixed page style gradients not applying to stats and edit pages. Both pages defined custom CSS classes for gradients but never actually used those classes on any elements.
+
+**Why**: The `page-config` API correctly fetched `pageStyle.backgroundGradient` and `pageStyle.headerBackgroundGradient` from the database, but the stats/edit pages injected CSS rules for `.stats-page-custom-bg` and `.edit-page-custom-bg` classes that were never applied to any DOM elements.
+
+**Impact**: All project-specific page styles were ignored - pages always showed default gray background despite having custom gradients configured in the database.
+
+---
+
+### Problem Analysis
+
+**Symptom**: After creating an event via Quick Add Partner Event tab with a selected Page Style, the stats page showed default gray background instead of the configured gradient.
+
+**Investigation Steps**:
+1. ✅ Verified `styleIdEnhanced` is saved to project document in MongoDB
+2. ✅ Verified `/api/page-config?projectId={slug}` returns correct `pageStyle` object with gradients
+3. ✅ Verified stats page receives `pageStyle` prop from API and sets state
+4. ✅ Found stats page injects CSS rules for custom classes at lines 368-379
+5. ❌ **ROOT CAUSE**: CSS classes defined but never used on elements
+
+**Code Analysis**:
+```tsx
+// ❌ BEFORE: Stats page defined classes but never used them
+{pageStyle && (
+  <style dangerouslySetInnerHTML={{
+    __html: `
+      .stats-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
+      .stats-hero-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+    `
+  }} />
+)}
+<div className={styles.pageContainer}> {/* Never has .stats-page-custom-bg class */}
+```
+
+**Parallel Issue**: `UnifiedPageHero` component had similar approach - it defined `.admin-container` and `.admin-header` classes, and the header card used `admin-header` class successfully. But stats page used `styles.pageContainer` (CSS module class) instead of `.admin-container`, so the page-level gradient was never applied.
+
+---
+
+### Solution Implemented
+
+**Fix 1: Stats Page** (`app/stats/[slug]/page.tsx`)
+```tsx
+// ✅ AFTER: Apply gradient directly as inline style
+<div 
+  className={styles.pageContainer}
+  style={pageStyle?.backgroundGradient ? {
+    background: `linear-gradient(${pageStyle.backgroundGradient})`
+  } : undefined}
+>
+```
+
+**Fix 2: Edit Page** (`app/edit/[slug]/page.tsx`)
+```tsx
+// ✅ AFTER: Apply gradient directly as inline style
+<div 
+  className="page-bg-gray"
+  style={pageStyle?.backgroundGradient ? {
+    background: `linear-gradient(${pageStyle.backgroundGradient})`
+  } : undefined}
+>
+```
+
+**Rationale**:
+- Page styles are **dynamic** - loaded from database at runtime
+- CSS modules cannot handle database-driven values
+- Inline styles are the correct approach for runtime gradients
+- This is the ONLY exception to the inline style prohibition (documented in `CODING_STANDARDS.md`)
+
+---
+
+### Files Modified
+
+**Code Changes** (2):
+1. `app/stats/[slug]/page.tsx` - Apply `backgroundGradient` as inline style on page container
+2. `app/edit/[slug]/page.tsx` - Apply `backgroundGradient` as inline style on page container
+
+**Documentation** (2):
+3. `CODING_STANDARDS.md` - Added exception for PageStyle dynamic gradients
+4. `LEARNINGS.md` - Documented this fix (this entry)
+
+---
+
+### Lessons Learned
+
+**1. CSS Class Definitions Without Usage Are Dead Code**
+- Defining a CSS class (via `<style>` injection or module) does nothing unless applied to elements
+- Always trace from element → class → style rules
+- Unused CSS classes are harder to detect than unused variables (no linter warnings)
+
+**2. Mismatch Between CSS Module Classes and Global Classes**
+- `UnifiedPageHero` assumed page container has `.admin-container` class
+- Stats/Edit pages used different container classes (`.pageContainer`, `.page-bg-gray`)
+- Result: Styles targeting wrong selector never apply
+- **Best Practice**: Use consistent class naming or direct inline styles for shared patterns
+
+**3. Dynamic Database Values Require Inline Styles**
+- Page styles stored in MongoDB cannot be predefined in CSS
+- Inline styles are the ONLY correct solution for runtime gradients
+- This is an **exception** to the inline style prohibition
+- Must document exceptions clearly to prevent confusion
+
+**4. Component Props Don't Guarantee Usage**
+- Just because a component receives `pageStyle` prop doesn't mean it uses it
+- Must verify the prop is actually applied to the DOM
+- Props can be passed through multiple layers without effect
+
+**5. Verification After Quick Add Creation**
+- Quick Add creates project with `styleIdEnhanced` correctly
+- API fetches style correctly
+- Component receives style correctly
+- **But final rendering must be verified manually**
+- Don't assume "data is there" = "rendering works"
+
+---
+
+### Future Prevention
+
+**1. Page Style Integration Checklist**
+```
+☐ Project document has styleIdEnhanced field
+☐ API fetches pageStyle from page_styles_enhanced collection
+☐ Component receives pageStyle prop
+☐ Component applies pageStyle.backgroundGradient to container element
+☐ Manually verify gradient renders in browser
+```
+
+**2. CSS Injection Anti-Pattern**
+```tsx
+// ❌ ANTI-PATTERN: Defining classes that are never used
+<style dangerouslySetInnerHTML={{ __html: `
+  .custom-bg { background: ${gradient}; }
+` }} />
+<div className="default-class"> {/* Where is .custom-bg? */}
+```
+
+```tsx
+// ✅ CORRECT: Apply styles directly or use consistent classes
+<div style={{ background: gradient }}>  {/* Direct application */}
+// OR
+<div className="custom-bg">  {/* Actually use the defined class */}
+```
+
+**3. Inline Style Exception Documentation**
+- Updated `CODING_STANDARDS.md` with PageStyle gradient exception
+- This is the ONLY allowed use of inline styles
+- Must be limited to:
+  - Top-level page containers
+  - `background` property only
+  - Database-sourced `pageStyle` object
+  - Optional chaining with `undefined` fallback
+
+---
+
 ## 2025-10-29T08:37:46.000Z — Version 8.0.0: Fixed Missing Visitor KYC Variables
 
 **What**: Added 3 missing visitor source variables (`visitQrCode`, `visitShortUrl`, `visitWeb`) to KYC system that were referenced in chart formulas but not registered in `variables_metadata` collection.

@@ -363,20 +363,12 @@ export default function StatsPage() {
      - Optional custom page style gradients
      - Responsive padding for different screen sizes */
   return (
-    <div className={styles.pageContainer}>
-      {/* Inject resolved page style for custom gradients (optional) */}
-      {pageStyle && (
-        <style
-          // WHAT: Set CSS variables for custom backgrounds if configured
-          // WHY: Allow project-specific branding while maintaining base TailAdmin V2 design
-          dangerouslySetInnerHTML={{
-            __html: `
-              .stats-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
-              .stats-hero-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
-            `
-          }}
-        />
-      )}
+    <div 
+      className={styles.pageContainer}
+      style={pageStyle?.backgroundGradient ? {
+        background: `linear-gradient(${pageStyle.backgroundGradient})`
+      } : undefined}
+    >
 
       {/* What: Main content container wrapper for PDF export
           Why: Contains hero and content sections separately for smart pagination */}

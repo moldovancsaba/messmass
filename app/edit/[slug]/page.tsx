@@ -209,19 +209,12 @@ export default function EditPage() {
   /* WHAT: Main editor container with flat design */
   if (project) {
     return (
-      <div className="page-bg-gray">
-        {/* What: Optional custom page style injection
-            Why: Allow project-specific branding while maintaining base design */}
-        {pageStyle && (
-          <style
-            dangerouslySetInnerHTML={{
-              __html: `
-                .edit-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
-                .edit-header-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
-              `
-            }}
-          />
-        )}
+      <div 
+        className="page-bg-gray"
+        style={pageStyle?.backgroundGradient ? {
+          background: `linear-gradient(${pageStyle.backgroundGradient})`
+        } : undefined}
+      >
         <EditorDashboard project={project} />
       </div>
     );
