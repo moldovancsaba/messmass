@@ -1,5 +1,95 @@
 # MessMass Release Notes
 
+## [v8.5.0] — 2025-10-29T14:40:00.000Z
+
+### 📊 New Variables & Chart: Vent Campaign Tracking + Marketing Opt-in %
+
+**What Changed**
+
+✅ **Unique Users Variable**
+- Added `stats.uniqueUsers` to KYC variables system
+- Visible in Clicker for manual editing
+- Category: Marketing
+- Type: count (users)
+- Purpose: Track total unique users who interacted with event
+
+✅ **Vent Campaign Variables (9 new variables)**
+Added manual tracking variables aligned with Bitly structure but editable in Clicker:
+- `stats.ventFacebook` - Visitors from Facebook campaign
+- `stats.ventInstagram` - Visitors from Instagram campaign
+- `stats.ventGoogle` - Visitors from Google campaign
+- `stats.ventQr` - Visitors from QR code scans
+- `stats.ventUrl` - Visitors from direct URL access
+- `stats.ventIos` - Visitors from iOS devices
+- `stats.ventAndroid` - Visitors from Android devices
+- `stats.ventCtaPopup` - CTA popup interactions
+- `stats.ventCtaEmail` - Email CTA click-throughs
+
+**Vent Variables Characteristics:**
+- Category: "Vent Campaign"
+- Type: count
+- Visible in Clicker: ✅ Yes
+- Editable in Manual Mode: ✅ Yes
+- Purpose: Manual campaign tracking before API integration
+
+✅ **Marketing Opt-in % KPI Chart**
+- Chart ID: `marketing-opt-in-percentage`
+- Type: KPI (percentage display)
+- Formula: `(eventValuePropositionPurchases / uniqueUsers) * 100`
+- Emoji: 📧
+- Subtitle: "Percentage of unique users who opted in to marketing"
+- Shows conversion rate from visitors to marketing subscribers
+
+**Why**
+
+**Problem:**
+- No way to track unique users separately from total interactions
+- Needed manual campaign tracking variables (vent.*) similar to Bitly metrics
+- No visibility into marketing opt-in conversion percentage
+
+**Solution:**
+- Added Unique Users to enable accurate conversion tracking
+- Created vent.* variables for manual campaign data entry
+- Built Marketing Opt-in % chart to calculate conversion rate
+
+**Use Cases:**
+1. **Campaign Performance**: Track which channels (Facebook, Instagram, QR) drive most visitors
+2. **Device Analytics**: Compare iOS vs Android visitor counts manually
+3. **CTA Effectiveness**: Measure popup vs email CTA performance
+4. **Marketing ROI**: Calculate opt-in percentage to measure campaign success
+
+**Files Created**: 1 file, 228 lines
+- CREATED: `scripts/add-vent-variables-and-charts.js` (228 lines)
+
+**Files Modified**: 1 file
+- MODIFIED: `package.json` - Version bump to 8.5.0
+
+**Database Changes**:
+- Added 10 new variables to `variables_metadata` collection
+- Added 1 new KPI chart to `chartConfigurations` collection
+- All variables configured for Clicker visibility and manual editing
+
+**Validation**
+- ✅ Variables created: 10 (1 Unique Users + 9 Vent)
+- ✅ All variables visible in Clicker: true
+- ✅ All variables editable in Manual: true
+- ✅ Marketing Opt-in % chart created successfully
+- ✅ Chart formula validates correctly
+
+**Admin UI Integration**
+- Variables appear in `/admin/variables` for management
+- Chart appears in `/admin/charts` for configuration
+- Variables visible in `/edit/[slug]` clicker for data entry
+- Chart displays on stats pages when data available
+
+**Future Integration**
+- vent.* variables currently manual entry
+- Will be populated via API in future releases
+- Structure aligned with Bitly for consistency
+- Easy migration path when API becomes available
+
+---
+
 ## [v8.4.1] — 2025-10-29T14:10:00.000Z
 
 ### 🔧 Remove Hardcoded Currency Detection — Use Database-Driven Type System
