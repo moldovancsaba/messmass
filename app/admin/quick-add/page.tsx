@@ -205,10 +205,10 @@ export default function QuickAddPage() {
   async function loadPartners() {
     setLoadingPartners(true);
     try {
-      // WHAT: Load ALL partners without limit
-      // WHY: Partner selector needs complete list for search to work properly
-      // HOW: Remove limit parameter to get all partners
-      const res = await fetch('/api/partners?sortField=name&sortOrder=asc');
+      // WHAT: Load ALL partners with high limit
+      // WHY: API defaults to limit=50 if not specified, need to override
+      // HOW: Set limit=9999 to ensure all partners are loaded
+      const res = await fetch('/api/partners?limit=9999&sortField=name&sortOrder=asc');
       const data = await res.json();
       if (data.success) {
         setPartners(data.partners);
