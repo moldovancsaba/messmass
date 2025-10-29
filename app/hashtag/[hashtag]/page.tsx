@@ -6,7 +6,8 @@ import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
-import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 
 // WHAT: Removed legacy CSS imports (stats.module.css, charts.css)
 // WHY: They imposed hard-coded grid and min-width constraints (e.g., 450px min track, 500px max chart width)
@@ -93,7 +94,7 @@ export default function HashtagStatsPage() {
   const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actualHashtag, setActualHashtag] = useState<string>('');
-  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
+  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
   const [includeDerived, setIncludeDerived] = useState(false);
@@ -264,18 +265,14 @@ export default function HashtagStatsPage() {
   }
 
   return (
-    <div className="admin-container">
-      {/* Inject resolved page style so hashtag page uses the same gradients as configured */}
-      {pageStyle && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              .admin-container { --page-bg: linear-gradient(${pageStyle.backgroundGradient}); }
-              .admin-header { --header-bg: linear-gradient(${pageStyle.headerBackgroundGradient}); }
-            `
-          }}
-        />
-      )}
+    <div 
+      className="admin-container"
+      style={pageStyle ? {
+        background: generateGradientCSS(pageStyle.pageBackground),
+        color: pageStyle.typography.primaryTextColor,
+        fontFamily: pageStyle.typography.fontFamily
+      } : undefined}
+    >
 
       {/* Unified Hero — EXACT same component used by /stats and /filter */}
       <UnifiedStatsHero

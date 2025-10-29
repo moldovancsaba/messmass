@@ -2,7 +2,7 @@ import React from 'react';
 import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
-import { PageStyle } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedPageHero.module.css';
 
 interface UnifiedPageHeroProps {
@@ -16,7 +16,7 @@ interface UnifiedPageHeroProps {
   };
   onExportCSV?: () => void;
   onExportPDF?: () => void; // PDF export callback
-  pageStyle?: PageStyle;
+  pageStyle?: PageStyleEnhanced;
   children?: React.ReactNode; // For additional content like dates
 }
 
@@ -31,8 +31,16 @@ export default function UnifiedPageHero({
   children
 }: UnifiedPageHeroProps) {
   const styleCss = pageStyle ? `
-    .admin-container { background: linear-gradient(${pageStyle.backgroundGradient}); }
-    .admin-header { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
+    .admin-container { 
+      background: ${generateGradientCSS(pageStyle.pageBackground)}; 
+      color: ${pageStyle.typography.primaryTextColor};
+    }
+    .admin-header { 
+      background: ${generateGradientCSS(pageStyle.heroBackground)}; 
+    }
+    .admin-title {
+      color: ${pageStyle.typography.headingColor};
+    }
   ` : '';
 
   return (

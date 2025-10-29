@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
-import { PageStyle } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import styles from './page.module.css';
 
 interface Project {
@@ -65,7 +65,7 @@ export default function EditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
-  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
+  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
 
   const loadProjectForEditing = useCallback(async () => {
     try {
@@ -211,8 +211,10 @@ export default function EditPage() {
     return (
       <div 
         className="page-bg-gray"
-        style={pageStyle?.backgroundGradient ? {
-          background: `linear-gradient(${pageStyle.backgroundGradient})`
+        style={pageStyle ? {
+          background: generateGradientCSS(pageStyle.pageBackground),
+          color: pageStyle.typography.primaryTextColor,
+          fontFamily: pageStyle.typography.fontFamily
         } : undefined}
       >
         <EditorDashboard project={project} />

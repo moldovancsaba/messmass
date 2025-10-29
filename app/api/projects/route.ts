@@ -15,7 +15,7 @@ import { addDerivedMetrics } from '@/lib/projectStatsUtils';
 import { validateProjectStats, prepareStatsForAnalytics, type ValidationResult } from '@/lib/dataValidator';
 
 // Import Bitly recalculation services for many-to-many link management
-import { recalculateProjectLinks, handleProjectDeletion } from '@/lib/bitly-recalculator';
+import { recalculateProjectLinks, handleProjectDeletion, createLinkAssociation } from '@/lib/bitly-recalculator';
 
 // Define project interface for type safety
 // Enhanced to support both traditional and categorized hashtags
@@ -546,6 +546,44 @@ export async function POST(request: NextRequest) {
 
     const result = await collection.insertOne(project);
     console.log('✅ Project created with ID:', result.insertedId);
+
+    // WHAT: Auto-associate Partner 1's Bitly links with new project (many-to-many)
+    // WHY: Quick Add shows partner Bitly links in preview, must connect them automatically
+    // NOTE: Only Partner 1 (home team) links are associated, NOT Partner 2
+    if (partner1Id && ObjectId.isValid(partner1Id)) {
+      try {
+        const partnersCollection = db.collection('partners');
+        const partner = await partnersCollection.findOne({ _id: new ObjectId(partner1Id) });
+        
+        if (partner && partner.bitlyLinkIds && Array.isArray(partner.bitlyLinkIds)) {
+          console.log(`🔗 Auto-associating ${partner.bitlyLinkIds.length} Bitly links from Partner 1 (${partner.name})`);
+          
+          // Create junction table entries for each Bitly link
+          // This will automatically calculate date ranges and populate cached metrics
+          let associatedCount = 0;
+          for (const bitlyLinkId of partner.bitlyLinkIds) {
+            try {
+              await createLinkAssociation({
+                bitlyLinkId: new ObjectId(bitlyLinkId),
+                projectId: result.insertedId,
+                autoCalculated: true
+              });
+              associatedCount++;
+            } catch (linkError) {
+              console.error(`❌ Failed to associate Bitly link ${bitlyLinkId}:`, linkError);
+              // Continue with other links even if one fails
+            }
+          }
+          
+          console.log(`✅ Successfully associated ${associatedCount}/${partner.bitlyLinkIds.length} Bitly links`);
+        } else {
+          console.log('ℹ️ Partner 1 has no Bitly links to associate');
+        }
+      } catch (bitlyError) {
+        console.error('❌ Failed to auto-associate Bitly links:', bitlyError);
+        // Don't fail the project creation if Bitly association fails
+      }
+    }
 
     // WHAT: Log notification for project creation
     // WHY: Notify all users of new project activity

@@ -1,6 +1,6 @@
 import React from 'react';
 import UnifiedPageHero from './UnifiedPageHero';
-import { PageStyle } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedStatsHero.module.css';
 
 interface UnifiedStatsHeroProps {
@@ -9,7 +9,7 @@ interface UnifiedStatsHeroProps {
   categorizedHashtags?: { [categoryName: string]: string[] };
   createdDate: string;
   lastUpdatedDate: string;
-  pageStyle?: PageStyle;
+  pageStyle?: PageStyleEnhanced;
   onExportCSV?: () => void;
   onExportPDF?: () => void; // PDF export callback
   extraContent?: React.ReactNode; // Optional controls or info injected by pages (e.g., export toggles)

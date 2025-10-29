@@ -9,7 +9,8 @@ import StandardState from '@/components/StandardState';
 import DataQualityInsights from '@/components/DataQualityInsights';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
-import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import { generateDataQualityInsights } from '@/lib/dataValidator';
 import styles from './page.module.css';
@@ -80,7 +81,7 @@ export default function StatsPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
-  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
+  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
@@ -365,8 +366,10 @@ export default function StatsPage() {
   return (
     <div 
       className={styles.pageContainer}
-      style={pageStyle?.backgroundGradient ? {
-        background: `linear-gradient(${pageStyle.backgroundGradient})`
+      style={pageStyle ? {
+        background: generateGradientCSS(pageStyle.pageBackground),
+        color: pageStyle.typography.primaryTextColor,
+        fontFamily: pageStyle.typography.fontFamily
       } : undefined}
     >
 

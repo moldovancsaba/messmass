@@ -7,7 +7,8 @@ import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
-import { PageStyle, DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 
@@ -86,7 +87,7 @@ export default function FilterPage() {
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
-  const [pageStyle, setPageStyle] = useState<PageStyle | null>(null);
+  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(false);
@@ -359,20 +360,15 @@ export default function FilterPage() {
      - Responsive padding for different screen sizes
      - Aggregated statistics display with project list */
   return (
-    <div className="page-bg-gray" style={{ padding: 'var(--mm-space-4)' }}>
-      {/* Inject resolved page style for custom gradients (optional) */}
-      {pageStyle && (
-        <style
-          // WHAT: Set CSS variables for custom backgrounds if configured
-          // WHY: Allow hashtag-specific branding while maintaining base TailAdmin V2 design
-          dangerouslySetInnerHTML={{
-            __html: `
-              .filter-page-custom-bg { background: linear-gradient(${pageStyle.backgroundGradient}); }
-              .filter-hero-custom-bg { background: linear-gradient(${pageStyle.headerBackgroundGradient}); }
-            `
-          }}
-        />
-      )}
+    <div 
+      className="page-bg-gray" 
+      style={pageStyle ? {
+        padding: 'var(--mm-space-4)',
+        background: generateGradientCSS(pageStyle.pageBackground),
+        color: pageStyle.typography.primaryTextColor,
+        fontFamily: pageStyle.typography.fontFamily
+      } : { padding: 'var(--mm-space-4)' }}
+    >
 
       {/* What: Main content container wrapper for PDF export
           Why: Contains hero and content sections separately for smart pagination */}
