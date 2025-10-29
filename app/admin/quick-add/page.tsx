@@ -205,10 +205,14 @@ export default function QuickAddPage() {
   async function loadPartners() {
     setLoadingPartners(true);
     try {
-      const res = await fetch('/api/partners?limit=100&sortField=name&sortOrder=asc');
+      // WHAT: Load ALL partners without limit
+      // WHY: Partner selector needs complete list for search to work properly
+      // HOW: Remove limit parameter to get all partners
+      const res = await fetch('/api/partners?sortField=name&sortOrder=asc');
       const data = await res.json();
       if (data.success) {
         setPartners(data.partners);
+        console.log(`✅ Loaded ${data.partners.length} partners for Quick Add`);
       }
     } catch (err) {
       console.error('Failed to load partners:', err);
