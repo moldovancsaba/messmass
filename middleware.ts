@@ -9,10 +9,56 @@ import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from 
 import { logRequestEnd, logRateLimitExceeded, logCsrfViolation } from '@/lib/logger';
 import { buildCorsHeaders } from '@/lib/cors';
 
+// WHAT: Check if admin session cookie exists and is valid
+// WHY: Protect ALL admin pages from unauthorized access
+function hasValidAdminSession(request: NextRequest): boolean {
+  const adminSession = request.cookies.get('admin-session');
+  
+  if (!adminSession?.value) {
+    return false;
+  }
+  
+  try {
+    // Decode base64 session token
+    const json = Buffer.from(adminSession.value, 'base64').toString();
+    const tokenData = JSON.parse(json);
+    
+    if (!tokenData?.token || !tokenData?.expiresAt || !tokenData?.userId) {
+      return false;
+    }
+    
+    // Check if token is expired
+    const expiresAt = new Date(tokenData.expiresAt);
+    const now = new Date();
+    
+    if (now > expiresAt) {
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // WHAT: Main middleware function (runs on every request)
 // WHY: Apply security controls before request reaches route handlers
 export async function middleware(request: NextRequest) {
   const startTime = Date.now();
+  const pathname = request.nextUrl.pathname;
+  
+  // WHAT: 0. Check admin authentication (CRITICAL SECURITY)
+  // WHY: Prevent unauthorized access to ALL admin pages
+  // EXCEPTION: /admin/login is public (users need to access it to log in)
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    const isAuthenticated = hasValidAdminSession(request);
+    
+    if (!isAuthenticated) {
+      console.warn(`⚠️  Unauthorized admin access attempt: ${pathname}`);
+      // Redirect to login page
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+  }
   
   // WHAT: 1. Apply rate limiting
   // WHY: Prevent DDoS and brute-force attacks
