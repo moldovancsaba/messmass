@@ -108,7 +108,6 @@ export default function KycVariablesPage() {
         searchPlaceholder="Search variables..."
         actionButtons={[
           { label: "New Variable", onClick: () => setCreateOpen(true), variant: "primary" },
-          { label: "↔️ Open Clicker Manager", onClick: () => { window.location.href = "/admin/variables"; }, variant: "secondary" },
           { label: "⬇️ Export CSV", onClick: () => exportCSV(filtered), variant: "secondary" },
           { label: "⬇️ Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
         ]}

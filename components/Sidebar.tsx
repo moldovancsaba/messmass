@@ -54,6 +54,7 @@ export default function Sidebar() {
         { label: 'Hashtag Manager', path: '/admin/hashtags', icon: '🏷️' },
         { label: 'Category Manager', path: '/admin/categories', icon: '🌍' },
         { label: 'Chart Algorithm Manager', path: '/admin/charts', icon: '📈' },
+        { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: '↔️' },
       ],
     },
     {
