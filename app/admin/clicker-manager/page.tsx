@@ -351,25 +351,34 @@ function GroupForm({
       </div>
 
       <div className="mt-4">
-        <label className="form-label-block">Variables in Group ({form.variables.length})</label>
-        <div className="grid gap-2 mt-2">
+        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Variables in Group ({form.variables.length})</label>
+        <div className="grid gap-2 mt-2" style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+          {form.variables.length === 0 && (
+            <div className="text-center text-gray-500 py-4 text-sm">
+              No variables added yet. Add variables from the list below.
+            </div>
+          )}
           {form.variables.map((varName, index) => {
             const varDef = variables.find((v) => v.name === varName);
             return (
               <div
                 key={varName}
-                className="flex items-center justify-between gap-3 p-2 bg-gray-100 rounded"
+                className="flex items-center justify-between gap-3 p-3 bg-white rounded border border-gray-300"
+                style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
               >
-                <div className="flex items-center gap-2 flex-1">
-                  <span className="text-sm font-mono text-gray-600">#{index + 1}</span>
-                  <span className="font-medium">{varDef?.label || varName}</span>
-                  <code className="variable-ref">{varName}</code>
+                <div className="flex items-center gap-3 flex-1">
+                  <span className="text-sm font-mono text-gray-500" style={{ minWidth: '32px' }}>#{index + 1}</span>
+                  <div className="flex-1">
+                    <span className="font-medium text-gray-900 block">{varDef?.label || varName}</span>
+                    <code className="variable-ref text-xs text-gray-600" style={{ fontSize: '11px', padding: '2px 6px', backgroundColor: '#f3f4f6', marginTop: '4px', display: 'inline-block' }}>{varName}</code>
+                  </div>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   <button
                     className="btn btn-small btn-secondary"
                     onClick={() => moveUp(index)}
                     disabled={index === 0}
+                    style={{ minWidth: '36px', opacity: index === 0 ? 0.5 : 1 }}
                   >
                     ↑
                   </button>
@@ -377,12 +386,14 @@ function GroupForm({
                     className="btn btn-small btn-secondary"
                     onClick={() => moveDown(index)}
                     disabled={index === form.variables.length - 1}
+                    style={{ minWidth: '36px', opacity: index === form.variables.length - 1 ? 0.5 : 1 }}
                   >
                     ↓
                   </button>
                   <button
                     className="btn btn-small btn-danger"
                     onClick={() => removeVariable(varName)}
+                    style={{ minWidth: '36px' }}
                   >
                     ✕
                   </button>
@@ -394,26 +405,28 @@ function GroupForm({
       </div>
 
       <div className="mt-4">
-        <label className="form-label-block">Add Variables</label>
+        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Add Variables</label>
         <input
           type="text"
-          className="form-input mb-2"
+          className="form-input mb-3"
           placeholder="Search variables..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{ padding: '10px 12px', fontSize: '14px' }}
         />
-        <div className="grid gap-2 max-h-300 overflow-y-auto">
+        <div className="grid gap-2 max-h-300 overflow-y-auto" style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
           {availableVars.map((v) => (
             <button
               key={v.name}
-              className="flex items-center justify-between gap-3 p-2 bg-white border rounded hover:bg-gray-50 text-left"
+              className="flex items-center justify-between gap-3 p-3 bg-white border border-gray-300 rounded hover:bg-blue-50 hover:border-blue-400 text-left transition-colors"
               onClick={() => addVariable(v.name)}
+              style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
             >
-              <div>
-                <span className="font-medium">{v.label}</span>
-                <code className="variable-ref ml-2">{v.name}</code>
+              <div className="flex-1">
+                <span className="font-medium text-gray-900 block">{v.label}</span>
+                <code className="variable-ref text-xs text-gray-600" style={{ fontSize: '11px', padding: '2px 6px', backgroundColor: '#f3f4f6' }}>{v.name}</code>
               </div>
-              <span className="text-green-600">+ Add</span>
+              <span className="text-green-600 font-semibold whitespace-nowrap">+ Add</span>
             </button>
           ))}
           {availableVars.length === 0 && (
