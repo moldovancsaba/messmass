@@ -200,24 +200,6 @@ export async function getAllCountries(region?: string): Promise<Country[]> {
 }
 
 /**
- * WHAT: Convert country name to flag emoji (synchronous, uses basic logic)
- * WHY: Support client-side components that can't use async
- * HOW: Uses Unicode regional indicator symbols
- * 
- * @param countryName - Full country name (e.g., "Hungary", "United States")
- * @returns Flag emoji or empty string if not convertible
- * 
- * NOTE: This is a fallback for client components. Server components should use isoToFlag()
- * LIMITATION: Requires country name → code mapping, which we don't have client-side.
- *             Returns empty string for now. Client components should fetch via API if needed.
- */
-export function countryToFlag(countryName: string | null | undefined): string {
-  // TODO: Implement client-side country name → flag mapping if needed
-  // For now, return empty string since this is rarely used
-  return '';
-}
-
-/**
  * WHAT: Clear country cache
  * WHY: Force cache refresh after country updates
  * 

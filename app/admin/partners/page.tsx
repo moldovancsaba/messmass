@@ -14,7 +14,8 @@ import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
-import { countryToFlag } from '@/lib/countryService';
+// TEMP FIX: countryToFlag removed until we implement client-safe version
+// TODO: Fetch country data via API in useEffect instead of direct import
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import styles from './PartnerManager.module.css';
@@ -1140,7 +1141,8 @@ export default function PartnersAdminPage() {
                     <td className={styles.flagCell}>
                       {/* WHAT: Display country flag from SportsDB data */}
                       {/* WHY: Visual identification of partner's country */}
-                      {countryToFlag(partner.sportsDb?.strCountry) || '—'}
+                      {/* TEMP: Removed countryToFlag due to MongoDB import in client component */}
+                      —
                     </td>
                     <td className={styles.logoCell}>
                       {/* WHAT: Display partner logo from ImgBB */}
