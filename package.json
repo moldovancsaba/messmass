@@ -55,6 +55,7 @@
     "cleanup:old-styles": "npx tsx scripts/cleanupOldStyleSystem.ts",
     "migrate:style-fields": "tsx -r dotenv/config scripts/migrateStyleIdToEnhanced.ts dotenv_config_path=.env.local",
     "seed:variables": "tsx -r dotenv/config scripts/seedVariablesFromRegistry.ts dotenv_config_path=.env.local",
+    "seed:visitor-kyc": "node scripts/addVisitorKYCVariables.js",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify"
   },

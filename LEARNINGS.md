@@ -1,5 +1,156 @@
 # MessMass Development Learnings
 
+## 2025-10-29T08:37:46.000Z — Version 8.0.0: Fixed Missing Visitor KYC Variables
+
+**What**: Added 3 missing visitor source variables (`visitQrCode`, `visitShortUrl`, `visitWeb`) to KYC system that were referenced in chart formulas but not registered in `variables_metadata` collection.
+
+**Why**: The "Visitor Sources" pie chart formula referenced `[stats.visitQrCode]`, `[stats.visitShortUrl]`, and `[stats.visitWeb]`, but these variables were not present in the KYC system, causing potential inconsistencies in variable management UI and metadata validation.
+
+**Impact**: Fixed data integrity issue affecting 1 chart (Visitor Sources) and ensured all chart variables are properly registered in KYC.
+
+---
+
+### Problem Analysis
+
+**Chart Algorithm Audit (4 Charts)**:
+1. ✅ **Top Countries** (bar) - All 10 Bitly variables registered in KYC
+2. ✅ **Top Country** (kpi) - Both variables registered in KYC
+3. ✅ **Countries Reached** (kpi) - Variable registered in KYC
+4. ⚠️ **Visitor Sources** (pie) - **3 variables missing from KYC**
+
+**Missing Variables**:
+- `stats.visitQrCode` - QR code scan visits
+- `stats.visitShortUrl` - Bitly short URL clicks
+- `stats.visitWeb` - Direct web visits
+
+**Root Cause**:
+- Variables existed in `project.stats` schema
+- Variables used in chart formulas
+- Variables NOT registered in `variables_metadata` collection
+- Result: No metadata, no validation, missing from admin UI
+
+---
+
+### Solution Implemented
+
+**Script**: `scripts/addVisitorKYCVariables.js` (121 lines)
+
+**Variable Metadata**:
+```javascript
+{
+  name: 'stats.visitQrCode',
+  label: 'QR Code Visits',
+  type: 'number',
+  category: 'visits',
+  visibleInClicker: false,  // Populated by API, not manual clicker
+  editableInManual: true,   // Can edit in Editor
+  isBaseVariable: true,
+  isDerived: false,
+  description: 'Number of visitors who scanned QR code to access event page',
+  order: 100
+}
+// + visitShortUrl (order: 101)
+// + visitWeb (order: 102)
+```
+
+**Key Decisions**:
+1. **`visibleInClicker: false`** - These are API-populated metrics, not manual increment buttons
+2. **`editableInManual: true`** - Admins can still manually adjust if needed
+3. **`isBaseVariable: true`** - System variables, not user-created custom variables
+4. **`category: 'visits'`** - Groups with other visit-related metrics
+
+---
+
+### Execution & Verification
+
+**Run Script**:
+```bash
+npm run seed:visitor-kyc
+```
+
+**Result**:
+```
+✅ Connected to MongoDB
+✅ Added: stats.visitQrCode - "QR Code Visits"
+✅ Added: stats.visitShortUrl - "Short URL Visits"
+✅ Added: stats.visitWeb - "Direct Web Visits"
+
+📊 Summary:
+   Added: 3 variables
+   Skipped: 0 variables (already exist)
+
+🔍 Verification:
+   ✅ stats.visitQrCode
+   ✅ stats.visitShortUrl
+   ✅ stats.visitWeb
+
+✨ Visitor KYC variables registration complete!
+```
+
+**Post-Fix Verification**:
+- Checked all 4 charts (visitor-sources, bitly-top-countries, bitly-top-country, bitly-countries-reached)
+- Extracted 10 unique variables from chart formulas
+- ✅ **10/10 variables found in KYC** (100% coverage)
+- ✅ All chart algorithms validated successfully
+
+---
+
+### Files Created/Modified
+
+**New Files** (1):
+- `scripts/addVisitorKYCVariables.js` (121 lines) - One-time registration script
+
+**Modified Files** (2):
+- `package.json` - Added `seed:visitor-kyc` npm command
+- `LEARNINGS.md` - Documented fix (this entry)
+
+---
+
+### Lessons Learned
+
+**1. Chart Formulas Must Reference Registered Variables**
+- Any variable in `[brackets]` in a formula MUST exist in `variables_metadata`
+- Missing variables = silent failures, inconsistent metadata
+- **Best Practice**: Audit all chart formulas after schema changes
+
+**2. API-Populated vs Manual-Increment Variables**
+- **API-populated** (`visibleInClicker: false`): Bitly analytics, imports, calculations
+- **Manual-increment** (`visibleInClicker: true`): Clicker buttons (female, male, merched)
+- **Both can be** `editableInManual: true` for admin overrides
+
+**3. Category-Based Organization Matters**
+- `category: 'visits'` groups all visit-related metrics
+- Easier to find in admin UI
+- Enables future category-based filtering/grouping
+
+**4. Idempotent Scripts are Essential**
+- Script checks if variable exists before inserting
+- Safe to run multiple times without errors
+- Supports both initial setup and recovery scenarios
+
+**5. Comprehensive Verification After Fixes**
+- Don't just add variables - verify ALL charts use registered variables
+- Extract all formula tokens and cross-check with KYC
+- Create verification scripts for repeatable validation
+
+---
+
+### Future Prevention
+
+**Automated Validation**:
+1. Create `npm run validate:chart-kyc` command
+2. Script extracts all variables from all chart formulas
+3. Cross-references with `variables_metadata` collection
+4. Fails CI/CD if unregistered variables detected
+
+**Schema Evolution Process**:
+1. Add new field to `project.stats` schema
+2. **Immediately** register in KYC via script or admin UI
+3. Create charts/formulas using the registered variable
+4. Never create formulas before registering variables
+
+---
+
 ## 2025-10-28T11:22:00.000Z — Version 7.0.0: Database-First Variable System with Single Reference Paths
 
 **What**: Migrated entire variable system from code-based registry (`lib/variablesRegistry.ts`) to fully database-driven architecture with MongoDB `variables_metadata` collection, implementing Single Reference System using absolute database paths (`stats.female` instead of `female`).
