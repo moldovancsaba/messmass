@@ -307,16 +307,15 @@ export default function UnifiedDataVisualization({
           border-color: var(--mm-color-primary-300);
         }
         
-        /* WHAT: Chart item container with fixed height for consistent alignment
-         * WHY: All charts must have same height regardless of content
-         * HOW: Fixed height with proper overflow handling */
+        /* WHAT: Chart item container that fills available grid cell height
+         * WHY: Charts should fill their grid cell without extra bottom space
+         * HOW: Use height: 100% to fill parent, let grid control sizing */
         .chart-item {
           display: flex;
           flex-direction: column;
           width: 100%;
-          height: 480px;
-          min-height: 480px;
-          max-height: 480px;
+          height: 100%;
+          min-height: 380px;
           max-width: none;
           justify-self: stretch;
           min-width: 0;
