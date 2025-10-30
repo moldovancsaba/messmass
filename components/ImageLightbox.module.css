@@ -1,0 +1,114 @@
+/* WHAT: Styles for full-page image lightbox overlay
+ * WHY: Provide clean, accessible image preview experience
+ * HOW: Fixed overlay with centered image and backdrop */
+
+.lightboxOverlay {
+  /* WHAT: Fixed fullscreen overlay
+     WHY: Cover entire viewport regardless of scroll position */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-8);
+  cursor: pointer; /* WHAT: Indicate clickable area; WHY: Close on overlay click */
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightboxContent {
+  /* WHAT: Container for the image that prevents click-through
+     WHY: Only clicks outside image should close lightbox */
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default; /* WHAT: Don't show pointer on image; WHY: Image shouldn't close lightbox */
+}
+
+.lightboxImage {
+  /* WHAT: Responsive image that fits viewport
+     WHY: Show full image without cropping or distortion */
+  max-width: 100%;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* WHAT: Show entire image without cropping; WHY: User wants to see full detail */
+  border-radius: var(--mm-radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  /* WHAT: Close button in top-right corner
+     WHY: Explicit way to dismiss lightbox, especially on mobile */
+  position: fixed;
+  top: var(--mm-space-6);
+  right: var(--mm-space-6);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mm-gray-900);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all var(--mm-transition-fast);
+  z-index: 10000;
+}
+
+.closeButton:hover {
+  background: var(--mm-white);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+}
+
+/* WHAT: Mobile-specific adjustments
+   WHY: Ensure usability on smaller screens */
+@media (max-width: 768px) {
+  .lightboxOverlay {
+    padding: var(--mm-space-4);
+  }
+  
+  .closeButton {
+    top: var(--mm-space-4);
+    right: var(--mm-space-4);
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}

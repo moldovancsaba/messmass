@@ -586,6 +586,55 @@ Row 2: Gender Distribution | Age Groups
 Row 3: Location | Sources
 ```
 
+## 📄 PDF Export System
+
+### Critical Implementation Rule: Object-Fit Cover Handling
+
+**MANDATORY**: When exporting PDFs with `html2canvas`, images using `object-fit: cover` MUST be converted to `background-image` before capture to preserve cropping.
+
+**Problem**: `html2canvas` captures the full image (e.g., 100x100px) even when CSS crops it with `object-fit: cover` (e.g., to 100x60px center). This causes distortion in PDFs.
+
+**Solution** (implemented in `lib/export/pdf.ts`):
+1. Before capture: Find all `img` elements with `object-fit: cover`
+2. Replace with `div` elements using `background-image` + `background-size: cover`
+3. Capture with `html2canvas` (backgrounds crop correctly)
+4. After capture: Restore original `img` elements
+
+**Code Pattern**:
+```typescript
+// Convert images to background divs before capture
+const imagesToRestore = [];
+const coverImages = element.querySelectorAll('img');
+coverImages.forEach((img) => {
+  if (getComputedStyle(img).objectFit === 'cover') {
+    const placeholder = document.createElement('div');
+    placeholder.style.backgroundImage = `url("${img.src}")`;
+    placeholder.style.backgroundSize = 'cover';
+    placeholder.style.backgroundPosition = 'center';
+    // ... copy all relevant styles
+    parent.replaceChild(placeholder, img);
+    imagesToRestore.push({ parent, img, placeholder });
+  }
+});
+
+// Capture with html2canvas
+await html2canvas(element, options);
+
+// Restore original images
+imagesToRestore.forEach(({ parent, img, placeholder }) => {
+  parent.replaceChild(img, placeholder);
+});
+```
+
+**When to Apply**:
+- ✅ All PDF exports using `html2canvas`
+- ✅ Any component with `object-fit: cover` images
+- ✅ Image charts, hero images, background images
+
+**Key Files**:
+- **`lib/export/pdf.ts`** - PDF export with object-fit handling
+- **`app/styles/components.css`** - `.image-chart-img` uses `object-fit: cover`
+
 ## 🚀 Deployment Architecture
 
 ### Development
