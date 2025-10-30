@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import ColoredCard from './ColoredCard';
+import AdminHero from './AdminHero';
 import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
@@ -16,8 +17,9 @@ import styles from './ChartAlgorithmManager.module.css';
  */
 
 // Props type for the Chart Algorithm Manager component
-// This component doesn't require any props as it manages its own state
-type ChartAlgorithmManagerProps = Record<string, never>;
+interface ChartAlgorithmManagerProps {
+  user: { name: string; role: string } | null;
+}
 
 // Interface for chart configuration form data
 interface ChartConfigFormData {
@@ -56,11 +58,17 @@ const SAMPLE_STATS = {
   eventValuePropositionVisited: 75, eventValuePropositionPurchases: 12
 };
 
-export default function ChartAlgorithmManager({ }: ChartAlgorithmManagerProps) {
+export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerProps) {
   const [configurations, setConfigurations] = useState<ChartConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [editingConfig, setEditingConfig] = useState<ChartConfigFormData | null>(null);
+  
+  /* WHAT: Search and sort state
+     WHY: Match Events management functionality */
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortField, setSortField] = useState<'title' | 'type' | 'status'>('title');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   // WHAT: Dynamic variable state from KYC system
   // WHY: Replace hardcoded AVAILABLE_VARIABLES with live data
@@ -327,6 +335,50 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
   };
 
 
+  /* WHAT: Filter and sort configurations
+     WHY: Implement search and sort like Events management */
+  const filteredAndSortedConfigurations = useMemo(() => {
+    let filtered = configurations;
+    
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(config => 
+        config.title.toLowerCase().includes(term) ||
+        config.chartId.toLowerCase().includes(term) ||
+        config.type.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortField === 'title') {
+        comparison = a.title.localeCompare(b.title);
+      } else if (sortField === 'type') {
+        comparison = a.type.localeCompare(b.type);
+      } else if (sortField === 'status') {
+        comparison = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0);
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    
+    return sorted;
+  }, [configurations, searchTerm, sortField, sortOrder]);
+  
+  /* WHAT: Toggle sort field and order
+     WHY: Click column header to sort */
+  const handleSort = (field: 'title' | 'type' | 'status') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+  
   if (loading) {
     return (
       <ColoredCard>
@@ -337,109 +389,69 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 
   return (
     <div className="chart-algorithm-manager">
-      {/* Header */}
-      <ColoredCard className={styles.headerCard}>
-        <div className={styles.headerFlex}>
-          <h2 className={styles.pageHeading}>Chart Algorithm Manager</h2>
-          <div className={styles.buttonGroup}>
-            <button 
-              className="btn btn-small btn-secondary"
-              onClick={() => validateAllFormulas()}
-              title="Validate all chart formulas"
-            >
-              ✓ Validate All
-            </button>
-            <button 
-              className="btn btn-small btn-primary"
-              onClick={() => startEditing()}
-            >
-              ➕ Add New Chart
-            </button>
-          </div>
-        </div>
-        
-        <div className={`charts-grid ${styles.statsGrid}`}>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.length}</div>
-            <div className="stat-label">Total Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.isActive).length}</div>
-            <div className="stat-label">Active Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.type === 'pie').length}</div>
-            <div className="stat-label">Pie Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.type === 'bar').length}</div>
-            <div className="stat-label">Bar Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.type === 'kpi').length}</div>
-            <div className="stat-label">KPI Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.type === 'text').length}</div>
-            <div className="stat-label">Text Charts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{configurations.filter(c => c.type === 'image').length}</div>
-            <div className="stat-label">Image Charts</div>
-          </div>
-        </div>
-      </ColoredCard>
+      {/* WHAT: AdminHero with search and New Chart button
+          WHY: Match Events management style */}
+      <AdminHero 
+        title="Chart Algorithm Manager"
+        subtitle="Configure chart algorithms, data processing & visualization settings"
+        badges={[
+          { text: `${configurations.length} Total`, variant: 'primary' },
+          { text: `${configurations.filter(c => c.isActive).length} Active`, variant: 'success' },
+          ...(user ? [{ text: user.name, variant: 'secondary' as const }] : [])
+        ]}
+        backLink="/admin"
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search charts by title, ID, or type..."
+        actionButtons={[
+          { label: 'New Chart', onClick: () => startEditing(), variant: 'primary' as const },
+          { label: 'Validate All', onClick: () => validateAllFormulas(), variant: 'secondary' as const },
+        ]}
+      />
 
 
       {/* Chart Configurations List */}
       <ColoredCard>
-          <h3 className={styles.sectionHeading}>Chart Configurations</h3>
           <table className="data-table">
             <thead>
               <tr>
-                <th>Order</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Elements</th>
-                <th>Status</th>
+                <th 
+                  onClick={() => handleSort('title')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Title {sortField === 'title' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  onClick={() => handleSort('type')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Type {sortField === 'type' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  onClick={() => handleSort('status')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Status {sortField === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {configurations.length === 0 ? (
+              {filteredAndSortedConfigurations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className={styles.emptyState}>
+                  <td colSpan={4} className={styles.emptyState}>
                     <div className={styles.emptyIcon}>📊</div>
-                    <div className={styles.emptyTitle}>No Chart Configurations Found</div>
+                    <div className={styles.emptyTitle}>
+                      {searchTerm ? 'No charts match your search' : 'No Chart Configurations Found'}
+                    </div>
                     <div className={styles.emptyDescription}>
-                      Create your first chart configuration to get started.
+                      {searchTerm ? 'Try adjusting your search terms' : 'Create your first chart configuration to get started.'}
                     </div>
                   </td>
                 </tr>
               ) : (
-                configurations.map((config, index) => (
+                filteredAndSortedConfigurations.map((config, index) => (
                   <tr key={config._id}>
-                    <td className="stat-number">
-                      <div className="order-controls">
-                        {config.order}
-                        <div className="order-buttons">
-                          <button
-                            className="btn btn-small btn-secondary"
-                            onClick={() => moveConfiguration(config._id!, 'up')}
-                            disabled={index === 0}
-                          >
-                            ↑
-                          </button>
-                          <button
-                            className="btn btn-small btn-secondary"
-                            onClick={() => moveConfiguration(config._id!, 'down')}
-                            disabled={index === configurations.length - 1}
-                          >
-                            ↓
-                          </button>
-                        </div>
-                      </div>
-                    </td>
                     <td>
                       <div className="chart-title-cell">
                         {config.emoji && <span className="chart-emoji">{config.emoji}</span>}
@@ -457,7 +469,6 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                          config.type === 'image' ? '🖼️ Image' : config.type}
                       </span>
                     </td>
-                    <td className="stat-number">{config.elements.length}</td>
                     <td>
                       <button
                         className={`btn btn-small ${config.isActive ? 'btn-success' : 'btn-secondary'}`}
@@ -474,13 +485,13 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                           className="btn btn-small btn-primary action-button"
                           onClick={() => startEditing(config)}
                         >
-                          ✏️ Edit
+                          Edit
                         </button>
                         <button 
                           className="btn btn-small btn-danger action-button"
                           onClick={() => deleteConfiguration(config._id!, config.title)}
                         >
-                          🗑️ Delete
+                          Delete
                         </button>
                       </div>
                     </td>

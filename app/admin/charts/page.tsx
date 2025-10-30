@@ -68,18 +68,8 @@ if (loading) {
 
   return (
     <div className="page-container">
-      <AdminHero 
-        title="Chart Algorithm Manager"
-        subtitle="Configure chart algorithms, data processing & visualization settings"
-        badges={[
-          { text: `${user?.name}`, variant: 'primary' },
-          { text: user?.role || '', variant: 'secondary' }
-        ]}
-        backLink="/admin"
-      />
-
-      {/* Chart Algorithm Manager Component */}
-      <ChartAlgorithmManager />
+      {/* Chart Algorithm Manager Component with integrated AdminHero */}
+      <ChartAlgorithmManager user={user} />
     </div>
   );
 }
