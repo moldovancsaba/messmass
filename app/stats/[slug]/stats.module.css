@@ -200,13 +200,15 @@
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: var(--mm-space-8);
   justify-items: center;
-  align-items: start;
+  align-items: stretch; /* WHAT: Stretch items to fill grid row height; WHY: Removes empty space at bottom */
 }
 
 .chart-item {
   width: 100%;
   max-width: 500px;
   min-height: 380px;
+  display: flex; /* WHAT: Make chart item flexbox; WHY: Allow child to fill 100% height */
+  flex-direction: column;
 }
 
 .footer {
