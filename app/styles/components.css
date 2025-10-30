@@ -406,59 +406,40 @@ textarea::placeholder {
   margin: 0;
 }
 
-/* WHAT: Image chart container for partner report images
-   WHY: Display reportImage* URLs as full-width responsive images
-   HOW: Uses centralized design tokens only */
+/* WHAT: Image chart container for partner report images - FULL BLEED COVER STYLE
+   WHY: Display images covering entire card space with no header/title
+   HOW: No padding, image fills entire container from edge to edge */
 .image-chart-container {
-  background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
+  position: relative;
+  width: 100%;
+  min-height: 400px;
   border-radius: var(--mm-radius-lg);
   overflow: hidden;
   box-shadow: var(--mm-shadow-sm);
 }
 
-.image-chart-header {
-  padding: var(--mm-space-4) var(--mm-space-6);
-  border-bottom: var(--mm-border-width-sm) solid var(--mm-gray-200);
-}
-
-.image-chart-title {
-  font-size: var(--mm-font-size-xl);
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
-  margin: 0;
-}
-
-.image-chart-subtitle {
-  font-size: var(--mm-font-size-sm);
-  color: var(--mm-gray-500);
-  margin: var(--mm-space-2) 0 0 0;
-}
-
-.image-chart-content {
-  position: relative;
-  width: 100%;
-  min-height: 300px;
-}
-
 .image-chart-wrapper {
   width: 100%;
   height: 100%;
+  min-height: 400px;
   position: relative;
 }
 
 .image-chart-img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  min-height: 400px;
   display: block;
   object-fit: cover;
+  object-position: center;
 }
 
 .image-chart-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  width: 100%;
+  min-height: 400px;
   background: var(--mm-gray-50);
   color: var(--mm-gray-400);
   font-size: var(--mm-font-size-sm);

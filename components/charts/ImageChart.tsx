@@ -16,31 +16,27 @@ export interface ImageChartProps {
 }
 
 export default function ImageChart({ title, imageUrl, subtitle, className = '' }: ImageChartProps) {
+  // WHAT: Pure cover image with no title/header
+  // WHY: User wants full-bleed image display without any text overlay or headers
+  // HOW: Render image directly in container, no header section
   return (
     <div className={`image-chart-container ${className}`}>
-      <div className="image-chart-header">
-        <h3 className="image-chart-title">{title}</h3>
-        {subtitle && <p className="image-chart-subtitle">{subtitle}</p>}
-      </div>
-      
-      <div className="image-chart-content">
-        {imageUrl ? (
-          <div className="image-chart-wrapper">
-            {/* WHAT: Use regular img tag for external ImgBB URLs
-                WHY: Next.js Image requires domain configuration for external URLs
-                HOW: Apply object-fit and responsive sizing via CSS */}
-            <img 
-              src={imageUrl} 
-              alt={title}
-              className="image-chart-img"
-            />
-          </div>
-        ) : (
-          <div className="image-chart-placeholder">
-            <p>No image available</p>
-          </div>
-        )}
-      </div>
+      {imageUrl ? (
+        <div className="image-chart-wrapper">
+          {/* WHAT: Use regular img tag for external ImgBB URLs
+              WHY: Next.js Image requires domain configuration for external URLs
+              HOW: Apply object-fit and responsive sizing via CSS */}
+          <img 
+            src={imageUrl} 
+            alt={title}
+            className="image-chart-img"
+          />
+        </div>
+      ) : (
+        <div className="image-chart-placeholder">
+          <p>No image available</p>
+        </div>
+      )}
     </div>
   );
 }
