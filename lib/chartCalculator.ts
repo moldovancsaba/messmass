@@ -224,8 +224,8 @@ export function calculateChart(
       // WHY: evaluateFormula returns 'NA' for string fields
       // HOW: Check if formula is simple [fieldName] pattern and extract string value
       if (kpiValue === 'NA' && configuration.elements[0].formula) {
-        // Match [FIELDNAME] or stats.fieldName patterns
-        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+        // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
+        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
         if (simpleFieldMatch) {
           const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
           // Convert to camelCase (e.g., reportImage1)
@@ -258,8 +258,8 @@ export function calculateChart(
       // WHY: evaluateFormula returns 'NA' for string fields
       // HOW: Check if formula is simple [fieldName] pattern and extract string value
       if (kpiValue === 'NA' && configuration.elements[0].formula) {
-        // Match [FIELDNAME] or stats.fieldName patterns
-        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+        // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
+        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
         if (simpleFieldMatch) {
           const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
           // Convert to camelCase (e.g., reportText1)

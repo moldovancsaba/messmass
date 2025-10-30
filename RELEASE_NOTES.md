@@ -1,5 +1,42 @@
 # MessMass Release Notes
 
+## [v8.10.0] — 2025-10-30T11:00:00.000Z
+
+### 🔧 Fix Regex Pattern for [stats.fieldName] in Image/Text Charts
+
+**What Changed**
+
+✅ **Regex Pattern Update**
+- Updated regex in `chartCalculator.ts` to match `[stats.fieldName]` pattern
+- Now supports all three formula patterns:
+  - `[reportImage1]` - Uppercase first letter, no prefix
+  - `[stats.reportImage1]` - Brackets with stats prefix
+  - `stats.reportImage1` - Stats prefix without brackets
+- Applied to both image and text chart special handling
+
+**Why**
+
+**Problem:**
+- Image charts showed "NA" when formula was `[stats.reportImage1]`
+- Text charts showed "NA" when formula was `[stats.reportText1]`
+- Previous regex only matched `[FIELDNAME]` or `stats.fieldName` (no brackets+prefix combo)
+
+**Root Cause:**
+The regex pattern `/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/` didn't account for the `[stats.` prefix combination that users were entering in the chart editor.
+
+**Solution:**
+Updated regex to `/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/` which includes optional `stats.` prefix inside brackets: `(?:stats\.)?`
+
+**Files Modified**: 1 file
+- MODIFIED: `lib/chartCalculator.ts` - Updated regex pattern in image and text chart handlers (lines 227, 261)
+
+**Validation**
+- ✅ `[stats.reportImage1]` now extracts image URL correctly
+- ✅ `[stats.reportText1]` now extracts text content correctly
+- ✅ Backward compatible with existing `[reportImage1]` and `stats.reportImage1` patterns
+
+---
+
 ## [v8.9.0] — 2025-10-30T10:47:00.000Z
 
 ### 🖼️ Fix Image and Text Chart Rendering in Partner Reports
