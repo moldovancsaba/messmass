@@ -42,10 +42,10 @@ export default function Sidebar() {
       title: 'Content',
       items: [
         { label: 'Dashboard', path: '/admin', icon: '📊' },
-        { label: 'Manage Projects', path: '/admin/projects', icon: '🍿' },
-        { label: 'Partner Management', path: '/admin/partners', icon: '🤝' },
+        { label: 'Events', path: '/admin/projects', icon: '🍿' },
+        { label: 'Partners', path: '/admin/partners', icon: '🤝' },
         { label: 'Quick Add', path: '/admin/quick-add', icon: '⚡' },
-        { label: 'Hashtag Filter', path: '/admin/filter', icon: '🔍' },
+        { label: 'Filters', path: '/admin/filter', icon: '🔍' },
       ],
     },
     {
