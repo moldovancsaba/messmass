@@ -290,10 +290,18 @@ export async function exportPageWithSmartPagination(
       const canvas = blockCanvases[i];
       const imgData = canvas.toDataURL('image/png', quality);
       
-      // Calculate block dimensions (maintaining aspect ratio for 3-column layout)
+      /* What: Calculate block dimensions preserving original aspect ratio
+         Why: Prevent stretching - scale proportionally to fit width */
       const blockRatio = canvas.width / canvas.height;
-      const blockWidth = contentWidth;
-      const blockHeight = blockWidth / blockRatio;
+      let blockWidth = contentWidth;
+      let blockHeight = blockWidth / blockRatio;
+      
+      /* What: If height exceeds available space, scale down to fit
+         Why: Prevent blocks from being too tall while maintaining aspect ratio */
+      if (blockHeight > availableHeightPerPage) {
+        blockHeight = availableHeightPerPage;
+        blockWidth = blockHeight * blockRatio;
+      }
       
       /* What: Check if block fits on current page
          Why: Move to next page if it doesn't fit */

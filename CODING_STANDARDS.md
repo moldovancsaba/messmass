@@ -20,19 +20,24 @@
 
 **ESLint Rule:** `react/forbid-dom-props` with `style` forbidden
 
-### Image Distortion Is Prohibited
+### Image Distortion (Stretching/Squashing) Is Prohibited
 
-**Rule:** All images MUST use `object-fit: contain` to preserve aspect ratio. Image distortion via `object-fit: cover` is **PROHIBITED**.
+**Rule:** Images MUST preserve their original aspect ratio. Stretching or squashing images is **PROHIBITED**.
+
+**Allowed:** `object-fit: cover` (crops image, preserves aspect ratio)  
+**Prohibited:** Stretching/squashing to force fit (distorts aspect ratio)
 
 **Why:**
 - Maintains image quality and professional appearance
-- Prevents distortion in PDF exports and printed materials
-- Respects original content and aspect ratios
-- Letterboxing (empty space) is preferable to distortion
+- Cropping is acceptable, distortion is not
+- PDF exports must preserve aspect ratios
+- Respects original content proportions
 
-**Global Standard:** Set in `app/styles/components.css` for `.image-chart-img`
+**Global Standard:** 
+- Web: `object-fit: cover` in `app/styles/components.css`
+- PDF Export: Aspect ratio preservation in `lib/export/pdf.ts`
 
-**Exception:** Never. If an image doesn't fit the layout, adjust the layout or choose a different image.
+**Key Principle:** Crop if needed, never distort.
 
 ---
 
