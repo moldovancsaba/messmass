@@ -562,7 +562,7 @@ export function getCalculationSummary(
   chartsWithErrors: number;
   elementsWithErrors: number;
   totalElements: number;
-  chartTypes: { pie: number; bar: number; kpi: number };
+  chartTypes: { pie: number; bar: number; kpi: number; text: number; image: number };
 } {
   const activeCharts = configurations.filter(config => config.isActive).length;
   const chartsWithErrors = results.filter(result => result.hasErrors).length;
@@ -581,10 +581,12 @@ export function getCalculationSummary(
   
   const chartTypes = results.reduce(
     (acc, result) => {
-      acc[result.type]++;
+      if (result.type === 'pie' || result.type === 'bar' || result.type === 'kpi' || result.type === 'text' || result.type === 'image') {
+        acc[result.type]++;
+      }
       return acc;
     },
-    { pie: 0, bar: 0, kpi: 0 }
+    { pie: 0, bar: 0, kpi: 0, text: 0, image: 0 }
   );
   
   return {

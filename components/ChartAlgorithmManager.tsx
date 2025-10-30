@@ -24,7 +24,7 @@ interface ChartConfigFormData {
   _id?: string;
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi';
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Support text/image chart types for partner reports
   order: number;
   isActive: boolean;
   elements: {
@@ -539,10 +539,14 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
   const [selectedVariableCategory, setSelectedVariableCategory] = useState<string>('All');
   const [formulaValidation, setFormulaValidation] = useState<Record<number, { isValid: boolean; error?: string; result?: number | 'NA' }>>({});
   
-  // Get the exact required element count for each chart type
-  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi'): number => {
+  // WHAT: Get the exact required element count for each chart type
+  // WHY: Enforce chart type constraints (text/image have 1 element like KPI)
+  // HOW: Switch on chart type and return expected element count
+  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'): number => {
     switch (type) {
       case 'kpi': return 1;
+      case 'text': return 1; // Text charts display one text variable
+      case 'image': return 1; // Image charts display one image URL
       case 'pie': return 2;
       case 'bar': return 5;
       default: return 1;

@@ -39,6 +39,10 @@ export type AppConfig = {
   footballDataSyncIntervalHours?: number;
   footballDataAutoCreateProjects?: boolean;
   footballDataAutoCreatePartners?: boolean;
+  // ImgBB API integration (server-only)
+  // WHAT: API key for ImgBB image hosting service
+  // WHY: Required for uploading partner report images from Clicker editor
+  imgbbApiKey?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -102,6 +106,8 @@ function initializeConfig(): AppConfig {
     footballDataSyncIntervalHours: getEnv('FOOTBALL_DATA_SYNC_INTERVAL_HOURS') ? Number(getEnv('FOOTBALL_DATA_SYNC_INTERVAL_HOURS')) : 6,
     footballDataAutoCreateProjects: getEnv('FOOTBALL_DATA_AUTO_CREATE_PROJECTS') ? getEnv('FOOTBALL_DATA_AUTO_CREATE_PROJECTS') === 'true' : true,
     footballDataAutoCreatePartners: getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') ? getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') === 'true' : true,
+    // ImgBB API integration
+    imgbbApiKey: getEnv('IMGBB_API_KEY'),
   };
 
   return cachedConfig;

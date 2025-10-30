@@ -348,8 +348,121 @@ textarea::placeholder {
   color: var(--color-gray-800) !important;
   margin: 0 0 var(--space-6) 0;
   line-height: var(--leading-tight);
-  border-bottom: 2px solid #e2e8f0; /* What: subtle divider under headings; Why: improves scanability in dense forms */
-  padding-bottom: 0.5rem;
+}
+
+/* ========================================
+   TEXT & IMAGE CHART COMPONENTS
+======================================== */
+
+/* WHAT: Text chart container for partner report text blocks
+   WHY: Display reportText* variables with consistent styling
+   HOW: Uses centralized design tokens only */
+.text-chart-container {
+  background: var(--mm-white);
+  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.text-chart-header {
+  margin-bottom: var(--mm-space-4);
+  border-bottom: var(--mm-border-width-sm) solid var(--mm-gray-200);
+  padding-bottom: var(--mm-space-3);
+}
+
+.text-chart-title {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+}
+
+.text-chart-subtitle {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  margin: var(--mm-space-2) 0 0 0;
+}
+
+.text-chart-content {
+  min-height: 100px;
+}
+
+.text-chart-text {
+  font-size: var(--mm-font-size-base);
+  line-height: var(--mm-line-height-lg);
+  color: var(--mm-gray-700);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.text-chart-placeholder {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-400);
+  font-style: italic;
+  text-align: center;
+  padding: var(--mm-space-8) 0;
+  margin: 0;
+}
+
+/* WHAT: Image chart container for partner report images
+   WHY: Display reportImage* URLs as full-width responsive images
+   HOW: Uses centralized design tokens only */
+.image-chart-container {
+  background: var(--mm-white);
+  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.image-chart-header {
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-bottom: var(--mm-border-width-sm) solid var(--mm-gray-200);
+}
+
+.image-chart-title {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+}
+
+.image-chart-subtitle {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  margin: var(--mm-space-2) 0 0 0;
+}
+
+.image-chart-content {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+}
+
+.image-chart-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.image-chart-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.image-chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-400);
+  font-size: var(--mm-font-size-sm);
+  font-style: italic;
 }
 
 .section-subtitle {

@@ -41,10 +41,11 @@ export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi'; // Chart type: pie (2 elements), bar (5 elements), kpi (1 element)
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Chart type (added text/image for partner reports)
+  // WHY: text displays reportText* variables as formatted text blocks, image shows reportImage* URLs as full-width images
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
-  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi)
+  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi/text/image)
   
   // Metadata fields with ISO 8601 millisecond precision
   createdAt: string; // ISO 8601: "2025-08-18T10:18:40.123Z"
@@ -142,19 +143,19 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi';
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Added text/image types for partner reports
   emoji?: string; // Chart emoji from configuration
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
   elements: {
     id: string;
     label: string;
-    value: number | 'NA';
+    value: number | string | 'NA'; // WHAT: Support string values for text/image content
     color: string;
     type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for formatting
   }[];
   total?: number | 'NA'; // Total value for bar charts
-  kpiValue?: number | 'NA'; // Single value for KPI charts
+  kpiValue?: number | string | 'NA'; // WHAT: Support string for text/image charts
   hasErrors: boolean; // Whether any element had calculation errors
 }
 

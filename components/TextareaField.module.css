@@ -1,0 +1,79 @@
+/* components/TextareaField.module.css */
+/* WHAT: Styles for multiline textarea field - CENTRALIZED ONLY
+   WHY: Reuse existing design tokens from theme.css and components.css
+   HOW: No hardcoded values, only CSS variables from centralized system */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  width: 100%;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.label {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+}
+
+.saving {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-success);
+  font-weight: var(--mm-font-weight-medium);
+  animation: fadeIn var(--transition-fast);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.textarea {
+  width: 100%;
+  padding: var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  font-family: inherit;
+  color: var(--mm-gray-900);
+  background-color: var(--mm-white);
+  border: var(--mm-border-width-md) solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  resize: vertical;
+  min-height: 80px;
+  transition: all var(--transition-base);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--mm-border-color-focus);
+  background-color: var(--mm-white);
+  box-shadow: 0 0 0 3px var(--mm-color-primary-100);
+}
+
+.textarea:disabled {
+  background-color: var(--mm-gray-50);
+  color: var(--mm-gray-400);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.textarea::placeholder {
+  color: var(--mm-gray-400);
+}
+
+.info {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 16px;
+}
+
+.charCount {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+}

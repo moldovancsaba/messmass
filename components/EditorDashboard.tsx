@@ -5,6 +5,8 @@ import ColoredCard from './ColoredCard';
 import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
+import ImageUploadField from './ImageUploadField';
+import TextareaField from './TextareaField';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -72,6 +74,10 @@ interface Project {
     eventResultVisitor?: number;
     eventValuePropositionVisited?: number;
     eventValuePropositionPurchases?: number;
+    // WHAT: Allow any additional field (string or number) for dynamic variables
+    // WHY: Partner report text (reportText*) and images (reportImage*) store strings
+    // HOW: Index signature allows flexible stats structure managed by variables_metadata
+    [key: string]: number | string | undefined;
   };
   createdAt: string;
   updatedAt: string;
@@ -163,9 +169,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     }
   };
 
-  // Increment/Decrement functions for click-to-increment cards
+  // WHAT: Increment/Decrement functions for click-to-increment cards
+  // WHY: Only works with numeric stats, not text/image fields
+  // HOW: Ensure currentValue is number before arithmetic operations
   const incrementStat = (key: keyof typeof project.stats) => {
-    const currentValue = project.stats[key] ?? 0;
+    const rawValue = project.stats[key];
+    const currentValue = typeof rawValue === 'number' ? rawValue : 0;
     const newStats = {
       ...project.stats,
       [key]: currentValue + 1
@@ -175,7 +184,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   };
 
   const decrementStat = (key: keyof typeof project.stats) => {
-    const currentValue = project.stats[key] ?? 0;
+    const rawValue = project.stats[key];
+    const currentValue = typeof rawValue === 'number' ? rawValue : 0;
     if (currentValue > 0) {
       const newStats = {
         ...project.stats,
@@ -206,6 +216,35 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     const newStats: any = { ...project.stats, [normalized]: Math.max(0, value) };
     setProject(prev => ({ ...prev, stats: newStats }));
     saveProject(newStats);
+  };
+  
+  // WHAT: Save text field (for reportText* variables)
+  // WHY: Partner report text notes need to be persisted as strings
+  // HOW: Store text directly in project.stats without type coercion
+  const saveTextField = (key: string, value: string) => {
+    const normalized = normalizeKey(key);
+    const newStats: any = { ...project.stats, [normalized]: value };
+    setProject(prev => ({ ...prev, stats: newStats }));
+    saveProject(newStats);
+  };
+  
+  // WHAT: Save image URL (for reportImage* variables)
+  // WHY: Uploaded images return ImgBB URLs that need to be stored
+  // HOW: Store URL string in project.stats
+  const saveImageUrl = (key: string, url: string) => {
+    const normalized = normalizeKey(key);
+    const newStats: any = { ...project.stats, [normalized]: url };
+    setProject(prev => ({ ...prev, stats: newStats }));
+    saveProject(newStats);
+  };
+  
+  // WHAT: Get text or image URL from stats
+  // WHY: Text and image fields store strings, not numbers
+  // HOW: Return empty string if undefined
+  const getTextField = (key: string): string => {
+    const normalized = normalizeKey(key);
+    const raw = (project.stats as any)[normalized];
+    return typeof raw === 'string' ? raw : '';
   };
   
   const incrementDynamic = (key: string) => setStat(key, getStat(key) + 1);
@@ -533,7 +572,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               
               return null;
             })
-            .filter((v): v is VariableWithFlags => !!v && !v.derived && v.type !== 'text')
+            .filter((v): v is VariableWithFlags => !!v && !v.derived)
           const filtered = editMode === 'clicker'
             ? items.filter(v => v.flags.visibleInClicker)
             : items.filter(v => v.flags.editableInManual)
@@ -553,6 +592,35 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   // WHY: Variables are stored as stats.female but MongoDB structure is { stats: { female: 120 } }
                   const normalizedName = normalizeKey(v.name);
                   const isRemoteFans = normalizedName === 'remoteFans' || v.name === 'remoteFans';
+                  const isTextField = normalizedName.startsWith('reportText');
+                  const isImageField = normalizedName.startsWith('reportImage');
+                  
+                  // WHAT: Render text input for reportText* variables
+                  // WHY: Multi-line text notes need textarea, not numeric input
+                  if (isTextField) {
+                    return (
+                      <TextareaField
+                        key={v.name}
+                        label={v.label}
+                        value={getTextField(v.name)}
+                        onSave={(text) => saveTextField(v.name, text)}
+                        rows={4}
+                      />
+                    );
+                  }
+                  
+                  // WHAT: Render image upload for reportImage* variables
+                  // WHY: Images need upload UI with preview, not text input
+                  if (isImageField) {
+                    return (
+                      <ImageUploadField
+                        key={v.name}
+                        label={v.label}
+                        value={getTextField(v.name)}
+                        onSave={(url) => saveImageUrl(v.name, url)}
+                      />
+                    );
+                  }
                   
                   return editMode === 'clicker' ? (
                     isRemoteFans ? (

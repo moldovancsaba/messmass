@@ -3,6 +3,8 @@
 import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
+import TextChart from './charts/TextChart';
+import ImageChart from './charts/ImageChart';
 import styles from './DynamicChart.module.css';
 
 interface DynamicChartProps {
@@ -62,6 +64,37 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
       </div>
     </div>
   );
+
+  // WHAT: Handle text and image charts (no data validation needed)
+  // WHY: Text/image charts display content, not numeric calculations
+  // HOW: Render directly without ChartCard wrapper (they have their own styling)
+  if (result.type === 'text') {
+    const textContent = typeof result.kpiValue === 'string' 
+      ? result.kpiValue 
+      : (result.elements[0]?.value as string || '');
+    return (
+      <TextChart
+        title={result.title}
+        content={textContent}
+        subtitle={result.subtitle}
+        className={className}
+      />
+    );
+  }
+  
+  if (result.type === 'image') {
+    const imageUrl = typeof result.kpiValue === 'string'
+      ? result.kpiValue
+      : (result.elements[0]?.value as string || '');
+    return (
+      <ImageChart
+        title={result.title}
+        imageUrl={imageUrl}
+        subtitle={result.subtitle}
+        className={className}
+      />
+    );
+  }
 
   if (result.type === 'pie') {
     return (
@@ -387,8 +420,10 @@ const KPIChart: React.FC<{
   className?: string;
   chartWidth?: number;
 }> = ({ result, className, chartWidth = 1 }) => {
-  // Get the KPI value - either from kpiValue field or from first element
-  let kpiValue: number | 'NA' = 'NA';
+  // WHAT: Get the KPI value - support number, string, or 'NA'
+  // WHY: Text/image charts may have string values
+  // HOW: Keep as union type and handle formatting accordingly
+  let kpiValue: number | string | 'NA' = 'NA';
   
   if (result.kpiValue !== undefined) {
     kpiValue = result.kpiValue;
@@ -399,11 +434,14 @@ const KPIChart: React.FC<{
   // Determine if this is a landscape layout
   const isLandscape = chartWidth === 2;
   
-  // Format KPI value - show 2 decimal places for non-NA values
-  const formatKPIValue = (value: number | 'NA') => {
+  // WHAT: Format KPI value - handle number, string, or NA
+  // WHY: Text/image charts have string values, numeric charts have numbers
+  // HOW: Check type and format accordingly
+  const formatKPIValue = (value: number | string | 'NA') => {
     if (value === 'NA') return 'N/A';
+    if (typeof value === 'string') return value;
     
-    // Format to 2 decimal places
+    // Format numbers to 2 decimal places
     return value.toFixed(2);
   };
   

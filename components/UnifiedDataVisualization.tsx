@@ -89,8 +89,20 @@ export default function UnifiedDataVisualization({
   // Check if chart has valid data to display
   const hasValidData = (result: ChartCalculationResult): boolean => {
     // WHAT: Check if chart has calculable data (not 'NA')
-    // WHY: KPI charts can have 0% (valid), pie charts need sum > 0
-    // HOW: For KPI, check if value is not 'NA'. For pie/bar, check sum > 0
+    // WHY: Different chart types have different validation rules
+    // HOW: Text/image always valid if content exists, KPI valid if not NA, pie/bar need sum > 0
+    
+    // WHAT: Text charts always valid (empty text is still displayable)
+    // WHY: Allow empty text fields to show placeholder message
+    if (result.type === 'text') {
+      return true;
+    }
+    
+    // WHAT: Image charts valid if URL exists
+    // WHY: Empty images show placeholder, but at least chart structure exists
+    if (result.type === 'image') {
+      return true;
+    }
     
     if (result.type === 'kpi') {
       // KPI charts: valid if kpiValue is a number (even 0 is valid)

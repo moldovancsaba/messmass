@@ -14,8 +14,12 @@ export { default as ChartBase } from './ChartBase';
 export { default as VerticalBarChart } from './VerticalBarChart';
 export { default as PieChart } from './PieChart';
 export { default as KPICard } from './KPICard';
+export { default as TextChart } from './TextChart';
+export { default as ImageChart } from './ImageChart';
 
 // Export types for TypeScript consumers
 export type { VerticalBarChartData } from './VerticalBarChart';
 export type { PieChartData } from './PieChart';
 export type { KPICardProps } from './KPICard';
+export type { TextChartProps } from './TextChart';
+export type { ImageChartProps } from './ImageChart';
