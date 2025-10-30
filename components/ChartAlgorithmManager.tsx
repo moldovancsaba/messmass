@@ -379,6 +379,14 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
             <div className="stat-value">{configurations.filter(c => c.type === 'kpi').length}</div>
             <div className="stat-label">KPI Charts</div>
           </div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.type === 'text').length}</div>
+            <div className="stat-label">Text Charts</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-value">{configurations.filter(c => c.type === 'image').length}</div>
+            <div className="stat-label">Image Charts</div>
+          </div>
         </div>
       </ColoredCard>
 
@@ -442,7 +450,11 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                     </td>
                     <td>
                       <span className={`chart-type-badge ${config.type}`}>
-                        {config.type === 'pie' ? '🥧 Pie' : config.type === 'bar' ? '📊 Bar' : '📈 KPI'}
+                        {config.type === 'pie' ? '🥧 Pie' : 
+                         config.type === 'bar' ? '📊 Bar' : 
+                         config.type === 'kpi' ? '📈 KPI' :
+                         config.type === 'text' ? '📝 Text' :
+                         config.type === 'image' ? '🖼️ Image' : config.type}
                       </span>
                     </td>
                     <td className="stat-number">{config.elements.length}</td>
@@ -519,6 +531,8 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
         .chart-type-badge.pie { background: rgba(139, 92, 246, 0.1); color: var(--color-chart-purple); }
         .chart-type-badge.bar { background: rgba(59, 130, 246, 0.1); color: var(--color-chart-blue); }
         .chart-type-badge.kpi { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
+        .chart-type-badge.text { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
+        .chart-type-badge.image { background: rgba(236, 72, 153, 0.1); color: var(--color-chart-pink); }
       `}</style>
     </div>
   );
@@ -756,7 +770,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 className="form-input"
                 value={formData.type}
                 onChange={(e) => {
-                  const newType = e.target.value as 'pie' | 'bar' | 'kpi';
+                  const newType = e.target.value as 'pie' | 'bar' | 'kpi' | 'text' | 'image';
                   const requiredCount = getRequiredElementCount(newType);
                   let newElements = [...formData.elements];
                   
@@ -783,6 +797,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 }}
               >
                 <option value="kpi">KPI Chart (1 element)</option>
+                <option value="text">📝 Text Chart (1 element)</option>
+                <option value="image">🖼️ Image Chart (1 element)</option>
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
               </select>
@@ -810,6 +826,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                     <strong>Element {index + 1}</strong>
                     <div className="element-header-info">
                       {formData.type === 'kpi' && <span className="chart-type-info">📈 KPI Value</span>}
+                      {formData.type === 'text' && <span className="chart-type-info">📝 Text Content</span>}
+                      {formData.type === 'image' && <span className="chart-type-info">🖼️ Image URL</span>}
                       {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
                       {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
                     </div>
@@ -879,6 +897,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
             <div className="element-constraint-info">
               <div className="constraint-badge">
                 {formData.type === 'kpi' && '📈 KPI charts require exactly 1 element'}
+                {formData.type === 'text' && '📝 Text charts require exactly 1 element (use [stats.reportText1-10])'}
+                {formData.type === 'image' && '🖼️ Image charts require exactly 1 element (use [stats.reportImage1-10])'}
                 {formData.type === 'pie' && '🥧 Pie charts require exactly 2 elements'}
                 {formData.type === 'bar' && '📊 Bar charts require exactly 5 elements'}
               </div>
