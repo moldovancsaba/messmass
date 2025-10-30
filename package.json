@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "8.16.0",
+  "version": "8.16.1",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -56,6 +56,7 @@
     "migrate:style-fields": "tsx -r dotenv/config scripts/migrateStyleIdToEnhanced.ts dotenv_config_path=.env.local",
     "seed:variables": "tsx -r dotenv/config scripts/seedVariablesFromRegistry.ts dotenv_config_path=.env.local",
     "seed:visitor-kyc": "node scripts/addVisitorKYCVariables.js",
+    "migrate:show-title": "tsx -r dotenv/config scripts/migrateShowTitleField.ts dotenv_config_path=.env.local",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify"
   },

@@ -170,10 +170,12 @@ export default function UnifiedDataVisualization({
               className={styles.blockCard}
               data-pdf-block="true"
             >
-              {/* Block Title */}
-              <h2 className={styles.blockTitle}>
-                📊 {block.name}
-              </h2>
+              {/* Block Title - Conditional rendering based on showTitle field */}
+              {block.showTitle !== false && (
+                <h2 className={styles.blockTitle}>
+                  {block.name}
+                </h2>
+              )}
 
               {/* Responsive Charts Grid (per-block columns) */}
               <div 

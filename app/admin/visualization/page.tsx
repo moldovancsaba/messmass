@@ -43,7 +43,8 @@ export default function VisualizationPage() {
     name: '',
     charts: [] as BlockChart[],
     order: 0,
-    isActive: true
+    isActive: true,
+    showTitle: true // NEW: Default to showing title
   });
 
   useEffect(() => {
@@ -131,7 +132,8 @@ export default function VisualizationPage() {
           name: '',
           charts: [],
           order: 0,
-          isActive: true
+          isActive: true,
+          showTitle: true // NEW: Default to showing title
         });
         alert('Data block created successfully!');
       } else {
@@ -278,7 +280,8 @@ export default function VisualizationPage() {
       name: '',
       charts: [],
       order: 0,
-      isActive: true
+      isActive: true,
+      showTitle: true // NEW: Default to showing title
     });
   };
 
@@ -737,6 +740,21 @@ export default function VisualizationPage() {
                 </label>
                 <p className="info-note">
                   Inactive blocks will not be displayed on the frontend
+                </p>
+              </div>
+              
+              <div>
+                <label className="flex-row checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={editingBlock.showTitle !== false}
+                    onChange={(e) => setEditingBlock({ ...editingBlock, showTitle: e.target.checked })}
+                    className="checkbox-input"
+                  />
+                  <span className="form-label">Show Title</span>
+                </label>
+                <p className="info-note">
+                  When unchecked, the block title will not be displayed on stat pages
                 </p>
               </div>
             </div>

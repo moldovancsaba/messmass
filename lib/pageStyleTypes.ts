@@ -23,6 +23,7 @@ export interface DataVisualizationBlock {
   charts: BlockChart[];
   order: number;
   isActive: boolean;
+  showTitle?: boolean; // NEW: Controls title visibility on stat pages (default: true)
   createdAt?: string;
   updatedAt?: string;
 }
@@ -59,5 +60,6 @@ export const DEFAULT_DATA_BLOCK: Omit<DataVisualizationBlock, '_id' | 'createdAt
   gridColumns: 3,
   charts: [],
   order: 0,
-  isActive: true
+  isActive: true,
+  showTitle: true // NEW: Default to showing title
 };

@@ -1,5 +1,65 @@
 # MessMass Release Notes
 
+## [v8.16.1] — 2025-10-30T21:10:00.000Z
+
+### ✨ Data Visualization Block Title Control + Emoji Removal
+
+**What Changed**
+
+✅ **Show Title Checkbox**
+- Added `showTitle` field to `DataVisualizationBlock` interface
+- New checkbox in Edit Data Block modal to control title visibility
+- Default value: `true` (titles visible by default)
+- Checkbox appears after the "Active" checkbox in the edit modal
+
+✅ **Emoji Removal**
+- Removed hardcoded 📊 emoji from all block titles
+- Block titles now display only the name text
+- Users can manually add emojis in the block name if desired
+- Consistent rendering in both admin preview and public stat pages
+
+✅ **Database Migration**
+- Created `scripts/migrateShowTitleField.ts` migration script
+- Added `npm run migrate:show-title` command
+- Automatically sets `showTitle: true` for all existing blocks
+- Ensures backward compatibility with existing data
+
+**Files Modified**: 4 files
+- `lib/pageStyleTypes.ts` - Added `showTitle?: boolean` field to interface
+- `app/admin/visualization/page.tsx` - Added checkbox control in edit modal
+- `components/UnifiedDataVisualization.tsx` - Conditional title rendering, removed emoji
+- `package.json` - Version bump to 8.16.1
+
+**Files Created**: 1 file
+- `scripts/migrateShowTitleField.ts` - Database migration script (66 lines)
+
+**Why**
+
+**User Request:**
+- Need ability to hide block titles on stat pages for cleaner layouts
+- Emojis should be optional, not hardcoded
+- More flexible design control for different event types
+
+**Solution:**
+- Added boolean flag with checkbox control in admin UI
+- Removed hardcoded emoji (users add manually if wanted)
+- Migration ensures existing blocks maintain current behavior (titles visible)
+
+**Use Cases:**
+1. **Minimalist Design**: Hide titles for full-bleed chart layouts
+2. **Custom Emojis**: Add different emojis per block (🏆, 🎯, 📈) by editing block name
+3. **Partner Reports**: Toggle titles based on client branding requirements
+4. **Mobile Optimization**: Hide titles on mobile for more chart space
+
+**Validation**
+- ✅ New blocks default to `showTitle: true`
+- ✅ Existing blocks migrated with `showTitle: true`
+- ✅ Checkbox toggles title visibility correctly
+- ✅ No emojis in block titles (admin or frontend)
+- ✅ Backward compatible with all existing data
+
+---
+
 ## [v8.16.0] — 2025-10-30T11:51:00.000Z
 
 ### 🎨 Partner Report Image/Text Charts + Mobile Responsiveness + Hide Empty Charts
