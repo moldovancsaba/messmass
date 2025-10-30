@@ -1,5 +1,221 @@
 # MessMass Development Learnings
 
+## 2025-10-30T11:00:00.000Z — Image/Text Charts Require String Value Extraction, Not Numeric Evaluation
+
+**What**: Fixed image and text charts showing "NA" by adding special handling to extract string values (URLs, text content) directly from stats fields instead of relying on numeric formula evaluation.
+
+**Why**: The formula evaluator (`evaluateFormula`) was designed for numeric calculations and returned 'NA' for string fields like `stats.reportImage1` (URL) and `stats.reportText1` (multi-line text). Additionally, `DynamicChart` filtered all chart elements for positive numbers, which invalidated text/image charts with string values.
+
+**Impact**:
+- ❌ Image charts couldn't display imgbb.com URLs even when stored in database
+- ❌ Text charts couldn't show multi-line content from string fields
+- ❌ Partner reports with logos, photos, or text blocks were broken
+- ✅ Now both text and image charts properly render string content
+
+---
+
+### Problem Analysis
+
+**Symptom**: Image chart on stats page showed "No data available" despite valid imgbb.com URL stored in `stats.reportImage1` field.
+
+**Investigation Steps**:
+1. ✅ Verified URL exists in database: `stats.reportImage1 = "https://i.ibb.co/0pD1S28/7a3b0f50a3e4.jpg"`
+2. ✅ Verified chart configuration: `type: 'image'`, `formula: '[stats.reportImage1]'`
+3. ❌ **FIRST BUG**: `DynamicChart.tsx` filtered `result.elements` for numeric values before checking chart type
+4. ❌ **SECOND BUG**: `chartCalculator.ts` returned 'NA' because `evaluateFormula()` couldn't handle string fields
+5. ❌ **THIRD BUG**: Regex pattern didn't match `[stats.reportImage1]` (brackets + stats prefix combo)
+
+**Root Causes**:
+
+1. **Numeric Validation Applied to String Charts**:
+```typescript
+// ❌ WRONG: Filters out all string values BEFORE checking chart type
+const validElements = result.elements.filter(
+  element => typeof element.value === 'number' && element.value > 0
+);
+if (validElements.length === 0) return <NoData />;
+
+// Then later tries to render text/image charts (but elements are empty)
+if (result.type === 'text') { /* can't render, no elements */ }
+```
+
+2. **Formula Evaluator Not String-Aware**:
+```typescript
+// ❌ WRONG: evaluateFormula designed for math, returns 'NA' for strings
+const value = evaluateFormula('[stats.reportImage1]', stats);
+// value = 'NA' because evaluator expects numbers, not URLs
+```
+
+3. **Incomplete Regex Pattern**:
+```typescript
+// ❌ WRONG: Only matched [FIELDNAME] or stats.fieldName
+const match = formula.match(/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+// Didn't match: [stats.reportImage1] (user's actual input)
+```
+
+---
+
+### Solution Implemented
+
+**Phase 1: Move String Chart Handling Before Numeric Validation (`DynamicChart.tsx`)**
+
+```typescript
+// ✅ CORRECT: Check chart type FIRST, skip numeric validation for strings
+export const DynamicChart = ({ result }) => {
+  if (!result.elements.length) return <NoData />;
+  
+  // WHAT: Handle text/image charts BEFORE numeric validation
+  // WHY: String values (URLs, text) aren't numbers
+  if (result.type === 'text') {
+    return <TextChart content={result.kpiValue} />;
+  }
+  if (result.type === 'image') {
+    return <ImageChart imageUrl={result.kpiValue} />;
+  }
+  
+  // WHAT: Now do numeric validation for pie/bar/kpi
+  const validElements = result.elements.filter(
+    element => typeof element.value === 'number' && element.value > 0
+  );
+  // ... render numeric charts
+};
+```
+
+**Phase 2: Add String Extraction Logic (`chartCalculator.ts`)**
+
+```typescript
+// ✅ CORRECT: Special handling for image charts
+if (configuration.type === 'image') {
+  kpiValue = elements[0].value; // Try numeric evaluation first
+  
+  // WHAT: If numeric eval failed, extract string directly from stats
+  // WHY: Images are URLs (strings), not numbers
+  if (kpiValue === 'NA' && configuration.elements[0].formula) {
+    // Match [FIELDNAME], [stats.fieldName], or stats.fieldName
+    const match = configuration.elements[0].formula.match(
+      /^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/
+    );
+    if (match) {
+      const fieldName = match[1] || match[2];
+      const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+      const fieldValue = stats[camelFieldName];
+      
+      if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+        kpiValue = fieldValue; // Use string value directly
+      }
+    }
+  }
+}
+
+// Same logic for text charts
+else if (configuration.type === 'text') { /* identical pattern */ }
+```
+
+**Phase 3: Fix Regex to Match All Formula Patterns**
+
+```typescript
+// ✅ CORRECT: Updated regex pattern
+/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/
+//       ^^^^^^^^^^^ Added optional stats. prefix inside brackets
+
+// Now matches all three patterns:
+// ✅ [reportImage1]
+// ✅ [stats.reportImage1]
+// ✅ stats.reportImage1
+```
+
+---
+
+### Files Modified
+
+1. **`components/DynamicChart.tsx`**
+   - Moved text/image chart handling BEFORE numeric validation
+   - Removed duplicate text/image rendering blocks
+   - Added comments explaining why string charts skip numeric filtering
+
+2. **`lib/chartCalculator.ts`**
+   - Added special handling for `image` chart type (lines 216-247)
+   - Added special handling for `text` chart type (lines 249-281)
+   - Updated regex pattern to support `[stats.fieldName]` syntax (v8.10.0)
+   - String extraction fallback when `evaluateFormula` returns 'NA'
+
+---
+
+### Lessons Learned
+
+**1. Type-Specific Validation: Don't Apply Numeric Filters to String Data**
+- Check data type requirements BEFORE applying filters
+- Text/image charts have string values, pie/bar/kpi have numeric values
+- Pattern: `if (stringType) { render directly } else { validate numbers }`
+
+**2. Formula Evaluators Need Type Awareness**
+- Generic formula evaluators (math-focused) can't handle all data types
+- Need fallback logic for string fields, dates, booleans, etc.
+- Pattern: Try evaluation → Check type → Extract directly if mismatch
+
+**3. Regex Patterns Must Match User Input Exactly**
+- Users enter formulas via UI, not code (e.g., `[stats.reportImage1]`)
+- Test regex against ALL possible input variations
+- Common patterns: `[FIELD]`, `[stats.field]`, `stats.field`, `{{field}}`
+- Pattern: Support multiple syntax styles for user convenience
+
+**4. String Values in Chart Systems**
+- Not all charts display numbers (images show URLs, text shows content)
+- Database fields can be strings, not just numbers
+- Chart type determines value type: `kpi/bar/pie` → number, `text/image` → string
+- Pattern: `ChartType → ValueType → Validation Strategy`
+
+**5. Ordering Matters: Check Type Before Filtering Data**
+```typescript
+// ❌ WRONG ORDER
+const numbers = data.filter(isNumber); // Loses string values
+if (type === 'text') { render(data); } // Data already filtered!
+
+// ✅ CORRECT ORDER  
+if (type === 'text') { render(data); } // Use raw data
+const numbers = data.filter(isNumber); // Filter only for numeric types
+```
+
+---
+
+### Testing Checklist for String-Value Charts
+
+```
+☐ Image chart with imgbb.com URL
+☐ Image chart with direct image URL (JPEG, PNG)
+☐ Text chart with single-line content
+☐ Text chart with multi-line content (\n characters)
+☐ Formula patterns: [field], [stats.field], stats.field
+☐ Empty/null string values show placeholder
+☐ Numeric charts unaffected by string logic
+☐ No "NA" displayed for valid string data
+```
+
+**Database Field Setup**:
+```typescript
+// Add string variables to variables_metadata
+{
+  name: 'reportImage1',
+  type: 'text',
+  category: 'Partner Reports',
+  visibleInClicker: true
+}
+
+// Store in project.stats
+project.stats.reportImage1 = "https://i.ibb.co/0pD1S28/7a3b0f50a3e4.jpg";
+project.stats.reportText1 = "Line 1\nLine 2\nLine 3";
+```
+
+---
+
+### Related Issues
+
+- **v8.9.0**: Initial fix for text/image chart numeric filtering
+- **v8.10.0**: Regex pattern fix for `[stats.fieldName]` syntax
+- **Future**: Consider generic `ChartValueExtractor` for all non-numeric types
+
+---
+
 ## 2025-10-29T14:15:00.000Z — Remove Hardcoded Patterns: Database as Single Source of Truth
 
 **What**: Found and removed hardcoded currency detection logic in chart rendering code. Replaced with database-driven `type` field that was already added by migration script.
