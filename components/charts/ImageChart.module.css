@@ -1,0 +1,48 @@
+/* WHAT: ImageChart component styles
+ * WHY: Eliminate prohibited inline style props
+ * HOW: Move all styling to CSS module following coding standards */
+
+/* WHAT: Container for image chart - also exported globally
+   WHY: Full-bleed image filling the entire block, detectable by parent components */
+.container {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+}
+
+.image {
+  /* WHAT: Responsive image with clickable cursor
+     WHY: Full coverage within container, click to expand */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform var(--mm-transition-normal);
+}
+
+.image:hover {
+  /* WHAT: Subtle zoom on hover
+     WHY: Visual feedback that image is clickable */
+  transform: scale(1.02);
+}
+
+.placeholder {
+  /* WHAT: Placeholder when no image available
+     WHY: Graceful fallback state */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-500);
+  font-size: var(--mm-text-sm);
+  border-radius: var(--mm-radius-lg);
+}

@@ -1,12 +1,13 @@
-// components/charts/ImageChart.tsx
-// WHAT: Display images from reportImage* variables as full-width responsive images
-// WHY: Partner reports need visual content display with no text overlay
-// HOW: Renders img tags with object-fit cover for consistent presentation + lightbox on click
+/* WHAT: Display images from reportImage* variables as full-width responsive images
+ * WHY: Partner reports need visual content display with no text overlay
+ * HOW: Renders img tags with object-fit cover for consistent presentation + lightbox on click
+ * CRITICAL: NO inline styles - all styling via CSS module per coding standards */
 
 'use client';
 
 import React, { useState } from 'react';
 import ImageLightbox from '@/components/ImageLightbox';
+import styles from './ImageChart.module.css';
 
 export interface ImageChartProps {
   title: string;
@@ -28,23 +29,23 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '' }
     }
   };
   
-  // WHAT: Full-bleed cover image filling entire block with click-to-expand
-  // WHY: User wants image to fill grid block completely, clickable for full view
-  // HOW: Render img directly in container with object-fit cover + lightbox integration
+  /* WHAT: Full-bleed cover image filling entire block with click-to-expand
+     WHY: User wants image to fill grid block completely, clickable for full view
+     HOW: CSS module for all styles, no inline style props
+     NOTE: Uses both module class and global class for UnifiedDataVisualization compatibility */
   return (
     <>
-      <div className={`image-chart-container ${className}`}>
+      <div className={`${styles.container} image-chart-container ${className}`}>
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt={title}
-            className="image-chart-img"
+            className={styles.image}
             onClick={handleImageClick}
-            style={{ cursor: 'pointer' }}
             title="Click to view full size"
           />
         ) : (
-          <div className="image-chart-placeholder">
+          <div className={styles.placeholder}>
             <p>No image available</p>
           </div>
         )}
