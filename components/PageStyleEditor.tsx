@@ -363,6 +363,8 @@ export default function PageStyleEditor({
                     <option value="inter">Inter</option>
                     <option value="roboto">Roboto</option>
                     <option value="poppins">Poppins</option>
+                    <option value="montserrat">Montserrat</option>
+                    <option value="asroma">AS Roma</option>
                   </select>
                 </div>
 
