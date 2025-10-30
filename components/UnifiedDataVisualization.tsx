@@ -211,8 +211,9 @@ export default function UnifiedDataVisualization({
         .udv-grid {
           /* Base: leave to per-block CSS; do not set columns here to avoid collisions */
           justify-items: stretch !important;
-          align-items: start;
+          align-items: stretch !important; /* WHAT: Stretch items to fill row height; WHY: Removes bottom space */
           grid-auto-flow: row !important;
+          grid-auto-rows: 1fr; /* WHAT: Make all rows equal height; WHY: Consistent chart heights */
         }
 
         /* Chart width spans - determines actual grid space occupied */
