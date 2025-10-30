@@ -51,8 +51,9 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '' }
         )}
       </div>
       
-      {/* WHAT: Lightbox for full-page image preview
-          WHY: Show image in full detail when clicked */}
+      {/* WHAT: Lightbox for full-page image preview using React Portal
+          WHY: Portal renders at document.body to escape parent container interference
+          HOW: CSS-only flexbox centering prevents flickering */}
       {imageUrl && (
         <ImageLightbox
           imageUrl={imageUrl}

@@ -1,10 +1,11 @@
-/* WHAT: Full-page image lightbox using SharePopup structure
- * WHY: SharePopup centers perfectly - reuse its proven approach
- * HOW: Same overlay + modal structure, but with image instead of text content */
+/* WHAT: Image lightbox using React Portal for proper full-screen rendering
+ * WHY: Parent page containers create stacking context interference - Portal escapes this
+ * HOW: createPortal renders at document.body + CSS flexbox centering (NO JavaScript positioning) */
 
 'use client';
 
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './ImageLightbox.module.css';
 
 export interface ImageLightboxProps {
@@ -15,8 +16,7 @@ export interface ImageLightboxProps {
 }
 
 export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageLightboxProps) {
-  /* WHAT: Close lightbox on ESC key press
-     WHY: Standard UX pattern for modal dismissal */
+  /* WHAT: Close lightbox on ESC key press */
   useEffect(() => {
     if (!isOpen) return;
     
@@ -30,8 +30,7 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
   
-  /* WHAT: Prevent body scroll when lightbox is open
-     WHY: User should not be able to scroll background content */
+  /* WHAT: Prevent body scroll when lightbox is open */
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -46,23 +45,26 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
   
   if (!isOpen) return null;
   
-  /* WHAT: Use exact same structure as SharePopup (overlay > modal)
-     WHY: SharePopup centers perfectly, so copy its approach exactly */
-  return (
+  /* WHAT: Render lightbox at document.body using React Portal
+     WHY: Escapes parent page's gray background and stacking context
+     HOW: createPortal(JSX, document.body) renders outside React tree */
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Close button - same as SharePopup */}
         <button onClick={onClose} className={styles.closeBtn}>
           ×
         </button>
         
-        {/* Image content - replaces SharePopup's text content */}
+        {/* WHAT: Image with CSS-only centering
+            WHY: Flexbox on modal centers perfectly without JavaScript
+            HOW: max-width/max-height constraints + object-fit contain */}
         <img 
           src={imageUrl} 
           alt={alt}
           className={styles.image}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

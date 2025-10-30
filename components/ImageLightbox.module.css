@@ -53,10 +53,11 @@
   color: #1f2937;
 }
 
-/* WHAT: Image styling - replaces SharePopup's content
-   WHY: Image fills modal container perfectly */
+/* WHAT: Image styling with CSS-only centering
+   WHY: Flexbox on .modal centers image perfectly without JavaScript
+   HOW: max-width/max-height + object-fit contain + auto width/height */
 .image {
-  max-width: 100%;
+  max-width: 95vw;
   max-height: 95vh;
   width: auto;
   height: auto;
