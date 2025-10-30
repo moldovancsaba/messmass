@@ -1,5 +1,52 @@
 # MessMass Release Notes
 
+## [v8.16.0] — 2025-10-30T11:51:00.000Z
+
+### 🎨 Partner Report Image/Text Charts + Mobile Responsiveness + Hide Empty Charts
+
+**What Changed**
+
+✅ **Image/Text Chart Rendering** (v8.9.0, v8.10.0)
+- Fixed image and text charts to display string values (URLs, multi-line text)
+- Added string extraction logic in chartCalculator for text/image types
+- Updated regex to support `[stats.fieldName]` pattern
+
+✅ **Full-Canvas Style** (v8.11.0, v8.12.0, v8.13.0)
+- Text/image charts fill 100% width/height of grid blocks
+- Removed padding/border from unified-chart-item for image/text charts
+- Images display edge-to-edge with border-radius and box-shadow preserved
+
+✅ **Grid Layout Fixes** (v8.14.0)
+- Changed align-items to stretch and added grid-auto-rows: 1fr
+- Removed fixed 480px height from chart-item
+- Charts now fill grid cells completely with no bottom space
+
+✅ **Mobile Responsive** (v8.15.0)
+- Added @media query for max-width: 768px
+- Force 1-column layout on mobile (grid-template-columns: 1fr)
+- All chart widths span 1 column on mobile screens
+
+✅ **Hide Empty Charts** (v8.16.0)
+- Image charts hidden if no URL (empty string)
+- Text charts hidden if no content (empty string)
+- Blocks hidden if all charts are empty
+- TypeScript !! boolean coercion fix
+
+**Files Modified**: 5 files
+- `components/DynamicChart.tsx`
+- `lib/chartCalculator.ts`
+- `app/styles/components.css`
+- `app/stats/[slug]/stats.module.css`
+- `components/UnifiedDataVisualization.tsx`
+
+**Impact**
+- Partner reports now support full-bleed images and text blocks
+- Mobile users see 1 chart per row for better readability
+- Clean UI with no "No image available" or "No content available" placeholders
+- Consistent chart heights across all devices
+
+---
+
 ## [v8.10.0] — 2025-10-30T11:00:00.000Z
 
 ### 🔧 Fix Regex Pattern for [stats.fieldName] in Image/Text Charts
