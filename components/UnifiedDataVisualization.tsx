@@ -98,7 +98,7 @@ export default function UnifiedDataVisualization({
       const textContent = typeof result.kpiValue === 'string' 
         ? result.kpiValue 
         : (result.elements[0]?.value as string || '');
-      return textContent && textContent.trim().length > 0;
+      return !!(textContent && textContent.trim().length > 0);
     }
     
     // WHAT: Image charts valid only if kpiValue has a URL
@@ -107,7 +107,7 @@ export default function UnifiedDataVisualization({
       const imageUrl = typeof result.kpiValue === 'string'
         ? result.kpiValue
         : (result.elements[0]?.value as string || '');
-      return imageUrl && imageUrl.trim().length > 0;
+      return !!(imageUrl && imageUrl.trim().length > 0);
     }
     
     if (result.type === 'kpi') {
