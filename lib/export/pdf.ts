@@ -218,8 +218,6 @@ export async function exportPageWithSmartPagination(
         useCORS: true,
         logging: false,
         allowTaint: true, // Allow cross-origin images
-        imageTimeout: 0, // No timeout for image loading
-        scale: window.devicePixelRatio || 1, // Use device pixel ratio for quality
       });
       blockCanvases.push(canvas);
       console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px (ratio: ${(canvas.width / canvas.height).toFixed(2)})`);

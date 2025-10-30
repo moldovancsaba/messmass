@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Roboto, Poppins } from 'next/font/google';
+import { Inter, Roboto, Poppins, Montserrat } from 'next/font/google';
 import './globals.css';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import { HashtagDataProvider } from '../contexts/HashtagDataProvider';
@@ -24,6 +24,13 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-poppins',
+  display: 'swap',
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-montserrat',
   display: 'swap',
 });
 
@@ -55,12 +62,14 @@ export default async function RootLayout({
     'inter': 'var(--font-inter)',
     'roboto': 'var(--font-roboto)',
     'poppins': 'var(--font-poppins)',
+    'montserrat': 'var(--font-montserrat)',
+    'asroma': '"AS Roma", sans-serif',
   };
   
   return (
     <html 
       lang="en" 
-      className={`${inter.variable} ${roboto.variable} ${poppins.variable}`}
+      className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable}`}
       data-font={selectedFont}
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >

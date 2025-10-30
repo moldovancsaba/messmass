@@ -159,12 +159,14 @@ function hexToRgb(hex: string): string {
 }
 
 /* WHAT: Map font family to CSS font-family value
- * WHY: Apply correct Google Font */
-function getFontFamily(font: 'inter' | 'roboto' | 'poppins'): string {
-  const fontMap = {
+ * WHY: Apply correct Google Font or custom font */
+function getFontFamily(font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma'): string {
+  const fontMap: Record<string, string> = {
     inter: '"Inter", sans-serif',
     roboto: '"Roboto", sans-serif',
-    poppins: '"Poppins", sans-serif'
+    poppins: '"Poppins", sans-serif',
+    montserrat: '"Montserrat", sans-serif',
+    asroma: '"AS Roma", sans-serif'
   };
-  return fontMap[font];
+  return fontMap[font] || fontMap.inter;
 }
