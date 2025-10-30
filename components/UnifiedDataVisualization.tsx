@@ -291,6 +291,13 @@ export default function UnifiedDataVisualization({
           flex-direction: column;
           box-shadow: var(--mm-shadow-sm);
         }
+        /* WHAT: Remove padding for image/text charts
+         * WHY: Images and text should fill the entire card edge-to-edge
+         * HOW: Zero padding when containing image/text chart containers */
+        .unified-chart-item:has(.image-chart-container),
+        .unified-chart-item:has(.text-chart-container) {
+          padding: 0;
+        }
         /* Prevent flex children from expanding beyond container height */
         .unified-chart-item > * { min-height: 0; }
         
