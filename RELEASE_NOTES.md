@@ -1,5 +1,60 @@
 # MessMass Release Notes
 
+## [v8.9.0] — 2025-10-30T10:47:00.000Z
+
+### 🖼️ Fix Image and Text Chart Rendering in Partner Reports
+
+**What Changed**
+
+✅ **DynamicChart Component Fix**
+- Moved text/image chart handling BEFORE numeric validation
+- Skip numeric filtering for string-based chart types (text, image)
+- Text charts now properly display multi-line string content
+- Image charts now properly display URL-based images (imgbb.com)
+- Removed duplicate text/image rendering blocks
+
+✅ **ChartCalculator Special Handling**
+- Added special handling for `image` chart type to extract string URLs from stats fields
+- Added special handling for `text` chart type to extract string content from stats fields
+- Support both `stats.fieldName` and `[FIELDNAME]` formula patterns
+- Extract string values directly when formula references stats fields (e.g., `stats.reportImage1`)
+- Fallback to string extraction when numeric evaluation returns 'NA'
+
+**Why**
+
+**Problem:**
+- Image charts showed "No data available" even with valid imgbb.com URLs in `stats.reportImage1`
+- Text charts couldn't display multi-line content from `stats.reportText1`
+- `evaluateFormula()` in chartCalculator returned 'NA' for string fields (designed for numbers)
+- `DynamicChart` filtered out all non-numeric values, breaking text/image charts
+
+**Root Causes:**
+1. **Numeric validation applied to string charts**: `DynamicChart` filtered `result.elements` for positive numbers, which invalidated text/image charts with string values
+2. **Formula evaluator designed for numbers**: `evaluateFormula()` couldn't handle string fields like URLs and text content
+3. **No string extraction logic**: chartCalculator didn't have fallback logic to extract strings from stats fields
+
+**Solution:**
+1. In `DynamicChart.tsx`: Check chart type first, render text/image immediately without numeric validation
+2. In `chartCalculator.ts`: Add special handling for image/text charts to extract string values from stats fields when numeric evaluation fails
+3. Support both `stats.reportImage1` and `[reportImage1]` patterns via regex matching
+
+**Files Modified**: 2 files
+- MODIFIED: `components/DynamicChart.tsx` - Skip numeric validation for text/image charts
+- MODIFIED: `lib/chartCalculator.ts` - Add string value extraction for image/text chart types
+
+**Validation**
+- ✅ Image charts display imgbb.com URLs correctly
+- ✅ Text charts render multi-line content
+- ✅ Numeric charts (pie/bar/kpi) maintain validation logic
+- ✅ "No data available" only shows for truly missing data
+
+**Use Cases:**
+- Partner reports with brand logos or event photos stored on imgbb.com
+- Text blocks with event descriptions, sponsor messages, or custom notes
+- Image+text layout combinations in custom partner dashboards
+
+---
+
 ## [v8.5.0] — 2025-10-29T14:40:00.000Z
 
 ### 📊 New Variables & Chart: Vent Campaign Tracking + Marketing Opt-in %

@@ -212,8 +212,76 @@ export function calculateChart(
   const remoteFansSynth = (syntheticStats.remoteFans ?? (syntheticStats.indoor + syntheticStats.outdoor));
   syntheticStats.totalFans = remoteFansSynth + (syntheticStats.stadium || 0);
   
+  // Special handling for image charts
+  if (configuration.type === 'image') {
+    // WHAT: Image charts display URLs stored in stats fields (e.g., stats.reportImage1)
+    // WHY: Images are string URLs, not numeric calculations
+    // HOW: Extract string value directly from stats field
+    if (elements.length > 0 && configuration.elements.length > 0) {
+      kpiValue = elements[0].value;
+      
+      // WHAT: If numeric evaluation failed, try direct stats field access for strings
+      // WHY: evaluateFormula returns 'NA' for string fields
+      // HOW: Check if formula is simple [fieldName] pattern and extract string value
+      if (kpiValue === 'NA' && configuration.elements[0].formula) {
+        // Match [FIELDNAME] or stats.fieldName patterns
+        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+        if (simpleFieldMatch) {
+          const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
+          // Convert to camelCase (e.g., reportImage1)
+          const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+          const fieldValue = (stats as any)[camelFieldName];
+          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+            kpiValue = fieldValue as any; // Allow string values for image URLs
+            console.log(`✅ Image URL for "${configuration.title}": ${fieldValue}`);
+          } else {
+            console.warn(`⚠️ Image chart "${configuration.title}" has no valid URL in stats.${camelFieldName}`);
+          }
+        }
+      }
+    } else {
+      kpiValue = 'NA';
+      hasErrors = true;
+      console.error(`❌ Image chart "${configuration.title}" has no elements`);
+    }
+  }
+  
+  // Special handling for text charts
+  else if (configuration.type === 'text') {
+    // WHAT: Text charts display string content from stats fields (e.g., stats.reportText1)
+    // WHY: Text content is strings, not numeric calculations
+    // HOW: Extract string value directly from stats field
+    if (elements.length > 0 && configuration.elements.length > 0) {
+      kpiValue = elements[0].value;
+      
+      // WHAT: If numeric evaluation failed, try direct stats field access for strings
+      // WHY: evaluateFormula returns 'NA' for string fields
+      // HOW: Check if formula is simple [fieldName] pattern and extract string value
+      if (kpiValue === 'NA' && configuration.elements[0].formula) {
+        // Match [FIELDNAME] or stats.fieldName patterns
+        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+        if (simpleFieldMatch) {
+          const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
+          // Convert to camelCase (e.g., reportText1)
+          const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+          const fieldValue = (stats as any)[camelFieldName];
+          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+            kpiValue = fieldValue as any; // Allow string values for text content
+            console.log(`✅ Text content for "${configuration.title}": ${fieldValue.substring(0, 50)}...`);
+          } else {
+            console.warn(`⚠️ Text chart "${configuration.title}" has no valid content in stats.${camelFieldName}`);
+          }
+        }
+      }
+    } else {
+      kpiValue = 'NA';
+      hasErrors = true;
+      console.error(`❌ Text chart "${configuration.title}" has no elements`);
+    }
+  }
+  
   // Special handling for KPI charts
-  if (configuration.type === 'kpi') {
+  else if (configuration.type === 'kpi') {
     // KPI charts should have exactly one element with the calculation formula
     if (elements.length > 0 && configuration.elements.length > 0) {
       kpiValue = elements[0].value;
