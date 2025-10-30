@@ -439,11 +439,12 @@ textarea::placeholder {
   height: 100%;
   min-height: 400px;
   display: block;
-  object-fit: cover;
+  object-fit: contain; /* WHAT: Preserve aspect ratio, no distortion; WHY: Image quality over fill */
   object-position: center;
   position: absolute; /* WHAT: Position absolute to fill container; WHY: Ensures full coverage */
   top: 0;
   left: 0;
+  background: var(--mm-gray-50); /* WHAT: Background for letterboxing; WHY: Better than stretching */
 }
 
 .image-chart-placeholder {

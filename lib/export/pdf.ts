@@ -201,17 +201,6 @@ export async function exportPageWithSmartPagination(
     const originalContentWidth = (contentElement as HTMLElement).style.width;
     (contentElement as HTMLElement).style.width = '1200px';
     
-    /* What: Temporarily change image object-fit for PDF capture
-       Why: Preserve aspect ratio in PDF (contain), not crop (cover) */
-    const imageElements = contentElement.querySelectorAll('.image-chart-img');
-    const originalObjectFits: string[] = [];
-    
-    imageElements.forEach((img) => {
-      const htmlImg = img as HTMLElement;
-      originalObjectFits.push(htmlImg.style.objectFit || '');
-      htmlImg.style.objectFit = 'contain';
-    });
-    
     for (let i = 0; i < blockElements.length; i++) {
       const element = blockElements[i] as HTMLElement;
       console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
@@ -219,19 +208,11 @@ export async function exportPageWithSmartPagination(
       const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
-        scale: 2, // WHAT: Higher DPI for better image quality; WHY: Prevent pixelation
         width: 1200, // Desktop width for 3-column layout
       });
       blockCanvases.push(canvas);
       console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px`);
     }
-    
-    /* What: Restore original object-fit after capture
-       Why: Don't affect page display after export */
-    imageElements.forEach((img, index) => {
-      const htmlImg = img as HTMLElement;
-      htmlImg.style.objectFit = originalObjectFits[index] || 'cover';
-    });
     
     /* What: Restore original width
        Why: Don't affect page display after capture */

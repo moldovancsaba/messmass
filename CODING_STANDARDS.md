@@ -20,6 +20,20 @@
 
 **ESLint Rule:** `react/forbid-dom-props` with `style` forbidden
 
+### Image Distortion Is Prohibited
+
+**Rule:** All images MUST use `object-fit: contain` to preserve aspect ratio. Image distortion via `object-fit: cover` is **PROHIBITED**.
+
+**Why:**
+- Maintains image quality and professional appearance
+- Prevents distortion in PDF exports and printed materials
+- Respects original content and aspect ratios
+- Letterboxing (empty space) is preferable to distortion
+
+**Global Standard:** Set in `app/styles/components.css` for `.image-chart-img`
+
+**Exception:** Never. If an image doesn't fit the layout, adjust the layout or choose a different image.
+
 ---
 
 ## ✅ Correct Styling Approaches
