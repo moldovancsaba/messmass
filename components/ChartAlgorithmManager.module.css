@@ -74,3 +74,67 @@
   max-height: 90vh;
   overflow: auto;
 }
+
+/* WHAT: Sortable table header
+   WHY: Indicate clickable columns for sorting */
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* WHAT: Chart title cell layout */
+.chartTitleCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* WHAT: Chart emoji size */
+.chartEmoji {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+/* WHAT: Chart ID monospace text */
+.chartId {
+  color: var(--color-gray-600);
+  font-family: monospace;
+}
+
+/* WHAT: Chart type badge base */
+.chartTypeBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* WHAT: Pie chart badge color */
+.chartTypeBadge.pie {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--color-chart-purple);
+}
+
+/* WHAT: Bar chart badge color */
+.chartTypeBadge.bar {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-chart-blue);
+}
+
+/* WHAT: KPI chart badge color */
+.chartTypeBadge.kpi {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+/* WHAT: Text chart badge color */
+.chartTypeBadge.text {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+/* WHAT: Image chart badge color */
+.chartTypeBadge.image {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--color-chart-pink);
+}

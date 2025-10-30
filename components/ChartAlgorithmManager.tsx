@@ -416,20 +416,20 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
             <thead>
               <tr>
                 <th 
+                  className={styles.sortableHeader}
                   onClick={() => handleSort('title')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
                 >
                   Title {sortField === 'title' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </th>
                 <th 
+                  className={styles.sortableHeader}
                   onClick={() => handleSort('type')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
                 >
                   Type {sortField === 'type' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </th>
                 <th 
+                  className={styles.sortableHeader}
                   onClick={() => handleSort('status')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
                 >
                   Status {sortField === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </th>
@@ -453,15 +453,15 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                 filteredAndSortedConfigurations.map((config, index) => (
                   <tr key={config._id}>
                     <td>
-                      <div className="chart-title-cell">
-                        {config.emoji && <span className="chart-emoji">{config.emoji}</span>}
+                      <div className={styles.chartTitleCell}>
+                        {config.emoji && <span className={styles.chartEmoji}>{config.emoji}</span>}
                         <strong>{config.title}</strong>
                         <br />
-                        <small className="chart-id">ID: {config.chartId}</small>
+                        <small className={styles.chartId}>ID: {config.chartId}</small>
                       </div>
                     </td>
                     <td>
-                      <span className={`chart-type-badge ${config.type}`}>
+                      <span className={`${styles.chartTypeBadge} ${styles[config.type]}`}>
                         {config.type === 'pie' ? '🥧 Pie' : 
                          config.type === 'bar' ? '📊 Bar' : 
                          config.type === 'kpi' ? '📈 KPI' :
@@ -514,37 +514,6 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
           }}
         />
       )}
-      
-      {/* CSS Styles */}
-      <style jsx>{`
-        .chart-algorithm-manager {
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-        }
-
-        /* Data table scoped styles */
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .data-table th { text-align: left; padding: 0.75rem 1rem; background: var(--color-gray-50); border-bottom: 2px solid var(--color-gray-200); font-weight: 600; color: var(--color-gray-700); vertical-align: middle; }
-        .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-gray-100); color: var(--color-gray-900); vertical-align: middle; }
-.data-table tr:hover td { background: var(--color-gray-50); }
-        .data-table td .btn { display: inline-flex; align-items: center; }
-        .stat-number { font-weight: 600; color: var(--color-gray-900); }
-
-        .order-controls { display: flex; align-items: center; gap: 0.5rem; }
-        .order-buttons { display: flex; flex-direction: column; gap: 0.125rem; }
-
-        .chart-title-cell { display: flex; flex-direction: column; gap: 0.25rem; }
-        .chart-emoji { font-size: 1.25rem; margin-right: 0.5rem; }
-        .chart-id { color: var(--color-gray-600); font-family: monospace; }
-
-        .chart-type-badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 500; }
-        .chart-type-badge.pie { background: rgba(139, 92, 246, 0.1); color: var(--color-chart-purple); }
-        .chart-type-badge.bar { background: rgba(59, 130, 246, 0.1); color: var(--color-chart-blue); }
-        .chart-type-badge.kpi { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
-        .chart-type-badge.text { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
-        .chart-type-badge.image { background: rgba(236, 72, 153, 0.1); color: var(--color-chart-pink); }
-      `}</style>
     </div>
   );
 }
