@@ -1,6 +1,6 @@
-/* WHAT: Full-page image lightbox overlay
- * WHY: Allow users to view images in full detail without leaving the page
- * HOW: Click image to open fullscreen overlay, click outside or ESC to close */
+/* WHAT: Full-page image lightbox using SharePopup structure
+ * WHY: SharePopup centers perfectly - reuse its proven approach
+ * HOW: Same overlay + modal structure, but with image instead of text content */
 
 'use client';
 
@@ -46,35 +46,23 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
   
   if (!isOpen) return null;
   
+  /* WHAT: Use exact same structure as SharePopup (overlay > modal)
+     WHY: SharePopup centers perfectly, so copy its approach exactly */
   return (
-    <div 
-      className={styles.lightboxOverlay}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Image preview"
-    >
-      {/* WHAT: Single image rendered directly in flexbox overlay
-          WHY: No intermediate container = no duplication or positioning issues */}
-      <img 
-        src={imageUrl} 
-        alt={alt}
-        className={styles.lightboxImage}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose();
-        }}
-      />
-      
-      {/* WHAT: Close button for explicit dismissal
-          WHY: Visual affordance for closing, especially on mobile */}
-      <button 
-        className={styles.closeButton}
-        onClick={onClose}
-        aria-label="Close image preview"
-      >
-        ✕
-      </button>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* Close button - same as SharePopup */}
+        <button onClick={onClose} className={styles.closeBtn}>
+          ×
+        </button>
+        
+        {/* Image content - replaces SharePopup's text content */}
+        <img 
+          src={imageUrl} 
+          alt={alt}
+          className={styles.image}
+        />
+      </div>
     </div>
   );
 }

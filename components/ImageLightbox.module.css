@@ -1,79 +1,86 @@
-/* WHAT: Styles for full-page image lightbox overlay
- * WHY: Provide clean, accessible image preview experience
- * HOW: Fixed overlay with centered image and backdrop */
+/* WHAT: Image lightbox styles - based on SharePopup structure
+ * WHY: SharePopup centers perfectly, so reuse its CSS approach
+ * HOW: overlay > modal > image (instead of overlay > modal > text) */
 
-.lightboxOverlay {
-  /* WHAT: Fixed fullscreen overlay - EXACT copy from SharePopup.module.css
-     WHY: SharePopup centers perfectly, so we use identical approach */
+/* WHAT: Fixed overlay - same as SharePopup
+   WHY: Proven centering approach */
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  cursor: pointer;
+  padding: 1rem;
 }
 
-.lightboxImage {
-  /* WHAT: Centered image - simple and stable
-     WHY: No flickering, always perfectly centered */
-  max-width: 90vw;
-  max-height: 90vh;
+/* WHAT: Modal container for image - adapted from SharePopup
+   WHY: Provides centered container that works perfectly */
+.modal {
+  background: transparent;
+  border-radius: 8px;
+  max-width: 95vw;
+  max-height: 95vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* WHAT: Close button - adapted from SharePopup
+   WHY: Proven to work perfectly */
+.closeBtn {
+  position: absolute;
+  top: -3rem;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.closeBtn:hover {
+  background: white;
+  color: #1f2937;
+}
+
+/* WHAT: Image styling - replaces SharePopup's content
+   WHY: Image fills modal container perfectly */
+.image {
+  max-width: 100%;
+  max-height: 95vh;
   width: auto;
   height: auto;
   object-fit: contain;
   display: block;
-  cursor: pointer;
-  pointer-events: auto;
   border-radius: 8px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-.closeButton {
-  /* WHAT: Close button in top-right corner
-     WHY: Explicit way to dismiss lightbox, especially on mobile */
-  position: fixed;
-  top: var(--mm-space-6);
-  right: var(--mm-space-6);
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--mm-gray-900);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all var(--mm-transition-fast);
-  z-index: 10000;
-}
-
-.closeButton:hover {
-  background: var(--mm-white);
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-}
-
-.closeButton:active {
-  transform: scale(0.95);
-}
-
-/* WHAT: Mobile-specific adjustments
-   WHY: Ensure usability on smaller screens */
+/* WHAT: Mobile adjustments
+   WHY: Better UX on small screens */
 @media (max-width: 768px) {
-  .closeButton {
-    top: var(--mm-space-4);
-    right: var(--mm-space-4);
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+  .closeBtn {
+    top: -2.5rem;
+    font-size: 1.5rem;
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .modal {
+    max-width: 98vw;
+    max-height: 98vh;
+  }
+  
+  .image {
+    max-height: 92vh;
   }
 }
