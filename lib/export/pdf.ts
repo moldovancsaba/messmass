@@ -201,9 +201,49 @@ export async function exportPageWithSmartPagination(
     const originalContentWidth = (contentElement as HTMLElement).style.width;
     (contentElement as HTMLElement).style.width = '1200px';
     
+    /* What: Convert object-fit:cover images to background-image for proper PDF capture
+       Why: html2canvas doesn't respect object-fit, causing distortion
+       How: Replace img elements with div backgrounds temporarily */
+    const imagesToRestore: Array<{ parent: HTMLElement; img: HTMLImageElement; placeholder: HTMLDivElement }> = [];
+    
     for (let i = 0; i < blockElements.length; i++) {
       const element = blockElements[i] as HTMLElement;
       console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
+      
+      /* What: Find all images with object-fit:cover in this block
+         Why: These need special handling to prevent distortion */
+      const coverImages = element.querySelectorAll('img');
+      coverImages.forEach((img: Element) => {
+        const imgEl = img as HTMLImageElement;
+        const computedStyle = window.getComputedStyle(imgEl);
+        
+        /* What: Check if image uses object-fit cover
+           Why: Only these need conversion to background-image */
+        if (computedStyle.objectFit === 'cover' && imgEl.src) {
+          const parent = imgEl.parentElement;
+          if (!parent) return;
+          
+          /* What: Create div with image as background
+             Why: html2canvas captures backgrounds correctly with cropping */
+          const placeholder = document.createElement('div');
+          placeholder.style.width = computedStyle.width;
+          placeholder.style.height = computedStyle.height;
+          placeholder.style.minHeight = computedStyle.minHeight;
+          placeholder.style.backgroundImage = `url("${imgEl.src}")`;
+          placeholder.style.backgroundSize = 'cover';
+          placeholder.style.backgroundPosition = computedStyle.objectPosition || 'center';
+          placeholder.style.backgroundRepeat = 'no-repeat';
+          placeholder.style.position = computedStyle.position;
+          placeholder.style.top = computedStyle.top;
+          placeholder.style.left = computedStyle.left;
+          placeholder.style.borderRadius = computedStyle.borderRadius;
+          
+          /* What: Replace image with background div
+             Why: html2canvas will now capture the cropped view */
+          parent.replaceChild(placeholder, imgEl);
+          imagesToRestore.push({ parent, img: imgEl, placeholder });
+        }
+      });
       
       /* What: Temporarily set fixed width for consistent capture
          Why: Ensure all blocks captured at desktop layout width (1200px) */
@@ -233,6 +273,12 @@ export async function exportPageWithSmartPagination(
     /* What: Restore original width
        Why: Don't affect page display after capture */
     (contentElement as HTMLElement).style.width = originalContentWidth;
+    
+    /* What: Restore original images with object-fit:cover
+       Why: Put back the real img elements after PDF capture */
+    imagesToRestore.forEach(({ parent, img, placeholder }) => {
+      parent.replaceChild(img, placeholder);
+    });
 
     /* What: Restore hero to normal state
        Why: Remove PDF capture styling after capture complete */
