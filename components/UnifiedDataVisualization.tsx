@@ -90,18 +90,24 @@ export default function UnifiedDataVisualization({
   const hasValidData = (result: ChartCalculationResult): boolean => {
     // WHAT: Check if chart has calculable data (not 'NA')
     // WHY: Different chart types have different validation rules
-    // HOW: Text/image always valid if content exists, KPI valid if not NA, pie/bar need sum > 0
+    // HOW: Text/image hide if empty, KPI valid if not NA, pie/bar need sum > 0
     
-    // WHAT: Text charts always valid (empty text is still displayable)
-    // WHY: Allow empty text fields to show placeholder message
+    // WHAT: Text charts valid only if kpiValue has content
+    // WHY: Hide "No content available" placeholders
     if (result.type === 'text') {
-      return true;
+      const textContent = typeof result.kpiValue === 'string' 
+        ? result.kpiValue 
+        : (result.elements[0]?.value as string || '');
+      return textContent && textContent.trim().length > 0;
     }
     
-    // WHAT: Image charts valid if URL exists
-    // WHY: Empty images show placeholder, but at least chart structure exists
+    // WHAT: Image charts valid only if kpiValue has a URL
+    // WHY: Hide "No image available" placeholders
     if (result.type === 'image') {
-      return true;
+      const imageUrl = typeof result.kpiValue === 'string'
+        ? result.kpiValue
+        : (result.elements[0]?.value as string || '');
+      return imageUrl && imageUrl.trim().length > 0;
     }
     
     if (result.type === 'kpi') {
@@ -143,6 +149,19 @@ export default function UnifiedDataVisualization({
     <div className={styles.container}>
       {visibleBlocks
         .map((block, blockIndex) => {
+          // WHAT: Check if block has any visible charts before rendering
+          // WHY: Hide blocks with no valid data
+          const visibleCharts = block.charts.filter(chart => {
+            const result = getChartResult(chart.chartId);
+            return result && hasValidData(result);
+          });
+          
+          // WHAT: Skip rendering block if no charts have valid data
+          // WHY: Clean UI without empty blocks
+          if (visibleCharts.length === 0) {
+            return null;
+          }
+          
           // Stable class suffix for CSS and keys: prefer _id, fall back to index
           const idSuffix = block._id || `i${blockIndex}`;
           return (
