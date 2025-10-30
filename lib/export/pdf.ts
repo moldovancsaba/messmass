@@ -211,11 +211,15 @@ export async function exportPageWithSmartPagination(
       const elementHeight = element.offsetHeight;
       console.log(`📐 Element dimensions: ${elementWidth}x${elementHeight}px`);
       
+      /* What: Capture canvas at natural size without forcing dimensions
+         Why: Forcing width/height can cause html2canvas to stretch content
+         Note: html2canvas will use element's actual rendered size */
       const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
-        width: elementWidth,
-        height: elementHeight,
+        allowTaint: true, // Allow cross-origin images
+        imageTimeout: 0, // No timeout for image loading
+        scale: window.devicePixelRatio || 1, // Use device pixel ratio for quality
       });
       blockCanvases.push(canvas);
       console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px (ratio: ${(canvas.width / canvas.height).toFixed(2)})`);
