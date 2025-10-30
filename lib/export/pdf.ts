@@ -205,13 +205,20 @@ export async function exportPageWithSmartPagination(
       const element = blockElements[i] as HTMLElement;
       console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
       
+      /* What: Get actual rendered dimensions of element
+         Why: Need to capture at natural size to avoid stretching */
+      const elementWidth = element.offsetWidth;
+      const elementHeight = element.offsetHeight;
+      console.log(`📐 Element dimensions: ${elementWidth}x${elementHeight}px`);
+      
       const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
-        width: 1200, // Desktop width for 3-column layout
+        width: elementWidth,
+        height: elementHeight,
       });
       blockCanvases.push(canvas);
-      console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px`);
+      console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px (ratio: ${(canvas.width / canvas.height).toFixed(2)})`);
     }
     
     /* What: Restore original width
@@ -293,14 +300,19 @@ export async function exportPageWithSmartPagination(
       /* What: Calculate block dimensions preserving original aspect ratio
          Why: Prevent stretching - scale proportionally to fit width */
       const blockRatio = canvas.width / canvas.height;
+      console.log(`📏 Block ${i + 1} original ratio: ${blockRatio.toFixed(2)} (${canvas.width}x${canvas.height}px)`);
+      
       let blockWidth = contentWidth;
       let blockHeight = blockWidth / blockRatio;
+      console.log(`📄 Initial PDF dimensions: ${blockWidth.toFixed(1)}mm x ${blockHeight.toFixed(1)}mm`);
       
       /* What: If height exceeds available space, scale down to fit
          Why: Prevent blocks from being too tall while maintaining aspect ratio */
       if (blockHeight > availableHeightPerPage) {
+        console.log(`⚠️ Block too tall (${blockHeight.toFixed(1)}mm > ${availableHeightPerPage.toFixed(1)}mm), scaling down...`);
         blockHeight = availableHeightPerPage;
         blockWidth = blockHeight * blockRatio;
+        console.log(`🔽 Scaled dimensions: ${blockWidth.toFixed(1)}mm x ${blockHeight.toFixed(1)}mm (ratio preserved: ${(blockWidth/blockHeight).toFixed(2)})`);
       }
       
       /* What: Check if block fits on current page
