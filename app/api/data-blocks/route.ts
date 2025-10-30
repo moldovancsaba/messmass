@@ -36,7 +36,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, gridColumns, charts, order, isActive } = body;
+    const { name, gridColumns, charts, order, isActive, showTitle } = body;
 
     if (!name || !gridColumns) {
       return NextResponse.json(
@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       charts: charts || [],
       order: order || 0,
       isActive: isActive !== false, // Default to true
+      showTitle: showTitle !== false, // NEW: Default to true
       createdAt: now,
       updatedAt: now
     };
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { _id, name, gridColumns, charts, order, isActive } = body;
+    const { _id, name, gridColumns, charts, order, isActive, showTitle } = body;
 
     if (!_id || !name || !gridColumns) {
       return NextResponse.json(
@@ -103,6 +104,7 @@ export async function PUT(request: NextRequest) {
       charts: charts || [],
       order: order || 0,
       isActive: isActive !== false,
+      showTitle: showTitle !== false, // NEW: Default to true
       updatedAt: new Date().toISOString()
     };
 
