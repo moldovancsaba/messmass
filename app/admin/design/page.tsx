@@ -300,14 +300,14 @@ export default function AdminDesignPage() {
           </p>
           
           <div className="flex gap-4 mb-6 flex-wrap">
-            {(['inter', 'roboto', 'poppins'] as const).map((font) => (
+            {(['inter', 'roboto', 'poppins', 'montserrat', 'asroma'] as const).map((font) => (
               <button
                 key={font}
                 onClick={() => saveFont(font)}
                 disabled={fontLoading}
                 className={`btn ${selectedFont === font ? 'btn-primary' : 'btn-secondary'}`}
               >
-                {font.charAt(0).toUpperCase() + font.slice(1)}
+                {font === 'asroma' ? 'AS Roma' : font.charAt(0).toUpperCase() + font.slice(1)}
                 {selectedFont === font && ' ✓'}
               </button>
             ))}

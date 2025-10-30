@@ -205,20 +205,27 @@ export async function exportPageWithSmartPagination(
       const element = blockElements[i] as HTMLElement;
       console.log(`📸 Capturing block ${i + 1}/${blockElements.length}...`);
       
-      /* What: Get actual rendered dimensions of element
-         Why: Need to capture at natural size to avoid stretching */
+      /* What: Temporarily set fixed width for consistent capture
+         Why: Ensure all blocks captured at desktop layout width (1200px) */
+      const originalWidth = (element as HTMLElement).style.width;
+      (element as HTMLElement).style.width = '1200px';
+      
       const elementWidth = element.offsetWidth;
       const elementHeight = element.offsetHeight;
       console.log(`📐 Element dimensions: ${elementWidth}x${elementHeight}px`);
       
-      /* What: Capture canvas at natural size without forcing dimensions
-         Why: Forcing width/height can cause html2canvas to stretch content
-         Note: html2canvas will use element's actual rendered size */
+      /* What: Capture canvas at 1200px width for consistent desktop layout
+         Why: Maintains 3-column grid layout in PDF, prevents stretching */
       const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
-        allowTaint: true, // Allow cross-origin images
+        allowTaint: true,
+        windowWidth: 1200, // Desktop viewport width
       });
+      
+      /* What: Restore original width
+         Why: Don't affect page display after capture */
+      (element as HTMLElement).style.width = originalWidth;
       blockCanvases.push(canvas);
       console.log(`✅ Block ${i + 1} captured: ${canvas.width}x${canvas.height}px (ratio: ${(canvas.width / canvas.height).toFixed(2)})`);
     }
