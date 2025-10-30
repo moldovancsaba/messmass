@@ -30,38 +30,29 @@
 }
 
 .lightboxContent {
-  /* WHAT: Container for the image that prevents click-through
-     WHY: Only clicks outside image should close lightbox */
-  max-width: 95vw;
-  max-height: 95vh;
+  /* WHAT: Centered container for image
+     WHY: Always center image vertically and horizontally */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: default; /* WHAT: Don't show pointer on image; WHY: Image shouldn't close lightbox */
 }
 
 .lightboxImage {
-  /* WHAT: Responsive image that fits viewport
-     WHY: Show full image without cropping or distortion */
-  max-width: 100%;
-  max-height: 95vh;
+  /* WHAT: Responsive image that fits viewport without layout shifts
+     WHY: Show full image without cropping, distortion, or flashing */
+  max-width: 90vw; /* WHAT: Limit to viewport width; WHY: Prevent overflow and flashing */
+  max-height: 90vh; /* WHAT: Limit to viewport height; WHY: Keep image fully visible */
   width: auto;
   height: auto;
   object-fit: contain; /* WHAT: Show entire image without cropping; WHY: User wants to see full detail */
   border-radius: var(--mm-radius-lg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: scaleIn 0.2s ease-out;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  display: block; /* WHAT: Prevent inline spacing issues; WHY: Eliminates layout shifts */
+  cursor: pointer; /* WHAT: Indicate image is clickable; WHY: Allow closing by clicking image */
 }
 
 .closeButton {

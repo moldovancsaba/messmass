@@ -54,16 +54,14 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
       aria-modal="true"
       aria-label="Image preview"
     >
-      {/* WHAT: Image container that doesn't trigger overlay click
-          WHY: Only clicks outside image should close lightbox */}
-      <div 
-        className={styles.lightboxContent}
-        onClick={(e) => e.stopPropagation()}
-      >
+      {/* WHAT: Image container centered in viewport
+          WHY: Always center image regardless of size */}
+      <div className={styles.lightboxContent}>
         <img 
           src={imageUrl} 
           alt={alt}
           className={styles.lightboxImage}
+          onClick={onClose}
         />
       </div>
       
