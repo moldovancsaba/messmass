@@ -411,27 +411,34 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 
 
       {/* Chart Configurations List */}
-      <ColoredCard>
-          <table className="data-table">
+      <div className="projects-table-container">
+        <div className="table-overflow-hidden">
+          <table className="projects-table table-full-width table-inherit-radius">
             <thead>
               <tr>
-                <th 
-                  className={styles.sortableHeader}
-                  onClick={() => handleSort('title')}
-                >
-                  Title {sortField === 'title' && (sortOrder === 'asc' ? '↑' : '↓')}
+                <th onClick={() => handleSort('title')} className="sortable-th">
+                  Title
+                  {sortField === 'title' && (
+                    <span className="sort-indicator">
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
                 </th>
-                <th 
-                  className={styles.sortableHeader}
-                  onClick={() => handleSort('type')}
-                >
-                  Type {sortField === 'type' && (sortOrder === 'asc' ? '↑' : '↓')}
+                <th onClick={() => handleSort('type')} className="sortable-th">
+                  Type
+                  {sortField === 'type' && (
+                    <span className="sort-indicator">
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
                 </th>
-                <th 
-                  className={styles.sortableHeader}
-                  onClick={() => handleSort('status')}
-                >
-                  Status {sortField === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
+                <th onClick={() => handleSort('status')} className="sortable-th">
+                  Status
+                  {sortField === 'status' && (
+                    <span className="sort-indicator">
+                      {sortOrder === 'asc' ? '▲' : '▼'}
+                    </span>
+                  )}
                 </th>
                 <th>Actions</th>
               </tr>
@@ -500,7 +507,8 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
               )}
             </tbody>
           </table>
-      </ColoredCard>
+        </div>
+      </div>
 
       {/* Chart Configuration Editor Modal */}
       {showEditor && editingConfig && (
