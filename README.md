@@ -108,8 +108,8 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 | **DATABASE_FIELD_NAMING.md** | Naming conventions for database fields and variables |
 | **HASHTAG_SYSTEM.md** | Unified hashtag system with category colors |
 | **BITLY_INTEGRATION_GUIDE.md** | Bitly API integration, analytics, many-to-many associations |
-| **AUTHENTICATION_AND_ACCESS.md** | Admin auth, session management, zero-trust access |
-| **ADMIN_LAYOUT_SYSTEM.md** | Admin navigation, sidebar, responsive layout patterns |
+|| **AUTHENTICATION_AND_ACCESS.md** | **Complete authentication system**: Admin auth, page passwords, security layers, audit (v8.16.0 - consolidated) |
+|| **ADMIN_LAYOUT_SYSTEM.md** | Admin navigation, sidebar, responsive layout patterns |
 | **CARD_SYSTEM.md** | ColoredCard component API and usage patterns |
 | **NOTIFICATION_INTEGRATION_GUIDE.md** | Multi-user notification system implementation |
 
