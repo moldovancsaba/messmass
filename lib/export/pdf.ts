@@ -215,12 +215,12 @@ export async function exportPageWithSmartPagination(
       console.log(`📐 Element dimensions: ${elementWidth}x${elementHeight}px`);
       
       /* What: Capture canvas at 1200px width for consistent desktop layout
-         Why: Maintains 3-column grid layout in PDF, prevents stretching */
+         Why: Maintains 3-column grid layout in PDF, prevents stretching
+         Note: Element width is set to 1200px before capture to ensure desktop layout */
       const canvas = await html2canvas(element, {
         useCORS: true,
         logging: false,
         allowTaint: true,
-        windowWidth: 1200, // Desktop viewport width
       });
       
       /* What: Restore original width

@@ -15,8 +15,8 @@ import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
 export default function AdminDesignPage() {
   /* WHAT: Typography font selection state
-   * WHY: Allow admin to switch between Inter, Roboto, and Poppins system-wide */
-  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins'>('inter');
+   * WHY: Allow admin to switch between Inter, Roboto, Poppins, Montserrat, and AS Roma fonts system-wide */
+  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma'>('inter');
   const [fontLoading, setFontLoading] = useState(false);
   
   /* WHAT: Active tab state for organizing content
@@ -73,7 +73,7 @@ export default function AdminDesignPage() {
     }
   };
   
-  const saveFont = async (font: 'inter' | 'roboto' | 'poppins') => {
+  const saveFont = async (font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma') => {
     setFontLoading(true);
     try {
       const data = await apiPut('/api/admin/ui-settings', { fontFamily: font });
