@@ -354,47 +354,58 @@ textarea::placeholder {
    TEXT & IMAGE CHART COMPONENTS
 ======================================== */
 
-/* WHAT: Text chart container for partner report text blocks
-   WHY: Display reportText* variables with consistent styling
-   HOW: Uses centralized design tokens only */
+/* WHAT: Text chart container - FULL CANVAS STYLE
+   WHY: Fill entire grid block with text content, no padding/borders
+   HOW: Remove padding, make text fill 100% width/height like image canvas */
 .text-chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
   background: var(--mm-white);
-  border: var(--mm-border-width-sm) solid var(--mm-border-color-default);
   border-radius: var(--mm-radius-lg);
-  padding: var(--mm-space-6);
+  overflow: hidden;
   box-shadow: var(--mm-shadow-sm);
+  display: flex;
+  flex-direction: column;
 }
 
 .text-chart-header {
-  margin-bottom: var(--mm-space-4);
-  border-bottom: var(--mm-border-width-sm) solid var(--mm-gray-200);
-  padding-bottom: var(--mm-space-3);
+  /* Hidden - no header in canvas mode */
+  display: none;
 }
 
 .text-chart-title {
-  font-size: var(--mm-font-size-xl);
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
-  margin: 0;
+  /* Hidden - no title in canvas mode */
+  display: none;
 }
 
 .text-chart-subtitle {
-  font-size: var(--mm-font-size-sm);
-  color: var(--mm-gray-500);
-  margin: var(--mm-space-2) 0 0 0;
+  /* Hidden - no subtitle in canvas mode */
+  display: none;
 }
 
 .text-chart-content {
-  min-height: 100px;
+  /* WHAT: Fill entire available space
+     WHY: Text should take 100% of grid block like images do */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-6);
+  width: 100%;
+  height: 100%;
 }
 
 .text-chart-text {
-  font-size: var(--mm-font-size-base);
-  line-height: var(--mm-line-height-lg);
-  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-lg);
+  line-height: var(--mm-line-height-relaxed);
+  color: var(--mm-gray-900);
   white-space: pre-wrap;
   word-wrap: break-word;
   margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .text-chart-placeholder {
@@ -402,16 +413,16 @@ textarea::placeholder {
   color: var(--mm-gray-400);
   font-style: italic;
   text-align: center;
-  padding: var(--mm-space-8) 0;
   margin: 0;
 }
 
-/* WHAT: Image chart container for partner report images - FULL BLEED COVER STYLE
-   WHY: Display images covering entire card space with no header/title
-   HOW: No padding, image fills entire container from edge to edge */
+/* WHAT: Image chart container - FULL CANVAS STYLE
+   WHY: Display images covering entire grid block with no header/title
+   HOW: Image fills 100% width/height from edge to edge */
 .image-chart-container {
   position: relative;
   width: 100%;
+  height: 100%;
   min-height: 400px;
   border-radius: var(--mm-radius-lg);
   overflow: hidden;
@@ -439,6 +450,7 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 100%;
   min-height: 400px;
   background: var(--mm-gray-50);
   color: var(--mm-gray-400);
