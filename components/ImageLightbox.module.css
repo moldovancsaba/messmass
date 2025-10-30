@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--mm-space-8);
+  padding: 0; /* WHAT: No padding; WHY: Flexbox handles centering */
   cursor: pointer; /* WHAT: Indicate clickable area; WHY: Close on overlay click */
   animation: fadeIn 0.2s ease-out;
 }
@@ -31,21 +31,20 @@
 
 .lightboxContent {
   /* WHAT: Centered container for image
-     WHY: Always center image vertically and horizontally */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+     WHY: Flexbox child - naturally centered by parent */
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none; /* WHAT: Let clicks pass through to overlay; WHY: Enable click-outside-to-close */
+  max-width: 90vw;
+  max-height: 90vh;
 }
 
 .lightboxImage {
   /* WHAT: Responsive image that fits viewport without layout shifts
      WHY: Show full image without cropping, distortion, or flashing */
-  max-width: 90vw; /* WHAT: Limit to viewport width; WHY: Prevent overflow and flashing */
-  max-height: 90vh; /* WHAT: Limit to viewport height; WHY: Keep image fully visible */
+  max-width: 100%; /* WHAT: Fill container; WHY: Parent already limits to 90vw */
+  max-height: 100%; /* WHAT: Fill container; WHY: Parent already limits to 90vh */
   width: auto;
   height: auto;
   object-fit: contain; /* WHAT: Show entire image without cropping; WHY: User wants to see full detail */
@@ -53,6 +52,7 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   display: block; /* WHAT: Prevent inline spacing issues; WHY: Eliminates layout shifts */
   cursor: pointer; /* WHAT: Indicate image is clickable; WHY: Allow closing by clicking image */
+  pointer-events: auto; /* WHAT: Re-enable pointer events on image; WHY: Allow clicking image to close */
 }
 
 .closeButton {
@@ -91,10 +91,6 @@
 /* WHAT: Mobile-specific adjustments
    WHY: Ensure usability on smaller screens */
 @media (max-width: 768px) {
-  .lightboxOverlay {
-    padding: var(--mm-space-4);
-  }
-  
   .closeButton {
     top: var(--mm-space-4);
     right: var(--mm-space-4);
