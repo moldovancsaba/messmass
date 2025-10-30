@@ -390,6 +390,26 @@ export default function UnifiedDataVisualization({
           padding: 0.25rem 0;
           font-size: 0.875rem;
         }
+        
+        /* WHAT: Mobile responsive - force 1 column layout
+         * WHY: Each chart should take full width on mobile
+         * HOW: Override grid columns to single column below 768px */
+        @media (max-width: 768px) {
+          .udv-grid {
+            grid-template-columns: 1fr !important;
+          }
+          
+          /* WHAT: Force all chart widths to span 1 on mobile
+           * WHY: Prevent charts from trying to span multiple columns */
+          .chart-width-1,
+          .chart-width-2,
+          .chart-width-3,
+          .chart-width-4,
+          .chart-width-5,
+          .chart-width-6 {
+            grid-column: span 1 !important;
+          }
+        }
       `}</style>
     </div>
   );
