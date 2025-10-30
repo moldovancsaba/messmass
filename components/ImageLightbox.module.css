@@ -18,12 +18,6 @@
   cursor: pointer;
 }
 
-.lightboxContent {
-  /* WHAT: Prevent clicks on this div from closing
-     WHY: Only clicks outside image should close */
-  pointer-events: none;
-}
-
 .lightboxImage {
   /* WHAT: Centered image - simple and stable
      WHY: No flickering, always perfectly centered */

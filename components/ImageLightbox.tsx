@@ -54,16 +54,17 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
       aria-modal="true"
       aria-label="Image preview"
     >
-      {/* WHAT: Image container centered in viewport
-          WHY: Always center image regardless of size */}
-      <div className={styles.lightboxContent}>
-        <img 
-          src={imageUrl} 
-          alt={alt}
-          className={styles.lightboxImage}
-          onClick={onClose}
-        />
-      </div>
+      {/* WHAT: Single image rendered directly in flexbox overlay
+          WHY: No intermediate container = no duplication or positioning issues */}
+      <img 
+        src={imageUrl} 
+        alt={alt}
+        className={styles.lightboxImage}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      />
       
       {/* WHAT: Close button for explicit dismissal
           WHY: Visual affordance for closing, especially on mobile */}
