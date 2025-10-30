@@ -30,6 +30,39 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     );
   }
 
+  // WHAT: Handle text and image charts FIRST (skip numeric validation)
+  // WHY: Text/image values are strings (URLs, text), not numbers
+  // HOW: Check chart type before numeric validation
+  if (result.type === 'text') {
+    const textContent = typeof result.kpiValue === 'string' 
+      ? result.kpiValue 
+      : (result.elements[0]?.value as string || '');
+    return (
+      <TextChart
+        title={result.title}
+        content={textContent}
+        subtitle={result.subtitle}
+        className={className}
+      />
+    );
+  }
+  
+  if (result.type === 'image') {
+    const imageUrl = typeof result.kpiValue === 'string'
+      ? result.kpiValue
+      : (result.elements[0]?.value as string || '');
+    return (
+      <ImageChart
+        title={result.title}
+        imageUrl={imageUrl}
+        subtitle={result.subtitle}
+        className={className}
+      />
+    );
+  }
+
+  // WHAT: Numeric validation only for pie/bar/kpi charts
+  // WHY: These chart types require numeric values for calculations
   // Filter out NA values and zero/empty entries, then calculate totals
   const validElements = result.elements.filter(
     element => typeof element.value === 'number' && (element.value as number) > 0
@@ -64,37 +97,6 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
       </div>
     </div>
   );
-
-  // WHAT: Handle text and image charts (no data validation needed)
-  // WHY: Text/image charts display content, not numeric calculations
-  // HOW: Render directly without ChartCard wrapper (they have their own styling)
-  if (result.type === 'text') {
-    const textContent = typeof result.kpiValue === 'string' 
-      ? result.kpiValue 
-      : (result.elements[0]?.value as string || '');
-    return (
-      <TextChart
-        title={result.title}
-        content={textContent}
-        subtitle={result.subtitle}
-        className={className}
-      />
-    );
-  }
-  
-  if (result.type === 'image') {
-    const imageUrl = typeof result.kpiValue === 'string'
-      ? result.kpiValue
-      : (result.elements[0]?.value as string || '');
-    return (
-      <ImageChart
-        title={result.title}
-        imageUrl={imageUrl}
-        subtitle={result.subtitle}
-        className={className}
-      />
-    );
-  }
 
   if (result.type === 'pie') {
     return (
