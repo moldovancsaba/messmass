@@ -483,10 +483,9 @@ const ValueChart: React.FC<{
   const validElements = result.elements.filter(element => typeof element.value === 'number');
   const maxValue = Math.max(...validElements.map(element => element.value as number));
   
-  // WHAT: VALUE chart is always 2 units, but internally behaves as TWO 1-unit charts
-  // WHY: KPI part must match standalone 1-unit KPI, bars must match 1-unit bar chart
-  // HOW: Use portrait sizing (1-unit) for both sides, NOT landscape sizing
-  const isLandscape = false; // Force portrait sizing for both KPI and bars
+  // WHAT: VALUE chart returns TWO separate components - no wrapper!
+  // WHY: Each must be an independent grid item with exact 1-unit dimensions
+  // HOW: Return React fragment with KPI chart + Bar chart as siblings
 
   // If no valid data, show message
   if (validElements.length === 0 || maxValue === 0) {
@@ -582,69 +581,62 @@ const ValueChart: React.FC<{
   const labelSize = '1.1rem';  // Portrait = 1-unit KPI size
   const padding = '2rem';      // Portrait = 1-unit KPI size
 
-  // WHAT: VALUE chart is ALWAYS rendered as two 1-unit charts side-by-side
-  // WHY: Ensures KPI matches standalone KPI, bars match standalone bars
-  // HOW: Use landscapeLayout container (flex with gap) but portrait chart sizing
+  // WHAT: Return TWO separate components as React fragment
+  // WHY: Parent grid places them as two independent 1-unit items
+  // HOW: Fragment makes children direct grid items, no wrapper interference
   return (
-    <div className={`${className} ${styles.landscapeLayout}`}>
-        {/* KPI Total value display on the left - IDENTICAL to standalone 1-unit KPI */}
-        {result.total !== undefined && (
-          <div className={styles.valueKpiSide}>
-            <div className={styles.kpiContainer}>
-              <div 
-                className={styles.kpiBox}
-                style={{
-                  ['--kpi-padding' as string]: padding,
-                  ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
-                  ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
-                } as React.CSSProperties}
-              >
-                {/* Large emoji at the top */}
-                {result.emoji && (
-                  <div 
-                    className={styles.kpiEmoji}
-                    style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
-                  >
-                    {result.emoji}
-                  </div>
-                )}
-                
-                {/* Large KPI value */}
-                <div 
-                  className={styles.kpiValue}
-                  style={{
-                    ['--kpi-value-size' as string]: valueSize,
-                    ['--kpi-color' as string]: kpiColor,
-                    ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
-                  } as React.CSSProperties}
-                >
-                  {formatTotal(result.total)}
-                </div>
-                
-                {/* Label with description */}
-                <div 
-                  className={styles.kpiLabel}
-                  style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
-                >
-                  {result.totalLabel || 'Total'}
-                </div>
-              </div>
+    <>
+      {/* KPI component - standalone 1-unit chart */}
+      <div className={`${className} ${styles.kpiContainer}`}>
+        <div 
+          className={styles.kpiBox}
+          style={{
+            ['--kpi-padding' as string]: padding,
+            ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
+            ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+          } as React.CSSProperties}
+        >
+          {result.emoji && (
+            <div 
+              className={styles.kpiEmoji}
+              style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
+            >
+              {result.emoji}
             </div>
+          )}
+          
+          <div 
+            className={styles.kpiValue}
+            style={{
+              ['--kpi-value-size' as string]: valueSize,
+              ['--kpi-color' as string]: kpiColor,
+              ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+            } as React.CSSProperties}
+          >
+            {formatTotal(result.total || 'NA')}
           </div>
-        )}
-        
-        {/* Bar chart on the right - equal flex with KPI */}
-        <div className={styles.valueBarSide}>
-          <div className={styles.barChartTwoColumns}>
-            <div className={styles.legendsColumn}>
-              {legends}
-            </div>
-            <div className={styles.barsColumn}>
-              {bars}
-            </div>
+          
+          <div 
+            className={styles.kpiLabel}
+            style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
+          >
+            {result.totalLabel || 'Total'}
           </div>
         </div>
       </div>
+      
+      {/* Bar component - standalone 1-unit chart */}
+      <div className={`${className} ${styles.portraitLayout}`}>
+        <div className={styles.barChartTwoColumns}>
+          <div className={styles.legendsColumn}>
+            {legends}
+          </div>
+          <div className={styles.barsColumn}>
+            {bars}
+          </div>
+        </div>
+      </div>
+    </>
     );
 };
 
