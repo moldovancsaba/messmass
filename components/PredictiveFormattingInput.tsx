@@ -148,7 +148,7 @@ export default function PredictiveFormattingInput({
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className={styles.input}
+          className="form-input"
           autoComplete="off"
         />
         {isOpen && filteredOptions.length > 0 && (
