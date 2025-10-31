@@ -280,17 +280,19 @@ export const DEFAULT_CHART_CONFIGURATIONS: Omit<ChartConfiguration, '_id' | 'cre
     ]
   },
   
-  // 6. Generated Value Horizontal Bar Chart
+  // 6. Generated Value Horizontal Bar Chart (VALUE type with dual formatting)
   {
     chartId: 'value',
     title: 'Generated Value',
-    type: 'bar',
+    type: 'value',
     order: 6,
     isActive: true,
     showTotal: true,
     totalLabel: 'Total Generated Value',
     emoji: '📊',
     subtitle: 'Breakdown of Event-Generated Brand Value',
+    kpiFormatting: { rounded: true, prefix: '€', suffix: '' },
+    barFormatting: { rounded: true, prefix: '€', suffix: '' },
     elements: [
       { 
         id: 'marketing-optin', 
