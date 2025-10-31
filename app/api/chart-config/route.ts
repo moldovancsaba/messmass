@@ -264,9 +264,27 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
+    
+    // WHAT: Ensure VALUE charts ALWAYS have formatting configs in database
+    // WHY: Defaults must be persisted, not applied at runtime
+    // HOW: Initialize with empty defaults if missing
+    let finalKpiFormatting = kpiFormatting;
+    let finalBarFormatting = barFormatting;
+    
+    if (type === 'value') {
+      if (!finalKpiFormatting) {
+        finalKpiFormatting = { rounded: true, prefix: '', suffix: '' };
+        console.log('⚠️ VALUE chart missing kpiFormatting, using defaults:', finalKpiFormatting);
+      }
+      if (!finalBarFormatting) {
+        finalBarFormatting = { rounded: true, prefix: '', suffix: '' };
+        console.log('⚠️ VALUE chart missing barFormatting, using defaults:', finalBarFormatting);
+      }
+    }
+    
     // WHAT: Include all formatting fields in the configuration object
     // WHY: kpiFormatting, barFormatting, and element.formatting must be persisted to database
-    // HOW: Spread body to capture all fields including formatting configs
+    // HOW: Use finalized formatting with defaults applied
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -274,8 +292,8 @@ export async function POST(request: NextRequest) {
       order,
       isActive: isActive ?? true,
       elements,
-      kpiFormatting,
-      barFormatting,
+      kpiFormatting: finalKpiFormatting,
+      barFormatting: finalBarFormatting,
       emoji,
       subtitle,
       showTotal,
@@ -387,9 +405,23 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // WHAT: Ensure VALUE charts ALWAYS have formatting configs when updating
+    // WHY: Defaults must be persisted to database, not applied at runtime
+    // HOW: Initialize with empty defaults if missing for VALUE type
+    if (updateData.type === 'value') {
+      if (!updateData.kpiFormatting) {
+        updateData.kpiFormatting = { rounded: true, prefix: '', suffix: '' };
+        console.log('⚠️ VALUE chart missing kpiFormatting on update, using defaults');
+      }
+      if (!updateData.barFormatting) {
+        updateData.barFormatting = { rounded: true, prefix: '', suffix: '' };
+        console.log('⚠️ VALUE chart missing barFormatting on update, using defaults');
+      }
+    }
+    
     // WHAT: Spread updateData to include all fields including formatting
     // WHY: kpiFormatting, barFormatting, and element.formatting are in updateData and must persist
-    // HOW: ...updateData spreads all fields from request body
+    // HOW: ...updateData spreads all fields from request body with defaults applied
     const updateFields = {
       ...updateData,
       updatedAt: new Date().toISOString(),
