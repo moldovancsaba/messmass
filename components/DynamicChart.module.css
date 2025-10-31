@@ -308,6 +308,16 @@
    KPI CHART LAYOUT
 ======================================== */
 
+/* WHAT: KPI side for VALUE charts (landscape) - matches 1-unit KPI dimensions
+ * WHY: VALUE chart KPI area should look exactly like standalone 1-unit KPI
+ * HOW: Flex basis matching standard chart unit width */
+.valueKpiSide {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+}
+
 /* WHAT: KPI container matching other chart graphic areas
  * WHY: All charts must have consistent visual area height
  * HOW: Fixed max-height matching pie/bar graphic areas */
