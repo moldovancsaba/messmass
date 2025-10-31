@@ -62,6 +62,13 @@
   height: 100%;
 }
 
+/* WHAT: Grid-based landscape layout for VALUE charts
+ * WHY: VALUE charts need to inherit parent grid's 1fr column sizing
+ * HOW: Use display: contents to make VALUE chart participate in parent grid */
+.landscapeLayoutGrid {
+  display: contents;
+}
+
 .portraitLayout {
   width: 100%;
   height: 100%;
@@ -310,15 +317,17 @@
 
 /* WHAT: KPI side for VALUE charts (landscape) - matches 1-unit KPI dimensions
  * WHY: VALUE chart KPI area should look exactly like standalone 1-unit KPI
- * HOW: Exactly 1 unit = (100% - 3 gaps) / 4 columns = 25% - 24px
+ * HOW: Take up exactly 1fr in the parent grid (natural grid behavior)
  * 
- * CALCULATION:
- * - 4-column grid with 3 gaps of 32px (--mm-space-8 = 2rem)
- * - 1 unit = (100% - 96px) / 4 = 25% - 24px
+ * NO HARDCODING:
+ * - Parent grid defines columns via repeat(N, 1fr)
+ * - This element takes 1fr = automatic 1-unit width
+ * - Works for any N (2, 3, 4, 5, 6 columns)
  */
 .valueKpiSide {
-  flex: 0 0 calc(25% - 24px);
-  width: calc(25% - 24px);
+  /* WHAT: Don't set width - let grid parent control it
+   * WHY: Grid item naturally takes 1fr when parent has grid-template-columns
+   * HOW: Remove flex/width, rely on parent grid layout */
   height: 100%;
 }
 

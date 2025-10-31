@@ -580,8 +580,10 @@ const ValueChart: React.FC<{
 
   if (isLandscape) {
     // Landscape layout: KPI total on left, bar chart on right - FILLS 2 units width
+    // WHAT: Use display: contents to participate in parent grid
+    // WHY: KPI side naturally takes 1fr (1 grid unit), bars fill remaining space
     return (
-      <div className={`${className} ${styles.landscapeLayout}`}>
+      <div className={`${className} ${styles.landscapeLayoutGrid}`}>
         {/* KPI Total value display on the left - IDENTICAL to standalone 1-unit KPI */}
         {result.total !== undefined && (
           <div className={styles.valueKpiSide}>
