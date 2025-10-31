@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 8.17.2
-Last Updated: 2025-10-31T11:05:00.000Z (UTC)
+Current Version: 8.17.3
+Last Updated: 2025-10-31T11:22:00.000Z (UTC)
 
 ### Immediate — Advanced Chart Formatting System (v8.17.0)
 
