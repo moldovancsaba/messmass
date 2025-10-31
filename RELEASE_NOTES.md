@@ -1,5 +1,74 @@
 # MessMass Release Notes
 
+## [v8.17.1] — 2025-10-31T10:42:00.000Z
+
+### 🛠️ Migration & Seed Scripts for Chart Formatting System
+
+**What Changed**
+
+✅ **Migration Script for Legacy Type Cleanup**
+- Created `scripts/migrateChartFormattingCleanup.ts` (178 lines)
+- Migrates all charts from legacy `type: 'currency' | 'percentage' | 'number'`
+- Converts to new `formatting: { rounded, prefix, suffix }` field
+- Removes backward compatibility dependencies for clean system
+- Dry-run mode by default, `--execute` flag to apply changes
+- Type mappings:
+  - `currency` → `{ rounded: false, prefix: '€', suffix: '' }`
+  - `percentage` → `{ rounded: false, prefix: '', suffix: '%' }`
+  - `number` → `{ rounded: true, prefix: '', suffix: '' }`
+
+✅ **VALUE Chart Templates Seeder**
+- Created `scripts/seedValueChartTemplates.ts` (497 lines)
+- Seeds 5 professional VALUE chart templates:
+  1. **Total Ad Value (€)** - Marketing ROI breakdown (email, social, stadium, premium, re-optin)
+  2. **Revenue Streams (€)** - Merchandise, tickets, food & beverage, parking, sponsorship
+  3. **Fan Engagement Score (pts)** - Photo, merchandise, social, repeat, referral engagement
+  4. **Geographic Reach (fans)** - Local, regional, national, international, remote global
+  5. **Partnership Value ($)** - Brand exposure, digital reach, event sponsorship, merch visibility, media coverage
+- All templates use VALUE chart type with dual formatting (KPI + bars)
+- Real formulas using SEYU tokens and PARAM tokens
+- Professional color schemes and descriptive metadata
+- Idempotent (checks for existing charts, no duplicates)
+
+✅ **NPM Scripts Added**
+- `npm run migrate:chart-formatting-cleanup` - Migrate legacy type to formatting (dry-run)
+- `npm run migrate:chart-formatting-cleanup --execute` - Apply migration
+- `npm run seed:value-charts` - Seed 5 VALUE chart templates
+
+**Execution Results**
+- ✅ Migration: 0 charts needed migration (system already clean)
+- ✅ Seeding: 5 VALUE chart templates created successfully
+- ✅ Templates ready at `/admin/charts`
+
+**Files Created**: 2 scripts
+- `scripts/migrateChartFormattingCleanup.ts` (178 lines)
+- `scripts/seedValueChartTemplates.ts` (497 lines)
+
+**Files Modified**: 1 file
+- `package.json` - Added 2 npm scripts, version bump to 8.17.1
+
+**Why**
+
+User requested:
+- "I WANT CLEAN SYSTEM! NO BACKWARD DEPENDENCES"
+- "Step 8: Default chart configurations (seed VALUE chart templates) - DO IT"
+
+Solution:
+- Migration script removes all legacy type dependencies
+- Seed script provides professional starting templates
+- Both scripts fully documented with WHAT/WHY comments
+- Ready for production use
+
+**Benefits**
+1. **Clean System**: No legacy type field dependencies
+2. **Professional Templates**: 5 ready-to-use VALUE charts
+3. **Multi-Currency**: Templates demonstrate €, $, pts, fans units
+4. **Parameterized**: All templates use PARAM tokens for flexibility
+5. **Idempotent**: Scripts safe to run multiple times
+6. **Well-Documented**: Extensive inline documentation
+
+---
+
 ## [v8.17.0] — 2025-10-31T10:17:00.000Z
 
 ### 🎨 Advanced Chart Formatting System with VALUE Chart Type
