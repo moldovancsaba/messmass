@@ -633,8 +633,8 @@ const ValueChart: React.FC<{
           </div>
         )}
         
-        {/* Bar chart on the right */}
-        <div className={styles.barChartSide}>
+        {/* Bar chart on the right - equal flex with KPI */}
+        <div className={styles.valueBarSide}>
           <div className={styles.barChartTwoColumns}>
             <div className={styles.legendsColumn}>
               {legends}

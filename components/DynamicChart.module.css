@@ -319,16 +319,23 @@
 
 /* WHAT: KPI side for VALUE charts (landscape) - matches 1-unit KPI dimensions
  * WHY: VALUE chart KPI area should look exactly like standalone 1-unit KPI
- * HOW: Take exactly half the 2-unit chart minus gap
+ * HOW: Both KPI and bars take equal width with gap between
  * 
- * SIMPLE SOLUTION:
- * - VALUE chart is 2 units wide in grid
- * - Internal layout: KPI (left half) + gap + Bars (right half)
- * - KPI width = (100% - gap) / 2 = (100% - 16px) / 2 = 50% - 8px
+ * CALCULATION:
+ * - Container has gap: var(--mm-space-4) = 16px
+ * - KPI flex: 1 (take equal space)
+ * - Bars flex: 1 (take equal space)
+ * - Gap automatically handled by flexbox
  */
 .valueKpiSide {
-  flex: 0 0 calc(50% - var(--mm-space-4) / 2);
-  width: calc(50% - var(--mm-space-4) / 2);
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+}
+
+.valueBarSide {
+  flex: 1 1 0;
+  min-width: 0;
   height: 100%;
 }
 
