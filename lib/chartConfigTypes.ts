@@ -201,6 +201,11 @@ export interface ChartCalculationResult {
   kpiColor?: string; // Color for KPI display
 
   hasErrors: boolean; // Whether any element had calculation errors
+  
+  // WHAT: Flags to identify split VALUE chart parts
+  // WHY: VALUE chart config becomes TWO separate result objects (KPI + BAR)
+  isValueKpiPart?: boolean;  // True for KPI chart derived from VALUE
+  isValueBarPart?: boolean;  // True for BAR chart derived from VALUE
 }
 
 /**

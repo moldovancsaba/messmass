@@ -472,6 +472,10 @@ export function calculateChartsBatchSafe(
  * @param configurations - Array of chart configurations
  * @param stats - Project statistics for all calculations
  * @returns Array of chart calculation results
+ * 
+ * WHAT: VALUE charts are split into TWO separate results (KPI + BAR)
+ * WHY: Report pages show VALUE as two independent 1-unit charts side by side
+ * HOW: When config.type === 'value', create KPI result + BAR result from single config
  */
 export function calculateChartsBatch(
   configurations: ChartConfiguration[],
@@ -479,7 +483,50 @@ export function calculateChartsBatch(
 ): ChartCalculationResult[] {
   console.log(`🧮 Batch calculating ${configurations.length} charts...`);
   
-  return configurations.map(config => calculateChart(config, stats));
+  const results: ChartCalculationResult[] = [];
+  
+  configurations.forEach(config => {
+    const result = calculateChart(config, stats);
+    
+    // WHAT: Split VALUE chart into TWO separate results
+    // WHY: VALUE = KPI (1 unit) + BAR (1 unit) on report pages
+    if (config.type === 'value') {
+      // KPI Chart (first half of VALUE)
+      results.push({
+        ...result,
+        type: 'kpi',
+        chartId: `${config.chartId}-kpi`,
+        elements: [{
+          id: result.elements[0]?.id || 'kpi',
+          label: result.totalLabel || 'Total',
+          value: result.total || 'NA',
+          color: result.elements[0]?.color || '#10b981',
+          formatting: result.kpiFormatting
+        }],
+        isValueKpiPart: true
+      });
+      
+      // BAR Chart (second half of VALUE)
+      results.push({
+        ...result,
+        type: 'bar',
+        chartId: `${config.chartId}-bar`,
+        title: '', // No title for bar part
+        subtitle: undefined,
+        total: undefined, // Hide total in bar part (already shown in KPI)
+        elements: result.elements.map(el => ({
+          ...el,
+          formatting: result.barFormatting
+        })),
+        isValueBarPart: true
+      });
+    } else {
+      // All other chart types: single result
+      results.push(result);
+    }
+  });
+  
+  return results;
 }
 
 /**

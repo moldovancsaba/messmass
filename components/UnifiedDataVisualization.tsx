@@ -194,24 +194,7 @@ export default function UnifiedDataVisualization({
                     const maxDesktopUnits = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
                     const safeWidth = Math.min(Math.max(chart.width ?? 1, 1), maxDesktopUnits);
 
-                    // WHAT: VALUE charts return TWO components, others return ONE
-                    // WHY: VALUE chart fragment must not be wrapped - children become direct grid items
-                    // HOW: VALUE returns <>KPI, Bars</>, no wrapper; others get wrapper div
-                    
-                    if (result.type === 'value') {
-                      // VALUE chart returns fragment - render children as separate grid items
-                      return (
-                        <React.Fragment key={`${idSuffix}-${chart.chartId}`}>
-                          <DynamicChart 
-                            result={result} 
-                            chartWidth={chart.width}
-                            showTitleInCard={true}
-                          />
-                        </React.Fragment>
-                      );
-                    }
-                    
-                    // All other chart types: single component with wrapper
+                    // All chart types get wrapper div with width class
                     return (
                       <div
                         key={`${idSuffix}-${chart.chartId}`}
