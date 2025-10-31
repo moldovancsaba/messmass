@@ -34,6 +34,18 @@ async function connectToDatabase() {
 }
 
 /**
+ * WHAT: Helper function to validate formatting object structure
+ * WHY: Ensure formatting configs have correct types
+ * HOW: Check rounded is boolean, prefix/suffix are strings or undefined
+ */
+function validateFormatting(formatting: any): boolean {
+  return formatting && 
+         typeof formatting.rounded === 'boolean' &&
+         (formatting.prefix === undefined || typeof formatting.prefix === 'string') &&
+         (formatting.suffix === undefined || typeof formatting.suffix === 'string');
+}
+
+/**
  * Validates chart configuration data before saving
  * Ensures required fields are present and constraints are met
  */
@@ -43,10 +55,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
   }
   
-  // WHAT: Chart type validation including text/image for partner reports
-  // WHY: Support new chart types for reportText* and reportImage* variables
-  if (!['pie', 'bar', 'kpi', 'text', 'image'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", or "image"' };
+  // WHAT: Chart type validation including text/image and VALUE
+  // WHY: Support new chart types for reportText*, reportImage*, and VALUE (KPI + BAR)
+  if (!['pie', 'bar', 'kpi', 'text', 'image', 'value'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", or "value"' };
   }
   
   // Elements validation
@@ -75,6 +87,41 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   
   if (config.type === 'image' && config.elements.length !== 1) {
     return { isValid: false, error: 'Image charts must have exactly 1 element' };
+  }
+  
+  // WHAT: VALUE chart type validation
+  // WHY: VALUE charts require exactly 5 elements AND dual formatting configs
+  if (config.type === 'value') {
+    if (config.elements.length !== 5) {
+      return { isValid: false, error: 'VALUE charts must have exactly 5 elements' };
+    }
+    
+    // Validate kpiFormatting exists and is valid
+    if (!config.kpiFormatting) {
+      return { isValid: false, error: 'VALUE type charts require kpiFormatting' };
+    }
+    if (!validateFormatting(config.kpiFormatting)) {
+      return { isValid: false, error: 'Invalid kpiFormatting: rounded must be boolean, prefix/suffix must be strings' };
+    }
+    
+    // Validate barFormatting exists and is valid
+    if (!config.barFormatting) {
+      return { isValid: false, error: 'VALUE type charts require barFormatting' };
+    }
+    if (!validateFormatting(config.barFormatting)) {
+      return { isValid: false, error: 'Invalid barFormatting: rounded must be boolean, prefix/suffix must be strings' };
+    }
+  }
+  
+  // WHAT: Validate element-level formatting if present
+  // WHY: Ensure formatting objects have correct structure
+  if (config.elements) {
+    for (let i = 0; i < config.elements.length; i++) {
+      const element = config.elements[i];
+      if (element.formatting && !validateFormatting(element.formatting)) {
+        return { isValid: false, error: `Invalid formatting in element ${i + 1}: rounded must be boolean, prefix/suffix must be strings` };
+      }
+    }
   }
   
   // Order validation
@@ -128,6 +175,10 @@ export async function GET() {
       order: config.order,
       isActive: config.isActive,
       elements: config.elements,
+      // WHAT: Include VALUE-specific formatting fields
+      // WHY: VALUE charts need both kpiFormatting and barFormatting
+      kpiFormatting: config.kpiFormatting,
+      barFormatting: config.barFormatting,
       emoji: config.emoji,
       subtitle: config.subtitle,
       showTotal: config.showTotal,

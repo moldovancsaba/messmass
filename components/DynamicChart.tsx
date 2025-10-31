@@ -98,6 +98,8 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     </div>
   );
 
+  // WHAT: Route to appropriate chart component based on type
+  // WHY: Each type has unique rendering requirements
   if (result.type === 'pie') {
     return (
       <ChartCard>
@@ -108,6 +110,14 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     return (
       <ChartCard>
         <BarChart result={result} chartWidth={chartWidth} />
+      </ChartCard>
+    );
+  } else if (result.type === 'value') {
+    // WHAT: VALUE type requires special dual-formatting (KPI + bars)
+    // WHY: Combines KPI total display with horizontal bar chart
+    return (
+      <ChartCard>
+        <ValueChart result={result} chartWidth={chartWidth} />
       </ChartCard>
     );
   } else if (result.type === 'kpi') {
@@ -130,7 +140,8 @@ interface ValidPieElement {
   label: string;
   value: number;
   color: string;
-  type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for proper formatting
+  type?: 'currency' | 'percentage' | 'number'; // DEPRECATED: Legacy type
+  formatting?: { rounded: boolean; prefix?: string; suffix?: string; }; // WHAT: New flexible formatting
 }
 
 /**
@@ -181,7 +192,7 @@ const PieChart: React.FC<{
             stroke="white"
             strokeWidth="2"
           >
-            <title>{`${element.label}: ${formatChartValue(element.value, { type: element.type })} (${percentage.toFixed(1)}%)`}</title>
+            <title>{`${element.label}: ${formatChartValue(element.value, { formatting: element.formatting, type: element.type })} (${percentage.toFixed(1)}%)`}</title>
           </path>
         </g>
       );
@@ -197,7 +208,7 @@ const PieChart: React.FC<{
     return (
       <div key={element.id} className={styles.legendItem}>
         <div className={styles.legendColor} style={{ ['--legend-color' as string]: element.color, backgroundColor: element.color } as React.CSSProperties}></div>
-        <span>{element.label}: {formatChartValue(element.value, { type: element.type })} ({percentage}%)</span>
+        <span>{element.label}: {formatChartValue(element.value, { formatting: element.formatting, type: element.type })} ({percentage}%)</span>
       </div>
     );
   });
@@ -232,7 +243,7 @@ const PieChart: React.FC<{
           </div>
           {result.total !== undefined && (
             <div className={styles.chartTotal}>
-              <strong>Total: {formatChartValue(result.total, { type: result.elements[0]?.type })}</strong>
+              <strong>Total: {formatChartValue(result.total, { formatting: result.elements[0]?.formatting, type: result.elements[0]?.type })}</strong>
             </div>
           )}
         </div>
@@ -277,7 +288,7 @@ const PieChart: React.FC<{
         </div>
         {result.total !== undefined && (
           <div className={styles.chartTotalPortrait}>
-            <strong>Total: {formatChartValue(result.total, { type: result.elements[0]?.type })}</strong>
+            <strong>Total: {formatChartValue(result.total, { formatting: result.elements[0]?.formatting, type: result.elements[0]?.type })}</strong>
           </div>
         )}
       </div>
@@ -310,12 +321,13 @@ const BarChart: React.FC<{
     );
   }
 
-  // Create separate legends and bars (hide zero or NA values)
+  // WHAT: Create separate legends and bars (hide zero or NA values)
+  // WHY: Formatting at element level for BAR charts
   const legends = validElements.map((element) => {
     const value = element.value as number;
     return (
       <div key={element.id} className={styles.legendTextRow}>
-        <span>{element.label}: {formatChartValue(value, { type: element.type })}</span>
+        <span>{element.label}: {formatChartValue(value, { formatting: element.formatting, type: element.type })}</span>
       </div>
     );
   });
@@ -339,21 +351,23 @@ const BarChart: React.FC<{
     );
   });
 
-  // WHAT: Format total value using type from first element
-  // WHY: Use database-driven type field instead of hardcoded string matching
-  // HOW: Check first element's type since bar chart elements should all be same type
+  // WHAT: Format total value using formatting from first element
+  // WHY: Use flexible formatting instead of hardcoded currency detection
+  // HOW: Check first element's formatting since bar chart elements typically share formatting
   const formatTotal = (total: number | 'NA') => {
     if (total === 'NA') return 'N/A';
     
-    // WHAT: Use type from first element to determine formatting
-    // WHY: Type is set in database, no hardcoding needed
-    const firstElementType = result.elements[0]?.type;
-    
-    if (firstElementType === 'currency') {
-      return `€${total.toLocaleString()}`;
+    // WHAT: Use new formatting system if available, fallback to legacy type
+    // WHY: Backward compatibility during migration period
+    const firstElement = result.elements[0];
+    if (firstElement?.formatting) {
+      return formatChartValue(total, { formatting: firstElement.formatting });
+    } else if (firstElement?.type) {
+      // Legacy fallback
+      return formatChartValue(total, { type: firstElement.type });
     }
     
-    // For other types, just show the number
+    // Default: just show the number
     return total.toLocaleString();
   };
 
@@ -388,6 +402,144 @@ const BarChart: React.FC<{
     );
   } else {
     // Portrait layout: traditional stacked layout - FILLS 1 unit width
+    return (
+      <div className={`${className} ${styles.portraitLayout}`}>
+        {result.total !== undefined && (
+          <div className={styles.totalBoxPortrait}>
+            <div className={styles.totalValuePortrait}>
+              {formatTotal(result.total)}
+            </div>
+            <div className={styles.totalLabel}>
+              {result.totalLabel || 'Total'}
+            </div>
+          </div>
+        )}
+        <div className={styles.barChartTwoColumns}>
+          <div className={styles.legendsColumn}>
+            {legends}
+          </div>
+          <div className={styles.barsColumn}>
+            {bars}
+          </div>
+        </div>
+      </div>
+    );
+  }
+};
+
+/**
+ * VALUE Chart Component
+ * WHAT: Combines KPI total display with horizontal bar chart, using dual formatting
+ * WHY: "Generated Value" chart requires separate formatting for total and bars
+ * HOW: Apply kpiFormatting to total, barFormatting to all bar elements (unified)
+ */
+const ValueChart: React.FC<{
+  result: ChartCalculationResult;
+  className?: string;
+  chartWidth?: number;
+}> = ({ result, className, chartWidth = 1 }) => {
+  // WHAT: Validate VALUE chart requirements
+  // WHY: Ensure data integrity and proper formatting config
+  if (!result.kpiFormatting || !result.barFormatting) {
+    return (
+      <div className={`${styles.noDataMessage} ${className}`}>
+        <p>VALUE chart requires both KPI and Bar formatting configs</p>
+      </div>
+    );
+  }
+
+  if (result.elements.length !== 5) {
+    return (
+      <div className={`${styles.noDataMessage} ${className}`}>
+        <p>VALUE charts must have exactly 5 elements (found {result.elements.length})</p>
+      </div>
+    );
+  }
+
+  // Find the maximum value for scaling bars
+  const validElements = result.elements.filter(element => typeof element.value === 'number');
+  const maxValue = Math.max(...validElements.map(element => element.value as number));
+  
+  // Determine if this is a landscape layout
+  const isLandscape = chartWidth === 2;
+
+  // If no valid data, show message
+  if (validElements.length === 0 || maxValue === 0) {
+    return (
+      <div className={`${styles.noDataMessage} ${className}`}>
+        <p>No data available for {result.title}</p>
+      </div>
+    );
+  }
+
+  // WHAT: Create legends with unified barFormatting
+  // WHY: All bars share same formatting in VALUE charts
+  const legends = validElements.map((element) => {
+    const value = element.value as number;
+    return (
+      <div key={element.id} className={styles.legendTextRow}>
+        <span>{element.label}: {formatChartValue(value, { formatting: result.barFormatting })}</span>
+      </div>
+    );
+  });
+
+  const bars = validElements.map((element) => {
+    const value = element.value as number;
+    const barWidth = ((value) / maxValue) * 100;
+    
+    return (
+      <div key={element.id} className={styles.barOnlyRow}>
+        <div className={styles.barContainer}>
+          <div 
+            className={styles.barFill} 
+            style={{ 
+              ['--bar-width' as string]: `${barWidth}%`, 
+              ['--bar-color' as string]: element.color
+            } as React.CSSProperties}
+          />
+        </div>
+      </div>
+    );
+  });
+
+  // WHAT: Format total using kpiFormatting (not barFormatting)
+  // WHY: VALUE charts have separate formatting for KPI total display
+  const formatTotal = (total: number | 'NA') => {
+    if (total === 'NA') return 'N/A';
+    return formatChartValue(total, { formatting: result.kpiFormatting });
+  };
+
+  if (isLandscape) {
+    // Landscape layout: KPI total on left, bar chart on right - FILLS 2 units width
+    return (
+      <div className={`${className} ${styles.landscapeLayout}`}>
+        {/* KPI Total value display on the left */}
+        {result.total !== undefined && (
+          <div className={styles.totalBoxLandscape}>
+            <div className={styles.totalValue}>
+              {formatTotal(result.total)}
+            </div>
+            <div className={styles.totalLabel}>
+              {result.totalLabel || 'Total'}
+            </div>
+          </div>
+        )}
+        
+        {/* Bar chart on the right */}
+        <div className={styles.barChartSide}>
+          <div className={styles.barChartTwoColumns}>
+            <div className={styles.legendsColumn}>
+              {legends}
+            </div>
+            <div className={styles.barsColumn}>
+              {bars}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  } else {
+    // Portrait layout: KPI total on top, bar chart below - FILLS 1 unit width
     return (
       <div className={`${className} ${styles.portraitLayout}`}>
         {result.total !== undefined && (

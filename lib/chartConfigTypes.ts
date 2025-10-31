@@ -6,12 +6,35 @@
  * Each element represents a segment/bar with its label, formula, and color
  * For KPI charts, only one element is used with the main calculation formula
  */
+export interface ChartValueFormatting {
+  /**
+   * WHAT: Formatting controls for numeric values
+   * WHY: Replace hardcoded type-based formatting with flexible prefix/suffix + rounding
+   */
+  rounded: boolean; // true = whole numbers, false = 2 decimals
+  prefix?: string;  // e.g., "€", "$", "£"
+  suffix?: string;  // e.g., "%", " pts"
+}
+
 export interface ChartElement {
   id: string; // Unique identifier for this element
   label: string; // Display label (e.g., "Female", "CPM", "Jersey")
   formula: string; // Mathematical formula using variables (e.g., "[FEMALE]", "[INDOOR] + [OUTDOOR]")
   color: string; // Hex color code (e.g., "#ff6b9d")
-  type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for formatting (e.g., currency shows €, percentage shows %)
+  
+  /**
+   * WHAT: Legacy value type for formatting (currency/percentage/number)
+   * WHY: Backward compatibility during migration to flexible formatting
+   * NOTE: Deprecated in favor of `formatting`
+   */
+  type?: 'currency' | 'percentage' | 'number';
+  
+  /**
+   * WHAT: New flexible formatting configuration
+   * WHY: Supports custom prefix/suffix and rounding per element
+   */
+  formatting?: ChartValueFormatting;
+
   // WHY: Enables proper display formatting without hardcoding currency detection logic
   description?: string; // Optional description for documentation
   
@@ -25,7 +48,7 @@ export interface ChartElement {
       unit?: string; // Optional unit, e.g., "EUR", "%", "count", "multiplier"
     }
   };
-
+  
   // WHAT: Optional manually computed data used by the formula via [MANUAL:key] tokens
   // WHY: Enables aggregated analytics (e.g., hashtag seasonality, partner benchmarks) without storing in stats
   manualData?: {
@@ -41,11 +64,17 @@ export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Chart type (added text/image for partner reports)
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'; // WHAT: Added 'value' type (KPI + BAR combined)
   // WHY: text displays reportText* variables as formatted text blocks, image shows reportImage* URLs as full-width images
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
-  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi/text/image)
+  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar/value, 1 for kpi/text/image)
+  
+  // VALUE TYPE ONLY: Dual formatting configs
+  /** WHAT: Formatting for KPI total area (VALUE charts) */
+  kpiFormatting?: ChartValueFormatting;
+  /** WHAT: Unified formatting for all bars (VALUE charts) */
+  barFormatting?: ChartValueFormatting;
   
   // Metadata fields with ISO 8601 millisecond precision
   createdAt: string; // ISO 8601: "2025-08-18T10:18:40.123Z"
@@ -143,7 +172,7 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Added text/image types for partner reports
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'; // WHAT: Added 'value' chart type
   emoji?: string; // Chart emoji from configuration
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
@@ -152,10 +181,22 @@ export interface ChartCalculationResult {
     label: string;
     value: number | string | 'NA'; // WHAT: Support string values for text/image content
     color: string;
-    type?: 'currency' | 'percentage' | 'number'; // WHAT: Value type for formatting
+    /**
+     * WHAT: Legacy type for backward compatibility (to be removed after migration)
+     */
+    type?: 'currency' | 'percentage' | 'number';
+    /**
+     * WHAT: New flexible formatting (preferred)
+     */
+    formatting?: ChartValueFormatting;
   }[];
-  total?: number | 'NA'; // Total value for bar charts
+  total?: number | 'NA'; // Total value for bar/value charts
   kpiValue?: number | string | 'NA'; // WHAT: Support string for text/image charts
+  
+  // VALUE TYPE ONLY: Dual formatting
+  kpiFormatting?: ChartValueFormatting;
+  barFormatting?: ChartValueFormatting;
+
   hasErrors: boolean; // Whether any element had calculation errors
 }
 

@@ -26,7 +26,7 @@ interface ChartConfigFormData {
   _id?: string;
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // WHAT: Support text/image chart types for partner reports
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'; // WHAT: Added 'value' type
   order: number;
   isActive: boolean;
   elements: {
@@ -35,7 +35,11 @@ interface ChartConfigFormData {
     formula: string;
     color: string;
     description?: string;
+    formatting?: { rounded: boolean; prefix?: string; suffix?: string; }; // WHAT: New flexible formatting
   }[];
+  // VALUE TYPE ONLY: Dual formatting configs
+  kpiFormatting?: { rounded: boolean; prefix?: string; suffix?: string; };
+  barFormatting?: { rounded: boolean; prefix?: string; suffix?: string; };
   emoji?: string;
   subtitle?: string;
   showTotal?: boolean;
@@ -544,13 +548,14 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
   // WHAT: Get the exact required element count for each chart type
   // WHY: Enforce chart type constraints (text/image have 1 element like KPI)
   // HOW: Switch on chart type and return expected element count
-  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'): number => {
+  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'): number => {
     switch (type) {
       case 'kpi': return 1;
       case 'text': return 1; // Text charts display one text variable
       case 'image': return 1; // Image charts display one image URL
       case 'pie': return 2;
       case 'bar': return 5;
+      case 'value': return 5; // VALUE charts have 5 bars like BAR type
       default: return 1;
     }
   };
@@ -574,6 +579,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
     if (missingData) {
       alert('Please fill in all element labels and formulas');
       return;
+    }
+    
+    // WHAT: Validate VALUE type has both formatting configs
+    // WHY: VALUE charts require dual formatting (kpi + bar)
+    if (formData.type === 'value') {
+      if (!formData.kpiFormatting || !formData.barFormatting) {
+        alert('VALUE type charts require both KPI and Bar formatting configurations');
+        return;
+      }
     }
     
     // Validate formulas
@@ -758,7 +772,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 className="form-input"
                 value={formData.type}
                 onChange={(e) => {
-                  const newType = e.target.value as 'pie' | 'bar' | 'kpi' | 'text' | 'image';
+                  const newType = e.target.value as 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value';
                   const requiredCount = getRequiredElementCount(newType);
                   let newElements = [...formData.elements];
                   
@@ -789,6 +803,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 <option value="image">🖼️ Image Chart (1 element)</option>
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
+                <option value="value">💰 VALUE Chart (KPI + 5 bars with dual formatting)</option>
               </select>
             </div>
 
@@ -804,6 +819,126 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
             </div>
           </div>
 
+          {/* WHAT: VALUE TYPE ONLY - Dual Formatting Controls */}
+          {/* WHY: VALUE charts need separate formatting for KPI total and bars */}
+          {formData.type === 'value' && (
+            <div className="formatting-section">
+              <h4 className="formatting-section-title">🎯 Formatting Configuration</h4>
+              
+              {/* KPI Total Formatting */}
+              <div className="formatting-group">
+                <h5 className="formatting-group-title">KPI Total Formatting</h5>
+                <div className="formatting-controls">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.kpiFormatting?.rounded ?? true}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        kpiFormatting: {
+                          rounded: e.target.checked,
+                          prefix: formData.kpiFormatting?.prefix || '€',
+                          suffix: formData.kpiFormatting?.suffix || ''
+                        }
+                      })}
+                    />
+                    <span>Rounded (whole numbers)</span>
+                  </label>
+                  <div className="formatting-input-group">
+                    <label>Prefix:</label>
+                    <input
+                      type="text"
+                      placeholder="€"
+                      value={formData.kpiFormatting?.prefix || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        kpiFormatting: {
+                          rounded: formData.kpiFormatting?.rounded ?? true,
+                          prefix: e.target.value,
+                          suffix: formData.kpiFormatting?.suffix || ''
+                        }
+                      })}
+                      className="form-input formatting-prefix-input"
+                    />
+                  </div>
+                  <div className="formatting-input-group">
+                    <label>Suffix:</label>
+                    <input
+                      type="text"
+                      placeholder="%"
+                      value={formData.kpiFormatting?.suffix || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        kpiFormatting: {
+                          rounded: formData.kpiFormatting?.rounded ?? true,
+                          prefix: formData.kpiFormatting?.prefix || '',
+                          suffix: e.target.value
+                        }
+                      })}
+                      className="form-input formatting-suffix-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bar Elements Formatting */}
+              <div className="formatting-group">
+                <h5 className="formatting-group-title">Bar Elements Formatting (applies to all 5 bars)</h5>
+                <div className="formatting-controls">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.barFormatting?.rounded ?? true}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        barFormatting: {
+                          rounded: e.target.checked,
+                          prefix: formData.barFormatting?.prefix || '€',
+                          suffix: formData.barFormatting?.suffix || ''
+                        }
+                      })}
+                    />
+                    <span>Rounded (whole numbers)</span>
+                  </label>
+                  <div className="formatting-input-group">
+                    <label>Prefix:</label>
+                    <input
+                      type="text"
+                      placeholder="€"
+                      value={formData.barFormatting?.prefix || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        barFormatting: {
+                          rounded: formData.barFormatting?.rounded ?? true,
+                          prefix: e.target.value,
+                          suffix: formData.barFormatting?.suffix || ''
+                        }
+                      })}
+                      className="form-input formatting-prefix-input"
+                    />
+                  </div>
+                  <div className="formatting-input-group">
+                    <label>Suffix:</label>
+                    <input
+                      type="text"
+                      placeholder="%"
+                      value={formData.barFormatting?.suffix || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        barFormatting: {
+                          rounded: formData.barFormatting?.rounded ?? true,
+                          prefix: formData.barFormatting?.prefix || '',
+                          suffix: e.target.value
+                        }
+                      })}
+                      className="form-input formatting-suffix-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Elements (Required: {getRequiredElementCount(formData.type)})</label>
             {formData.elements.map((element, index) => {
@@ -818,6 +953,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                       {formData.type === 'image' && <span className="chart-type-info">🖼️ Image URL</span>}
                       {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
                       {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
+                      {formData.type === 'value' && <span className="chart-type-info">💰 Bar {index + 1} (uses unified bar formatting)</span>}
                     </div>
                   </div>
                   
@@ -889,6 +1025,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 {formData.type === 'image' && '🖼️ Image charts require exactly 1 element (use [stats.reportImage1-10])'}
                 {formData.type === 'pie' && '🥧 Pie charts require exactly 2 elements'}
                 {formData.type === 'bar' && '📊 Bar charts require exactly 5 elements'}
+                {formData.type === 'value' && '💰 VALUE charts require exactly 5 elements + dual formatting (KPI + Bar)'}
               </div>
               <div className="constraint-note">
                 Element count is automatically managed when you change the chart type.
@@ -1165,6 +1302,90 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
           margin-top: 0.25rem;
         }
         
+        /* WHAT: Formatting Section Styles */
+        /* WHY: Make formatting controls visually distinct and easy to use */
+        .formatting-section {
+          background: rgba(249, 250, 251, 0.8);
+          border: 1px solid #e5e7eb;
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+        }
+        
+        .formatting-section-title {
+          color: #374151;
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin: 0 0 1rem 0;
+        }
+        
+        .formatting-group {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+        
+        .formatting-group:last-child {
+          margin-bottom: 0;
+        }
+        
+        .formatting-group-title {
+          color: #6b7280;
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin: 0 0 0.75rem 0;
+          text-transform: uppercase;
+        }
+        
+        .formatting-controls {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        
+        .formatting-checkbox {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          min-width: 200px;
+        }
+        
+        .formatting-checkbox input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+        
+        .formatting-checkbox span {
+          color: #374151;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+        
+        .formatting-input-group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        .formatting-input-group label {
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 500;
+          min-width: 50px;
+        }
+        
+        .formatting-prefix-input,
+        .formatting-suffix-input {
+          width: 80px;
+          padding: 0.5rem;
+          font-size: 0.875rem;
+        }
+
         .element-constraint-info {
           background: rgba(59, 130, 246, 0.05);
           border: 1px solid rgba(59, 130, 246, 0.2);

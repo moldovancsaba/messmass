@@ -184,7 +184,8 @@ export function calculateChart(
         label: resolvedLabel,
         value: value,
         color: element.color,
-        type: element.type // WHAT: Pass through type for proper formatting (currency, percentage, number)
+        type: element.type, // WHAT: Legacy type for backward compatibility
+        formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };
     } catch (error) {
       hasErrors = true;
@@ -198,7 +199,8 @@ export function calculateChart(
         label: element.label,
         value: 'NA' as const,
         color: element.color,
-        type: element.type // WHAT: Pass through type for proper formatting (currency, percentage, number)
+        type: element.type, // WHAT: Legacy type for backward compatibility
+        formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };
     }
   });
@@ -313,9 +315,10 @@ export function calculateChart(
       hasErrors = true;
       console.error(`❌ KPI chart "${configuration.title}" has no elements`);
     }
-  } else if (configuration.type === 'bar' && configuration.showTotal) {
+  } else if ((configuration.type === 'bar' || configuration.type === 'value') && configuration.showTotal) {
     try {
-      // For bar charts, total is the sum of all elements (excluding NA values)
+      // WHAT: For bar/value charts, total is the sum of all elements (excluding NA values)
+      // WHY: VALUE type behaves like BAR but with dual formatting
       const validValues = elements
         .map(el => el.value)
         .filter((value): value is number => typeof value === 'number');
@@ -383,7 +386,9 @@ export function calculateChart(
   
   console.log(`✅ Chart calculation complete: ${elements.length} elements, ${hasErrors ? 'with' : 'without'} errors`);
   
-  return {
+  // WHAT: Build result object with optional VALUE-type formatting
+  // WHY: VALUE charts require dual formatting configs (kpi + bar)
+  const result: ChartCalculationResult = {
     chartId: configuration.chartId,
     title: configuration.title,
     type: configuration.type,
@@ -395,6 +400,15 @@ export function calculateChart(
     kpiValue,
     hasErrors
   };
+  
+  // WHAT: Add VALUE-specific formatting if present
+  // WHY: VALUE charts need separate formatting for KPI total and bars
+  if (configuration.type === 'value') {
+    result.kpiFormatting = configuration.kpiFormatting;
+    result.barFormatting = configuration.barFormatting;
+  }
+  
+  return result;
 }
 
 /**
@@ -668,8 +682,10 @@ export function getCalculationSummary(
 }
 
 /**
- * Helper function to format chart values for display
- * Handles "NA" values and number formatting consistently
+ * WHAT: Format chart values with flexible prefix/suffix and rounding
+ * WHY: Support white-label customization (€, $, £, %) without hardcoding currency detection
+ * HOW: Use formatting object with rounded/prefix/suffix instead of legacy type field
+ * 
  * @param value - The value to format (number or "NA")
  * @param options - Formatting options
  * @returns Formatted string for display
@@ -677,20 +693,45 @@ export function getCalculationSummary(
 export function formatChartValue(
   value: number | 'NA',
   options: {
-    type?: 'currency' | 'percentage' | 'number';
-    decimals?: number;
+    formatting?: { rounded: boolean; prefix?: string; suffix?: string; };
+    type?: 'currency' | 'percentage' | 'number'; // DEPRECATED: Legacy support
+    decimals?: number; // DEPRECATED: Use formatting.rounded instead
     showNA?: string;
   } = {}
 ): string {
+  // WHAT: Handle NA values immediately
+  // WHY: No formatting needed for missing data
   if (value === 'NA') {
     return options.showNA || 'N/A';
   }
   
+  // WHAT: Use new flexible formatting system if available
+  // WHY: Supports custom prefix/suffix for white-labeling
+  if (options.formatting) {
+    // WHAT: Determine decimal places based on rounded flag
+    // WHY: rounded = whole numbers, !rounded = 2 decimal places
+    const decimals = options.formatting.rounded ? 0 : 2;
+    
+    // WHAT: Use toLocaleString() for thousands separator
+    // WHY: Improves readability for large numbers (1,000,000 vs 1000000)
+    const numericValue = value.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+    
+    // WHAT: Apply prefix and suffix in correct order
+    // WHY: Standard format is: prefix + number + suffix (e.g., "€1,234.56" or "50%")
+    return `${options.formatting.prefix || ''}${numericValue}${options.formatting.suffix || ''}`;
+  }
+  
+  // WHAT: Legacy type-based formatting for backward compatibility
+  // WHY: Support charts that haven't been migrated to new formatting system yet
+  // NOTE: This branch will be removed after migration in v8.17.0
   const decimals = options.decimals ?? 0;
   
   switch (options.type) {
     case 'currency':
-      return `€${value.toLocaleString(undefined, { 
+      return `€${value.toLocaleString('en-US', { 
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals 
       })}`;
@@ -700,7 +741,7 @@ export function formatChartValue(
     
     case 'number':
     default:
-      return value.toLocaleString(undefined, { 
+      return value.toLocaleString('en-US', { 
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals 
       });
