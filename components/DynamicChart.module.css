@@ -310,11 +310,10 @@
 
 /* WHAT: KPI side for VALUE charts (landscape) - matches 1-unit KPI dimensions
  * WHY: VALUE chart KPI area should look exactly like standalone 1-unit KPI
- * HOW: Flex basis matching standard chart unit width */
+ * HOW: Exactly 50% minus half the grid gap (--mm-space-8 / 2) */
 .valueKpiSide {
-  flex: 0 0 auto;
-  width: 100%;
-  max-width: 400px;
+  flex: 0 0 calc(50% - var(--mm-space-8) / 2);
+  width: calc(50% - var(--mm-space-8) / 2);
   height: 100%;
 }
 
