@@ -581,58 +581,74 @@ const ValueChart: React.FC<{
   const labelSize = '1.1rem';  // Portrait = 1-unit KPI size
   const padding = '2rem';      // Portrait = 1-unit KPI size
 
-  // WHAT: Return TWO separate components as React fragment
-  // WHY: Parent grid places them as two independent 1-unit items
-  // HOW: Fragment makes children direct grid items, no wrapper interference
+  // WHAT: Return TWO complete, independent chart cards
+  // WHY: VALUE chart = 2 separate charts on report (KPI chart + BAR chart)
+  // HOW: Two ChartCard components, each with title area, graphic area
   return (
     <>
-      {/* KPI component - standalone 1-unit chart */}
-      <div className={`unified-chart-item ${className} ${styles.kpiContainer}`}>
-        <div 
-          className={styles.kpiBox}
-          style={{
-            ['--kpi-padding' as string]: padding,
-            ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
-            ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
-          } as React.CSSProperties}
-        >
-          {result.emoji && (
-            <div 
-              className={styles.kpiEmoji}
-              style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
-            >
-              {result.emoji}
-            </div>
-          )}
-          
-          <div 
-            className={styles.kpiValue}
-            style={{
-              ['--kpi-value-size' as string]: valueSize,
-              ['--kpi-color' as string]: kpiColor,
-              ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
-            } as React.CSSProperties}
-          >
-            {formatTotal(result.total || 'NA')}
+      {/* CHART 1: KPI with title */}
+      <div className="chart-width-1 unified-chart-item">
+        <div className={styles.chartCard}>
+          <div className={styles.chartTitleArea}>
+            <h3 className={styles.chartTitle}>{result.title}</h3>
+            {result.subtitle && <p className={styles.chartSubtitle}>{result.subtitle}</p>}
           </div>
-          
-          <div 
-            className={styles.kpiLabel}
-            style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
-          >
-            {result.totalLabel || 'Total'}
+          <div className={styles.chartGraphicArea}>
+            <div className={styles.kpiContainer}>
+              <div 
+                className={styles.kpiBox}
+                style={{
+                  ['--kpi-padding' as string]: padding,
+                  ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
+                  ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+                } as React.CSSProperties}
+              >
+                {result.emoji && (
+                  <div 
+                    className={styles.kpiEmoji}
+                    style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
+                  >
+                    {result.emoji}
+                  </div>
+                )}
+                
+                <div 
+                  className={styles.kpiValue}
+                  style={{
+                    ['--kpi-value-size' as string]: valueSize,
+                    ['--kpi-color' as string]: kpiColor,
+                    ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+                  } as React.CSSProperties}
+                >
+                  {formatTotal(result.total || 'NA')}
+                </div>
+                
+                <div 
+                  className={styles.kpiLabel}
+                  style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
+                >
+                  {result.totalLabel || 'Total'}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      {/* Bar component - standalone 1-unit chart */}
-      <div className={`unified-chart-item ${className} ${styles.portraitLayout}`}>
-        <div className={styles.barChartTwoColumns}>
-          <div className={styles.legendsColumn}>
-            {legends}
-          </div>
-          <div className={styles.barsColumn}>
-            {bars}
+      {/* CHART 2: Bars (no title - just the bars) */}
+      <div className="chart-width-1 unified-chart-item">
+        <div className={styles.chartCard}>
+          <div className={styles.chartGraphicArea}>
+            <div className={styles.portraitLayout}>
+              <div className={styles.barChartTwoColumns}>
+                <div className={styles.legendsColumn}>
+                  {legends}
+                </div>
+                <div className={styles.barsColumn}>
+                  {bars}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
