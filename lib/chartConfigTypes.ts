@@ -75,6 +75,8 @@ export interface ChartConfiguration {
   kpiFormatting?: ChartValueFormatting;
   /** WHAT: Unified formatting for all bars (VALUE charts) */
   barFormatting?: ChartValueFormatting;
+  /** WHAT: Color for KPI display (VALUE charts) - separate from element colors */
+  kpiColor?: string;
   
   // Metadata fields with ISO 8601 millisecond precision
   createdAt: string; // ISO 8601: "2025-08-18T10:18:40.123Z"
@@ -196,6 +198,7 @@ export interface ChartCalculationResult {
   // VALUE TYPE ONLY: Dual formatting
   kpiFormatting?: ChartValueFormatting;
   barFormatting?: ChartValueFormatting;
+  kpiColor?: string; // Color for KPI display
 
   hasErrors: boolean; // Whether any element had calculation errors
 }

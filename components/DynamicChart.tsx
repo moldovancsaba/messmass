@@ -483,8 +483,10 @@ const ValueChart: React.FC<{
   const validElements = result.elements.filter(element => typeof element.value === 'number');
   const maxValue = Math.max(...validElements.map(element => element.value as number));
   
-  // Determine if this is a landscape layout
-  const isLandscape = chartWidth === 2;
+  // WHAT: VALUE chart is always 2 units, but internally behaves as TWO 1-unit charts
+  // WHY: KPI part must match standalone 1-unit KPI, bars must match 1-unit bar chart
+  // HOW: Use portrait sizing (1-unit) for both sides, NOT landscape sizing
+  const isLandscape = false; // Force portrait sizing for both KPI and bars
 
   // If no valid data, show message
   if (validElements.length === 0 || maxValue === 0) {
@@ -572,16 +574,19 @@ const ValueChart: React.FC<{
   
   const rgb = hexToRgb(kpiColor);
   
-  // Responsive sizing based on layout (same as standalone KPI)
-  const emojiSize = isLandscape ? '4.5rem' : '3.5rem';
-  const valueSize = isLandscape ? '5rem' : '4rem';
-  const labelSize = isLandscape ? '1.25rem' : '1.1rem';
-  const padding = isLandscape ? '3rem' : '2rem';
+  // WHAT: Always use portrait (1-unit) sizing - VALUE chart shows two 1-unit charts
+  // WHY: KPI side must be identical to standalone 1-unit KPI chart
+  // HOW: Force portrait dimensions regardless of chartWidth
+  const emojiSize = '3.5rem';  // Portrait = 1-unit KPI size
+  const valueSize = '4rem';    // Portrait = 1-unit KPI size  
+  const labelSize = '1.1rem';  // Portrait = 1-unit KPI size
+  const padding = '2rem';      // Portrait = 1-unit KPI size
 
-  if (isLandscape) {
-    // Landscape layout: KPI total on left, bar chart on right - FILLS 2 units width
-    return (
-      <div className={`${className} ${styles.landscapeLayout}`}>
+  // WHAT: VALUE chart is ALWAYS rendered as two 1-unit charts side-by-side
+  // WHY: Ensures KPI matches standalone KPI, bars match standalone bars
+  // HOW: Use landscapeLayout container (flex with gap) but portrait chart sizing
+  return (
+    <div className={`${className} ${styles.landscapeLayout}`}>
         {/* KPI Total value display on the left - IDENTICAL to standalone 1-unit KPI */}
         {result.total !== undefined && (
           <div className={styles.valueKpiSide}>
@@ -641,63 +646,6 @@ const ValueChart: React.FC<{
         </div>
       </div>
     );
-  } else {
-    // Portrait layout: KPI total on top, bar chart below - FILLS 1 unit width
-    return (
-      <div className={`${className} ${styles.portraitLayout}`}>
-        {result.total !== undefined && (
-          <div className={styles.kpiContainer}>
-            <div 
-              className={styles.kpiBox}
-              style={{
-                ['--kpi-padding' as string]: padding,
-                ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
-                ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
-              } as React.CSSProperties}
-            >
-              {/* Large emoji at the top */}
-              {result.emoji && (
-                <div 
-                  className={styles.kpiEmoji}
-                  style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
-                >
-                  {result.emoji}
-                </div>
-              )}
-              
-              {/* Large KPI value */}
-              <div 
-                className={styles.kpiValue}
-                style={{
-                  ['--kpi-value-size' as string]: valueSize,
-                  ['--kpi-color' as string]: kpiColor,
-                  ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
-                } as React.CSSProperties}
-              >
-                {formatTotal(result.total)}
-              </div>
-              
-              {/* Label with description */}
-              <div 
-                className={styles.kpiLabel}
-                style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
-              >
-                {result.totalLabel || 'Total'}
-              </div>
-            </div>
-          </div>
-        )}
-        <div className={styles.barChartTwoColumns}>
-          <div className={styles.legendsColumn}>
-            {legends}
-          </div>
-          <div className={styles.barsColumn}>
-            {bars}
-          </div>
-        </div>
-      </div>
-    );
-  }
 };
 
 /**
