@@ -233,6 +233,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel, kpiFormatting, barFormatting } = body;
 
+    // WHAT: Log received data to debug persistence
+    console.log('📥 POST RECEIVED - chartId:', chartId);
+    console.log('📥 POST RECEIVED - elements[0].formatting:', elements[0]?.formatting);
+    console.log('📥 POST RECEIVED - kpiFormatting:', kpiFormatting);
+    console.log('📥 POST RECEIVED - barFormatting:', barFormatting);
+
     // Validate required fields
     const validation = validateChartConfiguration(body);
     if (!validation.isValid) {
@@ -281,6 +287,9 @@ export async function POST(request: NextRequest) {
 
     const result = await collection.insertOne(configuration);
     console.log('✅ Chart configuration created with ID:', result.insertedId);
+    console.log('💾 SAVED TO DB - elements[0].formatting:', configuration.elements[0]?.formatting);
+    console.log('💾 SAVED TO DB - kpiFormatting:', configuration.kpiFormatting);
+    console.log('💾 SAVED TO DB - barFormatting:', configuration.barFormatting);
 
     return NextResponse.json({
       success: true,
@@ -321,6 +330,12 @@ export async function PUT(request: NextRequest) {
     
     const body = await request.json();
     const { configurationId, _id, createdAt, createdBy, ...updateData } = body;
+
+    // WHAT: Log received update data
+    console.log('📥 PUT RECEIVED - configurationId:', configurationId);
+    console.log('📥 PUT RECEIVED - elements[0].formatting:', updateData.elements?.[0]?.formatting);
+    console.log('📥 PUT RECEIVED - kpiFormatting:', updateData.kpiFormatting);
+    console.log('📥 PUT RECEIVED - barFormatting:', updateData.barFormatting);
 
     if (!configurationId || !ObjectId.isValid(configurationId)) {
       return NextResponse.json(
