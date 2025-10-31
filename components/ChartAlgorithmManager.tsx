@@ -6,6 +6,7 @@ import AdminHero from './AdminHero';
 import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
+import PredictiveFormattingInput from './PredictiveFormattingInput';
 import styles from './ChartAlgorithmManager.module.css';
 
 /**
@@ -545,6 +546,26 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
   const [selectedVariableCategory, setSelectedVariableCategory] = useState<string>('All');
   const [formulaValidation, setFormulaValidation] = useState<Record<number, { isValid: boolean; error?: string; result?: number | 'NA' }>>({});
   
+  // WHAT: Formatting defaults from database
+  // WHY: Predictive dropdowns need available prefix/suffix options
+  const [availablePrefixes, setAvailablePrefixes] = useState<string[]>([]);
+  const [availableSuffixes, setAvailableSuffixes] = useState<string[]>([]);
+  const [formattingDefaults, setFormattingDefaults] = useState<{ rounded: boolean; prefix: string; suffix: string; visible: boolean } | null>(null);
+  
+  // Load formatting defaults on mount
+  useEffect(() => {
+    fetch('/api/chart-formatting-defaults')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setAvailablePrefixes(data.availablePrefixes || []);
+          setAvailableSuffixes(data.availableSuffixes || []);
+          setFormattingDefaults(data.defaults || null);
+        }
+      })
+      .catch(err => console.error('Failed to load formatting defaults:', err));
+  }, []);
+  
   // WHAT: Get the exact required element count for each chart type
   // WHY: Enforce chart type constraints (text/image have 1 element like KPI)
   // HOW: Switch on chart type and return expected element count
@@ -850,18 +871,17 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
               <div className="formatting-group">
                 <h5 className="formatting-group-title">Default Formatting (applies to all elements)</h5>
                 <div className="formatting-controls">
+                  {/* CHECKBOX 1: Rounded */}
                   <label className="formatting-checkbox">
                     <input
                       type="checkbox"
                       checked={formData.elements[0]?.formatting?.rounded ?? true}
                       onChange={(e) => {
-                        // Apply to all elements
                         const updatedElements = formData.elements.map(el => ({
                           ...el,
                           formatting: {
-                            rounded: e.target.checked,
-                            prefix: el.formatting?.prefix || '€',
-                            suffix: el.formatting?.suffix || ''
+                            ...el.formatting,
+                            rounded: e.target.checked
                           }
                         }));
                         setFormData({ ...formData, elements: updatedElements });
@@ -869,46 +889,92 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                     />
                     <span>Rounded (whole numbers)</span>
                   </label>
-                  <div className="formatting-input-group">
-                    <label>Prefix:</label>
+                  
+                  {/* CHECKBOX 2: Show Prefix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="€"
-                      value={formData.elements[0]?.formatting?.prefix || ''}
+                      type="checkbox"
+                      checked={!!formData.elements[0]?.formatting?.prefix}
                       onChange={(e) => {
                         const updatedElements = formData.elements.map(el => ({
                           ...el,
                           formatting: {
+                            ...el.formatting,
                             rounded: el.formatting?.rounded ?? true,
-                            prefix: e.target.value,
+                            prefix: e.target.checked ? (formattingDefaults?.prefix || '€') : '',
                             suffix: el.formatting?.suffix || ''
                           }
                         }));
                         setFormData({ ...formData, elements: updatedElements });
                       }}
-                      className="form-input formatting-prefix-input"
                     />
-                  </div>
-                  <div className="formatting-input-group">
-                    <label>Suffix:</label>
+                    <span>Show Prefix</span>
+                  </label>
+                  
+                  {/* CHECKBOX 3: Show Suffix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="%"
-                      value={formData.elements[0]?.formatting?.suffix || ''}
+                      type="checkbox"
+                      checked={!!formData.elements[0]?.formatting?.suffix}
                       onChange={(e) => {
                         const updatedElements = formData.elements.map(el => ({
                           ...el,
                           formatting: {
+                            ...el.formatting,
                             rounded: el.formatting?.rounded ?? true,
                             prefix: el.formatting?.prefix || '',
-                            suffix: e.target.value
+                            suffix: e.target.checked ? (formattingDefaults?.suffix || '%') : ''
                           }
                         }));
                         setFormData({ ...formData, elements: updatedElements });
                       }}
-                      className="form-input formatting-suffix-input"
                     />
-                  </div>
+                    <span>Show Suffix</span>
+                  </label>
+                  
+                  {/* Predictive Prefix Input */}
+                  {formData.elements[0]?.formatting?.prefix !== undefined && formData.elements[0]?.formatting?.prefix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.elements[0]?.formatting?.prefix || ''}
+                      onChange={(value) => {
+                        const updatedElements = formData.elements.map(el => ({
+                          ...el,
+                          formatting: {
+                            ...el.formatting,
+                            rounded: el.formatting?.rounded ?? true,
+                            prefix: value,
+                            suffix: el.formatting?.suffix || ''
+                          }
+                        }));
+                        setFormData({ ...formData, elements: updatedElements });
+                      }}
+                      options={availablePrefixes}
+                      placeholder="Select or type prefix"
+                      label="Prefix"
+                    />
+                  )}
+                  
+                  {/* Predictive Suffix Input */}
+                  {formData.elements[0]?.formatting?.suffix !== undefined && formData.elements[0]?.formatting?.suffix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.elements[0]?.formatting?.suffix || ''}
+                      onChange={(value) => {
+                        const updatedElements = formData.elements.map(el => ({
+                          ...el,
+                          formatting: {
+                            ...el.formatting,
+                            rounded: el.formatting?.rounded ?? true,
+                            prefix: el.formatting?.prefix || '',
+                            suffix: value
+                          }
+                        }));
+                        setFormData({ ...formData, elements: updatedElements });
+                      }}
+                      options={availableSuffixes}
+                      placeholder="Select or type suffix"
+                      label="Suffix"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -924,6 +990,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
               <div className="formatting-group">
                 <h5 className="formatting-group-title">KPI Total Formatting</h5>
                 <div className="formatting-controls">
+                  {/* CHECKBOX 1: Rounded */}
                   <label className="formatting-checkbox">
                     <input
                       type="checkbox"
@@ -931,48 +998,87 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                       onChange={(e) => setFormData({
                         ...formData,
                         kpiFormatting: {
-                          rounded: e.target.checked,
-                          prefix: formData.kpiFormatting?.prefix || '€',
-                          suffix: formData.kpiFormatting?.suffix || ''
+                          ...formData.kpiFormatting,
+                          rounded: e.target.checked
                         }
                       })}
                     />
                     <span>Rounded (whole numbers)</span>
                   </label>
-                  <div className="formatting-input-group">
-                    <label>Prefix:</label>
+                  
+                  {/* CHECKBOX 2: Show Prefix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="€"
-                      value={formData.kpiFormatting?.prefix || ''}
+                      type="checkbox"
+                      checked={!!formData.kpiFormatting?.prefix}
                       onChange={(e) => setFormData({
                         ...formData,
                         kpiFormatting: {
+                          ...formData.kpiFormatting,
                           rounded: formData.kpiFormatting?.rounded ?? true,
-                          prefix: e.target.value,
+                          prefix: e.target.checked ? (formattingDefaults?.prefix || '€') : '',
                           suffix: formData.kpiFormatting?.suffix || ''
                         }
                       })}
-                      className="form-input formatting-prefix-input"
                     />
-                  </div>
-                  <div className="formatting-input-group">
-                    <label>Suffix:</label>
+                    <span>Show Prefix</span>
+                  </label>
+                  
+                  {/* CHECKBOX 3: Show Suffix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="%"
-                      value={formData.kpiFormatting?.suffix || ''}
+                      type="checkbox"
+                      checked={!!formData.kpiFormatting?.suffix}
                       onChange={(e) => setFormData({
                         ...formData,
                         kpiFormatting: {
+                          ...formData.kpiFormatting,
                           rounded: formData.kpiFormatting?.rounded ?? true,
                           prefix: formData.kpiFormatting?.prefix || '',
-                          suffix: e.target.value
+                          suffix: e.target.checked ? (formattingDefaults?.suffix || '%') : ''
                         }
                       })}
-                      className="form-input formatting-suffix-input"
                     />
-                  </div>
+                    <span>Show Suffix</span>
+                  </label>
+                  
+                  {/* Predictive Prefix Input */}
+                  {formData.kpiFormatting?.prefix !== undefined && formData.kpiFormatting?.prefix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.kpiFormatting?.prefix || ''}
+                      onChange={(value) => setFormData({
+                        ...formData,
+                        kpiFormatting: {
+                          ...formData.kpiFormatting,
+                          rounded: formData.kpiFormatting?.rounded ?? true,
+                          prefix: value,
+                          suffix: formData.kpiFormatting?.suffix || ''
+                        }
+                      })}
+                      options={availablePrefixes}
+                      placeholder="Select or type prefix"
+                      label="Prefix"
+                    />
+                  )}
+                  
+                  {/* Predictive Suffix Input */}
+                  {formData.kpiFormatting?.suffix !== undefined && formData.kpiFormatting?.suffix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.kpiFormatting?.suffix || ''}
+                      onChange={(value) => setFormData({
+                        ...formData,
+                        kpiFormatting: {
+                          ...formData.kpiFormatting,
+                          rounded: formData.kpiFormatting?.rounded ?? true,
+                          prefix: formData.kpiFormatting?.prefix || '',
+                          suffix: value
+                        }
+                      })}
+                      options={availableSuffixes}
+                      placeholder="Select or type suffix"
+                      label="Suffix"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -980,6 +1086,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
               <div className="formatting-group">
                 <h5 className="formatting-group-title">Bar Elements Formatting (applies to all 5 bars)</h5>
                 <div className="formatting-controls">
+                  {/* CHECKBOX 1: Rounded */}
                   <label className="formatting-checkbox">
                     <input
                       type="checkbox"
@@ -987,48 +1094,87 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                       onChange={(e) => setFormData({
                         ...formData,
                         barFormatting: {
-                          rounded: e.target.checked,
-                          prefix: formData.barFormatting?.prefix || '€',
-                          suffix: formData.barFormatting?.suffix || ''
+                          ...formData.barFormatting,
+                          rounded: e.target.checked
                         }
                       })}
                     />
                     <span>Rounded (whole numbers)</span>
                   </label>
-                  <div className="formatting-input-group">
-                    <label>Prefix:</label>
+                  
+                  {/* CHECKBOX 2: Show Prefix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="€"
-                      value={formData.barFormatting?.prefix || ''}
+                      type="checkbox"
+                      checked={!!formData.barFormatting?.prefix}
                       onChange={(e) => setFormData({
                         ...formData,
                         barFormatting: {
+                          ...formData.barFormatting,
                           rounded: formData.barFormatting?.rounded ?? true,
-                          prefix: e.target.value,
+                          prefix: e.target.checked ? (formattingDefaults?.prefix || '€') : '',
                           suffix: formData.barFormatting?.suffix || ''
                         }
                       })}
-                      className="form-input formatting-prefix-input"
                     />
-                  </div>
-                  <div className="formatting-input-group">
-                    <label>Suffix:</label>
+                    <span>Show Prefix</span>
+                  </label>
+                  
+                  {/* CHECKBOX 3: Show Suffix */}
+                  <label className="formatting-checkbox">
                     <input
-                      type="text"
-                      placeholder="%"
-                      value={formData.barFormatting?.suffix || ''}
+                      type="checkbox"
+                      checked={!!formData.barFormatting?.suffix}
                       onChange={(e) => setFormData({
                         ...formData,
                         barFormatting: {
+                          ...formData.barFormatting,
                           rounded: formData.barFormatting?.rounded ?? true,
                           prefix: formData.barFormatting?.prefix || '',
-                          suffix: e.target.value
+                          suffix: e.target.checked ? (formattingDefaults?.suffix || '%') : ''
                         }
                       })}
-                      className="form-input formatting-suffix-input"
                     />
-                  </div>
+                    <span>Show Suffix</span>
+                  </label>
+                  
+                  {/* Predictive Prefix Input */}
+                  {formData.barFormatting?.prefix !== undefined && formData.barFormatting?.prefix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.barFormatting?.prefix || ''}
+                      onChange={(value) => setFormData({
+                        ...formData,
+                        barFormatting: {
+                          ...formData.barFormatting,
+                          rounded: formData.barFormatting?.rounded ?? true,
+                          prefix: value,
+                          suffix: formData.barFormatting?.suffix || ''
+                        }
+                      })}
+                      options={availablePrefixes}
+                      placeholder="Select or type prefix"
+                      label="Prefix"
+                    />
+                  )}
+                  
+                  {/* Predictive Suffix Input */}
+                  {formData.barFormatting?.suffix !== undefined && formData.barFormatting?.suffix !== '' && (
+                    <PredictiveFormattingInput
+                      value={formData.barFormatting?.suffix || ''}
+                      onChange={(value) => setFormData({
+                        ...formData,
+                        barFormatting: {
+                          ...formData.barFormatting,
+                          rounded: formData.barFormatting?.rounded ?? true,
+                          prefix: formData.barFormatting?.prefix || '',
+                          suffix: value
+                        }
+                      })}
+                      options={availableSuffixes}
+                      placeholder="Select or type suffix"
+                      label="Suffix"
+                    />
+                  )}
                 </div>
               </div>
             </div>
