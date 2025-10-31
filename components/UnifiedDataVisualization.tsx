@@ -194,9 +194,24 @@ export default function UnifiedDataVisualization({
                     const maxDesktopUnits = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
                     const safeWidth = Math.min(Math.max(chart.width ?? 1, 1), maxDesktopUnits);
 
-                    // WHAT: Single clean card wrapper, no double-boxing
-                    // WHY: DynamicChart now handles its own card structure with title area
-                    // HOW: Direct rendering with unified chart item styling
+                    // WHAT: VALUE charts return TWO components, others return ONE
+                    // WHY: VALUE chart fragment must not be wrapped - children become direct grid items
+                    // HOW: VALUE returns <>KPI, Bars</>, no wrapper; others get wrapper div
+                    
+                    if (result.type === 'value') {
+                      // VALUE chart returns fragment - render children as separate grid items
+                      return (
+                        <React.Fragment key={`${idSuffix}-${chart.chartId}`}>
+                          <DynamicChart 
+                            result={result} 
+                            chartWidth={chart.width}
+                            showTitleInCard={true}
+                          />
+                        </React.Fragment>
+                      );
+                    }
+                    
+                    // All other chart types: single component with wrapper
                     return (
                       <div
                         key={`${idSuffix}-${chart.chartId}`}

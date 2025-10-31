@@ -572,19 +572,63 @@ const value = project.remoteImages;
 - **Edit access**: Session validation required
 - **Admin features**: Full authentication required
 
-## 🎨 Chart System & Visualization
+## 🎨 Chart System & Visualization (v9.0.0)
 
-### Enhanced Chart Components
-- **`components/StatsCharts.tsx`** - SVG pie charts and horizontal bar charts
+### Chart Types
+- **PIE** - 2 elements, circular segments with percentages
+- **BAR** - 5 elements, horizontal bars with legends
+- **KPI** - 1 element, large metric display with emoji
+- **TEXT** - 1 element, formatted text display
+- **IMAGE** - 1 element, full-width image display
+- **VALUE** - Special: Returns TWO grid items (KPI + BAR as siblings)
+
+### VALUE Chart Architecture (v9.0.0 - BREAKING CHANGE)
+
+**CRITICAL: VALUE charts are NOT single components!**
+
+**What VALUE chart returns:**
+```tsx
+<>
+  <KPI component />  {/* 1 grid unit */}
+  <BAR component />  {/* 1 grid unit */}
+</>
+```
+
+**Why this architecture:**
+- VALUE chart occupies **2 grid units total**
+- Returns **React Fragment** with TWO independent children
+- Parent grid places them as **separate grid items** with natural grid gap
+- KPI uses **exact 1-unit dimensions** (portrait sizing)
+- Bars use **exact 1-unit dimensions** (portrait sizing)
+- **NO internal wrapper**, **NO calculations**, **PURE GRID**
+
+**Grid behavior:**
+- Desktop (2+ columns): KPI left, bars right, 32px gap
+- Mobile (1 column): KPI top, bars bottom, stacked
+
+**Sizing (both parts use portrait/1-unit):**
+```
+Emoji: 3.5rem (56px)
+Value: 4rem (64px)
+Label: 1.1rem (17.6px)
+Padding: 2rem (32px)
+```
+
+**Database schema:**
+```typescript
+{
+  type: 'value',
+  kpiFormatting: { rounded: boolean, prefix?: string, suffix?: string },
+  barFormatting: { rounded: boolean, prefix?: string, suffix?: string },
+  kpiColor?: string,  // Optional: Override first element color
+  elements: [5 elements]  // Bar data
+}
+```
+
+### Chart Components
+- **`components/DynamicChart.tsx`** - Main chart renderer (all types)
 - **Chart export** - html2canvas integration for PNG downloads
-- **Core Fan Team metric**: `(merched fans / total fans) × attendees`
-
-### Chart Layout
-```
-Row 1: Merchandise | Engagement | Value
-Row 2: Gender Distribution | Age Groups  
-Row 3: Location | Sources
-```
+- **Formatting system** - Flexible prefix/suffix with rounding control
 
 ## 📄 PDF Export System
 

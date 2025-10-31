@@ -587,7 +587,7 @@ const ValueChart: React.FC<{
   return (
     <>
       {/* KPI component - standalone 1-unit chart */}
-      <div className={`${className} ${styles.kpiContainer}`}>
+      <div className={`unified-chart-item ${className} ${styles.kpiContainer}`}>
         <div 
           className={styles.kpiBox}
           style={{
@@ -626,7 +626,7 @@ const ValueChart: React.FC<{
       </div>
       
       {/* Bar component - standalone 1-unit chart */}
-      <div className={`${className} ${styles.portraitLayout}`}>
+      <div className={`unified-chart-item ${className} ${styles.portraitLayout}`}>
         <div className={styles.barChartTwoColumns}>
           <div className={styles.legendsColumn}>
             {legends}
