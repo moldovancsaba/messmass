@@ -88,3 +88,49 @@
   max-width: 100%;
   overflow: hidden;
 }
+
+/* WHAT: Toggle button for show/hide editor settings
+   WHY: Positioned between preview and editor for clear visual separation */
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-4);
+  margin-top: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+  background: var(--mm-color-primary-500, #6366f1);
+  color: white;
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--mm-transition-base, 0.2s ease);
+}
+
+.toggleButton:hover {
+  background: var(--mm-color-primary-600, #4f46e5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.toggleButton:active {
+  transform: translateY(0);
+}
+
+/* WHAT: Collapsible editor section container
+   WHY: Smooth expand/collapse transition for chart controls + add buttons */
+.editorSection {
+  overflow: hidden;
+  max-height: 5000px; /* Large enough for any content */
+  opacity: 1;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+/* WHAT: Collapsed state for editor section
+   WHY: Hides controls on page load to reduce cognitive load */
+.editorSectionHidden {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}

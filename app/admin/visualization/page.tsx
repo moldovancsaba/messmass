@@ -28,6 +28,10 @@ export default function VisualizationPage() {
   const [loading, setLoading] = useState(true);
   const [editingBlock, setEditingBlock] = useState<DataVisualizationBlock | null>(null);
   const [showCreateBlock, setShowCreateBlock] = useState(false);
+  
+  // WHAT: Track which block editors are expanded (default: all collapsed)
+  // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
+  const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
 
   // Live chart preview state (calculated using the same pipeline as stats pages)
   const [chartConfigs, setChartConfigs] = useState<ChartConfiguration[]>([]);
@@ -282,6 +286,20 @@ export default function VisualizationPage() {
       order: 0,
       isActive: true,
       showTitle: true // NEW: Default to showing title
+    });
+  };
+  
+  // WHAT: Toggle block editor visibility
+  // WHY: Single function handles add/remove from Set for any block
+  const toggleBlockEditor = (blockId: string) => {
+    setExpandedBlocks(prev => {
+      const next = new Set(prev);
+      if (next.has(blockId)) {
+        next.delete(blockId);
+      } else {
+        next.add(blockId);
+      }
+      return next;
     });
   };
 
@@ -554,8 +572,6 @@ export default function VisualizationPage() {
                 
                 {/* Charts in this Block */}
                 <div>
-                  <h5 className="section-subtitle">Charts in this Block:</h5>
-                  
                   {!block.charts || block.charts.length === 0 ? (
                     <div className="empty-charts">
                       <p>No charts assigned to this block yet</p>
@@ -608,8 +624,27 @@ export default function VisualizationPage() {
                     </>
                   )}
                   
-                  {/* Controls */}
-                  <div className="chart-controls-grid">
+                  {/* WHAT: Toggle button for show/hide editor settings */}
+                  {/* WHY: Positioned between preview and editor for clear visual separation */}
+                  <button
+                    onClick={() => toggleBlockEditor(block._id!)}
+                    className={vizStyles.toggleButton}
+                    aria-expanded={expandedBlocks.has(block._id!)}
+                    aria-controls={`editor-${block._id}`}
+                  >
+                    {expandedBlocks.has(block._id!) ? '⚙️ Hide Settings' : '⚙️ Show Settings'}
+                  </button>
+                  
+                  {/* WHAT: Collapsible editor section containing chart controls + add buttons */}
+                  {/* WHY: Hidden by default to reduce cognitive load, shown on demand */}
+                  <div
+                    id={`editor-${block._id}`}
+                    className={`${vizStyles.editorSection} ${
+                      expandedBlocks.has(block._id!) ? '' : vizStyles.editorSectionHidden
+                    }`}
+                  >
+                    {/* Controls */}
+                    <div className="chart-controls-grid">
                     {block.charts.map((chart, index) => {
                       const chartConfig = availableCharts.find(c => c.chartId === chart.chartId);
                       return (
@@ -673,6 +708,8 @@ export default function VisualizationPage() {
                       All available charts have been assigned to this block.
                     </p>
                   )}
+                  </div>
+                  {/* End of collapsible editor section */}
                 </div>
               </div>
             ))}

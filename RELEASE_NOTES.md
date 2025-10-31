@@ -1,5 +1,78 @@
 # MessMass Release Notes
 
+## [v8.16.2] — 2025-10-30T21:21:27.000Z
+
+### 🎨 UI Improvements - Visualization Manager
+
+**What Changed**
+
+✅ **Removed Redundant Subtitle**
+- Removed "Charts in this Block:" subtitle from block display
+- Chart preview grid is now self-explanatory without extra heading
+- Cleaner, more focused visual hierarchy
+
+✅ **Collapsible Editor Section**
+- Added Show/Hide toggle button for editor settings
+- Editor section includes:
+  - Chart controls grid (width, order, remove buttons)
+  - Add Chart buttons (green secondary buttons)
+- Default state: Editor collapsed on page load
+- Independent toggle state per block
+- Button text: "⚙️ Show Settings" / "⚙️ Hide Settings"
+- Smooth CSS transition animation (0.3-0.4s)
+
+✅ **Styling Standards Compliance**
+- All styling via CSS modules using design tokens
+- No inline styles (follows CODING_STANDARDS.md)
+- Used CSS variables from `app/styles/theme.css`:
+  - `--mm-space-*` for padding/margins
+  - `--mm-radius-md` for border radius
+  - `--mm-color-primary-*` for button colors
+  - `--mm-transition-base` for animations
+- Accessibility: ARIA attributes for screen readers
+
+✅ **Always Visible Elements**
+- Block header (title, meta, actions) - always visible
+- Chart preview grid - always visible
+- Edit/Delete buttons - always visible
+
+**Files Modified**: 2 files
+- `app/admin/visualization/page.tsx` - Added state management, toggle function, collapsible section
+- `app/admin/visualization/Visualization.module.css` - Added `.toggleButton`, `.editorSection`, `.editorSectionHidden` classes
+- `package.json` - Version bump to 8.16.2
+
+**Why**
+
+**User Request:**
+- Reduce visual clutter on Visualization Manager page
+- Hide editor controls by default to focus on chart previews
+- Make the page cleaner and easier to navigate
+
+**Solution:**
+- Removed redundant subtitle (preview speaks for itself)
+- Collapsible editor section with smooth toggle animation
+- Default collapsed state reduces cognitive load on page load
+- Per-block toggle allows comparing multiple block previews simultaneously
+
+**Benefits:**
+1. **Cleaner UX**: Focus on what matters (chart previews)
+2. **Faster Navigation**: Scan multiple blocks without scrolling past editor controls
+3. **On-Demand Details**: Show settings only when needed
+4. **Smooth Animations**: Professional feel with CSS transitions
+5. **Accessibility**: ARIA attributes for assistive technologies
+6. **Standards Compliant**: Zero inline styles, all CSS modules
+
+**Validation**
+- ✅ Development server starts successfully (npm run dev)
+- ✅ Toggle button styled with CSS modules (no inline styles)
+- ✅ Smooth expand/collapse transition animations
+- ✅ Independent toggle state per block
+- ✅ Chart preview always visible
+- ✅ Block header always visible
+- ✅ ARIA attributes for accessibility
+
+---
+
 ## [v8.16.1] — 2025-10-30T21:10:00.000Z
 
 ### ✨ Data Visualization Block Title Control + Emoji Removal
