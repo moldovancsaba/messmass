@@ -555,19 +555,73 @@ const ValueChart: React.FC<{
     if (total === 'NA') return 'N/A';
     return formatChartValue(total, { formatting: result.kpiFormatting });
   };
+  
+  // WHAT: Get color from first element for KPI styling (same as standalone KPI)
+  // WHY: Visual consistency between VALUE and KPI chart types
+  const kpiColor = validElements[0]?.color || '#10b981';
+  
+  // Convert hex to RGB for dynamic color usage
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 16, g: 185, b: 129 }; // fallback to green
+  };
+  
+  const rgb = hexToRgb(kpiColor);
+  
+  // Responsive sizing based on layout (same as standalone KPI)
+  const emojiSize = isLandscape ? '4.5rem' : '3.5rem';
+  const valueSize = isLandscape ? '5rem' : '4rem';
+  const labelSize = isLandscape ? '1.25rem' : '1.1rem';
+  const padding = isLandscape ? '3rem' : '2rem';
 
   if (isLandscape) {
     // Landscape layout: KPI total on left, bar chart on right - FILLS 2 units width
     return (
       <div className={`${className} ${styles.landscapeLayout}`}>
-        {/* KPI Total value display on the left */}
+        {/* KPI Total value display on the left - IDENTICAL to standalone KPI */}
         {result.total !== undefined && (
-          <div className={styles.totalBoxLandscape}>
-            <div className={styles.totalValue}>
-              {formatTotal(result.total)}
-            </div>
-            <div className={styles.totalLabel}>
-              {result.totalLabel || 'Total'}
+          <div className={styles.kpiContainer}>
+            <div 
+              className={styles.kpiBox}
+              style={{
+                ['--kpi-padding' as string]: padding,
+                ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
+                ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+              } as React.CSSProperties}
+            >
+              {/* Large emoji at the top */}
+              {result.emoji && (
+                <div 
+                  className={styles.kpiEmoji}
+                  style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
+                >
+                  {result.emoji}
+                </div>
+              )}
+              
+              {/* Large KPI value */}
+              <div 
+                className={styles.kpiValue}
+                style={{
+                  ['--kpi-value-size' as string]: valueSize,
+                  ['--kpi-color' as string]: kpiColor,
+                  ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+                } as React.CSSProperties}
+              >
+                {formatTotal(result.total)}
+              </div>
+              
+              {/* Label with description */}
+              <div 
+                className={styles.kpiLabel}
+                style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
+              >
+                {result.totalLabel || 'Total'}
+              </div>
             </div>
           </div>
         )}
@@ -590,12 +644,44 @@ const ValueChart: React.FC<{
     return (
       <div className={`${className} ${styles.portraitLayout}`}>
         {result.total !== undefined && (
-          <div className={styles.totalBoxPortrait}>
-            <div className={styles.totalValuePortrait}>
-              {formatTotal(result.total)}
-            </div>
-            <div className={styles.totalLabel}>
-              {result.totalLabel || 'Total'}
+          <div className={styles.kpiContainer}>
+            <div 
+              className={styles.kpiBox}
+              style={{
+                ['--kpi-padding' as string]: padding,
+                ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
+                ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+              } as React.CSSProperties}
+            >
+              {/* Large emoji at the top */}
+              {result.emoji && (
+                <div 
+                  className={styles.kpiEmoji}
+                  style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
+                >
+                  {result.emoji}
+                </div>
+              )}
+              
+              {/* Large KPI value */}
+              <div 
+                className={styles.kpiValue}
+                style={{
+                  ['--kpi-value-size' as string]: valueSize,
+                  ['--kpi-color' as string]: kpiColor,
+                  ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+                } as React.CSSProperties}
+              >
+                {formatTotal(result.total)}
+              </div>
+              
+              {/* Label with description */}
+              <div 
+                className={styles.kpiLabel}
+                style={{ ['--kpi-label-size' as string]: labelSize } as React.CSSProperties}
+              >
+                {result.totalLabel || 'Total'}
+              </div>
             </div>
           </div>
         )}
