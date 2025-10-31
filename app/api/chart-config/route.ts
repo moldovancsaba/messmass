@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel } = body;
+    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel, kpiFormatting, barFormatting } = body;
 
     // Validate required fields
     const validation = validateChartConfiguration(body);
@@ -258,6 +258,9 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
+    // WHAT: Include all formatting fields in the configuration object
+    // WHY: kpiFormatting, barFormatting, and element.formatting must be persisted to database
+    // HOW: Spread body to capture all fields including formatting configs
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -265,6 +268,8 @@ export async function POST(request: NextRequest) {
       order,
       isActive: isActive ?? true,
       elements,
+      kpiFormatting,
+      barFormatting,
       emoji,
       subtitle,
       showTotal,
@@ -367,6 +372,9 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // WHAT: Spread updateData to include all fields including formatting
+    // WHY: kpiFormatting, barFormatting, and element.formatting are in updateData and must persist
+    // HOW: ...updateData spreads all fields from request body
     const updateFields = {
       ...updateData,
       updatedAt: new Date().toISOString(),
