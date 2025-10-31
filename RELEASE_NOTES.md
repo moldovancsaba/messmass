@@ -1,5 +1,81 @@
 # MessMass Release Notes
 
+## [v8.17.2] — 2025-10-31T11:05:00.000Z
+
+### 🎯 Database-Backed Chart Formatting System
+
+**What Changed**
+
+✅ **Chart Formatting Defaults API**
+- Created `/api/chart-formatting-defaults` (GET + PUT)
+- Stores default formatting: `{ rounded, prefix, suffix, visible }`
+- Stores `availablePrefixes` array (10 currency options)
+- Stores `availableSuffixes` array (10 unit options)
+- Database-driven (no hardcoded values in code)
+
+✅ **Predictive Input Component**
+- Created `PredictiveFormattingInput.tsx` (183 lines)
+- Search-as-you-type filtering
+- Keyboard navigation (arrows, enter, escape)
+- Add new custom values on-the-fly
+- Click-outside-to-close behavior
+- Professional UX with CSS modules
+
+✅ **Formatting Defaults Seeder**
+- Created `scripts/seedChartFormattingDefaults.ts` (102 lines)
+- Seeds 10 currency prefixes: €, $, £, ¥, CHF, R$, ₹, ₽, kr, ¢
+- Seeds 10 unit suffixes: %, pts, fans, units, goals, km, m, items, count, x
+- Idempotent (safe to run multiple times)
+- NPM script: `npm run seed:formatting-defaults`
+
+**Files Created**: 4 files
+- `app/api/chart-formatting-defaults/route.ts` (97 lines)
+- `components/PredictiveFormattingInput.tsx` (183 lines)
+- `components/PredictiveFormattingInput.module.css` (74 lines)
+- `scripts/seedChartFormattingDefaults.ts` (102 lines)
+
+**Files Modified**: 2 files
+- `components/ChartAlgorithmManager.tsx` - Auto-initialize VALUE formatting
+- `package.json` - Added seed script, version bump to 8.17.2
+
+**Why**
+
+User requirement:
+- "WE USE DATABASE!" - No hardcoded values
+- "make it properly!!! not baked-in COWBOY CODING!!!"
+- "both the prefix and the suffix" - Predictive search for both fields
+- "able to add new VALUES and have DEFAULT VALUE!"
+- "checkbox to be able to set if it is visible or not!"
+
+Solution:
+- All formatting defaults stored in MongoDB
+- Predictive dropdown component with search + add new
+- Database seeded with professional currency/unit options
+- Extensible system for white-label deployments
+
+**Benefits**
+1. **Database-Driven**: Zero hardcoded formatting values
+2. **Predictive UX**: Professional search dropdown for prefix/suffix
+3. **Extensible**: Add new currencies/units without code changes
+4. **White-Label Ready**: Configure per deployment via database
+5. **Type-Safe**: Full TypeScript validation
+6. **Clean Code**: No cowboy coding, proper architecture
+
+**Technical Implementation**
+- Single document in `chart_formatting_defaults` collection
+- Predictive component with React hooks (useState, useRef, useEffect)
+- Keyboard navigation and accessibility support
+- CSS modules with design tokens (no inline styles)
+
+**Execution**
+- ✅ Database seeded with 10 prefixes + 10 suffixes
+- ✅ API endpoints tested and working
+- ✅ Component created and styled
+- ✅ TypeScript strict mode passing
+- ✅ Ready for integration into ChartAlgorithmManager
+
+---
+
 ## [v8.17.1] — 2025-10-31T10:42:00.000Z
 
 ### 🛠️ Migration & Seed Scripts for Chart Formatting System
