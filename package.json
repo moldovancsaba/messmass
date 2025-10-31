@@ -59,6 +59,7 @@
     "migrate:show-title": "tsx -r dotenv/config scripts/migrateShowTitleField.ts dotenv_config_path=.env.local",
     "migrate:chart-formatting-cleanup": "tsx -r dotenv/config scripts/migrateChartFormattingCleanup.ts dotenv_config_path=.env.local",
     "seed:value-charts": "tsx -r dotenv/config scripts/seedValueChartTemplates.ts dotenv_config_path=.env.local",
+    "seed:formatting-defaults": "tsx -r dotenv/config scripts/seedChartFormattingDefaults.ts dotenv_config_path=.env.local",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify"
   },

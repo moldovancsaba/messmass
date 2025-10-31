@@ -793,7 +793,28 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                     }
                   }
                   
-                  setFormData({ ...formData, type: newType, elements: newElements });
+                  // WHAT: Auto-initialize formatting configs for VALUE type
+                  // WHY: VALUE charts REQUIRE both kpiFormatting and barFormatting with defaults
+                  let newKpiFormatting = formData.kpiFormatting;
+                  let newBarFormatting = formData.barFormatting;
+                  
+                  if (newType === 'value') {
+                    // Initialize with defaults if not already set
+                    if (!newKpiFormatting) {
+                      newKpiFormatting = { rounded: true, prefix: '€', suffix: '' };
+                    }
+                    if (!newBarFormatting) {
+                      newBarFormatting = { rounded: true, prefix: '€', suffix: '' };
+                    }
+                  }
+                  
+                  setFormData({ 
+                    ...formData, 
+                    type: newType, 
+                    elements: newElements,
+                    kpiFormatting: newKpiFormatting,
+                    barFormatting: newBarFormatting
+                  });
                   // Clear validation when type changes
                   setFormulaValidation({});
                 }}
@@ -819,6 +840,80 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
             </div>
           </div>
 
+          {/* WHAT: Element-Level Formatting Controls (ALL chart types) */}
+          {/* WHY: All charts need flexible formatting (prefix/suffix/rounding) */}
+          {(formData.type === 'kpi' || formData.type === 'pie' || formData.type === 'bar') && (
+            <div className="formatting-section">
+              <h4 className="formatting-section-title">🎨 Element Formatting</h4>
+              <div className="formatting-note">Configure how numbers are displayed in this chart</div>
+              
+              <div className="formatting-group">
+                <h5 className="formatting-group-title">Default Formatting (applies to all elements)</h5>
+                <div className="formatting-controls">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.elements[0]?.formatting?.rounded ?? true}
+                      onChange={(e) => {
+                        // Apply to all elements
+                        const updatedElements = formData.elements.map(el => ({
+                          ...el,
+                          formatting: {
+                            rounded: e.target.checked,
+                            prefix: el.formatting?.prefix || '€',
+                            suffix: el.formatting?.suffix || ''
+                          }
+                        }));
+                        setFormData({ ...formData, elements: updatedElements });
+                      }}
+                    />
+                    <span>Rounded (whole numbers)</span>
+                  </label>
+                  <div className="formatting-input-group">
+                    <label>Prefix:</label>
+                    <input
+                      type="text"
+                      placeholder="€"
+                      value={formData.elements[0]?.formatting?.prefix || ''}
+                      onChange={(e) => {
+                        const updatedElements = formData.elements.map(el => ({
+                          ...el,
+                          formatting: {
+                            rounded: el.formatting?.rounded ?? true,
+                            prefix: e.target.value,
+                            suffix: el.formatting?.suffix || ''
+                          }
+                        }));
+                        setFormData({ ...formData, elements: updatedElements });
+                      }}
+                      className="form-input formatting-prefix-input"
+                    />
+                  </div>
+                  <div className="formatting-input-group">
+                    <label>Suffix:</label>
+                    <input
+                      type="text"
+                      placeholder="%"
+                      value={formData.elements[0]?.formatting?.suffix || ''}
+                      onChange={(e) => {
+                        const updatedElements = formData.elements.map(el => ({
+                          ...el,
+                          formatting: {
+                            rounded: el.formatting?.rounded ?? true,
+                            prefix: el.formatting?.prefix || '',
+                            suffix: e.target.value
+                          }
+                        }));
+                        setFormData({ ...formData, elements: updatedElements });
+                      }}
+                      className="form-input formatting-suffix-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* WHAT: VALUE TYPE ONLY - Dual Formatting Controls */}
           {/* WHY: VALUE charts need separate formatting for KPI total and bars */}
           {formData.type === 'value' && (
