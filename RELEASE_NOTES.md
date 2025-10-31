@@ -1,5 +1,67 @@
 # MessMass Release Notes
 
+## [v8.16.3] — 2025-10-31T09:12:00.000Z
+
+### 🎯 UX Improvements - Sidebar Navigation & Search Enhancement
+
+**What Changed**
+
+✅ **Simplified Sidebar Navigation Labels**
+- "Chart Algorithm Manager" → "Algorithms"
+- "Insights Dashboard" → "Insights"
+- "Visualization Manager" → "Reporting"
+- "Design Manager" → "Styles"
+- All routes and functionality remain unchanged
+- Icons preserved for visual consistency
+
+✅ **Expanded Search to Include Hashtags (Backend)**
+- Event Management search now matches hashtag values
+- Searches both traditional `hashtags` array and `categorizedHashtags` object
+- Server-side implementation using MongoDB aggregation pipeline
+- Case-insensitive matching with regex
+- Nested object search using `$expr`, `$objectToArray`, and `$anyElementTrue`
+
+**Files Modified**: 2 files
+- `components/Sidebar.tsx` - Updated 4 navigation labels
+- `app/api/projects/route.ts` - Expanded `$match` pipeline with hashtag search
+- `package.json` - Version bump to 8.16.3
+
+**Why**
+
+**User Request:**
+- Sidebar labels too verbose and cluttered
+- Need to search events by hashtag values (e.g., "germany", "uefa")
+- Improve discoverability and navigation speed
+
+**Solution:**
+- Shortened labels to essential terms for faster visual scanning
+- Added comprehensive hashtag search at database level for full-dataset results
+- Maintained backward compatibility with existing search functionality
+
+**Benefits:**
+1. **Cleaner Navigation**: Reduced cognitive load with concise labels
+2. **Faster Scanning**: Easier to find admin features at a glance
+3. **Improved Search**: Find events by hashtag values across all storage formats
+4. **Better UX**: Search works consistently across event names, dates, and hashtags
+5. **Performance**: Server-side search scales to large datasets
+
+**Technical Implementation**
+- MongoDB `$elemMatch` for traditional hashtags array
+- Nested `$map` + `$regexMatch` for categorized hashtags object values
+- `$ifNull` guards for projects without hashtags
+- Regex escape for special characters in search query
+
+**Validation**
+- ✅ Sidebar displays simplified labels
+- ✅ All navigation routes work correctly
+- ✅ Search matches traditional hashtags (e.g., "germany")
+- ✅ Search matches categorized hashtags (e.g., "country:germany")
+- ✅ Case-insensitive search works as expected
+- ✅ Existing event name/date search unaffected
+- ✅ Pagination and sorting function normally
+
+---
+
 ## [v8.16.2] — 2025-10-30T21:21:27.000Z
 
 ### 🎨 UI Improvements - Visualization Manager

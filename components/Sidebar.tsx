@@ -53,22 +53,22 @@ export default function Sidebar() {
       items: [
         { label: 'Hashtag Manager', path: '/admin/hashtags', icon: '🏷️' },
         { label: 'Category Manager', path: '/admin/categories', icon: '🌍' },
-        { label: 'Chart Algorithm Manager', path: '/admin/charts', icon: '📈' },
+        { label: 'Algorithms', path: '/admin/charts', icon: '📈' },
         { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: '↔️' },
       ],
     },
     {
       title: 'Analytics',
       items: [
-        { label: 'Insights Dashboard', path: '/admin/insights', icon: '💡' },
+        { label: 'Insights', path: '/admin/insights', icon: '💡' },
       ],
     },
     {
       title: 'Settings',
       items: [
         { label: 'KYC Variables', path: '/admin/kyc', icon: '🔐' },
-        { label: 'Visualization Manager', path: '/admin/visualization', icon: '👁️' },
-        { label: 'Design Manager', path: '/admin/design', icon: '🎨' },
+        { label: 'Reporting', path: '/admin/visualization', icon: '👁️' },
+        { label: 'Styles', path: '/admin/design', icon: '🎨' },
         { label: 'Bitly Management', path: '/admin/bitly', icon: '🔗' },
         { label: 'Users', path: '/admin/users', icon: '👥' },
         { label: 'Cache Management', path: '/admin/cache', icon: '🗑️' },

@@ -134,13 +134,40 @@ export async function GET(request: NextRequest) {
       const pipeline: any[] = [];
       if (isSearch) {
         const query = q!.trim();
-        const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        const regex = new RegExp(query.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i');
+        
+        // WHAT: Expanded search to include both traditional and categorized hashtags
+        // WHY: Users need to find events by hashtag values across both storage formats
+        // HOW: Added $expr with $anyElementTrue to search nested categorizedHashtags object values
         pipeline.push({
           $match: {
             $or: [
               { eventName: { $regex: regex } },
               { viewSlug: { $regex: regex } },
               { editSlug: { $regex: regex } },
+              // Traditional hashtags array search
+              { hashtags: { $elemMatch: { $regex: regex, $options: 'i' } } },
+              // Categorized hashtags nested object search
+              // Uses $expr to evaluate if any category array contains matching hashtag
+              {
+                $expr: {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: { $ifNull: ['$categorizedHashtags', {}] } },
+                      as: 'category',
+                      in: {
+                        $anyElementTrue: {
+                          $map: {
+                            input: '$$category.v',
+                            as: 'hashtag',
+                            in: { $regexMatch: { input: '$$hashtag', regex: query, options: 'i' } }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             ]
           }
         });
