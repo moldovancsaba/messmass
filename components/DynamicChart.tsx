@@ -327,6 +327,15 @@ const BarChart: React.FC<{
   const totalValue = validElements.reduce((sum, el) => sum + (el.value as number), 0);
   const hasPercentageSuffix = validElements[0]?.formatting?.suffix === '%';
   
+  console.log('🔍 BarChart DEBUG:', {
+    chartTitle: result.title,
+    firstElementFormatting: validElements[0]?.formatting,
+    suffix: validElements[0]?.formatting?.suffix,
+    hasPercentageSuffix,
+    totalValue,
+    sampleValue: validElements[0]?.value
+  });
+  
   // WHAT: Create separate legends and bars (hide zero or NA values)
   // WHY: Formatting at element level for BAR charts, with percentage conversion
   const legends = validElements.map((element) => {
@@ -491,6 +500,16 @@ const ValueChart: React.FC<{
   // HOW: Check if barFormatting has '%' suffix, then convert values
   const totalValue = validElements.reduce((sum, el) => sum + (el.value as number), 0);
   const hasPercentageSuffix = result.barFormatting?.suffix === '%';
+  
+  console.log('🔍 ValueChart DEBUG:', {
+    chartTitle: result.title,
+    barFormatting: result.barFormatting,
+    kpiFormatting: result.kpiFormatting,
+    suffix: result.barFormatting?.suffix,
+    hasPercentageSuffix,
+    totalValue,
+    sampleValue: validElements[0]?.value
+  });
   
   // WHAT: Create legends with unified barFormatting
   // WHY: All bars share same formatting in VALUE charts, with percentage conversion
