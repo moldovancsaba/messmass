@@ -7,6 +7,7 @@ import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTyp
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 import PredictiveFormattingInput from './PredictiveFormattingInput';
+import SaveStatusIndicator, { SaveStatus } from './SaveStatusIndicator';
 import styles from './ChartAlgorithmManager.module.css';
 
 /**
@@ -129,41 +130,36 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     }
   };
 
-  const saveConfiguration = async (configData: ChartConfigFormData) => {
-    try {
-      const isUpdate = !!configData._id;
-      const url = '/api/chart-config';
-      const method = isUpdate ? 'PUT' : 'POST';
-      
-      const body = isUpdate 
-        ? { configurationId: configData._id, ...configData }
-        : configData;
+  const saveConfiguration = async (configData: ChartConfigFormData): Promise<void> => {
+    const isUpdate = !!configData._id;
+    const url = '/api/chart-config';
+    const method = isUpdate ? 'PUT' : 'POST';
+    
+    const body = isUpdate 
+      ? { configurationId: configData._id, ...configData }
+      : configData;
 
-      console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration:`, configData.chartId);
-      console.log('📦 FULL CONFIG DATA BEING SENT:', JSON.stringify(configData, null, 2));
-      console.log('🔍 Element[0] formatting:', configData.elements[0]?.formatting);
-      console.log('🔍 kpiFormatting:', configData.kpiFormatting);
-      console.log('🔍 barFormatting:', configData.barFormatting);
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+    console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration:`, configData.chartId);
+    console.log('📦 FULL CONFIG DATA BEING SENT:', JSON.stringify(configData, null, 2));
+    console.log('🔍 Element[0] formatting:', configData.elements[0]?.formatting);
+    console.log('🔍 kpiFormatting:', configData.kpiFormatting);
+    console.log('🔍 barFormatting:', configData.barFormatting);
+    
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
 
-      const result = await response.json();
-      
-      if (result.success) {
-        console.log(`✅ Chart configuration ${isUpdate ? 'updated' : 'created'} successfully`);
-        await loadConfigurations(); // Reload the list
-        setShowEditor(false);
-        setEditingConfig(null);
-      } else {
-        alert(`Failed to ${isUpdate ? 'update' : 'create'} configuration: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('❌ Error saving configuration:', error);
-      alert('Failed to save configuration. Please try again.');
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log(`✅ Chart configuration ${isUpdate ? 'updated' : 'created'} successfully`);
+      await loadConfigurations(); // Reload the list
+      setShowEditor(false);
+      setEditingConfig(null);
+    } else {
+      throw new Error(result.error || 'Failed to save configuration');
     }
   };
 
@@ -539,7 +535,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 interface ChartConfigurationEditorProps {
   config: ChartConfigFormData;
   availableVariables: AvailableVariable[]; // WHAT: Dynamic variables from KYC
-  onSave: (config: ChartConfigFormData) => void;
+  onSave: (config: ChartConfigFormData) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -549,6 +545,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
   const [variableSearchTerm, setVariableSearchTerm] = useState('');
   const [selectedVariableCategory, setSelectedVariableCategory] = useState<string>('All');
   const [formulaValidation, setFormulaValidation] = useState<Record<number, { isValid: boolean; error?: string; result?: number | 'NA' }>>({});
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   
   // WHAT: Formatting defaults from database
   // WHY: Predictive dropdowns need available prefix/suffix options
@@ -585,7 +582,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
     }
   };
   
-  const handleSave = () => {
+  const handleSave = async () => {
     // Enhanced validation
     if (!formData.chartId || !formData.title) {
       alert('Please fill in Chart ID and Title');
@@ -622,7 +619,18 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
       return;
     }
     
-    onSave(formData);
+    // WHAT: Update save status with visual feedback
+    // WHY: User needs to see save operation progress
+    setSaveStatus('saving');
+    try {
+      await onSave(formData);
+      setSaveStatus('saved');
+      // Reset to idle after 2 seconds
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
   };
 
   const updateElement = (index: number, field: keyof ChartConfigFormData['elements'][0], value: string) => {
@@ -763,7 +771,10 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
     <div className="modal-overlay">
       <ColoredCard className={`modal-content ${styles.modalContent}`}>
         <div className="modal-header">
-          <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
+            <SaveStatusIndicator status={saveStatus} />
+          </div>
           <button className="btn btn-secondary" onClick={onCancel}>✕</button>
         </div>
 
