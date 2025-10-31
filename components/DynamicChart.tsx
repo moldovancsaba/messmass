@@ -637,13 +637,18 @@ const KPIChart: React.FC<{
   
   // WHAT: Format KPI value - handle number, string, or NA
   // WHY: Text/image charts have string values, numeric charts have numbers
-  // HOW: Check type and format accordingly
+  // HOW: Use formatChartValue with element formatting if available
   const formatKPIValue = (value: number | string | 'NA') => {
     if (value === 'NA') return 'N/A';
     if (typeof value === 'string') return value;
     
-    // Format numbers to 2 decimal places
-    return value.toFixed(2);
+    // WHAT: Use formatChartValue with element formatting
+    // WHY: Respect rounded/prefix/suffix configuration from database
+    const element = result.elements[0];
+    return formatChartValue(value, { 
+      formatting: element?.formatting,
+      type: element?.type 
+    });
   };
   
   // Get the color from the first element or use default
