@@ -1,5 +1,64 @@
 # MessMass Release Notes
 
+## [v8.19.1] — 2025-10-31T11:53:00.000Z
+
+### ✅ Percentage Calculation Fix + VALUE Chart KPI Display
+
+**What Changed**
+
+✅ **Proper Percentage Calculation for Bar/VALUE Charts**
+- When suffix is '%', values now convert to percentages: (value/total) × 100
+- Example: Values 100, 200, 300 with '%' suffix display as:
+  - Item 1: 16.67% (100/600 × 100)
+  - Item 2: 33.33% (200/600 × 100)
+  - Item 3: 50% (300/600 × 100)
+- Applied to both BAR and VALUE chart types
+- Percentage conversion happens before formatting
+
+✅ **VALUE Chart KPI Total Always Displays**
+- VALUE charts now ALWAYS calculate and show KPI total
+- Previously required `showTotal: true` flag
+- Now calculates total for VALUE type regardless of flag
+- Fixes "VALUE chart not showing KPI part" issue
+
+**Files Modified**: 2 files
+- `lib/chartCalculator.ts` - Always calculate total for VALUE charts
+- `components/DynamicChart.tsx` - Add percentage conversion when suffix is '%'
+- `package.json` - Version 8.19.1
+
+**Why**
+
+User requirements:
+- "when you calculate % i need you to make the proper calculation"
+- "item 1 is 100/6 % item 2 is 200/6 % item 3 is 300/6 %" (should be 100/600*100)
+- "also on the Value Chart you do not show the KPI part now"
+
+Solution:
+1. Calculate total of all values
+2. Convert each value to percentage: (value/total) × 100
+3. Apply percentage conversion BEFORE formatChartValue()
+4. Always calculate total for VALUE charts (not conditional on showTotal)
+
+**Benefits**
+1. **Correct Math**: Percentages display correctly (16.67%, 33.33%, 50%)
+2. **VALUE Charts Work**: KPI total always displays
+3. **Flexible Formatting**: Works with any suffix (€, %, pts, etc.)
+4. **User Intent**: Shows relative proportions when using % suffix
+
+**Technical Implementation**
+- BarChart: Check `element.formatting.suffix === '%'`, convert values
+- ValueChart: Check `result.barFormatting.suffix === '%'`, convert values
+- Calculator: `configuration.type === 'value'` bypasses showTotal check
+- Formula: `(value / totalValue) * 100` when percentage suffix detected
+
+**Execution**
+- ✅ Build passing
+- ✅ Percentage conversion implemented
+- ✅ VALUE chart total always calculated
+- ✅ Ready for testing with real data
+
+---
+
 ## [v8.19.0] — 2025-10-31T11:47:00.000Z
 
 ### 🔥 CRITICAL: Chart Formatting Database Persistence + SaveStatusIndicator

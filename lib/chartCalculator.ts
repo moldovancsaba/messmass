@@ -315,29 +315,32 @@ export function calculateChart(
       hasErrors = true;
       console.error(`❌ KPI chart "${configuration.title}" has no elements`);
     }
-  } else if ((configuration.type === 'bar' || configuration.type === 'value') && configuration.showTotal) {
-    try {
-      // WHAT: For bar/value charts, total is the sum of all elements (excluding NA values)
-      // WHY: VALUE type behaves like BAR but with dual formatting
-      const validValues = elements
-        .map(el => el.value)
-        .filter((value): value is number => typeof value === 'number');
-      
-      if (validValues.length === 0) {
+  } else if (configuration.type === 'bar' || configuration.type === 'value') {
+    // WHAT: Calculate total for bar/VALUE charts (VALUE always needs total for KPI display)
+    // WHY: VALUE charts show KPI total even if showTotal flag is false for subtitle
+    // HOW: Sum all valid numeric elements
+    if (configuration.showTotal || configuration.type === 'value') {
+      try {
+        const validValues = elements
+          .map(el => el.value)
+          .filter((value): value is number => typeof value === 'number');
+        
+        if (validValues.length === 0) {
+          total = 'NA';
+          hasErrors = true;
+        } else if (validValues.length < elements.length) {
+          // Some elements are NA, but we can still calculate partial total
+          total = validValues.reduce((sum, value) => sum + value, 0);
+          hasErrors = true; // Mark as having errors due to partial data
+        } else {
+          // All elements are valid numbers
+          total = validValues.reduce((sum, value) => sum + value, 0);
+        }
+      } catch (error) {
         total = 'NA';
         hasErrors = true;
-      } else if (validValues.length < elements.length) {
-        // Some elements are NA, but we can still calculate partial total
-        total = validValues.reduce((sum, value) => sum + value, 0);
-        hasErrors = true; // Mark as having errors due to partial data
-      } else {
-        // All elements are valid numbers
-        total = validValues.reduce((sum, value) => sum + value, 0);
+        console.error(`❌ Error calculating total for chart "${configuration.title}":`, error);
       }
-    } catch (error) {
-      total = 'NA';
-      hasErrors = true;
-      console.error(`❌ Error calculating total for chart "${configuration.title}":`, error);
     }
   }
   

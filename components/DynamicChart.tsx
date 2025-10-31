@@ -321,10 +321,24 @@ const BarChart: React.FC<{
     );
   }
 
+  // WHAT: Calculate total for percentage conversion if needed
+  // WHY: When suffix is '%', display values as (value/total)*100
+  // HOW: Check if formatting has '%' suffix, then convert values
+  const totalValue = validElements.reduce((sum, el) => sum + (el.value as number), 0);
+  const hasPercentageSuffix = validElements[0]?.formatting?.suffix === '%';
+  
   // WHAT: Create separate legends and bars (hide zero or NA values)
-  // WHY: Formatting at element level for BAR charts
+  // WHY: Formatting at element level for BAR charts, with percentage conversion
   const legends = validElements.map((element) => {
-    const value = element.value as number;
+    let value = element.value as number;
+    
+    // WHAT: Convert to percentage if suffix is '%'
+    // WHY: Show 16.67%, 33.33%, 50% instead of raw 100, 200, 300
+    // HOW: (value / total) * 100
+    if (hasPercentageSuffix && totalValue > 0) {
+      value = (value / totalValue) * 100;
+    }
+    
     return (
       <div key={element.id} className={styles.legendTextRow}>
         <span>{element.label}: {formatChartValue(value, { formatting: element.formatting, type: element.type })}</span>
@@ -472,10 +486,24 @@ const ValueChart: React.FC<{
     );
   }
 
+  // WHAT: Calculate total for percentage conversion if needed
+  // WHY: When suffix is '%', display values as (value/total)*100
+  // HOW: Check if barFormatting has '%' suffix, then convert values
+  const totalValue = validElements.reduce((sum, el) => sum + (el.value as number), 0);
+  const hasPercentageSuffix = result.barFormatting?.suffix === '%';
+  
   // WHAT: Create legends with unified barFormatting
-  // WHY: All bars share same formatting in VALUE charts
+  // WHY: All bars share same formatting in VALUE charts, with percentage conversion
   const legends = validElements.map((element) => {
-    const value = element.value as number;
+    let value = element.value as number;
+    
+    // WHAT: Convert to percentage if suffix is '%'
+    // WHY: Show 16.67%, 33.33%, 50% instead of raw 100, 200, 300
+    // HOW: (value / total) * 100
+    if (hasPercentageSuffix && totalValue > 0) {
+      value = (value / totalValue) * 100;
+    }
+    
     return (
       <div key={element.id} className={styles.legendTextRow}>
         <span>{element.label}: {formatChartValue(value, { formatting: result.barFormatting })}</span>
