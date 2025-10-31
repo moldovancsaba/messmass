@@ -401,11 +401,12 @@ export function calculateChart(
     hasErrors
   };
   
-  // WHAT: Add VALUE-specific formatting if present
-  // WHY: VALUE charts need separate formatting for KPI total and bars
+  // WHAT: Add VALUE-specific formatting with defaults if missing
+  // WHY: VALUE charts need separate formatting for KPI total and bars, use defaults if not configured
+  // HOW: Provide empty string defaults (no prefix/suffix) if formatting configs are missing
   if (configuration.type === 'value') {
-    result.kpiFormatting = configuration.kpiFormatting;
-    result.barFormatting = configuration.barFormatting;
+    result.kpiFormatting = configuration.kpiFormatting || { rounded: true, prefix: '', suffix: '' };
+    result.barFormatting = configuration.barFormatting || { rounded: true, prefix: '', suffix: '' };
   }
   
   return result;

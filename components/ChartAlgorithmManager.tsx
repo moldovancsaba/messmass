@@ -249,7 +249,21 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
 
   const startEditing = (config?: ChartConfiguration) => {
     if (config) {
-      // Edit existing configuration
+      // WHAT: Edit existing configuration - include ALL formatting fields
+      // WHY: kpiFormatting, barFormatting, element.formatting must be editable
+      // HOW: Spread all fields from config, initialize defaults for VALUE charts without formatting
+      
+      // WHAT: Initialize formatting defaults for VALUE charts that don't have them
+      // WHY: VALUE charts REQUIRE both kpiFormatting and barFormatting to display
+      // HOW: Set defaults if missing, otherwise use existing values
+      const kpiFormatting = config.type === 'value' && !config.kpiFormatting
+        ? { rounded: true, prefix: '', suffix: '' }
+        : config.kpiFormatting;
+      
+      const barFormatting = config.type === 'value' && !config.barFormatting
+        ? { rounded: true, prefix: '', suffix: '' }
+        : config.barFormatting;
+      
       setEditingConfig({
         _id: config._id,
         chartId: config.chartId,
@@ -258,6 +272,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         order: config.order,
         isActive: config.isActive,
         elements: config.elements,
+        kpiFormatting,
+        barFormatting,
         emoji: config.emoji,
         subtitle: config.subtitle,
         showTotal: config.showTotal,
