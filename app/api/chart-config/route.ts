@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { getAdminUser } from '@/lib/auth';
-import { ChartConfiguration, DEFAULT_CHART_CONFIGURATIONS } from '@/lib/chartConfigTypes';
+import { ChartConfiguration } from '@/lib/chartConfigTypes';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
