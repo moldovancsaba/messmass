@@ -61,6 +61,7 @@
     "migrate:charts-formatting": "tsx -r dotenv/config scripts/migrateChartsToNewFormatting.ts dotenv_config_path=.env.local",
     "seed:value-charts": "tsx -r dotenv/config scripts/seedValueChartTemplates.ts dotenv_config_path=.env.local",
     "seed:formatting-defaults": "tsx -r dotenv/config scripts/seedChartFormattingDefaults.ts dotenv_config_path=.env.local",
+    "migrate:existing-charts-formatting": "tsx -r dotenv/config scripts/migrateExistingChartsFormatting.ts dotenv_config_path=.env.local",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify"
   },
