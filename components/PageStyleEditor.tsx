@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import ColoredCard from './ColoredCard';
 import StylePreview from './StylePreview';
+import FormModal from './modals/FormModal';
 import styles from './PageStyleEditor.module.css';
 import { 
   PageStyleEnhanced, 
@@ -77,20 +78,6 @@ export default function PageStyleEditor({
     });
   };
 
-  /* WHAT: Handle form submission
-   * WHY: Validate and pass data to parent */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (!formData.name || formData.name.trim() === '') {
-      alert('Style name is required');
-      return;
-    }
-    
-    await onSave(formData);
-  };
-
   /* WHAT: Background type toggle
    * WHY: Switch between solid and gradient backgrounds */
   const toggleBackgroundType = (bgKey: 'pageBackground' | 'heroBackground') => {
@@ -116,26 +103,25 @@ export default function PageStyleEditor({
   ] as const;
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleSubmit}>
-          {/* Header */}
-          <div className={styles.modalHeader}>
-            <h2 className={styles.modalTitle}>
-              {style ? `✏️ Edit Style: ${style.name}` : '➕ Create New Style'}
-            </h2>
-            <button 
-              type="button" 
-              onClick={onClose} 
-              className={styles.closeButton}
-              disabled={isLoading}
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Section Tabs */}
-          <div className={styles.sectionTabs}>
+    <FormModal
+      isOpen={true}
+      onClose={onClose}
+      onSubmit={async () => {
+        // Basic validation
+        if (!formData.name || formData.name.trim() === '') {
+          alert('Style name is required');
+          return;
+        }
+        
+        await onSave(formData);
+      }}
+      title={style ? `✏️ Edit Style: ${style.name}` : '➕ Create New Style'}
+      submitText={style ? 'Update Style' : 'Create Style'}
+      isSubmitting={isLoading}
+      size="xl"
+    >
+      {/* Section Tabs */}
+      <div className={styles.sectionTabs}>
             {sections.map((section) => (
               <button
                 key={section.id}
@@ -151,7 +137,7 @@ export default function PageStyleEditor({
           {/* Split Layout: Form + Preview */}
           <div className={styles.splitLayout}>
             {/* Form Content */}
-            <div className={styles.modalBody}>
+            <div className={styles.formPane}>
             {/* GENERAL SECTION */}
             {activeSection === 'general' && (
               <div className={styles.section}>
@@ -541,27 +527,6 @@ export default function PageStyleEditor({
               <StylePreview style={formData} />
             </div>
           </div>
-
-          {/* Footer Actions */}
-          <div className={styles.modalFooter}>
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-secondary"
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : style ? 'Update Style' : 'Create Style'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    </FormModal>
   );
 }

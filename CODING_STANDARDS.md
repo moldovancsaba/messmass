@@ -41,6 +41,193 @@
 
 ---
 
+## 🔍 MANDATORY: Search Before Implementation
+
+### Rule: Never Create Without Searching First
+
+**Before writing ANY new component, modal, form, or styling:**
+
+1. **Search for existing implementations** in the codebase
+2. **Use the existing pattern exactly** - do not deviate
+3. **Copy the structure, class names, and tokens** verbatim
+4. **Verify with reference files** listed below
+
+**This is NOT optional. Failure to follow existing patterns will result in rejected code.**
+
+### Reference Implementations (MUST USE)
+
+#### Modals - Use FormModal Pattern
+
+**Reference Files:**
+- `components/modals/FormModal.tsx` - Structure reference
+- `components/modals/FormModal.module.css` - Styling reference
+- `components/modals/BaseModal.tsx` - Base container
+
+**Required Structure:**
+```tsx
+// ✅ CORRECT: Using FormModal
+import FormModal from '@/components/modals/FormModal';
+
+export default function MyModal({ isOpen, onClose }) {
+  return (
+    <FormModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={async () => { /* handler */ }}
+      title="My Modal Title"
+      submitText="Save"
+      size="lg"
+    >
+      {/* Modal content */}
+    </FormModal>
+  );
+}
+```
+
+**CSS Structure (if custom content styling needed):**
+```css
+/* MyModal.module.css - EXACT MATCH to FormModal pattern */
+
+/* Header section */
+.header {
+  padding: 2rem;
+  padding-right: 3.5rem; /* Space for close button */
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+/* Body section */
+.body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .header {
+    padding: 1.5rem;
+    padding-right: 3rem;
+  }
+  
+  .body {
+    padding: 1.5rem;
+  }
+}
+```
+
+**Real Example from Codebase:**
+- `components/SharePopup.tsx` - See lines 110-127 for header/body structure
+- `components/SharePopup.module.css` - See lines 1-42 for exact CSS pattern
+
+#### Cards - Use ColoredCard Pattern
+
+**Reference File:** `components/ColoredCard.tsx`
+
+**Required Usage:**
+```tsx
+// ✅ CORRECT: Using ColoredCard
+import ColoredCard from '@/components/ColoredCard';
+
+<ColoredCard 
+  accentColor="#3b82f6"
+  hoverable={true}
+  className="p-4"
+>
+  {/* Content */}
+</ColoredCard>
+```
+
+**Real Examples:**
+- `app/admin/projects/ProjectsPageClient.tsx` - Lines 205-220
+- `app/admin/filter/page.tsx` - Lines 195-210
+
+#### Forms - Use Unified Patterns
+
+**Reference Files:**
+- `components/UnifiedHashtagInput.tsx` - Hashtag inputs
+- `app/admin/projects/ProjectsPageClient.tsx` - Form structure (lines 916-960)
+
+**Required Structure:**
+```tsx
+// ✅ CORRECT: Form with CSS modules
+<div className="form-group mb-4">
+  <label className="form-label-block">Event Name *</label>
+  <input
+    type="text"
+    className="form-input"
+    value={formData.eventName}
+    onChange={(e) => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
+    placeholder="Enter event name..."
+  />
+</div>
+```
+
+**CSS Classes to Use:**
+- `.form-group` - Form field wrapper
+- `.form-label-block` - Field labels
+- `.form-input` - Text inputs, selects, textareas
+- `.btn` + `.btn-primary` / `.btn-secondary` - Buttons
+
+### Design System Tokens (MANDATORY)
+
+**ALL styling MUST use design tokens. Hardcoded values are PROHIBITED.**
+
+**Token Categories:**
+
+```css
+/* ✅ CORRECT: Using design tokens */
+.myComponent {
+  /* Colors */
+  color: var(--mm-gray-900);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  
+  /* Spacing */
+  padding: var(--mm-space-4);  /* 1rem */
+  margin: var(--mm-space-2);   /* 0.5rem */
+  gap: var(--mm-space-3);      /* 0.75rem */
+  
+  /* Typography */
+  font-size: var(--mm-font-size-sm);        /* 0.875rem */
+  font-weight: var(--mm-font-weight-medium); /* 500 */
+  line-height: var(--mm-line-height-md);    /* 1.5 */
+  
+  /* Effects */
+  border-radius: var(--mm-radius-lg);  /* 0.5rem */
+  box-shadow: var(--mm-shadow-sm);
+  transition: all var(--transition-fast); /* 0.15s */
+}
+
+/* ❌ FORBIDDEN: Hardcoded values */
+.badComponent {
+  color: #1f2937;           /* ❌ Use var(--mm-gray-900) */
+  padding: 16px;            /* ❌ Use var(--mm-space-4) */
+  font-size: 14px;          /* ❌ Use var(--mm-font-size-sm) */
+  border-radius: 8px;       /* ❌ Use var(--mm-radius-lg) */
+  background: #ffffff;      /* ❌ Use var(--mm-white) */
+}
+```
+
+**Token Reference:** See `app/styles/theme.css` for all available tokens
+
+**Real Example from Codebase:**
+- `components/SharePopup.module.css` - Lines 1-230 (100% design tokens)
+- `components/modals/FormModal.module.css` - Lines 1-152 (100% design tokens)
+
+### Pattern Matching Checklist
+
+Before submitting any code, verify:
+
+- [ ] **Searched** for existing similar components
+- [ ] **Identified** reference file to copy from
+- [ ] **Matched** exact class name structure (`.header`, `.body`, etc.)
+- [ ] **Used** design tokens for ALL colors, spacing, typography
+- [ ] **Copied** responsive breakpoints from reference
+- [ ] **Verified** no hardcoded values (run: `grep -r "#[0-9a-f]\{6\}\|[0-9]\+px" *.css`)
+- [ ] **Tested** mobile responsiveness matches reference
+
+---
+
 ## ✅ Correct Styling Approaches
 
 ### 1. CSS Modules (Preferred)
@@ -321,13 +508,121 @@ If you encounter any other legitimate need for inline styles:
 
 ## 🚨 Enforcement
 
-- **CI/CD:** Lint checks run on every commit
-- **Code Review:** Inline styles will be rejected
-- **AI Development:** WARP is configured to enforce this rule
-- **Documentation:** This file is the authoritative source
+### CI/CD Checks
 
-**Non-compliance:** Pull requests with inline styles will not be merged.
+- **Lint checks** run on every commit
+- **Build failures** for TypeScript errors
+- **Grep checks** for hardcoded values in CSS
+
+### Code Review Standards
+
+**The following will be REJECTED:**
+
+1. **Inline styles** on DOM elements (except PageStyle gradients)
+2. **Hardcoded colors** instead of design tokens
+3. **Hardcoded spacing** (px values) instead of tokens
+4. **Custom modal implementations** instead of FormModal/BaseModal
+5. **Custom card components** instead of ColoredCard
+6. **Deviation from reference implementations** without justification
+
+### Consequences of Non-Compliance
+
+| Violation | Consequence |
+|-----------|-------------|
+| Inline styles | **Immediate rejection** - rewrite required |
+| Hardcoded colors/spacing | **Rejection** - convert to design tokens |
+| Not using existing components | **Rejection** - use reference implementation |
+| Not searching codebase first | **Rejection** - demonstrate research |
+| Creating duplicate patterns | **Rejection** - consolidate with existing |
+
+### Verification Commands
+
+**Before submitting code, run these checks:**
+
+```bash
+# Check for hardcoded hex colors in CSS
+grep -r "#[0-9a-f]\{6\}" --include="*.css" --include="*.module.css" components/ app/
+
+# Check for hardcoded px values (excluding 0px, 1px, 2px borders)
+grep -r "[3-9][0-9]*px\|[0-9]\{3,\}px" --include="*.css" --include="*.module.css" components/ app/
+
+# Check for inline style props in JSX
+grep -r 'style={{' --include="*.tsx" --include="*.jsx" components/ app/
+
+# Run build
+npm run build
+
+# Run type check
+npm run type-check
+```
+
+**If any of these return results (except allowed exceptions), your code will be rejected.**
+
+### AI Development Rules
+
+**For WARP and other AI tools:**
+
+1. **MUST search** existing implementations before writing code
+2. **MUST reference** specific files and line numbers when copying patterns
+3. **MUST use** design tokens exclusively (no hardcoded values)
+4. **MUST match** existing component structure exactly
+5. **MUST verify** mobile responsiveness matches reference
+
+**Failure to follow these rules = code rejection**
+
+### Documentation as Contract
+
+This document is the **authoritative source** for coding standards.
+
+**All code must comply:**
+- Human developers
+- AI development tools (WARP, Copilot, etc.)
+- External contributors
+- Code generators
+
+**No exceptions** without explicit approval and documentation update.
 
 ---
 
-*This document is part of the MessMass technical standards and must be followed by all contributors, including AI development tools.*
+## 📚 Reference Quick Links
+
+### Essential Files to Study
+
+**Modals:**
+- `components/modals/FormModal.tsx` + `.module.css`
+- `components/modals/BaseModal.tsx` + `.module.css`
+- `components/modals/ConfirmDialog.tsx`
+- `components/SharePopup.tsx` + `.module.css`
+
+**Forms:**
+- `app/admin/projects/ProjectsPageClient.tsx` (lines 905-1038)
+- `components/UnifiedHashtagInput.tsx`
+
+**Cards:**
+- `components/ColoredCard.tsx`
+- `app/admin/filter/page.tsx` (ColoredCard usage)
+
+**Design Tokens:**
+- `app/styles/theme.css` (all CSS variables)
+- `app/styles/utilities.css` (utility classes)
+- `app/styles/components.css` (global components)
+
+### Command Reference
+
+```bash
+# Search for modal implementations
+grep -r "FormModal" --include="*.tsx" components/ app/
+
+# Find ColoredCard usage
+grep -r "ColoredCard" --include="*.tsx" app/
+
+# List all CSS modules
+find components/ app/ -name "*.module.css"
+
+# Check design token usage
+grep -r "var(--mm-" --include="*.css" components/
+```
+
+---
+
+*This document is part of the MessMass technical standards and must be followed by all contributors, including AI development tools. Version 8.24.0 - Last Updated: 2025-11-01T15:00:00.000Z*

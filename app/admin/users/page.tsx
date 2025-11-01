@@ -8,7 +8,7 @@ import AdminHero from '@/components/AdminHero'
 import ColoredCard from '@/components/ColoredCard'
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient'
 import PasswordModal from '@/components/PasswordModal'
-import ConfirmModal from '@/components/ConfirmModal'
+import { ConfirmDialog } from '@/components/modals'
 
 interface ListedUser {
   id: string
@@ -383,16 +383,16 @@ export default function AdminUsersPage() {
         subtitle="Copy this password and share it securely with the user"
       />
 
-      {/* WHAT: Modal for confirmation dialogs
+      {/* WHAT: Modal for confirmation dialogs - Unified Modal System v8.24.0+
           WHY: Replaces window.confirm() with styled modal */}
-      <ConfirmModal
+      <ConfirmDialog
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, onConfirm: () => {}, title: '', message: '' })}
         onConfirm={confirmModal.onConfirm}
         title={confirmModal.title}
         message={confirmModal.message}
         confirmText={confirmModal.confirmText}
-        isDangerous={confirmModal.isDangerous}
+        variant={confirmModal.isDangerous ? 'danger' : 'info'}
       />
     </div>
   )

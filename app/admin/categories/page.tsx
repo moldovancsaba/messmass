@@ -6,6 +6,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import styles from './Categories.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { FormModal } from '@/components/modals';
 
 interface HashtagCategory {
   _id: string;
@@ -377,193 +378,133 @@ if (error) {
         </div>
       )}
 
-      {/* Create Category Modal */}
-      {showCreateForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2 className="modal-title">
-                🆕 Create New Category
-              </h2>
-              <button
-                onClick={() => {
-                  setShowCreateForm(false);
-                  resetForm();
-                }}
-                className="modal-close"
-              >
-                ×
-              </button>
-            </div>
+      {/* Create Category Modal - Unified Modal System v8.24.0+ */}
+      <FormModal
+        isOpen={showCreateForm}
+        onClose={() => {
+          setShowCreateForm(false);
+          resetForm();
+        }}
+        onSubmit={handleCreateCategory}
+        title="🆕 Create New Category"
+        submitText="🆕 Create Category"
+        disableSubmit={!formData.name.trim()}
+        size="md"
+      >
+        {/* Category Name */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Category Name *
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.name}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="e.g., Sport, Team, Location"
+          />
+        </div>
 
-            <div className="modal-body">
-            {/* Category Name */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Category Name *
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="e.g., Sport, Team, Location"
-              />
-            </div>
+        {/* Order */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Display Order
+          </label>
+          <input
+            type="number"
+            className="form-input"
+            value={formData.order}
+            onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+            placeholder="0"
+          />
+        </div>
 
-            {/* Order */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Display Order
-              </label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.order}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
-              />
-            </div>
-
-            {/* Color Picker */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Category Color
-              </label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="color"
-                  className="form-input color-picker"
-                  value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                />
-                <input
-                  type="text"
-                  className="form-input flex-1"
-                  value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  placeholder="#3b82f6"
-                />
-              </div>
-            </div>
-            </div>
-
-            {/* Form Actions */}
-            <div className="modal-footer">
-              <button
-                onClick={() => {
-                  setShowCreateForm(false);
-                  resetForm();
-                }}
-                className="btn btn-small btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateCategory}
-                disabled={!formData.name.trim()}
-                className="btn btn-small btn-primary"
-              >
-                🆕 Create Category
-              </button>
-            </div>
+        {/* Color Picker */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Category Color
+          </label>
+          <div className="flex items-center gap-4">
+            <input
+              type="color"
+              className="form-input color-picker"
+              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+            />
+            <input
+              type="text"
+              className="form-input flex-1"
+              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+              placeholder="#3b82f6"
+            />
           </div>
         </div>
-      )}
+      </FormModal>
 
-      {/* Edit Category Modal */}
-      {showEditForm && editingCategory && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2 className="modal-title">
-                ✏️ Edit Category
-              </h2>
-              <button
-                onClick={() => {
-                  setShowEditForm(false);
-                  resetForm();
-                }}
-                className="modal-close"
-              >
-                ×
-              </button>
-            </div>
+      {/* Edit Category Modal - Unified Modal System v8.24.0+ */}
+      <FormModal
+        isOpen={showEditForm && !!editingCategory}
+        onClose={() => {
+          setShowEditForm(false);
+          resetForm();
+        }}
+        onSubmit={handleUpdateCategory}
+        title="✏️ Edit Category"
+        submitText="✔️ Update Category"
+        disableSubmit={!formData.name.trim()}
+        size="md"
+      >
+        {/* Category Name */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Category Name *
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            value={formData.name}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="e.g., Sport, Team, Location"
+          />
+        </div>
 
-            <div className="modal-body">
-            {/* Category Name */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Category Name *
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="e.g., Sport, Team, Location"
-              />
-            </div>
+        {/* Order */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Display Order
+          </label>
+          <input
+            type="number"
+            className="form-input"
+            value={formData.order}
+            onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+            placeholder="0"
+          />
+        </div>
 
-            {/* Order */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Display Order
-              </label>
-              <input
-                type="number"
-                className="form-input"
-                value={formData.order}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
-              />
-            </div>
-
-            {/* Color Picker */}
-            <div className="form-group mb-6">
-              <label className="form-label-block text-sm text-gray-700">
-                Category Color
-              </label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="color"
-                  className="form-input color-picker"
-                  value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                />
-                <input
-                  type="text"
-                  className="form-input flex-1"
-                  value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  placeholder="#3b82f6"
-                />
-              </div>
-            </div>
-            </div>
-
-            {/* Form Actions */}
-            <div className="modal-footer">
-              <button
-                onClick={() => {
-                  setShowEditForm(false);
-                  resetForm();
-                }}
-                className="btn btn-small btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpdateCategory}
-                disabled={!formData.name.trim()}
-                className="btn btn-small btn-primary"
-              >
-                ✔️ Update Category
-              </button>
-            </div>
+        {/* Color Picker */}
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Category Color
+          </label>
+          <div className="flex items-center gap-4">
+            <input
+              type="color"
+              className="form-input color-picker"
+              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+            />
+            <input
+              type="text"
+              className="form-input flex-1"
+              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+              placeholder="#3b82f6"
+            />
           </div>
         </div>
-      )}
+      </FormModal>
     </div>
   );
 }

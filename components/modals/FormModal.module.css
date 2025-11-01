@@ -1,0 +1,152 @@
+/**
+ * FormModal Styles
+ * 
+ * Form-specific modal styling with header, scrollable body, and action footer.
+ * Uses design system tokens for consistency.
+ */
+
+/* Form container */
+.form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: inherit;
+}
+
+/* Header section */
+.header {
+  padding: 2rem;
+  padding-right: 3.5rem; /* Space for close button */
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.title {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
+}
+
+/* Body section (scrollable) */
+.body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Footer section */
+.footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--mm-gray-200);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  background-color: var(--mm-gray-50);
+}
+
+/* Buttons */
+.cancelButton,
+.submitButton {
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
+}
+
+/* Cancel button */
+.cancelButton {
+  background-color: white;
+  color: var(--mm-gray-700);
+  border: 1px solid var(--mm-gray-300);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: var(--mm-gray-50);
+  border-color: var(--mm-gray-400);
+}
+
+.cancelButton:active:not(:disabled) {
+  background-color: var(--mm-gray-100);
+}
+
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Submit button */
+.submitButton {
+  background-color: var(--mm-color-primary-500);
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--mm-color-primary-600);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.submitButton:active:not(:disabled) {
+  background-color: var(--mm-color-primary-700);
+  transform: translateY(1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .header {
+    padding: 1.5rem;
+    padding-right: 3rem;
+  }
+  
+  .body {
+    padding: 1.5rem;
+  }
+  
+  .footer {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .submitButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

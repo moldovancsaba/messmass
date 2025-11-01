@@ -1,9 +1,84 @@
 # Database-First Variables & Metrics Management System
 
-**Version:** 7.0.0  
-**Last Updated:** 2025-01-31T16:00:00.000Z (UTC)  
+**Version:** 8.24.0  
+**Last Updated:** 2025-11-01T15:00:00.000Z (UTC)  
 **Status:** Production  
 **Breaking Change:** Migrated from code-based registry to database-first system
+
+---
+
+## 🔒 MANDATORY: Reference Implementations for Variable UI
+
+**Before implementing variable management UI:**
+
+### Rule: Use Existing Variable Management Patterns
+
+**Reference Files:**
+- **KYC Management**: `app/admin/kyc/page.tsx` (lines 1-850) - Complete variable management UI
+- **Variable Config API**: `app/api/variables-config/route.ts` (lines 1-234) - CRUD operations
+- **Editor Clicker**: `app/edit/[slug]/page.tsx` (lines 1-1200) - Variable display and editing
+- **Variable Groups**: `app/api/variables-groups/route.ts` (lines 1-189) - Grouping system
+
+### Real Examples
+
+**Creating Variable Card UI:**
+```tsx
+// ✅ CORRECT: From app/admin/kyc/page.tsx line 248
+<ColoredCard 
+  accentColor={getCategoryColor(variable.category)}
+  hoverable={false}
+  className="p-4"
+>
+  <div className="variable-card-header">
+    <h3 className="font-semibold">{variable.alias}</h3>
+    <span className="text-sm text-gray-500">{variable.name}</span>
+  </div>
+  <div className="variable-metadata">
+    <span className="badge">{variable.type}</span>
+    <span className="badge">{variable.category}</span>
+  </div>
+</ColoredCard>
+```
+
+**Using Variables API:**
+```typescript
+// ✅ CORRECT: Fetching all variables
+const response = await fetch('/api/variables-config');
+const { success, variables } = await response.json();
+
+// ✅ CORRECT: Creating custom variable
+await fetch('/api/variables-config', {
+  method: 'POST',
+  body: JSON.stringify({
+    name: 'customMetric',
+    alias: 'Custom Metric',
+    type: 'number',
+    category: 'custom',
+    visibleInClicker: true,
+    editableInManual: true
+  })
+});
+```
+
+**Variable Group Pattern:**
+```typescript
+// ✅ CORRECT: From app/api/variables-groups/route.ts
+interface VariableGroup {
+  id: string;
+  title: string;
+  chartId?: string;
+  variables: string[];
+  order: number;
+}
+```
+
+### Consequences
+
+| Violation | Result |
+|-----------|--------|
+| Custom variable UI without checking KYC page | ❌ Rejection |
+| Not using variables-config API | ❌ Rejection |
+| Custom variable CRUD implementation | ❌ Rejection |
 
 ---
 

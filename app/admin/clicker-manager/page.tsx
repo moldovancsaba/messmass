@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
-import { apiPost } from '@/lib/apiClient';
+import FormModal from '@/components/modals/FormModal';
+import { apiPost, apiDelete } from '@/lib/apiClient';
 
 // WHAT: Clicker Manager - Configure variable groups for Editor clicker UI
 // WHY: Admin control over which variables appear in clicker and their grouping/order
@@ -238,43 +239,59 @@ export default function ClickerManagerPage() {
         </div>
       )}
 
-      {/* Edit Group Modal */}
+      {/* WHAT: Edit Group Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
       {editingGroup && (
-        <div className="modal-overlay" onClick={() => setEditingGroup(null)}>
-          <div className="modal-content max-w-800" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Edit Group {editingGroup.groupOrder}</h3>
-            <GroupForm
-              group={editingGroup}
-              variables={variables}
-              onClose={() => setEditingGroup(null)}
-              onSaved={async () => {
-                setEditingGroup(null);
-                await loadData();
-              }}
-            />
-          </div>
-        </div>
+        <FormModal
+          isOpen={!!editingGroup}
+          onClose={() => setEditingGroup(null)}
+          onSubmit={async () => {
+            // GroupForm handles its own submission
+          }}
+          title={`Edit Group ${editingGroup.groupOrder}`}
+          submitText="Save Group"
+          size="xl"
+          customFooter={<div />} // GroupForm has its own submit button
+        >
+          <GroupForm
+            group={editingGroup}
+            variables={variables}
+            onClose={() => setEditingGroup(null)}
+            onSaved={async () => {
+              setEditingGroup(null);
+              await loadData();
+            }}
+          />
+        </FormModal>
       )}
 
-      {/* Create Group Modal */}
+      {/* WHAT: Create Group Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
       {createOpen && (
-        <div className="modal-overlay" onClick={() => setCreateOpen(false)}>
-          <div className="modal-content max-w-800" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">➕ New Group</h3>
-            <GroupForm
-              group={{
-                groupOrder: Math.max(0, ...groups.map((g) => g.groupOrder)) + 1,
-                variables: [],
-              }}
-              variables={variables}
-              onClose={() => setCreateOpen(false)}
-              onSaved={async () => {
-                setCreateOpen(false);
-                await loadData();
-              }}
-            />
-          </div>
-        </div>
+        <FormModal
+          isOpen={createOpen}
+          onClose={() => setCreateOpen(false)}
+          onSubmit={async () => {
+            // GroupForm handles its own submission
+          }}
+          title="➕ New Group"
+          submitText="Save Group"
+          size="xl"
+          customFooter={<div />} // GroupForm has its own submit button
+        >
+          <GroupForm
+            group={{
+              groupOrder: Math.max(0, ...groups.map((g) => g.groupOrder)) + 1,
+              variables: [],
+            }}
+            variables={variables}
+            onClose={() => setCreateOpen(false)}
+            onSaved={async () => {
+              setCreateOpen(false);
+              await loadData();
+            }}
+          />
+        </FormModal>
       )}
     </div>
   );

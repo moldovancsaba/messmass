@@ -9,6 +9,7 @@ import SharePopup from '@/components/SharePopup';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
+import FormModal from '@/components/modals/FormModal';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -901,166 +902,140 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
           )}
       </div>
 
-      {/* New Project Modal */}
-      {showNewProjectForm && (
-        <div className="modal-overlay" onClick={() => setShowNewProjectForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">➕ Create New Project</h2>
-              <button className="modal-close" onClick={() => setShowNewProjectForm(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group mb-4">
-                <label className="form-label-block">Event Name *</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={newProjectData.eventName}
-                  onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
-                  placeholder="Enter event name..."
-                />
-              </div>
-              
-              <div className="form-group mb-4">
-                <label className="form-label-block">Event Date *</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={newProjectData.eventDate}
-                  onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
-                />
-              </div>
-              
-              <div className="form-group mb-4">
-                <label className="form-label-block">Hashtags</label>
-                <UnifiedHashtagInput
-                  generalHashtags={newProjectData.hashtags}
-                  onGeneralChange={(hashtags) => 
-                    setNewProjectData(prev => ({ ...prev, hashtags }))
-                  }
-                  categorizedHashtags={newProjectData.categorizedHashtags}
-                  onCategorizedChange={(categorizedHashtags) => 
-                    setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
-                  }
-                  placeholder="Search or add hashtags..."
-                />
-              </div>
-              {/* Style selection */}
-              <div className="form-group mb-4">
-                <label className="form-label-block">Page Style</label>
-                <select 
-                  className="form-input"
-                  value={newProjectData.styleId || ''}
-                  onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value }))}
-                >
-                  <option value="">— Use Default/Global —</option>
-                  {availableStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button 
-                className="btn btn-small btn-secondary" 
-                onClick={() => setShowNewProjectForm(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn btn-small btn-primary" 
-                onClick={() => {
-                  console.log('Create Project button clicked');
-                  createNewProject();
-                }}
-                disabled={isCreatingProject}
-              >
-                {isCreatingProject ? 'Creating...' : 'Create Project'}
-              </button>
-            </div>
-          </div>
+      {/* WHAT: New Project Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior with FormModal across all admin pages */}
+      <FormModal
+        isOpen={showNewProjectForm}
+        onClose={() => setShowNewProjectForm(false)}
+        onSubmit={createNewProject}
+        title="➕ Create New Project"
+        submitText="Create Project"
+        isSubmitting={isCreatingProject}
+        size="lg"
+      >
+        <div className="form-group mb-4">
+          <label className="form-label-block">Event Name *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={newProjectData.eventName}
+            onChange={(e) => setNewProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+            placeholder="Enter event name..."
+          />
         </div>
-      )}
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Event Date *</label>
+          <input
+            type="date"
+            className="form-input"
+            value={newProjectData.eventDate}
+            onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Hashtags</label>
+          <UnifiedHashtagInput
+            generalHashtags={newProjectData.hashtags}
+            onGeneralChange={(hashtags) => 
+              setNewProjectData(prev => ({ ...prev, hashtags }))
+            }
+            categorizedHashtags={newProjectData.categorizedHashtags}
+            onCategorizedChange={(categorizedHashtags) => 
+              setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
+            }
+            placeholder="Search or add hashtags..."
+          />
+        </div>
+        
+        {/* WHAT: Page Style selection
+         * WHY: Allow project-specific styling via page_styles_enhanced */}
+        <div className="form-group mb-4">
+          <label className="form-label-block">Page Style</label>
+          <select 
+            className="form-input"
+            value={newProjectData.styleId || ''}
+            onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+          >
+            <option value="">— Use Default/Global —</option>
+            {availableStyles.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
+      </FormModal>
 
-      {/* Edit Project Modal */}
-      {showEditProjectForm && editingProject && (
-        <div className="modal-overlay" onClick={() => setShowEditProjectForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">✏️ Edit Project</h2>
-              <button className="modal-close" onClick={() => setShowEditProjectForm(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Event Name *</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={editProjectData.eventName}
-                  onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
-                  placeholder="Enter event name..."
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Event Date *</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={editProjectData.eventDate}
-                  onChange={(e) => setEditProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Hashtags</label>
-                <UnifiedHashtagInput
-                  generalHashtags={editProjectData.hashtags}
-                  onGeneralChange={(hashtags) => 
-                    setEditProjectData(prev => ({ ...prev, hashtags }))
-                  }
-                  categorizedHashtags={editProjectData.categorizedHashtags}
-                  onCategorizedChange={(categorizedHashtags) => 
-                    setEditProjectData(prev => ({ ...prev, categorizedHashtags }))
-                  }
-                  placeholder="Search or add hashtags..."
-                />
-              </div>
-              {/* Style selection */}
-              <div className="form-group">
-                <label>Page Style</label>
-                <select 
-                  className="form-input"
-                  value={editProjectData.styleId || ''}
-                  onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value }))}
-                >
-                  <option value="">— Use Default/Global —</option>
-                  {availableStyles.map(s => (
-                    <option key={s._id} value={s._id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-              
-              {/* WHAT: Bitly Links Management Section */}
-              {/* WHY: Allows admins to connect Bitly links directly from project edit modal */}
-              <div className="form-group">
-                <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-small btn-secondary" onClick={() => setShowEditProjectForm(false)}>
-                Cancel
-              </button>
-              <button 
-                className="btn btn-small btn-primary" 
-                onClick={updateProject}
-                disabled={isUpdatingProject}
-              >
-                {isUpdatingProject ? 'Updating...' : 'Update Project'}
-              </button>
-            </div>
+      {/* WHAT: Edit Project Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
+      {editingProject && (
+        <FormModal
+          isOpen={showEditProjectForm}
+          onClose={() => setShowEditProjectForm(false)}
+          onSubmit={updateProject}
+          title="✏️ Edit Project"
+          submitText="Update Project"
+          isSubmitting={isUpdatingProject}
+          size="lg"
+        >
+          <div className="form-group">
+            <label>Event Name *</label>
+            <input
+              type="text"
+              className="form-input"
+              value={editProjectData.eventName}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+              placeholder="Enter event name..."
+            />
           </div>
-        </div>
+          
+          <div className="form-group">
+            <label>Event Date *</label>
+            <input
+              type="date"
+              className="form-input"
+              value={editProjectData.eventDate}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Hashtags</label>
+            <UnifiedHashtagInput
+              generalHashtags={editProjectData.hashtags}
+              onGeneralChange={(hashtags) => 
+                setEditProjectData(prev => ({ ...prev, hashtags }))
+              }
+              categorizedHashtags={editProjectData.categorizedHashtags}
+              onCategorizedChange={(categorizedHashtags) => 
+                setEditProjectData(prev => ({ ...prev, categorizedHashtags }))
+              }
+              placeholder="Search or add hashtags..."
+            />
+          </div>
+          
+          {/* WHAT: Page Style selection
+           * WHY: Allow project-specific styling via page_styles_enhanced */}
+          <div className="form-group">
+            <label>Page Style</label>
+            <select 
+              className="form-input"
+              value={editProjectData.styleId || ''}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+            >
+              <option value="">— Use Default/Global —</option>
+              {availableStyles.map(s => (
+                <option key={s._id} value={s._id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          {/* WHAT: Bitly Links Management Section
+           * WHY: Allows admins to connect Bitly links directly from project edit modal */}
+          <div className="form-group">
+            <BitlyLinksEditor projectId={editingProject._id} projectName={editingProject.eventName} />
+          </div>
+        </FormModal>
       )}
 
       {/* Share Popup */}

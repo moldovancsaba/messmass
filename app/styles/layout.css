@@ -815,15 +815,9 @@
   position: absolute;
 }
 
-/* Modal Utilities */
-.modal-h2 {
-  margin: 0;
-  color: #1f2937;
-}
-
-.modal-body-padding {
-  padding: 1.5rem;
-}
+/* WHAT: Legacy modal utilities removed
+ * WHY: All modals now use unified modal system components
+ * WHEN: v8.24.0+ modal system migration complete */
 
 .form-label-block {
   display: block;

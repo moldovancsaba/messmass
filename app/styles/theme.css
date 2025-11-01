@@ -322,6 +322,10 @@
   --z-popover: 1060;
   --z-tooltip: 1070;
   --z-toast: 1080;
+  
+  /* Modal system z-index tokens (unified modal system v8.24.0+) */
+  --mm-z-modal: var(--z-modal);
+  --mm-z-modal-overlay: var(--z-modal-backdrop);
 
   /* ========================================
      BREAKPOINTS (for reference in CSS)

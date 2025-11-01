@@ -1,0 +1,127 @@
+/**
+ * ConfirmDialog Styles
+ * 
+ * Confirmation dialog styling with icon, content, and action buttons.
+ * Uses design system tokens for consistency.
+ */
+
+/* Container */
+.container {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Icon */
+.iconContainer {
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  font-size: 3rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Content */
+.content {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0 0 0.75rem 0;
+}
+
+.message {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
+  margin: 0;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Buttons */
+.cancelButton,
+.confirmButton,
+.confirmButtonDanger {
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+/* Cancel button */
+.cancelButton {
+  background-color: white;
+  color: var(--mm-gray-700);
+  border: 1px solid var(--mm-gray-300);
+}
+
+.cancelButton:hover {
+  background-color: var(--mm-gray-50);
+  border-color: var(--mm-gray-400);
+}
+
+.cancelButton:active {
+  background-color: var(--mm-gray-100);
+}
+
+/* Confirm button (info variant) */
+.confirmButton {
+  background-color: var(--mm-color-primary-500);
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: var(--mm-color-primary-600);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.confirmButton:active {
+  background-color: var(--mm-color-primary-700);
+  transform: translateY(1px);
+}
+
+/* Confirm button (danger variant) */
+.confirmButtonDanger {
+  background-color: var(--mm-error);
+  color: white;
+}
+
+.confirmButtonDanger:hover {
+  background-color: #dc2626;
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.confirmButtonDanger:active {
+  background-color: #b91c1c;
+  transform: translateY(1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .container {
+    padding: 1.5rem;
+  }
+  
+  .actions {
+    flex-direction: column-reverse;
+  }
+  
+  .cancelButton,
+  .confirmButton,
+  .confirmButtonDanger {
+    width: 100%;
+  }
+}

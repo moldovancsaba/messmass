@@ -1,53 +1,16 @@
-/* SharePopup Component Styles
-   WHAT: Styles for shareable link modal popup
-   WHY: Eliminates inline styles from SharePopup.tsx */
+/**
+ * SharePopup Styles
+ * 
+ * Matches FormModal structure: header, body sections with consistent spacing.
+ * Uses design system tokens for consistency.
+ */
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  position: relative;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.closeBtn:hover {
-  background: #f3f4f6;
-  color: #374151;
-}
-
+/* Header section - EXACT MATCH to FormModal */
 .header {
+  padding: 2rem;
+  padding-right: 3.5rem; /* Space for close button */
+  border-bottom: 1px solid var(--mm-gray-200);
   text-align: center;
-  margin-bottom: 2rem;
 }
 
 .headerEmoji {
@@ -56,22 +19,33 @@
 }
 
 .title {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
   margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
+  line-height: var(--mm-line-height-sm);
 }
 
 .subtitle {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
 }
 
+/* Body section - EXACT MATCH to FormModal */
+.body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Loading state */
 .loadingContainer {
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
+  color: var(--mm-gray-600);
 }
 
 .loadingEmoji {
@@ -79,13 +53,14 @@
   margin-bottom: 1rem;
 }
 
+/* Error state */
 .errorContainer {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
+  background: var(--mm-color-error-50, #fef2f2);
+  border: 1px solid var(--mm-color-error-200, #fecaca);
+  border-radius: var(--mm-radius-lg);
   padding: 1rem;
   text-align: center;
-  color: #dc2626;
+  color: var(--mm-color-error-600, #dc2626);
 }
 
 .errorEmoji {
@@ -100,17 +75,17 @@
 .retryBtn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: #dc2626;
+  background: var(--mm-color-error-600, #dc2626);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--mm-radius-md);
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  font-size: var(--mm-font-size-sm);
+  transition: all var(--transition-fast);
 }
 
 .retryBtn:hover {
-  background: #b91c1c;
+  background: var(--mm-color-error-700, #b91c1c);
 }
 
 .content {
@@ -125,15 +100,15 @@
 
 .label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
   margin-bottom: 0.5rem;
 }
 
 .labelOptional {
-  color: #9ca3af;
-  font-weight: 400;
+  color: var(--mm-gray-400);
+  font-weight: var(--mm-font-weight-normal);
 }
 
 .inputGroup {
@@ -145,21 +120,21 @@
 .input {
   flex: 1;
   padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  background: #f9fafb;
-  color: #374151;
+  border: 2px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-sm);
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-700);
   font-family: inherit;
 }
 
 .inputEditable {
   background: white;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-fast);
 }
 
 .inputEditable:focus {
-  border-color: #4f46e5;
+  border-color: var(--mm-color-primary-500);
   outline: none;
 }
 
@@ -240,4 +215,16 @@
 
 .instructionItem {
   margin-bottom: 0.25rem;
+}
+
+/* Mobile responsiveness - EXACT MATCH to FormModal */
+@media (max-width: 640px) {
+  .header {
+    padding: 1.5rem;
+    padding-right: 3rem;
+  }
+  
+  .body {
+    padding: 1.5rem;
+  }
 }

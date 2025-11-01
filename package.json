@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "9.1.0",
+  "version": "9.1.0"
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -69,6 +69,7 @@
   "dependencies": {
     "chart.js": "^4.5.0",
     "dotenv": "^17.2.1",
+    "focus-trap-react": "^11.0.4",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jspdf": "^3.0.1",

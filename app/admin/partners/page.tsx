@@ -12,6 +12,7 @@ import AdminHero from '@/components/AdminHero';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
+import FormModal from '@/components/modals/FormModal';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 // TEMP FIX: countryToFlag removed until we implement client-safe version
@@ -1264,16 +1265,20 @@ export default function PartnersAdminPage() {
         )}
       </div>
 
-      {/* WHAT: Add Partner Modal */}
-      {showAddForm && (
-        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">+ Add Partner</h2>
-              <button className="modal-close" onClick={() => setShowAddForm(false)}>✕</button>
-            </div>
-            <form onSubmit={handleAddPartner}>
-              <div className="modal-body">
+      {/* WHAT: Add Partner Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
+      <FormModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onSubmit={async () => {
+          const syntheticEvent = new Event('submit', { cancelable: true }) as any;
+          await handleAddPartner(syntheticEvent);
+        }}
+        title="+ Add Partner"
+        submitText="Create Partner"
+        isSubmitting={isSubmitting}
+        size="lg"
+      >
                 <div className="form-group mb-4">
                   <label className="form-label-block">Partner Name *</label>
                   <input
@@ -1332,39 +1337,23 @@ export default function PartnersAdminPage() {
                     Search by bitlink or title, click to add. Remove with ✕ button.
                   </p>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button"
-                  className="btn btn-small btn-secondary" 
-                  onClick={() => setShowAddForm(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="btn btn-small btn-primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Creating...' : 'Create Partner'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </FormModal>
 
-      {/* WHAT: Edit Partner Modal */}
-      {showEditForm && editingPartner && (
-        <div className="modal-overlay" onClick={() => setShowEditForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">✏️ Edit Partner</h2>
-              <button className="modal-close" onClick={() => setShowEditForm(false)}>✕</button>
-            </div>
-            <form onSubmit={handleUpdatePartner}>
-              <div className="modal-body">
+      {/* WHAT: Edit Partner Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
+      {editingPartner && (
+        <FormModal
+          isOpen={showEditForm}
+          onClose={() => setShowEditForm(false)}
+          onSubmit={async () => {
+            const syntheticEvent = new Event('submit', { cancelable: true }) as any;
+            await handleUpdatePartner(syntheticEvent);
+          }}
+          title="✏️ Edit Partner"
+          submitText="Update Partner"
+          isSubmitting={isSubmitting}
+          size="lg"
+        >
                 <div className="form-group mb-4">
                   <label className="form-label-block">Partner Name *</label>
                   <input
@@ -1588,43 +1577,24 @@ export default function PartnersAdminPage() {
                     If you can&apos;t find your team, use the manual entry button above.
                   </p>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button"
-                  className="btn btn-small btn-secondary" 
-                  onClick={() => setShowEditForm(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="btn btn-small btn-primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Updating...' : 'Update Partner'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        </FormModal>
       )}
 
-      {/* WHAT: Manual Sports Data Entry Modal */}
-      {/* WHY: Fallback when TheSportsDB doesn't have team or API returns wrong data */}
-      {showManualEntry && (
-        <div className="modal-overlay" onClick={() => setShowManualEntry(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">🖊️ Enter Sports Data Manually</h2>
-              <button className="modal-close" onClick={() => setShowManualEntry(false)}>✕</button>
-            </div>
-            <form onSubmit={handleManualEntry}>
-              <div className="modal-body">
-                <p className="text-sm text-gray-600 mb-4">
-                  Use this form when TheSportsDB doesn&apos;t have the team or returns incorrect data. All fields are optional.
-                </p>
+      {/* WHAT: Manual Sports Data Entry Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
+      <FormModal
+        isOpen={showManualEntry}
+        onClose={() => setShowManualEntry(false)}
+        onSubmit={async () => {
+          const syntheticEvent = new Event('submit', { cancelable: true }) as any;
+          await handleManualEntry(syntheticEvent);
+        }}
+        title="🖊️ Enter Sports Data Manually"
+        subtitle="Use this form when TheSportsDB doesn't have the team or returns incorrect data. All fields are optional."
+        submitText="Save Sports Data"
+        isSubmitting={sportsDbLinking}
+        size="lg"
+      >
                 
                 <div className="form-group mb-4">
                   <label className="form-label-block">Venue Name</label>
@@ -1694,28 +1664,7 @@ export default function PartnersAdminPage() {
                     Logo will be uploaded to ImgBB for permanent hosting
                   </p>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button"
-                  className="btn btn-small btn-secondary" 
-                  onClick={() => setShowManualEntry(false)}
-                  disabled={sportsDbLinking}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="btn btn-small btn-primary"
-                  disabled={sportsDbLinking}
-                >
-                  {sportsDbLinking ? 'Saving...' : 'Save Sports Data'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </FormModal>
     </div>
   );
 }

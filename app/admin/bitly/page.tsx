@@ -13,6 +13,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminHero from '@/components/AdminHero';
 import ProjectSelector from '@/components/ProjectSelector';
 import PartnerSelector from '@/components/PartnerSelector';
+import FormModal from '@/components/modals/FormModal';
 import styles from './page.module.css';
 
 // WHAT: Type definitions for links, projects, and partners
@@ -1183,83 +1184,68 @@ export default function BitlyAdminPage() {
         </div>
       </div>
 
-      {/* WHAT: Add Link Modal matching ProjectsPageClient modal pattern
-       * WHY: Consistent modal UX across admin pages; better accessibility than inline form
-       * ACCESSIBILITY: ESC to close, backdrop click, focus management */}
-      {showAddForm && (
-        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">+ Add Bitly Link</h2>
-              <button className="modal-close" onClick={() => setShowAddForm(false)}>✕</button>
-            </div>
-            <form onSubmit={handleAddLink}>
-              <div className="modal-body">
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Bitly Link or URL *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={newBitlink}
-                    onChange={(e) => setNewBitlink(e.target.value)}
-                    placeholder="bit.ly/abc123 or https://example.com/page"
-                    required
-                    autoFocus
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Enter a Bitly short link or the original long URL
-                  </p>
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Assign to Project (optional)</label>
-                  <select
-                    className="form-input"
-                    value={selectedProjectId}
-                    onChange={(e) => setSelectedProjectId(e.target.value)}
-                  >
-                    <option value="">-- Leave Unassigned --</option>
-                    {projects.map(project => (
-                      <option key={project._id} value={project._id}>
-                        {project.eventName} ({new Date(project.eventDate).toLocaleDateString()})
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-600 mt-1">
-                    🔗 <strong>Many-to-Many:</strong> After adding, you can select another project to associate the same link with multiple events
-                  </p>
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Custom Title (optional)</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={customTitle}
-                    onChange={(e) => setCustomTitle(e.target.value)}
-                    placeholder="Leave empty to use Bitly's title"
-                  />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button"
-                  className="btn btn-small btn-secondary" 
-                  onClick={() => setShowAddForm(false)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="btn btn-small btn-primary"
-                >
-                  Add Link
-                </button>
-              </div>
-            </form>
-          </div>
+      {/* WHAT: Add Link Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior with FormModal across all admin pages
+       * ACCESSIBILITY: Built-in ESC to close, backdrop click, focus trap */}
+      <FormModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onSubmit={async () => {
+          // WHAT: Create synthetic event for existing handler
+          // WHY: handleAddLink expects FormEvent, but FormModal passes none
+          const syntheticEvent = new Event('submit', { cancelable: true }) as any;
+          await handleAddLink(syntheticEvent);
+        }}
+        title="+ Add Bitly Link"
+        submitText="Add Link"
+        size="lg"
+      >
+        <div className="form-group mb-4">
+          <label className="form-label-block">Bitly Link or URL *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={newBitlink}
+            onChange={(e) => setNewBitlink(e.target.value)}
+            placeholder="bit.ly/abc123 or https://example.com/page"
+            required
+            autoFocus
+          />
+          <p className="text-xs text-gray-600 mt-1">
+            Enter a Bitly short link or the original long URL
+          </p>
         </div>
-      )}
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Assign to Project (optional)</label>
+          <select
+            className="form-input"
+            value={selectedProjectId}
+            onChange={(e) => setSelectedProjectId(e.target.value)}
+          >
+            <option value="">-- Leave Unassigned --</option>
+            {projects.map(project => (
+              <option key={project._id} value={project._id}>
+                {project.eventName} ({new Date(project.eventDate).toLocaleDateString()})
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-600 mt-1">
+            🔗 <strong>Many-to-Many:</strong> After adding, you can select another project to associate the same link with multiple events
+          </p>
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Custom Title (optional)</label>
+          <input
+            type="text"
+            className="form-input"
+            value={customTitle}
+            onChange={(e) => setCustomTitle(e.target.value)}
+            placeholder="Leave empty to use Bitly's title"
+          />
+        </div>
+      </FormModal>
     </div>
   );
 }

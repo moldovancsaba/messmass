@@ -302,20 +302,9 @@
   transition: all var(--mm-transition-base);
 }
 
-/* Modal overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: var(--mm-space-4);
-}
+/* WHAT: Legacy .modal-overlay removed (lines 305-318)
+ * WHY: All modals now use unified modal system components
+ * WHEN: v8.24.0+ modal system migration complete */
 
 /* Loading spinner base */
 .spinner {

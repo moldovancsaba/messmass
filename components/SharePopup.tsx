@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageType } from '@/lib/pagePassword';
 import { apiPost } from '@/lib/apiClient';
+import BaseModal from './modals/BaseModal';
 import styles from './SharePopup.module.css';
 
 interface SharePopupProps {
@@ -106,28 +107,25 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
     return `Share ${getPageTypeDisplay()}`;
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Close button */}
-        <button onClick={onClose} className={styles.closeBtn}>
-          ×
-        </button>
-
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.headerEmoji}>🔗</div>
-          <h2 className={styles.title}>
-            {getTitle()}
-          </h2>
-          <p className={styles.subtitle}>
-            Share this protected {getPageTypeDisplay().toLowerCase()} with the password below
-          </p>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="lg"
+      ariaLabel={getTitle()}
+    >
+      {/* Header section - matches FormModal structure */}
+      <div className={styles.header}>
+        <div className={styles.headerEmoji}>🔗</div>
+        <h2 className={styles.title}>{getTitle()}</h2>
+        <div className={styles.subtitle}>
+          Share this protected {getPageTypeDisplay().toLowerCase()} with the password below
         </div>
+      </div>
 
-        {isLoading ? (
+      {/* Body section - matches FormModal structure */}
+      <div className={styles.body}>
+      {isLoading ? (
           <div className={styles.loadingContainer}>
             <div className={styles.loadingEmoji}>⏳</div>
             <p>Generating shareable link...</p>
@@ -231,6 +229,6 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
           </div>
         ) : null}
       </div>
-    </div>
+    </BaseModal>
   );
 }

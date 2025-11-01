@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import AdminHero from "@/components/AdminHero";
 import ColoredCard from "@/components/ColoredCard";
 import { apiPost } from "@/lib/apiClient";
+import { FormModal } from "@/components/modals";
 
 // WHAT: KYC Variables Admin Page
 // WHY: Centralized catalog of all variables (manual/system/derived) powering analytics and clicker
@@ -228,23 +229,29 @@ export default function KycVariablesPage() {
         </>
       )}
 
-      {activeVar && (
-        <div className="modal-overlay" onClick={() => setActiveVar(null)}>
-          <div className="modal-content max-w-620" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Edit Variable</h3>
-            <EditVariableMeta variable={activeVar} onClose={() => { setActiveVar(null); load(); }} />
-          </div>
-        </div>
-      )}
+      {/* Edit Variable Modal - Unified Modal System v8.24.0+ */}
+      <FormModal
+        isOpen={!!activeVar}
+        onClose={() => { setActiveVar(null); load(); }}
+        onSubmit={async () => {}}
+        title="✏️ Edit Variable"
+        size="lg"
+        customFooter={<div />}
+      >
+        {activeVar && <EditVariableMeta variable={activeVar} onClose={() => { setActiveVar(null); load(); }} />}
+      </FormModal>
 
-      {createOpen && (
-        <div className="modal-overlay" onClick={() => setCreateOpen(false)}>
-          <div className="modal-content max-w-640" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">➕ New Variable</h3>
-            <CreateVariableForm onClose={() => setCreateOpen(false)} onCreated={async () => { setCreateOpen(false); await load(); }} />
-          </div>
-        </div>
-      )}
+      {/* Create Variable Modal - Unified Modal System v8.24.0+ */}
+      <FormModal
+        isOpen={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onSubmit={async () => {}}
+        title="➕ New Variable"
+        size="lg"
+        customFooter={<div />}
+      >
+        <CreateVariableForm onClose={() => setCreateOpen(false)} onCreated={async () => { setCreateOpen(false); await load(); }} />
+      </FormModal>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import ColoredCard from './ColoredCard';
 import AdminHero from './AdminHero';
+import ColoredCard from './ColoredCard';
+import FormModal from './modals/FormModal';
 import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
@@ -784,17 +785,37 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
   };
 
   return (
-    <div className="modal-overlay">
-      <ColoredCard className={`modal-content ${styles.modalContent}`}>
-        <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h3>{config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}</h3>
-            <SaveStatusIndicator status={saveStatus} />
+    <>
+      <FormModal
+        isOpen={true}
+        onClose={onCancel}
+        onSubmit={async () => {
+          // Handled by Save button in customFooter
+        }}
+        title={config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}
+        submitText="Save"
+        size="xl"
+        customFooter={
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onCancel}
+              disabled={saveStatus === 'saving'}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSave}
+              disabled={saveStatus === 'saving'}
+            >
+              {saveStatus === 'saving' ? 'Saving...' : 'Save Chart'}
+            </button>
           </div>
-          <button className="btn btn-secondary" onClick={onCancel}>✕</button>
-        </div>
-
-        <div className="modal-body">
+        }
+      >
           <div className="form-grid">
             <div className="form-group">
               <label className="form-label">Chart ID</label>
@@ -1310,19 +1331,11 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onCancel}>
-            Cancel
-          </button>
-          <button className="btn btn-primary" onClick={handleSave}>
-            {config._id ? 'Update' : 'Create'} Chart
-          </button>
-        </div>
-      </ColoredCard>
+      </FormModal>
       
-      {/* Variable Picker Modal */}
+      {/* WHAT: Variable Picker Modal - uses inline styles for now
+       * WHY: Complex nested modal requiring custom styling
+       * TODO: Could be migrated to BaseModal in future if needed */}
       {showVariablePicker && (
         <div className="variable-picker-overlay">
           <div className="variable-picker-modal">
@@ -1376,55 +1389,9 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
       )}
 
       <style jsx>{`
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 1rem;
-        }
-
-        .modal-content {
-          width: 100%;
-          padding: 2rem;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border-radius: 1rem;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #1f2937;
-        }
-
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-        }
-
-        .modal-header h3 {
-          color: #1f2937;
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin: 0;
-        }
-
-        .modal-body {
-          margin-bottom: 2rem;
-        }
-
-        .modal-footer {
-          display: flex;
-          gap: 1rem;
-          justify-content: flex-end;
-        }
-
+        /* WHAT: CSS-in-JS styles for ChartAlgorithmManager form and Variable Picker
+         * WHY: Component-scoped styles for complex chart editor interface
+         * NOTE: Main modal uses FormModal component, only Variable Picker uses inline */
         .form-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1697,49 +1664,6 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
           font-style: italic;
         }
         
-        .variable-picker-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1100;
-          padding: 1rem;
-        }
-        
-        .variable-picker-modal {
-          background: white;
-          border-radius: 0.75rem;
-          padding: 1.5rem;
-          max-width: 600px;
-          width: 100%;
-          max-height: 80vh;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .variable-picker-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .variable-picker-header h4 {
-          margin: 0;
-          color: #1f2937;
-          font-size: 1.125rem;
-          font-weight: 600;
-        }
-        
         .variable-picker-filters {
           display: flex;
           gap: 1rem;
@@ -1800,6 +1724,6 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
           line-height: 1.4;
         }
       `}</style>
-    </div>
+    </>
   );
 }

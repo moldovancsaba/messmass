@@ -1,7 +1,76 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-10-31T11:22:00.000Z
-Version: 8.17.3
+Last Updated: 2025-11-01T15:00:00.000Z
+Version: 8.24.0
+
+## 🔍 MANDATORY: Implementation Standards
+
+**Before implementing ANY feature or component:**
+
+### Rule 1: Search Existing Implementations
+
+**NEVER create custom implementations without checking existing patterns first.**
+
+**Reference Files:**
+- **Modals**: `components/modals/FormModal.tsx` (lines 1-148)
+- **Cards**: `components/ColoredCard.tsx` (lines 1-89)
+- **Forms**: `app/admin/projects/ProjectsPageClient.tsx` (lines 916-960)
+- **Hashtags**: `components/UnifiedHashtagInput.tsx` (lines 1-298)
+- **Partners**: `components/PartnerSelector.tsx` (lines 1-234)
+- **Admin Layout**: `components/AdminHero.tsx` (lines 1-98)
+
+### Rule 2: Use Design Tokens Exclusively
+
+**ALL styling MUST use CSS variables from `app/styles/theme.css`**
+
+```css
+/* ✅ CORRECT */
+.myComponent {
+  color: var(--mm-gray-900);
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+}
+
+/* ❌ FORBIDDEN */
+.badComponent {
+  color: #1f2937;      /* ❌ */
+  padding: 16px;       /* ❌ */
+  border-radius: 8px;  /* ❌ */
+}
+```
+
+### Rule 3: Match Existing Structure Exactly
+
+**Example - Modal Pattern:**
+```tsx
+// ✅ CORRECT: Use FormModal
+import FormModal from '@/components/modals/FormModal';
+
+<FormModal
+  isOpen={isOpen}
+  onClose={onClose}
+  onSubmit={handleSubmit}
+  title="Your Title"
+  size="lg"
+>
+  {/* Content */}
+</FormModal>
+```
+
+**Real Implementation:** See `app/admin/partners/page.tsx` lines 298-387 for complete example.
+
+### Rule 4: Consequences of Non-Compliance
+
+| Violation | Result |
+|-----------|--------|
+| Custom modal instead of FormModal | ❌ Rejection |
+| Hardcoded colors/spacing | ❌ Rejection |
+| Not using ColoredCard | ❌ Rejection |
+| Not searching codebase first | ❌ Rejection |
+
+**See:** `CODING_STANDARDS.md` for complete rules and enforcement.
+
+---
 
 ## Project Overview
 

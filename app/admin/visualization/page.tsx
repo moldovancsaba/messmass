@@ -8,6 +8,7 @@ import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTyp
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
+import FormModal from '@/components/modals/FormModal';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
@@ -717,14 +718,19 @@ export default function VisualizationPage() {
         )}
       </ColoredCard>
 
-      {/* Edit Block Modal */}
+      {/* WHAT: Edit Block Modal migrated to unified FormModal
+       * WHY: Consistent modal behavior across all admin pages */}
       {editingBlock && (
-        <div className="modal-overlay">
-          <ColoredCard accentColor="#6366f1" hoverable={false} className="modal-content">
-            <h2 className="modal-title">
-              Edit Data Block: {editingBlock.name}
-            </h2>
-            
+        <FormModal
+          isOpen={!!editingBlock}
+          onClose={() => setEditingBlock(null)}
+          onSubmit={async () => {
+            await handleUpdateBlock(editingBlock);
+          }}
+          title={`Edit Data Block: ${editingBlock.name}`}
+          submitText="Update Block"
+          size="lg"
+        >
             <div className="form-section">
               <div className="form-row">
                 <div>
@@ -795,23 +801,7 @@ export default function VisualizationPage() {
                 </p>
               </div>
             </div>
-            
-            <div className="form-actions">
-              <button
-                onClick={() => setEditingBlock(null)}
-                className="btn btn-small btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleUpdateBlock(editingBlock)}
-                className="btn btn-small btn-primary"
-              >
-                Update Block
-              </button>
-            </div>
-          </ColoredCard>
-        </div>
+        </FormModal>
       )}
     </div>
   );

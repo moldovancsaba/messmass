@@ -1,0 +1,202 @@
+/**
+ * BaseModal Styles
+ * 
+ * Professional modal styling using CSS Modules for scoped styles.
+ * Follows MessMass design system with CSS variables and tokens.
+ * 
+ * Design Decisions:
+ * - CSS Modules for component encapsulation (no global pollution)
+ * - CSS variables for theming and consistency
+ * - Smooth animations for professional feel
+ * - Responsive sizing with max-heights for mobile
+ * - Accessible focus indicators
+ * - Box shadows from design system
+ */
+
+/* Overlay - Full-screen backdrop */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* Semi-transparent dark background */
+  background-color: rgba(0, 0, 0, 0.5);
+  
+  /* Center modal */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Z-index from design system (to be added to theme.css) */
+  z-index: var(--mm-z-modal, 1000);
+  
+  /* Padding for mobile */
+  padding: 1rem;
+  
+  /* Smooth fade-in animation */
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal container - White card */
+.modal {
+  background: white;
+  border-radius: 16px;
+  
+  /* Professional shadow */
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Responsive constraints */
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  /* Position for close button */
+  position: relative;
+  
+  /* Smooth scale-in animation */
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Size Variants */
+.modal-sm {
+  max-width: 400px;
+}
+
+.modal-md {
+  max-width: 600px;
+}
+
+.modal-lg {
+  max-width: 800px;
+}
+
+.modal-xl {
+  max-width: 1200px;
+}
+
+.modal-full {
+  max-width: 90vw;
+}
+
+/* Close Button (×) */
+.closeButton {
+  /* Position in top-right corner */
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  
+  /* Reset button styles */
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  
+  /* Typography */
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--mm-gray-500, #6B7280);
+  
+  /* Cursor and transitions */
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+  
+  /* Z-index to stay above content */
+  z-index: 10;
+  
+  /* Circular clickable area */
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  color: var(--mm-gray-700, #374151);
+  background-color: var(--mm-gray-100, #F3F4F6);
+  transform: scale(1.1);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+}
+
+.closeButton:focus {
+  outline: 2px solid var(--mm-blue-500, #3B82F6);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Scrollbar styling for modal content */
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: var(--mm-gray-100, #F3F4F6);
+  border-radius: 0 16px 16px 0;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--mm-gray-300, #D1D5DB);
+  border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-gray-400, #9CA3AF);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal {
+    max-height: 95vh;
+  }
+  
+  .closeButton {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  /* All modals become full-width on mobile */
+  .modal-sm,
+  .modal-md,
+  .modal-lg,
+  .modal-xl {
+    max-width: 100%;
+  }
+}
+
+/* Print styles - hide modals when printing */
+@media print {
+  .overlay {
+    display: none;
+  }
+}

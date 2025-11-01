@@ -24,7 +24,142 @@ Before any development work:
 2. **Search existing codebase** before creating any new component/function/file
 3. **Check dependencies** - reuse existing patterns and components
 
-## 🏗️ System Architecture
+## 🔍 MANDATORY: Implementation Standards
+
+### Search Before Creating (NON-NEGOTIABLE)
+
+**Before writing ANY code:**
+
+1. **Search for similar implementations** in the codebase
+2. **Identify the reference file** to copy from
+3. **Use the exact same pattern** - class names, structure, tokens
+4. **Verify with examples** below
+
+### Reference Implementations
+
+#### Modals - MUST Use FormModal
+
+**Reference:** `components/modals/FormModal.tsx` + `.module.css`
+
+```tsx
+// ✅ CORRECT
+import FormModal from '@/components/modals/FormModal';
+
+<FormModal
+  isOpen={isOpen}
+  onClose={onClose}
+  onSubmit={handleSubmit}
+  title="Modal Title"
+  size="lg"
+>
+  {/* Content */}
+</FormModal>
+```
+
+**CSS Pattern (if needed):**
+```css
+/* EXACT MATCH to FormModal structure */
+.header {
+  padding: 2rem;
+  padding-right: 3.5rem;
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.body {
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .header { padding: 1.5rem; padding-right: 3rem; }
+  .body { padding: 1.5rem; }
+}
+```
+
+**Real Examples:**
+- `components/SharePopup.tsx` (lines 110-231)
+- `components/PageStyleEditor.tsx` (lines 105-536)
+
+#### Cards - MUST Use ColoredCard
+
+**Reference:** `components/ColoredCard.tsx`
+
+```tsx
+// ✅ CORRECT
+import ColoredCard from '@/components/ColoredCard';
+
+<ColoredCard accentColor="#3b82f6" hoverable={true}>
+  {/* Content */}
+</ColoredCard>
+```
+
+**Examples:**
+- `app/admin/projects/ProjectsPageClient.tsx` (lines 205-220)
+- `app/admin/filter/page.tsx` (lines 195-210)
+
+#### Forms - Use Standard Classes
+
+**Pattern:**
+```tsx
+<div className="form-group mb-4">
+  <label className="form-label-block">Label *</label>
+  <input type="text" className="form-input" />
+</div>
+```
+
+**Reference:** `app/admin/projects/ProjectsPageClient.tsx` (lines 916-960)
+
+### Design Tokens (MANDATORY)
+
+**ALL styling MUST use design tokens. Hardcoded values = REJECTION.**
+
+```css
+/* ✅ CORRECT: Design tokens */
+.component {
+  color: var(--mm-gray-900);
+  background: var(--mm-white);
+  padding: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  border-radius: var(--mm-radius-lg);
+  transition: all var(--transition-fast);
+}
+
+/* ❌ FORBIDDEN: Hardcoded values */
+.bad {
+  color: #1f2937;        /* ❌ Use var(--mm-gray-900) */
+  padding: 16px;         /* ❌ Use var(--mm-space-4) */
+  font-size: 14px;       /* ❌ Use var(--mm-font-size-sm) */
+  border-radius: 8px;    /* ❌ Use var(--mm-radius-lg) */
+}
+```
+
+**Token Reference:** `app/styles/theme.css`
+
+### Enforcement
+
+**Code will be REJECTED for:**
+- ❌ Not searching existing implementations first
+- ❌ Using hardcoded colors/spacing instead of tokens
+- ❌ Creating custom modals instead of FormModal
+- ❌ Creating custom cards instead of ColoredCard
+- ❌ Deviating from reference implementations
+- ❌ Using inline `style` prop (except PageStyle gradients)
+
+**Verification Commands:**
+```bash
+# Check for hardcoded hex colors
+grep -r "#[0-9a-f]\{6\}" --include="*.css" components/
+
+# Check for hardcoded px values
+grep -r "[3-9][0-9]*px" --include="*.css" components/
+
+# Check for inline styles
+grep -r 'style={{' --include="*.tsx" components/ app/
+```
+
+**See:** `CODING_STANDARDS.md` for complete rules and examples
+
+## 🏭️ System Architecture
 
 **MessMass** is a real-time collaborative event statistics dashboard with:
 

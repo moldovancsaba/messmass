@@ -1,8 +1,67 @@
 # MessMass Unified Hashtag System Documentation
 
-**Version:** 8.0.0  
-**Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
+**Version:** 8.24.0  
+**Last Updated:** 2025-11-01T15:00:00.000Z (UTC)  
 **Status:** Production
+
+## 🔒 MANDATORY: Use UnifiedHashtagInput - Do NOT Create Custom Hashtag Components
+
+**Reference Implementation:** `components/UnifiedHashtagInput.tsx` (lines 1-298)
+
+### Rule: UnifiedHashtagInput is THE Standard
+
+**ALL hashtag inputs MUST use UnifiedHashtagInput. Custom hashtag components are PROHIBITED.**
+
+**Real Examples in Codebase:**
+- ✅ `app/admin/projects/ProjectsPageClient.tsx` line 939: Project creation form
+- ✅ `app/admin/projects/ProjectsPageClient.tsx` line 1004: Project editing form
+- ✅ `app/admin/partners/page.tsx` line 341: Partner form
+
+### Exact Pattern to Copy
+
+```tsx
+// ✅ CORRECT: From ProjectsPageClient.tsx line 939
+import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
+
+<UnifiedHashtagInput
+  generalHashtags={newProjectData.hashtags}
+  onGeneralChange={(hashtags) => 
+    setNewProjectData(prev => ({ ...prev, hashtags }))
+  }
+  categorizedHashtags={newProjectData.categorizedHashtags}
+  onCategorizedChange={(categorizedHashtags) => 
+    setNewProjectData(prev => ({ ...prev, categorizedHashtags }))
+  }
+  placeholder="Search or add hashtags..."
+/>
+```
+
+### For Display Only: ColoredHashtagBubble
+
+**Reference:** `components/ColoredHashtagBubble.tsx` (lines 1-156)
+
+```tsx
+// ✅ For displaying hashtags
+import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+
+<ColoredHashtagBubble 
+  hashtag="summer" 
+  interactive={true}
+  onClick={(hashtag) => handleClick(hashtag)}
+/>
+```
+
+**Real Example:** `app/admin/projects/ProjectsPageClient.tsx` lines 755-768
+
+### Consequences
+
+| Violation | Result |
+|-----------|--------|
+| Custom hashtag input | ❌ Rejection |
+| Not using UnifiedHashtagInput | ❌ Rejection |
+| Custom hashtag display | ❌ Rejection |
+
+---
 
 ## 🎯 Overview
 

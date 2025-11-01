@@ -1,8 +1,110 @@
 # MessMass Design System
 
-**Version**: 6.0.0  
-**Last Updated**: 2025-01-21T11:14:00.000Z (UTC)  
+**Version**: 8.24.0  
+**Last Updated**: 2025-11-01T15:00:00.000Z (UTC)  
 **Status**: Production-Ready — TailAdmin V2 Flat Design
+
+---
+
+## 🔒 MANDATORY USAGE RULES
+
+### Rule 1: Design Tokens Are NOT Optional
+
+**ALL styling MUST use design tokens. Hardcoded values = immediate rejection.**
+
+**Reference:** `app/styles/theme.css` (lines 1-450) - Complete token catalog
+
+```css
+/* ✅ CORRECT: Design tokens */
+.component {
+  color: var(--mm-gray-900);
+  background: var(--mm-white);
+  padding: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+/* ❌ FORBIDDEN: Hardcoded values */
+.badComponent {
+  color: #1f2937;           /* ❌ Use var(--mm-gray-900) */
+  background: #ffffff;      /* ❌ Use var(--mm-white) */
+  padding: 16px;            /* ❌ Use var(--mm-space-4) */
+  font-size: 14px;          /* ❌ Use var(--mm-font-size-sm) */
+  font-weight: 500;         /* ❌ Use var(--mm-font-weight-medium) */
+  border-radius: 8px;       /* ❌ Use var(--mm-radius-lg) */
+}
+```
+
+**Real Examples:**
+- ✅ `components/SharePopup.module.css` (lines 1-230) - 100% tokens
+- ✅ `components/modals/FormModal.module.css` (lines 1-152) - 100% tokens
+- ✅ `components/ColoredCard.module.css` (lines 1-95) - 100% tokens
+
+### Rule 2: Use Component Library (Don't Recreate)
+
+**Reference Implementations:**
+
+| Component | Reference File | Usage |
+|-----------|---------------|-------|
+| Modals | `components/modals/FormModal.tsx` | MUST use FormModal/BaseModal |
+| Cards | `components/ColoredCard.tsx` | MUST use ColoredCard |
+| Hashtags | `components/UnifiedHashtagInput.tsx` | MUST use UnifiedHashtagInput |
+| Partners | `components/PartnerSelector.tsx` | MUST use PartnerSelector |
+| Admin Layout | `components/AdminHero.tsx` | MUST use AdminHero |
+
+**Real Example - ColoredCard Usage:**
+```tsx
+// ✅ CORRECT: From app/admin/filter/page.tsx (line 195)
+import ColoredCard from '@/components/ColoredCard';
+
+<ColoredCard accentColor="#3b82f6" hoverable={false} className="p-4">
+  <h2>Card Title</h2>
+  {/* Content */}
+</ColoredCard>
+```
+
+**❌ FORBIDDEN: Creating custom card components or CSS classes**
+
+### Rule 3: Verification Before Submission
+
+**Run these checks:**
+```bash
+# Check for hardcoded hex colors
+grep -r "#[0-9a-f]\{6\}" --include="*.css" --include="*.module.css" components/ app/
+
+# Check for hardcoded px values (excluding borders)
+grep -r "[3-9][0-9]*px\|[0-9]\{3,\}px" --include="*.css" components/
+
+# Check design token usage
+grep -r "var(--mm-" --include="*.css" components/ | wc -l
+```
+
+**If hardcoded values found = Code rejected**
+
+### Rule 4: Mobile Responsiveness Required
+
+**ALL components must include mobile breakpoints matching reference patterns:**
+
+```css
+/* Reference: components/modals/FormModal.module.css lines 132-152 */
+@media (max-width: 640px) {
+  .header {
+    padding: 1.5rem;
+    padding-right: 3rem;
+  }
+  
+  .body {
+    padding: 1.5rem;
+  }
+}
+```
+
+**Real Examples:**
+- `components/SharePopup.module.css` (lines 221-230)
+- `components/PageStyleEditor.module.css` (lines 229-267)
 
 ---
 

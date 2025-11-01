@@ -1,8 +1,64 @@
 # Card System — ColoredCard Component
 
-**Version**: 5.53.0  
-**Last Updated**: 2025-10-13T11:23:00.000Z  
+**Version**: 8.24.0  
+**Last Updated**: 2025-11-01T15:00:00.000Z  
 **Component**: `components/ColoredCard.tsx`
+
+---
+
+## 🔒 MANDATORY: Use ColoredCard - Do NOT Create Custom Cards
+
+**Reference Implementation:** `components/ColoredCard.tsx` (lines 1-89)
+
+### Rule: ColoredCard is THE Standard
+
+**ALL cards MUST use ColoredCard. Custom card components or CSS classes are PROHIBITED.**
+
+**Real Examples in Codebase:**
+- ✅ `app/admin/filter/page.tsx` line 195: `<ColoredCard accentColor="#3b82f6" hoverable={false}>`
+- ✅ `app/admin/projects/ProjectsPageClient.tsx` lines 205-220: Project cards
+- ✅ `app/admin/partners/page.tsx` lines 148-163: Partner cards
+- ✅ `app/admin/categories/page.tsx` lines 112-128: Category cards
+
+### Exact Pattern to Copy
+
+```tsx
+// ✅ CORRECT: From filter/page.tsx line 195
+import ColoredCard from '@/components/ColoredCard';
+
+<ColoredCard accentColor="#3b82f6" hoverable={false} className="p-4">
+  <h2 className="font-semibold text-lg mb-2">Card Title</h2>
+  <p>Card content goes here</p>
+</ColoredCard>
+```
+
+### Accent Colors (Use Design Tokens)
+
+```tsx
+// ✅ CORRECT: Design tokens
+<ColoredCard accentColor="var(--mm-chart-purple)">  {/* #8b5cf6 */}
+<ColoredCard accentColor="var(--mm-chart-blue)">    {/* #3b82f6 */}
+<ColoredCard accentColor="var(--mm-chart-green)">   {/* #10b981 */}
+```
+
+### ❌ FORBIDDEN Patterns
+
+```tsx
+// ❌ Creating custom card components
+export function MyCustomCard() { ... }
+
+// ❌ Using removed CSS classes
+<div className="admin-card">...</div>
+<div className="glass-card">...</div>
+```
+
+### Consequences
+
+| Violation | Result |
+|-----------|--------|
+| Custom card component | ❌ Rejection |
+| CSS card classes | ❌ Rejection |
+| Not using ColoredCard | ❌ Rejection |
 
 ---
 

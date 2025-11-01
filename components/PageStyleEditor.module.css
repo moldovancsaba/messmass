@@ -1,91 +1,6 @@
-/* PageStyleEditor.module.css - Modal form styles for Page Styles editor */
-
-/* WHAT: Full-screen modal overlay
- * WHY: Focus user attention on form, block background interaction */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: var(--mm-space-4);
-  overflow-y: auto;
-}
-
-/* WHAT: Modal container
- * WHY: Card-like appearance with proper sizing and scrolling
- * NOTE: Increased max-width to 1400px for split layout with preview */
-.modalContent {
-  background: var(--mm-white);
-  border-radius: var(--mm-radius-xl);
-  box-shadow: var(--mm-shadow-2xl);
-  width: 100%;
-  max-width: 1400px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ========================================
-   MODAL HEADER
-======================================== */
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--mm-space-6);
-  border-bottom: 2px solid var(--mm-gray-200);
-}
-
-.modalTitle {
-  font-size: var(--mm-text-2xl);
-  font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
-  margin: 0;
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  font-size: var(--mm-text-2xl);
-  color: var(--mm-gray-600);
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--mm-radius-md);
-  transition: all var(--transition-fast);
-}
-
-.closeButton:hover:not(:disabled) {
-  background: var(--mm-gray-100);
-  color: var(--mm-gray-900);
-}
-
-.closeButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+/* PageStyleEditor.module.css - Content styles for Page Styles editor (using FormModal for container)
+   WHAT: Form and preview styles only, modal container handled by FormModal
+   WHY: Unified modal system for consistency */
 
 /* ========================================
    SECTION TABS
@@ -126,35 +41,31 @@
 /* ========================================
    SPLIT LAYOUT (FORM + PREVIEW)
 ======================================== */
-
 /* WHAT: Side-by-side layout for form and preview
- * WHY: Show live preview while editing */
+| * WHY: Show live preview while editing */
 .splitLayout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--mm-space-4);
-  flex: 1;
   overflow: hidden;
 }
 
 /* ========================================
-   MODAL BODY (LEFT PANE)
+   FORM CONTENT (LEFT PANE)
 ======================================== */
 
-.modalBody {
-  flex: 1;
+.formPane {
   overflow-y: auto;
-  padding: var(--mm-space-6);
   border-right: 1px solid var(--mm-gray-200);
+  padding: var(--mm-space-4);
 }
 
 /* WHAT: Preview pane (right side)
- * WHY: Contain live preview component */
+| * WHY: Contain live preview component */
 .previewPane {
-  flex: 1;
   overflow-y: auto;
-  padding: var(--mm-space-6);
   background: var(--mm-gray-50);
+  padding: var(--mm-space-4);
 }
 
 .section {
@@ -316,19 +227,6 @@
 }
 
 /* ========================================
-   MODAL FOOTER
-======================================== */
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--mm-space-3);
-  padding: var(--mm-space-6);
-  border-top: 2px solid var(--mm-gray-200);
-  background: var(--mm-gray-50);
-}
-
-/* ========================================
    RESPONSIVE
 ======================================== */
 
@@ -339,47 +237,35 @@
     grid-template-columns: 1fr;
   }
   
-  .modalBody {
+  .formPane {
     border-right: none;
     border-bottom: 1px solid var(--mm-gray-200);
   }
 }
 
 @media (max-width: 768px) {
-  .modalContent {
-    max-height: 95vh;
-    margin: var(--mm-space-2);
-  }
-
-  .modalHeader,
-  .modalBody,
-  .modalFooter,
   .previewPane {
-    padding: var(--mm-space-4);
+    padding: var(--mm-space-2);
   }
-
+  
+  .formPane {
+    padding: var(--mm-space-2);
+  }
+  
   .sectionTabs {
     padding: var(--mm-space-3);
   }
-
+  
   .colorInputGroup {
     flex-direction: column;
     align-items: stretch;
   }
-
+  
   .colorPicker {
     width: 100%;
   }
-
+  
   .buttonGroup {
     flex-direction: column;
-  }
-
-  .modalFooter {
-    flex-direction: column-reverse;
-  }
-
-  .modalFooter button {
-    width: 100%;
   }
 }
