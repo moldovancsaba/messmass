@@ -863,6 +863,102 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 min="1"
               />
             </div>
+
+          </div>
+
+          {/* WHAT: Display Settings Section (Title/Emoji/Subtitle Visibility) */}
+          {/* WHY: Give admins full control over chart header display elements */}
+          {/* HOW: Checkbox toggles + conditional input fields (same pattern as prefix/suffix) */}
+          <div className="formatting-section">
+            <h4 className="formatting-section-title">👁️ Display Settings</h4>
+            <div className="formatting-note">Control visibility of chart header elements</div>
+            
+            <div className="formatting-group">
+              <h5 className="formatting-group-title">Chart Header Elements</h5>
+              <div className="formatting-controls">
+                {/* ROW 1: Show Title + Input Field */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.title !== undefined && formData.title !== ''}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          title: e.target.checked ? (formData.title || formData.chartId) : '' 
+                        });
+                      }}
+                    />
+                    <span>Show Title</span>
+                  </label>
+                  {formData.title !== undefined && formData.title !== '' && (
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="e.g., Gender Distribution"
+                    />
+                  )}
+                </div>
+                
+                {/* ROW 2: Show Emoji + Input Field */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={!!formData.emoji}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          emoji: e.target.checked ? '📊' : undefined 
+                        });
+                      }}
+                    />
+                    <span>Show Emoji</span>
+                  </label>
+                  {formData.emoji !== undefined && formData.emoji !== '' && (
+                    <input
+                      type="text"
+                      className="form-input emoji-input-field"
+                      value={formData.emoji || ''}
+                      onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
+                      placeholder="e.g., 📊"
+                      maxLength={2}
+                    />
+                  )}
+                </div>
+                
+                {/* ROW 3: Show Subtitle + Input Field */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={!!formData.subtitle}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          subtitle: e.target.checked ? '' : undefined 
+                        });
+                      }}
+                    />
+                    <span>Show Subtitle</span>
+                  </label>
+                  {formData.subtitle !== undefined && (
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={formData.subtitle || ''}
+                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                      placeholder="e.g., Total fans vs attendees (%)"
+                    />
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 mt-2">
+                💡 Tip: Subtitle appears below the chart title and is useful for explaining KPI metrics.
+              </p>
+            </div>
           </div>
 
           {/* WHAT: Element-Level Formatting Controls (ALL chart types) */}
@@ -1388,6 +1484,13 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
           width: 80px;
           padding: 0.5rem;
           font-size: 0.875rem;
+        }
+        
+        /* WHAT: Emoji input field sizing */
+        /* WHY: Emoji fields should be compact (max 2 characters) */
+        .emoji-input-field {
+          max-width: 100px;
+          text-align: center;
         }
 
         .element-constraint-info {

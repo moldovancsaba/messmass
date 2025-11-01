@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
       
       // Create chart entries for the default block
       const charts = existingCharts.map((chart, index) => ({
-        chartId: chart._id.toString(),
+        chartId: chart.chartId, // FIXED: Use chartId, not _id
         width: 1, // Each chart takes 1 grid column by default
         order: index
       }));
