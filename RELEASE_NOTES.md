@@ -1,5 +1,98 @@
 # MessMass Release Notes
 
+## [v9.2.0] — 2025-11-01T23:26:55.000Z
+
+### Added
+
+✅ **Missing /api/chart-configs Endpoint**
+- Created new endpoint for Visualization Manager chart picker dropdown
+- Fetches all active charts from chartConfigurations collection
+- Returns formatted list with chartId, title, type, emoji for UI display
+- Fixes issue where chart picker loaded empty/incorrect data
+- Resolves "marketing-value-kpi" chart not appearing correctly in blocks
+
+✅ **Professional Display Visibility Controls**
+- Added "👁️ Display Settings" section to Chart Algorithm Manager
+- Checkbox-first UX for Title, Emoji, and Subtitle visibility control
+- Follows exact same pattern as Element Formatting (prefix/suffix)
+- Conditional input fields appear only when checkbox is checked
+- Smart defaults: chartId for title, 📊 for emoji
+- Three independent controls:
+  - ☑ Show Title (with text input)
+  - ☑ Show Emoji (with 2-char input, centered, max 100px)
+  - ☑ Show Subtitle (with text input)
+
+### Fixed
+
+✅ **Visualization Manager Chart Picker**
+- Fixed missing /api/chart-configs endpoint causing empty dropdown
+- Chart IDs no longer get corrupted during block assignment
+- "marketing-value-kpi" now saves with correct ID (not stripped to "marketing-value")
+- All 38 charts now appear correctly in visualization manager
+
+✅ **Chart Header Element Management**
+- Charts can now hide title by setting to empty string
+- Emoji and subtitle can be toggled on/off independently
+- No more "always visible" elements - full admin control
+
+### Technical Details
+
+**Files Created**: 6 files
+- `app/api/chart-configs/route.ts` (60 lines) - Chart picker endpoint
+- `AI_PRECOMMIT_CHECKLIST.md` (334 lines) - Mandatory pre-commit protocol
+- `DIAGNOSTIC_REPORT.md` (449 lines) - Complete system audit documentation
+- `DISPLAY_VISIBILITY_CONTROLS.md` (480 lines) - Feature documentation
+- `FIX_SUMMARY.md` (206 lines) - API endpoint fix details
+- `SUBTITLE_FIX.md` (178 lines) - Subtitle field addition details
+
+**Files Modified**: 2 files
+- `components/ChartAlgorithmManager.tsx` - Display Settings section (lines 869-963), emoji CSS (lines 1489-1494)
+- `package.json` - Version 9.1.0 → 9.2.0
+
+**API Endpoints Added**:
+- `GET /api/chart-configs` - Fetch active charts for visualization manager
+
+**CSS Added**:
+```css
+.emoji-input-field {
+  max-width: 100px;
+  text-align: center;
+}
+```
+
+**Why**
+
+User reported critical issues:
+1. "when i click on 📊 marketing-value-kpi i got 'marketing-value' as a chart but it is not visible anywhere"
+2. "i see two different KPI charts - 'Engagement Rate' has description but there is no place to add description"
+3. "i want to be able to choose if visible or hidden both the title, emoji and subtitle"
+
+Solution:
+1. Created missing /api/chart-configs endpoint for proper chart data loading
+2. Added subtitle/description field to chart form
+3. Implemented professional checkbox-based visibility controls matching existing formatting pattern
+
+**Benefits**
+1. **Visualization Manager Fixed**: All charts load correctly in dropdown
+2. **Full Header Control**: Show/hide title, emoji, subtitle independently
+3. **Professional UX**: Consistent pattern with Element Formatting section
+4. **No Inline Styles**: CODING_STANDARDS.md compliant
+5. **Smart Defaults**: Sensible fallbacks when enabling elements
+6. **Complete Documentation**: 5 comprehensive markdown files
+7. **Pre-Commit Protocol**: AI checklist prevents future documentation gaps
+
+**Build Status**:
+- ✅ `npm run build` passed
+- ✅ `npm run type-check` passed
+- ✅ No TypeScript errors
+- ✅ No ESLint warnings
+
+**Database Impact**: None - uses existing chart configuration schema
+
+**Migration Required**: None - backward compatible
+
+---
+
 ## [v8.19.1] — 2025-10-31T11:53:00.000Z
 
 ### ✅ Percentage Calculation Fix + VALUE Chart KPI Display

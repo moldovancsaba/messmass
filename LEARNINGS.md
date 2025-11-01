@@ -1,5 +1,38 @@
 # MessMass Development Learnings
 
+## [v9.2.0] - 2025-11-01T23:26:55.000Z
+
+### Issue
+Missing API endpoint caused visualization manager to fail loading chart dropdown correctly. Charts created without visibility controls for title/emoji/subtitle.
+
+### Solution
+1. Created `/api/chart-configs` endpoint for visualization manager
+2. Added professional Display Visibility Controls section to Chart Algorithm Manager
+3. Implemented checkbox-first UX matching existing Element Formatting pattern
+
+### Key Learning
+**Always verify API endpoints exist before assuming frontend bugs.** The visualization manager was calling `/api/chart-configs` (plural) but only `/api/chart-config` (singular) existed. This caused:
+- Empty `availableCharts` array in state
+- Broken chart picker dropdown
+- Chart IDs being corrupted during save
+
+**Follow established patterns religiously.** The Display Visibility Controls implementation succeeded because it:
+- Copied the exact structure from Element Formatting (prefix/suffix)
+- Reused existing CSS classes (`.formatting-section`, `.formatting-row`)
+- Followed checkbox + conditional input pattern
+- No inline styles (CODING_STANDARDS.md compliant)
+
+**Pre-commit checklists prevent documentation gaps.** Created `AI_PRECOMMIT_CHECKLIST.md` as mandatory protocol to ensure:
+- Version bumps before commits
+- Documentation updates in sync
+- RELEASE_NOTES, LEARNINGS, ARCHITECTURE all updated
+- Build verification before push
+
+### Category
+Backend / Frontend / Process
+
+---
+
 ## 2025-11-01T20:10:00.000Z — VALUE Chart Type Removal: Complexity vs. Simplicity Trade-off
 
 **What**: Complete removal of the VALUE chart type system from the codebase, database, API routes, UI components, and documentation.
