@@ -32,6 +32,36 @@ export async function GET() {
   }
 }
 
+// WHAT: Normalize VALUE chart IDs before saving
+// WHY: VALUE charts are stored with base ID, not split IDs (-kpi, -bar)
+// HOW: Remove -kpi/-bar suffixes and deduplicate
+function normalizeChartIds(charts: any[]): any[] {
+  if (!charts || charts.length === 0) return [];
+  
+  const seen = new Set<string>();
+  const normalized: any[] = [];
+  
+  for (const chart of charts) {
+    let baseId = chart.chartId;
+    
+    // Remove VALUE chart split suffixes
+    if (baseId.endsWith('-kpi') || baseId.endsWith('-bar')) {
+      baseId = baseId.replace(/-kpi$|-bar$/, '');
+    }
+    
+    // Only add if not duplicate
+    if (!seen.has(baseId)) {
+      seen.add(baseId);
+      normalized.push({
+        ...chart,
+        chartId: baseId
+      });
+    }
+  }
+  
+  return normalized;
+}
+
 // POST /api/data-blocks - Create new data visualization block
 export async function POST(request: NextRequest) {
   try {
@@ -53,7 +83,7 @@ export async function POST(request: NextRequest) {
     const dataBlock: Omit<DataVisualizationBlock, '_id'> = {
       name,
       gridColumns: Math.min(Math.max(gridColumns, 1), 6), // Ensure 1-6 range
-      charts: charts || [],
+      charts: normalizeChartIds(charts || []), // WHAT: Normalize VALUE chart IDs
       order: order || 0,
       isActive: isActive !== false, // Default to true
       showTitle: showTitle !== false, // NEW: Default to true
@@ -101,10 +131,10 @@ export async function PUT(request: NextRequest) {
     const updateData = {
       name,
       gridColumns: Math.min(Math.max(gridColumns, 1), 6),
-      charts: charts || [],
+      charts: normalizeChartIds(charts || []), // WHAT: Normalize VALUE chart IDs
       order: order || 0,
       isActive: isActive !== false,
-      showTitle: showTitle !== false, // NEW: Default to true
+      showTitle: showTitle !== false,
       updatedAt: new Date().toISOString()
     };
 

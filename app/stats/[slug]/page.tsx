@@ -129,8 +129,20 @@ export default function StatsPage() {
   const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
     try {
       const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
+      console.log('🎨 [Stats] Fetching page config with:', { projectIdentifier, qs });
+      
       const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
       const data = await response.json();
+
+      console.log('🎨 [Stats] Page config response:', {
+        success: data.success,
+        blocksCount: data.config?.dataBlocks?.length,
+        blocks: data.config?.dataBlocks?.map((b: any) => ({
+          name: b.name,
+          charts: b.charts?.length,
+          isActive: b.isActive
+        }))
+      });
 
       if (data.success) {
         setPageStyle(data.config.pageStyle);
@@ -141,7 +153,7 @@ export default function StatsPage() {
         }
       }
     } catch (err) {
-      console.error('Failed to fetch page config:', err);
+      console.error('❌ [Stats] Failed to fetch page config:', err);
     }
   }, []);
 

@@ -1,8 +1,122 @@
 # MessMass Design System
 
-**Version**: 8.24.0  
-**Last Updated**: 2025-11-01T15:00:00.000Z (UTC)  
+**Version**: 9.1.0  
+**Last Updated**: 2025-11-01T15:48:00.000Z (UTC)  
 **Status**: Production-Ready — TailAdmin V2 Flat Design
+
+---
+
+## 🏛️ Centralized Design Token Management
+
+### Single Source of Truth: `app/styles/theme.css`
+
+**ALL design tokens are centrally managed in ONE file.**
+
+**Location**: `app/styles/theme.css` (lines 1-450)  
+**Tokens**: 200+ CSS variables (`--mm-*` prefix)  
+**Scope**: Global (`:root` selector)
+
+### Why Centralized Tokens Matter
+
+**Security**: 
+- One file to audit for CSS injection vulnerabilities
+- Centralized sanitization of dynamic values
+- Controlled token namespace (`--mm-*` prefix prevents conflicts)
+
+**Consistency**:
+- Change blue primary once → updates 60+ components
+- Spacing adjustments propagate system-wide
+- Typography scales apply uniformly
+
+**Maintainability**:
+- Find any token instantly (single file, 450 lines)
+- No scattered hardcoded values
+- Clear token naming convention
+
+### Token Update Protocol
+
+**When modifying design tokens:**
+
+1. **Identify Impact**: Search codebase for token usage
+   ```bash
+   # Example: Find all uses of --mm-space-4
+   grep -r "--mm-space-4" app/ components/ --include="*.css"
+   ```
+
+2. **Document Change**: Log in RELEASE_NOTES.md
+   ```
+   Design Token Update:
+   - Changed: --mm-space-4 (1rem → 1.25rem)
+   - Reason: Improve touch target sizes on mobile
+   - Affected: 45 components, 12 pages
+   - Tested: Mobile viewport 375px-768px
+   ```
+
+3. **Test Propagation**: Verify visual consistency
+   - Run `npm run dev`
+   - Check all admin pages
+   - Check public pages (stats, edit, filter)
+   - Verify mobile responsiveness
+
+4. **Version Bump**: 
+   - PATCH: Token value adjustment (e.g., spacing increase)
+   - MINOR: New token addition
+   - MAJOR: Token removal or breaking rename
+
+### Centralized Component Library
+
+**Complete Catalog**: See **`REUSABLE_COMPONENTS_INVENTORY.md`**
+
+**Module Categories**:
+1. **Modal System** (3 components) - FormModal, BaseModal, ConfirmDialog
+2. **Card System** (1 component) - ColoredCard (mandatory)
+3. **Hashtag System** (2 components) - UnifiedHashtagInput, ColoredHashtagBubble
+4. **Admin UI** (10+ components) - AdminHero, AdminLayout, Sidebar, etc.
+5. **Selectors** (2 components) - PartnerSelector, ProjectSelector
+6. **Charts** (7 components) - KPICard, PieChart, VerticalBarChart, etc.
+7. **Forms** (10+ components) - ImageUploadField, TextareaField, etc.
+8. **Analytics** (3 components) - MetricCard, InsightCard, LineChart
+
+**Critical Rule**: Never create custom versions. Use centralized modules exclusively.
+
+### Token Audit Commands
+
+**Before any styling work:**
+
+```bash
+# 1. Check if token exists
+grep "--mm-space-" app/styles/theme.css
+
+# 2. Find token usage
+grep -r "var(--mm-space-4)" app/ components/
+
+# 3. Verify no hardcoded values
+grep -r "padding: [0-9]" --include="*.css" components/ | grep -v "var(--"
+
+# 4. Count token usage
+grep -r "var(--mm-" --include="*.css" . | wc -l
+```
+
+### Module Dependency Tracking
+
+**Every component MUST document its token dependencies:**
+
+```css
+/* components/MyComponent.module.css */
+
+/**
+ * WHAT: My component styling
+ * WHY: Implements feature X with design system tokens
+ * 
+ * TOKEN DEPENDENCIES:
+ * - Colors: --mm-gray-900, --mm-white, --mm-primary
+ * - Spacing: --mm-space-4, --mm-space-6
+ * - Typography: --mm-font-size-sm, --mm-font-weight-medium
+ * - Effects: --mm-radius-lg, --mm-shadow-sm
+ * 
+ * AFFECTED BY: Changes to primary color palette or spacing scale
+ */
+```
 
 ---
 

@@ -64,19 +64,11 @@ export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'; // WHAT: Added 'value' type (KPI + BAR combined)
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // Chart type
   // WHY: text displays reportText* variables as formatted text blocks, image shows reportImage* URLs as full-width images
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
-  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar/value, 1 for kpi/text/image)
-  
-  // VALUE TYPE ONLY: Dual formatting configs
-  /** WHAT: Formatting for KPI total area (VALUE charts) */
-  kpiFormatting?: ChartValueFormatting;
-  /** WHAT: Unified formatting for all bars (VALUE charts) */
-  barFormatting?: ChartValueFormatting;
-  /** WHAT: Color for KPI display (VALUE charts) - separate from element colors */
-  kpiColor?: string;
+  elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi/text/image)
   
   // Metadata fields with ISO 8601 millisecond precision
   createdAt: string; // ISO 8601: "2025-08-18T10:18:40.123Z"
@@ -174,7 +166,7 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value'; // WHAT: Added 'value' chart type
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // Chart type
   emoji?: string; // Chart emoji from configuration
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
@@ -192,20 +184,10 @@ export interface ChartCalculationResult {
      */
     formatting?: ChartValueFormatting;
   }[];
-  total?: number | 'NA'; // Total value for bar/value charts
+  total?: number | 'NA'; // Total value for bar charts
   kpiValue?: number | string | 'NA'; // WHAT: Support string for text/image charts
-  
-  // VALUE TYPE ONLY: Dual formatting
-  kpiFormatting?: ChartValueFormatting;
-  barFormatting?: ChartValueFormatting;
-  kpiColor?: string; // Color for KPI display
 
   hasErrors: boolean; // Whether any element had calculation errors
-  
-  // WHAT: Flags to identify split VALUE chart parts
-  // WHY: VALUE chart config becomes TWO separate result objects (KPI + BAR)
-  isValueKpiPart?: boolean;  // True for KPI chart derived from VALUE
-  isValueBarPart?: boolean;  // True for BAR chart derived from VALUE
 }
 
 /**

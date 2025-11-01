@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-11-01T15:00:00.000Z
-Version: 8.24.0
+Last Updated: 2025-11-01T15:48:00.000Z (UTC)
+Version: 9.1.0
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -69,6 +69,187 @@ import FormModal from '@/components/modals/FormModal';
 | Not searching codebase first | ❌ Rejection |
 
 **See:** `CODING_STANDARDS.md` for complete rules and enforcement.
+
+---
+
+## 🏗️ Centralized Module Architecture
+
+### Module Management Philosophy
+
+**MessMass operates on a centralized module architecture where ALL reusable components, utilities, and styling systems are maintained as single-source-of-truth implementations.**
+
+**Core Principle**: One implementation, many consumers.
+
+### Module Inventory & Catalog
+
+**Complete Reference**: `REUSABLE_COMPONENTS_INVENTORY.md`
+
+**Module Categories** (210+ total modules):
+
+| Category | Count | Location | Examples |
+|----------|-------|----------|----------|
+| **UI Components** | 60+ | `components/` | FormModal, ColoredCard, UnifiedHashtagInput |
+| **Design Tokens** | 200+ | `app/styles/theme.css` | `--mm-color-primary-500`, `--mm-space-4` |
+| **Utility Functions** | 50+ | `lib/` | `formulaEngine`, `chartCalculator`, `analytics*` |
+| **Utility CSS** | 100+ | `app/styles/utilities.css` | `.flex-center`, `.text-bold`, `.p-4` |
+| **Hooks** | 10+ | `hooks/`, `lib/shareables/` | `usePageStyle`, `useHashtags`, `useAuth` |
+| **Type Definitions** | 20+ | `lib/types/` | API types, hashtag types, chart types |
+
+### Module Dependency Map
+
+**Critical Dependencies** (update with care):
+
+```
+FormModal (components/modals/FormModal.tsx)
+├── Used by: 12 admin pages
+├── Depends on: BaseModal, design tokens
+├── CSS: FormModal.module.css
+└── Impact: High (core admin functionality)
+
+ColoredCard (components/ColoredCard.tsx)
+├── Used by: 25+ pages/components
+├── Depends on: design tokens
+├── CSS: ColoredCard.module.css
+└── Impact: Critical (universal card component)
+
+theme.css (app/styles/theme.css)
+├── Used by: ALL styled components (100+)
+├── Tokens: 200+ CSS variables
+├── Scope: Global (:root)
+└── Impact: System-wide (changes affect entire app)
+
+formulaEngine (lib/formulaEngine.ts)
+├── Used by: Chart system, analytics, KYC
+├── Depends on: Variable metadata, stats schema
+├── Functions: 12+ formula evaluation functions
+└── Impact: High (core calculation engine)
+```
+
+### Centralized Update Strategy
+
+**When ANY module needs updating:**
+
+#### Step 1: Impact Assessment
+```bash
+# Find all usages
+grep -r "import.*FormModal" app/ components/
+grep -r "from '@/components/modals/FormModal'" app/ components/
+
+# Count affected files
+grep -r "FormModal" app/ components/ --include="*.tsx" | wc -l
+```
+
+#### Step 2: Document Affected Modules
+**MANDATORY in task planning:**
+
+```markdown
+## Task: Add Loading State to FormModal
+
+### Affected Modules:
+- **Primary**: `components/modals/FormModal.tsx`
+- **Dependent**: 12 admin pages
+  - app/admin/partners/page.tsx
+  - app/admin/variables/page.tsx
+  - app/admin/kyc/page.tsx
+  - app/admin/categories/page.tsx
+  - app/admin/hashtags/page.tsx
+  - [... 7 more]
+
+### Impact Level: HIGH
+- Core component used system-wide
+- Requires testing across all admin workflows
+- CSS changes may affect modal height calculations
+```
+
+#### Step 3: Single-Point Update
+**Update ONLY the canonical implementation:**
+
+```tsx
+// components/modals/FormModal.tsx
+// ✅ Update here ONCE
+
+export interface FormModalProps {
+  // ... existing props
+  isLoading?: boolean; // ✅ New prop added centrally
+}
+```
+
+**DO NOT update individual consumers unless necessary.**
+
+#### Step 4: Propagation Testing
+**Test ALL affected pages:**
+
+```bash
+# Start dev server
+npm run dev
+
+# Test matrix (example for FormModal update):
+# ☐ Partners page - Create/Edit modal
+# ☐ Variables page - Create/Edit modal
+# ☐ KYC page - Create/Edit modal
+# ☐ Categories page - Create/Edit modal
+# ... (all 12 pages)
+
+# Verify:
+# - Modal opens/closes correctly
+# - Form submission works
+# - Loading states display properly
+# - Mobile responsiveness maintained
+```
+
+#### Step 5: Version & Document
+**Update version and document changes:**
+
+```
+Version: 9.1.0 → 9.2.0 (MINOR - new prop)
+Module: FormModal
+Change: Added `isLoading` prop for async operations
+Affected: 12 admin pages
+Tested: All admin workflows verified
+Released: 2025-11-01T16:00:00.000Z
+```
+
+### Module Security Implications
+
+**Centralized modules = centralized security:**
+
+**Vulnerabilities**:
+- SQL/NoSQL injection in `formulaEngine.ts` affects ALL charts
+- XSS in `FormModal.tsx` affects ALL admin forms
+- CSRF bypass in `csrf.ts` affects ALL state-changing operations
+
+**Mitigation Strategy**:
+1. **Regular Audits**: Quarterly security review of top 20 modules
+2. **Dependency Scanning**: `npm audit` + Snyk integration
+3. **Input Sanitization**: Centralized in utility functions
+4. **Output Encoding**: Enforced in shared components
+5. **Version Pinning**: Lock critical dependencies
+
+**Audit Schedule**:
+- **Monthly**: Design tokens, core components (FormModal, ColoredCard)
+- **Quarterly**: Utility functions, analytics engines
+- **Annual**: Complete module inventory review
+
+### Module Deprecation Protocol
+
+**If a centralized module must be replaced:**
+
+1. **Create Replacement**: New canonical implementation
+2. **Deprecation Notice**: Add `@deprecated` JSDoc tag
+3. **Migration Guide**: Document step-by-step migration
+4. **Grace Period**: Minimum 2 versions (e.g., 9.1.0 → 9.3.0)
+5. **Automated Migration**: Provide codemod script if possible
+6. **Final Removal**: Delete after grace period + verification
+
+**Example Deprecation:**
+```tsx
+/**
+ * @deprecated Use FormModal from @/components/modals/FormModal instead.
+ * This component will be removed in v10.0.0.
+ * Migration guide: See MODAL_SYSTEM.md#migration
+ */
+export function LegacyModal() { ... }
+```
 
 ---
 

@@ -61,10 +61,6 @@ export async function GET() {
       type: config.type,
       order: config.order,
       elements: config.elements,
-      // WHAT: Include formatting fields for VALUE charts and element-level formatting
-      // WHY: Frontend needs these to display currency symbols, percentages, etc.
-      kpiFormatting: config.kpiFormatting,
-      barFormatting: config.barFormatting,
       emoji: config.emoji,
       subtitle: config.subtitle,
       showTotal: config.showTotal,

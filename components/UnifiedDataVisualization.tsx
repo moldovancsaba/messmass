@@ -20,11 +20,25 @@ export default function UnifiedDataVisualization({
   gridUnits = { desktop: 4, tablet: 2, mobile: 1 },
   useChartContainer = true
 }: UnifiedDataVisualizationProps) {
+  
+  console.log('📊 [UnifiedViz] Rendering with:', {
+    blocksCount: blocks.length,
+    chartResultsCount: chartResults.length,
+    loading
+  });
+  
   // Determine visible blocks once and keep a stable order
   // Why: We need a consistent ordering to generate matching dynamic CSS and class names
   const visibleBlocks = blocks
     .filter(block => block.isActive)
     .sort((a, b) => a.order - b.order);
+  
+  console.log('📊 [UnifiedViz] Visible blocks:', visibleBlocks.map(b => ({
+    name: b.name,
+    isActive: b.isActive,
+    chartsCount: b.charts?.length,
+    chartIds: b.charts?.map(c => c.chartId)
+  })));
 
   // Build dynamic CSS so each block's grid respects its configured gridColumns
   // Why: Requirements specify charts should fill their block's available units.

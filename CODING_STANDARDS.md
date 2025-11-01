@@ -1,7 +1,87 @@
 # MessMass Coding Standards
 
-**Version:** 8.0.0  
-**Last Updated:** 2025-10-20T13:49:00.000Z
+**Version:** 9.1.0  
+**Last Updated:** 2025-11-01T15:48:00.000Z (UTC)
+
+---
+
+## 🏗️ Centralized Module Management Strategy
+
+### Critical Principle: Single Source of Truth
+
+**ALL reusable components, utilities, and styling systems in MessMass are centrally managed.**
+
+**What This Means:**
+- We maintain ONE canonical implementation of each component/utility
+- Updates happen in ONE place and propagate system-wide
+- No duplication, no divergence, no fragmentation
+- Security patches and improvements are centralized
+
+**Why This Matters:**
+- **Security**: Vulnerabilities fixed once, everywhere
+- **Consistency**: UI/UX changes apply uniformly
+- **Maintainability**: Single update point reduces technical debt
+- **Scalability**: New features built on stable foundation
+
+### Module Inventory
+
+**Complete Catalog**: See **`REUSABLE_COMPONENTS_INVENTORY.md`** for full list of:
+- 🧩 **60+ Reusable Components** (modals, cards, forms, charts, selectors)
+- 🎨 **200+ Design Tokens** (colors, typography, spacing, shadows)
+- 🛠️ **50+ Utility Functions** (API helpers, analytics, data processing)
+- 📐 **100+ Utility CSS Classes** (layout, typography, spacing)
+
+### Centralized Update Protocol
+
+**When updating ANY centralized module:**
+
+1. **Document Impact**: List ALL affected pages/components
+2. **Update Once**: Modify only the canonical implementation
+3. **Test Propagation**: Verify changes across ALL usages
+4. **Version Bump**: Follow semantic versioning (PATCH for fixes, MINOR for features)
+5. **Document Changes**: Update RELEASE_NOTES.md with module impact
+
+**Example - Updating FormModal:**
+```
+Module: components/modals/FormModal.tsx
+Affected: 12 admin pages (partners, variables, kyc, categories, etc.)
+Change Type: MINOR (added new prop `footerAlign`)
+Test Coverage: All 12 pages verified
+Version: 9.1.0 → 9.2.0
+```
+
+### Module Usage Rules
+
+**MANDATORY for ALL development:**
+
+1. **Search Inventory First**: Check `REUSABLE_COMPONENTS_INVENTORY.md` before creating ANYTHING
+2. **Use Centralized Modules**: Never duplicate or create custom versions
+3. **Report Issues**: If module doesn't fit need, report → improve central module
+4. **Track Dependencies**: Document which modules your feature uses
+
+**Verification Command:**
+```bash
+# Before starting any task, review module inventory
+cat REUSABLE_COMPONENTS_INVENTORY.md
+
+# Check if module exists
+grep -r "FormModal\|ColoredCard\|UnifiedHashtagInput" REUSABLE_COMPONENTS_INVENTORY.md
+```
+
+### Prohibited Actions
+
+❌ **DO NOT**:
+- Copy-paste module code into your feature
+- Create "slightly modified" versions of central modules
+- Bypass centralized components for "special cases"
+- Update modules without documenting impact
+- Fork modules into feature-specific variants
+
+✅ **MUST DO**:
+- Import from canonical location (e.g., `@/components/modals/FormModal`)
+- Use modules exactly as documented in inventory
+- Propose improvements to central modules (not workarounds)
+- Document module dependencies in task planning
 
 ---
 

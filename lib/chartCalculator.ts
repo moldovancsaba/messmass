@@ -315,11 +315,11 @@ export function calculateChart(
       hasErrors = true;
       console.error(`❌ KPI chart "${configuration.title}" has no elements`);
     }
-  } else if (configuration.type === 'bar' || configuration.type === 'value') {
-    // WHAT: Calculate total for bar/VALUE charts (VALUE always needs total for KPI display)
-    // WHY: VALUE charts show KPI total even if showTotal flag is false for subtitle
+  } else if (configuration.type === 'bar') {
+    // WHAT: Calculate total for bar charts if showTotal is enabled
+    // WHY: Some bar charts display totals, others don't
     // HOW: Sum all valid numeric elements
-    if (configuration.showTotal || configuration.type === 'value') {
+    if (configuration.showTotal) {
       try {
         const validValues = elements
           .map(el => el.value)
@@ -389,8 +389,7 @@ export function calculateChart(
   
   console.log(`✅ Chart calculation complete: ${elements.length} elements, ${hasErrors ? 'with' : 'without'} errors`);
   
-  // WHAT: Build result object with optional VALUE-type formatting
-  // WHY: VALUE charts require dual formatting configs (kpi + bar)
+  // Build result object
   const result: ChartCalculationResult = {
     chartId: configuration.chartId,
     title: configuration.title,
@@ -403,14 +402,6 @@ export function calculateChart(
     kpiValue,
     hasErrors
   };
-  
-  // WHAT: Add VALUE-specific formatting with defaults if missing
-  // WHY: VALUE charts need separate formatting for KPI total and bars, use defaults if not configured
-  // HOW: Provide empty string defaults (no prefix/suffix) if formatting configs are missing
-  if (configuration.type === 'value') {
-    result.kpiFormatting = configuration.kpiFormatting || { rounded: true, prefix: '', suffix: '' };
-    result.barFormatting = configuration.barFormatting || { rounded: true, prefix: '', suffix: '' };
-  }
   
   return result;
 }
@@ -472,59 +463,21 @@ export function calculateChartsBatchSafe(
  * @param configurations - Array of chart configurations
  * @param stats - Project statistics for all calculations
  * @returns Array of chart calculation results
- * 
- * WHAT: VALUE charts are split into TWO separate results (KPI + BAR)
- * WHY: Report pages show VALUE as two independent 1-unit charts side by side
- * HOW: When config.type === 'value', create KPI result + BAR result from single config
  */
 export function calculateChartsBatch(
   configurations: ChartConfiguration[],
   stats: ProjectStats
 ): ChartCalculationResult[] {
-  console.log(`🧮 Batch calculating ${configurations.length} charts...`);
+  console.log(`🧮 [Calculator] Batch calculating ${configurations.length} charts...`);
   
   const results: ChartCalculationResult[] = [];
   
   configurations.forEach(config => {
     const result = calculateChart(config, stats);
-    
-    // WHAT: Split VALUE chart into TWO separate results
-    // WHY: VALUE = KPI (1 unit) + BAR (1 unit) on report pages
-    if (config.type === 'value') {
-      // KPI Chart (first half of VALUE)
-      results.push({
-        ...result,
-        type: 'kpi',
-        chartId: `${config.chartId}-kpi`,
-        elements: [{
-          id: result.elements[0]?.id || 'kpi',
-          label: result.totalLabel || 'Total',
-          value: result.total || 'NA',
-          color: result.elements[0]?.color || '#10b981',
-          formatting: result.kpiFormatting
-        }],
-        isValueKpiPart: true
-      });
-      
-      // BAR Chart (second half of VALUE)
-      results.push({
-        ...result,
-        type: 'bar',
-        chartId: `${config.chartId}-bar`,
-        title: '', // No title for bar part
-        subtitle: undefined,
-        total: undefined, // Hide total in bar part (already shown in KPI)
-        elements: result.elements.map(el => ({
-          ...el,
-          formatting: result.barFormatting
-        })),
-        isValueBarPart: true
-      });
-    } else {
-      // All other chart types: single result
-      results.push(result);
-    }
+    results.push(result);
   });
+  
+  console.log(`🧮 [Calculator] Total results: ${results.length} (from ${configurations.length} configs)`);
   
   return results;
 }

@@ -55,10 +55,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
   }
   
-  // WHAT: Chart type validation including text/image and VALUE
-  // WHY: Support new chart types for reportText*, reportImage*, and VALUE (KPI + BAR)
-  if (!['pie', 'bar', 'kpi', 'text', 'image', 'value'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", or "value"' };
+  // WHAT: Chart type validation including text/image
+  // WHY: Support new chart types for reportText*, reportImage*
+  if (!['pie', 'bar', 'kpi', 'text', 'image'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", or "image"' };
   }
   
   // Elements validation
@@ -87,30 +87,6 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   
   if (config.type === 'image' && config.elements.length !== 1) {
     return { isValid: false, error: 'Image charts must have exactly 1 element' };
-  }
-  
-  // WHAT: VALUE chart type validation
-  // WHY: VALUE charts require exactly 5 elements AND dual formatting configs
-  if (config.type === 'value') {
-    if (config.elements.length !== 5) {
-      return { isValid: false, error: 'VALUE charts must have exactly 5 elements' };
-    }
-    
-    // Validate kpiFormatting exists and is valid
-    if (!config.kpiFormatting) {
-      return { isValid: false, error: 'VALUE type charts require kpiFormatting' };
-    }
-    if (!validateFormatting(config.kpiFormatting)) {
-      return { isValid: false, error: 'Invalid kpiFormatting: rounded must be boolean, prefix/suffix must be strings' };
-    }
-    
-    // Validate barFormatting exists and is valid
-    if (!config.barFormatting) {
-      return { isValid: false, error: 'VALUE type charts require barFormatting' };
-    }
-    if (!validateFormatting(config.barFormatting)) {
-      return { isValid: false, error: 'Invalid barFormatting: rounded must be boolean, prefix/suffix must be strings' };
-    }
   }
   
   // WHAT: Validate element-level formatting if present
@@ -175,10 +151,6 @@ export async function GET() {
       order: config.order,
       isActive: config.isActive,
       elements: config.elements,
-      // WHAT: Include VALUE-specific formatting fields
-      // WHY: VALUE charts need both kpiFormatting and barFormatting
-      kpiFormatting: config.kpiFormatting,
-      barFormatting: config.barFormatting,
       emoji: config.emoji,
       subtitle: config.subtitle,
       showTotal: config.showTotal,
@@ -231,13 +203,11 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel, kpiFormatting, barFormatting } = body;
+    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
     console.log('📥 POST RECEIVED - elements[0].formatting:', elements[0]?.formatting);
-    console.log('📥 POST RECEIVED - kpiFormatting:', kpiFormatting);
-    console.log('📥 POST RECEIVED - barFormatting:', barFormatting);
 
     // Validate required fields
     const validation = validateChartConfiguration(body);
@@ -265,26 +235,8 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
     
-    // WHAT: Ensure VALUE charts ALWAYS have formatting configs in database
-    // WHY: Defaults must be persisted, not applied at runtime
-    // HOW: Initialize with empty defaults if missing
-    let finalKpiFormatting = kpiFormatting;
-    let finalBarFormatting = barFormatting;
-    
-    if (type === 'value') {
-      if (!finalKpiFormatting) {
-        finalKpiFormatting = { rounded: true, prefix: '', suffix: '' };
-        console.log('⚠️ VALUE chart missing kpiFormatting, using defaults:', finalKpiFormatting);
-      }
-      if (!finalBarFormatting) {
-        finalBarFormatting = { rounded: true, prefix: '', suffix: '' };
-        console.log('⚠️ VALUE chart missing barFormatting, using defaults:', finalBarFormatting);
-      }
-    }
-    
-    // WHAT: Include all formatting fields in the configuration object
-    // WHY: kpiFormatting, barFormatting, and element.formatting must be persisted to database
-    // HOW: Use finalized formatting with defaults applied
+    // WHAT: Include all configuration fields
+    // WHY: element.formatting must be persisted to database
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -292,8 +244,6 @@ export async function POST(request: NextRequest) {
       order,
       isActive: isActive ?? true,
       elements,
-      kpiFormatting: finalKpiFormatting,
-      barFormatting: finalBarFormatting,
       emoji,
       subtitle,
       showTotal,
@@ -306,8 +256,6 @@ export async function POST(request: NextRequest) {
     const result = await collection.insertOne(configuration);
     console.log('✅ Chart configuration created with ID:', result.insertedId);
     console.log('💾 SAVED TO DB - elements[0].formatting:', configuration.elements[0]?.formatting);
-    console.log('💾 SAVED TO DB - kpiFormatting:', configuration.kpiFormatting);
-    console.log('💾 SAVED TO DB - barFormatting:', configuration.barFormatting);
 
     return NextResponse.json({
       success: true,
@@ -352,8 +300,6 @@ export async function PUT(request: NextRequest) {
     // WHAT: Log received update data
     console.log('📥 PUT RECEIVED - configurationId:', configurationId);
     console.log('📥 PUT RECEIVED - elements[0].formatting:', updateData.elements?.[0]?.formatting);
-    console.log('📥 PUT RECEIVED - kpiFormatting:', updateData.kpiFormatting);
-    console.log('📥 PUT RECEIVED - barFormatting:', updateData.barFormatting);
 
     if (!configurationId || !ObjectId.isValid(configurationId)) {
       return NextResponse.json(
@@ -405,23 +351,8 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // WHAT: Ensure VALUE charts ALWAYS have formatting configs when updating
-    // WHY: Defaults must be persisted to database, not applied at runtime
-    // HOW: Initialize with empty defaults if missing for VALUE type
-    if (updateData.type === 'value') {
-      if (!updateData.kpiFormatting) {
-        updateData.kpiFormatting = { rounded: true, prefix: '', suffix: '' };
-        console.log('⚠️ VALUE chart missing kpiFormatting on update, using defaults');
-      }
-      if (!updateData.barFormatting) {
-        updateData.barFormatting = { rounded: true, prefix: '', suffix: '' };
-        console.log('⚠️ VALUE chart missing barFormatting on update, using defaults');
-      }
-    }
-    
     // WHAT: Spread updateData to include all fields including formatting
-    // WHY: kpiFormatting, barFormatting, and element.formatting are in updateData and must persist
-    // HOW: ...updateData spreads all fields from request body with defaults applied
+    // WHY: element.formatting is in updateData and must persist
     const updateFields = {
       ...updateData,
       updatedAt: new Date().toISOString(),
