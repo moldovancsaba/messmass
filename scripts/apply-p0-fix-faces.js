@@ -15,7 +15,7 @@ async function deactivateFacesChart() {
     client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
     const db = client.db('messmass');
-    const col = db.collection('chartConfigurations');
+    const col = db.collection('chart_configurations');
 
     // Verify chart exists before update
     const facesChart = await col.findOne({ chartId: 'faces' });

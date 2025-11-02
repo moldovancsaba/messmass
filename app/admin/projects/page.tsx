@@ -10,7 +10,6 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { projectsAdapter } from '@/lib/adapters/projectsAdapter';
 import { ProjectDTO } from '@/lib/types/api';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
-import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import FormModal from '@/components/modals/FormModal';
 import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
@@ -329,17 +328,21 @@ export default function ProjectsPageUnified() {
   }
   
   return (
-    <div className="page-container">
-      {/* WHAT: Custom hero with server-side search
-       * WHY: Database-only search, no client-side filtering */}
-      <UnifiedAdminHeroWithSearch
+    <>
+      <UnifiedAdminPage
+        adapter={projectsAdapter}
+        items={projects}
+        isLoading={loading}
         title="🍿 Manage Projects"
         subtitle="Manage all event projects, statistics, and sharing options"
         backLink="/admin"
-        showSearch
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
+        enableSearch={true}
+        externalSearchValue={searchQuery}
+        onExternalSearchChange={setSearchQuery}
         searchPlaceholder="Search projects..."
+        showPaginationStats={true}
+        totalMatched={totalMatched}
+        enableSort={false}
         actionButtons={[
           {
             label: 'Add New Project',
@@ -349,27 +352,6 @@ export default function ProjectsPageUnified() {
             title: 'Create a new project'
           }
         ]}
-      />
-      
-      {/* Pagination stats */}
-      {!loading && projects.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: 'var(--mm-gray-500)', fontSize: '0.875rem' }}>
-            Showing {projects.length} of {totalMatched} projects
-          </div>
-        </div>
-      )}
-      
-      <UnifiedAdminPage
-        adapter={projectsAdapter}
-        items={projects}
-        isLoading={loading}
-        title="🍿 Manage Projects"
-        subtitle="Manage all event projects, statistics, and sharing options"
-        backLink="/admin"
-        enableSearch={false}
-        enableSort={false}
-        actionButtons={[]}
       />
       
       {/* Create Project Modal */}
@@ -515,6 +497,6 @@ export default function ProjectsPageUnified() {
             : 'Share Hashtag Filter'
         }
       />
-    </div>
+    </>
   );
 }

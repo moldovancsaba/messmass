@@ -6,7 +6,7 @@ async function checkCharts() {
   try {
     await client.connect();
     const db = client.db('messmass');
-    const charts = await db.collection('chartConfigurations').find({}).toArray();
+    const charts = await db.collection('chart_configurations').find({}).toArray();
     
     console.log('\n📊 Chart Formula Analysis:\n');
     

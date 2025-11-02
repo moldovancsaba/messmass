@@ -10,7 +10,7 @@ async function checkBlockStorage() {
     await client.connect();
     const db = client.db(process.env.MONGODB_DB || 'messmass');
     
-    const block = await db.collection('dataBlocks').findOne({ name: 'Overview' });
+    const block = await db.collection('data_blocks').findOne({ name: 'Overview' });
     
     if (block) {
       console.log('📦 Overview block charts:\n');
@@ -20,7 +20,7 @@ async function checkBlockStorage() {
       
       // Get the actual chart configs
       console.log('\n\n🔍 Matching chart configurations:\n');
-      const countryCharts = await db.collection('chartConfigurations').find({
+      const countryCharts = await db.collection('chart_configurations').find({
         chartId: { $in: ['bitly-top-countries', 'bitly-top-country', 'bitly-countries-reached'] }
       }).toArray();
       

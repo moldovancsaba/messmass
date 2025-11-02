@@ -44,7 +44,7 @@ export async function PUT(
 
     const client = await clientPromise
     const db = client.db(config.dbName)
-    const usersCollection = db.collection('users')
+    const usersCollection = db.collection('local_users')
 
     // Check if user exists
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
@@ -113,7 +113,7 @@ export async function DELETE(
 
     const client = await clientPromise
     const db = client.db(config.dbName)
-    const usersCollection = db.collection('users')
+    const usersCollection = db.collection('local_users')
 
     // Check if user exists
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })

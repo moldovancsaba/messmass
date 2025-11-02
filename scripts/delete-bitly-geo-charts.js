@@ -6,7 +6,7 @@ async function cleanup() {
   try {
     await client.connect();
     const db = client.db('messmass');
-    const result = await db.collection('chartConfigurations').deleteMany({
+    const result = await db.collection('chart_configurations').deleteMany({
       chartId: { $in: ['bitly-top-countries', 'bitly-top-country', 'bitly-countries-reached'] }
     });
     console.log(`Deleted ${result.deletedCount} chart config documents`);

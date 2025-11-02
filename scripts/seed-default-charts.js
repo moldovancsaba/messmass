@@ -195,7 +195,7 @@ async function seedDefaultCharts() {
   try {
     await client.connect();
     const db = client.db(process.env.MONGODB_DB || 'messmass');
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
     
     console.log('🌱 Seeding default charts to database...\n');
     

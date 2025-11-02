@@ -97,7 +97,7 @@ async function addCurrencyTypes() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db(MONGODB_DB);
-    const chartsCollection = db.collection('chartConfigurations');
+    const chartsCollection = db.collection('chart_configurations');
     
     // Fetch all active charts
     const charts = await chartsCollection.find({ isActive: true }).toArray();

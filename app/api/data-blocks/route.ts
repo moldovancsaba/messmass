@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('dataBlocks');
+    const collection = db.collection('data_blocks');
 
     const blocks = await collection.find({}).sort({ order: 1 }).toArray();
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('dataBlocks');
+    const collection = db.collection('data_blocks');
 
     const now = new Date().toISOString();
     const dataBlock: Omit<DataVisualizationBlock, '_id'> = {
@@ -96,7 +96,7 @@ export async function PUT(request: NextRequest) {
 
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('dataBlocks');
+    const collection = db.collection('data_blocks');
 
     const updateData = {
       name,
@@ -151,7 +151,7 @@ export async function DELETE(request: NextRequest) {
 
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('dataBlocks');
+    const collection = db.collection('data_blocks');
 
     const result = await collection.deleteOne({ _id: new ObjectId(blockId) });
 

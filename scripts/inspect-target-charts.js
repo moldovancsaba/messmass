@@ -6,7 +6,7 @@ async function inspect() {
   try {
     await client.connect();
     const db = client.db('messmass');
-    const col = db.collection('chartConfigurations');
+    const col = db.collection('chart_configurations');
     
     console.log('\n🔍 Inspecting Target Charts for P0 Fixes:\n');
     console.log('═══════════════════════════════════════════════\n');

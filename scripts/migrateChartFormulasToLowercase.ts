@@ -146,7 +146,7 @@ async function migrateChartFormulas() {
     await client.connect();
     
     const db: Db = client.db(process.env.MONGODB_DB || 'messmass');
-    const chartsCollection: Collection<ChartConfiguration> = db.collection('chartConfigurations');
+    const chartsCollection: Collection<ChartConfiguration> = db.collection('chart_configurations');
     
     console.log('📊 Fetching all chart configurations...');
     const allCharts = await chartsCollection.find({}).toArray();

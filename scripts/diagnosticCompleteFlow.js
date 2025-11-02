@@ -62,7 +62,7 @@ async function runDiagnostic() {
     console.log('📊 STEP 2: CHART CONFIGURATIONS SYSTEM');
     console.log('='.repeat(80));
     
-    const chartsCol = db.collection('chartConfigurations');
+    const chartsCol = db.collection('chart_configurations');
     const chartsCount = await chartsCol.countDocuments();
     console.log(`\n📈 Total charts in chartConfigurations: ${chartsCount}`);
     
@@ -102,7 +102,7 @@ async function runDiagnostic() {
     console.log('📊 STEP 3: DATA VISUALIZATION BLOCKS');
     console.log('='.repeat(80));
     
-    const blocksCol = db.collection('dataBlocks');
+    const blocksCol = db.collection('data_blocks');
     const blocksCount = await blocksCol.countDocuments();
     console.log(`\n📈 Total blocks in dataBlocks: ${blocksCount}`);
     

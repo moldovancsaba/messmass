@@ -48,7 +48,7 @@ async function removeObsoleteVariables() {
     
     // Step 1: Delete charts using obsolete variables
     console.log('\n📊 Deleting charts with obsolete variables...');
-    const chartResult = await db.collection('chartConfigurations').deleteMany({
+    const chartResult = await db.collection('chart_configurations').deleteMany({
       chartId: { $in: CHARTS_TO_DELETE }
     });
     console.log(`   Deleted ${chartResult.deletedCount} charts`);

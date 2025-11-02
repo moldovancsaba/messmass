@@ -58,7 +58,7 @@ export async function getOrCreatePagePassword(
   try {
     const client = await clientPromise;
 const db = client.db(config.dbName);
-    const collection = db.collection('pagePasswords');
+    const collection = db.collection('page_passwords');
 
     // Check if password already exists
     let existingPassword = await collection.findOne({ pageId, pageType });
@@ -127,7 +127,7 @@ export async function validatePagePassword(
   try {
     const client = await clientPromise;
 const db = client.db(config.dbName);
-    const collection = db.collection('pagePasswords');
+    const collection = db.collection('page_passwords');
 
     const pagePassword = await collection.findOne({ pageId, pageType });
     
@@ -234,7 +234,7 @@ export async function cleanupExpiredPasswords(): Promise<number> {
   try {
     const client = await clientPromise;
 const db = client.db(config.dbName);
-    const collection = db.collection('pagePasswords');
+    const collection = db.collection('page_passwords');
 
     const now = new Date().toISOString();
     const result = await collection.deleteMany({
@@ -260,7 +260,7 @@ export async function getPasswordStats(pageId?: string) {
   try {
     const client = await clientPromise;
 const db = client.db(config.dbName);
-    const collection = db.collection('pagePasswords');
+    const collection = db.collection('page_passwords');
 
     const filter = pageId ? { pageId } : {};
     

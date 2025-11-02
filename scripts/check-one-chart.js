@@ -6,7 +6,7 @@ async function check() {
   try {
     await client.connect();
     const db = client.db('messmass');
-    const chart = await db.collection('chartConfigurations').findOne({ chartId: 'gender-distribution' });
+    const chart = await db.collection('chart_configurations').findOne({ chartId: 'gender-distribution' });
     
     console.log('\nGender Distribution Chart:');
     console.log(JSON.stringify(chart, null, 2));

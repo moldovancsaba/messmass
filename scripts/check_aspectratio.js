@@ -10,7 +10,7 @@ async function checkAspectRatio() {
   try {
     await client.connect();
     const db = client.db(dbName);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
     
     // Find all image charts
     const imageCharts = await collection.find({ type: 'image' }).toArray();

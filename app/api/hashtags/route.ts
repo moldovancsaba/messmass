@@ -328,7 +328,7 @@ export async function DELETE(request: NextRequest) {
     );
 
     // 3) Delete individual color config if exists
-    const colorDeleteResult = await db.collection('hashtagColors').deleteOne({ name: hashtag });
+    const colorDeleteResult = await db.collection('hashtag_colors').deleteOne({ name: hashtag });
 
     // 4) Clean counts/aux collections
     // 4a) Remove any hashtag count docs for this tag (plain and any category-prefixed forms)

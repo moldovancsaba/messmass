@@ -38,7 +38,7 @@ async function diagnoseOverviewBlock() {
   
   console.log('\n🔍 Checking chart configurations...\n');
   
-  const chartConfigs = await db.collection('chartConfigurations').find({}).toArray();
+  const chartConfigs = await db.collection('chart_configurations').find({}).toArray();
   const chartIdMap = {};
   chartConfigs.forEach(config => {
     chartIdMap[config.chartId] = {

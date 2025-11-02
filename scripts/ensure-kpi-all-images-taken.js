@@ -10,7 +10,7 @@ async function run() {
   try {
     await client.connect()
     const db = client.db(config.dbName)
-    const col = db.collection('chartConfigurations')
+    const col = db.collection('chart_configurations')
 
     const existing = await col.findOne({ chartId: 'all-images-taken' })
     const setDoc = {

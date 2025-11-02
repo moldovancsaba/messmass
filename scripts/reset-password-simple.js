@@ -25,7 +25,7 @@ async function resetPassword() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db('messmass');
-    const usersCollection = db.collection('users');
+    const usersCollection = db.collection('local_users');
     
     // Check if user exists
     const user = await usersCollection.findOne({ email });

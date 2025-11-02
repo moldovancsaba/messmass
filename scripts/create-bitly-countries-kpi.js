@@ -48,7 +48,7 @@ async function createBitlyCountriesKpi() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db(DB_NAME);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
     
     // Check if chart already exists
     const existing = await collection.findOne({ chartId: countriesKpiConfig.chartId });

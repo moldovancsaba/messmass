@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
     const pageStyle = await resolvePageStyle(db, projectId || undefined);
 
     // Get all active data visualization blocks
-    const dataBlocksCollection = db.collection('dataBlocks');
+    const dataBlocksCollection = db.collection('data_blocks');
     const dataBlocks = await dataBlocksCollection
       .find({ isActive: true })
       .sort({ order: 1 })
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     // If no data blocks exist, create a default one with existing charts
     if (dataBlocks.length === 0) {
       // Get all existing chart configurations
-      const chartConfigCollection = db.collection('chartConfigurations');
+      const chartConfigCollection = db.collection('chart_configurations');
       const existingCharts = await chartConfigCollection.find({ isActive: true }).toArray();
       
       // Create chart entries for the default block

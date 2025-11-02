@@ -128,7 +128,7 @@ export async function GET() {
     
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // Get collection stats for debugging
     const stats = await collection.estimatedDocumentCount();
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // Check if chartId already exists
     const existingConfig = await collection.findOne({ chartId });
@@ -314,7 +314,7 @@ export async function PUT(request: NextRequest) {
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // For updates, we only validate if essential fields are being updated
     // Skip validation for simple field updates like isActive, order
@@ -429,7 +429,7 @@ export async function DELETE(request: NextRequest) {
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // Get configuration details before deletion for logging
     const configuration = await collection.findOne({ _id: new ObjectId(configurationId) });

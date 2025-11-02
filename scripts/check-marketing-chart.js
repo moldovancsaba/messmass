@@ -10,7 +10,7 @@ async function checkChart() {
     const db = client.db('messmass');
     
     console.log('🔍 Checking marketing-value chart configuration...\n');
-    const chartConfig = await db.collection('chartConfigurations').findOne({ chartId: 'marketing-value' });
+    const chartConfig = await db.collection('chart_configurations').findOne({ chartId: 'marketing-value' });
     
     if (!chartConfig) {
       console.log('❌ Chart configuration NOT FOUND');
@@ -26,7 +26,7 @@ async function checkChart() {
     console.log('  - order:', chartConfig.order);
     
     console.log('\n🔍 Checking Overview data block...\n');
-    const overviewBlock = await db.collection('dataBlocks').findOne({ blockId: 'overview' });
+    const overviewBlock = await db.collection('data_blocks').findOne({ blockId: 'overview' });
     
     if (!overviewBlock) {
       console.log('❌ Overview data block NOT FOUND');

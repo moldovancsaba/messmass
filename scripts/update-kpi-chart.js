@@ -22,7 +22,7 @@ async function updateKPIChart() {
     console.log('✅ Connected to MongoDB Atlas');
 
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // Update the KPI chart - remove subtitle and update label
     const result = await collection.updateOne(

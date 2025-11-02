@@ -19,7 +19,7 @@ async function checkCountryCharts() {
     console.log('🔍 Checking country-related charts...\n');
     
     for (const chartId of countryChartIds) {
-      const chart = await db.collection('chartConfigurations').findOne({ chartId });
+      const chart = await db.collection('chart_configurations').findOne({ chartId });
       if (chart) {
         console.log(`✅ ${chartId}: EXISTS (isActive: ${chart.isActive})`);
         console.log(`   Formula: ${chart.elements?.[0]?.formula}`);

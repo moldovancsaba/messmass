@@ -19,7 +19,7 @@ async function diagnose() {
     // 1. Check chartConfigurations collection
     console.log('1. CHART CONFIGURATIONS (chartConfigurations collection)');
     console.log('-'.repeat(80));
-    const charts = await db.collection('chartConfigurations').find({}).toArray();
+    const charts = await db.collection('chart_configurations').find({}).toArray();
     console.log(`Total charts: ${charts.length}`);
     console.log('');
     
@@ -55,7 +55,7 @@ async function diagnose() {
     // 2. Check dataBlocks collection
     console.log('2. DATA BLOCKS (dataBlocks collection)');
     console.log('-'.repeat(80));
-    const blocks = await db.collection('dataBlocks').find({}).toArray();
+    const blocks = await db.collection('data_blocks').find({}).toArray();
     console.log(`Total data blocks: ${blocks.length}`);
     console.log('');
     

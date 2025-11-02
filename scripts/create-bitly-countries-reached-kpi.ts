@@ -42,7 +42,7 @@ async function createChart() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db(dbName);
-    const charts = db.collection('chartConfigurations');
+    const charts = db.collection('chart_configurations');
     
     // Check if chart already exists
     const existing = await charts.findOne({ chartId: chartConfig.chartId });

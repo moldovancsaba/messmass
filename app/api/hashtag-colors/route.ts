@@ -19,7 +19,7 @@ export async function GET() {
   try {
     const db = await getDb();
     const hashtagColors = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .find({})
       .sort({ name: 1 })
       .toArray();
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     
     // Check if hashtag name already exists
     const existingHashtag = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .findOne({ name: name.toLowerCase() });
 
     if (existingHashtag) {
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     };
 
     const result = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .insertOne(newHashtagColor);
 
     return NextResponse.json({
@@ -124,7 +124,7 @@ export async function PUT(request: NextRequest) {
       
       // Check if another hashtag with the same name exists (excluding current one)
       const existingHashtag = await db
-        .collection('hashtagColors')
+        .collection('hashtag_colors')
         .findOne({ 
           name: name.toLowerCase(),
           _id: { $ne: new ObjectId(_id) }
@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const result = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .updateOne(filter, updateOperation);
 
     if (result.matchedCount === 0) {
@@ -174,7 +174,7 @@ export async function PUT(request: NextRequest) {
 
     // Fetch updated document
     const updatedHashtag = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .findOne(filter);
 
     return NextResponse.json({
@@ -213,7 +213,7 @@ export async function DELETE(request: NextRequest) {
     const db = await getDb();
     
     const result = await db
-      .collection('hashtagColors')
+      .collection('hashtag_colors')
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {

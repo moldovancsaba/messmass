@@ -5,7 +5,7 @@ async function showPassword() {
   const client = new MongoClient(process.env.MONGODB_URI);
   await client.connect();
   const db = client.db('messmass');
-  const users = db.collection('users');
+  const users = db.collection('local_users');
   
   const user = await users.findOne({ email: 'moldovancsaba@gmail.com' });
   if (user) {

@@ -14,7 +14,7 @@ async function backupCharts() {
     client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
     const db = client.db('messmass');
-    const col = db.collection('chartConfigurations');
+    const col = db.collection('chart_configurations');
 
     // Get all charts
     const charts = await col.find({}).toArray();

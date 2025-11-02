@@ -20,7 +20,7 @@ async function main() {
     console.log('🔗 Connecting to MongoDB...')
     await client.connect()
     const db = client.db(config.dbName)
-    const collection = db.collection('chartConfigurations')
+    const collection = db.collection('chart_configurations')
 
     const existing = await collection.find({}, { projection: { order: 1, chartId: 1 } }).toArray()
     const maxOrder = existing.reduce((m, d) => Math.max(m, Number(d.order || 0)), 0)

@@ -28,7 +28,7 @@ async function createLocalAdmin() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db('messmass');
-    const usersCollection = db.collection('users');
+    const usersCollection = db.collection('local_users');
     
     // Check if user already exists
     const existingUser = await usersCollection.findOne({ email: email.toLowerCase() });

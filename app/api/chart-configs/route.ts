@@ -20,7 +20,7 @@ export async function GET() {
     
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // WHAT: Fetch only active charts (same as public endpoint)
     // WHY: Visualization manager should only show charts that can actually render

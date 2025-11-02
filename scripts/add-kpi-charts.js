@@ -23,7 +23,7 @@ async function main() {
     const db = client.db(config.dbName)
 
     // Use the canonical collection name used by API routes
-    const collection = db.collection('chartConfigurations')
+    const collection = db.collection('chart_configurations')
 
     // Compute next order index based on existing documents
     const existing = await collection.find({}, { projection: { order: 1, chartId: 1 } }).toArray()

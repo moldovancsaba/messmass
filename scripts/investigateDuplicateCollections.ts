@@ -42,7 +42,7 @@ async function investigate() {
     console.log('\n\n🔍 INVESTIGATING CHART COLLECTIONS:');
     console.log('='.repeat(80));
     
-    const chartConfigsCamel = db.collection('chartConfigurations');
+    const chartConfigsCamel = db.collection('chart_configurations');
     const chartConfigsSnake = db.collection('chart_configurations');
     
     const camelCount = await chartConfigsCamel.countDocuments();
@@ -61,7 +61,7 @@ async function investigate() {
     console.log('\n\n🔍 INVESTIGATING VARIABLES GROUPS:');
     console.log('='.repeat(80));
     
-    const varGroupsCamel = db.collection('variablesGroups');
+    const varGroupsCamel = db.collection('variables_groups');
     const varGroupsSnake = db.collection('variables_groups');
     
     const camelVarCount = await varGroupsCamel.countDocuments();
@@ -93,7 +93,7 @@ async function investigate() {
     console.log('\n\n🔍 INVESTIGATING USERS COLLECTIONS:');
     console.log('='.repeat(80));
     
-    const users = db.collection('users');
+    const users = db.collection('local_users');
     const localUsers = db.collection('local_users');
     
     const usersCount = await users.countDocuments();

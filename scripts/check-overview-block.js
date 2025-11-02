@@ -10,7 +10,7 @@ async function checkOverview() {
     const db = client.db('messmass');
     
     console.log('📊 Overview Data Block Configuration:\n');
-    const overview = await db.collection('dataBlocks').findOne({ blockId: 'overview' });
+    const overview = await db.collection('data_blocks').findOne({ blockId: 'overview' });
     
     if (!overview) {
       console.log('❌ Overview block not found');

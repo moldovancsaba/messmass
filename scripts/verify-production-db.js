@@ -24,7 +24,7 @@ async function verifyProductionDB() {
     console.log('✅ Successfully connected to MongoDB\n');
     
     const db = client.db('messmass');
-    const usersCollection = db.collection('users');
+    const usersCollection = db.collection('local_users');
     
     // Count users
     const userCount = await usersCollection.countDocuments();

@@ -47,6 +47,16 @@ interface UnifiedAdminPageProps<T extends { _id: string }> {
   syncViewToUrl?: boolean;
   /** Optional accent color for card view */
   accentColor?: string;
+  /** External search value (for server-side search) */
+  externalSearchValue?: string;
+  /** External search change handler (for server-side search) */
+  onExternalSearchChange?: (value: string) => void;
+  /** Search placeholder override */
+  searchPlaceholder?: string;
+  /** Total matched items (for server-side pagination info) */
+  totalMatched?: number;
+  /** Show pagination stats */
+  showPaginationStats?: boolean;
 }
 
 /**
@@ -76,6 +86,11 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
   enableSort = true,
   syncViewToUrl = true,
   accentColor,
+  externalSearchValue,
+  onExternalSearchChange,
+  searchPlaceholder,
+  totalMatched,
+  showPaginationStats = false,
 }: UnifiedAdminPageProps<T>) {
   
   // WHAT: View mode state with persistence
@@ -88,7 +103,11 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
 
   // WHAT: Search state with debouncing
   // WHY: Prevent excessive filtering during typing
-  const [searchTerm, setSearchTerm] = useState('');
+  // Use external search if provided (server-side), otherwise internal (client-side)
+  const isServerSideSearch = externalSearchValue !== undefined && onExternalSearchChange !== undefined;
+  const [internalSearchTerm, setInternalSearchTerm] = useState('');
+  const searchTerm = isServerSideSearch ? externalSearchValue : internalSearchTerm;
+  const setSearchTerm = isServerSideSearch ? onExternalSearchChange : setInternalSearchTerm;
   const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
 
   // WHAT: Sort state
@@ -113,13 +132,13 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
     }
   };
 
-  // WHAT: Apply client-side filtering and sorting
+  // WHAT: Apply client-side filtering and sorting (only if not using server-side)
   // WHY: Reduce prop drilling, handle common patterns centrally
   const processedItems = useMemo(() => {
     let result = items;
 
-    // Apply search filter if enabled
-    if (enableSearch && debouncedSearchTerm) {
+    // Apply search filter if enabled AND not using server-side search
+    if (enableSearch && !isServerSideSearch && debouncedSearchTerm) {
       result = clientSideSearch(result, debouncedSearchTerm, adapter.searchFields);
     }
 
@@ -129,7 +148,7 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
     }
 
     return result;
-  }, [items, debouncedSearchTerm, sortField, sortOrder, enableSearch, enableSort, adapter.searchFields]);
+  }, [items, debouncedSearchTerm, sortField, sortOrder, enableSearch, enableSort, adapter.searchFields, isServerSideSearch]);
 
   return (
     <div className={`page-container ${className}`}>
@@ -141,12 +160,21 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
         showSearch={enableSearch}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
-        searchPlaceholder={`Search ${adapter.pageName}...`}
+        searchPlaceholder={searchPlaceholder || `Search ${adapter.pageName}...`}
         actionButtons={actionButtons}
         showViewToggle
         currentView={viewMode}
         onViewChange={setViewMode}
       />
+      
+      {/* WHAT: Pagination stats for server-side search/pagination */}
+      {showPaginationStats && !isLoading && items.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
+          <div style={{ color: 'var(--mm-gray-500)', fontSize: '0.875rem' }}>
+            Showing {items.length} of {totalMatched || items.length} {adapter.pageName}
+          </div>
+        </div>
+      )}
 
       {/* WHAT: Conditional view renderer */}
       {/* WHY: Show list or card view based on user preference */}

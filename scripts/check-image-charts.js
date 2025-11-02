@@ -6,7 +6,7 @@ async function checkImageCharts() {
   try {
     await client.connect();
     const db = client.db(process.env.MONGODB_DB || 'messmass');
-    const charts = await db.collection('chartConfigurations').find({ type: 'image' }).toArray();
+    const charts = await db.collection('chart_configurations').find({ type: 'image' }).toArray();
     
     console.log(`\n📊 Found ${charts.length} IMAGE charts:\n`);
     charts.forEach((chart, i) => {

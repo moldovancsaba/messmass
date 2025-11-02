@@ -11,7 +11,7 @@ async function checkCountryChartsInBlocks() {
     const db = client.db(process.env.MONGODB_DB || 'messmass');
     
     // Get country chart IDs
-    const countryCharts = await db.collection('chartConfigurations').find({
+    const countryCharts = await db.collection('chart_configurations').find({
       chartId: { $in: ['bitly-top-countries', 'bitly-top-country', 'bitly-countries-reached'] }
     }).toArray();
     
@@ -21,7 +21,7 @@ async function checkCountryChartsInBlocks() {
       console.log(`📊 Chart: ${chart.chartId} (_id: ${chart._id})`);
       
       // Find data blocks that contain this chart
-      const blocks = await db.collection('dataBlocks').find({
+      const blocks = await db.collection('data_blocks').find({
         'charts.chartId': chart._id.toString()
       }).toArray();
       
@@ -38,7 +38,7 @@ async function checkCountryChartsInBlocks() {
     
     // Show all data blocks
     console.log('\n📦 All data blocks:');
-    const allBlocks = await db.collection('dataBlocks').find({ isActive: true }).toArray();
+    const allBlocks = await db.collection('data_blocks').find({ isActive: true }).toArray();
     allBlocks.forEach(block => {
       console.log(`\n  Block: "${block.name}" (${block.charts?.length || 0} charts)`);
       block.charts?.forEach((chart: any, idx: number) => {

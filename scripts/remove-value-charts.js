@@ -16,21 +16,21 @@ async function removeValueCharts() {
   
   // 1. Remove VALUE chart configurations
   console.log('1. Removing VALUE chart configurations...');
-  const chartResult = await db.collection('chartConfigurations').deleteMany({
+  const chartResult = await db.collection('chart_configurations').deleteMany({
     type: 'value'
   });
   console.log(`   ✅ Deleted ${chartResult.deletedCount} VALUE chart configurations`);
   
   // 2. Remove orphaned split charts (-kpi, -bar from VALUE charts)
   console.log('\n2. Removing orphaned VALUE split charts...');
-  const splitResult = await db.collection('chartConfigurations').deleteMany({
+  const splitResult = await db.collection('chart_configurations').deleteMany({
     chartId: { $regex: /^(value|estimated-value|marketing-value).*(-kpi|-bar)$/ }
   });
   console.log(`   ✅ Deleted ${splitResult.deletedCount} split chart configurations`);
   
   // 3. Remove VALUE charts from dataBlocks
   console.log('\n3. Removing VALUE charts from visualization blocks...');
-  const blocks = await db.collection('dataBlocks').find({}).toArray();
+  const blocks = await db.collection('data_blocks').find({}).toArray();
   let blocksUpdated = 0;
   
   for (const block of blocks) {
@@ -41,7 +41,7 @@ async function removeValueCharts() {
     }) || [];
     
     if (filtered.length !== originalCount) {
-      await db.collection('dataBlocks').updateOne(
+      await db.collection('data_blocks').updateOne(
         { _id: block._id },
         { $set: { charts: filtered } }
       );

@@ -15,7 +15,7 @@ async function deleteAllCharts() {
     client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
     const db = client.db('messmass');
-    const col = db.collection('chartConfigurations');
+    const col = db.collection('chart_configurations');
 
     // Count before deletion
     const countBefore = await col.countDocuments();

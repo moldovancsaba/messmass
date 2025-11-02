@@ -37,7 +37,7 @@ export async function GET() {
     
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
-    const collection = db.collection('chartConfigurations');
+    const collection = db.collection('chart_configurations');
 
     // Get collection stats for debugging
     const stats = await collection.estimatedDocumentCount();

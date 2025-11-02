@@ -24,7 +24,7 @@ export interface UserDoc {
  */
 export async function getUsersCollection() {
   const db = await getDb()
-  const col = db.collection<UserDoc>('users')
+  const col = db.collection<UserDoc>('local_users')
   // Ensure unique index on email for consistency
   try {
     await col.createIndex({ email: 1 }, { unique: true })

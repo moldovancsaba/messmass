@@ -10,7 +10,7 @@ async function listCharts() {
     const db = client.db('messmass');
     
     console.log('📊 All Chart Configurations:\n');
-    const charts = await db.collection('chartConfigurations').find({}).toArray();
+    const charts = await db.collection('chart_configurations').find({}).toArray();
     
     if (charts.length === 0) {
       console.log('❌ No charts found in database');

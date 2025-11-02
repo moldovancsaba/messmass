@@ -19,7 +19,7 @@ async function createAdminUser() {
     console.log('✅ Connected to MongoDB');
     
     const db = client.db('messmass');
-    const users = db.collection('users');
+    const users = db.collection('local_users');
     
     // Check if admin user already exists
     const existing = await users.findOne({ email: 'moldovancsaba@gmail.com' });

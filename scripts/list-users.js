@@ -18,7 +18,7 @@ async function listUsers() {
     console.log('\n👤 All Users in database:');
     console.log('='.repeat(80));
     
-    const users = await db.collection('users').find({}).toArray();
+    const users = await db.collection('local_users').find({}).toArray();
     
     if (users.length === 0) {
       console.log('⚠️  No users found in database');

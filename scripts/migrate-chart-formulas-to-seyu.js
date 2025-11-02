@@ -112,7 +112,7 @@ async function run() {
   try {
     await client.connect()
     const db = client.db(dbName)
-    const col = db.collection('chartConfigurations')
+    const col = db.collection('chart_configurations')
 
     const docs = await col.find({}).toArray()
 

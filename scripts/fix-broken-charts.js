@@ -18,7 +18,7 @@ async function fixCharts() {
   
   await client.connect();
   const db = client.db('messmass');
-  const col = db.collection('chartConfigurations');
+  const col = db.collection('chart_configurations');
   
   const fixes = [];
   

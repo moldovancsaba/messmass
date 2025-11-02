@@ -6,7 +6,7 @@ async function listCharts() {
   try {
     await client.connect();
     const db = client.db('messmass');
-    const charts = await db.collection('chartConfigurations').find({}).project({ chartId: 1, title: 1, isActive: 1 }).toArray();
+    const charts = await db.collection('chart_configurations').find({}).project({ chartId: 1, title: 1, isActive: 1 }).toArray();
     
     console.log('\n📊 Charts in MongoDB Atlas:');
     console.log('═══════════════════════════════════════════════\n');

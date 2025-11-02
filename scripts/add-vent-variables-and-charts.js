@@ -20,7 +20,7 @@ async function addVentVariablesAndCharts() {
     
     const db = client.db(MONGODB_DB);
     const variablesCollection = db.collection('variables_metadata');
-    const chartsCollection = db.collection('chartConfigurations');
+    const chartsCollection = db.collection('chart_configurations');
     
     const now = new Date().toISOString();
     
