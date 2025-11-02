@@ -165,8 +165,11 @@ export default function ProjectsPageUnified() {
   // WHAT: Trigger search after user stops typing
   // WHY: Prevent excessive API calls while typing
   useEffect(() => {
-    loadProjects(true);
-  }, [loadProjects]);
+    if (user) {
+      loadProjects(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchQuery, sortField, sortOrder, user]);
   
   // Handle sorting
   const handleSort = (field: SortField) => {
