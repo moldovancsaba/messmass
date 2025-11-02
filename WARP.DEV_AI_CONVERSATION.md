@@ -4,7 +4,55 @@
 
 ---
 
-## [2025-11-02T23:27:00.000Z] v10.2.2 - Decimal Width Option for Image Layout
+## [2025-11-02T23:45:00.000Z] v10.2.3 - HOTFIX: Corrected Width from 3.4 to 3.2
+
+### User Feedback
+User reported that 3.4 width still didn't produce equal heights. Investigation revealed the calculation was based on incorrect understanding of CSS aspect-ratio box height formula.
+
+### Problem Identified
+
+**Incorrect calculation in v10.2.2**:
+- Used formula assuming image height, not box height
+- Result: Portrait box 6.05 units, Landscape box 5.63 units
+- Difference: 0.42 units (7% mismatch) - visually noticeable
+
+### Corrected Solution
+
+**Version**: 10.2.2 → 10.2.3 (PATCH increment - hotfix)
+
+**Correct Formula**:
+- Portrait box (9:16): height = width × (16/9) = 3.2 × 1.778 = 5.69 units
+- Landscape box (16:9): height = width × (9/16) = 10 × 0.5625 = 5.63 units
+- Difference: 0.06 units (~1%) - imperceptible ✅
+
+**Code Changes**:
+1. `app/admin/visualization/page.tsx` (line 613)
+   - Changed `<option value={3.4}>Width: 3.4 units</option>` → `<option value={3.2}>Width: 3.2 units</option>`
+   - Updated comment with correct box height formulas
+
+**Key Insight**: CSS `aspect-ratio` property determines box height as `width × (height-ratio / width-ratio)`, NOT the inverse.
+
+### Documentation Updates
+
+1. ✅ `package.json` - Version 10.2.2 → 10.2.3
+2. ✅ `RELEASE_NOTES.md` - Added v10.2.3 hotfix entry, marked v10.2.2 as DEPRECATED
+3. ✅ `ARCHITECTURE.md` - Updated version header to 10.2.3
+4. ✅ `TASKLIST.md` - Updated version header to 10.2.3
+5. ✅ `LEARNINGS.md` - Added comprehensive hotfix entry with 3 key learnings
+6. ✅ `README.md` - Updated version badge to v10.2.3
+7. ✅ `ROADMAP.md` - Updated version header to 10.2.3
+8. ✅ `WARP.DEV_AI_CONVERSATION.md` - This entry (hotfix log)
+
+### Lessons Learned
+
+1. **Trust User Feedback**: User immediately spotted the visual mismatch
+2. **Verify Calculations**: Mathematical formulas must match actual CSS rendering behavior
+3. **Fast Hotfix Response**: Issue identified and fixed within 18 minutes
+4. **Document Failures**: Marked v10.2.2 as deprecated with explanation
+
+---
+
+## [2025-11-02T23:27:00.000Z] v10.2.2 - Decimal Width Option for Image Layout (DEPRECATED - Incorrect Calculation)
 
 ### User Request
 Need to set chart widths for 1 portrait (9:16) and 1 landscape (16:9) image in same row with equal heights for reports.

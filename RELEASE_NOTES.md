@@ -1,6 +1,45 @@
 # MessMass Release Notes
 
-## [v10.2.2] — 2025-11-02T23:27:00.000Z
+## [v10.2.3] — 2025-11-02T23:45:00.000Z
+
+### Fixed
+
+✅ **HOTFIX: Corrected Decimal Width from 3.4 to 3.2**
+- Fixed incorrect calculation in v10.2.2
+- **Problem**: Width 3.4 resulted in 7% height mismatch (6.05 vs 5.63 units)
+- **Solution**: Width 3.2 provides 1% height match (5.69 vs 5.63 units)
+- **Root Cause**: Misunderstood box height calculation with CSS aspect-ratio property
+
+### Technical Details
+
+**Corrected Mathematical Basis**:
+- Portrait box (9:16): height = width × (16/9) = 3.2 × 1.778 = **5.69 units**
+- Landscape box (16:9): height = width × (9/16) = 10 × 0.5625 = **5.63 units**
+- Height difference: **0.06 units (~1%)** - imperceptible ✅
+
+**Previous (Incorrect)**:
+- Width 3.4: Portrait height 6.05, Landscape height 5.63
+- Difference: 0.42 units (7% mismatch) ❌
+
+**Files Modified** (1 file):
+- `app/admin/visualization/page.tsx`
+  - Changed `<option value={3.4}>` → `<option value={3.2}>`
+  - Updated comment with correct formula showing box height calculation
+
+**Version**: `10.2.2` → `10.2.3` (PATCH increment - hotfix)
+
+**Why PATCH Version**:
+- Critical calculation error fix
+- Same feature, correct implementation
+- No breaking changes
+
+**Backward Compatibility**: ✅ 100%
+- Existing projects using 3.4 can manually change to 3.2 in UI
+- All other widths unchanged
+
+---
+
+## [v10.2.2] — 2025-11-02T23:27:00.000Z (DEPRECATED - Incorrect Calculation)
 
 ### Added
 
