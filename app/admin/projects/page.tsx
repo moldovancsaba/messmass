@@ -179,8 +179,9 @@ export default function ProjectsPageUnified() {
   }, [debouncedSearchQuery, sortField, sortOrder, user]);
   
   // Handle sorting
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
+  const handleSort = (field: string) => {
+    const typedField = field as SortField;
+    if (sortField === typedField) {
       if (sortOrder === 'asc') {
         setSortOrder('desc');
       } else if (sortOrder === 'desc') {
@@ -188,7 +189,7 @@ export default function ProjectsPageUnified() {
         setSortOrder(null);
       }
     } else {
-      setSortField(field);
+      setSortField(typedField);
       setSortOrder('asc');
     }
     setNextCursor(null);
@@ -200,9 +201,9 @@ export default function ProjectsPageUnified() {
     const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
     const currentField = sortField;
     const currentOrder = sortOrder;
-    let nextField: SortField = field;
+    let nextField: SortField = typedField;
     let nextOrder: SortOrder = 'asc';
-    if (currentField === field) {
+    if (currentField === typedField) {
       nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
     }
     if (nextOrder) {
