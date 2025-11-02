@@ -191,6 +191,7 @@ export interface ChartCalculationResult {
   }[];
   total?: number | 'NA'; // Total value for bar charts
   kpiValue?: number | string | 'NA'; // WHAT: Support string for text/image charts
+  aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio for grid width calculation (v9.3.0)
 
   hasErrors: boolean; // Whether any element had calculation errors
 }

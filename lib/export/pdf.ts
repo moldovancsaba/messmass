@@ -203,7 +203,11 @@ export async function exportPageWithSmartPagination(
     
     /* What: Convert object-fit:cover images to background-image for proper PDF capture
        Why: html2canvas doesn't respect object-fit, causing distortion
-       How: Replace img elements with div backgrounds temporarily */
+       How: Replace img elements with div backgrounds temporarily
+       
+       NOTE (v9.3.0): ImageChart component now uses background-image natively, so this
+       workaround is NO LONGER NEEDED for image charts. Kept for backward compatibility
+       with any other components that may still use <img> with object-fit:cover. */
     const imagesToRestore: Array<{ parent: HTMLElement; img: HTMLImageElement; placeholder: HTMLDivElement }> = [];
     
     for (let i = 0; i < blockElements.length; i++) {

@@ -31,18 +31,21 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '' }
   
   /* WHAT: Full-bleed cover image filling entire block with click-to-expand
      WHY: User wants image to fill grid block completely, clickable for full view
-     HOW: CSS module for all styles, no inline style props
+     HOW: background-image with CSS variable for PDF export compatibility (v9.3.0)
      NOTE: Uses both module class and global class for UnifiedDataVisualization compatibility */
   return (
     <>
       <div className={`${styles.container} image-chart-container ${className}`}>
         {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt={title}
+          <div
             className={styles.image}
             onClick={handleImageClick}
             title="Click to view full size"
+            role="img"
+            aria-label={title}
+            style={{
+              ['--image-url' as string]: `url("${imageUrl}")`
+            } as React.CSSProperties}
           />
         ) : (
           <div className={styles.placeholder}>
