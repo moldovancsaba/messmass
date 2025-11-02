@@ -129,6 +129,39 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     }
   };
 
+  // WHAT: Update configuration without closing modal (for Update button)
+  // WHY: Allow rapid iterative editing with immediate feedback
+  const updateConfiguration = async (configData: ChartConfigFormData): Promise<void> => {
+    const isUpdate = !!configData._id;
+    const url = '/api/chart-config';
+    const method = isUpdate ? 'PUT' : 'POST';
+    
+    const body = isUpdate 
+      ? { configurationId: configData._id, ...configData }
+      : configData;
+
+    console.log(`🔄 Updating chart configuration (modal stays open):`, configData.chartId);
+    console.log('📦 aspectRatio:', configData.aspectRatio);
+    
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log(`✅ Chart configuration updated successfully (modal open)`);
+      await loadConfigurations(); // Reload the list
+      // NOTE: Modal stays open - do NOT call setShowEditor(false)
+    } else {
+      throw new Error(result.error || 'Failed to update configuration');
+    }
+  };
+  
+  // WHAT: Save configuration and close modal (for Save button)
+  // WHY: Traditional workflow - save then close
   const saveConfiguration = async (configData: ChartConfigFormData): Promise<void> => {
     const isUpdate = !!configData._id;
     const url = '/api/chart-config';
@@ -138,9 +171,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       ? { configurationId: configData._id, ...configData }
       : configData;
 
-    console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration:`, configData.chartId);
-    console.log('📦 FULL CONFIG DATA BEING SENT:', JSON.stringify(configData, null, 2));
-    console.log('🔍 Element[0] formatting:', configData.elements[0]?.formatting);
+    console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration (then close):`, configData.chartId);
+    console.log('📦 aspectRatio:', configData.aspectRatio);
     
     const response = await fetch(url, {
       method,
@@ -153,7 +185,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     if (result.success) {
       console.log(`✅ Chart configuration ${isUpdate ? 'updated' : 'created'} successfully`);
       await loadConfigurations(); // Reload the list
-      setShowEditor(false);
+      setShowEditor(false); // Close modal
       setEditingConfig(null);
     } else {
       throw new Error(result.error || 'Failed to save configuration');
@@ -519,6 +551,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
           config={editingConfig}
           availableVariables={availableVariables}
           onSave={saveConfiguration}
+          onUpdate={updateConfiguration}
           onCancel={() => {
             setShowEditor(false);
             setEditingConfig(null);
@@ -534,10 +567,11 @@ interface ChartConfigurationEditorProps {
   config: ChartConfigFormData;
   availableVariables: AvailableVariable[]; // WHAT: Dynamic variables from KYC
   onSave: (config: ChartConfigFormData) => Promise<void>;
+  onUpdate: (config: ChartConfigFormData) => Promise<void>; // WHAT: Update without closing
   onCancel: () => void;
 }
 
-function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel }: ChartConfigurationEditorProps) {
+function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate, onCancel }: ChartConfigurationEditorProps) {
   const [formData, setFormData] = useState<ChartConfigFormData>(config);
   const [showVariablePicker, setShowVariablePicker] = useState<{ elementIndex: number } | null>(null);
   const [variableSearchTerm, setVariableSearchTerm] = useState('');
@@ -615,7 +649,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
     
     setSaveStatus('saving');
     try {
-      await onSave(formData);
+      await onUpdate(formData); // Call onUpdate instead of onSave
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
       // NOTE: Modal stays open for continued editing
