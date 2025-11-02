@@ -16,6 +16,43 @@ export interface ImageLightboxProps {
 }
 
 export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageLightboxProps) {
+  // WHAT: Default to white with 85% opacity (matches DEFAULT_PAGE_STYLE_ENHANCED)
+  // WHY: System default page background is #ffffff, not black
+  const [overlayBg, setOverlayBg] = React.useState<string>('rgba(255, 255, 255, 0.85)');
+  
+  /* WHAT: Extract page background color and apply 85% opacity
+   * WHY: Match page style background with same transparency as original black overlay
+   * HOW: Read computed background from page container, convert to rgba with alpha 0.85 */
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    // Try to find the page container with background style
+    const pageContainer = document.querySelector('[style*="background"]') as HTMLElement;
+    if (pageContainer) {
+      const bgStyle = pageContainer.style.background;
+      
+      // WHAT: Convert gradient/solid background to transparent version
+      // WHY: Maintain page aesthetic while allowing overlay transparency
+      if (bgStyle.includes('linear-gradient')) {
+        // Replace opacity in gradient stops with 0.85
+        const transparentGradient = bgStyle.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/g, 'rgba($1, $2, $3, 0.85)');
+        setOverlayBg(transparentGradient);
+      } else if (bgStyle.includes('rgb')) {
+        // Convert rgb/rgba to rgba with 0.85 opacity
+        const match = bgStyle.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+          setOverlayBg(`rgba(${match[1]}, ${match[2]}, ${match[3]}, 0.85)`);
+        }
+      } else if (bgStyle.match(/^#[0-9a-f]{6}$/i)) {
+        // Convert hex to rgba
+        const r = parseInt(bgStyle.slice(1, 3), 16);
+        const g = parseInt(bgStyle.slice(3, 5), 16);
+        const b = parseInt(bgStyle.slice(5, 7), 16);
+        setOverlayBg(`rgba(${r}, ${g}, ${b}, 0.85)`);
+      }
+    }
+  }, [isOpen]);
+  
   /* WHAT: Close lightbox on ESC key press */
   useEffect(() => {
     if (!isOpen) return;
@@ -49,7 +86,7 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
      WHY: Escapes parent page's gray background and stacking context
      HOW: createPortal(JSX, document.body) renders outside React tree */
   return createPortal(
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} style={{ background: overlayBg }} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className={styles.closeBtn}>
           ×

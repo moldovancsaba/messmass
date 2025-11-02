@@ -212,14 +212,15 @@
   justify-content: center;
 }
 
-/* WHAT: Bar chart rows container - stacks bar rows vertically
- * WHY: Each row contains legend + bar for proper vertical alignment
- * HOW: Flexbox column with gap between rows */
+/* WHAT: Bar chart rows container - distributes rows equally in available vertical space
+ * WHY: Each row should have equal height and spacing to match KPI/PIE chart visual weight
+ * HOW: Flexbox column with space-between - automatically distributes rows with equal gaps */
 .barChartRows {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-3); /* 0.75rem */
+  justify-content: space-between; /* CRITICAL: Equal vertical distribution */
 }
 
 /* WHAT: Single bar row with bar and legend side-by-side
