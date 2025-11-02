@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { projectsAdapter } from '@/lib/adapters/projectsAdapter';
 import { ProjectDTO } from '@/lib/types/api';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
@@ -31,6 +32,7 @@ export default function ProjectsPageUnified() {
   
   // Search & Pagination state
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [searchOffset, setSearchOffset] = useState<number | null>(null);
   const [sortOffset, setSortOffset] = useState<number | null>(null);
@@ -83,12 +85,21 @@ export default function ProjectsPageUnified() {
   // WHAT: Load projects with database-only logic (no client-side filtering)
   // WHY: Fix search issues by using only server-side search/sort/pagination
   const loadProjects = useCallback(async (resetList = true) => {
+    const q = debouncedSearchQuery.trim();
+    const isSearchMode = !!q;
+    
     try {
+      // Don't show full loading spinner during search typing
+      if (isSearchMode) {
+        // Keep existing UI, just mark as searching
+      } else {
+        setLoading(true);
+      }
+      
       const params = new URLSearchParams();
       params.set('limit', String(PAGE_SIZE));
       
       // Server-side search
-      const q = searchQuery.trim();
       if (q) {
         params.set('q', q);
         params.set('offset', '0');
@@ -118,7 +129,7 @@ export default function ProjectsPageUnified() {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, sortField, sortOrder]);
+  }, [debouncedSearchQuery, sortField, sortOrder]);
   
   // Initial load
   useEffect(() => {
@@ -151,13 +162,11 @@ export default function ProjectsPageUnified() {
   }, [loadProjects]);
   
   // Database search with debounce
+  // WHAT: Trigger search after user stops typing
+  // WHY: Prevent excessive API calls while typing
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setLoading(true);
-      loadProjects(true);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchQuery, loadProjects]);
+    loadProjects(true);
+  }, [loadProjects]);
   
   // Handle sorting
   const handleSort = (field: SortField) => {
