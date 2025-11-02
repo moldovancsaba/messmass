@@ -352,7 +352,7 @@ export default function ProjectsPageUnified() {
     ...projectsAdapter,
     listConfig: {
       ...projectsAdapter.listConfig,
-      rowActions: projectsAdapter.listConfig.rowActions.map(action => {
+      rowActions: projectsAdapter.listConfig.rowActions?.map(action => {
         if (action.label === 'Edit') {
           return {
             ...action,
@@ -364,7 +364,7 @@ export default function ProjectsPageUnified() {
     },
     cardConfig: {
       ...projectsAdapter.cardConfig,
-      cardActions: projectsAdapter.cardConfig.cardActions.map(action => {
+      cardActions: projectsAdapter.cardConfig.cardActions?.map(action => {
         if (action.label === 'Edit') {
           return {
             ...action,
