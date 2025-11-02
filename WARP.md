@@ -707,29 +707,73 @@ const value = project.remoteImages;
 - **Edit access**: Session validation required
 - **Admin features**: Full authentication required
 
-## 🎨 Chart System & Visualization (v9.0.0)
+## 🎨 Chart System & Visualization (v9.3.0)
 
 ### Chart Types
 - **PIE** - 2 elements, circular segments with percentages
 - **BAR** - 5 elements, horizontal bars with legends
 - **KPI** - 1 element, large metric display with emoji
 - **TEXT** - 1 element, formatted text display
-- **IMAGE** - 1 element, full-width image display
+- **IMAGE** - 1 element, aspect ratio-aware image display (16:9, 9:16, 1:1)
+- **VALUE** - 2 components (KPI + BAR), returns React Fragment with TWO grid items
+
+### Image Layout System (v9.3.0)
+
+**Aspect Ratio Support**:
+- **16:9** (Landscape) - 2 grid units width, ideal for event banners
+- **9:16** (Portrait) - 0.5 grid units width, mobile-first content
+- **1:1** (Square) - 1 grid unit width, social media format
+
+**Automatic Width Calculation**:
+- IMAGE charts derive width from `aspectRatio` field automatically
+- Utility: `calculateImageWidth(aspectRatio)` in `lib/imageLayoutUtils.ts`
+- Result: Consistent row heights across mixed-ratio grids
+
+**Background-Image Rendering**:
+- IMAGE charts use `background-image` CSS (not `<img>` tag)
+- Implementation: `--image-url` CSS variable with `background-size: cover`
+- Benefit: Native PDF export compatibility (no html2canvas workaround)
+
+**Database Schema**:
+```typescript
+interface ChartConfiguration {
+  type: 'image';
+  aspectRatio?: '16:9' | '9:16' | '1:1'; // Default: '16:9'
+  elements: [{ imageUrl: string }];
+}
+```
+
+**Admin UI**:
+- Aspect ratio dropdown in Chart Algorithm Manager (when `type === 'image'`)
+- Default selection: 16:9 (landscape)
 
 ### Chart Components
 - **`components/DynamicChart.tsx`** - Main chart renderer (all types)
+- **`components/charts/ImageChart.tsx`** - Background-image implementation
+- **`lib/imageLayoutUtils.ts`** - Width calculation and aspect ratio helpers
 - **Chart export** - html2canvas integration for PNG downloads
 - **Formatting system** - Flexible prefix/suffix with rounding control
 
 ## 📄 PDF Export System
 
-### Critical Implementation Rule: Object-Fit Cover Handling
+### Image Rendering Strategy (v9.3.0 Update)
 
-**MANDATORY**: When exporting PDFs with `html2canvas`, images using `object-fit: cover` MUST be converted to `background-image` before capture to preserve cropping.
+**Current Implementation**: IMAGE charts natively use `background-image` CSS rendering, eliminating the need for runtime DOM manipulation during PDF export.
+
+**Background**: Previous versions used `<img>` tags with `object-fit: cover`, which required a workaround to convert images to background divs before `html2canvas` capture.
+
+**Status (v9.3.0)**:
+- ✅ IMAGE charts: Native `background-image` rendering (no workaround needed)
+- ⚠️ Legacy workaround: Preserved in `lib/export/pdf.ts` for backward compatibility
+- 📋 Deprecation: Workaround marked for removal in v10.0.0
+
+### Legacy Object-Fit Cover Handling (DEPRECATED)
+
+**Note**: This workaround is NO LONGER USED by core IMAGE charts as of v9.3.0, but remains for backward compatibility with custom components.
 
 **Problem**: `html2canvas` captures the full image (e.g., 100x100px) even when CSS crops it with `object-fit: cover` (e.g., to 100x60px center). This causes distortion in PDFs.
 
-**Solution** (implemented in `lib/export/pdf.ts`):
+**Legacy Solution** (deprecated in `lib/export/pdf.ts`):
 1. Before capture: Find all `img` elements with `object-fit: cover`
 2. Replace with `div` elements using `background-image` + `background-size: cover`
 3. Capture with `html2canvas` (backgrounds crop correctly)
@@ -892,4 +936,4 @@ For detailed information, see:
 
 ---
 
-*Version: 8.16.1 | Last Updated: 2025-10-30T21:10:00.000Z (UTC) | Status: Production-Ready*
+*Version: 9.3.0 | Last Updated: 2025-11-01T19:45:00.000Z (UTC) | Status: Production-Ready*
