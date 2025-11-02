@@ -579,41 +579,61 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
     }
   };
   
-  const handleSave = async () => {
-    // Enhanced validation
+  // WHAT: Shared validation logic used by both handleSave and handleUpdate
+  // WHY: DRY principle - avoid duplicating validation code
+  const validateForm = (): boolean => {
     if (!formData.chartId || !formData.title) {
       alert('Please fill in Chart ID and Title');
-      return;
+      return false;
     }
     
-    // Validate element count matches requirements
     const requiredCount = getRequiredElementCount(formData.type);
     if (formData.elements.length !== requiredCount) {
       alert(`${formData.type.toUpperCase()} charts must have exactly ${requiredCount} element${requiredCount !== 1 ? 's' : ''}`);
-      return;
+      return false;
     }
     
-    // Validate that all elements have labels and formulas
     const missingData = formData.elements.find((element, index) => !element.label.trim() || !element.formula.trim());
     if (missingData) {
       alert('Please fill in all element labels and formulas');
-      return;
+      return false;
     }
     
-    // Validate formulas
     const invalidFormula = Object.entries(formulaValidation).find(([_, validation]) => !validation.isValid);
     if (invalidFormula) {
       alert('Please fix all formula errors before saving');
-      return;
+      return false;
     }
     
-    // WHAT: Update save status with visual feedback
-    // WHY: User needs to see save operation progress
+    return true;
+  };
+  
+  // WHAT: Update without closing modal (rapid iteration)
+  // WHY: User wants to save and see status without closing
+  const handleUpdate = async () => {
+    if (!validateForm()) return;
+    
     setSaveStatus('saving');
     try {
       await onSave(formData);
       setSaveStatus('saved');
-      // Reset to idle after 2 seconds
+      setTimeout(() => setSaveStatus('idle'), 2000);
+      // NOTE: Modal stays open for continued editing
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  };
+  
+  // WHAT: Save and close modal
+  // WHY: Traditional workflow - save then exit
+  const handleSave = async () => {
+    if (!validateForm()) return;
+    
+    setSaveStatus('saving');
+    try {
+      await onSave(formData);
+      setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (error) {
       setSaveStatus('error');
@@ -760,32 +780,14 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
       <FormModal
         isOpen={true}
         onClose={onCancel}
-        onSubmit={async () => {
-          // Handled by Save button in customFooter
-        }}
+        onSubmit={handleSave}
+        onUpdate={handleUpdate}
+        saveStatus={saveStatus}
+        showStatusIndicator={true}
         title={config._id ? 'Edit Chart Configuration' : 'Create Chart Configuration'}
         submitText="Save"
+        updateText="Update"
         size="xl"
-        customFooter={
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onCancel}
-              disabled={saveStatus === 'saving'}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSave}
-              disabled={saveStatus === 'saving'}
-            >
-              {saveStatus === 'saving' ? 'Saving...' : 'Save Chart'}
-            </button>
-          </div>
-        }
       >
           <div className="form-grid">
             <div className="form-group">

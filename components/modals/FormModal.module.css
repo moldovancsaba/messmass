@@ -48,14 +48,28 @@
   padding: 1.5rem 2rem;
   border-top: 1px solid var(--mm-gray-200);
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
-  justify-content: flex-end;
   background-color: var(--mm-gray-50);
+}
+
+/* Status indicator on left */
+.statusContainer {
+  flex: 0 0 auto;
+}
+
+/* Button group on right */
+.buttonGroup {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
 }
 
 /* Buttons */
 .cancelButton,
-.submitButton {
+.submitButton,
+.updateButton {
   padding: 0.625rem 1.25rem;
   border-radius: var(--mm-radius-lg);
   font-size: var(--mm-font-size-sm);
@@ -111,6 +125,29 @@
   cursor: not-allowed;
 }
 
+/* Update button (between Cancel and Save) */
+.updateButton {
+  background-color: var(--mm-color-primary-500);
+  color: white;
+  opacity: 0.85; /* Slightly dimmed to differentiate from Save */
+}
+
+.updateButton:hover:not(:disabled) {
+  opacity: 1;
+  background-color: var(--mm-color-primary-600);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.updateButton:active:not(:disabled) {
+  background-color: var(--mm-color-primary-700);
+  transform: translateY(1px);
+}
+
+.updateButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Loading spinner */
 .spinner {
   display: inline-block;
@@ -142,10 +179,22 @@
   .footer {
     padding: 1rem 1.5rem;
     flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .statusContainer {
+    order: -1; /* Status on top */
+    margin-bottom: 1rem;
+  }
+  
+  .buttonGroup {
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
   .cancelButton,
-  .submitButton {
+  .submitButton,
+  .updateButton {
     width: 100%;
     justify-content: center;
   }

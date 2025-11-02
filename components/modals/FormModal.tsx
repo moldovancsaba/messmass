@@ -2,6 +2,7 @@
 
 import React from 'react';
 import BaseModal from './BaseModal';
+import SaveStatusIndicator, { SaveStatus } from '../SaveStatusIndicator';
 import styles from './FormModal.module.css';
 
 /**
@@ -60,6 +61,18 @@ export interface FormModalProps {
   
   /** Optional custom footer (overrides default Cancel/Submit buttons) */
   customFooter?: React.ReactNode;
+  
+  /** NEW: Optional update handler (save without closing) */
+  onUpdate?: () => Promise<void> | void;
+  
+  /** NEW: Current save status (for status indicator) */
+  saveStatus?: SaveStatus;
+  
+  /** NEW: Show status indicator in footer */
+  showStatusIndicator?: boolean;
+  
+  /** NEW: Update button text */
+  updateText?: string;
 }
 
 export default function FormModal({
@@ -75,6 +88,10 @@ export default function FormModal({
   subtitle,
   disableSubmit = false,
   customFooter,
+  onUpdate,
+  saveStatus = 'idle',
+  showStatusIndicator = true,
+  updateText = 'Update',
 }: FormModalProps) {
   
   // Handle form submission
@@ -83,6 +100,14 @@ export default function FormModal({
     
     // Call the provided submit handler
     await onSubmit();
+  };
+  
+  // Handle update (save without closing)
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onUpdate) {
+      await onUpdate();
+    }
   };
   
   // Disable submit if already submitting or explicitly disabled
@@ -116,29 +141,58 @@ export default function FormModal({
             customFooter
           ) : (
             <>
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                className={styles.cancelButton}
-              >
-                {cancelText}
-              </button>
+              {/* Left: Status Indicator */}
+              {showStatusIndicator && (
+                <div className={styles.statusContainer}>
+                  <SaveStatusIndicator status={saveStatus} />
+                </div>
+              )}
               
-              <button
-                type="submit"
-                disabled={submitDisabled}
-                className={styles.submitButton}
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className={styles.spinner}></span>
-                    Saving...
-                  </>
-                ) : (
-                  submitText
+              {/* Right: Action Buttons */}
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSubmitting || saveStatus === 'saving'}
+                  className={styles.cancelButton}
+                >
+                  {cancelText}
+                </button>
+                
+                {/* Update button (save without closing) */}
+                {onUpdate && (
+                  <button
+                    type="button"
+                    onClick={handleUpdate}
+                    disabled={isSubmitting || saveStatus === 'saving'}
+                    className={styles.updateButton}
+                  >
+                    {saveStatus === 'saving' ? (
+                      <>
+                        <span className={styles.spinner}></span>
+                        Updating...
+                      </>
+                    ) : (
+                      updateText
+                    )}
+                  </button>
                 )}
-              </button>
+                
+                <button
+                  type="submit"
+                  disabled={submitDisabled || saveStatus === 'saving'}
+                  className={styles.submitButton}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className={styles.spinner}></span>
+                      Saving...
+                    </>
+                  ) : (
+                    submitText
+                  )}
+                </button>
+              </div>
             </>
           )}
         </div>
