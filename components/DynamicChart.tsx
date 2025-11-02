@@ -328,31 +328,26 @@ const BarChart: React.FC<{
     sampleValue: validElements[0]?.value
   });
   
-  // WHAT: Create separate legends and bars (hide zero or NA values)
-  // WHY: Formatting at element level for BAR charts, with percentage conversion
-  const legends = validElements.map((element) => {
-    let value = element.value as number;
+  // WHAT: Create bar rows with legend and bar side-by-side per row
+  // WHY: Vertical alignment of legend text with bar (centered)
+  // HOW: Each row contains legend + bar in a flexbox layout
+  const barRows = validElements.map((element) => {
+    let displayValue = element.value as number;
     
     // WHAT: Convert to percentage if suffix is '%'
     // WHY: Show 16.67%, 33.33%, 50% instead of raw 100, 200, 300
     // HOW: (value / total) * 100
     if (hasPercentageSuffix && totalValue > 0) {
-      value = (value / totalValue) * 100;
+      displayValue = (displayValue / totalValue) * 100;
     }
     
-    return (
-      <div key={element.id} className={styles.legendTextRow}>
-        <span>{element.label}: {formatChartValue(value, { formatting: element.formatting, type: element.type })}</span>
-      </div>
-    );
-  });
-
-  const bars = validElements.map((element) => {
-    const value = element.value as number;
-    const barWidth = ((value) / maxValue) * 100;
+    const barWidth = ((element.value as number) / maxValue) * 100;
     
     return (
-      <div key={element.id} className={styles.barOnlyRow}>
+      <div key={element.id} className={styles.barRow}>
+        <div className={styles.barLegend}>
+          <span>{element.label}: {formatChartValue(displayValue, { formatting: element.formatting, type: element.type })}</span>
+        </div>
         <div className={styles.barContainer}>
           <div 
             className={styles.barFill} 
@@ -404,13 +399,8 @@ const BarChart: React.FC<{
         
         {/* Bar chart on the right */}
         <div className={styles.barChartSide}>
-          <div className={styles.barChartTwoColumns}>
-            <div className={styles.legendsColumn}>
-              {legends}
-            </div>
-            <div className={styles.barsColumn}>
-              {bars}
-            </div>
+          <div className={styles.barChartRows}>
+            {barRows}
           </div>
         </div>
       </div>
@@ -429,13 +419,8 @@ const BarChart: React.FC<{
             </div>
           </div>
         )}
-        <div className={styles.barChartTwoColumns}>
-          <div className={styles.legendsColumn}>
-            {legends}
-          </div>
-          <div className={styles.barsColumn}>
-            {bars}
-          </div>
+        <div className={styles.barChartRows}>
+          {barRows}
         </div>
       </div>
     );
