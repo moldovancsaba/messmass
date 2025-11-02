@@ -1,0 +1,2380 @@
+{
+  "name": "variables_metadata",
+  "documentCount": 125,
+  "documents": [
+    {
+      "_id": "690092f821e809256d762169",
+      "name": "stats.remoteImages",
+      "category": "Images",
+      "createdAt": "2025-10-28T09:55:04.482Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Images taken remotely",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Remote Images",
+      "order": 0,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.482Z"
+    },
+    {
+      "_id": "690092f821e809256d76216a",
+      "name": "stats.hostessImages",
+      "category": "Images",
+      "createdAt": "2025-10-28T09:55:04.519Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Images taken by hostesses",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Hostess Images",
+      "order": 1,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.519Z"
+    },
+    {
+      "_id": "690092f821e809256d76216b",
+      "name": "stats.selfies",
+      "category": "Images",
+      "createdAt": "2025-10-28T09:55:04.548Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Self-shot images",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Selfies",
+      "order": 2,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.548Z"
+    },
+    {
+      "_id": "690092f821e809256d76216c",
+      "name": "stats.remoteFans",
+      "category": "Fans",
+      "createdAt": "2025-10-28T09:55:04.580Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Fans engaging remotely (not at venue)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Remote Fans",
+      "order": 3,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.580Z"
+    },
+    {
+      "_id": "690092f821e809256d76216d",
+      "name": "stats.stadium",
+      "category": "Fans",
+      "createdAt": "2025-10-28T09:55:04.611Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "On-site fans at venue/stadium",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Fans",
+      "order": 4,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.611Z"
+    },
+    {
+      "_id": "690092f821e809256d76216e",
+      "name": "stats.female",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.641Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Female",
+      "order": 5,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.641Z"
+    },
+    {
+      "_id": "690092f821e809256d76216f",
+      "name": "stats.male",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.669Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Male",
+      "order": 6,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.669Z"
+    },
+    {
+      "_id": "690092f821e809256d762170",
+      "name": "stats.genAlpha",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.699Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Gen Alpha",
+      "order": 7,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.699Z"
+    },
+    {
+      "_id": "690092f821e809256d762171",
+      "name": "stats.genYZ",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.728Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Gen Y+Z",
+      "order": 8,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.728Z"
+    },
+    {
+      "_id": "690092f821e809256d762172",
+      "name": "stats.genX",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.758Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Gen X",
+      "order": 9,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.758Z"
+    },
+    {
+      "_id": "690092f821e809256d762173",
+      "name": "stats.boomer",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:04.787Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Boomer",
+      "order": 10,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.787Z"
+    },
+    {
+      "_id": "690092f821e809256d762174",
+      "name": "stats.merched",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.815Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "People with Merch",
+      "order": 11,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.815Z"
+    },
+    {
+      "_id": "690092f821e809256d762175",
+      "name": "stats.jersey",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.843Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Jersey",
+      "order": 12,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.843Z"
+    },
+    {
+      "_id": "690092f821e809256d762176",
+      "name": "stats.scarf",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.871Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Scarf",
+      "order": 13,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.871Z"
+    },
+    {
+      "_id": "690092f821e809256d762177",
+      "name": "stats.flags",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.900Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Flags",
+      "order": 14,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.900Z"
+    },
+    {
+      "_id": "690092f821e809256d762178",
+      "name": "stats.baseballCap",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.929Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Baseball Cap",
+      "order": 15,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.929Z"
+    },
+    {
+      "_id": "690092f921e809256d762179",
+      "name": "stats.other",
+      "category": "Merchandise",
+      "createdAt": "2025-10-28T09:55:04.959Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Other",
+      "order": 16,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.959Z"
+    },
+    {
+      "_id": "690092f921e809256d76217a",
+      "name": "stats.approvedImages",
+      "category": "Moderation",
+      "createdAt": "2025-10-28T09:55:04.987Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Approved Images",
+      "order": 17,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:04.987Z"
+    },
+    {
+      "_id": "690092f921e809256d76217b",
+      "name": "stats.rejectedImages",
+      "category": "Moderation",
+      "createdAt": "2025-10-28T09:55:05.016Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Rejected Images",
+      "order": 18,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.016Z"
+    },
+    {
+      "_id": "690092f921e809256d76217c",
+      "name": "stats.eventAttendees",
+      "category": "Event",
+      "createdAt": "2025-10-28T09:55:05.046Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Event Attendees",
+      "order": 19,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.046Z"
+    },
+    {
+      "_id": "690092f921e809256d76217d",
+      "name": "stats.eventResultHome",
+      "category": "Event",
+      "createdAt": "2025-10-28T09:55:05.075Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Event Result Home",
+      "order": 20,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.075Z"
+    },
+    {
+      "_id": "690092f921e809256d76217e",
+      "name": "stats.eventResultVisitor",
+      "category": "Event",
+      "createdAt": "2025-10-28T09:55:05.103Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Event Result Visitor",
+      "order": 21,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.103Z"
+    },
+    {
+      "_id": "690092f921e809256d76217f",
+      "name": "stats.bitlyTotalClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.133Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Sum of all Bitly link clicks for event",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Total Bitly Clicks",
+      "order": 22,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.133Z"
+    },
+    {
+      "_id": "690092f921e809256d762180",
+      "name": "stats.bitlyUniqueClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.162Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Unique visitors from Bitly links",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Unique Bitly Clicks",
+      "order": 23,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.162Z"
+    },
+    {
+      "_id": "690092f921e809256d762181",
+      "name": "stats.bitlyClicksByCountry",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.198Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count from top country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Clicks by Top Country",
+      "order": 24,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.198Z"
+    },
+    {
+      "_id": "690092f921e809256d762182",
+      "name": "stats.bitlyTopCountry",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.232Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Country with most clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Top Country",
+      "order": 25,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.232Z"
+    },
+    {
+      "_id": "690092f921e809256d762183",
+      "name": "stats.bitlyCountryCount",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.269Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Number of unique countries",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Countries Reached",
+      "order": 26,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.269Z"
+    },
+    {
+      "_id": "690092f921e809256d762184",
+      "name": "stats.bitlyCountry1",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.302Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Name of #1 country by clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #1 Name",
+      "order": 27,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.302Z"
+    },
+    {
+      "_id": "690092f921e809256d762185",
+      "name": "stats.bitlyCountry1Clicks",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.338Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count for #1 country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #1 Clicks",
+      "order": 28,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.338Z"
+    },
+    {
+      "_id": "690092f921e809256d762186",
+      "name": "stats.bitlyCountry2",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.376Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Name of #2 country by clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #2 Name",
+      "order": 29,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.376Z"
+    },
+    {
+      "_id": "690092f921e809256d762187",
+      "name": "stats.bitlyCountry2Clicks",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.410Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count for #2 country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #2 Clicks",
+      "order": 30,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.410Z"
+    },
+    {
+      "_id": "690092f921e809256d762188",
+      "name": "stats.bitlyCountry3",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.441Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Name of #3 country by clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #3 Name",
+      "order": 31,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.441Z"
+    },
+    {
+      "_id": "690092f921e809256d762189",
+      "name": "stats.bitlyCountry3Clicks",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.474Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count for #3 country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #3 Clicks",
+      "order": 32,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.474Z"
+    },
+    {
+      "_id": "690092f921e809256d76218a",
+      "name": "stats.bitlyCountry4",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.505Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Name of #4 country by clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #4 Name",
+      "order": 33,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.505Z"
+    },
+    {
+      "_id": "690092f921e809256d76218b",
+      "name": "stats.bitlyCountry4Clicks",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.537Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count for #4 country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #4 Clicks",
+      "order": 34,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.537Z"
+    },
+    {
+      "_id": "690092f921e809256d76218c",
+      "name": "stats.bitlyCountry5",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.570Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Name of #5 country by clicks",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #5 Name",
+      "order": 35,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.570Z"
+    },
+    {
+      "_id": "690092f921e809256d76218d",
+      "name": "stats.bitlyCountry5Clicks",
+      "category": "Bitly / Top Countries",
+      "createdAt": "2025-10-28T09:55:05.600Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Click count for #5 country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country #5 Clicks",
+      "order": 36,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.600Z"
+    },
+    {
+      "_id": "690092f921e809256d76218e",
+      "name": "stats.bitlyDirectClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.628Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks with no referrer",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Direct Clicks",
+      "order": 37,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.628Z"
+    },
+    {
+      "_id": "690092f921e809256d76218f",
+      "name": "stats.bitlySocialClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.661Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from social platforms",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Social Media Clicks",
+      "order": 38,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.661Z"
+    },
+    {
+      "_id": "690092f921e809256d762190",
+      "name": "stats.bitlyTopReferrer",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.689Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Platform with most clicks (e.g., Instagram, Facebook)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Top Referrer Platform",
+      "order": 39,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.689Z"
+    },
+    {
+      "_id": "690092f921e809256d762191",
+      "name": "stats.bitlyReferrerCount",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.719Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Number of unique referrer platforms",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Referrer Platforms Count",
+      "order": 40,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.719Z"
+    },
+    {
+      "_id": "690092f921e809256d762192",
+      "name": "stats.bitlyTopDomain",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.747Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Specific domain with most clicks (e.g., l.instagram.com)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Top Referring Domain",
+      "order": 41,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:05.747Z"
+    },
+    {
+      "_id": "690092f921e809256d762193",
+      "name": "stats.bitlyDomainCount",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.776Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Number of unique referring domains",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Referring Domains Count",
+      "order": 42,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.776Z"
+    },
+    {
+      "_id": "690092f921e809256d762194",
+      "name": "stats.bitlyQrCodeClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.806Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from qr.partners.bit.ly",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "QR Code Clicks",
+      "order": 43,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.806Z"
+    },
+    {
+      "_id": "690092f921e809256d762195",
+      "name": "stats.bitlyInstagramMobileClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.835Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from l.instagram.com",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Instagram Mobile Clicks",
+      "order": 44,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.835Z"
+    },
+    {
+      "_id": "690092f921e809256d762196",
+      "name": "stats.bitlyInstagramWebClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.864Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from www.instagram.com",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Instagram Web Clicks",
+      "order": 45,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.864Z"
+    },
+    {
+      "_id": "690092f921e809256d762197",
+      "name": "stats.bitlyFacebookMobileClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.893Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from m.facebook.com",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Facebook Mobile Clicks",
+      "order": 46,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.893Z"
+    },
+    {
+      "_id": "690092f921e809256d762198",
+      "name": "stats.bitlyFacebookMessengerClicks",
+      "category": "Bitly / Traffic Sources",
+      "createdAt": "2025-10-28T09:55:05.923Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from lm.facebook.com",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Facebook Messenger Clicks",
+      "order": 47,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.923Z"
+    },
+    {
+      "_id": "690092fa21e809256d762199",
+      "name": "stats.bitlyMobileClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.952Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from mobile devices",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Mobile Clicks",
+      "order": 48,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.952Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219a",
+      "name": "stats.bitlyDesktopClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:05.988Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from desktop computers",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Desktop Clicks",
+      "order": 49,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:05.988Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219b",
+      "name": "stats.bitlyTabletClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.018Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from tablets",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Tablet Clicks",
+      "order": 50,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.018Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219c",
+      "name": "stats.bitlyiOSClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.046Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from iOS devices",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "iOS Clicks",
+      "order": 51,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.046Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219d",
+      "name": "stats.bitlyAndroidClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.075Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from Android devices",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Android Clicks",
+      "order": 52,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.075Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219e",
+      "name": "stats.bitlyChromeClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.108Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from Chrome browser",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Chrome Clicks",
+      "order": 53,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.108Z"
+    },
+    {
+      "_id": "690092fa21e809256d76219f",
+      "name": "stats.bitlySafariClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.139Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from Safari browser",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Safari Clicks",
+      "order": 54,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.139Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a0",
+      "name": "stats.bitlyFirefoxClicks",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:06.173Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Clicks from Firefox browser",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Firefox Clicks",
+      "order": 55,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.173Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a1",
+      "name": "stats.sportsDbTeamId",
+      "category": "SportsDB / Core",
+      "createdAt": "2025-10-28T09:55:06.207Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "TheSportsDB unique team identifier",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "SportsDB Team ID",
+      "order": 56,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.207Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a2",
+      "name": "stats.sportsDbStrTeam",
+      "category": "SportsDB / Core",
+      "createdAt": "2025-10-28T09:55:06.239Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Official full team name from SportsDB",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Full Team Name",
+      "order": 57,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.239Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a3",
+      "name": "stats.sportsDbStrTeamShort",
+      "category": "SportsDB / Core",
+      "createdAt": "2025-10-28T09:55:06.268Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Abbreviated team name",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Short Team Name",
+      "order": 58,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.268Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a4",
+      "name": "stats.sportsDbStrAlternate",
+      "category": "SportsDB / Core",
+      "createdAt": "2025-10-28T09:55:06.297Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Alternative team name variations",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Alternative Team Names",
+      "order": 59,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.297Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a5",
+      "name": "stats.sportsDbStrSport",
+      "category": "SportsDB / League",
+      "createdAt": "2025-10-28T09:55:06.327Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Sport type (e.g., Soccer, Handball)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Sport Type",
+      "order": 60,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.327Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a6",
+      "name": "stats.sportsDbStrLeague",
+      "category": "SportsDB / League",
+      "createdAt": "2025-10-28T09:55:06.357Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "League name (e.g., La Liga)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "League Name",
+      "order": 61,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.357Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a7",
+      "name": "stats.sportsDbLeagueId",
+      "category": "SportsDB / League",
+      "createdAt": "2025-10-28T09:55:06.386Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "TheSportsDB league identifier",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "SportsDB League ID",
+      "order": 62,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.386Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a8",
+      "name": "stats.sportsDbStrStadium",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.417Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Stadium or venue name",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Name",
+      "order": 63,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.417Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621a9",
+      "name": "stats.sportsDbVenueId",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.447Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "TheSportsDB venue identifier",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "SportsDB Venue ID",
+      "order": 64,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.447Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621aa",
+      "name": "stats.sportsDbIntStadiumCapacity",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.482Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Maximum stadium capacity (number of seats)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Capacity",
+      "order": 65,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:06.482Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621ab",
+      "name": "stats.sportsDbStrStadiumThumb",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.512Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Stadium image thumbnail URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Image URL",
+      "order": 66,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.512Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621ac",
+      "name": "stats.sportsDbStrStadiumDescription",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.544Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Stadium description text",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Description",
+      "order": 67,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.544Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621ad",
+      "name": "stats.sportsDbStrStadiumLocation",
+      "category": "SportsDB / Venue",
+      "createdAt": "2025-10-28T09:55:06.573Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Stadium city or location",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Stadium Location",
+      "order": 68,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.573Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621ae",
+      "name": "stats.sportsDbIntFormedYear",
+      "category": "SportsDB / Team",
+      "createdAt": "2025-10-28T09:55:06.602Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Year the team was founded",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Year Founded",
+      "order": 69,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.602Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621af",
+      "name": "stats.sportsDbStrCountry",
+      "category": "SportsDB / Team",
+      "createdAt": "2025-10-28T09:55:06.634Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Team country",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Country",
+      "order": 70,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.634Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b0",
+      "name": "stats.sportsDbStrDescriptionEN",
+      "category": "SportsDB / Team",
+      "createdAt": "2025-10-28T09:55:06.665Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "English description of the team",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Description",
+      "order": 71,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.665Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b1",
+      "name": "stats.sportsDbStrTeamBadge",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.701Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Team badge/logo URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Badge URL",
+      "order": 72,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.701Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b2",
+      "name": "stats.sportsDbStrTeamLogo",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.730Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Alternative team logo URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Logo URL",
+      "order": 73,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.730Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b3",
+      "name": "stats.sportsDbStrTeamJersey",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.760Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Team jersey/kit image URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Jersey URL",
+      "order": 74,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.760Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b4",
+      "name": "stats.sportsDbStrTeamBanner",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.790Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Team banner image URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Banner URL",
+      "order": 75,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.790Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b5",
+      "name": "stats.sportsDbStrTeamFanart1",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.819Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Fan art image 1 URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Fan Art 1 URL",
+      "order": 76,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.819Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b6",
+      "name": "stats.sportsDbStrTeamFanart2",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.852Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Fan art image 2 URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Fan Art 2 URL",
+      "order": 77,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.852Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b7",
+      "name": "stats.sportsDbStrTeamFanart3",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.886Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Fan art image 3 URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Fan Art 3 URL",
+      "order": 78,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.886Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b8",
+      "name": "stats.sportsDbStrTeamFanart4",
+      "category": "SportsDB / Assets",
+      "createdAt": "2025-10-28T09:55:06.916Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Fan art image 4 URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Fan Art 4 URL",
+      "order": 79,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.916Z"
+    },
+    {
+      "_id": "690092fa21e809256d7621b9",
+      "name": "stats.sportsDbStrWebsite",
+      "category": "SportsDB / Social",
+      "createdAt": "2025-10-28T09:55:06.943Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Official team website URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Team Website",
+      "order": 80,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.943Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621ba",
+      "name": "stats.sportsDbStrFacebook",
+      "category": "SportsDB / Social",
+      "createdAt": "2025-10-28T09:55:06.973Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Facebook page URL",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Facebook Page",
+      "order": 81,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:06.973Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621bb",
+      "name": "stats.sportsDbStrTwitter",
+      "category": "SportsDB / Social",
+      "createdAt": "2025-10-28T09:55:07.007Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Twitter/X handle",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Twitter Handle",
+      "order": 82,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:07.007Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621bc",
+      "name": "stats.sportsDbStrInstagram",
+      "category": "SportsDB / Social",
+      "createdAt": "2025-10-28T09:55:07.036Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "Instagram handle",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Instagram Handle",
+      "order": 83,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:07.036Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621bd",
+      "name": "stats.sportsDbLastSynced",
+      "category": "SportsDB / Meta",
+      "createdAt": "2025-10-28T09:55:07.064Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "ISO 8601 timestamp of last SportsDB sync",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "Last Synced",
+      "order": 84,
+      "type": "date",
+      "updatedAt": "2025-10-28T09:55:07.064Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621be",
+      "name": "stats.allImages",
+      "category": "Images",
+      "createdAt": "2025-10-28T09:55:07.098Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Sum of Remote, Hostess, and Selfies",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": false
+      },
+      "formula": "stats.remoteImages + stats.hostessImages + stats.selfies",
+      "isSystem": true,
+      "label": "Total Images",
+      "order": 85,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:07.098Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621bf",
+      "name": "stats.totalFans",
+      "category": "Fans",
+      "createdAt": "2025-10-28T09:55:07.130Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Total fans counted across remote and on-site (Remote + Stadium)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": false
+      },
+      "formula": "stats.remoteFans + stats.stadium",
+      "isSystem": true,
+      "label": "Total Fans",
+      "order": 86,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:07.130Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621c0",
+      "name": "stats.totalUnder40",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:07.160Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Gen Alpha + Gen YZ",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": false
+      },
+      "formula": "stats.genAlpha + stats.genYZ",
+      "isSystem": true,
+      "label": "Total Under 40",
+      "order": 87,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:07.160Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621c1",
+      "name": "stats.totalOver40",
+      "category": "Demographics",
+      "createdAt": "2025-10-28T09:55:07.192Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Gen X + Boomer",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": false
+      },
+      "formula": "stats.genX + stats.boomer",
+      "isSystem": true,
+      "label": "Total Over 40",
+      "order": 88,
+      "type": "count",
+      "updatedAt": "2025-10-28T09:55:07.192Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621c2",
+      "name": "stats.bitlyClickRate",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:07.223Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Percentage of attendees who clicked Bitly links",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": "(stats.bitlyTotalClicks / stats.eventAttendees) * 100",
+      "isSystem": true,
+      "label": "Bitly Click-Through Rate",
+      "order": 89,
+      "type": "percentage",
+      "updatedAt": "2025-10-28T09:55:07.223Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621c3",
+      "name": "stats.bitlyMobileRate",
+      "category": "Bitly",
+      "createdAt": "2025-10-28T09:55:07.252Z",
+      "createdBy": "system",
+      "derived": true,
+      "description": "Percentage of Bitly clicks from mobile devices",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": "(stats.bitlyMobileClicks / stats.bitlyTotalClicks) * 100",
+      "isSystem": true,
+      "label": "Bitly Mobile Usage Rate",
+      "order": 90,
+      "type": "percentage",
+      "updatedAt": "2025-10-28T09:55:07.252Z"
+    },
+    {
+      "_id": "690092fb21e809256d7621c4",
+      "name": "hashtags",
+      "category": "Hashtags",
+      "createdAt": "2025-10-28T09:55:07.289Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "All general hashtags (plain list)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "General Hashtags",
+      "order": 91,
+      "type": "text",
+      "updatedAt": "2025-10-28T09:55:07.289Z"
+    },
+    {
+      "_id": "6901d27bc0ca9757a7b9c0e9",
+      "name": "stats.visitQrCode",
+      "label": "QR Code Visits",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isBaseVariable": true,
+      "isDerived": false,
+      "description": "Number of visitors who scanned QR code to access event page",
+      "order": 100,
+      "createdAt": "2025-10-29T08:38:19.173Z",
+      "updatedAt": "2025-10-29T08:38:19.173Z"
+    },
+    {
+      "_id": "6901d27bc0ca9757a7b9c0ea",
+      "name": "stats.visitShortUrl",
+      "label": "Short URL Visits",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isBaseVariable": true,
+      "isDerived": false,
+      "description": "Number of visitors who clicked Bitly short URL",
+      "order": 101,
+      "createdAt": "2025-10-29T08:38:19.247Z",
+      "updatedAt": "2025-10-29T08:38:19.247Z"
+    },
+    {
+      "_id": "6901d27bc0ca9757a7b9c0eb",
+      "name": "stats.visitWeb",
+      "label": "Direct Web Visits",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isBaseVariable": true,
+      "isDerived": false,
+      "description": "Number of visitors who accessed event page directly via web URL",
+      "order": 102,
+      "createdAt": "2025-10-29T08:38:19.293Z",
+      "updatedAt": "2025-10-29T08:38:19.293Z"
+    },
+    {
+      "_id": "690226da21e809256d76630a",
+      "name": "stats.uniqueUsers",
+      "category": "Marketing",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Total number of unique users who interacted with the event",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Unique Users",
+      "order": 100,
+      "type": "count",
+      "unit": "users",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d76630b",
+      "name": "stats.ventFacebook",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from Facebook campaign",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: Facebook",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d76630c",
+      "name": "stats.ventInstagram",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from Instagram campaign",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: Instagram",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d76630d",
+      "name": "stats.ventGoogle",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from Google campaign",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: Google",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d76630e",
+      "name": "stats.ventQr",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from QR code scans",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: QR Code",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d76630f",
+      "name": "stats.ventUrl",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from direct URL access",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: Direct URL",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d766310",
+      "name": "stats.ventIos",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from iOS devices",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: iOS",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d766311",
+      "name": "stats.ventAndroid",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of visitors from Android devices",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: Android",
+      "order": 200,
+      "type": "count",
+      "unit": "visitors",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d766312",
+      "name": "stats.ventCtaPopup",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of interactions with CTA popup",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: CTA Popup",
+      "order": 200,
+      "type": "count",
+      "unit": "interactions",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "690226da21e809256d766313",
+      "name": "stats.ventCtaEmail",
+      "category": "Vent Campaign",
+      "createdAt": "2025-10-29T14:38:18.429Z",
+      "derived": false,
+      "description": "Manual count of email CTA click-throughs",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Vent: CTA Email",
+      "order": 200,
+      "type": "count",
+      "unit": "clicks",
+      "updatedAt": "2025-10-29T14:38:18.429Z"
+    },
+    {
+      "_id": "6903266821e809256d769807",
+      "name": "stats.reportText1",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 1 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText1",
+      "order": 301,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769808",
+      "name": "stats.reportText2",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 2 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText2",
+      "order": 302,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769809",
+      "name": "stats.reportText3",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 3 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText3",
+      "order": 303,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980a",
+      "name": "stats.reportText4",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 4 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText4",
+      "order": 304,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980b",
+      "name": "stats.reportText5",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 5 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText5",
+      "order": 305,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980c",
+      "name": "stats.reportText6",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 6 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText6",
+      "order": 306,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980d",
+      "name": "stats.reportText7",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 7 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText7",
+      "order": 307,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980e",
+      "name": "stats.reportText8",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 8 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText8",
+      "order": 308,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d76980f",
+      "name": "stats.reportText9",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 9 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText9",
+      "order": 309,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769810",
+      "name": "stats.reportText10",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable text field 10 for partner reports",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportText10",
+      "order": 310,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769811",
+      "name": "stats.reportImage1",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 1 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage1",
+      "order": 401,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769812",
+      "name": "stats.reportImage2",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 2 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage2",
+      "order": 402,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769813",
+      "name": "stats.reportImage3",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 3 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage3",
+      "order": 403,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769814",
+      "name": "stats.reportImage4",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 4 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage4",
+      "order": 404,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769815",
+      "name": "stats.reportImage5",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 5 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage5",
+      "order": 405,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266821e809256d769816",
+      "name": "stats.reportImage6",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 6 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage6",
+      "order": 406,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266921e809256d769817",
+      "name": "stats.reportImage7",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 7 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage7",
+      "order": 407,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266921e809256d769818",
+      "name": "stats.reportImage8",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 8 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage8",
+      "order": 408,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266921e809256d769819",
+      "name": "stats.reportImage9",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 9 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage9",
+      "order": 409,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    },
+    {
+      "_id": "6903266921e809256d76981a",
+      "name": "stats.reportImage10",
+      "category": "Partner Report",
+      "createdAt": "2025-10-30T09:16:26.705Z",
+      "derived": false,
+      "description": "Customizable image field 10 for partner reports (ImgBB URL)",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "reportImage10",
+      "order": 410,
+      "type": "text",
+      "updatedAt": "2025-10-30T09:16:26.705Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "name": 1
+      },
+      "name": "name_1",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "category": 1
+      },
+      "name": "category_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "flags.visibleInClicker": 1
+      },
+      "name": "flags.visibleInClicker_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "isSystem": 1
+      },
+      "name": "isSystem_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "category": 1,
+        "order": 1
+      },
+      "name": "category_1_order_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "createdAt": -1
+      },
+      "name": "createdAt_-1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "updatedAt": -1
+      },
+      "name": "updatedAt_-1"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:50.085Z"
+}

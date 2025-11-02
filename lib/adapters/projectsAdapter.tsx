@@ -1,6 +1,6 @@
 // lib/adapters/projectsAdapter.tsx
 // WHAT: Adapter configuration for Projects admin page
-// WHY: Defines list/card view structure for event projects data
+// WHY: Defines list/card view structure for event projects data with partner support
 // USAGE: Import and pass to UnifiedAdminPage component
 
 import React from 'react';
@@ -29,14 +29,98 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         key: 'eventName',
         label: 'Event Name',
         sortable: true,
-        minWidth: '200px',
-        render: (project) => (
-          <span style={{ fontWeight: 600 }}>{project.eventName}</span>
-        ),
+        minWidth: '250px',
+        render: (project) => {
+          const partnerRowStyle: React.CSSProperties = {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          };
+          const partnerEmojiStyle: React.CSSProperties = {
+            fontSize: '2rem',
+            flexShrink: 0
+          };
+          const partnerLogoStyle: React.CSSProperties = {
+            width: '40px',
+            height: '40px',
+            objectFit: 'contain',
+            borderRadius: '4px',
+            flexShrink: 0
+          };
+          const partnerLogoPlaceholderStyle: React.CSSProperties = {
+            width: '40px',
+            height: '40px',
+            flexShrink: 0
+          };
+          const eventNameStyle: React.CSSProperties = {
+            fontWeight: 600
+          };
+          
+          return (
+            <div>
+              <div style={partnerRowStyle}>
+                {project.partner1 && (
+                  <span style={partnerEmojiStyle}>
+                    {project.partner1.emoji}
+                  </span>
+                )}
+                
+                {project.partner1?.logoUrl ? (
+                  <img
+                    src={project.partner1.logoUrl}
+                    alt={`${project.partner1.name} logo`}
+                    style={partnerLogoStyle}
+                    title={project.partner1.name}
+                  />
+                ) : project.partner1 ? (
+                  <div style={partnerLogoPlaceholderStyle} />
+                ) : null}
+                
+                <span style={eventNameStyle}>{project.eventName}</span>
+                
+                {project.partner2?.logoUrl ? (
+                  <img
+                    src={project.partner2.logoUrl}
+                    alt={`${project.partner2.name} logo`}
+                    style={partnerLogoStyle}
+                    title={project.partner2.name}
+                  />
+                ) : project.partner2 ? (
+                  <div style={partnerLogoPlaceholderStyle} />
+                ) : null}
+              </div>
+              
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                {project.hashtags?.map((hashtag) => (
+                  <ColoredHashtagBubble
+                    key={`general-${hashtag}`}
+                    hashtag={hashtag}
+                    small
+                    interactive={false}
+                    projectCategorizedHashtags={project.categorizedHashtags}
+                    autoResolveColor
+                  />
+                ))}
+                {project.categorizedHashtags &&
+                  Object.entries(project.categorizedHashtags).map(([category, hashtags]) =>
+                    hashtags.map((hashtag) => (
+                      <ColoredHashtagBubble
+                        key={`${category}-${hashtag}`}
+                        hashtag={`${category}:${hashtag}`}
+                        showCategoryPrefix
+                        small
+                        interactive={false}
+                      />
+                    ))
+                  )}
+              </div>
+            </div>
+          );
+        },
       },
       {
         key: 'eventDate',
-        label: 'Event Date',
+        label: 'Date',
         sortable: true,
         width: '120px',
         render: (project) => (
@@ -46,10 +130,9 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         ),
       },
       {
-        key: 'stats',
+        key: 'images',
         label: 'Images',
         width: '100px',
-        sortField: 'stats.remoteImages',
         sortable: true,
         render: (project) => {
           const total = (project.stats.remoteImages || 0) + 
@@ -59,8 +142,8 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         },
       },
       {
-        key: 'stats.stadium',
-        label: 'Fans',
+        key: 'fans',
+        label: 'Total Fans',
         width: '100px',
         sortable: true,
         render: (project) => {
@@ -69,55 +152,60 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         },
       },
       {
-        key: 'hashtags',
-        label: 'Hashtags',
-        minWidth: '200px',
-        render: (project) => (
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {project.hashtags?.map((hashtag) => (
-              <ColoredHashtagBubble
-                key={`general-${hashtag}`}
-                hashtag={hashtag}
-                small
-                interactive={false}
-                projectCategorizedHashtags={project.categorizedHashtags}
-                autoResolveColor
-              />
-            ))}
-            {project.categorizedHashtags &&
-              Object.entries(project.categorizedHashtags).map(([category, hashtags]) =>
-                hashtags.map((hashtag) => (
-                  <ColoredHashtagBubble
-                    key={`${category}-${hashtag}`}
-                    hashtag={`${category}:${hashtag}`}
-                    showCategoryPrefix
-                    small
-                    interactive={false}
-                  />
-                ))
-              )}
-            {!project.hashtags?.length &&
-              !Object.keys(project.categorizedHashtags || {}).length && (
-                <span className="text-gray-400 text-sm">No tags</span>
-              )}
-          </div>
-        ),
-      },
-      {
-        key: 'updatedAt',
-        label: 'Updated',
+        key: 'attendees',
+        label: 'Attendees',
+        width: '100px',
         sortable: true,
-        width: '120px',
         render: (project) => (
-          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-            {new Date(project.updatedAt).toLocaleDateString()}
-          </span>
+          <span>{(project.stats.eventAttendees || 0).toLocaleString()}</span>
         ),
       },
     ],
     rowActions: [
       {
-        label: 'View',
+        label: 'CSV',
+        icon: '⬇️',
+        variant: 'secondary',
+        handler: async (project) => {
+          try {
+            const timestamp = new Date().getTime();
+            const id = project.viewSlug || project._id;
+            const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
+            const data = await res.json();
+            if (!data.success || !data.project) {
+              alert('Failed to fetch project stats for CSV export');
+              return;
+            }
+            const p = data.project;
+            const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+            const rows: Array<[string, string | number]> = [];
+            rows.push(['Event Name', p.eventName]);
+            rows.push(['Event Date', p.eventDate]);
+            rows.push(['Created At', p.createdAt]);
+            rows.push(['Updated At', p.updatedAt]);
+            Object.entries(p.stats || {}).forEach(([k, v]) => {
+              rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
+            });
+            const header = ['Variable', 'Value'];
+            const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${base}_variables.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } catch (e) {
+            alert('Export failed');
+          }
+        },
+        title: 'Download CSV export',
+      },
+      {
+        label: 'View Stats',
         icon: '👁️',
         variant: 'secondary',
         handler: (project) => {
@@ -125,26 +213,38 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
             window.open(`/stats/${project.viewSlug}`, '_blank');
           }
         },
-        title: 'View public stats page',
+        title: 'View public statistics page',
       },
       {
         label: 'Edit',
         icon: '✏️',
         variant: 'primary',
         handler: (project) => {
-          if (project.editSlug) {
-            window.location.href = `/edit/${project.editSlug}`;
-          }
+          // This will be overridden by the page component
+          console.log('Edit project:', project._id);
         },
-        title: 'Edit project',
+        title: 'Edit project details',
       },
       {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
-        handler: (project) => {
+        handler: async (project) => {
           if (confirm(`Delete event "${project.eventName}"?`)) {
-            console.log('Delete project:', project._id);
+            try {
+              const response = await fetch(`/api/projects?projectId=${project._id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+              });
+              const result = await response.json();
+              if (result.success) {
+                window.location.reload();
+              } else {
+                alert('Failed to delete project');
+              }
+            } catch (e) {
+              alert('Delete failed');
+            }
           }
         },
         title: 'Delete project',
@@ -183,28 +283,49 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         render: (project) => (project.stats.merched || 0).toLocaleString(),
       },
       {
-        key: 'hashtags',
-        label: 'Hashtags',
-        icon: '🏷️',
-        render: (project) => {
-          const totalHashtags =
-            (project.hashtags?.length || 0) +
-            Object.values(project.categorizedHashtags || {}).reduce(
-              (sum, tags) => sum + tags.length,
-              0
-            );
-          return totalHashtags > 0 ? `${totalHashtags} tags` : 'No tags';
-        },
+        key: 'stats.eventAttendees',
+        label: 'Attendees',
+        icon: '🏟️',
+        render: (project) => (project.stats.eventAttendees || 0).toLocaleString(),
       },
     ],
     cardActions: [
       {
-        label: 'View',
-        icon: '👁️',
+        label: 'CSV',
+        icon: '⬇️',
         variant: 'secondary',
-        handler: (project) => {
-          if (project.viewSlug) {
-            window.open(`/stats/${project.viewSlug}`, '_blank');
+        handler: async (project) => {
+          try {
+            const timestamp = new Date().getTime();
+            const id = project.viewSlug || project._id;
+            const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
+            const data = await res.json();
+            if (!data.success || !data.project) {
+              alert('Failed to fetch project stats');
+              return;
+            }
+            const p = data.project;
+            const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+            const rows: Array<[string, string | number]> = [];
+            rows.push(['Event Name', p.eventName]);
+            rows.push(['Event Date', p.eventDate]);
+            Object.entries(p.stats || {}).forEach(([k, v]) => {
+              rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
+            });
+            const header = ['Variable', 'Value'];
+            const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${base}_variables.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } catch (e) {
+            alert('Export failed');
           }
         },
       },
@@ -213,15 +334,14 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         icon: '✏️',
         variant: 'primary',
         handler: (project) => {
-          if (project.editSlug) {
-            window.location.href = `/edit/${project.editSlug}`;
-          }
+          // This will be overridden by the page component
+          console.log('Edit project:', project._id);
         },
       },
     ],
   },
 
   searchFields: ['eventName', 'hashtags', 'categorizedHashtags'],
-  emptyStateMessage: 'No events found. Click "Add Event" to create your first project.',
+  emptyStateMessage: 'No projects found. Click "Add New Project" to create your first event.',
   emptyStateIcon: '🍿',
 };

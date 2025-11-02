@@ -1,0 +1,231 @@
+{
+  "timestamp": "2025-11-02T19:25:48.950Z",
+  "version": "9.3.0",
+  "totalCollections": 31,
+  "totalDocuments": 9294,
+  "totalSize": 16222507,
+  "collections": [
+    {
+      "name": "cities",
+      "documentCount": 16,
+      "indexes": 4,
+      "sizeBytes": 3242
+    },
+    {
+      "name": "system_settings",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 138
+    },
+    {
+      "name": "bitly_project_links",
+      "documentCount": 252,
+      "indexes": 1,
+      "sizeBytes": 321564
+    },
+    {
+      "name": "chartConfigurations",
+      "documentCount": 45,
+      "indexes": 1,
+      "sizeBytes": 38071
+    },
+    {
+      "name": "partners",
+      "documentCount": 118,
+      "indexes": 3,
+      "sizeBytes": 117708
+    },
+    {
+      "name": "hashtags",
+      "documentCount": 101,
+      "indexes": 1,
+      "sizeBytes": 9740
+    },
+    {
+      "name": "hashtag_categories",
+      "documentCount": 7,
+      "indexes": 1,
+      "sizeBytes": 1045
+    },
+    {
+      "name": "variables_metadata",
+      "documentCount": 125,
+      "indexes": 8,
+      "sizeBytes": 44997
+    },
+    {
+      "name": "pagePasswords",
+      "documentCount": 201,
+      "indexes": 1,
+      "sizeBytes": 42281
+    },
+    {
+      "name": "notifications",
+      "documentCount": 4128,
+      "indexes": 1,
+      "sizeBytes": 1493454
+    },
+    {
+      "name": "hashtagColors",
+      "documentCount": 54,
+      "indexes": 1,
+      "sizeBytes": 8184
+    },
+    {
+      "name": "chart_formatting_defaults",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 437
+    },
+    {
+      "name": "settings",
+      "documentCount": 2,
+      "indexes": 1,
+      "sizeBytes": 331
+    },
+    {
+      "name": "bitly_link_project_junction",
+      "documentCount": 22,
+      "indexes": 1,
+      "sizeBytes": 2794
+    },
+    {
+      "name": "hashtag_slugs",
+      "documentCount": 392,
+      "indexes": 1,
+      "sizeBytes": 52737
+    },
+    {
+      "name": "variablesGroups",
+      "documentCount": 15,
+      "indexes": 1,
+      "sizeBytes": 4524
+    },
+    {
+      "name": "page_styles_enhanced",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 769
+    },
+    {
+      "name": "football_data_fixtures",
+      "documentCount": 253,
+      "indexes": 7,
+      "sizeBytes": 194751
+    },
+    {
+      "name": "analytics_aggregates",
+      "documentCount": 45,
+      "indexes": 6,
+      "sizeBytes": 64507
+    },
+    {
+      "name": "aggregation_logs",
+      "documentCount": 1,
+      "indexes": 5,
+      "sizeBytes": 2500
+    },
+    {
+      "name": "bitly_sync_logs",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 359
+    },
+    {
+      "name": "countries",
+      "documentCount": 197,
+      "indexes": 5,
+      "sizeBytes": 44441
+    },
+    {
+      "name": "event_comparisons",
+      "documentCount": 0,
+      "indexes": 4,
+      "sizeBytes": 0
+    },
+    {
+      "name": "users",
+      "documentCount": 9,
+      "indexes": 2,
+      "sizeBytes": 2041
+    },
+    {
+      "name": "partner_analytics",
+      "documentCount": 0,
+      "indexes": 5,
+      "sizeBytes": 0
+    },
+    {
+      "name": "variablesConfig",
+      "documentCount": 26,
+      "indexes": 1,
+      "sizeBytes": 5290
+    },
+    {
+      "name": "filter_slugs",
+      "documentCount": 30,
+      "indexes": 1,
+      "sizeBytes": 6105
+    },
+    {
+      "name": "dataBlocks",
+      "documentCount": 11,
+      "indexes": 1,
+      "sizeBytes": 3810
+    },
+    {
+      "name": "projects",
+      "documentCount": 154,
+      "indexes": 10,
+      "sizeBytes": 156162
+    },
+    {
+      "name": "charts",
+      "documentCount": 0,
+      "indexes": 1,
+      "sizeBytes": 0
+    },
+    {
+      "name": "bitly_links",
+      "documentCount": 3086,
+      "indexes": 1,
+      "sizeBytes": 13600525
+    }
+  ],
+  "integrity": {
+    "verified": true,
+    "checksums": {
+      "cities": "5073935f98f0ec4631b7cbc972f299d5",
+      "system_settings": "2b0a929b3c9196eec29fa7ea8a8a306d",
+      "bitly_project_links": "57bff4fefaa7f04199d430d66f1810fa",
+      "chartConfigurations": "8c6bc0b82a6cf0945ec057e3307d2c29",
+      "partners": "59bb8956f630daa6ff2c6e419b4f096b",
+      "hashtags": "bf764cec84f765d3c18f05163cc9896d",
+      "hashtag_categories": "036efbb73f32f9fceeb95feb856006ee",
+      "variables_metadata": "170bf4c39d0d738aed13dd692706b7e0",
+      "pagePasswords": "c7027fa712c7e8c586d304476db74a95",
+      "notifications": "2f31eeb5638ebec593b89c007491b637",
+      "hashtagColors": "22e6da21827f98a78bd2c705abef6a26",
+      "chart_formatting_defaults": "c6fa28d733dcc205b698c9185ad81049",
+      "settings": "1b30ae2b61e425def441ead2029e7dea",
+      "bitly_link_project_junction": "cf01676e8abd0d373a974d763888f706",
+      "hashtag_slugs": "1e2a87fadba6a6eb65262e805282243d",
+      "variablesGroups": "60d71de02197faf44237cb7f0aebc301",
+      "page_styles_enhanced": "a7d2019f7117aa7614ae50e6cbad5f7a",
+      "football_data_fixtures": "bbb42d4daf6408dd596dae36dbb767d9",
+      "analytics_aggregates": "b622a3e303776c0101f5fb4739344a2c",
+      "aggregation_logs": "c214f17f1889bb09e5ac352b43615e1f",
+      "bitly_sync_logs": "eab7778d3511df07c8f4b9792e56e3b6",
+      "countries": "5f6929cf8c377235a42f99b2a09211b4",
+      "event_comparisons": "d751713988987e9331980363e24189ce",
+      "users": "7ed748aed44b3a56646a9d5ca0105c2e",
+      "partner_analytics": "d751713988987e9331980363e24189ce",
+      "variablesConfig": "5ad6c323499ddd2e0062b2f532ea6d6b",
+      "filter_slugs": "7b55fd8f1e45ad6aaffcf03cdd59aa11",
+      "dataBlocks": "46720a6f909f905be44b391be7ffea7c",
+      "projects": "2bf7da2562d324a4b269b994e3842f5a",
+      "charts": "d751713988987e9331980363e24189ce",
+      "bitly_links": "1e7d1792db761ca261017ff13c50f1ef"
+    }
+  }
+}

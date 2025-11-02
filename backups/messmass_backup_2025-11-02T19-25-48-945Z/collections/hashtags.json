@@ -1,0 +1,622 @@
+{
+  "name": "hashtags",
+  "documentCount": 101,
+  "documents": [
+    {
+      "_id": "68a3559036ea2553b91c60de",
+      "hashtag": "mkosz",
+      "count": 2,
+      "createdAt": "2025-08-18T16:32:16.089Z"
+    },
+    {
+      "_id": "68a3596836ea2553b91c653a",
+      "hashtag": "hungary",
+      "count": 60,
+      "createdAt": "2025-08-18T16:48:40.515Z"
+    },
+    {
+      "_id": "68a3596836ea2553b91c653b",
+      "hashtag": "men",
+      "count": 94,
+      "createdAt": "2025-08-18T16:48:40.515Z"
+    },
+    {
+      "_id": "68a3599436ea2553b91c6574",
+      "hashtag": "women",
+      "count": -3,
+      "createdAt": "2025-08-18T16:49:24.133Z"
+    },
+    {
+      "_id": "68a35a9436ea2553b91c66b4",
+      "hashtag": "fiba",
+      "count": -9,
+      "createdAt": "2025-08-18T16:53:40.654Z"
+    },
+    {
+      "_id": "68a35b2b36ea2553b91c6769",
+      "hashtag": "dvtk",
+      "count": 8,
+      "createdAt": "2025-08-18T16:56:11.241Z"
+    },
+    {
+      "_id": "68a35b2b36ea2553b91c676b",
+      "hashtag": "mlsz",
+      "count": 11,
+      "createdAt": "2025-08-18T16:56:11.241Z"
+    },
+    {
+      "_id": "68a35b2b36ea2553b91c676c",
+      "hashtag": "soccer",
+      "count": 9,
+      "createdAt": "2025-08-18T16:56:11.241Z"
+    },
+    {
+      "_id": "68a35b5136ea2553b91c679e",
+      "hashtag": "mtk",
+      "count": 14,
+      "createdAt": "2025-08-18T16:56:49.786Z"
+    },
+    {
+      "_id": "68a35dc836ea2553b91c6a8b",
+      "hashtag": "motogp",
+      "count": 2,
+      "createdAt": "2025-08-18T17:07:20.259Z"
+    },
+    {
+      "_id": "68a35ef936ea2553b91c6bf9",
+      "hashtag": "plazs",
+      "count": 0,
+      "createdAt": "2025-08-18T17:12:25.603Z"
+    },
+    {
+      "_id": "68a35ef936ea2553b91c6bfb",
+      "hashtag": "halott_penz",
+      "count": 0,
+      "createdAt": "2025-08-18T17:12:25.603Z"
+    },
+    {
+      "_id": "68a44e4036ea2553b91d872b",
+      "hashtag": "mrsz",
+      "count": 1,
+      "createdAt": "2025-08-19T10:13:20.392Z"
+    },
+    {
+      "_id": "68a44eb836ea2553b91d87c0",
+      "hashtag": "basketball",
+      "count": 4,
+      "createdAt": "2025-08-19T10:15:19.911Z"
+    },
+    {
+      "_id": "68a4577036ea2553b91d9221",
+      "hashtag": "football",
+      "count": 36,
+      "createdAt": "2025-08-19T10:52:32.448Z"
+    },
+    {
+      "_id": "68a4656136ea2553b91da3a7",
+      "hashtag": "ujpestfc",
+      "count": 12,
+      "createdAt": "2025-08-19T11:52:01.695Z"
+    },
+    {
+      "_id": "68a761ee36ea2553b91e09d1",
+      "hashtag": "handball",
+      "count": 33,
+      "createdAt": "2025-08-21T18:14:05.791Z"
+    },
+    {
+      "_id": "68a761ee36ea2553b91e09d2",
+      "hashtag": "ehf",
+      "count": 35,
+      "createdAt": "2025-08-21T18:14:05.791Z"
+    },
+    {
+      "_id": "68a7626a36ea2553b91e09df",
+      "hashtag": "italy",
+      "count": 3,
+      "createdAt": "2025-08-21T18:16:10.187Z"
+    },
+    {
+      "_id": "68a762da36ea2553b91e09ea",
+      "hashtag": "croatia",
+      "count": 4,
+      "createdAt": "2025-08-21T18:18:01.838Z"
+    },
+    {
+      "_id": "68a7631436ea2553b91e09f5",
+      "hashtag": "chl",
+      "count": 9,
+      "createdAt": "2025-08-21T18:18:59.988Z"
+    },
+    {
+      "_id": "68a7631436ea2553b91e09f6",
+      "hashtag": "icehockey",
+      "count": 13,
+      "createdAt": "2025-08-21T18:18:59.988Z"
+    },
+    {
+      "_id": "68a7637f36ea2553b91e0a08",
+      "hashtag": "romania",
+      "count": 4,
+      "createdAt": "2025-08-21T18:20:46.867Z"
+    },
+    {
+      "_id": "68ac4a7936ea2553b91ebd1b",
+      "hashtag": "3x3",
+      "count": 4,
+      "createdAt": "2025-08-25T11:35:21.093Z"
+    },
+    {
+      "_id": "68ad742036ea2553b91edead",
+      "hashtag": "balatonpark_circuit",
+      "count": 2,
+      "createdAt": "2025-08-26T08:45:19.788Z"
+    },
+    {
+      "_id": "68ad88ce36ea2553b91ee019",
+      "hashtag": "ea_junior_swimming_championship",
+      "count": 5,
+      "createdAt": "2025-08-26T10:13:34.445Z"
+    },
+    {
+      "_id": "68ad890a36ea2553b91ee021",
+      "hashtag": "junior",
+      "count": 3,
+      "createdAt": "2025-08-26T10:14:34.725Z"
+    },
+    {
+      "_id": "68ad890d36ea2553b91ee022",
+      "hashtag": "slovakia",
+      "count": 6,
+      "createdAt": "2025-08-26T10:14:37.443Z"
+    },
+    {
+      "_id": "68ad891136ea2553b91ee023",
+      "hashtag": "swimming",
+      "count": 5,
+      "createdAt": "2025-08-26T10:14:41.211Z"
+    },
+    {
+      "_id": "68ad892636ea2553b91ee026",
+      "hashtag": "european_championship",
+      "count": 5,
+      "createdAt": "2025-08-26T10:15:02.567Z"
+    },
+    {
+      "_id": "68add78636ea2553b91eea43",
+      "hashtag": "serie_a",
+      "count": 3,
+      "createdAt": "2025-08-26T15:49:25.622Z"
+    },
+    {
+      "_id": "68adef0736ea2553b91eedb8",
+      "hashtag": "derby",
+      "count": 1,
+      "createdAt": "2025-08-26T17:29:43.462Z"
+    },
+    {
+      "_id": "68adf1dd36ea2553b91eedde",
+      "hashtag": "music",
+      "count": 0,
+      "createdAt": "2025-08-26T17:41:49.661Z"
+    },
+    {
+      "_id": "68b0014dd5dc708d4205579e",
+      "hashtag": "france",
+      "count": 1,
+      "createdAt": "2025-08-28T07:12:13.261Z"
+    },
+    {
+      "_id": "68b44bacd5dc708d4205df23",
+      "hashtag": "bozsik_david",
+      "count": 29,
+      "createdAt": "2025-08-31T13:18:36.583Z"
+    },
+    {
+      "_id": "68b69399d5dc708d4206409a",
+      "hashtag": "debrecen",
+      "count": 13,
+      "createdAt": "2025-09-02T06:50:01.315Z"
+    },
+    {
+      "_id": "68b693a5d5dc708d4206409c",
+      "hashtag": "toth_lili_anna",
+      "count": 5,
+      "createdAt": "2025-09-02T06:50:13.225Z"
+    },
+    {
+      "_id": "68b96fa8e31dcca1e161cbc1",
+      "hashtag": "poland",
+      "count": 8,
+      "createdAt": "2025-09-04T10:53:27.948Z"
+    },
+    {
+      "_id": "68bacd8fe31dcca1e16208c1",
+      "hashtag": "switzerland",
+      "count": 7,
+      "createdAt": "2025-09-05T11:46:22.446Z"
+    },
+    {
+      "_id": "68bbd535e31dcca1e16232fb",
+      "hashtag": "kuopio",
+      "count": 1,
+      "createdAt": "2025-09-06T06:31:16.966Z"
+    },
+    {
+      "_id": "68ca62ae45c24b57c21e3830",
+      "hashtag": "mol",
+      "count": 29,
+      "createdAt": "2025-09-17T07:26:37.855Z"
+    },
+    {
+      "_id": "68ca62ae45c24b57c21e3832",
+      "hashtag": "zagreb",
+      "count": 6,
+      "createdAt": "2025-09-17T07:26:37.855Z"
+    },
+    {
+      "_id": "68ca6b8845c24b57c21e3a4f",
+      "hashtag": "veszprem",
+      "count": 5,
+      "createdAt": "2025-09-17T08:04:23.731Z"
+    },
+    {
+      "_id": "68ca85f445c24b57c21e3cd3",
+      "hashtag": "budapest",
+      "count": 24,
+      "createdAt": "2025-09-17T09:57:07.803Z"
+    },
+    {
+      "_id": "68ca87bc45c24b57c21e3d08",
+      "hashtag": "hbc_nantes",
+      "count": 4,
+      "createdAt": "2025-09-17T10:04:44.390Z"
+    },
+    {
+      "_id": "68ca96b345c24b57c21e3f84",
+      "hashtag": "brno",
+      "count": 1,
+      "createdAt": "2025-09-17T11:08:35.150Z"
+    },
+    {
+      "_id": "68ca96b345c24b57c21e3f85",
+      "hashtag": "czechia",
+      "count": 2,
+      "createdAt": "2025-09-17T11:08:35.150Z"
+    },
+    {
+      "_id": "68ca972e45c24b57c21e3f9a",
+      "hashtag": "belfast",
+      "count": 1,
+      "createdAt": "2025-09-17T11:10:37.858Z"
+    },
+    {
+      "_id": "68ca972f45c24b57c21e3f9f",
+      "hashtag": "northern_ireland",
+      "count": 1,
+      "createdAt": "2025-09-17T11:10:37.858Z"
+    },
+    {
+      "_id": "68ca979a45c24b57c21e3fb4",
+      "hashtag": "mountfield",
+      "count": 1,
+      "createdAt": "2025-09-17T11:12:25.489Z"
+    },
+    {
+      "_id": "68ca979b45c24b57c21e3fbb",
+      "hashtag": "united_kingdom",
+      "count": 1,
+      "createdAt": "2025-09-17T11:12:25.489Z"
+    },
+    {
+      "_id": "68ca97ea45c24b57c21e3fc1",
+      "hashtag": "grenoble",
+      "count": 1,
+      "createdAt": "2025-09-17T11:13:46.467Z"
+    },
+    {
+      "_id": "68ca985c45c24b57c21e3fdf",
+      "hashtag": "zurich",
+      "count": 1,
+      "createdAt": "2025-09-17T11:15:38.453Z"
+    },
+    {
+      "_id": "68cbef1845c24b57c21e66ee",
+      "hashtag": "industria_kielce",
+      "count": 6,
+      "createdAt": "2025-09-18T11:38:00.054Z"
+    },
+    {
+      "_id": "68cbef1845c24b57c21e66ef",
+      "hashtag": "kielce",
+      "count": 5,
+      "createdAt": "2025-09-18T11:38:00.054Z"
+    },
+    {
+      "_id": "68cbf05c45c24b57c21e6719",
+      "hashtag": "orlen_wisla_plock",
+      "count": 7,
+      "createdAt": "2025-09-18T11:43:23.613Z"
+    },
+    {
+      "_id": "68cbf18e45c24b57c21e672d",
+      "hashtag": "lounge",
+      "count": 2,
+      "createdAt": "2025-09-18T11:48:30.134Z"
+    },
+    {
+      "_id": "68cbf18f45c24b57c21e672e",
+      "hashtag": "motor",
+      "count": 1,
+      "createdAt": "2025-09-18T11:48:30.134Z"
+    },
+    {
+      "_id": "68cbf19045c24b57c21e6736",
+      "hashtag": "vechy_tom",
+      "count": 2,
+      "createdAt": "2025-09-18T11:48:30.134Z"
+    },
+    {
+      "_id": "68cbf2e745c24b57c21e6752",
+      "hashtag": "toth_lili",
+      "count": 39,
+      "createdAt": "2025-09-18T11:54:13.335Z"
+    },
+    {
+      "_id": "68cbf37945c24b57c21e675f",
+      "hashtag": "as_roma",
+      "count": 3,
+      "createdAt": "2025-09-18T11:56:40.884Z"
+    },
+    {
+      "_id": "68cbf37a45c24b57c21e6764",
+      "hashtag": "roma",
+      "count": 3,
+      "createdAt": "2025-09-18T11:56:40.884Z"
+    },
+    {
+      "_id": "68cbf48545c24b57c21e6786",
+      "hashtag": "germany",
+      "count": 2,
+      "createdAt": "2025-09-18T12:01:09.431Z"
+    },
+    {
+      "_id": "68cbf48545c24b57c21e6787",
+      "hashtag": "koln",
+      "count": 2,
+      "createdAt": "2025-09-18T12:01:09.431Z"
+    },
+    {
+      "_id": "68cbf64a45c24b57c21e67b5",
+      "hashtag": "dvsc",
+      "count": 4,
+      "createdAt": "2025-09-18T12:08:41.789Z"
+    },
+    {
+      "_id": "68cbf64a45c24b57c21e67bb",
+      "hashtag": "paks",
+      "count": 2,
+      "createdAt": "2025-09-18T12:08:41.789Z"
+    },
+    {
+      "_id": "68cbf64b45c24b57c21e67bf",
+      "hashtag": "szabo_diana_rozalia",
+      "count": 19,
+      "createdAt": "2025-09-18T12:08:41.789Z"
+    },
+    {
+      "_id": "68cbf72845c24b57c21e67d8",
+      "hashtag": "nyiregyhaza",
+      "count": 4,
+      "createdAt": "2025-09-18T12:12:23.779Z"
+    },
+    {
+      "_id": "68cbf72a45c24b57c21e67df",
+      "hashtag": "ujpest",
+      "count": 2,
+      "createdAt": "2025-09-18T12:12:23.779Z"
+    },
+    {
+      "_id": "68cbfa6c45c24b57c21e6869",
+      "hashtag": "diosgyor",
+      "count": 3,
+      "createdAt": "2025-09-18T12:26:19.774Z"
+    },
+    {
+      "_id": "68cbfb8445c24b57c21e688d",
+      "hashtag": "otp_bank_pick_szeged",
+      "count": 6,
+      "createdAt": "2025-09-18T12:30:59.630Z"
+    },
+    {
+      "_id": "68cbfb8645c24b57c21e6892",
+      "hashtag": "szeged",
+      "count": 5,
+      "createdAt": "2025-09-18T12:30:59.630Z"
+    },
+    {
+      "_id": "68cbfe8345c24b57c21e690b",
+      "hashtag": "sc_magdeburg",
+      "count": 4,
+      "createdAt": "2025-09-18T12:43:46.261Z"
+    },
+    {
+      "_id": "68cc023645c24b57c21e69db",
+      "hashtag": "miskolc",
+      "count": 5,
+      "createdAt": "2025-09-18T12:59:33.393Z"
+    },
+    {
+      "_id": "68cc05ac45c24b57c21e6a57",
+      "hashtag": "samorin",
+      "count": 1,
+      "createdAt": "2025-09-18T13:14:19.707Z"
+    },
+    {
+      "_id": "68cc066345c24b57c21e6a6d",
+      "hashtag": "european_aquatics",
+      "count": 5,
+      "createdAt": "2025-09-18T13:17:22.965Z"
+    },
+    {
+      "_id": "68cc0bd445c24b57c21e6c82",
+      "hashtag": "szombathely",
+      "count": 2,
+      "createdAt": "2025-09-18T13:40:34.613Z"
+    },
+    {
+      "_id": "68d15f4245c24b57c21f233f",
+      "hashtag": "lask",
+      "count": 1,
+      "createdAt": "2025-09-22T14:37:53.711Z"
+    },
+    {
+      "_id": "68d15f4245c24b57c21f2340",
+      "hashtag": "lens",
+      "count": 1,
+      "createdAt": "2025-09-22T14:37:53.711Z"
+    },
+    {
+      "_id": "68d1608c45c24b57c21f235f",
+      "hashtag": "fribourg",
+      "count": 4,
+      "createdAt": "2025-09-22T14:43:24.847Z"
+    },
+    {
+      "_id": "68d1608d45c24b57c21f2360",
+      "hashtag": "hc_fribourg_gotteron",
+      "count": 4,
+      "createdAt": "2025-09-22T14:43:24.847Z"
+    },
+    {
+      "_id": "68d1633e45c24b57c21f23cb",
+      "hashtag": "paris_saint_german",
+      "count": 2,
+      "createdAt": "2025-09-22T14:54:53.608Z"
+    },
+    {
+      "_id": "68d1648445c24b57c21f23fd",
+      "hashtag": "lukasiewicza",
+      "count": 1,
+      "createdAt": "2025-09-22T15:00:19.419Z"
+    },
+    {
+      "_id": "68d167b845c24b57c21f247f",
+      "hashtag": "pecs",
+      "count": 2,
+      "createdAt": "2025-09-22T15:13:59.465Z"
+    },
+    {
+      "_id": "68d16c1045c24b57c21f252f",
+      "hashtag": "kaposvar",
+      "count": 2,
+      "createdAt": "2025-09-22T15:32:32.577Z"
+    },
+    {
+      "_id": "68d16e8d45c24b57c21f258e",
+      "hashtag": "plock",
+      "count": 4,
+      "createdAt": "2025-09-22T15:43:07.650Z"
+    },
+    {
+      "_id": "68d1779b45c24b57c21f270d",
+      "hashtag": "bucharest",
+      "count": 2,
+      "createdAt": "2025-09-22T16:21:47.376Z"
+    },
+    {
+      "_id": "68d17bac45c24b57c21f28b5",
+      "hashtag": "austria",
+      "count": 1,
+      "createdAt": "2025-09-22T16:39:08.419Z"
+    },
+    {
+      "_id": "68d17bac45c24b57c21f28b7",
+      "hashtag": "ec_kac_saas",
+      "count": 1,
+      "createdAt": "2025-09-22T16:39:08.419Z"
+    },
+    {
+      "_id": "68d17bad45c24b57c21f28ba",
+      "hashtag": "klagenfurt",
+      "count": 1,
+      "createdAt": "2025-09-22T16:39:08.419Z"
+    },
+    {
+      "_id": "68d18dac45c24b57c21f2a7b",
+      "hashtag": "szolnok",
+      "count": 2,
+      "createdAt": "2025-09-22T17:55:55.157Z"
+    },
+    {
+      "_id": "68de5d78df9735cb2a9fe4d1",
+      "hashtag": "hungarian_football_league_division_i",
+      "count": 2,
+      "createdAt": "2025-10-02T11:09:44.235Z"
+    },
+    {
+      "_id": "68de5ddbdf9735cb2a9fe4d8",
+      "hashtag": "eurobasket_qualifier_men",
+      "count": 1,
+      "createdAt": "2025-10-02T11:11:22.915Z"
+    },
+    {
+      "_id": "68de6073df9735cb2a9fe52c",
+      "hashtag": "daniella",
+      "count": 1,
+      "createdAt": "2025-10-02T11:22:26.744Z"
+    },
+    {
+      "_id": "68de613edf9735cb2a9fe54a",
+      "hashtag": "eurobasket_b_divisionwomen",
+      "count": 1,
+      "createdAt": "2025-10-02T11:25:50.674Z"
+    },
+    {
+      "_id": "68de6213df9735cb2a9fe576",
+      "hashtag": "eurobasket_b_division_women",
+      "count": 1,
+      "createdAt": "2025-10-02T11:29:23.359Z"
+    },
+    {
+      "_id": "68ee45c92ab1c1098e6af58c",
+      "hashtag": "cs_dinamo_bucuresti",
+      "count": 2,
+      "createdAt": "2025-10-14T12:44:57.007Z"
+    },
+    {
+      "_id": "68f545e347a629969d8ddf53",
+      "hashtag": "hc_zagreb",
+      "count": 2,
+      "createdAt": "2025-10-19T20:11:14.755Z"
+    },
+    {
+      "_id": "68f8b7ed47a629969d8e814a",
+      "hashtag": "bucuresti",
+      "count": 1,
+      "createdAt": "2025-10-22T10:54:37.643Z"
+    },
+    {
+      "_id": "68f8b80847a629969d8e8151",
+      "hashtag": "fuchse_berlin",
+      "count": 1,
+      "createdAt": "2025-10-22T10:55:04.148Z"
+    },
+    {
+      "_id": "68f8b80847a629969d8e8152",
+      "hashtag": "one_veszprem_hc",
+      "count": 1,
+      "createdAt": "2025-10-22T10:55:04.148Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:49.705Z"
+}

@@ -1,0 +1,67 @@
+================================================================================
+DATABASE BACKUP SUMMARY
+================================================================================
+
+Timestamp: 2025-11-02T19:25:48.950Z
+Version: 9.3.0
+Location: /Users/moldovancsaba/Projects/messmass/backups/messmass_backup_2025-11-02T19-25-48-945Z
+
+📊 STATISTICS:
+────────────────────────────────────────────────────────────────────────────────
+Total Collections: 31
+Total Documents: 9,294
+Total Size: 15.47 MB
+
+📦 COLLECTIONS:
+────────────────────────────────────────────────────────────────────────────────
+  notifications                           4128 docs  |     1458.45 KB  |  1 indexes
+  bitly_links                             3086 docs  |    13281.76 KB  |  1 indexes
+  hashtag_slugs                            392 docs  |       51.50 KB  |  1 indexes
+  football_data_fixtures                   253 docs  |      190.19 KB  |  7 indexes
+  bitly_project_links                      252 docs  |      314.03 KB  |  1 indexes
+  pagePasswords                            201 docs  |       41.29 KB  |  1 indexes
+  countries                                197 docs  |       43.40 KB  |  5 indexes
+  projects                                 154 docs  |      152.50 KB  |  10 indexes
+  variables_metadata                       125 docs  |       43.94 KB  |  8 indexes
+  partners                                 118 docs  |      114.95 KB  |  3 indexes
+  hashtags                                 101 docs  |        9.51 KB  |  1 indexes
+  hashtagColors                             54 docs  |        7.99 KB  |  1 indexes
+  chartConfigurations                       45 docs  |       37.18 KB  |  1 indexes
+  analytics_aggregates                      45 docs  |       63.00 KB  |  6 indexes
+  filter_slugs                              30 docs  |        5.96 KB  |  1 indexes
+  variablesConfig                           26 docs  |        5.17 KB  |  1 indexes
+  bitly_link_project_junction               22 docs  |        2.73 KB  |  1 indexes
+  cities                                    16 docs  |        3.17 KB  |  4 indexes
+  variablesGroups                           15 docs  |        4.42 KB  |  1 indexes
+  dataBlocks                                11 docs  |        3.72 KB  |  1 indexes
+  users                                      9 docs  |        1.99 KB  |  2 indexes
+  hashtag_categories                         7 docs  |        1.02 KB  |  1 indexes
+  settings                                   2 docs  |        0.32 KB  |  1 indexes
+  system_settings                            1 docs  |        0.13 KB  |  1 indexes
+  chart_formatting_defaults                  1 docs  |        0.43 KB  |  1 indexes
+  page_styles_enhanced                       1 docs  |        0.75 KB  |  1 indexes
+  aggregation_logs                           1 docs  |        2.44 KB  |  5 indexes
+  bitly_sync_logs                            1 docs  |        0.35 KB  |  1 indexes
+  event_comparisons                          0 docs  |        0.00 KB  |  4 indexes
+  partner_analytics                          0 docs  |        0.00 KB  |  5 indexes
+  charts                                     0 docs  |        0.00 KB  |  1 indexes
+
+🔐 INTEGRITY:
+────────────────────────────────────────────────────────────────────────────────
+Verification: ✅ PASSED
+Checksums: 31 collections verified
+
+================================================================================
+RESTORE INSTRUCTIONS:
+================================================================================
+
+Full restore:
+  npm run db:restore -- --backup=messmass_backup_2025-11-02T19-25-48-945Z
+
+Single collection restore:
+  npm run db:restore -- --backup=messmass_backup_2025-11-02T19-25-48-945Z --collection=projects
+
+Dry-run (preview only):
+  npm run db:restore -- --backup=messmass_backup_2025-11-02T19-25-48-945Z --dry-run
+
+================================================================================

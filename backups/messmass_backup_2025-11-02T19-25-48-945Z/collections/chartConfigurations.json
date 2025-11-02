@@ -1,0 +1,1943 @@
+{
+  "name": "chartConfigurations",
+  "documentCount": 45,
+  "documents": [
+    {
+      "_id": "68f7aa417241ff4b5c8f6d85",
+      "chartId": "gender-distribution",
+      "title": "Gender Distribution",
+      "type": "pie",
+      "order": 1,
+      "isActive": true,
+      "emoji": "👥",
+      "subtitle": "Fan demographics",
+      "elements": [
+        {
+          "id": "female",
+          "label": "Female",
+          "formula": "[stats.female]",
+          "color": "#8d287a",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "male",
+          "label": "Male",
+          "formula": "[stats.male]",
+          "color": "#417db9",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:01.696Z",
+      "updatedAt": "2025-10-31T12:11:02.976Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d86",
+      "chartId": "fans-location",
+      "title": "Fans Location",
+      "type": "pie",
+      "order": 2,
+      "isActive": true,
+      "emoji": "📍",
+      "subtitle": "Where fans engage",
+      "elements": [
+        {
+          "id": "remote",
+          "label": "Remote",
+          "formula": "[stats.remoteFans]",
+          "color": "#417db9",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "event",
+          "label": "Event",
+          "formula": "[stats.stadium]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:01.949Z",
+      "updatedAt": "2025-10-31T12:11:03.008Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d87",
+      "chartId": "age-groups",
+      "title": "Age Groups",
+      "type": "bar",
+      "order": 3,
+      "isActive": true,
+      "emoji": "👥",
+      "subtitle": "Age demographics",
+      "elements": [
+        {
+          "id": "element1",
+          "label": "GEN Alpha",
+          "formula": "[stats.genAlpha]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element2",
+          "label": "GEN Y + GEN Z",
+          "formula": "[stats.genYZ]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element3",
+          "label": "GEN X",
+          "formula": "[stats.genX]",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element4",
+          "label": "Boomer",
+          "formula": "[stats.boomer]",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element5",
+          "label": "Other",
+          "formula": "0",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.145Z",
+      "updatedAt": "2025-10-31T13:37:16.051Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d88",
+      "chartId": "visitor-sources",
+      "title": "Visitor Sources",
+      "type": "pie",
+      "order": 4,
+      "isActive": true,
+      "emoji": "🌐",
+      "subtitle": "Attribution",
+      "elements": [
+        {
+          "id": "qr-short",
+          "label": "QR + Short URL",
+          "formula": "[stats.visitQrCode] + [stats.visitShortUrl]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "other",
+          "label": "Direct",
+          "formula": "[stats.visitWeb]",
+          "color": "#b45fa2",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.330Z",
+      "updatedAt": "2025-10-31T12:11:03.067Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d89",
+      "chartId": "engagement-rate",
+      "title": "Engagement Rate",
+      "type": "kpi",
+      "order": 5,
+      "isActive": true,
+      "emoji": "🤗",
+      "subtitle": "Total fans vs attendees (%)",
+      "elements": [
+        {
+          "id": "engagement-rate-kpi",
+          "label": "Engagement",
+          "formula": "([stats.totalFans]) / [stats.eventAttendees] * 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.553Z",
+      "updatedAt": "2025-11-01T23:34:37.824Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d8a",
+      "chartId": "merch-penetration",
+      "title": "Merchandise Penetration",
+      "type": "kpi",
+      "order": 6,
+      "isActive": true,
+      "emoji": "🛍️",
+      "subtitle": "Merched fans / total fans (%)",
+      "elements": [
+        {
+          "id": "merch-pen-kpi",
+          "label": "Merch %",
+          "formula": "[stats.merched] / [stats.totalFans] * 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.769Z",
+      "updatedAt": "2025-10-31T13:31:05.341Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8b",
+      "chartId": "fans-per-image",
+      "title": "Fans per Image",
+      "type": "kpi",
+      "order": 7,
+      "isActive": true,
+      "emoji": "👀",
+      "subtitle": "Average faces per approved image",
+      "elements": [
+        {
+          "id": "faces-kpi",
+          "label": "Faces/Image",
+          "formula": "([stats.female] + [stats.male]) / [stats.approvedImages]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.975Z",
+      "updatedAt": "2025-10-31T12:24:45.661Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8c",
+      "chartId": "merchandise-distribution",
+      "title": "Merchandise Frequency",
+      "type": "bar",
+      "order": 8,
+      "isActive": true,
+      "emoji": "🛍️",
+      "subtitle": "Types of merchandise",
+      "showTotal": false,
+      "elements": [
+        {
+          "id": "jersey-penetration",
+          "label": "Jersey",
+          "formula": "[stats.jersey] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8d2878",
+          "description": "Jersey penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "scarf-penetration",
+          "label": "Scarf",
+          "formula": "[stats.scarf] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Scarf penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "flags-penetration",
+          "label": "Flags",
+          "formula": "[stats.flags] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Flags penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "cap-penetration",
+          "label": "Baseball Cap",
+          "formula": "[stats.baseballCap] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Baseball cap penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "other-penetration",
+          "label": "Other",
+          "formula": "[stats.other] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Other merchandise penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:03.176Z",
+      "updatedAt": "2025-11-02T00:46:55.902Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8e",
+      "chartId": "image-density",
+      "title": "Image Density",
+      "type": "kpi",
+      "order": 10,
+      "isActive": true,
+      "emoji": "🧮",
+      "subtitle": "Images per 100 fans",
+      "elements": [
+        {
+          "id": "image-density-kpi",
+          "label": "Images / 100 Fans",
+          "formula": "([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) / ([stats.female] + [stats.male]) * 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:03.629Z",
+      "updatedAt": "2025-10-31T12:11:03.222Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "68ff7b5c9b793f7e3fb2b7b4",
+      "chartId": "bitly-top-countries",
+      "title": "Most Visitors",
+      "emoji": "🌍",
+      "type": "bar",
+      "order": 8,
+      "showTotal": false,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-country-1",
+          "label": "{{stats.bitlyCountry1}}",
+          "formula": "[stats.bitlyCountry1Clicks]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-2",
+          "label": "{{stats.bitlyCountry2}}",
+          "formula": "[stats.bitlyCountry2Clicks]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-3",
+          "label": "{{stats.bitlyCountry3}}",
+          "formula": "[stats.bitlyCountry3Clicks]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-4",
+          "label": "{{stats.bitlyCountry4}}",
+          "formula": "[stats.bitlyCountry4Clicks]",
+          "color": "#8c2877",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-5",
+          "label": "{{stats.bitlyCountry5}}",
+          "formula": "[stats.bitlyCountry5Clicks]",
+          "color": "#8c2877",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "updatedAt": "2025-11-02T00:40:24.565Z",
+      "subtitle": "Based on fan engagement "
+    },
+    {
+      "_id": "68ff7b5d400cc0d49e50711e",
+      "chartId": "bitly-top-country",
+      "title": "Top Country",
+      "emoji": "🏆",
+      "subtitle": "Most Engaging Geography",
+      "type": "kpi",
+      "order": 9,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-top-country-kpi-element",
+          "label": "{{stats.bitlyTopCountry}}",
+          "formula": "[stats.bitlyClicksByCountry]",
+          "color": "#8d2878",
+          "description": "Top country by Bitly clicks with click count",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "updatedAt": "2025-10-31T12:11:03.288Z"
+    },
+    {
+      "_id": "68ff7b5ee9723ccb4bccce3d",
+      "chartId": "bitly-countries-reached",
+      "title": "Countries Reached",
+      "emoji": "🌐",
+      "subtitle": "Unique Countries",
+      "type": "kpi",
+      "order": 10,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-countries-reached-kpi-element",
+          "label": "Countries Reached",
+          "formula": "[stats.bitlyCountryCount]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "updatedAt": "2025-10-31T12:11:03.323Z"
+    },
+    {
+      "_id": "69024449ad64cd37c62afdad",
+      "chartId": "marketing-opt-in",
+      "title": "Marketing Opt-in %",
+      "type": "kpi",
+      "order": 51,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Marketing Opt-in %",
+          "formula": "( ( [stats.ventCtaEmail] + [stats.ventCtaPopup] ) / [stats.uniqueUsers] ) * 100",
+          "color": "#10b981",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-29T16:43:53.477Z",
+      "updatedAt": "2025-10-31T12:11:03.353Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6902479c898e37c5388e5199",
+      "chartId": "unique-users",
+      "title": "Unique Users",
+      "type": "kpi",
+      "order": 52,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Unique Users",
+          "formula": "[stats.uniqueUsers]",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": "Registered with email address",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-29T16:58:04.317Z",
+      "updatedAt": "2025-11-02T00:43:03.104Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "690333d2ae74703f42cd0e7e",
+      "chartId": "stats.reportImage1",
+      "title": "[stats.reportImage1]",
+      "type": "image",
+      "order": 53,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage1]",
+          "formula": "[stats.reportImage1]",
+          "color": "#8d2878",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T09:45:54.571Z",
+      "updatedAt": "2025-11-02T17:35:24.727Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16"
+    },
+    {
+      "_id": "6903445bd831049fe40942c2",
+      "chartId": "stats.reportText1",
+      "title": "[stats.reportText1]",
+      "type": "text",
+      "order": 54,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText1]",
+          "formula": "[stats.reportText1]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T10:56:27.227Z",
+      "updatedAt": "2025-10-30T10:56:27.227Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69034a087b0d0677b1b25bd5",
+      "chartId": "stats.reportImage2",
+      "title": "[stats.reportImage2]",
+      "type": "image",
+      "order": 55,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage2]",
+          "formula": "[stats.reportImage2]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T11:20:40.559Z",
+      "updatedAt": "2025-11-02T17:26:25.864Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69034a1e7b0d0677b1b25bd6",
+      "chartId": "stats.reportImage3",
+      "title": "[stats.reportImage3]",
+      "type": "image",
+      "order": 56,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage3]",
+          "formula": "[stats.reportImage3]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T11:21:02.872Z",
+      "updatedAt": "2025-11-02T19:00:21.768Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9"
+    },
+    {
+      "_id": "69034a51838764a82c20fae2",
+      "chartId": "stats.reportText2",
+      "title": "[stats.reportText2]",
+      "type": "text",
+      "order": 57,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText2]",
+          "formula": "[stats.reportText2]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T11:21:53.500Z",
+      "updatedAt": "2025-10-30T13:41:38.828Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69034a64838764a82c20fae3",
+      "chartId": "stats.reportText3",
+      "title": "[stats.reportText3]",
+      "type": "text",
+      "order": 58,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText3]",
+          "formula": "[stats.reportText3]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T11:22:12.255Z",
+      "updatedAt": "2025-10-30T13:41:29.693Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036acd46e47d17e299a08c",
+      "chartId": "stats.reportText4",
+      "title": "[stats.reportText4]",
+      "type": "text",
+      "order": 59,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText4]",
+          "formula": "[stats.reportText4]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:40:29.088Z",
+      "updatedAt": "2025-10-30T13:40:29.088Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036adc46e47d17e299a08d",
+      "chartId": "stats.reportText5",
+      "title": "[stats.reportText5]",
+      "type": "text",
+      "order": 60,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText5]",
+          "formula": "[stats.reportText5]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:40:44.539Z",
+      "updatedAt": "2025-10-30T13:41:11.987Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036aeb46e47d17e299a08e",
+      "chartId": "stats.reportText6",
+      "title": "[stats.reportText6]",
+      "type": "text",
+      "order": 61,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText6]",
+          "formula": "[stats.reportText6]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:40:59.463Z",
+      "updatedAt": "2025-10-30T13:41:20.985Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036b2c46e47d17e299a08f",
+      "chartId": "stats.reportText7",
+      "title": "[stats.reportText7]",
+      "type": "text",
+      "order": 62,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText7]",
+          "formula": "[stats.reportText7]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:42:04.301Z",
+      "updatedAt": "2025-10-30T13:42:04.301Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036b3f46e47d17e299a090",
+      "chartId": "stats.reportText8",
+      "title": "[stats.reportText8]",
+      "type": "text",
+      "order": 63,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText8]",
+          "formula": "[stats.reportText8]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:42:23.098Z",
+      "updatedAt": "2025-10-30T13:42:23.098Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036b7346e47d17e299a091",
+      "chartId": "stats.reportText9",
+      "title": "[stats.reportText9]",
+      "type": "text",
+      "order": 64,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText9]",
+          "formula": "[stats.reportText9]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:43:15.275Z",
+      "updatedAt": "2025-10-30T13:43:15.275Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036b86f7daf64629cb6b81",
+      "chartId": "stats.reportText10",
+      "title": "[stats.reportText10]",
+      "type": "text",
+      "order": 65,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportText10]",
+          "formula": "[stats.reportText10]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:43:34.706Z",
+      "updatedAt": "2025-10-30T13:43:34.706Z",
+      "createdBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036baaf7daf64629cb6b82",
+      "chartId": "stats.reportImage4",
+      "title": "[stats.reportImage4]",
+      "type": "image",
+      "order": 66,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage4]",
+          "formula": "[stats.reportImage4]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:44:10.288Z",
+      "updatedAt": "2025-11-02T17:47:57.935Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69036bbef7daf64629cb6b83",
+      "chartId": "stats.reportImage5",
+      "title": "[stats.reportImage5]",
+      "type": "image",
+      "order": 67,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage5]",
+          "formula": "[stats.reportImage5]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T13:44:30.653Z",
+      "updatedAt": "2025-11-02T19:04:36.385Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9"
+    },
+    {
+      "_id": "69037007510b4d5645d9eb54",
+      "chartId": "stats.reportImage6",
+      "title": "[stats.reportImage6]",
+      "type": "image",
+      "order": 68,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage6]",
+          "formula": "[stats.reportImage6]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T14:02:47.196Z",
+      "updatedAt": "2025-11-02T17:44:56.686Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "1:1"
+    },
+    {
+      "_id": "6903702705f42756d189698a",
+      "chartId": "stats.reportImage7",
+      "title": "[stats.reportImage7]",
+      "type": "image",
+      "order": 69,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage7]",
+          "formula": "[stats.reportImage7]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T14:03:19.714Z",
+      "updatedAt": "2025-11-02T17:51:34.695Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6903703a05f42756d189698b",
+      "chartId": "stats.reportImage8",
+      "title": "[stats.reportImage8]",
+      "type": "image",
+      "order": 70,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage8]",
+          "formula": "[stats.reportImage8]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T14:03:38.602Z",
+      "updatedAt": "2025-11-02T17:51:41.948Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16"
+    },
+    {
+      "_id": "6903704905f42756d189698c",
+      "chartId": "stats.reportImage9",
+      "title": "[stats.reportImage9]",
+      "type": "image",
+      "order": 71,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage9]",
+          "formula": "[stats.reportImage9]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T14:03:53.242Z",
+      "updatedAt": "2025-11-02T17:51:49.751Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16"
+    },
+    {
+      "_id": "690370a7510b4d5645d9eb55",
+      "chartId": "stats.reportImage10",
+      "title": "[stats.reportImage10]",
+      "type": "image",
+      "order": 72,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "[stats.reportImage10]",
+          "formula": "[stats.reportImage10]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-30T14:05:27.184Z",
+      "updatedAt": "2025-11-02T17:26:19.814Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "9:16"
+    },
+    {
+      "_id": "6904abf6411747d6603678f9",
+      "chartId": "merchandise-sales",
+      "title": "Merchandise Sales",
+      "type": "bar",
+      "order": 5,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "possible merch sales",
+      "emoji": "🛍️",
+      "elements": [
+        {
+          "id": "jersey-sales",
+          "label": "Jersey",
+          "formula": "[stats.jersey] * [PARAM:jerseyPrice]",
+          "color": "#7b68ee",
+          "description": "Jersey sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "scarf-sales",
+          "label": "Scarf",
+          "formula": "[stats.scarf] * [PARAM:scarfPrice]",
+          "color": "#ff6b9d",
+          "description": "Scarf sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "flags-sales",
+          "label": "Flags",
+          "formula": "[stats.flags] * [PARAM:flagsPrice]",
+          "color": "#ffa726",
+          "description": "Flag sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "cap-sales",
+          "label": "Baseball Cap",
+          "formula": "[stats.baseballCap] * [PARAM:capPrice]",
+          "color": "#66bb6a",
+          "description": "Baseball cap sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "other-sales",
+          "label": "Other",
+          "formula": "[stats.other] * [PARAM:otherPrice]",
+          "color": "#ef5350",
+          "description": "Other merchandise sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-31T12:30:46.597Z",
+      "updatedAt": "2025-10-31T12:30:46.597Z",
+      "createdBy": "system-seed"
+    },
+    {
+      "_id": "6904abf6411747d6603678fa",
+      "chartId": "engagement",
+      "title": "Engagement",
+      "type": "bar",
+      "order": 7,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "Core Fan Team",
+      "elements": [
+        {
+          "id": "engaged",
+          "label": "Engaged",
+          "formula": "([stats.remoteFans] + [stats.stadium]) / [stats.eventAttendees] * 100",
+          "color": "#8b5cf6",
+          "description": "Fan Engagement %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "interactive",
+          "label": "Interactive",
+          "formula": "([stats.socialVisit] + [stats.eventValuePropositionVisited] + [stats.eventValuePropositionPurchases]) / ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 100",
+          "color": "#f59e0b",
+          "description": "Fan Interaction %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "front-runners",
+          "label": "Front-runners",
+          "formula": "[stats.merched] / ([stats.remoteFans] + [stats.stadium]) * 100",
+          "color": "#10b981",
+          "description": "Merched fans %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "fanaticals",
+          "label": "Fanaticals",
+          "formula": "([stats.flags] + [stats.scarf]) / [stats.merched] * 100",
+          "color": "#ef4444",
+          "description": "Flags & scarfs of merched %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "casuals",
+          "label": "Casuals",
+          "formula": "(([stats.remoteFans] + [stats.stadium]) - [stats.merched]) / ([stats.remoteFans] + [stats.stadium]) * 100",
+          "color": "#06b6d4",
+          "description": "Non-merched fans %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-31T12:30:46.597Z",
+      "updatedAt": "2025-10-31T12:40:13.490Z",
+      "createdBy": "system-seed",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6904abf6411747d6603678fb",
+      "chartId": "faces-per-image",
+      "title": "Fans per Image",
+      "type": "kpi",
+      "order": 8,
+      "isActive": true,
+      "emoji": "👀",
+      "elements": [
+        {
+          "id": "faces-per-image-value",
+          "label": "Average faces per approved image",
+          "formula": "([stats.female] + [stats.male]) / [stats.approvedImages]",
+          "color": "#8e2878",
+          "description": "Calculation from your totals: total faces by gender divided by images to show authentic reach per asset. Target audience: Brand owner, media planners, sponsorship sales. Quantify how many branded faces appear per image on average. Capture the multiplier effect for on-screen brand exposure.",
+          "formatting": {
+            "rounded": false
+          }
+        }
+      ],
+      "createdAt": "2025-10-31T12:30:46.597Z",
+      "updatedAt": "2025-10-31T13:39:19.050Z",
+      "createdBy": "system-seed",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "69068b0a666da24b06382aaf",
+      "chartId": "marketing-value-kpi",
+      "title": "Estimated Marketing Value",
+      "type": "kpi",
+      "order": 73,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Estimated value",
+          "formula": "[stats.male] * 10 + [stats.female] * 5",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        }
+      ],
+      "emoji": "🪙",
+      "subtitle": "Based on Industry standards in the EU",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-11-01T22:34:50.254Z",
+      "updatedAt": "2025-11-01T23:51:08.563Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69069b24666fcbf1b0f1b510",
+      "chartId": "marketing-value-chart",
+      "title": "Marketing Value Distribution",
+      "type": "bar",
+      "order": 74,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Brand Awareness",
+          "formula": "3.1",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element2",
+          "label": "Display Ads",
+          "formula": "2.8",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element3",
+          "label": "Fan Engagement ",
+          "formula": "1.6",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element4",
+          "label": "Value Proposition",
+          "formula": "1.4",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element5",
+          "label": "Social Impact",
+          "formula": "1.1",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "emoji": "🤖",
+      "subtitle": "Standards updated on 27 October 2025",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-11-01T23:43:32.083Z",
+      "updatedAt": "2025-11-02T00:14:15.395Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "69078bcaa46543e1ff209691",
+      "version": "1.0.3",
+      "lastUpdated": "2025-08-18T09:22:59.083Z",
+      "updatedBy": "system",
+      "algorithms": {
+        "merchandise": [
+          {
+            "id": "potential_sales",
+            "name": "Potential Merchandise Sales",
+            "description": "Calculate potential sales from non-merched fans",
+            "formula": "(totalFans - merchedFans) × potentialSaleValue",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "potentialSaleValue",
+                "name": "Potential Sale Value",
+                "type": "currency",
+                "value": 10,
+                "description": "Average merchandise sale value per fan (EUR)",
+                "min": 1,
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "engagement": [
+          {
+            "id": "core_fan_team",
+            "name": "Core Fan Team",
+            "description": "Highly engaged merchandise-wearing fans projected to stadium",
+            "formula": "(merchedFans / totalFans) × eventAttendees",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "eventAttendees",
+                "name": "Event Attendees",
+                "type": "number",
+                "value": 0,
+                "description": "Total number of people who attended the event",
+                "min": 0
+              }
+            ]
+          },
+          {
+            "id": "fan_engagement",
+            "name": "Fan Engagement",
+            "description": "Percentage of attendees who became fans",
+            "formula": "(totalFans / eventAttendees) × 100",
+            "enabled": true,
+            "parameters": []
+          },
+          {
+            "id": "fan_interaction",
+            "name": "Fan Interaction",
+            "description": "Social media and value prop interaction rate",
+            "formula": "((socialMediaVisits + valueProp) / totalImages) × 100",
+            "enabled": true,
+            "parameters": []
+          },
+          {
+            "id": "front_runners",
+            "name": "Front-runners",
+            "description": "Percentage of fans with merchandise",
+            "formula": "(merchedFans / totalFans) × 100",
+            "enabled": true,
+            "parameters": []
+          },
+          {
+            "id": "fanaticals",
+            "name": "Fanaticals",
+            "description": "Percentage of merched fans with flags/scarfs",
+            "formula": "((flags + scarfs) / merchedFans) × 100",
+            "enabled": true,
+            "parameters": []
+          },
+          {
+            "id": "casuals",
+            "name": "Casuals",
+            "description": "Percentage of fans without merchandise",
+            "formula": "((totalFans - merchedFans) / totalFans) × 100",
+            "enabled": true,
+            "parameters": []
+          }
+        ],
+        "value": [
+          {
+            "id": "cpm_value",
+            "name": "CPM (Cost Per Mille)",
+            "description": "Value proposition click value",
+            "formula": "valuePropVisited × cpmRate",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "cpmRate",
+                "name": "CPM Rate",
+                "type": "currency",
+                "value": 15,
+                "description": "Cost per thousand impressions (EUR)",
+                "min": 1,
+                "max": 100
+              }
+            ]
+          },
+          {
+            "id": "edm_value",
+            "name": "eDM (Electronic Direct Mail)",
+            "description": "Email marketing value from images",
+            "formula": "totalImages × edmRate",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "edmRate",
+                "name": "eDM Rate",
+                "type": "currency",
+                "value": 5,
+                "description": "Email marketing value per image (EUR)",
+                "min": 1,
+                "max": 50
+              }
+            ]
+          },
+          {
+            "id": "ads_value",
+            "name": "Advertisement Value",
+            "description": "Advertisement value from fan engagement",
+            "formula": "totalFans × adsRate",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "adsRate",
+                "name": "Ads Rate",
+                "type": "currency",
+                "value": 3,
+                "description": "Advertisement value per fan (EUR)",
+                "min": 1,
+                "max": 20
+              }
+            ]
+          },
+          {
+            "id": "u40_engagement",
+            "name": "Under 40 Engagement",
+            "description": "Young demographic engagement value",
+            "formula": "under40Fans × u40Rate",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "u40Rate",
+                "name": "U40 Rate",
+                "type": "currency",
+                "value": 4,
+                "description": "Under 40 engagement value (EUR)",
+                "min": 1,
+                "max": 25
+              }
+            ]
+          },
+          {
+            "id": "branding_value",
+            "name": "Branding Value",
+            "description": "Brand awareness from visitor traffic",
+            "formula": "totalVisitors × brandingRate",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "brandingRate",
+                "name": "Branding Rate",
+                "type": "currency",
+                "value": 1,
+                "description": "Brand awareness value per visitor (EUR)",
+                "min": 0.1,
+                "max": 10
+              }
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "qr_short_url_weight",
+            "name": "QR + Short URL Weight",
+            "description": "Combined weight for QR codes and short URLs",
+            "formula": "(visitQrCode + visitShortUrl) × qrWeight",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "qrWeight",
+                "name": "QR Weight",
+                "type": "number",
+                "value": 1,
+                "description": "Weight multiplier for QR and short URL visits",
+                "min": 0.1,
+                "max": 5
+              }
+            ]
+          },
+          {
+            "id": "other_sources_weight",
+            "name": "Other Sources Weight",
+            "description": "Weight for web and other traffic sources",
+            "formula": "visitWeb × otherWeight",
+            "enabled": true,
+            "parameters": [
+              {
+                "key": "otherWeight",
+                "name": "Other Weight",
+                "type": "number",
+                "value": 1,
+                "description": "Weight multiplier for other visit sources",
+                "min": 0.1,
+                "max": 5
+              }
+            ]
+          }
+        ]
+      },
+      "migratedFrom": "chartConfig",
+      "migratedAt": "2025-11-02T16:50:18.992Z"
+    },
+    {
+      "_id": "69078bcba46543e1ff209692",
+      "chartId": "total-ad-value-euro",
+      "title": "Total Ad Value",
+      "type": "value",
+      "emoji": "💰",
+      "description": "Marketing ROI breakdown across email, social, stadium, and premium channels",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "€",
+        "suffix": ""
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "€",
+        "suffix": ""
+      },
+      "elements": [
+        {
+          "id": "email-value",
+          "label": "Email",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:cpmEmailOptin]",
+          "color": "#3b82f6",
+          "description": "Email opt-in value based on total images captured",
+          "parameters": {
+            "cpmEmailOptin": {
+              "value": 4.87,
+              "label": "Email Opt-in CPM",
+              "description": "€4.87 avg market cost per email opt-in in Europe, 2025",
+              "unit": "EUR"
+            }
+          }
+        },
+        {
+          "id": "social-value",
+          "label": "Social",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:exposureRatio] * [PARAM:sharedImages] * [PARAM:avgViews] * [PARAM:cpmSocialOrganic] / 1000",
+          "color": "#8b5cf6",
+          "description": "Social media organic reach value",
+          "parameters": {
+            "exposureRatio": {
+              "value": 0.35,
+              "label": "Exposure Ratio",
+              "description": "Percentage of images shared on social media",
+              "unit": "multiplier"
+            },
+            "sharedImages": {
+              "value": 20,
+              "label": "Shared Images",
+              "description": "Average number of times each image is shared",
+              "unit": "count"
+            },
+            "avgViews": {
+              "value": 300,
+              "label": "Avg Views per Share",
+              "description": "Average views per social media share",
+              "unit": "count"
+            },
+            "cpmSocialOrganic": {
+              "value": 14.5,
+              "label": "Social Organic CPM",
+              "description": "€14.50 CPM for organic social media impressions",
+              "unit": "EUR"
+            }
+          }
+        },
+        {
+          "id": "stadium-value",
+          "label": "Stadium",
+          "formula": "[SEYUSTADIUMFANS] * [PARAM:cpmStadiumAd]",
+          "color": "#10b981",
+          "description": "In-stadium advertising exposure value",
+          "parameters": {
+            "cpmStadiumAd": {
+              "value": 6,
+              "label": "Stadium Ad CPM",
+              "description": "€6.00 CPM for in-stadium ad exposure",
+              "unit": "EUR"
+            }
+          }
+        },
+        {
+          "id": "premium-value",
+          "label": "Premium",
+          "formula": "([SEYUGENALPHAFANS] + [SEYUGENYZFANS]) * [PARAM:premiumContactValue]",
+          "color": "#f59e0b",
+          "description": "Premium youth demographic contact value",
+          "parameters": {
+            "premiumContactValue": {
+              "value": 2.14,
+              "label": "Premium Contact Value",
+              "description": "€2.14 premium per Gen Alpha/YZ contact",
+              "unit": "EUR"
+            }
+          }
+        },
+        {
+          "id": "reoptin-value",
+          "label": "Re-optin",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * [PARAM:exposureRatio] * [PARAM:cpmEmailAddon]",
+          "color": "#ec4899",
+          "description": "Additional email re-engagement value",
+          "parameters": {
+            "exposureRatio": {
+              "value": 0.35,
+              "label": "Email Open Rate",
+              "description": "35% average email open rate",
+              "unit": "multiplier"
+            },
+            "cpmEmailAddon": {
+              "value": 1.07,
+              "label": "Email Addon CPM",
+              "description": "€1.07 CPM for additional email opens",
+              "unit": "EUR"
+            }
+          }
+        }
+      ],
+      "order": 100,
+      "active": true,
+      "category": "financial",
+      "createdAt": "2025-10-31T10:38:02.914Z",
+      "updatedAt": "2025-10-31T10:38:02.916Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.092Z"
+    },
+    {
+      "_id": "69078bcba46543e1ff209693",
+      "chartId": "revenue-streams-euro",
+      "title": "Revenue Streams",
+      "type": "value",
+      "emoji": "💵",
+      "description": "Total revenue breakdown: merchandise, tickets, and partnerships",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "€",
+        "suffix": ""
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "€",
+        "suffix": ""
+      },
+      "elements": [
+        {
+          "id": "merch-revenue",
+          "label": "Merchandise",
+          "formula": "[SEYUMERCHEDFANS] * 30",
+          "color": "#3b82f6",
+          "description": "Merchandise revenue (€30 avg per fan)"
+        },
+        {
+          "id": "ticket-revenue",
+          "label": "Tickets",
+          "formula": "[SEYUATTENDEES] * 25",
+          "color": "#10b981",
+          "description": "Ticket sales revenue (€25 avg per ticket)"
+        },
+        {
+          "id": "food-beverage",
+          "label": "Food & Beverage",
+          "formula": "[SEYUATTENDEES] * 15",
+          "color": "#f59e0b",
+          "description": "Food and beverage revenue (€15 avg per attendee)"
+        },
+        {
+          "id": "parking",
+          "label": "Parking",
+          "formula": "[SEYUATTENDEES] * 0.4 * 10",
+          "color": "#8b5cf6",
+          "description": "Parking revenue (40% drive, €10 per car)"
+        },
+        {
+          "id": "sponsorship",
+          "label": "Sponsorship",
+          "formula": "[SEYUTOTALFANS] * 2",
+          "color": "#ec4899",
+          "description": "Sponsorship value (€2 per fan impression)"
+        }
+      ],
+      "order": 101,
+      "active": true,
+      "category": "financial",
+      "createdAt": "2025-10-31T10:38:03.007Z",
+      "updatedAt": "2025-10-31T10:38:03.007Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.119Z"
+    },
+    {
+      "_id": "69078bcba46543e1ff209694",
+      "chartId": "fan-engagement-score",
+      "title": "Fan Engagement Score",
+      "type": "value",
+      "emoji": "⭐",
+      "description": "Multi-factor fan engagement scoring system",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " pts"
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " pts"
+      },
+      "elements": [
+        {
+          "id": "photo-engagement",
+          "label": "Photo",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 10",
+          "color": "#3b82f6",
+          "description": "Photo capture engagement (10 pts per image)"
+        },
+        {
+          "id": "merch-engagement",
+          "label": "Merchandise",
+          "formula": "[SEYUMERCHEDFANS] * 50",
+          "color": "#10b981",
+          "description": "Merchandise purchase engagement (50 pts per fan)"
+        },
+        {
+          "id": "social-engagement",
+          "label": "Social",
+          "formula": "[SEYUSOCIALVISIT] * 20",
+          "color": "#8b5cf6",
+          "description": "Social media engagement (20 pts per visit)"
+        },
+        {
+          "id": "repeat-engagement",
+          "label": "Repeat",
+          "formula": "[SEYUQRCODEVISIT] * 30",
+          "color": "#f59e0b",
+          "description": "Repeat visit engagement (30 pts per QR scan)"
+        },
+        {
+          "id": "referral-engagement",
+          "label": "Referral",
+          "formula": "[SEYUSHORTURLVISIT] * 25",
+          "color": "#ec4899",
+          "description": "Referral engagement (25 pts per link click)"
+        }
+      ],
+      "order": 102,
+      "active": true,
+      "category": "engagement",
+      "createdAt": "2025-10-31T10:38:03.067Z",
+      "updatedAt": "2025-10-31T10:38:03.067Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.146Z"
+    },
+    {
+      "_id": "69078bcba46543e1ff209695",
+      "chartId": "geographic-reach",
+      "title": "Geographic Reach",
+      "type": "value",
+      "emoji": "🌍",
+      "description": "Fan distribution across geographic regions",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " fans"
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " fans"
+      },
+      "elements": [
+        {
+          "id": "local-fans",
+          "label": "Local",
+          "formula": "[SEYUSTADIUMFANS] * 0.6",
+          "color": "#3b82f6",
+          "description": "Local city fans (60% of stadium attendance)"
+        },
+        {
+          "id": "regional-fans",
+          "label": "Regional",
+          "formula": "[SEYUSTADIUMFANS] * 0.25",
+          "color": "#10b981",
+          "description": "Regional fans (25% of stadium attendance)"
+        },
+        {
+          "id": "national-fans",
+          "label": "National",
+          "formula": "[SEYUSTADIUMFANS] * 0.1",
+          "color": "#f59e0b",
+          "description": "National fans (10% of stadium attendance)"
+        },
+        {
+          "id": "international-fans",
+          "label": "International",
+          "formula": "[SEYUSTADIUMFANS] * 0.05",
+          "color": "#8b5cf6",
+          "description": "International fans (5% of stadium attendance)"
+        },
+        {
+          "id": "remote-global",
+          "label": "Remote Global",
+          "formula": "[SEYUREMOTEFANS]",
+          "color": "#ec4899",
+          "description": "Remote fans engaging globally"
+        }
+      ],
+      "order": 103,
+      "active": true,
+      "category": "demographics",
+      "createdAt": "2025-10-31T10:38:03.126Z",
+      "updatedAt": "2025-10-31T10:38:03.126Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.189Z"
+    },
+    {
+      "_id": "69078bcba46543e1ff209696",
+      "chartId": "partnership-value-usd",
+      "title": "Partnership Value",
+      "type": "value",
+      "emoji": "🤝",
+      "description": "Multi-channel partnership value calculation (USD)",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "$",
+        "suffix": ""
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "$",
+        "suffix": ""
+      },
+      "elements": [
+        {
+          "id": "brand-exposure",
+          "label": "Brand Exposure",
+          "formula": "[SEYUTOTALFANS] * 1.5",
+          "color": "#3b82f6",
+          "description": "Brand exposure value ($1.50 per fan)"
+        },
+        {
+          "id": "digital-reach",
+          "label": "Digital Reach",
+          "formula": "([SEYUREMOTEIMAGES] + [SEYUHOSTESSIMAGES] + [SEYUSELFIES]) * 3",
+          "color": "#10b981",
+          "description": "Digital content reach value ($3 per image)"
+        },
+        {
+          "id": "event-sponsorship",
+          "label": "Event Sponsorship",
+          "formula": "[SEYUATTENDEES] * 2",
+          "color": "#f59e0b",
+          "description": "Event-level sponsorship value ($2 per attendee)"
+        },
+        {
+          "id": "merch-visibility",
+          "label": "Merchandise Visibility",
+          "formula": "[SEYUMERCHEDFANS] * 5",
+          "color": "#8b5cf6",
+          "description": "Branded merchandise visibility value ($5 per fan)"
+        },
+        {
+          "id": "media-coverage",
+          "label": "Media Coverage",
+          "formula": "[SEYUSOCIALVISIT] * 4",
+          "color": "#ec4899",
+          "description": "Media and social coverage value ($4 per social visit)"
+        }
+      ],
+      "order": 104,
+      "active": true,
+      "category": "financial",
+      "createdAt": "2025-10-31T10:38:03.189Z",
+      "updatedAt": "2025-10-31T10:38:03.189Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.214Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:49.482Z"
+}

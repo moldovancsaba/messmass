@@ -1,0 +1,63 @@
+{
+  "name": "page_styles_enhanced",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "68fa2c861d5fdc1dc6e7e8b3",
+      "name": "stat view",
+      "description": "Clean, professional default theme",
+      "isGlobalDefault": true,
+      "pageBackground": {
+        "type": "solid",
+        "solidColor": "#141837"
+      },
+      "heroBackground": {
+        "type": "solid",
+        "gradientAngle": 135,
+        "gradientStops": [
+          {
+            "color": "#ebebeb",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ],
+        "solidColor": "#ebebeb"
+      },
+      "contentBoxBackground": {
+        "type": "solid",
+        "solidColor": "#ffffff",
+        "opacity": 0.8
+      },
+      "typography": {
+        "fontFamily": "montserrat",
+        "primaryTextColor": "#8d2878",
+        "secondaryTextColor": "#8c2877",
+        "headingColor": "#8d2878"
+      },
+      "colorScheme": {
+        "primary": "#9b0a2d",
+        "secondary": "#4e0504",
+        "success": "#f8b807",
+        "warning": "#f26601",
+        "error": "#ff2600"
+      },
+      "createdAt": "2025-10-23T13:24:22.178Z",
+      "updatedAt": "2025-10-30T15:58:55.775Z",
+      "createdBy": "admin",
+      "projectIds": []
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:51.169Z"
+}

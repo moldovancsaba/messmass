@@ -1,0 +1,51 @@
+{
+  "name": "chart_formatting_defaults",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "690495b733a752495870d5bb",
+      "defaults": {
+        "rounded": true,
+        "prefix": "€",
+        "suffix": "",
+        "visible": true
+      },
+      "availablePrefixes": [
+        "€",
+        "$",
+        "£",
+        "¥",
+        "CHF",
+        "R$",
+        "₹",
+        "₽",
+        "kr",
+        "¢"
+      ],
+      "availableSuffixes": [
+        "%",
+        " pts",
+        " fans",
+        " units",
+        " goals",
+        " km",
+        " m",
+        " items",
+        " count",
+        "x"
+      ],
+      "createdAt": "2025-10-31T10:55:51.772Z",
+      "updatedAt": "2025-10-31T10:55:51.775Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:50.755Z"
+}

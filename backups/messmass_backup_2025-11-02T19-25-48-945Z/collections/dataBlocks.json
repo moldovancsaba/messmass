@@ -1,0 +1,288 @@
+{
+  "name": "dataBlocks",
+  "documentCount": 11,
+  "documents": [
+    {
+      "_id": "68bc680773eff5a9fd73df05",
+      "name": "Core Report",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "gender-distribution",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "image-density",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "age-groups",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 20,
+      "isActive": true,
+      "createdAt": "2025-09-06T16:57:43.050Z",
+      "updatedAt": "2025-11-02T18:52:03.267Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69023cedfa020c8d5318a29d",
+      "name": "Overview",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "engagement-rate",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "marketing-value-kpi",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "marketing-value-chart",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 10,
+      "isActive": true,
+      "createdAt": "2025-10-29T16:12:29.947Z",
+      "updatedAt": "2025-11-01T23:49:23.772Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69034a7a95fa6ce8520f37dc",
+      "name": "Seyu Data Dashboard",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "stats.reportImage1",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportImage2",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "stats.reportImage10",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 0,
+      "isActive": true,
+      "createdAt": "2025-10-30T11:22:34.431Z",
+      "updatedAt": "2025-11-02T17:24:27.957Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69036c6af7daf64629cb6b84",
+      "name": "Future Opportunities",
+      "gridColumns": 2,
+      "charts": [
+        {
+          "chartId": "stats.reportText2",
+          "width": 1,
+          "order": 0
+        }
+      ],
+      "order": 40,
+      "isActive": true,
+      "createdAt": "2025-10-30T13:47:22.434Z",
+      "updatedAt": "2025-11-02T18:53:04.971Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69036f35603a88659c08014b",
+      "name": "Thank you!",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "stats.reportText3",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportImage6",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 50,
+      "isActive": true,
+      "createdAt": "2025-10-30T13:59:17.909Z",
+      "updatedAt": "2025-11-02T19:05:19.566Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69037a4853813a93b1809be0",
+      "name": "Happy Fans",
+      "gridColumns": 4,
+      "charts": [
+        {
+          "chartId": "stats.reportImage7",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportImage8",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "stats.reportImage9",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 35,
+      "isActive": true,
+      "createdAt": "2025-10-30T14:46:32.349Z",
+      "updatedAt": "2025-10-31T14:05:59.050Z",
+      "showTitle": true
+    },
+    {
+      "_id": "6903c78d340f78b5a6742bd0",
+      "name": "Future Opportunities II",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "stats.reportImage4",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportImage5",
+          "width": 3,
+          "order": 1
+        }
+      ],
+      "order": 45,
+      "isActive": true,
+      "createdAt": "2025-10-30T20:16:13.267Z",
+      "updatedAt": "2025-11-02T19:04:57.070Z",
+      "showTitle": false
+    },
+    {
+      "_id": "6903d7059ab67b6c5ba48d03",
+      "name": "Core Report III",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "engagement-rate",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "merchandise-distribution",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "merch-penetration",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 30,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-10-30T21:22:13.594Z",
+      "updatedAt": "2025-11-02T18:52:43.861Z"
+    },
+    {
+      "_id": "6903d7d69ab67b6c5ba48d04",
+      "name": "Core Report II",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "bitly-top-country",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fans-location",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "faces-per-image",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 25,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-10-30T21:25:42.988Z",
+      "updatedAt": "2025-10-30T21:31:22.520Z"
+    },
+    {
+      "_id": "6904790f4aad3c506416a0b7",
+      "name": "Overview II",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "unique-users",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "bitly-top-countries",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "bitly-top-country",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 12,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-10-31T08:53:35.063Z",
+      "updatedAt": "2025-11-02T00:41:12.162Z"
+    },
+    {
+      "_id": "69047b814aad3c506416a0b8",
+      "name": "Overview III",
+      "gridColumns": 2,
+      "charts": [
+        {
+          "chartId": "stats.reportText1",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportImage3",
+          "width": 2,
+          "order": 1
+        }
+      ],
+      "order": 14,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-10-31T09:04:01.149Z",
+      "updatedAt": "2025-11-02T19:00:59.114Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:52.154Z"
+}

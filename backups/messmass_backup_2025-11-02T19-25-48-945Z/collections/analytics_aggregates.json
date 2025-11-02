@@ -1,0 +1,4243 @@
+{
+  "name": "analytics_aggregates",
+  "documentCount": 45,
+  "documents": [
+    {
+      "_id": "68f4cba37b7bd65a4ae4a352",
+      "projectId": "68b01f835eb842d4f6c9fd1f",
+      "eventDate": "2025-09-09",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 2531,
+        "remoteFans": 82,
+        "stadium": 2449,
+        "engagementRate": 4.117254729718738,
+        "remoteQuality": 0.45121951219512196,
+        "stadiumQuality": 0,
+        "selfieRate": 37.57408139075464,
+        "coreFanTeam": 36990.66732516792,
+        "fanToAttendeeConversion": 4.117254729718738
+      },
+      "merchMetrics": {
+        "totalMerched": 1523,
+        "penetrationRate": 60.17384433030423,
+        "byType": {
+          "jersey": 1236,
+          "scarf": 505,
+          "flags": 24,
+          "baseballCap": 26,
+          "other": 10
+        },
+        "merchToAttendee": 0.024775104517430417,
+        "diversityIndex": 5,
+        "highValueFans": 1741,
+        "casualFans": 36
+      },
+      "adMetrics": {
+        "totalImpressions": 296400,
+        "socialValue": 85956,
+        "emailValue": 0,
+        "totalROI": 85956,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 33.96128012643224,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 836,
+          "male": 1695
+        },
+        "ageGroups": {
+          "genAlpha": 558,
+          "genYZ": 743,
+          "genX": 770,
+          "boomer": 460
+        },
+        "youthIndex": 51.40260766495456,
+        "genderBalance": 33.93915448439352,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 61473,
+        "remoteImages": 37,
+        "hostessImages": 0,
+        "selfies": 951,
+        "approvedImages": 959,
+        "rejectedImages": 28
+      },
+      "createdAt": "2025-10-19T11:29:39.053Z",
+      "updatedAt": "2025-10-19T11:29:39.053Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a353",
+      "projectId": "68a756589645c258180dc290",
+      "eventDate": "2025-02-24",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 1069,
+        "remoteFans": 337,
+        "stadium": 732,
+        "engagementRate": 1.876590889142456,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 23.666978484565014,
+        "coreFanTeam": 26377.619270346117,
+        "fanToAttendeeConversion": 1.876590889142456
+      },
+      "merchMetrics": {
+        "totalMerched": 495,
+        "penetrationRate": 46.30495790458372,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.008689546212586677,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 177000,
+        "socialValue": 51330,
+        "emailValue": 0,
+        "totalROI": 51330,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 48.01683816651076,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 455,
+          "male": 614
+        },
+        "ageGroups": {
+          "genAlpha": 725,
+          "genYZ": 344,
+          "genX": 0,
+          "boomer": 0
+        },
+        "youthIndex": 100,
+        "genderBalance": 14.873713751169317,
+        "diversityIndex": 4
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 56965,
+        "remoteImages": 337,
+        "hostessImages": 0,
+        "selfies": 253,
+        "approvedImages": 590,
+        "rejectedImages": 106
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a354",
+      "projectId": "68a744cc129ce4f6890aa58e",
+      "eventDate": "2025-02-21",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 46,
+        "remoteFans": 1,
+        "stadium": 45,
+        "engagementRate": 0.9040880503144654,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 28.26086956521739,
+        "coreFanTeam": 1327.304347826087,
+        "fanToAttendeeConversion": 0.9040880503144654
+      },
+      "merchMetrics": {
+        "totalMerched": 12,
+        "penetrationRate": 26.08695652173913,
+        "byType": {
+          "jersey": 1,
+          "scarf": 5,
+          "flags": 2,
+          "baseballCap": 6,
+          "other": 0
+        },
+        "merchToAttendee": 0.0023584905660377358,
+        "diversityIndex": 4,
+        "highValueFans": 6,
+        "casualFans": 6
+      },
+      "adMetrics": {
+        "totalImpressions": 4200,
+        "socialValue": 1218,
+        "emailValue": 0,
+        "totalROI": 1218,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 26.47826086956522,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 10,
+          "male": 36
+        },
+        "ageGroups": {
+          "genAlpha": 15,
+          "genYZ": 13,
+          "genX": 11,
+          "boomer": 7
+        },
+        "youthIndex": 60.86956521739131,
+        "genderBalance": 56.52173913043478,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5088,
+        "remoteImages": 1,
+        "hostessImages": 0,
+        "selfies": 13,
+        "approvedImages": 14,
+        "rejectedImages": 12
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a355",
+      "projectId": "68ac160fb0e2fcaca4608e06",
+      "eventDate": "2025-03-30",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 307,
+        "remoteFans": 157,
+        "stadium": 150,
+        "engagementRate": 2.967904098994586,
+        "remoteQuality": 0.006369426751592357,
+        "stadiumQuality": 0,
+        "selfieRate": 42.671009771986974,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 2.967904098994586
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 39600,
+        "socialValue": 11484,
+        "emailValue": 0,
+        "totalROI": 11484,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 37.4071661237785,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 113,
+          "male": 194
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 0,
+          "genX": 59,
+          "boomer": 25
+        },
+        "youthIndex": 0,
+        "genderBalance": 26.384364820846905,
+        "diversityIndex": 4
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 10344,
+        "remoteImages": 1,
+        "hostessImages": 0,
+        "selfies": 131,
+        "approvedImages": 132,
+        "rejectedImages": 11
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a356",
+      "projectId": "68a310655f297aa093437b1d",
+      "eventDate": "2025-08-06",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 71,
+        "remoteFans": 7,
+        "stadium": 64,
+        "engagementRate": 50.71428571428571,
+        "remoteQuality": 0.2857142857142857,
+        "stadiumQuality": 0.421875,
+        "selfieRate": 12.676056338028168,
+        "coreFanTeam": 33.52112676056338,
+        "fanToAttendeeConversion": 50.71428571428571
+      },
+      "merchMetrics": {
+        "totalMerched": 17,
+        "penetrationRate": 23.943661971830984,
+        "byType": {
+          "jersey": 14,
+          "scarf": 1,
+          "flags": 2,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.12142857142857143,
+        "diversityIndex": 3,
+        "highValueFans": 15,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 11400,
+        "socialValue": 3306,
+        "emailValue": 0,
+        "totalROI": 3306,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 46.563380281690144,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 39,
+          "male": 26
+        },
+        "ageGroups": {
+          "genAlpha": 18,
+          "genYZ": 26,
+          "genX": 11,
+          "boomer": 10
+        },
+        "youthIndex": 67.6923076923077,
+        "genderBalance": 20,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 140,
+        "remoteImages": 2,
+        "hostessImages": 27,
+        "selfies": 9,
+        "approvedImages": 38,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a357",
+      "projectId": "68ad821bfedc121e45c50ca4",
+      "eventDate": "2025-07-02",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 234,
+        "remoteFans": 39,
+        "stadium": 195,
+        "engagementRate": 78,
+        "remoteQuality": 0.3076923076923077,
+        "stadiumQuality": 0,
+        "selfieRate": 20.51282051282051,
+        "coreFanTeam": 52.56410256410256,
+        "fanToAttendeeConversion": 78
+      },
+      "merchMetrics": {
+        "totalMerched": 41,
+        "penetrationRate": 17.52136752136752,
+        "byType": {
+          "jersey": 22,
+          "scarf": 7,
+          "flags": 17,
+          "baseballCap": 12,
+          "other": 12
+        },
+        "merchToAttendee": 0.13666666666666666,
+        "diversityIndex": 5,
+        "highValueFans": 29,
+        "casualFans": 24
+      },
+      "adMetrics": {
+        "totalImpressions": 18000,
+        "socialValue": 5220,
+        "emailValue": 0,
+        "totalROI": 5220,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 22.307692307692307,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 105,
+          "male": 129
+        },
+        "ageGroups": {
+          "genAlpha": 125,
+          "genYZ": 70,
+          "genX": 18,
+          "boomer": 21
+        },
+        "youthIndex": 83.33333333333334,
+        "genderBalance": 10.256410256410255,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 300,
+        "remoteImages": 12,
+        "hostessImages": 0,
+        "selfies": 48,
+        "approvedImages": 60,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a358",
+      "projectId": "68a744f5129ce4f6890aa58f",
+      "eventDate": "2025-02-21",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 146,
+        "remoteFans": 6,
+        "stadium": 140,
+        "engagementRate": 9.733333333333333,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 47.26027397260274,
+        "coreFanTeam": 842.4657534246576,
+        "fanToAttendeeConversion": 9.733333333333333
+      },
+      "merchMetrics": {
+        "totalMerched": 82,
+        "penetrationRate": 56.16438356164384,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.05466666666666667,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 20700,
+        "socialValue": 6003,
+        "emailValue": 0,
+        "totalROI": 6003,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 41.11643835616438,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 44,
+          "male": 102
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 131,
+          "genX": 9,
+          "boomer": 6
+        },
+        "youthIndex": 89.72602739726028,
+        "genderBalance": 39.726027397260275,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 1500,
+        "remoteImages": 0,
+        "hostessImages": 0,
+        "selfies": 69,
+        "approvedImages": 69,
+        "rejectedImages": 7
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a359",
+      "projectId": "68a836935648c43afa856c6d",
+      "eventDate": "2025-08-24",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 91,
+        "remoteFans": 18,
+        "stadium": 73,
+        "engagementRate": 3.82996632996633,
+        "remoteQuality": 0.05555555555555555,
+        "stadiumQuality": 0,
+        "selfieRate": 37.362637362637365,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 3.82996632996633
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 3,
+          "scarf": 1,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 2
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 3,
+        "highValueFans": 4,
+        "casualFans": 2
+      },
+      "adMetrics": {
+        "totalImpressions": 10500,
+        "socialValue": 3045,
+        "emailValue": 0,
+        "totalROI": 3045,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 33.46153846153846,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 16,
+          "male": 75
+        },
+        "ageGroups": {
+          "genAlpha": 16,
+          "genYZ": 61,
+          "genX": 11,
+          "boomer": 3
+        },
+        "youthIndex": 84.61538461538461,
+        "genderBalance": 64.83516483516483,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2376,
+        "remoteImages": 1,
+        "hostessImages": 0,
+        "selfies": 34,
+        "approvedImages": 64,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35a",
+      "projectId": "68ac2e3154d43f7d4ef56088",
+      "eventDate": "2025-05-17",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 31,
+        "remoteFans": 14,
+        "stadium": 17,
+        "engagementRate": 0.7040654099477629,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 35.483870967741936,
+        "coreFanTeam": 2698.6129032258063,
+        "fanToAttendeeConversion": 0.7040654099477629
+      },
+      "merchMetrics": {
+        "totalMerched": 19,
+        "penetrationRate": 61.29032258064516,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.004315239609357257,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 3300,
+        "socialValue": 957,
+        "emailValue": 0,
+        "totalROI": 957,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 30.870967741935484,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 9,
+          "male": 22
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 19,
+          "genX": 9,
+          "boomer": 3
+        },
+        "youthIndex": 61.29032258064516,
+        "genderBalance": 41.935483870967744,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 4403,
+        "remoteImages": 0,
+        "hostessImages": 0,
+        "selfies": 11,
+        "approvedImages": 12,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35b",
+      "projectId": "68ac20a3b0e2fcaca4608e0d",
+      "eventDate": "2025-04-27",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 155,
+        "remoteFans": 77,
+        "stadium": 78,
+        "engagementRate": 2.9882398303450937,
+        "remoteQuality": 0.06493506493506493,
+        "stadiumQuality": 0,
+        "selfieRate": 34.193548387096776,
+        "coreFanTeam": 4517.709677419355,
+        "fanToAttendeeConversion": 2.9882398303450937
+      },
+      "merchMetrics": {
+        "totalMerched": 135,
+        "penetrationRate": 87.09677419354838,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.026026604973973393,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 17400,
+        "socialValue": 5046,
+        "emailValue": 0,
+        "totalROI": 5046,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 32.55483870967742,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 34,
+          "male": 121
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 135,
+          "genX": 10,
+          "boomer": 10
+        },
+        "youthIndex": 87.09677419354838,
+        "genderBalance": 56.12903225806451,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5187,
+        "remoteImages": 5,
+        "hostessImages": 0,
+        "selfies": 53,
+        "approvedImages": 58,
+        "rejectedImages": 7
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35c",
+      "projectId": "68ac291d54d43f7d4ef56085",
+      "eventDate": "2025-05-10",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 180,
+        "remoteFans": 78,
+        "stadium": 102,
+        "engagementRate": 4.709576138147567,
+        "remoteQuality": 0.1794871794871795,
+        "stadiumQuality": 0,
+        "selfieRate": 41.66666666666667,
+        "coreFanTeam": 3057.6000000000004,
+        "fanToAttendeeConversion": 4.709576138147567
+      },
+      "merchMetrics": {
+        "totalMerched": 144,
+        "penetrationRate": 80,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.03767660910518053,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 26700,
+        "socialValue": 7743,
+        "emailValue": 0,
+        "totalROI": 7743,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 43.016666666666666,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 23,
+          "male": 157
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 144,
+          "genX": 19,
+          "boomer": 17
+        },
+        "youthIndex": 80,
+        "genderBalance": 74.44444444444444,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3822,
+        "remoteImages": 14,
+        "hostessImages": 0,
+        "selfies": 75,
+        "approvedImages": 89,
+        "rejectedImages": 18
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35d",
+      "projectId": "68ac3212dba998121e2543ef",
+      "eventDate": "2025-05-24",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 87,
+        "remoteFans": 40,
+        "stadium": 47,
+        "engagementRate": 3.0472854640980733,
+        "remoteQuality": 0.3,
+        "stadiumQuality": 0.5957446808510638,
+        "selfieRate": 54.02298850574713,
+        "coreFanTeam": 6333.505747126437,
+        "fanToAttendeeConversion": 3.0472854640980733
+      },
+      "merchMetrics": {
+        "totalMerched": 193,
+        "penetrationRate": 221.83908045977012,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.06760070052539405,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 26100,
+        "socialValue": 7569,
+        "emailValue": 0,
+        "totalROI": 7569,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 87,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 40,
+          "male": 211
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 193,
+          "genX": 35,
+          "boomer": 23
+        },
+        "youthIndex": 76.89243027888446,
+        "genderBalance": 68.12749003984064,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2855,
+        "remoteImages": 12,
+        "hostessImages": 28,
+        "selfies": 47,
+        "approvedImages": 119,
+        "rejectedImages": 11
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35e",
+      "projectId": "68a2fe668092da4a83ed58cc",
+      "eventDate": "2025-07-26",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 341,
+        "remoteFans": 0,
+        "stadium": 341,
+        "engagementRate": 7.957992998833138,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.1378299120234604,
+        "selfieRate": 1.1730205278592376,
+        "coreFanTeam": 263.8856304985337,
+        "fanToAttendeeConversion": 7.957992998833138
+      },
+      "merchMetrics": {
+        "totalMerched": 21,
+        "penetrationRate": 6.158357771260997,
+        "byType": {
+          "jersey": 15,
+          "scarf": 3,
+          "flags": 3,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.004900816802800466,
+        "diversityIndex": 3,
+        "highValueFans": 18,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 15600,
+        "socialValue": 4524,
+        "emailValue": 0,
+        "totalROI": 4524,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 13.266862170087977,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 55,
+          "male": 286
+        },
+        "ageGroups": {
+          "genAlpha": 90,
+          "genYZ": 224,
+          "genX": 14,
+          "boomer": 13
+        },
+        "youthIndex": 92.08211143695014,
+        "genderBalance": 67.74193548387096,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 4285,
+        "remoteImages": 1,
+        "hostessImages": 47,
+        "selfies": 4,
+        "approvedImages": 187,
+        "rejectedImages": 6
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a35f",
+      "projectId": "68ac1a16b0e2fcaca4608e09",
+      "eventDate": "2025-04-03",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 139,
+        "remoteFans": 0,
+        "stadium": 139,
+        "engagementRate": 8.6875,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 35.25179856115108,
+        "coreFanTeam": 1254.6762589928057,
+        "fanToAttendeeConversion": 8.6875
+      },
+      "merchMetrics": {
+        "totalMerched": 109,
+        "penetrationRate": 78.41726618705036,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.068125,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 14700,
+        "socialValue": 4263,
+        "emailValue": 0,
+        "totalROI": 4263,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 30.66906474820144,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 20,
+          "male": 119
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 109,
+          "genX": 15,
+          "boomer": 15
+        },
+        "youthIndex": 78.41726618705036,
+        "genderBalance": 71.22302158273382,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 1600,
+        "remoteImages": 0,
+        "hostessImages": 0,
+        "selfies": 49,
+        "approvedImages": 49,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a360",
+      "projectId": "68a2202442a32a85c78af11e",
+      "eventDate": "2025-08-17",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 76,
+        "remoteFans": 2,
+        "stadium": 74,
+        "engagementRate": 3.8954382368016405,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 75,
+        "coreFanTeam": 102.68421052631578,
+        "fanToAttendeeConversion": 3.8954382368016405
+      },
+      "merchMetrics": {
+        "totalMerched": 4,
+        "penetrationRate": 5.263157894736842,
+        "byType": {
+          "jersey": 2,
+          "scarf": 0,
+          "flags": 1,
+          "baseballCap": 2,
+          "other": 0
+        },
+        "merchToAttendee": 0.0020502306509482316,
+        "diversityIndex": 3,
+        "highValueFans": 2,
+        "casualFans": 2
+      },
+      "adMetrics": {
+        "totalImpressions": 17700,
+        "socialValue": 5133,
+        "emailValue": 0,
+        "totalROI": 5133,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 67.53947368421052,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 4,
+          "male": 72
+        },
+        "ageGroups": {
+          "genAlpha": 55,
+          "genYZ": 10,
+          "genX": 11,
+          "boomer": 0
+        },
+        "youthIndex": 85.52631578947368,
+        "genderBalance": 89.47368421052632,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 1951,
+        "remoteImages": 2,
+        "hostessImages": 0,
+        "selfies": 57,
+        "approvedImages": 59,
+        "rejectedImages": 23
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a361",
+      "projectId": "68a314a54facdc7acf03a409",
+      "eventDate": "2025-08-09",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 68,
+        "remoteFans": 0,
+        "stadium": 68,
+        "engagementRate": 3.090909090909091,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.6176470588235294,
+        "selfieRate": 2.941176470588235,
+        "coreFanTeam": 905.8823529411765,
+        "fanToAttendeeConversion": 3.090909090909091
+      },
+      "merchMetrics": {
+        "totalMerched": 28,
+        "penetrationRate": 41.17647058823529,
+        "byType": {
+          "jersey": 14,
+          "scarf": 7,
+          "flags": 2,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.012727272727272728,
+        "diversityIndex": 3,
+        "highValueFans": 21,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 13200,
+        "socialValue": 3828,
+        "emailValue": 0,
+        "totalROI": 3828,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 56.294117647058826,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 29,
+          "male": 132
+        },
+        "ageGroups": {
+          "genAlpha": 39,
+          "genYZ": 71,
+          "genX": 23,
+          "boomer": 22
+        },
+        "youthIndex": 70.96774193548387,
+        "genderBalance": 63.975155279503106,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2200,
+        "remoteImages": 0,
+        "hostessImages": 42,
+        "selfies": 2,
+        "approvedImages": 101,
+        "rejectedImages": 5
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a362",
+      "projectId": "68a301748172f9a06d294340",
+      "eventDate": "2025-07-26",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 1081,
+        "remoteFans": 0,
+        "stadium": 1081,
+        "engagementRate": 36.03333333333333,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 38.02035152636448,
+        "coreFanTeam": 108.23311748381128,
+        "fanToAttendeeConversion": 36.03333333333333
+      },
+      "merchMetrics": {
+        "totalMerched": 39,
+        "penetrationRate": 3.6077705827937097,
+        "byType": {
+          "jersey": 22,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 3,
+          "other": 24
+        },
+        "merchToAttendee": 0.013,
+        "diversityIndex": 3,
+        "highValueFans": 22,
+        "casualFans": 27
+      },
+      "adMetrics": {
+        "totalImpressions": 123300,
+        "socialValue": 35757,
+        "emailValue": 0,
+        "totalROI": 35757,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 33.077705827937095,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 783,
+          "male": 305
+        },
+        "ageGroups": {
+          "genAlpha": 298,
+          "genYZ": 578,
+          "genX": 112,
+          "boomer": 100
+        },
+        "youthIndex": 80.51470588235294,
+        "genderBalance": 43.93382352941176,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3000,
+        "remoteImages": 0,
+        "hostessImages": 0,
+        "selfies": 411,
+        "approvedImages": 411,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a363",
+      "projectId": "68ca62ae23c3f8f0560ee28c",
+      "eventDate": "2025-09-17",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 93,
+        "remoteFans": 0,
+        "stadium": 93,
+        "engagementRate": 2.502691065662002,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.3870967741935484,
+        "selfieRate": 7.526881720430108,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 2.502691065662002
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 66,
+          "scarf": 18,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 2,
+        "highValueFans": 84,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 12900,
+        "socialValue": 3741,
+        "emailValue": 0,
+        "totalROI": 3741,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 40.225806451612904,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 34,
+          "male": 59
+        },
+        "ageGroups": {
+          "genAlpha": 14,
+          "genYZ": 38,
+          "genX": 36,
+          "boomer": 5
+        },
+        "youthIndex": 55.91397849462365,
+        "genderBalance": 26.881720430107524,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3716,
+        "remoteImages": 0,
+        "hostessImages": 36,
+        "selfies": 7,
+        "approvedImages": 0,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.054Z",
+      "updatedAt": "2025-10-19T11:29:39.054Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a364",
+      "projectId": "68a89c8dbdf3637ee7258412",
+      "eventDate": "2025-03-01",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 200,
+        "remoteFans": 143,
+        "stadium": 57,
+        "engagementRate": 5.4024851431658565,
+        "remoteQuality": 0.027972027972027972,
+        "stadiumQuality": 0.49122807017543857,
+        "selfieRate": 19.5,
+        "coreFanTeam": 795.93,
+        "fanToAttendeeConversion": 5.4024851431658565
+      },
+      "merchMetrics": {
+        "totalMerched": 43,
+        "penetrationRate": 21.5,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.011615343057806591,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 21300,
+        "socialValue": 6177,
+        "emailValue": 0,
+        "totalROI": 6177,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 30.885,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 42,
+          "male": 158
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 128,
+          "genX": 51,
+          "boomer": 21
+        },
+        "youthIndex": 64,
+        "genderBalance": 57.99999999999999,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3702,
+        "remoteImages": 4,
+        "hostessImages": 28,
+        "selfies": 39,
+        "approvedImages": 71,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a365",
+      "projectId": "68ac1551b0e2fcaca4608e05",
+      "eventDate": "2025-03-30",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 185,
+        "remoteFans": 7,
+        "stadium": 178,
+        "engagementRate": 3.646038628301143,
+        "remoteQuality": 0.7142857142857143,
+        "stadiumQuality": 0,
+        "selfieRate": 33.513513513513516,
+        "coreFanTeam": 3510.65945945946,
+        "fanToAttendeeConversion": 3.646038628301143
+      },
+      "merchMetrics": {
+        "totalMerched": 128,
+        "penetrationRate": 69.1891891891892,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.025226645644461962,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 20100,
+        "socialValue": 5829,
+        "emailValue": 0,
+        "totalROI": 5829,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 31.508108108108107,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 56,
+          "male": 129
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 128,
+          "genX": 28,
+          "boomer": 29
+        },
+        "youthIndex": 69.1891891891892,
+        "genderBalance": 39.45945945945946,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5074,
+        "remoteImages": 5,
+        "hostessImages": 0,
+        "selfies": 62,
+        "approvedImages": 62,
+        "rejectedImages": 3
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a366",
+      "projectId": "68ac1fa7b0e2fcaca4608e0c",
+      "eventDate": "2025-04-26",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 303,
+        "remoteFans": 256,
+        "stadium": 47,
+        "engagementRate": 5.8415268941584735,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 13.2013201320132,
+        "coreFanTeam": 3184.09900990099,
+        "fanToAttendeeConversion": 5.8415268941584735
+      },
+      "merchMetrics": {
+        "totalMerched": 186,
+        "penetrationRate": 61.386138613861384,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.035858877964141125,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 12000,
+        "socialValue": 3480,
+        "emailValue": 0,
+        "totalROI": 3480,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 11.485148514851485,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 63,
+          "male": 240
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 186,
+          "genX": 77,
+          "boomer": 40
+        },
+        "youthIndex": 61.386138613861384,
+        "genderBalance": 58.415841584158414,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5187,
+        "remoteImages": 0,
+        "hostessImages": 0,
+        "selfies": 40,
+        "approvedImages": 40,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a368",
+      "projectId": "68a31c617156b08d95203613",
+      "eventDate": "2025-08-15",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 282,
+        "remoteFans": 0,
+        "stadium": 282,
+        "engagementRate": 4.15072122460995,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.32978723404255317,
+        "selfieRate": 26.95035460992908,
+        "coreFanTeam": 96.36879432624113,
+        "fanToAttendeeConversion": 4.15072122460995
+      },
+      "merchMetrics": {
+        "totalMerched": 4,
+        "penetrationRate": 1.4184397163120568,
+        "byType": {
+          "jersey": 102,
+          "scarf": 16,
+          "flags": 16,
+          "baseballCap": 5,
+          "other": 0
+        },
+        "merchToAttendee": 0.0005887547836326171,
+        "diversityIndex": 4,
+        "highValueFans": 118,
+        "casualFans": 5
+      },
+      "adMetrics": {
+        "totalImpressions": 50700,
+        "socialValue": 14703,
+        "emailValue": 0,
+        "totalROI": 14703,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 52.138297872340424,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 65,
+          "male": 220
+        },
+        "ageGroups": {
+          "genAlpha": 85,
+          "genYZ": 173,
+          "genX": 14,
+          "boomer": 13
+        },
+        "youthIndex": 90.52631578947368,
+        "genderBalance": 54.385964912280706,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 6794,
+        "remoteImages": 0,
+        "hostessImages": 93,
+        "selfies": 76,
+        "approvedImages": 169,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a367",
+      "projectId": "68a2f944fa27e5f2260e7e0c",
+      "eventDate": "2025-07-25",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 327,
+        "remoteFans": 39,
+        "stadium": 288,
+        "engagementRate": 3.2664069523524124,
+        "remoteQuality": 0.05128205128205128,
+        "stadiumQuality": 0.23958333333333334,
+        "selfieRate": 3.669724770642202,
+        "coreFanTeam": 6061.706422018349,
+        "fanToAttendeeConversion": 3.2664069523524124
+      },
+      "merchMetrics": {
+        "totalMerched": 198,
+        "penetrationRate": 60.550458715596335,
+        "byType": {
+          "jersey": 90,
+          "scarf": 24,
+          "flags": 23,
+          "baseballCap": 2,
+          "other": 0
+        },
+        "merchToAttendee": 0.019778243931675158,
+        "diversityIndex": 4,
+        "highValueFans": 114,
+        "casualFans": 2
+      },
+      "adMetrics": {
+        "totalImpressions": 24900,
+        "socialValue": 7221,
+        "emailValue": 0,
+        "totalROI": 7221,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 22.08256880733945,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 91,
+          "male": 236
+        },
+        "ageGroups": {
+          "genAlpha": 77,
+          "genYZ": 125,
+          "genX": 61,
+          "boomer": 34
+        },
+        "youthIndex": 68.01346801346801,
+        "genderBalance": 44.342507645259936,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 10011,
+        "remoteImages": 2,
+        "hostessImages": 69,
+        "selfies": 12,
+        "approvedImages": 155,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a369",
+      "projectId": "68a318399385721704af4ca7",
+      "eventDate": "2025-08-10",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 241,
+        "remoteFans": 0,
+        "stadium": 241,
+        "engagementRate": 2.786127167630058,
+        "remoteQuality": 0,
+        "stadiumQuality": 0,
+        "selfieRate": 0,
+        "coreFanTeam": 215.35269709543567,
+        "fanToAttendeeConversion": 2.786127167630058
+      },
+      "merchMetrics": {
+        "totalMerched": 6,
+        "penetrationRate": 2.4896265560165975,
+        "byType": {
+          "jersey": 97,
+          "scarf": 14,
+          "flags": 11,
+          "baseballCap": 4,
+          "other": 0
+        },
+        "merchToAttendee": 0.0006936416184971098,
+        "diversityIndex": 4,
+        "highValueFans": 111,
+        "casualFans": 4
+      },
+      "adMetrics": {
+        "totalImpressions": 29400,
+        "socialValue": 8526,
+        "emailValue": 0,
+        "totalROI": 8526,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 35.37759336099585,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 92,
+          "male": 154
+        },
+        "ageGroups": {
+          "genAlpha": 66,
+          "genYZ": 125,
+          "genX": 30,
+          "boomer": 25
+        },
+        "youthIndex": 77.64227642276423,
+        "genderBalance": 25.203252032520325,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 8650,
+        "remoteImages": 98,
+        "hostessImages": 0,
+        "selfies": 0,
+        "approvedImages": 153,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36a",
+      "projectId": "68ac2550153559b70134cc4a",
+      "eventDate": "2025-05-03",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 350,
+        "remoteFans": 206,
+        "stadium": 144,
+        "engagementRate": 7.0678513731825525,
+        "remoteQuality": 0.024271844660194174,
+        "stadiumQuality": 0,
+        "selfieRate": 38,
+        "coreFanTeam": 2886.308571428571,
+        "fanToAttendeeConversion": 7.0678513731825525
+      },
+      "merchMetrics": {
+        "totalMerched": 204,
+        "penetrationRate": 58.285714285714285,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.04119547657512116,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 41400,
+        "socialValue": 12006,
+        "emailValue": 0,
+        "totalROI": 12006,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 34.30285714285714,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 105,
+          "male": 245
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 204,
+          "genX": 93,
+          "boomer": 53
+        },
+        "youthIndex": 58.285714285714285,
+        "genderBalance": 40,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 4952,
+        "remoteImages": 5,
+        "hostessImages": 0,
+        "selfies": 133,
+        "approvedImages": 138,
+        "rejectedImages": 11
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36b",
+      "projectId": "68ac2d6a54d43f7d4ef56087",
+      "eventDate": "2025-05-16",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 256,
+        "remoteFans": 85,
+        "stadium": 171,
+        "engagementRate": 4.926866820631255,
+        "remoteQuality": 0.023529411764705882,
+        "stadiumQuality": 0,
+        "selfieRate": 28.90625,
+        "coreFanTeam": 4018.78125,
+        "fanToAttendeeConversion": 4.926866820631255
+      },
+      "merchMetrics": {
+        "totalMerched": 198,
+        "penetrationRate": 77.34375,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.03810623556581986,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 22800,
+        "socialValue": 6612,
+        "emailValue": 0,
+        "totalROI": 6612,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 25.828125,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 76,
+          "male": 180
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 198,
+          "genX": 40,
+          "boomer": 18
+        },
+        "youthIndex": 77.34375,
+        "genderBalance": 40.625,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5196,
+        "remoteImages": 2,
+        "hostessImages": 0,
+        "selfies": 74,
+        "approvedImages": 76,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36c",
+      "projectId": "68af05539f8bb7d7177173ed",
+      "eventDate": "2025-08-31",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 260,
+        "remoteFans": 2,
+        "stadium": 258,
+        "engagementRate": 6.577283076144701,
+        "remoteQuality": 0.5,
+        "stadiumQuality": 0,
+        "selfieRate": 45,
+        "coreFanTeam": 60.815384615384616,
+        "fanToAttendeeConversion": 6.577283076144701
+      },
+      "merchMetrics": {
+        "totalMerched": 4,
+        "penetrationRate": 1.5384615384615385,
+        "byType": {
+          "jersey": 33,
+          "scarf": 78,
+          "flags": 0,
+          "baseballCap": 19,
+          "other": 1
+        },
+        "merchToAttendee": 0.0010118897040222615,
+        "diversityIndex": 4,
+        "highValueFans": 111,
+        "casualFans": 20
+      },
+      "adMetrics": {
+        "totalImpressions": 35400,
+        "socialValue": 10266,
+        "emailValue": 0,
+        "totalROI": 10266,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 39.48461538461538,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 71,
+          "male": 189
+        },
+        "ageGroups": {
+          "genAlpha": 69,
+          "genYZ": 93,
+          "genX": 89,
+          "boomer": 9
+        },
+        "youthIndex": 62.30769230769231,
+        "genderBalance": 45.38461538461539,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3953,
+        "remoteImages": 1,
+        "hostessImages": 0,
+        "selfies": 117,
+        "approvedImages": 113,
+        "rejectedImages": 5
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36d",
+      "projectId": "68af01909f8bb7d7177173ea",
+      "eventDate": "2025-08-28",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 331,
+        "remoteFans": 15,
+        "stadium": 316,
+        "engagementRate": 7.869709938183547,
+        "remoteQuality": 0.8666666666666667,
+        "stadiumQuality": 0,
+        "selfieRate": 32.3262839879154,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 7.869709938183547
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 71,
+          "scarf": 11,
+          "flags": 5,
+          "baseballCap": 10,
+          "other": 0
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 4,
+        "highValueFans": 82,
+        "casualFans": 10
+      },
+      "adMetrics": {
+        "totalImpressions": 36000,
+        "socialValue": 10440,
+        "emailValue": 0,
+        "totalROI": 10440,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 31.540785498489427,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 162,
+          "male": 169
+        },
+        "ageGroups": {
+          "genAlpha": 30,
+          "genYZ": 273,
+          "genX": 26,
+          "boomer": 2
+        },
+        "youthIndex": 91.54078549848943,
+        "genderBalance": 2.1148036253776437,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 4206,
+        "remoteImages": 13,
+        "hostessImages": 0,
+        "selfies": 107,
+        "approvedImages": 116,
+        "rejectedImages": 9
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36e",
+      "projectId": "68af02864d9a86f7e26fa499",
+      "eventDate": "2025-08-29",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 70,
+        "remoteFans": 4,
+        "stadium": 66,
+        "engagementRate": 2.0213687554143807,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 38.57142857142858,
+        "coreFanTeam": 98.94285714285714,
+        "fanToAttendeeConversion": 2.0213687554143807
+      },
+      "merchMetrics": {
+        "totalMerched": 2,
+        "penetrationRate": 2.857142857142857,
+        "byType": {
+          "jersey": 8,
+          "scarf": 18,
+          "flags": 0,
+          "baseballCap": 3,
+          "other": 0
+        },
+        "merchToAttendee": 0.0005775339301183945,
+        "diversityIndex": 3,
+        "highValueFans": 26,
+        "casualFans": 3
+      },
+      "adMetrics": {
+        "totalImpressions": 9300,
+        "socialValue": 2697,
+        "emailValue": 0,
+        "totalROI": 2697,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 38.52857142857143,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 18,
+          "male": 52
+        },
+        "ageGroups": {
+          "genAlpha": 22,
+          "genYZ": 26,
+          "genX": 17,
+          "boomer": 5
+        },
+        "youthIndex": 68.57142857142857,
+        "genderBalance": 48.57142857142857,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 3463,
+        "remoteImages": 4,
+        "hostessImages": 0,
+        "selfies": 27,
+        "approvedImages": 27,
+        "rejectedImages": 1
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a371",
+      "projectId": "68a2f3c984762cb47afcdf16",
+      "eventDate": "2025-08-16",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 412,
+        "remoteFans": 359,
+        "stadium": 53,
+        "engagementRate": 7.534747622531091,
+        "remoteQuality": 0.005571030640668524,
+        "stadiumQuality": 2.5660377358490565,
+        "selfieRate": 8.737864077669903,
+        "coreFanTeam": 2057.135922330097,
+        "fanToAttendeeConversion": 7.534747622531091
+      },
+      "merchMetrics": {
+        "totalMerched": 155,
+        "penetrationRate": 37.62135922330097,
+        "byType": {
+          "jersey": 69,
+          "scarf": 80,
+          "flags": 1,
+          "baseballCap": 6,
+          "other": 16
+        },
+        "merchToAttendee": 0.02834674469641551,
+        "diversityIndex": 5,
+        "highValueFans": 149,
+        "casualFans": 22
+      },
+      "adMetrics": {
+        "totalImpressions": 52200,
+        "socialValue": 15138,
+        "emailValue": 0,
+        "totalROI": 15138,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 36.74271844660194,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 111,
+          "male": 301
+        },
+        "ageGroups": {
+          "genAlpha": 82,
+          "genYZ": 253,
+          "genX": 61,
+          "boomer": 16
+        },
+        "youthIndex": 81.31067961165049,
+        "genderBalance": 46.116504854368934,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5468,
+        "remoteImages": 2,
+        "hostessImages": 136,
+        "selfies": 36,
+        "approvedImages": 184,
+        "rejectedImages": 6
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a36f",
+      "projectId": "68af04f84d9a86f7e26fa49a",
+      "eventDate": "2025-08-30",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 722,
+        "remoteFans": 15,
+        "stadium": 707,
+        "engagementRate": 11.64516129032258,
+        "remoteQuality": 0.4,
+        "stadiumQuality": 0,
+        "selfieRate": 36.98060941828255,
+        "coreFanTeam": 111.63434903047093,
+        "fanToAttendeeConversion": 11.64516129032258
+      },
+      "merchMetrics": {
+        "totalMerched": 13,
+        "penetrationRate": 1.8005540166204987,
+        "byType": {
+          "jersey": 153,
+          "scarf": 16,
+          "flags": 0,
+          "baseballCap": 27,
+          "other": 10
+        },
+        "merchToAttendee": 0.002096774193548387,
+        "diversityIndex": 4,
+        "highValueFans": 169,
+        "casualFans": 37
+      },
+      "adMetrics": {
+        "totalImpressions": 81900,
+        "socialValue": 23751,
+        "emailValue": 0,
+        "totalROI": 23751,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 32.89612188365651,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 348,
+          "male": 374
+        },
+        "ageGroups": {
+          "genAlpha": 200,
+          "genYZ": 277,
+          "genX": 234,
+          "boomer": 11
+        },
+        "youthIndex": 66.06648199445983,
+        "genderBalance": 3.6011080332409975,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 6200,
+        "remoteImages": 6,
+        "hostessImages": 0,
+        "selfies": 267,
+        "approvedImages": 261,
+        "rejectedImages": 13
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a372",
+      "projectId": "68ac1b18b0e2fcaca4608e0a",
+      "eventDate": "2025-04-05",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 214,
+        "remoteFans": 123,
+        "stadium": 91,
+        "engagementRate": 4.080854309687262,
+        "remoteQuality": 0.024390243902439025,
+        "stadiumQuality": 0,
+        "selfieRate": 38.78504672897196,
+        "coreFanTeam": 3626.6915887850464,
+        "fanToAttendeeConversion": 4.080854309687262
+      },
+      "merchMetrics": {
+        "totalMerched": 148,
+        "penetrationRate": 69.1588785046729,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.02822273073989321,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 25800,
+        "socialValue": 7482,
+        "emailValue": 0,
+        "totalROI": 7482,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 34.96261682242991,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 60,
+          "male": 154
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 148,
+          "genX": 33,
+          "boomer": 33
+        },
+        "youthIndex": 69.1588785046729,
+        "genderBalance": 43.925233644859816,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5244,
+        "remoteImages": 3,
+        "hostessImages": 0,
+        "selfies": 83,
+        "approvedImages": 86,
+        "rejectedImages": 6
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a370",
+      "projectId": "68a307238092da4a83ed58cd",
+      "eventDate": "2025-08-02",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 146,
+        "remoteFans": 0,
+        "stadium": 146,
+        "engagementRate": 2.570875154076422,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.7808219178082192,
+        "selfieRate": 1.36986301369863,
+        "coreFanTeam": 8246.219178082192,
+        "fanToAttendeeConversion": 2.570875154076422
+      },
+      "merchMetrics": {
+        "totalMerched": 212,
+        "penetrationRate": 145.2054794520548,
+        "byType": {
+          "jersey": 97,
+          "scarf": 54,
+          "flags": 54,
+          "baseballCap": 9,
+          "other": 0
+        },
+        "merchToAttendee": 0.03733051593590421,
+        "diversityIndex": 4,
+        "highValueFans": 151,
+        "casualFans": 9
+      },
+      "adMetrics": {
+        "totalImpressions": 35100,
+        "socialValue": 10179,
+        "emailValue": 0,
+        "totalROI": 10179,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 69.71917808219177,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 137,
+          "male": 214
+        },
+        "ageGroups": {
+          "genAlpha": 96,
+          "genYZ": 133,
+          "genX": 62,
+          "boomer": 60
+        },
+        "youthIndex": 65.24216524216524,
+        "genderBalance": 21.937321937321936,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 5679,
+        "remoteImages": 1,
+        "hostessImages": 114,
+        "selfies": 2,
+        "approvedImages": 161,
+        "rejectedImages": 3
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a373",
+      "projectId": "68a8a51fe741c8f8ba3ac638",
+      "eventDate": "2025-03-09",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 233,
+        "remoteFans": 26,
+        "stadium": 207,
+        "engagementRate": 2.191085198420162,
+        "remoteQuality": 0.19230769230769232,
+        "stadiumQuality": 0,
+        "selfieRate": 30.472103004291846,
+        "coreFanTeam": 2966.56652360515,
+        "fanToAttendeeConversion": 2.191085198420162
+      },
+      "merchMetrics": {
+        "totalMerched": 65,
+        "penetrationRate": 27.896995708154503,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.006112469437652812,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 22800,
+        "socialValue": 6612,
+        "emailValue": 0,
+        "totalROI": 6612,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 28.377682403433475,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 67,
+          "male": 166
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 158,
+          "genX": 35,
+          "boomer": 40
+        },
+        "youthIndex": 67.81115879828327,
+        "genderBalance": 42.48927038626609,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 10634,
+        "remoteImages": 5,
+        "hostessImages": 0,
+        "selfies": 71,
+        "approvedImages": 76,
+        "rejectedImages": 3
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a374",
+      "projectId": "68ac2ecd54d43f7d4ef56089",
+      "eventDate": "2025-05-18",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 324,
+        "remoteFans": 88,
+        "stadium": 236,
+        "engagementRate": 4.017857142857143,
+        "remoteQuality": 0.056818181818181816,
+        "stadiumQuality": 0,
+        "selfieRate": 38.58024691358025,
+        "coreFanTeam": 2439.1111111111113,
+        "fanToAttendeeConversion": 4.017857142857143
+      },
+      "merchMetrics": {
+        "totalMerched": 98,
+        "penetrationRate": 30.246913580246915,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.012152777777777778,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 39000,
+        "socialValue": 11310,
+        "emailValue": 0,
+        "totalROI": 11310,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 34.907407407407405,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 95,
+          "male": 229
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 98,
+          "genX": 87,
+          "boomer": 44
+        },
+        "youthIndex": 42.79475982532751,
+        "genderBalance": 41.358024691358025,
+        "diversityIndex": 5
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 8064,
+        "remoteImages": 5,
+        "hostessImages": 0,
+        "selfies": 125,
+        "approvedImages": 130,
+        "rejectedImages": 2
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a375",
+      "projectId": "68a317909385721704af4ca6",
+      "eventDate": "2025-08-09",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 165,
+        "remoteFans": 67,
+        "stadium": 98,
+        "engagementRate": 7.173913043478261,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.40816326530612246,
+        "selfieRate": 10.909090909090908,
+        "coreFanTeam": 599.3939393939394,
+        "fanToAttendeeConversion": 7.173913043478261
+      },
+      "merchMetrics": {
+        "totalMerched": 43,
+        "penetrationRate": 26.060606060606062,
+        "byType": {
+          "jersey": 35,
+          "scarf": 6,
+          "flags": 3,
+          "baseballCap": 3,
+          "other": 0
+        },
+        "merchToAttendee": 0.018695652173913044,
+        "diversityIndex": 4,
+        "highValueFans": 41,
+        "casualFans": 3
+      },
+      "adMetrics": {
+        "totalImpressions": 17400,
+        "socialValue": 5046,
+        "emailValue": 0,
+        "totalROI": 5046,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 30.581818181818182,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 62,
+          "male": 103
+        },
+        "ageGroups": {
+          "genAlpha": 40,
+          "genYZ": 42,
+          "genX": 59,
+          "boomer": 24
+        },
+        "youthIndex": 49.696969696969695,
+        "genderBalance": 24.848484848484848,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2300,
+        "remoteImages": 0,
+        "hostessImages": 40,
+        "selfies": 18,
+        "approvedImages": 59,
+        "rejectedImages": 8
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a376",
+      "projectId": "68a31ade85f7f395e248f452",
+      "eventDate": "2025-08-10",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 119,
+        "remoteFans": 70,
+        "stadium": 49,
+        "engagementRate": 17,
+        "remoteQuality": 0,
+        "stadiumQuality": 0.8979591836734694,
+        "selfieRate": 9.243697478991598,
+        "coreFanTeam": 164.7058823529412,
+        "fanToAttendeeConversion": 17
+      },
+      "merchMetrics": {
+        "totalMerched": 28,
+        "penetrationRate": 23.52941176470588,
+        "byType": {
+          "jersey": 21,
+          "scarf": 4,
+          "flags": 10,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0.04,
+        "diversityIndex": 3,
+        "highValueFans": 25,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 16500,
+        "socialValue": 4785,
+        "emailValue": 0,
+        "totalROI": 4785,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 40.21008403361345,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 56,
+          "male": 63
+        },
+        "ageGroups": {
+          "genAlpha": 19,
+          "genYZ": 45,
+          "genX": 30,
+          "boomer": 25
+        },
+        "youthIndex": 53.78151260504202,
+        "genderBalance": 5.88235294117647,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 700,
+        "remoteImages": 0,
+        "hostessImages": 44,
+        "selfies": 11,
+        "approvedImages": 55,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a377",
+      "projectId": "68a3140c4facdc7acf03a408",
+      "eventDate": "2025-08-09",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 58,
+        "remoteFans": 38,
+        "stadium": 20,
+        "engagementRate": 11.600000000000001,
+        "remoteQuality": 0.10526315789473684,
+        "stadiumQuality": 1.35,
+        "selfieRate": 13.793103448275861,
+        "coreFanTeam": 232.75862068965517,
+        "fanToAttendeeConversion": 11.600000000000001
+      },
+      "merchMetrics": {
+        "totalMerched": 27,
+        "penetrationRate": 46.55172413793103,
+        "byType": {
+          "jersey": 16,
+          "scarf": 7,
+          "flags": 7,
+          "baseballCap": 0,
+          "other": 5
+        },
+        "merchToAttendee": 0.054,
+        "diversityIndex": 4,
+        "highValueFans": 23,
+        "casualFans": 5
+      },
+      "adMetrics": {
+        "totalImpressions": 11700,
+        "socialValue": 3393,
+        "emailValue": 0,
+        "totalROI": 3393,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 58.5,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 37,
+          "male": 21
+        },
+        "ageGroups": {
+          "genAlpha": 14,
+          "genYZ": 24,
+          "genX": 11,
+          "boomer": 9
+        },
+        "youthIndex": 65.51724137931035,
+        "genderBalance": 27.586206896551722,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 500,
+        "remoteImages": 4,
+        "hostessImages": 27,
+        "selfies": 8,
+        "approvedImages": 39,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a378",
+      "projectId": "68a31e537156b08d95203614",
+      "eventDate": "2025-08-16",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 257,
+        "remoteFans": 9,
+        "stadium": 248,
+        "engagementRate": 12.85,
+        "remoteQuality": 0.8888888888888888,
+        "stadiumQuality": 0.2661290322580645,
+        "selfieRate": 3.501945525291829,
+        "coreFanTeam": 124.5136186770428,
+        "fanToAttendeeConversion": 12.85
+      },
+      "merchMetrics": {
+        "totalMerched": 16,
+        "penetrationRate": 6.22568093385214,
+        "byType": {
+          "jersey": 20,
+          "scarf": 3,
+          "flags": 3,
+          "baseballCap": 2,
+          "other": 0
+        },
+        "merchToAttendee": 0.008,
+        "diversityIndex": 4,
+        "highValueFans": 23,
+        "casualFans": 2
+      },
+      "adMetrics": {
+        "totalImpressions": 24900,
+        "socialValue": 7221,
+        "emailValue": 0,
+        "totalROI": 7221,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 28.09727626459144,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 99,
+          "male": 158
+        },
+        "ageGroups": {
+          "genAlpha": 51,
+          "genYZ": 91,
+          "genX": 63,
+          "boomer": 52
+        },
+        "youthIndex": 55.252918287937746,
+        "genderBalance": 22.957198443579767,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2000,
+        "remoteImages": 8,
+        "hostessImages": 66,
+        "selfies": 9,
+        "approvedImages": 83,
+        "rejectedImages": 5
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a379",
+      "projectId": "68ad8782afcfe0b38d8ed332",
+      "eventDate": "2025-02-06",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 123,
+        "remoteFans": 8,
+        "stadium": 115,
+        "engagementRate": 5.590909090909091,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 93.4959349593496,
+        "coreFanTeam": 1108.9430894308941,
+        "fanToAttendeeConversion": 5.590909090909091
+      },
+      "merchMetrics": {
+        "totalMerched": 62,
+        "penetrationRate": 50.40650406504065,
+        "byType": {
+          "jersey": 32,
+          "scarf": 32,
+          "flags": 4,
+          "baseballCap": 0,
+          "other": 3
+        },
+        "merchToAttendee": 0.028181818181818183,
+        "diversityIndex": 4,
+        "highValueFans": 64,
+        "casualFans": 3
+      },
+      "adMetrics": {
+        "totalImpressions": 36900,
+        "socialValue": 10701,
+        "emailValue": 0,
+        "totalROI": 10701,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 87,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 190,
+          "male": 283
+        },
+        "ageGroups": {
+          "genAlpha": 100,
+          "genYZ": 46,
+          "genX": 30,
+          "boomer": 297
+        },
+        "youthIndex": 30.866807610993657,
+        "genderBalance": 19.661733615221987,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 2200,
+        "remoteImages": 8,
+        "hostessImages": 0,
+        "selfies": 115,
+        "approvedImages": 123,
+        "rejectedImages": 4
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37a",
+      "projectId": "68a2f39f84762cb47afcdf14",
+      "eventDate": "2025-08-24",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 201,
+        "remoteFans": 0,
+        "stadium": 201,
+        "engagementRate": 0.44666666666666666,
+        "remoteQuality": 0,
+        "stadiumQuality": 1,
+        "selfieRate": 0,
+        "coreFanTeam": 29328.358208955226,
+        "fanToAttendeeConversion": 0.44666666666666666
+      },
+      "merchMetrics": {
+        "totalMerched": 131,
+        "penetrationRate": 65.17412935323384,
+        "byType": {
+          "jersey": 93,
+          "scarf": 5,
+          "flags": 4,
+          "baseballCap": 37,
+          "other": 12
+        },
+        "merchToAttendee": 0.0029111111111111113,
+        "diversityIndex": 5,
+        "highValueFans": 98,
+        "casualFans": 49
+      },
+      "adMetrics": {
+        "totalImpressions": 60300,
+        "socialValue": 17487,
+        "emailValue": 0,
+        "totalROI": 17487,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 87,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 46,
+          "male": 155
+        },
+        "ageGroups": {
+          "genAlpha": 48,
+          "genYZ": 51,
+          "genX": 61,
+          "boomer": 41
+        },
+        "youthIndex": 49.25373134328358,
+        "genderBalance": 54.22885572139303,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 45000,
+        "remoteImages": 0,
+        "hostessImages": 201,
+        "selfies": 0,
+        "approvedImages": 201,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37b",
+      "projectId": "68a2f37184762cb47afcdf12",
+      "eventDate": "2025-08-23",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 473,
+        "remoteFans": 0,
+        "stadium": 473,
+        "engagementRate": 1.3514285714285714,
+        "remoteQuality": 0,
+        "stadiumQuality": 1,
+        "selfieRate": 0,
+        "coreFanTeam": 15243.128964059197,
+        "fanToAttendeeConversion": 1.3514285714285714
+      },
+      "merchMetrics": {
+        "totalMerched": 206,
+        "penetrationRate": 43.551797040169134,
+        "byType": {
+          "jersey": 177,
+          "scarf": 32,
+          "flags": 18,
+          "baseballCap": 85,
+          "other": 31
+        },
+        "merchToAttendee": 0.005885714285714286,
+        "diversityIndex": 5,
+        "highValueFans": 209,
+        "casualFans": 116
+      },
+      "adMetrics": {
+        "totalImpressions": 141900,
+        "socialValue": 41151,
+        "emailValue": 0,
+        "totalROI": 41151,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 87,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 162,
+          "male": 311
+        },
+        "ageGroups": {
+          "genAlpha": 92,
+          "genYZ": 158,
+          "genX": 129,
+          "boomer": 94
+        },
+        "youthIndex": 52.85412262156448,
+        "genderBalance": 31.501057082452434,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 35000,
+        "remoteImages": 0,
+        "hostessImages": 473,
+        "selfies": 0,
+        "approvedImages": 473,
+        "rejectedImages": 0
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37c",
+      "projectId": "68ef4bf0370adfaf1dac15ce",
+      "eventDate": "2025-10-15",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 446,
+        "remoteFans": 1,
+        "stadium": 445,
+        "engagementRate": 7.216828478964402,
+        "remoteQuality": 1,
+        "stadiumQuality": 0.1842696629213483,
+        "selfieRate": 19.506726457399104,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 7.216828478964402
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 170,
+          "scarf": 81,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 2,
+        "highValueFans": 251,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 51000,
+        "socialValue": 14790,
+        "emailValue": 0,
+        "totalROI": 14790,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 33.16143497757847,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 165,
+          "male": 281
+        },
+        "ageGroups": {
+          "genAlpha": 43,
+          "genYZ": 227,
+          "genX": 134,
+          "boomer": 42
+        },
+        "youthIndex": 60.53811659192825,
+        "genderBalance": 26.00896860986547,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 6180,
+        "remoteImages": 1,
+        "hostessImages": 82,
+        "selfies": 87,
+        "approvedImages": 160,
+        "rejectedImages": 16
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37d",
+      "projectId": "68ef7ca9ec633b6d49249101",
+      "eventDate": "2025-10-11",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 2196,
+        "remoteFans": 86,
+        "stadium": 2110,
+        "engagementRate": 3.7976653696498053,
+        "remoteQuality": 0.38372093023255816,
+        "stadiumQuality": 0,
+        "selfieRate": 38.84335154826958,
+        "coreFanTeam": 29070.491803278688,
+        "fanToAttendeeConversion": 3.7976653696498053
+      },
+      "merchMetrics": {
+        "totalMerched": 1104,
+        "penetrationRate": 50.27322404371585,
+        "byType": {
+          "jersey": 468,
+          "scarf": 702,
+          "flags": 41,
+          "baseballCap": 78,
+          "other": 33
+        },
+        "merchToAttendee": 0.019092088197146563,
+        "diversityIndex": 5,
+        "highValueFans": 1170,
+        "casualFans": 111
+      },
+      "adMetrics": {
+        "totalImpressions": 265800,
+        "socialValue": 77082,
+        "emailValue": 0,
+        "totalROI": 77082,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 35.10109289617486,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 736,
+          "male": 1460
+        },
+        "ageGroups": {
+          "genAlpha": 332,
+          "genYZ": 1150,
+          "genX": 407,
+          "boomer": 309
+        },
+        "youthIndex": 67.42493175614194,
+        "genderBalance": 32.96903460837887,
+        "diversityIndex": 6
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "stadium",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 57825,
+        "remoteImages": 33,
+        "hostessImages": 0,
+        "selfies": 853,
+        "approvedImages": 10,
+        "rejectedImages": 2196
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    },
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37e",
+      "projectId": "68ad880868deb7c352b3a965",
+      "eventDate": "2025-01-18",
+      "aggregationType": "event",
+      "fanMetrics": {
+        "totalFans": 102,
+        "remoteFans": 16,
+        "stadium": 86,
+        "engagementRate": 9.272727272727273,
+        "remoteQuality": 1,
+        "stadiumQuality": 0,
+        "selfieRate": 37.254901960784316,
+        "coreFanTeam": 0,
+        "fanToAttendeeConversion": 9.272727272727273
+      },
+      "merchMetrics": {
+        "totalMerched": 0,
+        "penetrationRate": 0,
+        "byType": {
+          "jersey": 0,
+          "scarf": 0,
+          "flags": 0,
+          "baseballCap": 0,
+          "other": 0
+        },
+        "merchToAttendee": 0,
+        "diversityIndex": 0,
+        "highValueFans": 0,
+        "casualFans": 0
+      },
+      "adMetrics": {
+        "totalImpressions": 16200,
+        "socialValue": 4698,
+        "emailValue": 0,
+        "totalROI": 4698,
+        "viralCoefficient": 2000,
+        "emailConversion": 0,
+        "costPerEngagement": 0,
+        "adValuePerFan": 46.05882352941177,
+        "reachMultiplier": 20
+      },
+      "demographicMetrics": {
+        "gender": {
+          "female": 47,
+          "male": 55
+        },
+        "ageGroups": {
+          "genAlpha": 0,
+          "genYZ": 72,
+          "genX": 0,
+          "boomer": 30
+        },
+        "youthIndex": 70.58823529411765,
+        "genderBalance": 7.8431372549019605,
+        "diversityIndex": 4
+      },
+      "visitMetrics": {
+        "bySource": {
+          "qrCode": 0,
+          "shortUrl": 0,
+          "web": 0,
+          "social": 0
+        },
+        "totalVisits": 0,
+        "fanConversion": 0,
+        "propositionEffectiveness": 0
+      },
+      "bitlyMetrics": null,
+      "partnerContext": {
+        "partnerId": null,
+        "partnerName": null,
+        "partnerEmoji": null,
+        "opponentId": null,
+        "opponentName": null,
+        "leagueId": null,
+        "leagueName": null,
+        "venueType": "mixed",
+        "venueCapacity": null,
+        "isHomeGame": false
+      },
+      "rawStats": {
+        "eventAttendees": 1100,
+        "remoteImages": 16,
+        "hostessImages": 0,
+        "selfies": 38,
+        "approvedImages": 54,
+        "rejectedImages": 20
+      },
+      "createdAt": "2025-10-19T11:29:39.055Z",
+      "updatedAt": "2025-10-19T11:29:39.055Z",
+      "version": "1.0"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "projectId": 1
+      },
+      "name": "idx_projectId",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "eventDate": -1
+      },
+      "name": "idx_eventDate",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "aggregationType": 1
+      },
+      "name": "idx_aggregationType",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "partnerContext.partnerId": 1,
+        "eventDate": -1
+      },
+      "name": "idx_partnerId_eventDate",
+      "background": true,
+      "sparse": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "updatedAt": -1
+      },
+      "name": "idx_updatedAt",
+      "background": true
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:51.428Z"
+}

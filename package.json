@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "9.3.0",
+  "version": "9.4.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -65,7 +65,9 @@
     "migrate:existing-charts-formatting": "tsx -r dotenv/config scripts/migrateExistingChartsFormatting.ts dotenv_config_path=.env.local",
     "version:update": "node scripts/update-version.js",
     "version:verify": "node scripts/update-version.js --verify",
-    "audit:database": "tsx -r dotenv/config scripts/auditDatabaseCollections.ts dotenv_config_path=.env.local"
+    "audit:database": "tsx -r dotenv/config scripts/auditDatabaseCollections.ts dotenv_config_path=.env.local",
+    "db:backup": "npx tsx -r dotenv/config scripts/backupDatabase.ts dotenv_config_path=.env.local",
+    "db:restore": "npx tsx -r dotenv/config scripts/restoreDatabase.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

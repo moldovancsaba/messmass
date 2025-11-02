@@ -1,0 +1,22 @@
+{
+  "name": "system_settings",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "68f4cba347a629969d8dcc4e",
+      "key": "analytics_aggregation_last_run",
+      "updatedAt": "2025-10-19T11:29:39.272Z",
+      "value": "2025-10-19T11:29:37.410Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:49.201Z"
+}

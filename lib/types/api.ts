@@ -92,6 +92,19 @@ export interface ProjectDTO {
   eventDate: string;
   hashtags?: string[];
   categorizedHashtags?: { [category: string]: string[] };
+  styleIdEnhanced?: string | null;
+  partner1?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
+  partner2?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
   stats: {
     remoteImages: number;
     hostessImages: number;
@@ -99,6 +112,7 @@ export interface ProjectDTO {
     indoor: number;
     outdoor: number;
     stadium: number;
+    remoteFans?: number;
     female: number;
     male: number;
     genAlpha: number;
@@ -111,7 +125,8 @@ export interface ProjectDTO {
     flags: number;
     baseballCap: number;
     other: number;
-    [key: string]: number; // Allow dynamic stats
+    eventAttendees?: number;
+    [key: string]: number | undefined; // Allow dynamic stats
   };
   viewSlug?: string;
   editSlug?: string;

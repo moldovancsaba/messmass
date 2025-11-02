@@ -1,0 +1,170 @@
+{
+  "name": "bitly_link_project_junction",
+  "documentCount": 22,
+  "documents": [
+    {
+      "_id": "6901f2b20821c76b0c8811db",
+      "bitlyLinkId": "68ee530624d876778410f04a",
+      "projectId": "68f257753c7621720a9bdb10",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:46.769Z"
+    },
+    {
+      "_id": "6901f2b20821c76b0c8811dc",
+      "bitlyLinkId": "68ee530624d876778410f303",
+      "projectId": "68f257753c7621720a9bdb10",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:46.771Z"
+    },
+    {
+      "_id": "6901f2b20821c76b0c8811dd",
+      "bitlyLinkId": "68ee530624d876778410f307",
+      "projectId": "68f257753c7621720a9bdb10",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:46.771Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811de",
+      "bitlyLinkId": "68ee530624d876778410f304",
+      "projectId": "68f2579c3c7621720a9bdb12",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.106Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811df",
+      "bitlyLinkId": "68ee1cc8331119275c72e2af",
+      "projectId": "68f2579c3c7621720a9bdb12",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.106Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e0",
+      "bitlyLinkId": "68f26e235684582f7494e216",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e1",
+      "bitlyLinkId": "68f26e235684582f7494e220",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e2",
+      "bitlyLinkId": "68f26e235684582f7494e228",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e3",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa892055",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e4",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa89204b",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e5",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa892054",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e6",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa89204d",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e7",
+      "bitlyLinkId": "68f26e235684582f7494e21f",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e8",
+      "bitlyLinkId": "68f26e235684582f7494e227",
+      "projectId": "68f75aca59e5555d8ad05c17",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.324Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811e9",
+      "bitlyLinkId": "68ee3254f3043f4e384334df",
+      "projectId": "68f8b7ee6a3ac49f87d02d21",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.484Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811ea",
+      "bitlyLinkId": "68ee49f6bd1900cbd97a680b",
+      "projectId": "68f8b8086a3ac49f87d02d23",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.615Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811eb",
+      "bitlyLinkId": "68ee49f6bd1900cbd97a6807",
+      "projectId": "68f8b821ea10e29ce9651ecb",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.756Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811ec",
+      "bitlyLinkId": "68ee530624d876778410f2fd",
+      "projectId": "68faf7acd4767f8a6d45aa29",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.886Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811ed",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa892053",
+      "projectId": "68faf7acd4767f8a6d45aa29",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.886Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811ee",
+      "bitlyLinkId": "68faf70c3cbb3b2ffa892051",
+      "projectId": "68faf7acd4767f8a6d45aa29",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.886Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811ef",
+      "bitlyLinkId": "68fe6f7e81e82c30c0d4946d",
+      "projectId": "68faf7acd4767f8a6d45aa29",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.886Z"
+    },
+    {
+      "_id": "6901f2b30821c76b0c8811f0",
+      "bitlyLinkId": "68fe6f7e81e82c30c0d4946c",
+      "projectId": "68faf7acd4767f8a6d45aa29",
+      "autoCalculated": true,
+      "createdAt": "2025-10-29T10:55:47.886Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:50.909Z"
+}

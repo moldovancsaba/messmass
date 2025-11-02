@@ -1,0 +1,4458 @@
+{
+  "name": "partners",
+  "documentCount": 118,
+  "documents": [
+    {
+      "_id": "68eea86df5fff60e66413ab9",
+      "name": "Újpest FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "budapest",
+          "hungary"
+        ],
+        "partner": [
+          "ujpestfc"
+        ],
+        "sport": [
+          "soccer"
+        ],
+        "league": [
+          "hungariannbi"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f04a",
+        "68ee530624d876778410f303",
+        "68ee530624d876778410f307"
+      ],
+      "createdAt": "2025-10-14T19:45:49.068Z",
+      "updatedAt": "2025-10-29T11:31:29.315Z",
+      "logoUrl": "https://i.ibb.co/R5M0Lx1/partner-jpest-fc.png",
+      "sportsDb": {
+        "teamId": "138183",
+        "strTeam": "Újpest",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "Szusza Ferenc Stadion",
+        "venueId": "17887",
+        "intStadiumCapacity": 14817,
+        "intFormedYear": "1885",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Újpest Football Club is a Hungarian professional football club, based in Újpest, Budapest, that competes in Nemzeti Bajnokság I.\r\n\r\nFormed in 1885, Újpest reached the first division of the Hungarian League in 1905 and has been relegated only once since then. The club has been a member of the first division for 102 consecutive years. Újpest have been Hungarian champions twenty times, and have won the Magyar Kupa ten times and the Szuperkupa three times. In international competitions Újpest are two-times winners of the Mitropa Cup and winners of the 1930 Coupe des Nations. They also reached the semi-finals of the European Cup 1973–74 and the UEFA Cup Winners' Cup 1961–62, and were runners-up in the Inter-Cities Fairs Cup 1968–69.\r\n\r\nSince 1922 their home ground has been the Szusza Ferenc Stadion in Újpest. Their biggest rivalry is with fellow Budapest-based club Ferencvárosi TC, with whom they contest a local derby.\r\n\r\nÚjpest FC is part of the Újpesti TE family. The club includes other sports sections that represent the club at ice hockey and waterpolo.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/03bmx91688115233.png",
+        "strWebsite": "www.ujpestfc.hu",
+        "strFacebook": "www.facebook.com/ujpestfootballclub",
+        "strTwitter": "twitter.com/ujpestfc1885",
+        "strInstagram": "www.instagram.com/ujpestfc",
+        "lastSynced": "2025-10-18T07:42:17.251Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "Szusza Ferenc Stadion",
+        "venueCapacity": 14817,
+        "founded": "1885",
+        "country": "Hungary",
+        "website": "www.ujpestfc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/03bmx91688115233.png"
+      },
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68eea8f3f5fff60e66413aba",
+      "name": "Ferencvárosi TC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "soccer"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "league": [
+          "hungariannbi"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-14T19:48:03.381Z",
+      "updatedAt": "2025-10-29T11:31:29.345Z",
+      "sportsDb": {
+        "teamId": "134620",
+        "strTeam": "Ferencváros",
+        "strTeamShort": "FER",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "Groupama Aréna",
+        "venueId": "17888",
+        "intStadiumCapacity": 22000,
+        "intFormedYear": "1899",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Ferencvárosi Torna Club, known as Ferencváros, is a professional football club based in Ferencváros, Budapest, Hungary, that competes in the Nemzeti Bajnokság I, the top flight of Hungarian football. Ferencváros was founded in 1899 by Ferenc Springer and a group of local residents of Budapest's ninth district, Ferencváros. Ferencváros is best known internationally for winning the 1964–65 edition of the Inter-Cities Fairs Cup after defeating Juventus 1–0 in Turin and for reaching the final in the same competition in 1968, when they lost to Leeds United and the final in the 1974–75 season of the European Cup Winners' Cup, lost to Dynamo Kiev.\r\n\r\nThe best-known part of the club is the well-supported men's football team – the most popular team in the country. The parent multisport club Ferencvárosi TC divisions include the women's football, women's handball, men's futsal, men's ice hockey, men's handball, men's water polo, cycling, gymnastics, athletics, wrestling, curling and swimming teams, some of which are highly successful.\r\n\r\nThe club colours are green and white, and the club's mascot is a green eagle, hence another of the club's nicknames, The Green Eagles.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/wk17od1688115265.png",
+        "strWebsite": "www.fradi.hu",
+        "strFacebook": "www.facebook.com/fradi.hu/",
+        "strTwitter": "twitter.com/Fradi_HU",
+        "strInstagram": "www.instagram.com/ftcofficial",
+        "lastSynced": "2025-10-17T18:21:40.464Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "Groupama Aréna",
+        "venueCapacity": 22000,
+        "founded": "1899",
+        "country": "Hungary",
+        "website": "www.fradi.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/wk17od1688115265.png"
+      },
+      "logoUrl": "https://i.ibb.co/0RBxBcqF/partner-ferencv-rosi-tc.png",
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68eea956482bab8ad7af9428",
+      "name": "Hungary Soccer Men - MLSZ",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "soccer"
+        ],
+        "location": [
+          "hungary"
+        ],
+        "league": [
+          "uefaeuropeanchampionships"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f2d3",
+        "68ee530624d876778410f2d4"
+      ],
+      "createdAt": "2025-10-14T19:49:42.657Z",
+      "updatedAt": "2025-10-29T11:31:29.375Z",
+      "sportsDb": {
+        "teamId": "135987",
+        "strTeam": "Hungary",
+        "strTeamShort": "HUN",
+        "strSport": "Soccer",
+        "strLeague": "UEFA European Championships",
+        "leagueId": "4502",
+        "strStadium": "Puskás Aréna",
+        "venueId": "17376",
+        "intStadiumCapacity": 36000,
+        "intFormedYear": "1902",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "The Hungary national football team (Hungarian: Magyar labdarúgó-válogatott) represents Hungary in men's international football and it's controlled by the Hungarian Football Federation, The team has made nine appearances in the FIFA World Cup finals and 3 appearances in the European Championship, The team plays its home matches at the Puskás Aréna that opened in November 2019.\r\n\r\nHungary has a respectable football history, having won three Olympic titles, finishing runners-up in the 1938 and 1954 World Cups, and third in the 1964 UEFA European Football Championship. Hungary revolutionized the sport in the 1950s, laying the tactical fundamentals of Total Football and dominating international football with the remarkable Golden Team which included legend Ferenc Puskás, top goalscorer of the 20th century, to whom FIFA dedicated its newest award, the Puskás Award. The side of that era has the all-time highest Football Elo Ranking in the world, with 2230 in 1954, and one of the longest undefeated runs in football history, remaining unbeaten in 31 games, spanning over four years and including matches such as the Match of the Century.\r\n\r\nDespite these achievements, the Hungarian team faced a severe drought starting from their elimination at the 1986 World Cup, failing to qualify to a major tournament for 30 years and reaching their lowest FIFA ranking (87) in 1996 as well as finishing sixth in their group of Euro 2008 qualifiers before qualifying to Euro 2016, where they made their best European Championship performance in over 40 years after reaching the round of 16.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/ihaoit1717365719.png",
+        "strWebsite": "www.mlsz.hu",
+        "strFacebook": "www.facebook.com/magyarlabdarugoszovetseg",
+        "strTwitter": "twitter.com/MLSZhivatalos",
+        "strInstagram": "www.instagram.com/mlsztv",
+        "lastSynced": "2025-10-18T07:41:47.927Z",
+        "leagueName": "UEFA European Championships",
+        "venueName": "Puskás Aréna",
+        "venueCapacity": 36000,
+        "founded": "1902",
+        "country": "Hungary",
+        "website": "www.mlsz.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/ihaoit1717365719.png"
+      },
+      "logoUrl": "https://i.ibb.co/JFKRCVL8/partner-hungary-soccer-men.png",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68eea983482bab8ad7af9429",
+      "name": "Hungary Basketball Men - MKOSZ",
+      "emoji": "🏀",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "location": [
+          "hungary"
+        ],
+        "league": [
+          "fibabasketballworldcup"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f025",
+        "68ee530624d876778410f1a0"
+      ],
+      "createdAt": "2025-10-14T19:50:27.847Z",
+      "updatedAt": "2025-10-29T11:31:29.404Z",
+      "sportsDb": {
+        "teamId": "140427",
+        "strTeam": "Hungary Basketball",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "FIBA Basketball World Cup",
+        "leagueId": "4549",
+        "strStadium": "",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1935",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "The Hungary national basketball team (Hungarian: Magyar nemzeti kosárlabda-válogatott) represents Hungary in international basketball tournaments. It is governed by the Hungarian Basketball Federation (MKOSZ).\r\n\r\nThe national team had its best years between the 1940s and the 1960s, where it won several medals on the continental stage (1946, 1953, 1955), and qualified for the Summer Olympics on four out of five occasions. After that era, Hungary has been able to reach the EuroBasket twice (1999, 2017) since 1969. At the 2017 event, the country celebrated its first EuroBasket victory in almost 50 years. Hungary vies for their debut appearance at the FIBA World Cup.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/54nyim1606674658.png",
+        "strWebsite": "hunbasket.hu",
+        "strFacebook": "www.facebook.com/kosarsport/",
+        "strTwitter": "twitter.com/Hunbasket1",
+        "strInstagram": "www.instagram.com/hunbasket_mkosz",
+        "lastSynced": "2025-10-17T18:28:40.757Z",
+        "leagueName": "FIBA Basketball World Cup",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "1935",
+        "country": "Hungary",
+        "website": "hunbasket.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/54nyim1606674658.png"
+      },
+      "logoUrl": "https://i.ibb.co/DDJ1Tq91/partner-hungary-basketball-men.png",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68eeac2d482bab8ad7af942a",
+      "name": "MTK",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "budapest",
+          "hungary"
+        ],
+        "sport": [
+          "soccer"
+        ],
+        "partner": [
+          "mtk"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f304",
+        "68ee1cc8331119275c72e2af",
+        "690353f3eb482e63be18a553"
+      ],
+      "createdAt": "2025-10-14T20:01:49.731Z",
+      "updatedAt": "2025-10-30T12:03:11.251Z",
+      "logoUrl": "https://i.ibb.co/JWKw47MN/partner-mtk.png",
+      "sportsDb": {
+        "teamId": "134028",
+        "leagueId": "4690",
+        "venueId": "17879",
+        "venueCapacity": 5322,
+        "venueName": "Hidegkuti Nándor Stadion",
+        "leagueName": "Hungarian NB I",
+        "founded": "1888",
+        "country": "Hungary",
+        "website": "www.mtkhungaria.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/brw5tj1688115226.png",
+        "lastSynced": "2025-10-17T14:14:14.705Z"
+      },
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5a0110eddb9737ecda59",
+      "name": "Alba Fehérvár Kosárlabda",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "location": [
+          "szekesfehervar",
+          "hungary"
+        ],
+        "partner": [
+          "alba_fehervar_kosarlabda"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T08:23:29.316Z",
+      "updatedAt": "2025-10-29T11:31:29.457Z",
+      "logoUrl": "https://i.ibb.co/xQMjLZ8/partner-alba-feh-rv-r-kos-rlabda.png",
+      "sportsDb": {
+        "teamId": "137522",
+        "strTeam": "Alba Fehérvár",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 3000,
+        "intFormedYear": "1949",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Alba Fehérvár are a Hungarian professional basketball club based in Székesfehérvár that compete Nemzeti Bajnokság I, the premier division of basketball in Hungary. Founded as the successor of Székesfehérvári MDSE, they took the Hungarian championship title five times and won the Hungarian cup on four occasions. In addition, Albacomp also were crowned as the Central European Basketball League champions in 2009.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/yxpfv41575042196.png",
+        "strWebsite": "www.albakosar.hu",
+        "strFacebook": "www.facebook.com/albakosar.hu/",
+        "strTwitter": "twitter.com/alba_fehervar",
+        "strInstagram": "www.instagram.com/albafehervar/?hl=hu",
+        "lastSynced": "2025-10-17T18:16:09.926Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "",
+        "venueCapacity": 3000,
+        "founded": "1949",
+        "country": "Hungary",
+        "website": "www.albakosar.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/yxpfv41575042196.png"
+      },
+      "cityId": "6901faee22c96156a9a5dd10",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5a71da117b7f18de2c61",
+      "name": "Atomerőmű SE",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "atomeromu_se"
+        ],
+        "location": [
+          "hungary",
+          "paks"
+        ],
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksag"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T08:25:21.115Z",
+      "updatedAt": "2025-10-29T11:31:29.485Z",
+      "sportsDb": {
+        "teamId": "137523",
+        "strTeam": "Atomerőmű SE",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "ASE Sportcsarnok",
+        "venueId": null,
+        "intStadiumCapacity": 2005,
+        "intFormedYear": "1979",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Atomerőmű SE, sometimes shortened to ASE, is a Hungarian professional basketball team based in Paks. The team plays in the Nemzeti Bajnokság I/A, the highest professional league in Hungary. The team was founded in 1979 and has won the Hungarian championship four times.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/kd71p51575042454.png",
+        "strWebsite": "kosarlabda.ase.hu",
+        "strFacebook": "www.facebook.com/asekosar",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/asekosarlabda/?hl=en",
+        "lastSynced": "2025-10-17T17:21:23.025Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "ASE Sportcsarnok",
+        "venueCapacity": 2005,
+        "founded": "1979",
+        "country": "Hungary",
+        "website": "kosarlabda.ase.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/kd71p51575042454.png"
+      },
+      "logoUrl": "https://i.ibb.co/35Xd95Mf/partner-atomer-m-se.png",
+      "cityId": "6901faee22c96156a9a5dd11",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5abbfd0f22362e4b768f",
+      "name": "Balatonfüredi KSE",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "balatonfuredi_kse"
+        ],
+        "location": [
+          "balatonfured",
+          "hungary"
+        ],
+        "sport": [
+          "handball"
+        ],
+        "league": [
+          "ehfeuropeanleague"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T08:26:35.177Z",
+      "updatedAt": "2025-10-29T11:31:29.515Z",
+      "sportsDb": {
+        "teamId": "137582",
+        "strTeam": "Balatonfüredi KSE",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "EHF European League",
+        "leagueId": "5275",
+        "strStadium": "Észak- Balatoni Regionális Konferencia Központ",
+        "venueId": null,
+        "intStadiumCapacity": 712,
+        "intFormedYear": "1990",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Balatonfüredi Kézilabda Sport Egyesület is a Hungarian team handball club from Balatonfüred, that currently plays in the Nemzeti Bajnokság I. The team won promotion to the top division in 2007 and achieved their best ever result in 2009 by finishing fifth. In the 2009–2010 Hungarian Cup campaign the club finished third, but as the two finalists, MKB Veszprém KC and Pick Szeged already secured their places in the EHF Champions League, BKSE got the right to represent Hungary in the EHF Cup Winners' Cup next season.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/9brjgx1575294263.png",
+        "strWebsite": "www.balatonfuredikc.hu",
+        "strFacebook": "www.facebook.com/balatonfuredikc/",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T17:22:14.908Z",
+        "leagueName": "EHF European League",
+        "venueName": "Észak- Balatoni Regionális Konferencia Központ",
+        "venueCapacity": 712,
+        "founded": "1990",
+        "country": "Hungary",
+        "website": "www.balatonfuredikc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/9brjgx1575294263.png"
+      },
+      "logoUrl": "https://i.ibb.co/GfWpDFMw/partner-balatonf-redi-kse.png",
+      "cityId": "6901faee22c96156a9a5dd12",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5e1a6a32609c5247510a",
+      "name": "Budai Farkasok - Rév",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "budai_farkasok_rev"
+        ],
+        "sport": [
+          "handball"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgi"
+        ],
+        "whatever": [
+          "budai_farkasok_kkuk"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T08:40:58.294Z",
+      "updatedAt": "2025-10-29T11:31:29.545Z",
+      "logoUrl": "https://i.ibb.co/kVC7bq5f/partner-budai-farkasok-r-v.png",
+      "sportsDb": {
+        "teamId": "146744",
+        "strTeam": "Budai Farkasok KKUK",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "Hungarian Nemzeti Bajnokság I",
+        "leagueId": "4535",
+        "strStadium": "",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "0",
+        "strCountry": "Hungary",
+        "strDescriptionEN": null,
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/jimx1n1659722574.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T18:18:46.251Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság I",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "0",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/jimx1n1659722574.png"
+      },
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5f846a32609c5247510b",
+      "name": "ETO University Handball Team",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "eto_university_handball_team"
+        ],
+        "sport": [
+          "handball"
+        ],
+        "location": [
+          "gyor",
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f714"
+      ],
+      "createdAt": "2025-10-15T08:47:00.141Z",
+      "updatedAt": "2025-10-29T11:31:29.576Z",
+      "logoUrl": "https://i.ibb.co/Nd5nv0JW/partner-eto-university-handball-team.png",
+      "sportsDb": {
+        "founded": "2000",
+        "country": "Hungary",
+        "badge": "https://i.ibb.co/bT9zcLg/medium-3.png",
+        "lastSynced": "2025-10-17T18:25:18.639Z"
+      },
+      "cityId": "6901faee22c96156a9a5dd13",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef5fec012e9f51ae782133",
+      "name": "One Veszprém HC",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "one_veszprem_hc",
+        "handball",
+        "veszprem"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [
+        "68ee49f6bd1900cbd97a680b"
+      ],
+      "createdAt": "2025-10-15T08:48:44.569Z",
+      "updatedAt": "2025-10-29T11:31:29.612Z",
+      "logoUrl": "https://i.ibb.co/sJQZgYQN/partner-one-veszpr-m-hc.png",
+      "sportsDb": {
+        "teamId": "137578",
+        "leagueId": "4535",
+        "venueId": "0",
+        "venueCapacity": 5096,
+        "venueName": "Veszprém Aréna",
+        "leagueName": "Hungarian Nemzeti Bajnokság I",
+        "founded": "1977",
+        "country": "Hungary",
+        "website": "handballveszprem.hu/en",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/v1mmzo1575292678.png",
+        "lastSynced": "2025-10-17T14:19:20.552Z"
+      },
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef601c012e9f51ae782137",
+      "name": "OTP Bank - PICK Szeged",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "otp_bank_pick_szeged",
+        "handball",
+        "szeged"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [
+        "68ee49f6bd1900cbd97a680d"
+      ],
+      "createdAt": "2025-10-15T08:49:32.856Z",
+      "updatedAt": "2025-10-29T11:31:29.634Z",
+      "logoUrl": "https://i.ibb.co/pjbDMtxs/partner-otp-bank-pick-szeged.png",
+      "sportsDb": {
+        "teamId": "137577",
+        "leagueId": "4535",
+        "venueId": "31002",
+        "venueCapacity": 3200,
+        "venueName": "Városi Sportcsarnok",
+        "leagueName": "Hungarian Nemzeti Bajnokság I",
+        "founded": "1961",
+        "country": "Hungary",
+        "website": "www.pickhandball.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/t8cmkq1575292156.png",
+        "lastSynced": "2025-10-17T14:18:37.036Z"
+      },
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ef60e4012e9f51ae782141",
+      "name": "Orlen Wisla Plock",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "orlen_wisla_plock",
+        "plock",
+        "handball"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [
+        "68ee49f6bd1900cbd97a6807"
+      ],
+      "createdAt": "2025-10-15T08:52:52.070Z",
+      "updatedAt": "2025-10-29T11:31:29.810Z",
+      "logoUrl": "https://i.ibb.co/WRmP9NG/partner-orlen-wisla-plock.png",
+      "sportsDb": {
+        "venueCapacity": 5467,
+        "venueName": "Orlen Arena",
+        "leagueName": "EHF Champions League",
+        "founded": "1964 (61 years old)",
+        "country": "Poland",
+        "badge": "https://i.ibb.co/C52n6GZb/medium-2.png",
+        "lastSynced": "2025-10-17T14:23:57.397Z"
+      },
+      "countryId": "6901f99defeaa570627a1865"
+    },
+    {
+      "_id": "68ef60fc012e9f51ae782145",
+      "name": "Industria Kielce",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "industria_kielce",
+        "kielce",
+        "handball"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [
+        "68ee49f6bd1900cbd97a6809"
+      ],
+      "createdAt": "2025-10-15T08:53:16.249Z",
+      "updatedAt": "2025-10-29T11:31:29.837Z",
+      "logoUrl": "https://i.ibb.co/wrd02y3Y/partner-industria-kielce.png",
+      "sportsDb": {
+        "teamId": "137453",
+        "leagueId": "4537",
+        "venueId": "25812",
+        "venueCapacity": 4200,
+        "venueName": "Hala Legionów",
+        "leagueName": "Polish Handball Superliga",
+        "founded": "1965",
+        "country": "Poland",
+        "website": "vtkielce.pl",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/gbi5ie1651171680.png",
+        "lastSynced": "2025-10-17T12:49:15.302Z"
+      },
+      "countryId": "6901f99defeaa570627a1865"
+    },
+    {
+      "_id": "68ef612a012e9f51ae782148",
+      "name": "CS Dinamo București",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "cs_dinamo_bucuresti",
+        "bucuresti",
+        "handball"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "handball"
+        ],
+        "league": [],
+        "location": [
+          "romania"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee3254f3043f4e384334df"
+      ],
+      "createdAt": "2025-10-15T08:54:02.799Z",
+      "updatedAt": "2025-10-29T11:31:29.868Z",
+      "sportsDb": {
+        "teamId": "142672",
+        "strTeam": "CS Dinamo București",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "_No League",
+        "leagueId": "4367",
+        "strStadium": "Sala Polivalentă Dinamo",
+        "venueId": null,
+        "intStadiumCapacity": 2538,
+        "intFormedYear": "1953",
+        "strCountry": "Romania",
+        "strDescriptionEN": "Clubul Sportiv Dinamo București is a Romanian handball club based in Bucharest, that competes in the Liga Națională, the top flight of Romanian handball. Nicknamed \"the Red Dogs\", the club was founded in 1948. The club's home ground is the Sala Polivalentă Dinamo in Sector 2, to which it moved in 2013. Dinamo București are among Romania's most successful clubs, having won over twenty competitive honours, including 17 top-flight titles, 6 Romanian Cups, 4 Romanian Supercups, and 1 EHF Champions League. Dinamo București has rivalry with Steaua București.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/h7053l1626321340.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T17:24:10.224Z",
+        "leagueName": "_No League",
+        "venueName": "Sala Polivalentă Dinamo",
+        "venueCapacity": 2538,
+        "founded": "1953",
+        "country": "Romania",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/h7053l1626321340.png"
+      },
+      "logoUrl": "https://i.ibb.co/4g1RV6t2/partner-cs-dinamo-bucure-ti.png",
+      "countryId": "6901f99defeaa570627a1867"
+    },
+    {
+      "_id": "68ef6150012e9f51ae78214c",
+      "name": "HC Zagreb",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "hc_zagreb",
+        "zagreb",
+        "handball"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "handball"
+        ],
+        "league": [],
+        "location": [
+          "croatia"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T08:54:40.479Z",
+      "updatedAt": "2025-10-29T11:31:29.895Z",
+      "logoUrl": "https://i.ibb.co/Jw0HShtv/partner-hc-zagreb.png",
+      "sportsDb": {
+        "teamId": "141555",
+        "strTeam": "RK PPD Zagreb",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "_No League",
+        "leagueId": "4367",
+        "strStadium": "Arena Zagreb",
+        "venueId": "20175",
+        "intStadiumCapacity": 15200,
+        "intFormedYear": "1922",
+        "strCountry": "Croatia",
+        "strDescriptionEN": "Rukometni klub Zagreb (English: Zagreb Handball Club, pronounced ), currently known as Prvo plinarsko društvo Zagreb or simply PPD Zagreb for sponsorship reasons, is a men's professional handball club from Zagreb, Croatia. It competes in the Croatian Premier League, SEHA League, and the EHF Champions League.\r\n\r\nThe team was formerly known as Badel 1862 Zagreb, Banka Croatia Zagreb and Croatia Osiguranje Zagreb for sponsorship reasons. Nowadays, it is called Prvo plinarsko društvo Zagreb or simply PPD Zagreb.\r\n\r\nZagreb was 33 times national champion and won national cup 27 times. The club was also European champion twice and played another four times in the finals, and is among top eight most successful handball clubs in the EHF Champions League's history.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/a1dkjy1623955827.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T18:29:42.253Z",
+        "leagueName": "_No League",
+        "venueName": "Arena Zagreb",
+        "venueCapacity": 15200,
+        "founded": "1922",
+        "country": "Croatia",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/a1dkjy1623955827.png"
+      },
+      "countryId": "6901f99defeaa570627a184b"
+    },
+    {
+      "_id": "68ef7c344f5ff9d34f6c7357",
+      "name": "Armenia",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "soccer"
+        ],
+        "location": [
+          "armenia"
+        ],
+        "league": [
+          "uefaeuropeanchampionships",
+          "fifaworldcup"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T10:49:24.832Z",
+      "updatedAt": "2025-10-29T11:31:29.925Z",
+      "sportsDb": {
+        "teamId": "136469",
+        "strTeam": "Armenia",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "UEFA European Championships",
+        "leagueId": "4502",
+        "strStadium": "Vazgen Sargsyan Republican Stadium",
+        "venueId": "22968",
+        "intStadiumCapacity": 14403,
+        "intFormedYear": "1992",
+        "strCountry": "Armenia",
+        "strDescriptionEN": "The Armenia national football team (Armenian: Հայաստանի ֆուտբոլի ազգային հավաքական, Hayastani futboli azgayin havak'akan) represents Armenia in association football and is controlled by the Football Federation of Armenia, the governing body for football in Armenia. After gaining independence from the Soviet Union, the team played its first international match on October 12, 1992. The national team has participated in the qualification of every major tournament from the UEFA Euro 1996 onwards, though they are yet to qualify for the knockout stage in either a UEFA European Football Championship or a FIFA World Cup. In what was the Armenian national squad's greatest success at present, the team came in third place in the UEFA Euro 2012 qualifying stage, with controversial officiating preventing them from achieving second place, and hence moving on to the play-off stage.\r\n\r\nThe primary training ground is at the Technical Center-Academy of the Football Federation of Armenia in the northern Avan District of the capital Yerevan, and the team plays their home matches at the Republican Stadium.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/8gcur81705941637.png",
+        "strWebsite": "www.ffa.am/en",
+        "strFacebook": "www.facebook.com/FootballFederationofArmenia",
+        "strTwitter": "twitter.com/OfficialArmFF",
+        "strInstagram": "www.instagram.com/armenian_ff",
+        "lastSynced": "2025-10-17T18:16:28.759Z",
+        "leagueName": "UEFA European Championships",
+        "venueName": "Vazgen Sargsyan Republican Stadium",
+        "venueCapacity": 14403,
+        "founded": "1992",
+        "country": "Armenia",
+        "website": "www.ffa.am/en",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/8gcur81705941637.png"
+      },
+      "logoUrl": "https://i.ibb.co/whJjWKNK/partner-armenia.png",
+      "countryId": "6901f99defeaa570627a1844"
+    },
+    {
+      "_id": "68ef837870382b9e35f567e9",
+      "name": "Paris Saint-Germain",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "paris_saint_german",
+        "handball"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:20:24.141Z",
+      "updatedAt": "2025-10-29T11:31:29.955Z",
+      "logoUrl": "https://i.ibb.co/XrWpqFG3/partner-paris-saint-germain.png",
+      "sportsDb": {
+        "venueCapacity": 4300,
+        "venueName": "Stade Pierre de Coubertin",
+        "leagueName": "LNH Division 1",
+        "founded": "1941",
+        "country": "France",
+        "badge": "https://i.ibb.co/Z1kwvSBn/medium.png",
+        "lastSynced": "2025-10-17T13:23:07.240Z"
+      },
+      "countryId": "6901f99defeaa570627a1851"
+    },
+    {
+      "_id": "68ef839470382b9e35f567ea",
+      "name": "SC Magdeburg",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "sc_magdeburg",
+        "handball"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "handball"
+        ],
+        "league": [
+          "germanhandballbundesliga"
+        ],
+        "location": [
+          "germany"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:20:52.986Z",
+      "updatedAt": "2025-10-29T11:31:29.986Z",
+      "sportsDb": {
+        "teamId": "137208",
+        "strTeam": "SC Magdeburg",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "German Handball-Bundesliga",
+        "leagueId": "4533",
+        "strStadium": "GETEC Arena",
+        "venueId": "23209",
+        "intStadiumCapacity": 8071,
+        "intFormedYear": "1955",
+        "strCountry": "Germany",
+        "strDescriptionEN": "SC Magdeburg is a German multi-sports club located in the city of Magdeburg, which offers athletics, canoeing, gymnastics, rowing, swimming and handball. Historically, the club has also had a water polo section as well as a football section that was separated as 1. FC Magdeburg in 1965. The club is most famous for its handball team which has won the Champions League and preceding competitions three times, as well as the Cup Winners' Cup twice and EHF Cup twice. The club also won the East German handball championship ten times from 1970 to 1991. The handball side is the only team to have won the all titles in East Germany and the unified country after 1990.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/7fk4f61643120710.png",
+        "strWebsite": "www.scm-handball.de",
+        "strFacebook": "www.facebook.com/SCMagdeburg/",
+        "strTwitter": "twitter.com/scmagdeburg",
+        "strInstagram": "www.instagram.com/scmagdeburg",
+        "lastSynced": "2025-10-18T07:41:15.056Z",
+        "leagueName": "German Handball-Bundesliga",
+        "venueName": "GETEC Arena",
+        "venueCapacity": 8071,
+        "founded": "1955",
+        "country": "Germany",
+        "website": "www.scm-handball.de",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/7fk4f61643120710.png"
+      },
+      "logoUrl": "https://i.ibb.co/TM1yy0SJ/partner-sc-magdeburg.png",
+      "countryId": "6901f99defeaa570627a1853"
+    },
+    {
+      "_id": "68ef83aa70382b9e35f567eb",
+      "name": "HBC Nantes",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "hbc_nantes",
+        "handball"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "handball"
+        ],
+        "league": [
+          "frenchlnhdivision1"
+        ],
+        "location": [
+          "france"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:21:14.523Z",
+      "updatedAt": "2025-10-29T11:31:30.009Z",
+      "sportsDb": {
+        "teamId": "136774",
+        "strTeam": "HBC Nantes",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "French LNH Division 1",
+        "leagueId": "4536",
+        "strStadium": "Le palais des sports de Beaulieu",
+        "venueId": "31810",
+        "intStadiumCapacity": 5500,
+        "intFormedYear": "1953",
+        "strCountry": "France",
+        "strDescriptionEN": "Handball Club Nantes is a team from Nantes, France, that plays in the LNH Division 1.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/6l4ruw1560677096.png",
+        "strWebsite": "hbcnantes.com/home",
+        "strFacebook": "www.facebook.com/HBCNantesOfficiel",
+        "strTwitter": "twitter.com/HBCNantes",
+        "strInstagram": "instagram.com/hbcnantes",
+        "lastSynced": "2025-10-17T18:30:41.353Z",
+        "leagueName": "French LNH Division 1",
+        "venueName": "Le palais des sports de Beaulieu",
+        "venueCapacity": 5500,
+        "founded": "1953",
+        "country": "France",
+        "website": "hbcnantes.com/home",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/6l4ruw1560677096.png"
+      },
+      "logoUrl": "https://i.ibb.co/Kp4k0G0H/partner-hbc-nantes.png",
+      "countryId": "6901f99defeaa570627a1851"
+    },
+    {
+      "_id": "68ef8b2f642b6684a3c80561",
+      "name": "GOG Håndbold",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "gog",
+          "ehf",
+          "mol"
+        ],
+        "sport": [
+          "handball"
+        ],
+        "location": [
+          "denmark"
+        ],
+        "league": [
+          "danishmenshandballleague"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:53:19.499Z",
+      "updatedAt": "2025-10-29T11:31:30.033Z",
+      "logoUrl": "https://i.ibb.co/XfGcjrYY/partner-gog-h-ndbold.png",
+      "sportsDb": {
+        "teamId": "142777",
+        "strTeam": "GOG Håndbold",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "Danish Mens Handball League",
+        "leagueId": "5135",
+        "strStadium": "Phønix Tag Arena",
+        "venueId": "31013",
+        "intStadiumCapacity": 2265,
+        "intFormedYear": "1973",
+        "strCountry": "Denmark",
+        "strDescriptionEN": "GOG is a handball club based in the small town of Gudme on Funen, Denmark. The club is one of the most successful in the history of Danish handball having won the Danish Handball Championship 7 times and the Danish Handball Cup a record 10 times. Currently GOG competes in the men's Danish Handball League.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/e5mgdo1626394656.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T18:27:20.511Z",
+        "leagueName": "Danish Mens Handball League",
+        "venueName": "Phønix Tag Arena",
+        "venueCapacity": 2265,
+        "founded": "1973",
+        "country": "Denmark",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/e5mgdo1626394656.png"
+      },
+      "countryId": "6901f99defeaa570627a184e"
+    },
+    {
+      "_id": "68ef8b50642b6684a3c80562",
+      "name": "Sporting Clube de Portugal",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "sporting_cp",
+        "handball"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:53:52.491Z",
+      "updatedAt": "2025-10-29T11:31:30.053Z",
+      "logoUrl": "https://i.ibb.co/4whKLRfC/partner-sporting-clube-de-portugal.png",
+      "sportsDb": {
+        "teamId": "142776",
+        "leagueId": "5275",
+        "venueId": null,
+        "venueCapacity": 3000,
+        "venueName": "Pavilhão João Rocha",
+        "leagueName": "EHF European League",
+        "founded": "1932",
+        "country": "Portugal",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/z4r7fu1626394490.png",
+        "lastSynced": "2025-10-17T13:18:27.106Z"
+      },
+      "countryId": "6901f99defeaa570627a1866"
+    },
+    {
+      "_id": "68ef8b612d764adf38d5a27d",
+      "name": "Füchse Berlin",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "fuchse_berlin",
+        "handball",
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:54:09.942Z",
+      "updatedAt": "2025-10-29T11:31:30.075Z",
+      "logoUrl": "https://i.ibb.co/tM6ZtPD7/partner-f-chse-berlin.png",
+      "sportsDb": {
+        "teamId": "137197",
+        "leagueId": "4533",
+        "venueId": "30192",
+        "venueCapacity": 9000,
+        "venueName": "Max-Schmeling-Halle",
+        "leagueName": "German Handball-Bundesliga",
+        "founded": "1891",
+        "country": "Germany",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/kz5cc71567091572.png",
+        "lastSynced": "2025-10-17T14:07:01.092Z"
+      },
+      "countryId": "6901f99defeaa570627a1853"
+    },
+    {
+      "_id": "68ef8b742d764adf38d5a27e",
+      "name": "Kolstad Håndball",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "kolstad_handball",
+        "handball"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:54:28.796Z",
+      "updatedAt": "2025-10-29T11:31:30.108Z",
+      "logoUrl": "https://i.ibb.co/Wv2QPYVT/partner-kolstad-h-ndball.png",
+      "sportsDb": {
+        "teamId": "146571",
+        "leagueId": "5497",
+        "venueId": "31242",
+        "venueCapacity": 2500,
+        "venueName": "Trondheim Spektrum",
+        "leagueName": "_No League",
+        "founded": "1972",
+        "country": "Norway",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/gwfhmo1658697923.png",
+        "lastSynced": "2025-10-17T12:49:52.873Z"
+      },
+      "countryId": "6901f99defeaa570627a1864"
+    },
+    {
+      "_id": "68ef8b9b2d764adf38d5a27f",
+      "name": "Aalborg Håndbold",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "handball"
+        ],
+        "location": [
+          "denmark"
+        ],
+        "partner": [
+          "ehf",
+          "aalborg_handbold"
+        ],
+        "league": [
+          "danishmenshandballleague"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:55:07.794Z",
+      "updatedAt": "2025-10-29T11:31:30.135Z",
+      "sportsDb": {
+        "teamId": "141549",
+        "strTeam": "Aalborg Håndbold",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "Danish Mens Handball League",
+        "leagueId": "5135",
+        "strStadium": "Jutlander Bank Arena",
+        "venueId": "31010",
+        "intStadiumCapacity": 5000,
+        "intFormedYear": "2000",
+        "strCountry": "Denmark",
+        "strDescriptionEN": "Aalborg Handball is a handball club from Aalborg, Denmark that competes in the Danish Handball League. Aalborg Håndbold play there home games in the Gigantium arena in Aalborg - known as Jutlander Bank Arena for sponsorship reasons.\r\n\r\nAalborg Håndbold has won 6 Danish Championships and 1 Danish Cup. Aalborg is the only Danish and also the only Nordic men's team to reach the final in the EHF Champions League.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/xpslwb1623955424.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T17:19:24.042Z",
+        "leagueName": "Danish Mens Handball League",
+        "venueName": "Jutlander Bank Arena",
+        "venueCapacity": 5000,
+        "founded": "2000",
+        "country": "Denmark",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/xpslwb1623955424.png"
+      },
+      "logoUrl": "https://i.ibb.co/GynC0YP/partner-aalborg-h-ndbold.png",
+      "countryId": "6901f99defeaa570627a184e"
+    },
+    {
+      "_id": "68ef8bb42d764adf38d5a280",
+      "name": "HC Eurofarm Pelister",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "ehf",
+        "hc_eurofarm_pelister",
+        "handball",
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:55:32.870Z",
+      "updatedAt": "2025-10-29T11:31:30.165Z",
+      "logoUrl": "https://i.ibb.co/Q39wRNj4/partner-hc-eurofarm-pelister.png",
+      "sportsDb": {
+        "teamId": "142780",
+        "leagueId": "5275",
+        "venueId": null,
+        "venueCapacity": 3700,
+        "venueName": "Sports Hall Boro Čurlevski",
+        "leagueName": "EHF European League",
+        "founded": "2011",
+        "country": "Macedonia",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/20pmid1626395089.png",
+        "lastSynced": "2025-10-17T14:08:05.307Z"
+      },
+      "countryId": "6901f99defeaa570627a1863"
+    },
+    {
+      "_id": "68ef8bc62d764adf38d5a281",
+      "name": "Barça",
+      "emoji": "🤾🏻",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "ehf",
+          "barca"
+        ],
+        "sport": [
+          "handball"
+        ],
+        "location": [
+          "spain"
+        ],
+        "league": [
+          "spanishligaasobal"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-15T11:55:50.277Z",
+      "updatedAt": "2025-10-29T11:31:30.194Z",
+      "logoUrl": "https://i.ibb.co/0166Pg7/partner-bar-a.png",
+      "sportsDb": {
+        "teamId": "136751",
+        "strTeam": "FC Barcelona Handbol",
+        "strTeamShort": "",
+        "strSport": "Handball",
+        "strLeague": "Spanish Liga ASOBAL",
+        "leagueId": "4534",
+        "strStadium": "Palau Blaugrana",
+        "venueId": "31029",
+        "intStadiumCapacity": 7500,
+        "intFormedYear": "1942",
+        "strCountry": "Spain",
+        "strDescriptionEN": "Futbol Club Barcelona Handbol, for sponsorship reasons FC Barcelona Lassa, is a Spanish handball team based in Barcelona, Catalonia. It is a part of the FC Barcelona multi sports club, and was founded on 29 November 1942. The club competes domestically in the Liga ASOBAL and in the European Champions League. It is the most successful handball club in Spain and Europe with a record number of domestic and international titles.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/r2j4y31703595502.png",
+        "strWebsite": "www.fcbarcelona.com/handball",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T17:23:39.233Z",
+        "leagueName": "Spanish Liga ASOBAL",
+        "venueName": "Palau Blaugrana",
+        "venueCapacity": 7500,
+        "founded": "1942",
+        "country": "Spain",
+        "website": "www.fcbarcelona.com/handball",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/r2j4y31703595502.png"
+      },
+      "countryId": "6901f99defeaa570627a186d"
+    },
+    {
+      "_id": "68f120783e9851f15e2afe8b",
+      "name": "Nyíregyháza FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "nyiregyhaza_fc"
+        ],
+        "location": [
+          "nyiregyhaza",
+          "hungary"
+        ],
+        "sport": [
+          "soccer"
+        ],
+        "league": [
+          "hungarian_football_league_division_i"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-16T16:42:32.410Z",
+      "updatedAt": "2025-10-29T11:31:30.225Z",
+      "logoUrl": "https://i.ibb.co/Kpbn48c7/partner-ny-regyh-za-fc.png",
+      "sportsDb": {
+        "teamId": "141223",
+        "leagueId": "4690",
+        "venueId": "31410",
+        "venueCapacity": 10300,
+        "venueName": "Városi Stadion Nyíregyháza",
+        "leagueName": "Hungarian NB I",
+        "founded": "1928",
+        "country": "Hungary",
+        "website": "nyiregyhazaspartacus.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/un2th71617288448.png",
+        "lastSynced": "2025-10-17T14:17:31.975Z"
+      },
+      "cityId": "6901faee22c96156a9a5dd14",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f12192d3db48e18cd809df",
+      "name": "Mezőkövesd Zsóry FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "league": [
+          "hungarian_football_league_division_ii"
+        ],
+        "location": [
+          "mezokovesd",
+          "hungary"
+        ],
+        "sport": [
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-16T16:47:14.351Z",
+      "updatedAt": "2025-10-29T11:31:30.257Z",
+      "logoUrl": "https://i.ibb.co/1YKFSPcc/partner-mez-k-vesd-zs-ry-fc.png",
+      "sportsDb": {
+        "teamId": "138181",
+        "leagueId": "4965",
+        "venueId": "31409",
+        "venueCapacity": 4183,
+        "venueName": "Városi Stadion Mezőkövesd",
+        "leagueName": "Hungarian NB II",
+        "founded": "1975",
+        "country": "Hungary",
+        "website": "mezokovesdzsory.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/lznedy1579728539.png",
+        "lastSynced": "2025-10-17T14:17:09.913Z"
+      },
+      "cityId": "6901faee22c96156a9a5dd15",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f1220fd3db48e18cd809e1",
+      "name": "Budafoki MTE",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "budafoki_mte"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "budapest",
+          "hungary",
+          "budafok"
+        ],
+        "sport": [
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "createdAt": "2025-10-16T16:49:19.337Z",
+      "updatedAt": "2025-10-29T11:31:30.286Z",
+      "logoUrl": "https://i.ibb.co/22KzVtL/partner-budafoki-mte.png",
+      "sportsDb": {
+        "teamId": "140065",
+        "strTeam": "Budafoki MTE",
+        "strTeamShort": null,
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Promontor utcai Stadion",
+        "venueId": null,
+        "intStadiumCapacity": 4000,
+        "intFormedYear": "1912",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Budafoki Munkás Testedző Egyesület is a Hungarian football club from the town of Budafok, Budapest, Hungary.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/rhdnzt1594991933.png",
+        "strWebsite": "budafokimte.hu",
+        "strFacebook": "www.facebook.com/pg/BudafokiMTE/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/budafokimte",
+        "lastSynced": "2025-10-17T18:17:26.726Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Promontor utcai Stadion",
+        "venueCapacity": 4000,
+        "founded": "1912",
+        "country": "Hungary",
+        "website": "budafokimte.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/rhdnzt1594991933.png"
+      },
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f25682efe14c2e19c4fc8d",
+      "name": "Finland Basketball Women",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "finland"
+        ],
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "eurobasketwomen"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/XrRHNNKB/partner-finland-basketball-women.png",
+      "sportsDb": {
+        "teamId": "146125",
+        "strTeam": "Finland Basketball Women",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "EuroBasket Women",
+        "leagueId": "4890",
+        "strStadium": "",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "0",
+        "strCountry": "Finland",
+        "strDescriptionEN": null,
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/gfjkta1651192934.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T18:26:29.431Z",
+        "leagueName": "EuroBasket Women",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "0",
+        "country": "Finland",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/gfjkta1651192934.png"
+      },
+      "createdAt": "2025-10-17T14:45:22.960Z",
+      "updatedAt": "2025-10-29T11:31:30.306Z",
+      "countryId": "6901f99defeaa570627a1850"
+    },
+    {
+      "_id": "68f2570fefe14c2e19c4fc8e",
+      "name": "Hungary Basketball Women - MKOSZ",
+      "emoji": "🏀",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f1a0"
+      ],
+      "logoUrl": "https://i.ibb.co/XrwMLcx5/partner-hungary-basketball-women.png",
+      "sportsDb": {
+        "teamId": "146128",
+        "leagueId": "4891",
+        "venueId": "0",
+        "venueCapacity": 0,
+        "venueName": "",
+        "leagueName": "FIBA Womens World Cup",
+        "founded": "0",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/70oiw41651192951.png",
+        "lastSynced": "2025-10-17T14:47:57.591Z"
+      },
+      "createdAt": "2025-10-17T14:47:43.761Z",
+      "updatedAt": "2025-10-29T11:31:30.334Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f258becb107e78f6c141d4",
+      "name": "HC Fribourg-Gottéron",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ],
+        "partner": [
+          "hc_fribourg_gotteron"
+        ],
+        "league": [
+          "swissnationalleague"
+        ],
+        "location": [
+          "switzerland"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/Myrz9XDR/partner-hc-fribourg-gott-ron.png",
+      "sportsDb": {
+        "teamId": "140976",
+        "strTeam": "HC Fribourg-Gottéron",
+        "strTeamShort": "",
+        "strSport": "Ice Hockey",
+        "strLeague": "Swiss National League",
+        "leagueId": "4934",
+        "strStadium": "BCF Arena",
+        "venueId": "32219",
+        "intStadiumCapacity": 8934,
+        "intFormedYear": "1938",
+        "strCountry": "Switzerland",
+        "strDescriptionEN": "HC Fribourg-Gottéron is a professional ice hockey team based in Fribourg, Switzerland, which competes in the National League (NL). The team is the sixth most attended team in Switzerland for the 2015/16 season with 6,156 spectators.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/w9ifxt1647290466.png",
+        "strWebsite": "www.gotteron.ch",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-17T18:27:40.689Z",
+        "leagueName": "Swiss National League",
+        "venueName": "BCF Arena",
+        "venueCapacity": 8934,
+        "founded": "1938",
+        "country": "Switzerland",
+        "website": "www.gotteron.ch",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/w9ifxt1647290466.png"
+      },
+      "createdAt": "2025-10-17T14:54:54.523Z",
+      "updatedAt": "2025-10-29T11:31:30.356Z",
+      "countryId": "6901f99defeaa570627a186f"
+    },
+    {
+      "_id": "68f2597c12c39121b229dcd7",
+      "name": "Lausanne HC",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/tMn8848c/partner-lausanne-hc-lausanne-hc.png",
+      "sportsDb": {
+        "teamId": "141409",
+        "leagueId": "4934",
+        "venueId": "24559",
+        "venueCapacity": 9600,
+        "venueName": "Vaudoise Aréna",
+        "leagueName": "Swiss National League",
+        "founded": "1922",
+        "country": "Switzerland",
+        "website": "www.lausannehc.ch",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/24kiss1703935058.png",
+        "lastSynced": "2025-10-17T14:58:26.045Z"
+      },
+      "createdAt": "2025-10-17T14:58:04.057Z",
+      "updatedAt": "2025-10-29T11:31:30.384Z",
+      "countryId": "6901f99defeaa570627a186f"
+    },
+    {
+      "_id": "68f25c1c72d0890a6f8ebfa6",
+      "name": "Storhamar",
+      "emoji": "🏒",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/Y4Y75GJ7/partner-storhammar-hamar.png",
+      "sportsDb": {
+        "teamId": "140842",
+        "leagueId": "4926",
+        "venueId": "31548",
+        "venueCapacity": 0,
+        "venueName": "CC Amfi",
+        "leagueName": "Norwegian Fjordkraft-ligaen",
+        "founded": "1957",
+        "country": "Norway",
+        "website": "www.sil.no",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/mwtp8b1697194388.png",
+        "lastSynced": "2025-10-17T15:10:39.324Z"
+      },
+      "createdAt": "2025-10-17T15:09:16.981Z",
+      "updatedAt": "2025-10-29T11:31:30.413Z",
+      "countryId": "6901f99defeaa570627a1864"
+    },
+    {
+      "_id": "68f25ce68894db3cbca8a1f5",
+      "name": "Fischtown Pinguins Bremerhaven",
+      "emoji": "🏒",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ],
+        "league": [
+          "germandel"
+        ],
+        "location": [
+          "germany"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/1J9QSrPJ/partner-fischtown-pinguins-bremerhaven.png",
+      "sportsDb": {
+        "teamId": "140914",
+        "strTeam": "Fischtown Pinguins",
+        "strTeamShort": "FPB",
+        "strSport": "Ice Hockey",
+        "strLeague": "German DEL",
+        "leagueId": "4925",
+        "strStadium": "Eisarena Bremerhaven",
+        "venueId": "31396",
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1974",
+        "strCountry": "Germany",
+        "strDescriptionEN": "The Fischtown Pinguins, also known as REV Bremerhaven, are a professional ice hockey team based in Bremerhaven, Germany. From 2004 to 2016 the team played at the second tier of ice hockey in Germany, known as the 2nd Bundesliga until the 2012–13 season and, from the 2013–14 season onward, as the DEL2. On 1 July 2016 the team was granted a DEL licence for the 2016–17 season to replace the Hamburg Freezers which had withdrawn from the league.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/vcq3zw1647637845.png",
+        "strWebsite": "fischtown-pinguins.de",
+        "strFacebook": "www.facebook.com/Fischtown.Pinguins",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/ft_pinguins",
+        "lastSynced": "2025-10-17T18:26:56.031Z",
+        "leagueName": "German DEL",
+        "venueName": "Eisarena Bremerhaven",
+        "venueCapacity": 0,
+        "founded": "1974",
+        "country": "Germany",
+        "website": "fischtown-pinguins.de",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/vcq3zw1647637845.png"
+      },
+      "createdAt": "2025-10-17T15:12:38.864Z",
+      "updatedAt": "2025-10-29T11:31:30.439Z",
+      "countryId": "6901f99defeaa570627a1853"
+    },
+    {
+      "_id": "68f276da306a309512e230e2",
+      "name": "Kometa-KVGY Kaposvári KK",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/ynv7Wm4X/partner-kometa-kvgy-kaposv-ri-kk.png",
+      "sportsDb": {
+        "teamId": "137526",
+        "leagueId": "4580",
+        "venueId": null,
+        "venueCapacity": 3000,
+        "venueName": "Kaposvár Aréna",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "founded": "1960",
+        "country": "Hungary",
+        "website": "www.delfinek.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/eiyqak1575043489.png",
+        "lastSynced": "2025-10-17T17:04:47.906Z"
+      },
+      "createdAt": "2025-10-17T17:03:22.983Z",
+      "updatedAt": "2025-10-29T11:31:30.464Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f625856d0f41c3f6a4c84c",
+      "name": "DEAC",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+      "sportsDb": {
+        "teamId": "137329",
+        "strTeam": "DEAC",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "Oláh Gábor Sports Hall",
+        "venueId": null,
+        "intStadiumCapacity": 1000,
+        "intFormedYear": "1919",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Debreceni EAC, commonly known as DEAC, is a professional basketball club from Debrecen, Hungary. It is part of the multi-sports club Debreceni EAC. The club plays its home games at the Oláh Gábor Sports Hall, which has a capacity of 1,000 people. They entered the top division Nemzeti Bajnokság I/A for the 2017–18 season.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/o6key11571921458.png",
+        "strWebsite": "www.deac.hu/hirek/kosarlabda",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-20T12:17:13.903Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "Oláh Gábor Sports Hall",
+        "venueCapacity": 1000,
+        "founded": "1919",
+        "country": "Hungary",
+        "website": "www.deac.hu/hirek/kosarlabda",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/o6key11571921458.png"
+      },
+      "createdAt": "2025-10-20T12:05:25.754Z",
+      "updatedAt": "2025-10-29T11:31:30.493Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f6258c6d0f41c3f6a4c84d",
+      "name": "European Aquatics",
+      "emoji": "💦",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "waterpolo",
+          "swimming",
+          "artistic_swimming"
+        ],
+        "location": [
+          "europe"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ece9a1c502c1f17b7f9b83",
+        "68ee49f6bd1900cbd97a67f7",
+        "68ee49f6bd1900cbd97a67fb",
+        "68ee530624d876778410f06f"
+      ],
+      "logoUrl": "https://i.ibb.co/60bcMpb1/partner-european-aquatics.jpg",
+      "sportsDb": {
+        "country": "European Union",
+        "badge": "https://i.ibb.co/MyN3WqTS/03caseweb-ea-after.jpg",
+        "lastSynced": "2025-10-20T12:08:44.086Z"
+      },
+      "createdAt": "2025-10-20T12:05:32.574Z",
+      "updatedAt": "2025-10-21T10:08:57.803Z"
+    },
+    {
+      "_id": "68f625976d0f41c3f6a4c84e",
+      "name": "Duna Aszfalt-DTKH Kecskemét",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/7JpZnk7C/partner-duna-aszfalt-dtkh-kecskem-t.png",
+      "sportsDb": {
+        "teamId": "137527",
+        "strTeam": "DTKH Kecskemét",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 1200,
+        "intFormedYear": "2012",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Kecskeméti TE, for sponsorship reasons named KTE-Duna Aszfalt, is the basketball team of the Hungarian sports club Kecskeméti TE, based in Kecskemét. The team plays in the NB I/A, the Hungarian first division.",
+        "strTeamBadge": "https://www.thesportsdb.com/images/media/team/badge/sa5qo41759414053.png",
+        "strWebsite": "ktekosar.com",
+        "strFacebook": "www.facebook.com/ktekosar/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/ktedunaaszfalt/?hl=en",
+        "lastSynced": "2025-10-20T12:18:32.885Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "",
+        "venueCapacity": 1200,
+        "founded": "2012",
+        "country": "Hungary",
+        "website": "ktekosar.com",
+        "badge": "https://www.thesportsdb.com/images/media/team/badge/sa5qo41759414053.png"
+      },
+      "createdAt": "2025-10-20T12:05:43.018Z",
+      "updatedAt": "2025-10-29T11:31:30.524Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f625ae6d0f41c3f6a4c84f",
+      "name": "Egis Körmend",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/4ws0kW1Z/partner-egis-k-rmend.png",
+      "sportsDb": {
+        "teamId": "137524",
+        "strTeam": "BC Körmend",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 2000,
+        "intFormedYear": "1962",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "BC Körmend, named Egis Körmend for sponsorship reasons, is a Hungarian professional basketball club, based in Körmend. The club was founded in 1962 and has won the domestic championship three times (1987, 1996, 2003) and the domestic cup seven times (1990, 1993–1995, 1997, 1998, 2016).",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/odkvrt1575042907.png",
+        "strWebsite": "bckormend.hu",
+        "strFacebook": "www.facebook.com/EgisKormendOfficial/",
+        "strTwitter": "twitter.com/egiskormend",
+        "strInstagram": "www.instagram.com/egiskormend/?hl=en",
+        "lastSynced": "2025-10-20T12:19:02.720Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "",
+        "venueCapacity": 2000,
+        "founded": "1962",
+        "country": "Hungary",
+        "website": "bckormend.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/odkvrt1575042907.png"
+      },
+      "createdAt": "2025-10-20T12:06:06.285Z",
+      "updatedAt": "2025-10-29T11:31:30.554Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f625c96d0f41c3f6a4c850",
+      "name": "Endo Plus Service-Honvéd",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/rfbdBhKW/partner-endo-plus-service-honv-d.png",
+      "sportsDb": {
+        "teamId": "146890",
+        "strTeam": "Budapesti Honvéd SE",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1950",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Budapesti Honvéd SE is a basketball club based in Budapest, Hungary. With 33 Hungarian Championships and 17 Hungarian Cups won from the 1950s to the 1990s, it is the most successful team in the Hungarian national basketball league. The club was relegated from the 1st division in 2001, but continued as an amateur club in the 3rd division. Between 2004 and 2022 they have played in the 2nd division.",
+        "strTeamBadge": "https://www.thesportsdb.com/images/media/team/badge/fawo6s1759413665.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-20T12:19:59.525Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "1950",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://www.thesportsdb.com/images/media/team/badge/fawo6s1759413665.png"
+      },
+      "createdAt": "2025-10-20T12:06:33.669Z",
+      "updatedAt": "2025-10-29T11:31:30.577Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f625e56d0f41c3f6a4c851",
+      "name": "Falco-Vulcano Energia KC Szombathely",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/vCKQYZDQ/partner-falco-vulcano-energia-kc-szombathely.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/svMMxY7P/falco.png",
+        "lastSynced": "2025-10-27T15:21:15.999Z"
+      },
+      "createdAt": "2025-10-20T12:07:01.453Z",
+      "updatedAt": "2025-10-27T15:21:22.251Z"
+    },
+    {
+      "_id": "68f625ff6d0f41c3f6a4c852",
+      "name": "Kometa-KVGY Kaposvári KK",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:07:27.599Z",
+      "updatedAt": "2025-10-20T12:07:27.599Z"
+    },
+    {
+      "_id": "68f626106d0f41c3f6a4c853",
+      "name": "MVM-OSE Lions",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:07:44.245Z",
+      "updatedAt": "2025-10-20T12:07:44.245Z"
+    },
+    {
+      "_id": "68f62632f1081bc59a724bf8",
+      "name": "NHSZ-Szolnoki Olajbányász",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:08:18.875Z",
+      "updatedAt": "2025-10-20T12:08:18.875Z"
+    },
+    {
+      "_id": "68f62647f1081bc59a724bf9",
+      "name": "NKA Universitas Pécs",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "sportsDb": {
+        "teamId": "148275",
+        "strTeam": "NKA Pecs",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "0",
+        "strCountry": "Hungary",
+        "strDescriptionEN": null,
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/6fq0a81713953365.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-20T12:45:28.252Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "0",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/6fq0a81713953365.png"
+      },
+      "createdAt": "2025-10-20T12:08:39.673Z",
+      "updatedAt": "2025-10-29T11:31:30.608Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f62648f1081bc59a724bfa",
+      "name": "WUKF",
+      "emoji": "🥋",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "karate"
+        ],
+        "location": [
+          "europe"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68f26e235684582f7494e216",
+        "68f26e235684582f7494e220",
+        "68f26e235684582f7494e228",
+        "68faf70c3cbb3b2ffa892055",
+        "68faf70c3cbb3b2ffa89204b",
+        "68faf70c3cbb3b2ffa892054",
+        "68faf70c3cbb3b2ffa89204d",
+        "68f26e235684582f7494e21f",
+        "68f26e235684582f7494e227",
+        "6905f87c1a93ece6a8f4e9be"
+      ],
+      "logoUrl": "https://i.ibb.co/whT1Dvfy/partner-wukf.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/XxRfj7Nf/wukf.png",
+        "lastSynced": "2025-10-21T20:47:49.055Z"
+      },
+      "createdAt": "2025-10-20T12:08:40.042Z",
+      "updatedAt": "2025-11-01T12:09:45.468Z"
+    },
+    {
+      "_id": "68f6268feaea906244f28923",
+      "name": "AS Roma",
+      "emoji": "⚽️",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "soccer"
+        ],
+        "league": [
+          "italianseriea"
+        ],
+        "location": [
+          "italy"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f08f",
+        "68ee530624d876778410f21f",
+        "68ee530624d876778410f087"
+      ],
+      "logoUrl": "https://i.ibb.co/r2yBLxCG/partner-as-roma.png",
+      "sportsDb": {
+        "teamId": "133682",
+        "strTeam": "Roma",
+        "strTeamShort": "ROM",
+        "strSport": "Soccer",
+        "strLeague": "Italian Serie A",
+        "leagueId": "4332",
+        "strStadium": "Stadio Olimpico",
+        "venueId": "17086",
+        "intStadiumCapacity": 70634,
+        "intFormedYear": "1927",
+        "strCountry": "Italy",
+        "strDescriptionEN": "Associazione Sportiva Roma, commonly referred to as Roma, is an Italian professional football club based in Rome. Founded by a merger in 1927, Roma have participated in the top-tier of Italian football for all of their existence except for 1951–52.\r\n\r\nRoma have won Serie A three times, in 1941–42, 1982–83 and 2000–01, as well as winning nine Coppa Italia titles and two Supercoppa Italiana titles. In European competitions, Roma won the Inter-Cities Fairs Cup in 1960–61 and were runners-up in the 1983–84 European Cup and the 1990–91 UEFA Cup.\r\n\r\nFifteen players have won the FIFA World Cup while playing at Roma: Ferraris, Guaita and Masetti (1934); Donati, Monzeglio and Serantoni (1938); Bruno Conti (1982); Rudi Voller and Berthold (1990); Aldair (1994); Candela (1998); Cafu (2002); Daniele De Rossi, Simone Perrotta and Francesco Totti (2006).\r\n\r\nSince 1953, Roma have played their home matches at the Stadio Olimpico, a venue they share with city rivals Lazio. With a capacity of over 72,000, it is the second-largest of its kind in Italy, with only the San Siro able to seat more. The club plan to move to a new stadium, though this is yet to start construction.\r\n\r\nThe club's home colours are Tyrian purple and gold, which gives Roma their nickname \"I Giallorossi\" (\"The Yellow and Reds\"). Their club badge features a she-wolf, an allusion to the founding myth of Rome.",
+        "strTeamBadge": "https://www.thesportsdb.com/images/media/team/badge/jwro2s1760820674.png",
+        "strWebsite": "www.asroma.it",
+        "strFacebook": "www.facebook.com/officialasroma/",
+        "strTwitter": "twitter.com/officialasroma",
+        "strInstagram": "www.instagram.com/officialasroma",
+        "lastSynced": "2025-10-20T12:16:30.116Z",
+        "leagueName": "Italian Serie A",
+        "venueName": "Stadio Olimpico",
+        "venueCapacity": 70634,
+        "founded": "1927",
+        "country": "Italy",
+        "website": "www.asroma.it",
+        "badge": "https://www.thesportsdb.com/images/media/team/badge/jwro2s1760820674.png"
+      },
+      "createdAt": "2025-10-20T12:09:51.525Z",
+      "updatedAt": "2025-10-29T11:31:30.643Z",
+      "countryId": "6901f99defeaa570627a1858"
+    },
+    {
+      "_id": "68f626a7eaea906244f28924",
+      "name": "Sopron KC",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:10:15.592Z",
+      "updatedAt": "2025-10-20T12:10:15.592Z"
+    },
+    {
+      "_id": "68f626b4eaea906244f28925",
+      "name": "Swiss Ice Hockey Federation (SIHF)",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/QvCstx3q/bibbao1626129533.png",
+      "sportsDb": {
+        "leagueName": "Swiss Ice Hockey Federation (SIHF)",
+        "country": "Switzerland",
+        "badge": "https://i.ibb.co/QvCstx3q/bibbao1626129533.png",
+        "lastSynced": "2025-10-20T14:27:16.935Z"
+      },
+      "createdAt": "2025-10-20T12:10:28.330Z",
+      "updatedAt": "2025-10-29T11:31:30.666Z",
+      "countryId": "6901f99defeaa570627a186f"
+    },
+    {
+      "_id": "68f626b7eaea906244f28926",
+      "name": "SZTE-Szedeák",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/JW30BBZX/partner-szte-szeged-k.png",
+      "sportsDb": {
+        "founded": "1992",
+        "country": "Hungary",
+        "badge": "https://i.ibb.co/20XtP8QF/medium-4.png",
+        "lastSynced": "2025-10-20T12:13:34.826Z"
+      },
+      "createdAt": "2025-10-20T12:10:31.829Z",
+      "updatedAt": "2025-10-29T11:31:30.695Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f626e0eaea906244f28928",
+      "name": "Zalakerámia ZTE KK",
+      "emoji": "🏀",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "hungariannemzetibajnoksgia"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/dwSBFr2X/partner-zalaker-mia-zte-kk.png",
+      "sportsDb": {
+        "teamId": "137532",
+        "strTeam": "ZTE KK",
+        "strTeamShort": null,
+        "strSport": "Basketball",
+        "strLeague": "Hungarian Nemzeti Bajnokság IA",
+        "leagueId": "4580",
+        "strStadium": "Városi Sportcsarnok",
+        "venueId": null,
+        "intStadiumCapacity": 4000,
+        "intFormedYear": "1979",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Zalaegerszegi Torna Egylet Kosárlabda Klub now mostly known for sponsorship reasons as Zalakerámia ZTE is a professional basketball team from Zalaegerszeg, Hungary. ZTE currently plays in the Nemzeti Bajnokság I/A, the Hunagrian top division. In its history the team has won four national championships – the last one in 2010 – and four national cups. Between 1994 till 1997 ZTE also played in Europe, in the Korac Cup.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/r79fzm1575045647.png",
+        "strWebsite": "www.ztekosar.hu",
+        "strFacebook": "www.facebook.com/ztekosar",
+        "strTwitter": "twitter.com/kk_zte",
+        "strInstagram": "www.instagram.com/zalakeramiaztekk/?hl=hu",
+        "lastSynced": "2025-10-20T12:14:02.049Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság IA",
+        "venueName": "Városi Sportcsarnok",
+        "venueCapacity": 4000,
+        "founded": "1979",
+        "country": "Hungary",
+        "website": "www.ztekosar.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/r79fzm1575045647.png"
+      },
+      "createdAt": "2025-10-20T12:11:12.398Z",
+      "updatedAt": "2025-10-29T11:31:30.794Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f628ff36dae2424f1d13cb",
+      "name": "BKG-PRIMA Szigetszentmiklós",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "location": [
+          "szigetszentmiklos",
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/XxCqXBrg/partner-bkg-prima-szigetszentmikl-s.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/PzWczngc/Partner-BKG-Prima-Szigetszentmikl-s-Kos-rlabda.png",
+        "lastSynced": "2025-10-28T10:32:18.630Z"
+      },
+      "createdAt": "2025-10-20T12:20:15.030Z",
+      "updatedAt": "2025-10-28T10:32:23.821Z"
+    },
+    {
+      "_id": "68f6290f3ce24b9fe4684673",
+      "name": "Csata TKK",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/gZy4Rsy9/partner-csata-tkk.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/21WS3hGv/csata-szines-1.png",
+        "lastSynced": "2025-10-28T10:42:07.378Z"
+      },
+      "createdAt": "2025-10-20T12:20:31.073Z",
+      "updatedAt": "2025-10-28T10:42:12.084Z"
+    },
+    {
+      "_id": "68f629483ce24b9fe4684674",
+      "name": "Dávid Kornél Kosárlabda Akadémia",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/5gYzXG6w/partner-d-vid-korn-l-kos-rlabda-akad-mia.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/4R82VF7N/Partner-David-Kornel-Akademia.png",
+        "lastSynced": "2025-10-27T15:41:58.845Z"
+      },
+      "createdAt": "2025-10-20T12:21:28.461Z",
+      "updatedAt": "2025-10-27T15:42:01.137Z"
+    },
+    {
+      "_id": "68f6295736dae2424f1d13cc",
+      "name": "DVTK HUNTHERM",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "noleaguebasketball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee49f6bd1900cbd97a6820"
+      ],
+      "logoUrl": "https://i.ibb.co/7d2GQvW9/partner-dvtk-huntherm.png",
+      "sportsDb": {
+        "teamId": "148316",
+        "strTeam": "DVTK Women",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "_No League Basketball",
+        "leagueId": "4836",
+        "strStadium": "DVTK Arena",
+        "venueId": "0",
+        "intStadiumCapacity": 0,
+        "intFormedYear": "2011",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Diósgyőri VTK is a Hungarian women's basketball club playing in the Hungarian Championship. It was founded after World War II. In 1991, it separated from the Diósgyőri VTK football club and began to play as Diósgyőri KSK. It won the National Cup in 1993 and 1994 and it was a regular in the Ronchetti Cup through the 1990s. It has subsequently made four appearances in the Eurocup. In 2006, the club dissolved but was re-founded in 2011. In 2013, the club re-joined the DVTK.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/akkl9q1757703702.png",
+        "strWebsite": "kosarlabda.dvtk.hu",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-20T12:34:33.946Z",
+        "leagueName": "_No League Basketball",
+        "venueName": "DVTK Arena",
+        "venueCapacity": 0,
+        "founded": "2011",
+        "country": "Hungary",
+        "website": "kosarlabda.dvtk.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/akkl9q1757703702.png"
+      },
+      "createdAt": "2025-10-20T12:21:43.642Z",
+      "updatedAt": "2025-10-29T11:31:30.829Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f6297236dae2424f1d13cd",
+      "name": "ELTE BEAC Újbuda",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "budapest",
+          "hungary"
+        ],
+        "sport": [
+          "basketball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:22:10.481Z",
+      "updatedAt": "2025-10-20T12:54:14.026Z"
+    },
+    {
+      "_id": "68f6299536dae2424f1d13ce",
+      "name": "NKA Universitas Pécs Női",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "noleaguebasketball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/hRHs53bN/partner-nka-universitas-p-cs.png",
+      "sportsDb": {
+        "teamId": "151539",
+        "strTeam": "NKA Pecs Women",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "_No League Basketball",
+        "leagueId": "4836",
+        "strStadium": "",
+        "venueId": "0",
+        "intFormedYear": "1923",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "PEAC-Pécs is the first-class women basketball team of Pécs, Hungary. The team started in the Hungarian Championship division A in 2012/2013 season. Beside the Hungarian Championship the team also attending the Hungarian Cup and the MŽRKL also known as the Women's Adriatic League.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/eah1841741173441.png",
+        "strWebsite": "www.nkapecswomen.hu",
+        "strFacebook": "www.facebook.com/nkapecswomen",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/nkapecswomen",
+        "lastSynced": "2025-10-20T12:45:43.858Z",
+        "leagueName": "_No League Basketball",
+        "venueName": "",
+        "founded": "1923",
+        "country": "Hungary",
+        "website": "www.nkapecswomen.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/eah1841741173441.png"
+      },
+      "createdAt": "2025-10-20T12:22:45.607Z",
+      "updatedAt": "2025-10-29T11:31:30.855Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f629a536dae2424f1d13cf",
+      "name": "Sopron Basket",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "noleaguebasketball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/yFDt9wgg/partner-sopron-basket.png",
+      "sportsDb": {
+        "teamId": "144035",
+        "strTeam": "Sopron Basket Women",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "_No League Basketball",
+        "leagueId": "4836",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 2500,
+        "intFormedYear": "1921",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Sopron Basket is a Hungarian women's basketball club from Sopron. Founded in 1921 as the women's section of Soproni VSE, it has played in the Hungarian National Championship since 1986. It plays its home games in the Aréna Sopron.\r\n\r\nSopron won its first national championship in 1993, making its debut in the Euroleague the following season. Settled in the top positions, the team played in subsequent years the Ronchetti Cup, which it won in 1998 beating ASPTT Aix-en-Provence. As of 2011 Sopron remains the only Hungarian women's basketball team that has won an international competition since the fall of communism. The following year Sopron won its second championship, which marked its return to the Euroleague, which it has played every year since.\r\n\r\nThe team has won four more championships since 2002, three of them between 2007 and 2011. In 2009 it reached the Euroleague's Final Four after beating Wisła Kraków and Bourges Basket in the knockout stages, ending 4th after losing to CB Avenida and UMMC Ekaterinburg.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/borydc1746286880.png",
+        "strWebsite": "www.wb-sopron.com",
+        "strFacebook": "www.facebook.com/hajrasopron/",
+        "strTwitter": "twitter.com/wbsopron",
+        "strInstagram": "www.instagram.com/wbsopron",
+        "lastSynced": "2025-10-20T12:51:32.994Z",
+        "leagueName": "_No League Basketball",
+        "venueName": "",
+        "venueCapacity": 2500,
+        "founded": "1921",
+        "country": "Hungary",
+        "website": "www.wb-sopron.com",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/borydc1746286880.png"
+      },
+      "createdAt": "2025-10-20T12:23:01.178Z",
+      "updatedAt": "2025-10-29T11:31:30.883Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f629b236dae2424f1d13d0",
+      "name": "TARR KSC Szekszárd",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "noleaguebasketball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/JRD1P0nD/partner-tarr-ksc-szeksz-rd.png",
+      "sportsDb": {
+        "teamId": "144021",
+        "strTeam": "KSC Szekszárd",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "_No League Basketball",
+        "leagueId": "4836",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1988",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Atomerőmű KSC Szekszárd, is a Hungarian women's basketball team, that is based in Szekszárd (Hungary), as that competes in the top flight of the Hungarian women's basketball leagues.\r\n\r\nThe club played first time at the Hungarian First class of women in 1975. The head coach of the self-educated team was Pál Buttás. The name of the team at that time was Szekszárd Vasas Sport Kör. The Basketball Sport Club Szekszárd was founded in February 1988, and since 1989 it has been playing its home games in the Szekszárd City Sports Hall. In 1991, the first foreign player to join the team, while in 2005 the first American basketball player. Until 2000, the difficult financial situation of the club also determined the team's performance, when the Paks Nuclear Power Plant became the name-giving sponsor of the team. In the 2016-2017 and subsequent seasons, the club played in the finals of the Hungarian championship, but beaten by Sopron Basket on both occasions. In the 2017-2018 season, they were able to celebrate the Hungarian Cup victory.",
+        "strTeamBadge": "https://www.thesportsdb.com/images/media/team/badge/5vjvt41758201019.png",
+        "strWebsite": "kscszekszard.hu",
+        "strFacebook": "www.facebook.com/kscszekszard/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/kscszekszard",
+        "lastSynced": "2025-10-20T12:52:31.800Z",
+        "leagueName": "_No League Basketball",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "1988",
+        "country": "Hungary",
+        "website": "kscszekszard.hu",
+        "badge": "https://www.thesportsdb.com/images/media/team/badge/5vjvt41758201019.png"
+      },
+      "createdAt": "2025-10-20T12:23:14.323Z",
+      "updatedAt": "2025-10-29T11:31:30.907Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f629f636dae2424f1d13d1",
+      "name": "TFSE",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "hungary",
+          "budapest"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/gZCgv7R0/partner-tfse.png",
+      "sportsDb": {
+        "founded": "1945",
+        "country": "Hungary",
+        "badge": "https://i.ibb.co/HptY3hbY/va570i1742050826.png",
+        "lastSynced": "2025-10-20T12:50:18.630Z"
+      },
+      "createdAt": "2025-10-20T12:24:22.101Z",
+      "updatedAt": "2025-10-29T11:31:30.935Z",
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f62a0736dae2424f1d13d2",
+      "name": "UNI Győr",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "sport": [
+          "basketball"
+        ],
+        "league": [
+          "noleaguebasketball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/RT3XN7Hn/partner-uni-gy-r.png",
+      "sportsDb": {
+        "teamId": "148317",
+        "strTeam": "UNI Gyor Women",
+        "strTeamShort": "",
+        "strSport": "Basketball",
+        "strLeague": "_No League Basketball",
+        "leagueId": "4836",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 0,
+        "intFormedYear": "0",
+        "strCountry": "Hungary",
+        "strDescriptionEN": null,
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/cca5sn1714046499.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-20T12:44:33.630Z",
+        "leagueName": "_No League Basketball",
+        "venueName": "",
+        "venueCapacity": 0,
+        "founded": "0",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/cca5sn1714046499.png"
+      },
+      "createdAt": "2025-10-20T12:24:39.775Z",
+      "updatedAt": "2025-10-29T11:31:30.978Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f62a1c36dae2424f1d13d3",
+      "name": "Vasas Akadémia",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/jvyXNmmB/partner-vasas-akad-mia.png",
+      "sportsDb": {
+        "country": "Hungary",
+        "badge": "https://i.ibb.co/Q7jLmnSn/eqk0hu1713696218.png",
+        "lastSynced": "2025-10-20T12:43:24.903Z"
+      },
+      "createdAt": "2025-10-20T12:25:00.929Z",
+      "updatedAt": "2025-10-29T11:31:31.003Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f62a2f36dae2424f1d13d4",
+      "name": "VBW CEKK Cegléd",
+      "emoji": "🏀",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "cegled",
+          "hungary"
+        ],
+        "sport": [
+          "basketball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-20T12:25:19.259Z",
+      "updatedAt": "2025-10-20T12:53:37.172Z"
+    },
+    {
+      "_id": "68f776ea9d48f546efb9de98",
+      "name": "Kolorcity Kazincbarcika",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "location": [
+          "hungary",
+          "mezokovesd"
+        ],
+        "partner": [
+          "kolorcitykazincbarcika"
+        ],
+        "league": [
+          "hungarian_football_league_division_i"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": {
+        "venueCapacity": 3400,
+        "venueName": "Mezőkövesd Városi Stadionja",
+        "leagueName": "Hungary firts division football league",
+        "country": "Hungary",
+        "lastSynced": "2025-10-21T12:09:06.307Z"
+      },
+      "createdAt": "2025-10-21T12:04:58.702Z",
+      "updatedAt": "2025-10-29T11:31:31.025Z",
+      "cityId": "6901faee22c96156a9a5dd15",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f779099d48f546efb9de99",
+      "name": "ETO FC Győr",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "eto_fc_gyor"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ],
+        "league": [
+          "hungarian_football_league_division_i",
+          "hungariannbi"
+        ],
+        "location": [
+          "gyor",
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/TqR26x7w/partner-eto-fc-gy-r.png",
+      "sportsDb": {
+        "teamId": "134314",
+        "strTeam": "Győri ETO",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "ETO Park",
+        "venueId": "19114",
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1904",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "ETO FC Győr (Egyetértés Torna Osztály Futball Club Győr; lit. Concordance Gymnastics Department Football Club of Győr) or just ETO is a Hungarian professional football club from the city of Győr. They are best known for reaching the semi-finals of the European Cup 1964-65. The club has won the Hungarian League four times. In 1904 the club was founded as Győri Vagongyár ETO and has undergone many name changes since. The colours of the club are green and white.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/z2rda41750334368.png",
+        "strWebsite": "www.eto.hu",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-27T09:52:19.303Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "ETO Park",
+        "venueCapacity": 0,
+        "founded": "1904",
+        "country": "Hungary",
+        "website": "www.eto.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/z2rda41750334368.png"
+      },
+      "createdAt": "2025-10-21T12:14:01.825Z",
+      "updatedAt": "2025-10-29T11:31:31.053Z",
+      "cityId": "6901faee22c96156a9a5dd13",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77b589d48f546efb9de9a",
+      "name": "Dunaújvárosi Kohász Kézilabda Akadémia",
+      "emoji": "🤾",
+      "hashtags": [
+        "woman"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "dkka"
+        ],
+        "league": [
+          "womanhandball"
+        ],
+        "location": [
+          "hungary",
+          "dunaujvaros"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:23:52.764Z",
+      "updatedAt": "2025-10-21T12:23:52.764Z"
+    },
+    {
+      "_id": "68f77bed9d48f546efb9de9b",
+      "name": "MOL Esztergom",
+      "emoji": "🤾",
+      "hashtags": [
+        "woman"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "molesztergom"
+        ],
+        "league": [
+          "womanhandball"
+        ],
+        "location": [
+          "hungary",
+          "esztergom"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/7tPhLjpn/partner-mol-esztergom.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/fVRTy5Gt/partner-mol-esztergom.png",
+        "lastSynced": "2025-10-27T15:26:04.018Z"
+      },
+      "createdAt": "2025-10-21T12:26:21.881Z",
+      "updatedAt": "2025-10-27T15:26:05.354Z"
+    },
+    {
+      "_id": "68f77c499d48f546efb9de9c",
+      "name": "FC Ajka",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "fcajka"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "ajka"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/ycN21vFp/partner-fc-ajka.png",
+      "sportsDb": {
+        "teamId": "141215",
+        "strTeam": "Ajka",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Városi Stadion Ajka",
+        "venueId": "31526",
+        "intStadiumCapacity": 5000,
+        "intFormedYear": "1923",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "FC Ajka is a Hungarian football club located in Ajka, Hungary. It currently plays in Hungarian National Championship II. The team's colors are white and green.\r\n\r\nIn the 8th round of the 2018–19 Magyar Kupa season Ajka eliminated 2018–19 Nemzeti Bajnokság I club MTK Budapest. However, in the round of 16th Ajka were eliminated by Debreceni VSC on 3–4 aggregate.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/o5pkag1617288404.png",
+        "strWebsite": "fcajka.hu",
+        "strFacebook": "www.facebook.com/fcajkaofficial/",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-28T10:34:22.895Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Városi Stadion Ajka",
+        "venueCapacity": 5000,
+        "founded": "1923",
+        "country": "Hungary",
+        "website": "fcajka.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/o5pkag1617288404.png"
+      },
+      "createdAt": "2025-10-21T12:27:53.885Z",
+      "updatedAt": "2025-10-29T11:31:31.082Z",
+      "cityId": "6901faee22c96156a9a5dd16",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77c8b9d48f546efb9de9d",
+      "name": "Vasas FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "vasasfc"
+        ],
+        "league": [
+          "hungarian_football_leauge_division_ii"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:28:59.481Z",
+      "updatedAt": "2025-10-21T12:28:59.481Z"
+    },
+    {
+      "_id": "68f77ce09d48f546efb9de9e",
+      "name": "DEAC Jégkorong",
+      "emoji": "🏒",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "deac"
+        ],
+        "league": [
+          "icehockey_erste_leauge"
+        ],
+        "location": [
+          "hungary",
+          "icehockey"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/8nBGz2Xr/partner-deac-j-gkorong.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/xSMP2JRB/partner-deac.png",
+        "lastSynced": "2025-10-27T15:22:59.108Z"
+      },
+      "createdAt": "2025-10-21T12:30:24.760Z",
+      "updatedAt": "2025-10-27T15:23:16.321Z"
+    },
+    {
+      "_id": "68f77d549d48f546efb9de9f",
+      "name": "Budapesti Vasutas SC Zugló",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "budapesti_vasutas_sc_zuglo"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/JRjw0bbC/partner-budapesti-vasutas-sc-zugl.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/HLtFXwVP/Partner-Budapesti-Vasutas-Zuglo.png",
+        "lastSynced": "2025-10-28T10:36:50.644Z"
+      },
+      "createdAt": "2025-10-21T12:32:20.178Z",
+      "updatedAt": "2025-10-28T10:36:54.875Z"
+    },
+    {
+      "_id": "68f77d909d48f546efb9dea0",
+      "name": "Karcagi  SE",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "karcagi_se"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "karcag"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/C3Qzr7Dv/partner-karcagi-se.png",
+      "sportsDb": {
+        "teamId": "152526",
+        "strTeam": "Karcag",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "",
+        "venueId": "0",
+        "intFormedYear": "1945",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Karcagi Sportegyesület is a professional football club based in Karcag, Jász-Nagykun-Szolnok, Hungary, that competes in the Nemzeti Bajnokság III – Northeast, the third tier of Hungarian football.\r\n\r\nThe club's home stadium is Ligeti úti Sporttelep, which is under reconstruction as of 28 March 2022. In the 2022-23 season, they played their home games at Városi Sportpálya in Balmazújváros.\r\n\r\nNext season, Karcag will play at the home of Tiszafüred, at the Lipcsey Elemér Sporttelep, until their ground expected to be ready in spring 2024.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/g3diaw1751844953.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-27T15:17:07.750Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "",
+        "founded": "1945",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/g3diaw1751844953.png"
+      },
+      "createdAt": "2025-10-21T12:33:20.183Z",
+      "updatedAt": "2025-10-29T11:31:31.113Z",
+      "cityId": "6901faee22c96156a9a5dd17",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77dde9d48f546efb9dea1",
+      "name": "HR-Rent Kozármisleny",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "kozarmisleny"
+        ],
+        "league": [
+          "hungarian_football_leauge_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "kozarmisleny"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/b5PBQFTt/partner-hr-rent-koz-rmisleny.png",
+      "sportsDb": {
+        "teamId": "146466",
+        "strTeam": "Kozármisleny",
+        "strTeamShort": null,
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Alkotmány tér",
+        "venueId": null,
+        "intStadiumCapacity": 1500,
+        "intFormedYear": "1989",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Kozármisleny SE is a football club based in Kozármisleny, Hungary. The team is currently playing in the league NB II, which is the second tier of Hungarian football.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/tnc2p21657724111.png",
+        "strWebsite": "www.kozarmislenyfc.hu",
+        "strFacebook": "www.facebook.com/kozarmislenyfc/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/kozarmisleny_fc/?hl=hu",
+        "lastSynced": "2025-10-28T10:13:39.377Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Alkotmány tér",
+        "venueCapacity": 1500,
+        "founded": "1989",
+        "country": "Hungary",
+        "website": "www.kozarmislenyfc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/tnc2p21657724111.png"
+      },
+      "createdAt": "2025-10-21T12:34:38.383Z",
+      "updatedAt": "2025-10-29T11:31:31.138Z",
+      "cityId": "6901faee22c96156a9a5dd18",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77e309d48f546efb9dea2",
+      "name": "Szeged-Csanád Grosics Akadémia",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "szeged_csanad_grosics_akademia"
+        ],
+        "league": [
+          "hungarian_football_leauge_divison_ii"
+        ],
+        "location": [
+          "hungary"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:36:00.235Z",
+      "updatedAt": "2025-10-21T12:36:00.235Z"
+    },
+    {
+      "_id": "68f77e679d48f546efb9dea3",
+      "name": "Soroksár SC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "soroksar_sc"
+        ],
+        "league": [
+          "hungarian_football_leauge_division_ii"
+        ],
+        "location": [
+          "hunggary",
+          "soroksar"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:36:55.070Z",
+      "updatedAt": "2025-10-21T12:36:55.070Z"
+    },
+    {
+      "_id": "68f77eab9d48f546efb9dea4",
+      "name": "Tiszakécskei LC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "tiszakecskei_lc"
+        ],
+        "league": [
+          "hungarian_footbal_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "tiszakecske"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/HDC9YPDB/partner-tiszak-cskei-lc.png",
+      "sportsDb": {
+        "teamId": "142853",
+        "strTeam": "Tiszakécske",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Városi Stadion Tiszakécske",
+        "venueId": "17885",
+        "intStadiumCapacity": 4500,
+        "intFormedYear": "1993",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Tiszakécske Futball Club is a Hungarian football club from the town of Tiszakécske, Hungary.\r\n\r\nTiszakécske FC debuted in the 1997–98 season of the Hungarian League and finished fifteenth.The relegation play-offs were lost against III. Kerületi TVE and the club were relegated.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/arcys81626446994.png",
+        "strWebsite": "www.tiszakecskefoci.hu",
+        "strFacebook": "www.facebook.com/dunaaszfalttvse.hu/",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-27T15:32:37.016Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Városi Stadion Tiszakécske",
+        "venueCapacity": 4500,
+        "founded": "1993",
+        "country": "Hungary",
+        "website": "www.tiszakecskefoci.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/arcys81626446994.png"
+      },
+      "createdAt": "2025-10-21T12:38:03.625Z",
+      "updatedAt": "2025-10-29T11:31:31.168Z",
+      "cityId": "6901faee22c96156a9a5dd19",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77ede9d48f546efb9dea5",
+      "name": "DVTK",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "dvtk"
+        ],
+        "league": [
+          "hungarian_football_league_division_i",
+          "hungariannbi"
+        ],
+        "location": [
+          "hungary",
+          "miskolc"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f2fd",
+        "68faf70c3cbb3b2ffa892053",
+        "68faf70c3cbb3b2ffa892051",
+        "68fe6f7e81e82c30c0d4946d",
+        "68fe6f7e81e82c30c0d4946c",
+        "6905f87c1a93ece6a8f4e9bf"
+      ],
+      "logoUrl": "https://i.ibb.co/27p0K141/partner-dvtk.png",
+      "sportsDb": {
+        "teamId": "134611",
+        "strTeam": "Diósgyőr",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "DVTK-Stadion",
+        "venueId": "17882",
+        "intStadiumCapacity": 15325,
+        "intFormedYear": "1910",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Diósgyőr-Vasgyári Testgyakorlók Köre, more commonly Diósgyőri VTK is a Hungarian sports club from Diósgyőr district of Miskolc best known for its football team. Founded in 1910 by the local working class youth, the team plays in the first division of the Hungarian League and has spent most of its history in the top tier of Hungarian football. Diósgyőr is best known for its passionate supporters – in the past years Diósgyőr had one of the highest average attendances in the Hungarian top division. The football club enjoyed its first golden age in the late '70s and early '80s, including a third place in the 1978–79 season of the Hungarian League and two Hungarian Cup triumphs in 1977 and 1980.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/8wji2r1750334494.png",
+        "strWebsite": "www.dvtk.eu",
+        "strFacebook": "facebook.com/DVTK1910",
+        "strTwitter": "twitter.com/@DVTKeu",
+        "strInstagram": "instagram.com/dvtkinstagram",
+        "lastSynced": "2025-10-26T17:46:29.764Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "DVTK-Stadion",
+        "venueCapacity": 15325,
+        "founded": "1910",
+        "country": "Hungary",
+        "website": "www.dvtk.eu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/8wji2r1750334494.png"
+      },
+      "createdAt": "2025-10-21T12:38:54.424Z",
+      "updatedAt": "2025-11-01T12:09:41.094Z",
+      "cityId": "6901faee22c96156a9a5dd1a",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77f339d48f546efb9dea6",
+      "name": "DVSC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "dvsc"
+        ],
+        "league": [
+          "hungarian_football_league_division_i",
+          "hungariannbi"
+        ],
+        "location": [
+          "hungary",
+          "debrecen"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f2f7"
+      ],
+      "logoUrl": "https://i.ibb.co/rfm7tHgS/partner-dvsc.png",
+      "sportsDb": {
+        "teamId": "133945",
+        "strTeam": "Debrecen",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "Nagyerdei Stadion",
+        "venueId": "19124",
+        "intStadiumCapacity": 20340,
+        "intFormedYear": "1902",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Debreceni Vasutas Sport Club is a professional football club, based in Debrecen, Hungary, that competes in the Nemzeti Bajnokság II, the second tier of Hungarian football. They are best known internationally for reaching the group stages of the UEFA Champions League 2009–10 season. Debrecen have become the most successful club in Hungary since 2000, winning the Hungarian League seven times.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/0e2yn71579728606.png",
+        "strWebsite": "www.dvsc.hu",
+        "strFacebook": "www.facebook.com/dvscfoci?fref=ts",
+        "strTwitter": "twitter.com/DVSC_Official",
+        "strInstagram": "www.instagram.com/dvschivatalos",
+        "lastSynced": "2025-10-27T09:49:21.200Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "Nagyerdei Stadion",
+        "venueCapacity": 20340,
+        "founded": "1902",
+        "country": "Hungary",
+        "website": "www.dvsc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/0e2yn71579728606.png"
+      },
+      "createdAt": "2025-10-21T12:40:19.030Z",
+      "updatedAt": "2025-10-29T11:31:31.374Z",
+      "cityId": "6901faee22c96156a9a5dd1b",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f77fe69d7e63a072225c10",
+      "name": "Kisvárda FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "kisvarda_fc"
+        ],
+        "league": [
+          "hungarian_football_league_division_i"
+        ],
+        "location": [
+          "hungary",
+          "kisvarda"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:43:18.666Z",
+      "updatedAt": "2025-10-21T12:43:18.666Z"
+    },
+    {
+      "_id": "68f780219d7e63a072225c11",
+      "name": "Paksi FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "paks"
+        ],
+        "league": [
+          "hungarian_football_league_division_i",
+          "hungariannbi"
+        ],
+        "location": [
+          "hungary",
+          "paks"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/vCCf8S3f/partner-paksi-fc.png",
+      "sportsDb": {
+        "teamId": "138185",
+        "strTeam": "Paks",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB I",
+        "leagueId": "4690",
+        "strStadium": "Fehérvári úti Stadion",
+        "venueId": "31408",
+        "intStadiumCapacity": 6150,
+        "intFormedYear": "1952",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Paksi FC (Paks) is a Hungarian football club based in Paks. Since its founding in 1952 it has played at either a county or national level. In 2006 it ascended to Borsodi Liga, or NB I, the top division in Hungarian football, for the first time. It plays its home games at Fehérvári úti Stadion. The team colors are green and white. In the 2010–11 Hungarian Division Paksi finished second and qualified for the Europa League 2011–12 season.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/kos9hc1604523576.png",
+        "strWebsite": "paksifc.hu",
+        "strFacebook": "www.facebook.com/paksifcofficialsite",
+        "strTwitter": "www.twitter.com/PaksiFC",
+        "strInstagram": "www.instagram.com/paksifc",
+        "lastSynced": "2025-10-26T17:47:44.602Z",
+        "leagueName": "Hungarian NB I",
+        "venueName": "Fehérvári úti Stadion",
+        "venueCapacity": 6150,
+        "founded": "1952",
+        "country": "Hungary",
+        "website": "paksifc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/kos9hc1604523576.png"
+      },
+      "createdAt": "2025-10-21T12:44:17.337Z",
+      "updatedAt": "2025-10-29T11:31:31.552Z",
+      "cityId": "6901faee22c96156a9a5dd11",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f780639d7e63a072225c12",
+      "name": "Puskás Akadémia FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "puskas_akademia_fc"
+        ],
+        "league": [
+          "hungarian_football_league_division_i"
+        ],
+        "location": [
+          "hungary",
+          "pancho_arena"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:45:23.215Z",
+      "updatedAt": "2025-10-21T12:45:23.215Z"
+    },
+    {
+      "_id": "68f7809a9d7e63a072225c13",
+      "name": "Zalaegerszegi TE FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "zte"
+        ],
+        "league": [
+          "hungarian_football_league_division_i"
+        ],
+        "location": [
+          "hungary",
+          "zalaegerszeg"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:46:18.666Z",
+      "updatedAt": "2025-10-21T12:46:18.666Z"
+    },
+    {
+      "_id": "68f781bc9d7e63a072225c14",
+      "name": "Aquital FC Csákvár",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "csakvar_fc"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "csakvar"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/mrgXQCSF/partner-aquital-fc-cs-kv-r.png",
+      "sportsDb": {
+        "teamId": "141218",
+        "strTeam": "Csákvár",
+        "strTeamShort": null,
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Tersztyánszky Ödön Stadion",
+        "venueId": null,
+        "intStadiumCapacity": 2020,
+        "intFormedYear": "1947",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Aqvital FC Csákvár is a Hungarian football club located in Csákvár, Hungary. It currently plays in Hungarian National Championship II. The team's colors are yellow and blue.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/byvjok1617288426.png",
+        "strWebsite": "aqvitalfc.hu",
+        "strFacebook": "www.facebook.com/AqvitalFCCsakvar",
+        "strTwitter": "twitter.com/aqvitalfc",
+        "strInstagram": "",
+        "lastSynced": "2025-10-28T10:29:40.422Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Tersztyánszky Ödön Stadion",
+        "venueCapacity": 2020,
+        "founded": "1947",
+        "country": "Hungary",
+        "website": "aqvitalfc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/byvjok1617288426.png"
+      },
+      "createdAt": "2025-10-21T12:51:08.320Z",
+      "updatedAt": "2025-10-29T11:31:31.576Z",
+      "cityId": "6901faee22c96156a9a5dd1c",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f782019d7e63a072225c15",
+      "name": "Békéscsaba 1912 Előre",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "bekescsaba"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "bekescsaba"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/SDpBVYdV/partner-b-k-scsaba-1912-el-re.png",
+      "sportsDb": {
+        "teamId": "141216",
+        "strTeam": "Békéscsaba",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Kórház utcai Stadion",
+        "venueId": "21068",
+        "intStadiumCapacity": 2479,
+        "intFormedYear": "1912",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Békéscsaba 1912 Előre is a Hungarian football club from Békéscsaba. The club was founded in 1912 as Előre Munkás Testedző Egyesület. The colours of the club are lilac and white. The club achieved its greatest success in 1988 when it won the Hungarian Cup competition, defeating Budapest Honvéd FC 3–2 in the final.\r\n\r\nUntil the end of 2004–05 the club spent a total of 25 seasons in the first Hungarian division, the Nemzeti Bajnokság I. They were promoted back to the top tier in 2015.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/lstv241617288409.png",
+        "strWebsite": "www.1912elore.hu",
+        "strFacebook": "www.facebook.com/1912elore/",
+        "strTwitter": "twitter.com/1912elore",
+        "strInstagram": "www.instagram.com/1912elore",
+        "lastSynced": "2025-10-27T09:49:57.158Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Kórház utcai Stadion",
+        "venueCapacity": 2479,
+        "founded": "1912",
+        "country": "Hungary",
+        "website": "www.1912elore.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/lstv241617288409.png"
+      },
+      "createdAt": "2025-10-21T12:52:17.051Z",
+      "updatedAt": "2025-10-29T11:31:31.603Z",
+      "cityId": "6901faee22c96156a9a5dd1d",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f7824a9d7e63a072225c16",
+      "name": "Budapest Honvéd FC",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "budapest_honved_fc"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii",
+          "hungariannbii"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "football",
+          "soccer"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/0RznwVnp/partner-budapest-honv-d-fc.png",
+      "sportsDb": {
+        "teamId": "134070",
+        "strTeam": "Budapest Honvéd",
+        "strTeamShort": "",
+        "strSport": "Soccer",
+        "strLeague": "Hungarian NB II",
+        "leagueId": "4965",
+        "strStadium": "Bozsik Aréna",
+        "venueId": "20602",
+        "intStadiumCapacity": 8000,
+        "intFormedYear": "1909",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Budapest Honvéd Football Club (commonly known as Budapest Honvéd or simply Honvéd, is a Hungarian sports club based in Kispest, Budapest, with the colours of red and black. The club is best known for its football team. Honvéd means the Homeland Defence. Originally formed as Kispest AC, they became Kispest FC in 1926 before reverting to their original name in 1944.\r\n\r\nThe team enjoyed a golden age during the 1950s when it was renamed Budapesti Honvéd SE and became the Hungarian Army team. The club's top players from this era, Ferenc Puskás, Sándor Kocsis, József Bozsik, Zoltán Czibor, and Gyula Grosics helped the club win the Hungarian League four times during the 1950s and also formed the nucleus of the legendary Hungary national team popularly known as the Mighty Magyars.\r\n\r\nDuring the 1980s and early 1990s, the club enjoyed another successful period, winning a further eight Hungarian League titles. They also won league and cup doubles in 1985 and 1989. In 1991, the club was renamed Kispest Honvéd FC and adopted its current name in 2003.\r\n\r\nWhen the club was originally formed in 1909, it also organised teams that competed in fencing, cycling, gymnastics, wrestling, athletics, boxing, and tennis. Later, the Honvéd family was extended to include a water polo team, now known as Groupama Honvéd, a 33-times basketball-champion team and a handball team that were European Champions in 1982.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/qs0xku1604523567.png",
+        "strWebsite": "www.honvedfc.hu",
+        "strFacebook": "www.facebook.com/honvedfc/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/bphonvedfcofficial/?hl=hu",
+        "lastSynced": "2025-10-21T20:49:09.677Z",
+        "leagueName": "Hungarian NB II",
+        "venueName": "Bozsik Aréna",
+        "venueCapacity": 8000,
+        "founded": "1909",
+        "country": "Hungary",
+        "website": "www.honvedfc.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/qs0xku1604523567.png"
+      },
+      "createdAt": "2025-10-21T12:53:30.608Z",
+      "updatedAt": "2025-10-29T11:31:31.626Z",
+      "cityId": "6901faee22c96156a9a5dd0f",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f783829d7e63a072225c17",
+      "name": "Kecskeméti TE",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "kecskemeti_te"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii"
+        ],
+        "location": [
+          "hungary",
+          "kecskemet"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T12:58:42.279Z",
+      "updatedAt": "2025-10-21T12:58:42.279Z"
+    },
+    {
+      "_id": "68f783fe9d7e63a072225c18",
+      "name": "Szentlőrinc SE",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "szentlorinc_se"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii"
+        ],
+        "location": [
+          "hungary",
+          "szentlorinc"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:00:46.357Z",
+      "updatedAt": "2025-10-21T13:00:46.357Z"
+    },
+    {
+      "_id": "68f784499d7e63a072225c19",
+      "name": "Videoton FC Fehérvár",
+      "emoji": "⚽",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "videoton_fc"
+        ],
+        "league": [
+          "hungarian_football_league_division_ii"
+        ],
+        "location": [
+          "hungary",
+          "szekesfehervar"
+        ],
+        "sport": [
+          "football"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:02:01.308Z",
+      "updatedAt": "2025-10-21T13:02:01.308Z"
+    },
+    {
+      "_id": "68f78d013ced8e1a321f4650",
+      "name": "Alba Fehérvár Kézilabda",
+      "emoji": "🤾",
+      "hashtags": [
+        "woman"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "albafehervar"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "szekesfehervar"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/4gscCtbX/partner-alba-feh-rv-r-k-zilabda.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/pvdDv31D/K-zilabda-ALBA-LOGO-3.png",
+        "lastSynced": "2025-10-28T10:28:06.988Z"
+      },
+      "createdAt": "2025-10-21T13:39:13.133Z",
+      "updatedAt": "2025-10-28T10:28:16.645Z"
+    },
+    {
+      "_id": "68f78d5b3ced8e1a321f4651",
+      "name": "DVSC Schaffler",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "dvsc_schaffler"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "debrecen"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:40:43.088Z",
+      "updatedAt": "2025-10-21T13:40:43.088Z"
+    },
+    {
+      "_id": "68f78dca3ced8e1a321f4652",
+      "name": "FTC Rail Cargo Hungária",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "ftc_rail_cargo_hungaria"
+        ],
+        "league": [
+          "handball_leauge"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:42:34.765Z",
+      "updatedAt": "2025-10-21T13:42:34.765Z"
+    },
+    {
+      "_id": "68f78e0e3ced8e1a321f4653",
+      "name": "Győri Audi ETO KC",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "gyori_audi_eto_kc"
+        ],
+        "league": [
+          "handball_league",
+          "noleague"
+        ],
+        "location": [
+          "hungary",
+          "gyor"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/CpD1zKGZ/partner-gy-ri-audi-eto-kc.png",
+      "sportsDb": {
+        "teamId": "145911",
+        "strTeam": "Győri Audi ETO KC Women",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "_No League",
+        "leagueId": "4367",
+        "strStadium": "Audi Aréna",
+        "venueId": null,
+        "intStadiumCapacity": 5500,
+        "intFormedYear": "1948",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Győri ETO KC (Hungarian: Győri Egyetértés Torna Osztály Kézilabda Club, lit. Concordance Gymnastics Department of Győr Handball Club) is a Hungarian women's handball club from Győr. Since they are sponsored by Audi, the official name for the team is Győri Audi ETO KC.\r\n\r\nOn domestic level ETO won 15 Hungarian Championship title, including seven in a row between 2008 and 2014. They are also a fifteen-time Hungarian Cup winners, having won all their finals between 2005 and 2016.\r\n\r\nETO won the Champions League in 2013, 2014, 2017, 2018, and 2019. The team also reached the final in 2009, 2012, and in 2016. In addition, Győr reached the final of the EHF Cup Winners' Cup in 2006 and the final of the EHF Cup in 1999, 2002, 2004, and 2005.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/xqaizc1661682395.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-27T09:53:39.456Z",
+        "leagueName": "_No League",
+        "venueName": "Audi Aréna",
+        "venueCapacity": 5500,
+        "founded": "1948",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/xqaizc1661682395.png"
+      },
+      "createdAt": "2025-10-21T13:43:42.025Z",
+      "updatedAt": "2025-10-29T11:31:31.653Z",
+      "cityId": "6901faee22c96156a9a5dd13",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f78e473ced8e1a321f4654",
+      "name": "Kisvárda Master Good SE",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "kisvarda_master_good_se"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "kisvarda"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:44:39.230Z",
+      "updatedAt": "2025-10-21T13:44:39.230Z"
+    },
+    {
+      "_id": "68f78e823ced8e1a321f4655",
+      "name": "Kozármisleny KA",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "kozarmisleny_ka"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "kozarmisleny"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/mV5GxsdJ/partner-koz-rmisleny-ka.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/7dWhRv22/partner-kozarmisleny-kezilabda.png",
+        "lastSynced": "2025-10-28T10:21:33.360Z"
+      },
+      "createdAt": "2025-10-21T13:45:38.980Z",
+      "updatedAt": "2025-10-28T10:21:34.924Z"
+    },
+    {
+      "_id": "68f78ec93ced8e1a321f4656",
+      "name": "Mosonmagyaróvári KC SE",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "mosonmagyarovar_kc_se"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "mosonmagyarovar"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:46:49.158Z",
+      "updatedAt": "2025-10-21T13:46:49.158Z"
+    },
+    {
+      "_id": "68f78f073ced8e1a321f4657",
+      "name": "Moyra Budaörs",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "moyra_budaors"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "budaors"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:47:51.732Z",
+      "updatedAt": "2025-10-21T13:47:51.732Z"
+    },
+    {
+      "_id": "68f78f3b3ced8e1a321f4658",
+      "name": "NEKA",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "neka"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "balatonboglar"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:48:43.330Z",
+      "updatedAt": "2025-10-21T13:48:43.330Z"
+    },
+    {
+      "_id": "68f78f843ced8e1a321f4659",
+      "name": "Szombathelyi Kézilabda Klub és Akadémia",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "szombathelyi_kka"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "szombathely"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:49:56.959Z",
+      "updatedAt": "2025-10-21T13:49:56.959Z"
+    },
+    {
+      "_id": "68f78fc23ced8e1a321f465a",
+      "name": "Váci NKSE",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "vaci_nkse"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "vac"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:50:58.573Z",
+      "updatedAt": "2025-10-21T13:50:58.573Z"
+    },
+    {
+      "_id": "68f790073ced8e1a321f465b",
+      "name": "Vasas SC",
+      "emoji": "🤾",
+      "hashtags": [
+        "women"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "vasas_sc"
+        ],
+        "league": [
+          "handball_league"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:52:07.534Z",
+      "updatedAt": "2025-10-21T13:52:07.534Z"
+    },
+    {
+      "_id": "68f7906e3ced8e1a321f465c",
+      "name": "Carbonex Komló",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "carbonex_komlo"
+        ],
+        "league": [
+          "men_handball_league",
+          "hungariannemzetibajnoksgi"
+        ],
+        "location": [
+          "hungary"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/ZzWyWB27/partner-carbonex-koml.png",
+      "sportsDb": {
+        "teamId": "137584",
+        "strTeam": "Komlói Bányász SK",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "Hungarian Nemzeti Bajnokság I",
+        "leagueId": "4535",
+        "strStadium": "Városi Sportcsarnok",
+        "venueId": null,
+        "intStadiumCapacity": 800,
+        "intFormedYear": "1952",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Komlói Bányász Sport Klub (handball section) is a Hungarian handball club from Komló, that plays in the Nemzeti Bajnokság I, the top level championship in Hungary.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/4pcp7m1575295119.png",
+        "strWebsite": "komlokezi.hu",
+        "strFacebook": "hu-hu.facebook.com/komlosportkft/",
+        "strTwitter": "",
+        "strInstagram": "www.instagram.com/sport36komlo",
+        "lastSynced": "2025-10-28T10:39:21.283Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság I",
+        "venueName": "Városi Sportcsarnok",
+        "venueCapacity": 800,
+        "founded": "1952",
+        "country": "Hungary",
+        "website": "komlokezi.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/4pcp7m1575295119.png"
+      },
+      "createdAt": "2025-10-21T13:53:50.414Z",
+      "updatedAt": "2025-10-29T11:31:31.673Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f790a83ced8e1a321f465d",
+      "name": "CYEB Budakalász",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "cyeb_budakalasz"
+        ],
+        "league": [
+          "men_handball_league",
+          "hungariannemzetibajnoksgi"
+        ],
+        "location": [
+          "hungary",
+          "budakalasz"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/HTwjT7fx/partner-cyeb-budakal-sz.png",
+      "sportsDb": {
+        "teamId": "137588",
+        "strTeam": "Budakalász KC",
+        "strTeamShort": null,
+        "strSport": "Handball",
+        "strLeague": "Hungarian Nemzeti Bajnokság I",
+        "leagueId": "4535",
+        "strStadium": "Budakalász Sports Hall",
+        "venueId": null,
+        "intStadiumCapacity": 0,
+        "intFormedYear": "1992",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Budakalász Handball Co. is a men's handball club founded in 1992 . Currently included in NB I. The club was founded in 1992.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/elaaqh1575296730.png",
+        "strWebsite": "",
+        "strFacebook": "www.facebook.com/budakalaszfkc/",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-28T10:38:45.568Z",
+        "leagueName": "Hungarian Nemzeti Bajnokság I",
+        "venueName": "Budakalász Sports Hall",
+        "venueCapacity": 0,
+        "founded": "1992",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/elaaqh1575296730.png"
+      },
+      "createdAt": "2025-10-21T13:54:48.155Z",
+      "updatedAt": "2025-10-29T11:31:31.697Z",
+      "cityId": "6901faee22c96156a9a5dd1e",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68f790df3ced8e1a321f465e",
+      "name": "Csugrói KK",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "csurgoi_kk"
+        ],
+        "league": [
+          "men_handball_league"
+        ],
+        "location": [
+          "hungary"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:55:43.942Z",
+      "updatedAt": "2025-10-21T13:55:43.942Z"
+    },
+    {
+      "_id": "68f791365a7f97910b39fc31",
+      "name": "FTC Green Collect",
+      "emoji": "🤾",
+      "hashtags": [
+        "men"
+      ],
+      "categorizedHashtags": {
+        "partner": [
+          "ftc_green_collect"
+        ],
+        "league": [
+          "men_handball_league"
+        ],
+        "location": [
+          "hungary",
+          "budapest"
+        ],
+        "sport": [
+          "handball"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-21T13:57:10.808Z",
+      "updatedAt": "2025-10-21T13:57:10.808Z"
+    },
+    {
+      "_id": "68ff3bd3bef269e74a370f1c",
+      "name": "SEYU",
+      "emoji": "📱",
+      "hashtags": [
+        "company"
+      ],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [
+        "68ee530624d876778410f085",
+        "68ee530624d876778410eff6",
+        "68ee49f6bd1900cbd97a6813",
+        "6901d1cf6d6f958454bc326e",
+        "6901d1cf6d6f958454bc326d"
+      ],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T09:30:59.972Z",
+      "updatedAt": "2025-10-29T08:36:00.077Z"
+    },
+    {
+      "_id": "68ff45b75473ed0e88defa53",
+      "name": "Hungary Volleyball Men - MRSZ",
+      "emoji": "🏐",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "volleyball"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [
+        "68ee530624d876778410f7f1",
+        "68ee530624d876778410f7ed",
+        "68ee530624d876778410f7f2",
+        "68ee530624d876778410f7f0",
+        "68ee530624d876778410f7ef",
+        "68ee530624d876778410f7ee",
+        "68ee530624d876778410f78d",
+        "68ee530624d876778410f301",
+        "68ee530624d876778410f03c",
+        "68ee530624d876778410f032",
+        "68ee530624d876778410f031",
+        "68ee530624d876778410f030",
+        "68ee530624d876778410f02f",
+        "68ee49f6bd1900cbd97a6811"
+      ],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T10:13:11.547Z",
+      "updatedAt": "2025-10-27T10:15:11.506Z"
+    },
+    {
+      "_id": "68ff6e8ba2b0252e38f37cff",
+      "name": "Dunaújvárosi Acélbikák",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:07:23.494Z",
+      "updatedAt": "2025-10-27T13:07:23.494Z"
+    },
+    {
+      "_id": "68ff6e9da2b0252e38f37d00",
+      "name": "Sport Club Csíkszereda",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:07:41.210Z",
+      "updatedAt": "2025-10-27T13:07:41.210Z"
+    },
+    {
+      "_id": "68ff6ec6a2b0252e38f37d01",
+      "name": "Budapest Jégkorong Akadémia HC",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ],
+        "league": [
+          "hungarianersteliga"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/mVWSZ2cJ/partner-budapest-j-gkorong-akad-mia-hc.png",
+      "sportsDb": {
+        "teamId": "144099",
+        "strTeam": "Budapest JAHC",
+        "strTeamShort": "",
+        "strSport": "Ice Hockey",
+        "strLeague": "Hungarian Erste Liga",
+        "leagueId": "5156",
+        "strStadium": "Tüskecsarnok",
+        "venueId": null,
+        "intStadiumCapacity": 2540,
+        "intFormedYear": "2015",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "MAC HKB Újbuda is a Hungarian ice hockey team that currently plays in the Erste Liga. They play their home games at Tüskecsarnok, located in Budapest. In their first year of competition they would finish second in the regular season, and would reach the league finals, being swept in 4 games by DVTK Jegesmedvék. In their second season MAC would once again finish the regular season in 2nd place. They won their first playoff series 4-1 over Fehérvári Titanok, as well as their second over Debreceni HK in the semi-final 4-1. In the final they would be swept four games to one by the defending champions DVTK Jegesmedvék to once again finish in second place overall. In 2018 team began new era with joining slovak Tipsport liga.",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/y0x7r91714651555.png",
+        "strWebsite": "macbudapesthockey.hu",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-28T10:38:04.447Z",
+        "leagueName": "Hungarian Erste Liga",
+        "venueName": "Tüskecsarnok",
+        "venueCapacity": 2540,
+        "founded": "2015",
+        "country": "Hungary",
+        "website": "macbudapesthockey.hu",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/y0x7r91714651555.png"
+      },
+      "createdAt": "2025-10-27T13:08:22.357Z",
+      "updatedAt": "2025-10-29T11:31:31.719Z",
+      "countryId": "6901f99defeaa570627a1855"
+    },
+    {
+      "_id": "68ff6ed6a2b0252e38f37d02",
+      "name": "ASC Corona Brașov",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ],
+        "league": [
+          "hungarianersteliga"
+        ],
+        "location": [
+          "romania"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/FvRJJ89/partner-asc-corona-bra-ov.png",
+      "sportsDb": {
+        "badge": "https://i.ibb.co/nMxp73qv/partner-corona-brasov.png",
+        "lastSynced": "2025-10-28T10:49:23.597Z"
+      },
+      "createdAt": "2025-10-27T13:08:38.401Z",
+      "updatedAt": "2025-10-28T10:49:28.543Z"
+    },
+    {
+      "_id": "68ff6ef8a2b0252e38f37d03",
+      "name": "DVTK Jegesmedvék",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:09:12.173Z",
+      "updatedAt": "2025-10-27T13:09:12.173Z"
+    },
+    {
+      "_id": "68ff6f05a2b0252e38f37d04",
+      "name": "FEHA19",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:09:25.847Z",
+      "updatedAt": "2025-10-27T13:09:25.847Z"
+    },
+    {
+      "_id": "68ff6f16a2b0252e38f37d05",
+      "name": "FTC - Telekom Jégkorong",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:09:42.628Z",
+      "updatedAt": "2025-10-27T13:09:42.628Z"
+    },
+    {
+      "_id": "68ff6f26a2b0252e38f37d06",
+      "name": "Gyergyói Hoki Klub",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:09:58.004Z",
+      "updatedAt": "2025-10-27T13:09:58.004Z"
+    },
+    {
+      "_id": "68ff6f35a2b0252e38f37d07",
+      "name": "Hydro Fehérvár AV19",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {},
+      "bitlyLinkIds": [],
+      "logoUrl": null,
+      "sportsDb": null,
+      "createdAt": "2025-10-27T13:10:13.774Z",
+      "updatedAt": "2025-10-27T13:10:13.774Z"
+    },
+    {
+      "_id": "68ff6f56a2b0252e38f37d08",
+      "name": "UTE Jégkorong",
+      "emoji": "🏒",
+      "hashtags": [],
+      "categorizedHashtags": {
+        "sport": [
+          "icehockey"
+        ],
+        "league": [
+          "hungarianersteliga"
+        ],
+        "location": [
+          "hungary"
+        ]
+      },
+      "bitlyLinkIds": [],
+      "logoUrl": "https://i.ibb.co/dw0wd27h/partner-ute-j-gkorong.png",
+      "sportsDb": {
+        "teamId": "144319",
+        "strTeam": "UTE",
+        "strTeamShort": "",
+        "strSport": "Ice Hockey",
+        "strLeague": "Hungarian Erste Liga",
+        "leagueId": "5156",
+        "strStadium": "",
+        "venueId": "0",
+        "intStadiumCapacity": 2000,
+        "intFormedYear": "1955",
+        "strCountry": "Hungary",
+        "strDescriptionEN": "Újpesti Torna Egylet jégkorong szakosztály (English: Újpesti Torna Egylet ice hockey department) is an ice hockey club from Újpest, Budapest, Hungary. Újpesti TE is one of the sport clubs in Hungary that are part of Újpesti TE sport society. The Club was founded in 1885, while the ice hockey department was founded in 1930 and refounded in 1955. During its history, the club had won 13 titles of national champions.\r\n\r\nÚjpest is infamous as being the club of Attila Ambrus, the \"Whiskey Robber\".",
+        "strTeamBadge": "https://r2.thesportsdb.com/images/media/team/badge/pyqrle1756397444.png",
+        "strWebsite": "",
+        "strFacebook": "",
+        "strTwitter": "",
+        "strInstagram": "",
+        "lastSynced": "2025-10-28T10:24:54.326Z",
+        "leagueName": "Hungarian Erste Liga",
+        "venueName": "",
+        "venueCapacity": 2000,
+        "founded": "1955",
+        "country": "Hungary",
+        "website": "",
+        "badge": "https://r2.thesportsdb.com/images/media/team/badge/pyqrle1756397444.png"
+      },
+      "createdAt": "2025-10-27T13:10:46.827Z",
+      "updatedAt": "2025-10-29T11:31:31.742Z",
+      "countryId": "6901f99defeaa570627a1855"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "countryId": 1
+      },
+      "name": "countryId_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "cityId": 1
+      },
+      "name": "cityId_1"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:49.605Z"
+}

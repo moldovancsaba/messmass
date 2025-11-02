@@ -1,0 +1,254 @@
+{
+  "name": "cities",
+  "documentCount": 16,
+  "documents": [
+    {
+      "_id": "6901faee22c96156a9a5dd0f",
+      "name": "Budapest",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd10",
+      "name": "Szekesfehervar",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd11",
+      "name": "Paks",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd12",
+      "name": "Balatonfured",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd13",
+      "name": "Gyor",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd14",
+      "name": "Nyiregyhaza",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd15",
+      "name": "Mezokovesd",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd16",
+      "name": "Ajka",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd17",
+      "name": "Karcag",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd18",
+      "name": "Kozarmisleny",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd19",
+      "name": "Tiszakecske",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd1a",
+      "name": "Miskolc",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd1b",
+      "name": "Debrecen",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd1c",
+      "name": "Csakvar",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd1d",
+      "name": "Bekescsaba",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    },
+    {
+      "_id": "6901faee22c96156a9a5dd1e",
+      "name": "Budakalasz",
+      "countryId": "6901f99defeaa570627a1855",
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timezone": null,
+      "active": true,
+      "createdAt": "2025-10-29T11:30:54.901Z",
+      "updatedAt": "2025-10-29T11:30:54.901Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "countryId": 1
+      },
+      "name": "countryId_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "name": 1,
+        "countryId": 1
+      },
+      "name": "name_1_countryId_1",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "_fts": "text",
+        "_ftsx": 1
+      },
+      "name": "name_text",
+      "weights": {
+        "name": 1
+      },
+      "default_language": "english",
+      "language_override": "language",
+      "textIndexVersion": 3
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:49.124Z"
+}

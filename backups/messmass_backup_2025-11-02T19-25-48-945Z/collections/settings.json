@@ -1,0 +1,35 @@
+{
+  "name": "settings",
+  "documentCount": 2,
+  "documents": [
+    {
+      "_id": "gridSettings",
+      "desktopUnits": 3,
+      "mobileUnits": 1,
+      "tabletUnits": 2,
+      "unitPercentages": {
+        "desktop": 33.333333333333336,
+        "tablet": 50,
+        "mobile": 100
+      },
+      "updatedAt": "2025-10-29T16:58:55.030Z"
+    },
+    {
+      "_id": "68de8fa7df9735cb2a9fecd3",
+      "key": "typography",
+      "createdAt": "2025-10-02T14:43:51.786Z",
+      "fontFamily": "montserrat",
+      "updatedAt": "2025-11-01T13:50:08.660Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:50.830Z"
+}

@@ -1,0 +1,300 @@
+{
+  "name": "variablesConfig",
+  "documentCount": 26,
+  "documents": [
+    {
+      "_id": "female",
+      "createdAt": "2025-09-26T11:16:09.641Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "name": "female",
+      "updatedAt": "2025-09-28T10:50:47.482Z",
+      "manualOrder": 2
+    },
+    {
+      "_id": "boomer",
+      "createdAt": "2025-09-28T10:48:37.390Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "manualOrder": -1,
+      "name": "boomer",
+      "updatedAt": "2025-10-14T09:19:40.559Z",
+      "category": "Demographics",
+      "derived": false,
+      "description": null,
+      "formula": null,
+      "isCustom": false,
+      "label": "Boomer ≥ 65",
+      "type": "count"
+    },
+    {
+      "_id": "genAlpha",
+      "createdAt": "2025-09-28T10:49:23.618Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "name": "genAlpha",
+      "updatedAt": "2025-10-14T09:16:04.041Z",
+      "category": "Demographics",
+      "derived": false,
+      "description": null,
+      "formula": null,
+      "isCustom": false,
+      "label": "15 ≥ Gen Alpha",
+      "type": "count"
+    },
+    {
+      "_id": "male",
+      "createdAt": "2025-09-28T10:50:09.261Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "manualOrder": 1,
+      "name": "male",
+      "updatedAt": "2025-09-28T10:50:09.261Z"
+    },
+    {
+      "_id": "bitlyAndroidClicks",
+      "createdAt": "2025-10-13T16:26:47.249Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyAndroidClicks",
+      "updatedAt": "2025-10-13T16:26:47.249Z"
+    },
+    {
+      "_id": "bitlyChromeClicks",
+      "createdAt": "2025-10-13T16:26:48.450Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyChromeClicks",
+      "updatedAt": "2025-10-13T16:26:48.450Z"
+    },
+    {
+      "_id": "bitlyClicksByCountry",
+      "createdAt": "2025-10-13T16:26:49.927Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyClicksByCountry",
+      "updatedAt": "2025-10-13T16:26:49.927Z"
+    },
+    {
+      "_id": "bitlyDirectClicks",
+      "createdAt": "2025-10-13T16:26:52.858Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyDirectClicks",
+      "updatedAt": "2025-10-13T16:26:52.858Z"
+    },
+    {
+      "_id": "bitlyDesktopClicks",
+      "createdAt": "2025-10-13T16:26:54.445Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyDesktopClicks",
+      "updatedAt": "2025-10-13T16:26:54.445Z"
+    },
+    {
+      "_id": "bitlyCountryCount",
+      "createdAt": "2025-10-13T16:26:55.865Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyCountryCount",
+      "updatedAt": "2025-10-13T16:26:55.865Z"
+    },
+    {
+      "_id": "bitlyFirefoxClicks",
+      "createdAt": "2025-10-13T16:26:57.367Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyFirefoxClicks",
+      "updatedAt": "2025-10-13T16:26:57.367Z"
+    },
+    {
+      "_id": "bitlyiOSClicks",
+      "createdAt": "2025-10-13T16:26:59.222Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyiOSClicks",
+      "updatedAt": "2025-10-13T16:26:59.222Z"
+    },
+    {
+      "_id": "bitlyMobileClicks",
+      "createdAt": "2025-10-13T16:27:00.517Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyMobileClicks",
+      "updatedAt": "2025-10-13T16:27:00.517Z"
+    },
+    {
+      "_id": "bitlySocialClicks",
+      "createdAt": "2025-10-13T16:27:02.555Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlySocialClicks",
+      "updatedAt": "2025-10-13T16:27:02.555Z"
+    },
+    {
+      "_id": "bitlySafariClicks",
+      "createdAt": "2025-10-13T16:27:04.122Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlySafariClicks",
+      "updatedAt": "2025-10-13T16:27:04.122Z"
+    },
+    {
+      "_id": "bitlyReferrerCount",
+      "createdAt": "2025-10-13T16:27:05.547Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyReferrerCount",
+      "updatedAt": "2025-10-13T16:27:05.547Z"
+    },
+    {
+      "_id": "bitlyTabletClicks",
+      "createdAt": "2025-10-13T16:27:06.873Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyTabletClicks",
+      "updatedAt": "2025-10-13T16:27:06.873Z"
+    },
+    {
+      "_id": "bitlyTotalClicks",
+      "createdAt": "2025-10-13T16:27:08.065Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyTotalClicks",
+      "updatedAt": "2025-10-13T16:27:08.065Z"
+    },
+    {
+      "_id": "bitlyUniqueClicks",
+      "createdAt": "2025-10-13T16:27:09.379Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyUniqueClicks",
+      "updatedAt": "2025-10-13T16:27:09.379Z"
+    },
+    {
+      "_id": "bitlyFacebookMessengerClicks",
+      "createdAt": "2025-10-13T18:22:40.885Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyFacebookMessengerClicks",
+      "updatedAt": "2025-10-13T18:22:40.885Z"
+    },
+    {
+      "_id": "bitlyFacebookMobileClicks",
+      "createdAt": "2025-10-13T18:22:41.921Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyFacebookMobileClicks",
+      "updatedAt": "2025-10-13T18:22:41.921Z"
+    },
+    {
+      "_id": "bitlyQrCodeClicks",
+      "createdAt": "2025-10-13T18:22:43.172Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyQrCodeClicks",
+      "updatedAt": "2025-10-13T18:22:43.172Z"
+    },
+    {
+      "_id": "bitlyInstagramWebClicks",
+      "createdAt": "2025-10-13T18:22:44.593Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyInstagramWebClicks",
+      "updatedAt": "2025-10-13T18:22:44.593Z"
+    },
+    {
+      "_id": "bitlyDomainCount",
+      "createdAt": "2025-10-13T18:22:45.674Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyDomainCount",
+      "updatedAt": "2025-10-13T18:22:45.674Z"
+    },
+    {
+      "_id": "bitlyInstagramMobileClicks",
+      "createdAt": "2025-10-13T18:22:47.753Z",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": false
+      },
+      "name": "bitlyInstagramMobileClicks",
+      "updatedAt": "2025-10-13T18:22:47.753Z"
+    },
+    {
+      "_id": "genX",
+      "category": "Demographics",
+      "createdAt": "2025-10-14T09:19:18.219Z",
+      "derived": false,
+      "description": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isCustom": false,
+      "label": "65 ≥ GenX ≥ 45",
+      "name": "genX",
+      "type": "count",
+      "updatedAt": "2025-10-14T09:19:18.219Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-11-02T19:25:52.009Z"
+}
