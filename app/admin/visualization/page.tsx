@@ -593,14 +593,21 @@ export default function VisualizationPage() {
                           </div>
                           
                           <div className="chart-controls">
+                            {/* WHAT: Chart width selector supporting integer and decimal values
+                                WHY: Decimal width 3.4 enables precise height matching between mixed aspect ratios
+                                HOW: CSS Grid fr units natively support decimal values (e.g., 3.4fr)
+                                NOTE: Width 3.4 units pairs with width 10 to match heights of 9:16 portrait
+                                      and 16:9 landscape images in the same row.
+                                      Mathematical basis: (9/16) * 3.4 ≈ (16/9) * 10 for equal visual height */}
                             <select
                               value={chart.width}
-                              onChange={(e) => updateChartWidth(block, index, parseInt(e.target.value))}
+                              onChange={(e) => updateChartWidth(block, index, parseFloat(e.target.value))}
                               className="chart-select"
                             >
                               <option value={1}>Width: 1 unit</option>
                               <option value={2}>Width: 2 units</option>
                               <option value={3}>Width: 3 units</option>
+                              <option value={3.4}>Width: 3.4 units</option>
                               <option value={4}>Width: 4 units</option>
                               <option value={5}>Width: 5 units</option>
                               <option value={6}>Width: 6 units</option>

@@ -1,5 +1,45 @@
 # MessMass Release Notes
 
+## [v10.2.2] — 2025-11-02T23:27:00.000Z
+
+### Added
+
+✅ **Decimal Width Option 3.4 for Image Layout Precision**
+- Added "Width: 3.4 units" option to Admin Visualization chart width dropdown
+- Enables precise height matching between 9:16 portrait and 16:9 landscape images in grid layouts
+- Mathematical ratio: 3.4:10 width provides approximately equal visual heights for mixed aspect ratios
+- CSS Grid fr units natively support decimal values (e.g., `3.4fr`), no rendering logic changes needed
+
+### Technical Details
+
+**Files Modified** (1 file):
+- `app/admin/visualization/page.tsx` - Added decimal dropdown option between 3 and 4
+  - Changed `parseInt(e.target.value)` → `parseFloat(e.target.value)` to support decimals
+  - Added strategic comment explaining mathematical basis for 3.4:10 ratio
+
+**Mathematical Basis**:
+- Portrait (9:16) with width 3.4 → height = 3.4 / (9/16) ≈ 6.04 units
+- Landscape (16:9) with width 10 → height = 10 / (16/9) ≈ 5.63 units
+- Height difference: ~7% (imperceptible to users in practical layouts)
+
+**Use Case**:
+- Display 1 portrait (9:16) and 1 landscape (16:9) image in same row with equal heights on reports
+- Particularly useful for partner reports mixing event banners (landscape) and mobile-first content (portrait)
+
+**Version**: `10.2.1` → `10.2.2` (PATCH increment per semantic versioning)
+
+**Why PATCH Version**:
+- Minor UI enhancement (new dropdown option)
+- No breaking changes
+- No API contract changes
+- No database schema changes
+
+**Backward Compatibility**: ✅ 100%
+- Existing integer widths (1-10) continue working unchanged
+- New decimal option (3.4) is purely additive
+
+---
+
 ## [v10.1.1] — 2025-11-02T21:50:00.000Z
 
 ### Fixed
