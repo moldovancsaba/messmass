@@ -36,13 +36,13 @@ async function migrateImageAspectRatio() {
 
     await client.connect();
     const db = client.db(MONGODB_DB);
-    const chartsCollection = db.collection<ChartConfiguration>('chart_configurations');
+    const chartsCollection = db.collection<ChartConfiguration>('chartConfigurations');
 
-    // WHAT: Find all image charts without aspectRatio field
+    // WHAT: Find all image charts without aspectRatio field or with invalid value
     // WHY: Only migrate charts that need the new field
     const imageChartsWithoutRatio = await chartsCollection.find({
       type: 'image',
-      aspectRatio: { $exists: false }
+      aspectRatio: { $nin: ['16:9', '9:16', '1:1'] }
     }).toArray();
 
     console.log(`🔍 Found ${imageChartsWithoutRatio.length} image charts without aspectRatio field\n`);
@@ -52,12 +52,12 @@ async function migrateImageAspectRatio() {
       return;
     }
 
-    // WHAT: Add aspectRatio: '16:9' to all image charts
+    // WHAT: Add aspectRatio: '16:9' to all image charts without valid aspectRatio
     // WHY: Landscape is the most common use case, provides backward compatibility
     const result = await chartsCollection.updateMany(
       {
         type: 'image',
-        aspectRatio: { $exists: false }
+        aspectRatio: { $nin: ['16:9', '9:16', '1:1'] }
       },
       {
         $set: {
