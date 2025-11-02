@@ -1,16 +1,16 @@
 // app/admin/users/page.tsx — Admin Users Management (Unified)
 'use client';
 
-// WHAT: Migrated users page using Unified Admin View System (Phase 5)
-// WHY: Reduces code by ~40% while adding search, sort, view toggle
-// BEFORE: 400 lines with manual table, complex pagination, search state
-// AFTER: ~250 lines with UnifiedAdminPage for user list display
+// WHAT: Fully unified users page with create modal
+// WHY: Consistent with categories page - all CRUD in modals
+// BEFORE: 400 lines with inline create form
+// AFTER: ~200 lines, fully unified with modal-based create
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import { usersAdapter } from '@/lib/adapters';
-import ColoredCard from '@/components/ColoredCard';
+import { FormModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import PasswordModal from '@/components/PasswordModal';
 import { ConfirmDialog } from '@/components/modals';
@@ -24,7 +24,8 @@ export default function AdminUsersPageUnified() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Create form state (keep separate - not part of table)
+  // Create modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [creating, setCreating] = useState(false);
@@ -103,8 +104,7 @@ export default function AdminUsersPageUnified() {
   };
 
   // Create user handler
-  const onCreateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onCreateUser = async () => {
     if (!email.trim() || !name.trim()) return;
     setCreating(true);
     try {
@@ -116,6 +116,7 @@ export default function AdminUsersPageUnified() {
         const userEmail = email.trim();
         setEmail('');
         setName('');
+        setShowCreateModal(false);
         setPasswordModal({
           isOpen: true,
           password: data.password,
@@ -231,62 +232,73 @@ export default function AdminUsersPageUnified() {
 
   return (
     <>
-      {/* WHAT: Keep custom create form section with manual hero
-          WHY: This page has unique two-section layout (create form + user list) */}
-      <div className="page-container" style={{ marginBottom: 0 }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          marginBottom: '1rem'
-        }}>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Users Management</h1>
-            <p className="text-gray-600 mt-2">Create and manage admin users</p>
-          </div>
-          <a href="/admin" className="btn btn-secondary">← Back to Admin</a>
-        </div>
-
-        <ColoredCard accentColor="#10b981" hoverable={false}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Admin</h2>
-          <form onSubmit={onCreateUser} className="user-create-form">
-            <input
-              className="form-input"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              className="form-input"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            <button 
-              type="submit" 
-              className="btn btn-small btn-primary" 
-              disabled={creating || !email.trim() || !name.trim()}
-            >
-              {creating ? 'Creating…' : 'Create'}
-            </button>
-          </form>
-        </ColoredCard>
-      </div>
-
-      {/* WHAT: Unified admin page for user list display
-          WHY: Replaces manual table + complex pagination with automatic search/sort/view */}
+      {/* WHAT: Fully unified users page with modal-based create
+          WHY: Consistent with categories page, all CRUD in modals */}
       <UnifiedAdminPage
         adapter={adapterWithHandlers as any}
         items={users as any}
-        title="All Admin Users"
-        subtitle="Manage existing admin accounts"
+        title="👥 Users Management"
+        subtitle="Create and manage admin users"
+        backLink="/admin"
+        actionButtons={[
+          {
+            label: 'Add User',
+            icon: '➕',
+            variant: 'primary',
+            onClick: () => setShowCreateModal(true),
+          }
+        ]}
       />
 
-      {/* WHAT: Keep existing modal components unchanged
-          WHY: Modal logic is separate from display logic */}
-      
+      {/* WHAT: Create user modal */}
+      <FormModal
+        isOpen={showCreateModal}
+        onClose={() => {
+          setShowCreateModal(false);
+          setEmail('');
+          setName('');
+        }}
+        onSubmit={onCreateUser}
+        title="➕ Create New Admin User"
+        submitText="Create User"
+        disableSubmit={creating || !email.trim() || !name.trim()}
+        size="md"
+      >
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="admin@example.com"
+            required
+          />
+        </div>
+
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="John Doe"
+            required
+          />
+        </div>
+
+        <div className="form-group" style={{ padding: '12px', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #fbbf24' }}>
+          <p style={{ fontSize: '0.875rem', color: '#92400e', margin: 0 }}>
+            <strong>Note:</strong> A secure password will be generated automatically and displayed after creation.
+          </p>
+        </div>
+      </FormModal>
+
       {/* Password Display Modal */}
       <PasswordModal
         isOpen={passwordModal.isOpen}
