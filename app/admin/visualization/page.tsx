@@ -268,8 +268,8 @@ export default function VisualizationPage() {
   
   const updateChartWidth = (block: DataVisualizationBlock, chartIndex: number, newWidth: number) => {
     const updatedCharts = [...block.charts];
-    // Only allow width 1 (Portrait) or 2 (Landscape)
-    updatedCharts[chartIndex] = { ...updatedCharts[chartIndex], width: Math.min(Math.max(newWidth, 1), 2) };
+    // Allow width 1-10 units for flexible ratios
+    updatedCharts[chartIndex] = { ...updatedCharts[chartIndex], width: Math.min(Math.max(newWidth, 1), 10) };
     
     const updatedBlock = {
       ...block,
@@ -325,74 +325,7 @@ export default function VisualizationPage() {
           { text: `${dataBlocks.length} Data Blocks`, variant: 'primary' }
         ]}
       />
-      {/* Grid Settings Editor */}
-      <ColoredCard accentColor="#10b981" hoverable={false} className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 m-0">Grid Settings</h2>
-        <p className="info-note mt-2">
-          Configure the number of units per breakpoint used by stats/filter/hashtag pages.
-        </p>
-        <div className="flex gap-4 flex-wrap mt-3">
-          <label className="grid-input-label">
-            <span>Desktop Units</span>
-            <input
-              type="number"
-              min={1}
-              max={6}
-              value={gridForm.desktop}
-              onChange={(e) => setGridForm({ ...gridForm, desktop: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 6) })}
-              className="form-input grid-input-field"
-            />
-          </label>
-          <label className="grid-input-label">
-            <span>Tablet Units</span>
-            <input
-              type="number"
-              min={1}
-              max={4}
-              value={gridForm.tablet}
-              onChange={(e) => setGridForm({ ...gridForm, tablet: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 4) })}
-              className="form-input grid-input-field"
-            />
-          </label>
-          <label className="grid-input-label">
-            <span>Mobile Units</span>
-            <input
-              type="number"
-              min={1}
-              max={2}
-              value={gridForm.mobile}
-              onChange={(e) => setGridForm({ ...gridForm, mobile: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 2) })}
-              className="form-input grid-input-field"
-            />
-          </label>
-          <div className="flex items-end">
-            <button
-              className="btn-create"
-              onClick={async () => {
-                try {
-                  // WHAT: Use apiPut() for automatic CSRF token handling
-                  const data = await apiPut('/api/grid-settings', {
-                    desktopUnits: gridForm.desktop,
-                    tabletUnits: gridForm.tablet,
-                    mobileUnits: gridForm.mobile,
-                  });
-                  if (data.success) {
-                    const gs = data.settings;
-                    setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
-                    alert('Grid settings saved.');
-                  } else {
-                    alert('Failed to save grid settings');
-                  }
-                } catch (e) {
-                  alert('Failed to save grid settings');
-                }
-              }}
-            >
-              💾 Save
-            </button>
-          </div>
-        </div>
-      </ColoredCard>
+      {/* DEPRECATED: Grid Settings removed - system now auto-calculates from chart widths */}
 
       {/* WHAT: Last major card section on page (blocks within this may exist but this is the last main section)
           WHY: No mb-8 on last section */}
@@ -672,8 +605,16 @@ export default function VisualizationPage() {
                               onChange={(e) => updateChartWidth(block, index, parseInt(e.target.value))}
                               className="chart-select"
                             >
-                              <option value={1}>1 unit (Portrait)</option>
-                              <option value={2}>2 units (Landscape)</option>
+                              <option value={1}>Width: 1 unit</option>
+                              <option value={2}>Width: 2 units</option>
+                              <option value={3}>Width: 3 units</option>
+                              <option value={4}>Width: 4 units</option>
+                              <option value={5}>Width: 5 units</option>
+                              <option value={6}>Width: 6 units</option>
+                              <option value={7}>Width: 7 units</option>
+                              <option value={8}>Width: 8 units</option>
+                              <option value={9}>Width: 9 units</option>
+                              <option value={10}>Width: 10 units</option>
                             </select>
                             
                             <button
@@ -754,22 +695,11 @@ export default function VisualizationPage() {
                   />
                 </div>
                 
-                <div>
-                  <label className="form-label">Grid Columns (Desktop)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={6}
-                    value={Math.min(Math.max(editingBlock.gridColumns || 3, 1), 6)}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value) || 1;
-                      setEditingBlock({ ...editingBlock, gridColumns: Math.min(Math.max(v, 1), 6) });
-                    }}
-                    className="form-input"
-                  />
-                </div>
               </div>
-              <p className="info-note">Desktop will render {editingBlock.gridColumns} unit{(editingBlock.gridColumns||0) !== 1 ? 's' : ''} per row for this block. Tablet caps at 2; Mobile uses 1.</p>
+              <p className="info-note">
+                💡 Grid columns auto-calculated from chart widths (e.g., widths 2+2+3 = "2fr 2fr 3fr" grid).<br/>
+                Tablet: auto-wrap at 300px min-width | Mobile: single column
+              </p>
               
               <div>
                 <label className="flex-row checkbox-label">
