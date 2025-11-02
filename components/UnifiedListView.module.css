@@ -1,0 +1,258 @@
+/* components/UnifiedListView.module.css */
+/* WHAT: Styling for unified list view table component */
+/* WHY: Consistent table design across all admin pages */
+/* DESIGN SYSTEM: Uses theme.css tokens, follows existing table patterns */
+
+.listContainer {
+  width: 100%;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: var(--mm-radius-lg, 8px);
+  border: 1px solid var(--mm-gray-200);
+  background: var(--mm-white);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Table header styling */
+/* WHY: Clear visual hierarchy and professional appearance */
+.table thead {
+  background: var(--mm-gray-50);
+  border-bottom: 2px solid var(--mm-gray-200);
+}
+
+.table thead th {
+  padding: var(--mm-spacing-md, 16px);
+  text-align: left;
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-sm);
+  white-space: nowrap;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-spacing-xs, 8px);
+}
+
+/* WHAT: Sortable column styling */
+/* WHY: Visual indication that column can be sorted */
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+  background: var(--mm-gray-100);
+}
+
+.sorted {
+  color: var(--mm-color-primary-600);
+  background: var(--mm-color-primary-50);
+}
+
+.sortIndicator {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-color-primary-600);
+}
+
+/* WHAT: Table body styling */
+/* WHY: Clean, readable row layout with hover effects */
+.table tbody {
+  background: var(--mm-white);
+}
+
+.row {
+  border-bottom: 1px solid var(--mm-gray-200);
+  transition: background-color 0.15s ease;
+}
+
+.row:hover {
+  background: var(--mm-gray-50);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row.clickable {
+  cursor: pointer;
+}
+
+.row.clickable:hover {
+  background: var(--mm-color-primary-50);
+}
+
+.table tbody td {
+  padding: var(--mm-spacing-md, 16px);
+  color: var(--mm-gray-700);
+  vertical-align: middle;
+}
+
+/* WHAT: Actions cell styling */
+/* WHY: Right-aligned action buttons with proper spacing */
+.actionsHeader {
+  text-align: right !important;
+  width: 180px;
+  min-width: 180px;
+}
+
+.actionsCell {
+  text-align: right;
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--mm-spacing-xs, 8px);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-spacing-xs, 6px);
+  padding: var(--mm-spacing-xs, 6px) var(--mm-spacing-sm, 12px);
+  border: 1px solid transparent;
+  border-radius: var(--mm-radius-md, 6px);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--mm-color-primary-500);
+  outline-offset: 2px;
+}
+
+/* WHAT: Action button variants */
+/* WHY: Visual differentiation for different action types */
+.actionButton.variant-primary {
+  background: var(--mm-color-primary-500);
+  color: white;
+}
+
+.actionButton.variant-primary:hover {
+  background: var(--mm-color-primary-600);
+}
+
+.actionButton.variant-secondary {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  border-color: var(--mm-gray-300);
+}
+
+.actionButton.variant-secondary:hover {
+  background: var(--mm-gray-200);
+  border-color: var(--mm-gray-400);
+}
+
+.actionButton.variant-danger {
+  background: var(--mm-error, #ef4444);
+  color: white;
+}
+
+.actionButton.variant-danger:hover {
+  background: #dc2626;
+}
+
+.actionIcon {
+  font-size: var(--mm-font-size-base);
+  line-height: 1;
+}
+
+.actionLabel {
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Loading skeleton styling */
+/* WHY: Visual feedback during data loading */
+.skeletonRow {
+  opacity: 0.5;
+}
+
+.skeleton {
+  height: 20px;
+  background: linear-gradient(90deg, var(--mm-gray-200) 25%, var(--mm-gray-300) 50%, var(--mm-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--mm-radius-sm, 4px);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* WHAT: Empty state styling */
+/* WHY: Clear messaging when no data is available */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-spacing-2xl, 64px) var(--mm-spacing-lg, 24px);
+  text-align: center;
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg, 8px);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: var(--mm-spacing-md, 16px);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-spacing-xs, 8px);
+}
+
+.emptyMessage {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  max-width: 400px;
+}
+
+/* WHAT: Responsive adjustments for mobile */
+/* WHY: Maintain usability on small screens */
+@media (max-width: 768px) {
+  .table {
+    font-size: var(--mm-font-size-xs);
+  }
+  
+  .table thead th,
+  .table tbody td {
+    padding: var(--mm-spacing-sm, 12px);
+  }
+  
+  .actionLabel {
+    display: none;
+  }
+  
+  .actionButton {
+    padding: var(--mm-spacing-xs, 6px);
+  }
+  
+  .actionsHeader {
+    width: 80px;
+    min-width: 80px;
+  }
+}

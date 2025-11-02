@@ -1,0 +1,168 @@
+/* components/UnifiedAdminHeroWithSearch.module.css */
+/* WHAT: Styling for unified admin hero with search and view toggle */
+/* WHY: Consistent hero design across all admin pages */
+/* DESIGN SYSTEM: Uses theme.css tokens, extends AdminHero patterns */
+
+.heroContainer {
+  width: 100%;
+  background: linear-gradient(135deg, var(--mm-color-primary-500) 0%, var(--mm-color-primary-600) 100%);
+  padding: var(--mm-spacing-lg, 24px) var(--mm-spacing-xl, 32px);
+  border-radius: var(--mm-radius-lg, 8px);
+  margin-bottom: var(--mm-spacing-lg, 24px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.heroContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--mm-spacing-lg, 24px);
+}
+
+/* WHAT: Left section - Title and search */
+/* WHY: Primary content grouping */
+.heroLeft {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-spacing-md, 16px);
+}
+
+.heroTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-spacing-xs, 8px);
+}
+
+.heroTitle {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: white;
+  margin: 0;
+  line-height: var(--mm-line-height-sm);
+}
+
+.heroSubtitle {
+  font-size: var(--mm-font-size-base);
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: var(--mm-line-height-md);
+}
+
+/* WHAT: Search input container */
+/* WHY: Prominent search with icon */
+.searchContainer {
+  position: relative;
+  max-width: 500px;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--mm-spacing-sm, 12px) var(--mm-spacing-md, 16px);
+  padding-left: var(--mm-spacing-xl, 40px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--mm-radius-md, 6px);
+  background: rgba(255, 255, 255, 0.95);
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-900);
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--mm-gray-500);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: white;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--mm-spacing-sm, 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-500);
+  pointer-events: none;
+}
+
+/* WHAT: Right section - Controls and actions */
+/* WHY: Secondary content grouping */
+.heroRight {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-spacing-md, 16px);
+  flex-shrink: 0;
+}
+
+.viewToggleWrapper {
+  /* View toggle has its own styling */
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--mm-spacing-sm, 12px);
+}
+
+/* WHAT: Responsive adjustments for tablets */
+/* WHY: Stack controls vertically on medium screens */
+@media (max-width: 1024px) {
+  .heroContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .heroLeft {
+    width: 100%;
+  }
+  
+  .heroRight {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .searchContainer {
+    max-width: 100%;
+  }
+}
+
+/* WHAT: Responsive adjustments for mobile */
+/* WHY: Full-width layout on small screens */
+@media (max-width: 640px) {
+  .heroContainer {
+    padding: var(--mm-spacing-md, 16px);
+  }
+  
+  .heroTitle {
+    font-size: var(--mm-font-size-2xl);
+  }
+  
+  .heroSubtitle {
+    font-size: var(--mm-font-size-sm);
+  }
+  
+  .heroRight {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--mm-spacing-sm, 12px);
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .actionButtons button {
+    width: 100%;
+  }
+  
+  .viewToggleWrapper {
+    display: flex;
+    justify-content: center;
+  }
+}

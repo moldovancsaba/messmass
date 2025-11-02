@@ -1,0 +1,298 @@
+/* components/UnifiedCardView.module.css */
+/* WHAT: Styling for unified card view grid component */
+/* WHY: Consistent card grid design across all admin pages */
+/* DESIGN SYSTEM: Uses theme.css tokens, responsive grid layout */
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--mm-spacing-lg, 20px);
+  width: 100%;
+}
+
+/* WHAT: Card container using ColoredCard component */
+/* WHY: ColoredCard provides base styling, we add card-specific layout */
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-spacing-sm, 12px);
+  height: 100%;
+}
+
+/* WHAT: Card image styling */
+/* WHY: Visual identification with consistent dimensions */
+.cardImage {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: var(--mm-radius-md, 6px);
+  background: var(--mm-gray-100);
+  margin-bottom: var(--mm-spacing-xs, 8px);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* WHAT: Card icon styling (alternative to image) */
+/* WHY: Large emoji/icon for visual identification */
+.cardIcon {
+  font-size: 3rem;
+  text-align: center;
+  padding: var(--mm-spacing-md, 16px);
+  line-height: 1;
+}
+
+/* WHAT: Card title styling */
+/* WHY: Primary identifier with emphasis */
+.cardTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  line-height: var(--mm-line-height-sm);
+}
+
+/* WHAT: Card subtitle styling */
+/* WHY: Secondary information below title */
+.cardSubtitle {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  line-height: var(--mm-line-height-md);
+}
+
+/* WHAT: Badge/tag styling */
+/* WHY: Status indicators or category labels */
+.cardBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-spacing-xs, 6px);
+  margin-top: var(--mm-spacing-xs, 8px);
+}
+
+/* WHAT: Metadata section styling */
+/* WHY: Display key-value pairs in structured format */
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-spacing-xs, 8px);
+  padding-top: var(--mm-spacing-sm, 12px);
+  border-top: 1px solid var(--mm-gray-200);
+  margin-top: auto; /* Push to bottom of card */
+}
+
+.metaField {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-spacing-xs, 6px);
+  font-size: var(--mm-font-size-sm);
+  line-height: var(--mm-line-height-md);
+}
+
+.metaIcon {
+  font-size: var(--mm-font-size-base);
+  line-height: 1;
+}
+
+.metaLabel {
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+}
+
+.metaValue {
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Card actions styling */
+/* WHY: Action buttons at bottom of card */
+.cardActions {
+  display: flex;
+  gap: var(--mm-spacing-xs, 8px);
+  padding-top: var(--mm-spacing-sm, 12px);
+  border-top: 1px solid var(--mm-gray-200);
+  margin-top: var(--mm-spacing-sm, 12px);
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-spacing-xs, 6px);
+  padding: var(--mm-spacing-xs, 8px) var(--mm-spacing-sm, 12px);
+  border: 1px solid transparent;
+  border-radius: var(--mm-radius-md, 6px);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--mm-color-primary-500);
+  outline-offset: 2px;
+}
+
+/* WHAT: Action button variants */
+/* WHY: Visual differentiation for different action types */
+.actionButton.variant-primary {
+  background: var(--mm-color-primary-500);
+  color: white;
+}
+
+.actionButton.variant-primary:hover {
+  background: var(--mm-color-primary-600);
+}
+
+.actionButton.variant-secondary {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  border-color: var(--mm-gray-300);
+}
+
+.actionButton.variant-secondary:hover {
+  background: var(--mm-gray-200);
+  border-color: var(--mm-gray-400);
+}
+
+.actionButton.variant-danger {
+  background: var(--mm-error, #ef4444);
+  color: white;
+}
+
+.actionButton.variant-danger:hover {
+  background: #dc2626;
+}
+
+.actionIcon {
+  font-size: var(--mm-font-size-base);
+  line-height: 1;
+}
+
+.actionLabel {
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Loading skeleton styling */
+/* WHY: Visual feedback during data loading */
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-spacing-sm, 12px);
+  padding: var(--mm-spacing-md, 16px);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--mm-gray-200) 25%, var(--mm-gray-300) 50%, var(--mm-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--mm-radius-sm, 4px);
+}
+
+.skeletonTitle {
+  height: 24px;
+  width: 70%;
+}
+
+.skeletonSubtitle {
+  height: 18px;
+  width: 50%;
+}
+
+.skeletonMeta {
+  height: 16px;
+  width: 90%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* WHAT: Empty state styling */
+/* WHY: Clear messaging when no data is available */
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-spacing-2xl, 64px) var(--mm-spacing-lg, 24px);
+  text-align: center;
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg, 8px);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: var(--mm-spacing-md, 16px);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-spacing-xs, 8px);
+}
+
+.emptyMessage {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  max-width: 400px;
+}
+
+/* WHAT: Responsive adjustments for tablets */
+/* WHY: Optimize grid layout for medium screens */
+@media (max-width: 1024px) {
+  .cardGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--mm-spacing-md, 16px);
+  }
+}
+
+/* WHAT: Responsive adjustments for mobile */
+/* WHY: Single column layout on small screens */
+@media (max-width: 640px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+    gap: var(--mm-spacing-md, 16px);
+  }
+  
+  .cardImage {
+    height: 120px;
+  }
+  
+  .cardIcon {
+    font-size: 2.5rem;
+    padding: var(--mm-spacing-sm, 12px);
+  }
+  
+  .cardTitle {
+    font-size: var(--mm-font-size-base);
+  }
+  
+  .cardActions {
+    flex-direction: column;
+  }
+  
+  .actionButton {
+    width: 100%;
+  }
+}

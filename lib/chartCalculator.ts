@@ -400,7 +400,13 @@ export function calculateChart(
     elements,
     total,
     kpiValue,
-    hasErrors
+    hasErrors,
+    // WHAT: Pass through aspectRatio for image charts (v9.3.0)
+    // WHY: UnifiedDataVisualization needs this to calculate grid width
+    // HOW: Optional field, only set for image charts
+    ...(configuration.type === 'image' && 'aspectRatio' in configuration && configuration.aspectRatio 
+      ? { aspectRatio: configuration.aspectRatio } 
+      : {})
   };
   
   return result;

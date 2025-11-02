@@ -3,6 +3,7 @@ import ColoredCard from './ColoredCard';
 import { DynamicChart, ChartContainer } from './DynamicChart';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
+import { calculateImageWidth } from '@/lib/imageLayoutUtils';
 import styles from './UnifiedDataVisualization.module.css';
 
 interface UnifiedDataVisualizationProps {
@@ -204,9 +205,23 @@ export default function UnifiedDataVisualization({
                       return null;
                     }
 
+                    // WHAT: Calculate width based on chart type and aspect ratio (v9.3.0)
+                    // WHY: Image charts auto-calculate width from aspect ratio
+                    // HOW: Use aspectRatio from result or chart config
+                    let calculatedWidth = chart.width ?? 1;
+                    
+                    if (result.type === 'image' && 'aspectRatio' in result) {
+                      // WHAT: Extract aspectRatio from chart result (comes from chart config)
+                      // WHY: Image width determined by aspect ratio, not manual setting
+                      const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
+                      if (aspectRatio) {
+                        calculatedWidth = calculateImageWidth(aspectRatio);
+                      }
+                    }
+                    
                     // Clamp width to [1 .. desktop units], future-proof for >2
                     const maxDesktopUnits = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
-                    const safeWidth = Math.min(Math.max(chart.width ?? 1, 1), maxDesktopUnits);
+                    const safeWidth = Math.min(Math.max(calculatedWidth, 1), maxDesktopUnits);
 
                     // All chart types get wrapper div with width class
                     return (
