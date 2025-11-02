@@ -117,9 +117,10 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
   const [internalSearchTerm, setInternalSearchTerm] = useState('');
   const searchTerm = isServerSideSearch ? externalSearchValue : internalSearchTerm;
   const setSearchTerm = isServerSideSearch ? onExternalSearchChange : setInternalSearchTerm;
-  // WHAT: Only debounce for client-side search (server-side should debounce in parent)
-  // WHY: Avoid double-debouncing when parent already handles it
-  const debouncedSearchTerm = isServerSideSearch ? searchTerm : useDebouncedValue(searchTerm, 300);
+  // WHAT: Always call useDebouncedValue (React Hooks rules)
+  // WHY: Hooks must be called unconditionally, then decide whether to use result
+  const clientDebouncedSearch = useDebouncedValue(searchTerm, 300);
+  const debouncedSearchTerm = isServerSideSearch ? searchTerm : clientDebouncedSearch;
 
   // WHAT: Sort state (internal or external)
   // WHY: Support both client-side and server-side sorting

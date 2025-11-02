@@ -331,24 +331,9 @@ export default function ProjectsPageUnified() {
     setSharePopupOpen(true);
   };
   
-  // Loading state
-  if (authLoading || loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-card">
-          <div className="text-4xl mb-4">📁</div>
-          <div className="text-gray-600">Loading projects...</div>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!user) {
-    return null;
-  }
-  
   // WHAT: Create enhanced adapter with custom Edit handler
   // WHY: Override default Edit action to open modal instead of logging
+  // NOTE: Must be called before any early returns (React Hooks rules)
   const enhancedAdapter = React.useMemo(() => ({
     ...projectsAdapter,
     listConfig: {
@@ -376,6 +361,22 @@ export default function ProjectsPageUnified() {
       })
     }
   }), []);
+  
+  // Loading state
+  if (authLoading || loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-card">
+          <div className="text-4xl mb-4">📁</div>
+          <div className="text-gray-600">Loading projects...</div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return null;
+  }
   
   return (
     <>
