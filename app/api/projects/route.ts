@@ -145,8 +145,8 @@ export async function GET(request: NextRequest) {
               { eventName: { $regex: regex } },
               { viewSlug: { $regex: regex } },
               { editSlug: { $regex: regex } },
-              // Traditional hashtags array search
-              { hashtags: { $elemMatch: { $regex: regex, $options: 'i' } } },
+              // Traditional hashtags array search (regex already has 'i' flag)
+              { hashtags: { $elemMatch: { $regex: regex } } },
               // Categorized hashtags nested object search
               // Uses $expr to evaluate if any category array contains matching hashtag
               {
