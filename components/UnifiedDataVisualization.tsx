@@ -40,60 +40,56 @@ export default function UnifiedDataVisualization({
     chartIds: b.charts?.map(c => c.chartId)
   })));
 
-  // Build dynamic CSS so each block's grid respects its configured gridColumns
-  // Why: Requirements specify charts should fill their block's available units.
-  // If a block has 3 columns, a width=2 chart spans 2/3; if a block has 2 columns, width=2 spans full width.
-  // We keep mobile at 1 column for readability; on tablets we cap at 2 columns to avoid cramped layouts.
-  // IMPORTANT: Use the exact same fallback as Admin Visualization for grid columns.
-  // Functional: Prevents NaN in CSS when older blocks lack gridColumns; ensures identical layout.
-  // Strategic: Keeps stats pages visually in lockstep with admin preview.
+  // WHAT: Build dynamic CSS using fr units based on chart width ratios
+  // WHY: Auto-calculate grid from chart widths (e.g., 2+2+3 = "2fr 2fr 3fr"), no manual grid columns needed
+  // HOW: Sum chart widths, generate explicit fr values, auto-wrap with min-width on tablet/mobile
   const dynamicGridCSS = visibleBlocks
     .map((block, idx) => {
       const idSuffix = block._id || `i${idx}`;
-      // Desktop uses per-block gridColumns, capped by global desktop units
-      const desktopCols = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
-      // Tablet uses global units (kept consistent across blocks)
-      const tabletCols = Math.max(1, Math.floor(gridUnits.tablet));
-      // Mobile uses 1 column (or configured global if provided)
-      const mobileCols = Math.max(1, Math.floor(gridUnits.mobile || 1));
+      
+      // WHAT: Get visible charts with valid data for this block
+      const blockCharts = block.charts
+        .filter(chart => {
+          const result = getChartResult(chart.chartId);
+          return result && hasValidData(result);
+        })
+        .sort((a, b) => a.order - b.order);
+      
+      // WHAT: Build fr unit string from chart widths (e.g., [2, 2, 3] → "2fr 2fr 3fr")
+      // WHY: Creates proportional columns - 2/7, 2/7, 3/7 of row width
+      const chartWidths = blockCharts.map(c => Math.max(1, c.width || 1));
+      const frColumns = chartWidths.map(w => `${w}fr`).join(' ');
+      
+      console.log(`📐 [Grid ${idSuffix}]`, { chartWidths, frColumns });
+      
       return `
-        /* Ensure each block grid fills columns and aligns correctly */
-        .udv-grid-${idSuffix} { justify-items: stretch !important; align-items: start; grid-auto-flow: row !important; grid-template-columns: repeat(${desktopCols}, minmax(0, 1fr)) !important; }
-        /* Tablet overrides */
+        /* Desktop: Auto-calculated fr units from chart widths */
+        .udv-grid-${idSuffix} { 
+          justify-items: stretch !important; 
+          align-items: start; 
+          grid-auto-flow: row !important; 
+          grid-template-columns: ${frColumns || '1fr'} !important; 
+        }
+        /* Tablet: Auto-wrap with 300px minimum width per chart */
         @media (max-width: 1023px) {
-          .udv-grid-${idSuffix} { grid-template-columns: repeat(${tabletCols}, minmax(0, 1fr)) !important; }
+          .udv-grid-${idSuffix} { 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important; 
+          }
         }
-        /* Mobile overrides */
+        /* Mobile: Force single column */
         @media (max-width: 767px) {
-          .udv-grid-${idSuffix} { grid-template-columns: repeat(${mobileCols}, minmax(0, 1fr)) !important; }
+          .udv-grid-${idSuffix} { 
+            grid-template-columns: 1fr !important; 
+          }
         }
-        /* Per-block container overrides to avoid pixel constraints */
+        /* Per-block container overrides */
         .udv-grid-${idSuffix} :global(.chart-container) { min-width: 0 !important; max-width: none !important; width: 100% !important; }
         .udv-grid-${idSuffix} :global(.chart-legend) { min-width: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden; }
       `;
     })
     .join('\n');
 
-  // Clamp spans on tablet so any width > tablet units spans exactly tablet units
-  const tabletSpan = Math.max(1, Math.floor(gridUnits.tablet));
-  const mobileSpan = Math.max(1, Math.floor(gridUnits.mobile || 1));
-  const extraClampCSS = `
-    /* Tablet clamp: any width > tablet units spans exactly tablet units */
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .chart-width-3 { grid-column: span ${tabletSpan} !important; }
-      .chart-width-4 { grid-column: span ${tabletSpan} !important; }
-      .chart-width-5 { grid-column: span ${tabletSpan} !important; }
-      .chart-width-6 { grid-column: span ${tabletSpan} !important; }
-    }
-    /* Mobile clamp: any width > mobile units spans exactly mobile units */
-    @media (max-width: 767px) {
-      .chart-width-2 { grid-column: span ${mobileSpan} !important; }
-      .chart-width-3 { grid-column: span ${mobileSpan} !important; }
-      .chart-width-4 { grid-column: span ${mobileSpan} !important; }
-      .chart-width-5 { grid-column: span ${mobileSpan} !important; }
-      .chart-width-6 { grid-column: span ${mobileSpan} !important; }
-    }
-  `;
+  // NO LONGER NEEDED: Chart widths handled by fr units in grid-template-columns
   
   // Get chart result by ID
   const getChartResult = (chartId: string): ChartCalculationResult | null => {
@@ -204,30 +200,25 @@ export default function UnifiedDataVisualization({
                       return null;
                     }
 
-                    // WHAT: Use manual width from block settings (NO automatic calculation)
-                    // WHY: Grid columns determine WIDTH, aspect ratio determines HEIGHT for that width
-                    // HOW: Width = how many grid columns this chart spans
-                    const chartWidth = chart.width ?? 1;
+                    // WHAT: No width calculations needed - fr units in grid-template-columns handle proportions
+                    // WHY: Chart width ratio already baked into CSS (e.g., "2fr 2fr 3fr")
+                    // HOW: Just render chart in grid cell, CSS does the rest
                     
                     // Debug logging for image charts
                     if (result.type === 'image') {
                       console.log('🖼️ [IMAGE CHART]', {
                         chartId: chart.chartId,
-                        manualWidth: chartWidth,
+                        width: chart.width,
                         aspectRatio: (result as any).aspectRatio,
-                        note: 'Width from block settings, aspect ratio controls height'
+                        note: 'Width handled by fr units, aspect ratio controls height'
                       });
                     }
-                    
-                    // Clamp width to [1 .. desktop units]
-                    const maxDesktopUnits = Math.max(1, Math.min(Math.floor(block.gridColumns || 1), Math.floor(gridUnits.desktop)));
-                    const safeWidth = Math.min(Math.max(chartWidth, 1), maxDesktopUnits);
 
-                    // All chart types get wrapper div with width class
+                    // No width classes needed - fr units handle proportions
                     return (
                       <div
                         key={`${idSuffix}-${chart.chartId}`}
-                        className={`chart-item chart-width-${safeWidth} unified-chart-item`}
+                        className={`chart-item unified-chart-item`}
                       >
                         <DynamicChart 
                           result={result} 
@@ -264,17 +255,8 @@ export default function UnifiedDataVisualization({
           grid-auto-rows: 1fr; /* WHAT: Make all rows equal height; WHY: Consistent chart heights */
         }
 
-        /* Chart width spans - determines actual grid space occupied */
-        .chart-width-1 { grid-column: span 1 !important; }
-        .chart-width-2 { grid-column: span 2 !important; }
-
-        /* Mobile clamp is injected dynamically to respect configured mobile units */
-
-        /* Inject per-block column definitions for tablet and desktop */
+        /* Inject per-block column definitions (fr units auto-calculate from widths) */
         ${dynamicGridCSS}
-
-        /* Clamp spans at tablet: width > tabletCols -> span tabletCols */
-        ${extraClampCSS}
 
         /* Override global chart container min/max width so units control size, not pixels */
         .udv-grid :global(.chart-container) {
@@ -317,11 +299,7 @@ export default function UnifiedDataVisualization({
           overflow: hidden;
         }
 
-        /* Support up to 6-unit spans for forward compatibility */
-        .chart-width-3 { grid-column: span 3 !important; }
-        .chart-width-4 { grid-column: span 4 !important; }
-        .chart-width-5 { grid-column: span 5 !important; }
-        .chart-width-6 { grid-column: span 6 !important; }
+        /* NO SPAN CLASSES NEEDED - fr units handle proportions automatically */
 
         /* WHAT: Unified chart item with improved spacing and height
          * WHY: Single clean card container without double-boxing
