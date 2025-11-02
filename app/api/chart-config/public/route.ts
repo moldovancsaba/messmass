@@ -65,6 +65,7 @@ export async function GET() {
       subtitle: config.subtitle,
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
+      aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio for grid width calculation
       // Exclude sensitive fields like createdBy, lastModifiedBy, etc.
     }));
 

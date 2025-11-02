@@ -131,7 +131,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
 
   // WHAT: Update configuration without closing modal (for Update button)
   // WHY: Allow rapid iterative editing with immediate feedback
-  const updateConfiguration = async (configData: ChartConfigFormData): Promise<void> => {
+  const updateConfiguration = async (configData: ChartConfigFormData): Promise<ChartConfigFormData> => {
     const isUpdate = !!configData._id;
     const url = '/api/chart-config';
     const method = isUpdate ? 'PUT' : 'POST';
@@ -141,7 +141,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       : configData;
 
     console.log(`🔄 Updating chart configuration (modal stays open):`, configData.chartId);
-    console.log('📦 aspectRatio:', configData.aspectRatio);
+    console.log('📦 aspectRatio BEFORE save:', configData.aspectRatio);
     
     const response = await fetch(url, {
       method,
@@ -154,7 +154,10 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     if (result.success) {
       console.log(`✅ Chart configuration updated successfully (modal open)`);
       await loadConfigurations(); // Reload the list
-      // NOTE: Modal stays open - do NOT call setShowEditor(false)
+      
+      // CRITICAL: Return the updated configuration so Editor can refresh its formData
+      console.log('📦 aspectRatio AFTER save (from API):', result.configuration?.aspectRatio);
+      return result.configuration;
     } else {
       throw new Error(result.error || 'Failed to update configuration');
     }
@@ -291,7 +294,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         emoji: config.emoji,
         subtitle: config.subtitle,
         showTotal: config.showTotal,
-        totalLabel: config.totalLabel
+        totalLabel: config.totalLabel,
+        aspectRatio: config.aspectRatio // v9.3.0: Image aspect ratio
       });
     } else {
       // Create new configuration with proper element count based on type
@@ -567,7 +571,7 @@ interface ChartConfigurationEditorProps {
   config: ChartConfigFormData;
   availableVariables: AvailableVariable[]; // WHAT: Dynamic variables from KYC
   onSave: (config: ChartConfigFormData) => Promise<void>;
-  onUpdate: (config: ChartConfigFormData) => Promise<void>; // WHAT: Update without closing
+  onUpdate: (config: ChartConfigFormData) => Promise<ChartConfigFormData>; // WHAT: Update without closing, returns fresh data
   onCancel: () => void;
 }
 
@@ -649,11 +653,19 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     
     setSaveStatus('saving');
     try {
-      await onUpdate(formData); // Call onUpdate instead of onSave
+      const freshData = await onUpdate(formData); // Get fresh data from API
       setSaveStatus('saved');
+      
+      // CRITICAL: Update formData with fresh data from database
+      if (freshData) {
+        console.log('🔄 Refreshing form with data from database');
+        setFormData(freshData);
+      }
+      
       setTimeout(() => setSaveStatus('idle'), 2000);
       // NOTE: Modal stays open for continued editing
     } catch (error) {
+      console.error('❌ Update failed:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
