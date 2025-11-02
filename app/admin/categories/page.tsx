@@ -21,6 +21,13 @@ export default function CategoriesPageUnified() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // WHAT: Client-side sorting state
+  // WHY: Categories are small dataset, no need for server-side sorting
+  type SortField = 'name' | 'order' | 'createdAt' | null;
+  type SortOrder = 'asc' | 'desc' | null;
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+  
   // Modal states (keep existing modal logic)
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -162,6 +169,25 @@ export default function CategoriesPageUnified() {
       alert('Failed to delete category');
     }
   };
+  
+  // WHAT: Handle column sorting (three-state cycle)
+  // WHY: null → asc → desc → null pattern for intuitive sorting
+  const handleSort = (field: string) => {
+    const typedField = field as SortField;
+    if (sortField === typedField) {
+      // Cycle through: asc → desc → null
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else if (sortOrder === 'desc') {
+        setSortField(null);
+        setSortOrder(null);
+      }
+    } else {
+      // New field: start with asc
+      setSortField(typedField);
+      setSortOrder('asc');
+    }
+  };
 
   // WHAT: Wire adapter with real action handlers
   // WHY: Connects unified view actions to actual business logic
@@ -215,6 +241,11 @@ export default function CategoriesPageUnified() {
         title="🌍 Category Manager"
         subtitle="Manage hashtag categories with colors and display order"
         backLink="/admin"
+        enableSearch={true}
+        enableSort={true}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={handleSort}
         actionButtons={[
           {
             label: 'New Category',

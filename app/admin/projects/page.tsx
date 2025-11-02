@@ -346,10 +346,40 @@ export default function ProjectsPageUnified() {
     return null;
   }
   
+  // WHAT: Create enhanced adapter with custom Edit handler
+  // WHY: Override default Edit action to open modal instead of logging
+  const enhancedAdapter = React.useMemo(() => ({
+    ...projectsAdapter,
+    listConfig: {
+      ...projectsAdapter.listConfig,
+      rowActions: projectsAdapter.listConfig.rowActions.map(action => {
+        if (action.label === 'Edit') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => editProject(project)
+          };
+        }
+        return action;
+      })
+    },
+    cardConfig: {
+      ...projectsAdapter.cardConfig,
+      cardActions: projectsAdapter.cardConfig.cardActions.map(action => {
+        if (action.label === 'Edit') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => editProject(project)
+          };
+        }
+        return action;
+      })
+    }
+  }), []);
+  
   return (
     <>
       <UnifiedAdminPage
-        adapter={projectsAdapter}
+        adapter={enhancedAdapter}
         items={projects}
         isLoading={loading}
         title="🍿 Manage Projects"
@@ -361,7 +391,10 @@ export default function ProjectsPageUnified() {
         searchPlaceholder="Search projects..."
         showPaginationStats={true}
         totalMatched={totalMatched}
-        enableSort={false}
+        enableSort={true}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={handleSort}
         actionButtons={[
           {
             label: 'Add New Project',

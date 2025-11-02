@@ -91,22 +91,24 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
     ],
     rowActions: [
       {
-        label: 'Edit',
-        icon: '✏️',
-        variant: 'primary',
+        label: 'Regenerate',
+        icon: '🔄',
+        variant: 'secondary',
         handler: (user) => {
-          console.log('Edit user:', user._id);
+          // WHAT: Regenerate password action (overridden by page component)
+          // WHY: Users cannot edit email/name after creation (security)
+          console.log('Regenerate password for:', user._id);
         },
-        title: 'Edit user',
+        title: 'Regenerate password',
       },
       {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
         handler: (user) => {
-          if (confirm(`Delete user "${user.email}"?`)) {
-            console.log('Delete user:', user._id);
-          }
+          // WHAT: Delete user action (overridden by page component)
+          // WHY: Requires confirmation modal before deletion
+          console.log('Delete user:', user._id);
         },
         title: 'Delete user',
       },
@@ -139,22 +141,24 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
     ],
     cardActions: [
       {
-        label: 'Edit',
-        icon: '✏️',
-        variant: 'primary',
+        label: 'Regenerate',
+        icon: '🔄',
+        variant: 'secondary',
         handler: (user) => {
-          console.log('Edit user:', user._id);
+          // WHAT: Regenerate password action (overridden by page component)
+          console.log('Regenerate password for:', user._id);
         },
+        title: 'Regenerate password',
       },
       {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
         handler: (user) => {
-          if (confirm(`Delete "${user.email}"?`)) {
-            console.log('Delete user:', user._id);
-          }
+          // WHAT: Delete user action (overridden by page component)
+          console.log('Delete user:', user._id);
         },
+        title: 'Delete user',
       },
     ],
   },

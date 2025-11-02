@@ -216,14 +216,27 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         title: 'View public statistics page',
       },
       {
+        label: 'Edit Stats',
+        icon: '📊',
+        variant: 'primary',
+        handler: (project) => {
+          // WHAT: Navigate to stats editor (main application function)
+          // WHY: This is the primary purpose of MessMass - editing event statistics
+          if (project.editSlug) {
+            window.location.href = `/edit/${project.editSlug}`;
+          }
+        },
+        title: 'Edit event statistics (clicker & manual input)',
+      },
+      {
         label: 'Edit',
         icon: '✏️',
-        variant: 'primary',
+        variant: 'secondary',
         handler: (project) => {
           // This will be overridden by the page component
           console.log('Edit project:', project._id);
         },
-        title: 'Edit project details',
+        title: 'Edit project details (name, date, hashtags)',
       },
       {
         label: 'Delete',
@@ -291,6 +304,29 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
     ],
     cardActions: [
       {
+        label: 'Edit Stats',
+        icon: '📊',
+        variant: 'primary',
+        handler: (project) => {
+          // WHAT: Navigate to stats editor (main application function)
+          // WHY: This is the primary purpose of MessMass - editing event statistics
+          if (project.editSlug) {
+            window.location.href = `/edit/${project.editSlug}`;
+          }
+        },
+        title: 'Edit event statistics',
+      },
+      {
+        label: 'Edit',
+        icon: '✏️',
+        variant: 'secondary',
+        handler: (project) => {
+          // This will be overridden by the page component
+          console.log('Edit project:', project._id);
+        },
+        title: 'Edit project details',
+      },
+      {
         label: 'CSV',
         icon: '⬇️',
         variant: 'secondary',
@@ -328,15 +364,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
             alert('Export failed');
           }
         },
-      },
-      {
-        label: 'Edit',
-        icon: '✏️',
-        variant: 'primary',
-        handler: (project) => {
-          // This will be overridden by the page component
-          console.log('Edit project:', project._id);
-        },
+        title: 'Download CSV export',
       },
     ],
   },
