@@ -103,14 +103,19 @@ export default function ProjectsPageUnified() {
       if (q) {
         params.set('q', q);
         params.set('offset', '0');
+        console.log('🔎 API call with search:', q, 'URL:', `/api/projects?${params.toString()}`);
       } else if (sortField && sortOrder) {
         // Server-side sorting
         params.set('sortField', sortField);
         params.set('sortOrder', sortOrder);
         params.set('offset', '0');
+        console.log('📦 API call with sort:', sortField, sortOrder);
+      } else {
+        console.log('📦 API call default (no search/sort)');
       }
       
       const response = await fetch(`/api/projects?${params.toString()}`, { cache: 'no-store' });
+      console.log('✅ API response received, success:', response.ok);
       const data = await response.json();
       
       if (data.success) {
@@ -165,7 +170,9 @@ export default function ProjectsPageUnified() {
   // WHAT: Trigger search after user stops typing
   // WHY: Prevent excessive API calls while typing
   useEffect(() => {
+    console.log('🔍 Search effect triggered:', { debouncedSearchQuery, sortField, sortOrder, user: !!user });
     if (user) {
+      console.log('🚀 Calling loadProjects with search:', debouncedSearchQuery);
       loadProjects(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
