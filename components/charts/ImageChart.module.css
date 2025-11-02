@@ -28,13 +28,9 @@
   background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
-  transition: transform var(--mm-transition-normal);
-}
-
-.image:hover {
-  /* WHAT: Subtle zoom on hover
-     WHY: Visual feedback that image is clickable */
-  transform: scale(1.02);
+  /* WHAT: No hover transform
+     WHY: Scale effect breaks height alignment when multiple images with different aspect ratios in same row
+     NOTE: Cursor pointer still indicates clickability */
 }
 
 .placeholder {
