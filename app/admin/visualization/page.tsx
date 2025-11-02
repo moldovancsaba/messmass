@@ -610,7 +610,11 @@ export default function VisualizationPage() {
                               <option value={1}>Width: 1 unit</option>
                               <option value={2}>Width: 2 units</option>
                               <option value={3}>Width: 3 units</option>
+                              <option value={3.1}>Width: 3.1 units</option>
                               <option value={3.15}>Width: 3.15 units</option>
+                              <option value={3.18}>Width: 3.18 units</option>
+                              <option value={3.2}>Width: 3.2 units</option>
+                              <option value={3.25}>Width: 3.25 units</option>
                               <option value={4}>Width: 4 units</option>
                               <option value={5}>Width: 5 units</option>
                               <option value={6}>Width: 6 units</option>
