@@ -572,10 +572,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               
               return null;
             })
-            .filter((v): v is VariableWithFlags => !!v && !v.derived)
+            .filter((v): v is VariableWithFlags => !!v && !v.derived && !!v.flags)
           const filtered = editMode === 'clicker'
-            ? items.filter(v => v.flags.visibleInClicker)
-            : items.filter(v => v.flags.editableInManual)
+            ? items.filter(v => v.flags?.visibleInClicker)
+            : items.filter(v => v.flags?.editableInManual)
           // WHAT: Hide group block if no variables are visible in current mode
           // WHY: Prevents empty "Success Manager" or other titled blocks from appearing
           if (filtered.length === 0) return null
@@ -675,11 +675,11 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         
         {/* Custom Variables Section (supports newly added variables) */}
         {(() => {
-          const customVars = varsConfig.filter(v => v.isCustom && (v.type === 'count' || v.type === 'numeric'))
+          const customVars = varsConfig.filter(v => v.isCustom && (v.type === 'count' || v.type === 'numeric') && !!v.flags)
           if (customVars.length === 0) return null
           const showAny = editMode === 'clicker'
-            ? customVars.some(v => v.flags.visibleInClicker)
-            : customVars.some(v => v.flags.editableInManual)
+            ? customVars.some(v => v.flags?.visibleInClicker)
+            : customVars.some(v => v.flags?.editableInManual)
           if (!showAny) return null
           return (
             <ColoredCard>
@@ -687,13 +687,13 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               <div className="stats-cards-row">
                 {editMode === 'clicker' ? (
                   <>
-                    {customVars.filter(v => v.flags.visibleInClicker).map(v => (
+                    {customVars.filter(v => v.flags?.visibleInClicker).map(v => (
                       <StatCard key={v.name} label={v.label} value={getStat(v.name)} onIncrement={() => incrementDynamic(v.name)} onDecrement={() => decrementDynamic(v.name)} />
                     ))}
                   </>
                 ) : (
                   <>
-                    {customVars.filter(v => v.flags.editableInManual).map(v => (
+                    {customVars.filter(v => v.flags?.editableInManual).map(v => (
                       <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
                     ))}
                   </>
