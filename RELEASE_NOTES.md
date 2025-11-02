@@ -1,5 +1,113 @@
 # MessMass Release Notes
 
+## [v9.2.1] — 2025-11-02T00:21:00.000Z
+
+### Added
+
+✅ **Bar Chart 50/50 Fixed Layout**
+- Implemented fixed 50%/50% grid layout for bar charts
+- Bar positioned on LEFT (50% width), legend on RIGHT (50% width)
+- Ensures consistent bar widths regardless of legend text length
+- Changed from `grid-template-columns: auto 1fr` to `1fr 1fr`
+
+✅ **Text Fade-Out Utility Class**
+- Created reusable `.text-fade-end` utility in `app/styles/utilities.css`
+- 5% gradient fade from transparent to `var(--mm-white)` at text end
+- Applied to bar chart legends for elegant text overflow handling
+- Reusable across entire codebase for any text overflow scenario
+
+### Fixed
+
+✅ **Bar Chart Visual Consistency**
+- Fixed issue where long legend text caused inconsistent bar widths
+- Bars now maintain equal visual weight across all chart instances
+- Text overflow handled gracefully with gradient fade instead of cut-off
+
+✅ **Design Token Compliance**
+- Replaced all hardcoded values in bar chart CSS with design tokens:
+  - Spacing: `var(--mm-space-3)`, `var(--mm-space-4)`
+  - Typography: `var(--mm-font-size-sm)`
+  - Border radius: `var(--mm-radius-xl)`
+  - Transitions: `var(--transition-base)`
+- 100% compliance with MessMass coding standards
+
+### Technical Details
+
+**Files Modified**: 3 files
+- `components/DynamicChart.tsx` - Changed bar/legend order, added `.text-fade-end` class
+- `components/DynamicChart.module.css` - Fixed 50/50 grid, replaced hardcoded values
+- `app/styles/utilities.css` - Added `.text-fade-end` utility class
+- `lib/adapters/index.ts` - Fixed missing adapter exports
+
+**Files Added**: 12 files
+- `lib/adapters/*.tsx` - Unified admin view adapter implementations
+- `lib/adminDataAdapters.ts` - Adapter type definitions
+- `lib/adminViewState.ts` - View state management
+
+**CSS Changes**:
+```css
+/* Bar row with fixed 50/50 split */
+.barRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Equal 50%/50% split */
+  gap: var(--mm-space-4);
+  align-items: center;
+}
+
+/* Text fade-out utility */
+.text-fade-end {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.text-fade-end::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5%;
+  height: 100%;
+  background: linear-gradient(to right, transparent 0%, var(--mm-white) 100%);
+  pointer-events: none;
+}
+```
+
+**Why**
+
+User requirement:
+- "the vertical alignment is perfect"
+- "i need to have the same width for all bars that has to be independent from the text length"
+- "if the text of the legend is longer than the available space the overflow part should disappeared"
+- "DO NOT BAKE IN CODE, NO HARDCODED STYLE" - create reusable utility
+- "fade out text end" - 5% gradient using `var(--mm-white)`
+
+**Benefits**
+1. **Visual Consistency**: All bars same width regardless of legend length
+2. **Professional Look**: Gradient fade instead of abrupt text cut-off
+3. **Reusable Utility**: `.text-fade-end` available for future use cases
+4. **Design System Compliance**: Zero hardcoded values, 100% design tokens
+5. **Coding Standards**: Strategic comments (WHAT/WHY/HOW) on all code
+
+**Layout Visualization**:
+```
+[████████████████ 50%]  [Legend text here... 50%]
+[████████ 50%]          [Short 50%]
+[███████████████ 50%]   [Very long legend t... 50%]
+```
+
+**Build Status**:
+- ✅ `npm run build` passed
+- ✅ `npm run type-check` passed
+- ✅ Vercel deployment successful
+- ✅ No inline styles, all design tokens
+
+**Database Impact**: None - pure CSS/layout changes
+
+**Migration Required**: None - backward compatible visual update
+
+---
+
 ## [v9.2.0] — 2025-11-01T23:26:55.000Z
 
 ### Added

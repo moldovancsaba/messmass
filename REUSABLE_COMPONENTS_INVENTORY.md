@@ -451,6 +451,7 @@ import InsightCard from '@/components/analytics/InsightCard';
 .text-bold { font-weight: var(--mm-font-weight-bold); }
 .text-muted { color: var(--mm-gray-500); }
 .text-sm { font-size: var(--mm-font-size-sm); }
+.text-fade-end { /* Text overflow with gradient fade-out (last 5%) */ }
 ```
 
 ### Spacing Utilities
@@ -543,4 +544,4 @@ For implementation details, see:
 
 ---
 
-*Version: 9.1.0 | Last Updated: 2025-11-01T15:42:00.000Z (UTC)*
+*Version: 9.2.1 | Last Updated: 2025-11-02T00:21:00.000Z (UTC)*

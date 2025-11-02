@@ -2611,7 +2611,11 @@ interface ChartValueFormatting {
 
 **Existing Chart Updates**:
 - **PieChart**: Updated to use `formatting` field (backward compatible)
-- **BarChart**: Updated with flexible total formatting
+- **BarChart**: Updated with flexible total formatting and **50/50 fixed layout** (v9.2.1)
+  - **Layout**: Bar (50% left) | Legend (50% right) with `grid-template-columns: 1fr 1fr`
+  - **Text Overflow**: Legend uses `.text-fade-end` utility (5% gradient fade to `var(--mm-white)`)
+  - **Purpose**: Ensures consistent bar widths regardless of legend text length
+  - **Design Tokens**: All spacing, colors, transitions use CSS variables (no hardcoded values)
 - **KPIChart**: Maintains compatibility with legacy `type` field
 
 **Backward Compatibility**:
