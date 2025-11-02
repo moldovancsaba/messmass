@@ -57,6 +57,12 @@ interface UnifiedAdminPageProps<T extends { _id: string }> {
   totalMatched?: number;
   /** Show pagination stats */
   showPaginationStats?: boolean;
+  /** External sort field (for server-side sorting) */
+  sortField?: string | null;
+  /** External sort order (for server-side sorting) */
+  sortOrder?: 'asc' | 'desc' | null;
+  /** External sort change handler (for server-side sorting) */
+  onSortChange?: (field: string) => void;
 }
 
 /**
@@ -91,6 +97,9 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
   searchPlaceholder,
   totalMatched,
   showPaginationStats = false,
+  sortField: externalSortField,
+  sortOrder: externalSortOrder,
+  onSortChange: externalOnSortChange,
 }: UnifiedAdminPageProps<T>) {
   
   // WHAT: View mode state with persistence
@@ -112,25 +121,35 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
   // WHY: Avoid double-debouncing when parent already handles it
   const debouncedSearchTerm = isServerSideSearch ? searchTerm : useDebouncedValue(searchTerm, 300);
 
-  // WHAT: Sort state
-  // WHY: Track current sort field and order
-  const [sortField, setSortField] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+  // WHAT: Sort state (internal or external)
+  // WHY: Support both client-side and server-side sorting
+  const isServerSideSort = externalSortField !== undefined && externalSortOrder !== undefined && externalOnSortChange !== undefined;
+  const [internalSortField, setInternalSortField] = useState<string | null>(null);
+  const [internalSortOrder, setInternalSortOrder] = useState<'asc' | 'desc' | null>(null);
+  
+  const sortField = isServerSideSort ? externalSortField : internalSortField;
+  const sortOrder = isServerSideSort ? externalSortOrder : internalSortOrder;
 
   // WHAT: Handle sort column click
   // WHY: Three-state cycle: null → asc → desc → null
   const handleSortChange = (field: string) => {
-    if (sortField === field) {
-      // Cycle through: asc → desc → null
-      if (sortOrder === 'asc') {
-        setSortOrder('desc');
-      } else if (sortOrder === 'desc') {
-        setSortField(null);
-        setSortOrder(null);
-      }
+    if (isServerSideSort && externalOnSortChange) {
+      // Server-side: delegate to parent
+      externalOnSortChange(field);
     } else {
-      setSortField(field);
-      setSortOrder('asc');
+      // Client-side: manage internally
+      if (internalSortField === field) {
+        // Cycle through: asc → desc → null
+        if (internalSortOrder === 'asc') {
+          setInternalSortOrder('desc');
+        } else if (internalSortOrder === 'desc') {
+          setInternalSortField(null);
+          setInternalSortOrder(null);
+        }
+      } else {
+        setInternalSortField(field);
+        setInternalSortOrder('asc');
+      }
     }
   };
 
