@@ -211,7 +211,6 @@
    {
      "_id": ObjectId,
      "name": "Core Report",           // Block display name
-     "gridColumns": 3,                // CSS grid columns
      "charts": [
        {
          "chartId": "gender-distribution",

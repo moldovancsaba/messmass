@@ -25,7 +25,6 @@ async function diagnoseOverviewBlock() {
   console.log('📋 Overview Block Contents:');
   console.log('Name:', overviewBlock.name);
   console.log('Order:', overviewBlock.order);
-  console.log('Grid Columns:', overviewBlock.gridColumns);
   console.log('Is Active:', overviewBlock.isActive);
   console.log('\n📊 Charts in Overview block:');
   

@@ -4969,17 +4969,17 @@ All formulas use existing variables (see lib/chartConfigTypes.ts AVAILABLE_VARIA
 
 ### 📐 Visualization Parity & Chart Sizing
 - Stats pages (/stats, /filter, /hashtag) now render charts with exactly the same grid, sizing, and behavior as configured in Admin Visualization.
-- Desktop uses per-block gridColumns (as configured in admin), capped by global desktop units.
+- Desktop uses chart-defined widths with automatic wrapping when combined widths exceed available units.
 - Tablet/Mobile use global grid units with span clamping so widths greater than available units are gracefully limited to fit.
 - Introduced per-block, id-scoped grid classes (udv-grid-[blockId]) with injected CSS to ensure specificity and avoid legacy overrides.
 - Removed pixel-based min/max-width constraints for chart containers and legends so unit-based grid math is authoritative.
 
 ### 🛠 Technical
 - Updated components/UnifiedDataVisualization.tsx to:
-  - Apply per-block desktop columns (min 1, max block.gridColumns, capped by global desktop units).
+  - Use explicit `fr` units calculated from chart widths.
   - Respect global tablet/mobile units and clamp chart spans accordingly.
   - Inject responsive CSS per block with !important flags where needed to neutralize legacy CSS.
-  - Clamp chart width spans based on the current breakpoint’s unit count.
+  - Clamp chart width spans based on the current breakpoint's unit count.
 - Admin Visualization global preview continues to use the same shared component for exact parity.
 
 ---

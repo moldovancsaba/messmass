@@ -121,14 +121,8 @@ export default function VisualizationPage() {
     }
     
     try {
-      // WHAT: Add default gridColumns for backward compatibility
-      const blockData = {
-        ...blockForm,
-        gridColumns: 4 // Default to 4 columns for PC layout
-      };
-      
       // WHAT: Use apiPost() for automatic CSRF token handling
-      const data = await apiPost('/api/data-blocks', blockData);
+      const data = await apiPost('/api/data-blocks', blockForm);
       
       if (data.success) {
         await loadDataBlocks();
@@ -475,7 +469,6 @@ export default function VisualizationPage() {
                     <div className="block-meta">
                       <span><strong>Charts:</strong> {block.charts?.length || 0}</span>
                       <span><strong>Order:</strong> {block.order}</span>
-                      <span><strong>Columns:</strong> {block.gridColumns}</span>
                     </div>
                   </div>
                   

@@ -63,7 +63,6 @@ async function diagnose() {
       blocks.forEach(block => {
         console.log(`Block: "${block.name || block.blockId}"`);
         console.log(`  - Order: ${block.order}`);
-        console.log(`  - Columns: ${block.gridColumns || block.columns || 'N/A'}`);
         console.log(`  - Active: ${block.isActive ? '✓' : '✗'}`);
         console.log(`  - Charts: ${block.charts?.length || 0}`);
         

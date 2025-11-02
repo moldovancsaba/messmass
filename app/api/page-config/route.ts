@@ -124,7 +124,6 @@ export async function GET(request: NextRequest) {
       
       const defaultBlock = {
         name: 'Data Visualization',
-        gridColumns: 3,
         charts: charts,
         order: 0,
         isActive: true,
@@ -159,7 +158,6 @@ export async function GET(request: NextRequest) {
         pageStyle: DEFAULT_PAGE_STYLE,
         dataBlocks: [{
           name: 'Data Visualization',
-          gridColumns: 3,
           charts: [],
           order: 0,
           isActive: true

@@ -19,7 +19,6 @@ export interface PageStyle {
 export interface DataVisualizationBlock {
   _id?: string;
   name: string;
-  gridColumns: number; // Maximum columns in the grid (1-6)
   charts: BlockChart[];
   order: number;
   isActive: boolean;
@@ -30,7 +29,7 @@ export interface DataVisualizationBlock {
 
 export interface BlockChart {
   chartId: string; // Reference to chart configuration
-  width: number; // How many grid columns this chart spans (1-gridColumns)
+  width: number; // How many grid columns this chart spans
   order: number; // Order within the block
 }
 
@@ -57,7 +56,6 @@ export const DEFAULT_PAGE_STYLE: Omit<PageStyle, '_id' | 'createdAt' | 'updatedA
 
 export const DEFAULT_DATA_BLOCK: Omit<DataVisualizationBlock, '_id' | 'createdAt' | 'updatedAt'> = {
   name: 'Default Block',
-  gridColumns: 3,
   charts: [],
   order: 0,
   isActive: true,

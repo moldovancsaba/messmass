@@ -37,9 +37,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, gridColumns, charts, order, isActive, showTitle } = body;
+    const { name, charts, order, isActive, showTitle } = body;
 
-    if (!name || !gridColumns) {
+    if (!name) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
     const dataBlock: Omit<DataVisualizationBlock, '_id'> = {
       name,
-      gridColumns: Math.min(Math.max(gridColumns, 1), 6), // Ensure 1-6 range
       charts: charts || [],
       order: order || 0,
       isActive: isActive !== false, // Default to true
@@ -86,9 +85,9 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { _id, name, gridColumns, charts, order, isActive, showTitle } = body;
+    const { _id, name, charts, order, isActive, showTitle } = body;
 
-    if (!_id || !name || !gridColumns) {
+    if (!_id || !name) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -101,7 +100,6 @@ export async function PUT(request: NextRequest) {
 
     const updateData = {
       name,
-      gridColumns: Math.min(Math.max(gridColumns, 1), 6),
       charts: charts || [],
       order: order || 0,
       isActive: isActive !== false,
