@@ -39,6 +39,51 @@ export default function UnifiedDataVisualization({
     chartsCount: b.charts?.length,
     chartIds: b.charts?.map(c => c.chartId)
   })));
+  
+  // WHAT: Helper functions must be defined BEFORE usage in CSS generation
+  // WHY: Prevents ReferenceError when filtering charts for grid CSS
+  
+  // Get chart result by ID
+  const getChartResult = (chartId: string): ChartCalculationResult | null => {
+    return chartResults.find(result => result.chartId === chartId) || null;
+  };
+
+  // Check if chart has valid data to display
+  const hasValidData = (result: ChartCalculationResult): boolean => {
+    // WHAT: Check if chart has calculable data (not 'NA')
+    // WHY: Different chart types have different validation rules
+    // HOW: Text/image hide if empty, KPI valid if not NA, pie/bar need sum > 0
+    
+    // WHAT: Text charts valid only if kpiValue has content
+    // WHY: Hide "No content available" placeholders
+    if (result.type === 'text') {
+      const textContent = typeof result.kpiValue === 'string' 
+        ? result.kpiValue 
+        : (result.elements[0]?.value as string || '');
+      return !!(textContent && textContent.trim().length > 0);
+    }
+    
+    // WHAT: Image charts valid only if kpiValue has a URL
+    // WHY: Hide "No image available" placeholders
+    if (result.type === 'image') {
+      const imageUrl = typeof result.kpiValue === 'string'
+        ? result.kpiValue
+        : (result.elements[0]?.value as string || '');
+      return !!(imageUrl && imageUrl.trim().length > 0);
+    }
+    
+    if (result.type === 'kpi') {
+      // KPI charts: valid if kpiValue is a number (even 0 is valid)
+      return result.kpiValue !== 'NA' && result.kpiValue !== undefined;
+    }
+    
+    // Pie/Bar charts: valid only if they have numeric elements with sum > 0
+    const validElements = result.elements.filter(element => 
+      typeof element.value === 'number'
+    );
+    const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
+    return validElements.length > 0 && totalValue > 0;
+  };
 
   // WHAT: Build dynamic CSS using fr units based on chart width ratios
   // WHY: Auto-calculate grid from chart widths (e.g., 2+2+3 = "2fr 2fr 3fr"), no manual grid columns needed
@@ -90,48 +135,6 @@ export default function UnifiedDataVisualization({
     .join('\n');
 
   // NO LONGER NEEDED: Chart widths handled by fr units in grid-template-columns
-  
-  // Get chart result by ID
-  const getChartResult = (chartId: string): ChartCalculationResult | null => {
-    return chartResults.find(result => result.chartId === chartId) || null;
-  };
-
-  // Check if chart has valid data to display
-  const hasValidData = (result: ChartCalculationResult): boolean => {
-    // WHAT: Check if chart has calculable data (not 'NA')
-    // WHY: Different chart types have different validation rules
-    // HOW: Text/image hide if empty, KPI valid if not NA, pie/bar need sum > 0
-    
-    // WHAT: Text charts valid only if kpiValue has content
-    // WHY: Hide "No content available" placeholders
-    if (result.type === 'text') {
-      const textContent = typeof result.kpiValue === 'string' 
-        ? result.kpiValue 
-        : (result.elements[0]?.value as string || '');
-      return !!(textContent && textContent.trim().length > 0);
-    }
-    
-    // WHAT: Image charts valid only if kpiValue has a URL
-    // WHY: Hide "No image available" placeholders
-    if (result.type === 'image') {
-      const imageUrl = typeof result.kpiValue === 'string'
-        ? result.kpiValue
-        : (result.elements[0]?.value as string || '');
-      return !!(imageUrl && imageUrl.trim().length > 0);
-    }
-    
-    if (result.type === 'kpi') {
-      // KPI charts: valid if kpiValue is a number (even 0 is valid)
-      return result.kpiValue !== 'NA' && result.kpiValue !== undefined;
-    }
-    
-    // Pie/Bar charts: valid only if they have numeric elements with sum > 0
-    const validElements = result.elements.filter(element => 
-      typeof element.value === 'number'
-    );
-    const totalValue = validElements.reduce((sum, element) => sum + (element.value as number), 0);
-    return validElements.length > 0 && totalValue > 0;
-  };
 
   if (loading) {
     return (
