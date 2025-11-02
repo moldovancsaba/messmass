@@ -155,6 +155,7 @@ export async function GET() {
       subtitle: config.subtitle,
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
+      aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
       createdBy: config.createdBy,
@@ -203,7 +204,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel } = body;
+    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel, aspectRatio } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
@@ -236,7 +237,7 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
     
     // WHAT: Include all configuration fields
-    // WHY: element.formatting must be persisted to database
+    // WHY: element.formatting and aspectRatio must be persisted to database
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -248,6 +249,7 @@ export async function POST(request: NextRequest) {
       subtitle,
       showTotal,
       totalLabel,
+      aspectRatio, // v9.3.0: Image aspect ratio (9:16, 1:1, 16:9)
       createdAt: now,
       updatedAt: now,
       createdBy: user.id
