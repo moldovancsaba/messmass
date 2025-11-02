@@ -1,5 +1,97 @@
 # MessMass Release Notes
 
+## [v10.1.1] — 2025-11-02T21:50:00.000Z
+
+### Fixed
+
+✅ **CRITICAL: Added Missing Edit Stats Button**
+- Projects admin page was missing the main application function
+- Added "📊 Edit Stats" button to both list and card views
+- Button navigates to `/edit/[editSlug]` for full statistics editor
+- Positioned between "View Stats" and "Edit" for logical workflow
+- Variant set to `primary` (blue) for emphasis as main action
+
+✅ **Fixed Users Adapter Action Labels**
+- Changed "Edit" → "Regenerate Password" in usersAdapter
+- Updated icon from ✏️ → 🔄
+- Added comments explaining security decision (email/name locked after creation)
+- Variant changed from `primary` → `secondary`
+
+✅ **TypeScript Build Error (Hotfix)**
+- Added `sortField`, `sortOrder`, `onSortChange` props to UnifiedAdminPageProps
+- Support both client-side (internal) and server-side (external) sorting modes
+- Fixed Vercel build failure: "Property 'sortField' does not exist"
+
+### Added
+
+✅ **Column Sorting on Projects Page**
+- Enabled `enableSort={true}` in UnifiedAdminPage
+- Connected sort handlers for Event Name, Event Date, Images, Total Fans, Attendees
+- Three-state sorting cycle: null → asc → desc → null
+- Visual sort indicators (▲ ▼) appear on sorted column
+
+✅ **Column Sorting on Categories Page**
+- Added client-side sort state management
+- Implemented `handleSort` function with three-state cycle
+- Sortable columns: Category Name, Order, Created Date
+- Client-side sorting (categories are small dataset, no server-side needed)
+
+✅ **Projects Edit Modal Connection**
+- Created `enhancedAdapter` with `useMemo` to override Edit handler
+- Edit button now opens modal with pre-filled project data
+- Applied to both list view and card view actions
+- Prevents unnecessary re-renders with memoization
+
+✅ **Documentation**
+- Created `UNIFIED_ADMIN_FEATURE_LIST.md` - Plain English feature guide with current status
+- Created `RELEASE_v10.1.1.md` - Detailed release notes with testing checklist
+- Updated `ARCHITECTURE.md` - Added Unified Admin System section (~230 lines)
+- Updated `LEARNINGS.md` - Documented v10.1.0 search/sort implementation lessons
+
+### Technical Details
+
+**Files Modified** (7 files):
+- `package.json` - Version 10.1.0 → 10.1.1
+- `lib/adapters/projectsAdapter.tsx` - Edit Stats button, action reordering
+- `lib/adapters/usersAdapter.tsx` - Regenerate action labels
+- `app/admin/projects/page.tsx` - Sorting enabled, edit handler connected
+- `app/admin/categories/page.tsx` - Sort state and handlers added
+- `components/UnifiedAdminPage.tsx` - External sort props added (hotfix)
+- `UNIFIED_ADMIN_FEATURE_LIST.md` - New documentation (516 lines)
+
+**Build Status**:
+- ✅ TypeScript strict mode validation passed (after hotfix)
+- ✅ Vercel production build successful
+- ✅ All admin pages operational
+
+**Version**: `10.1.0` → `10.1.1` (PATCH increment per semantic versioning)
+
+**Why PATCH Version**:
+- Critical bugfix (missing Edit Stats button)
+- TypeScript interface update (non-breaking)
+- Feature enhancement (column sorting)
+- No API contract changes
+- No database schema changes
+
+**Backward Compatibility**: ✅ 100%
+- All changes are UI/UX enhancements
+- No breaking API changes
+- No database migrations required
+
+**Key Learnings**:
+
+1. **Always Run Type Check Before Commit**: TypeScript errors should be caught locally, not in CI/CD
+2. **Adapter Consistency Matters**: Action labels in adapters should match actual page functionality
+3. **External Sort Props Pattern**: UnifiedAdminPage now supports both client and server-side sorting
+4. **Documentation First**: Feature lists help identify gaps before implementation
+
+**Deferred to v10.2.0 (MINOR)**:
+1. Pagination "Load More" button implementation
+2. Vertical action dropdown menu (industry standard UX)
+3. Multi-field search expansion (partner names, event dates)
+
+---
+
 ## [v10.0.0] — 2025-01-27T00:00:00.000Z
 
 ### Changed

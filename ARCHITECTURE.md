@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-11-01T19:45:00.000Z (UTC)
-Version: 9.3.0
+Last Updated: 2025-11-02T21:57:00.000Z (UTC)
+Version: 10.1.1
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -784,12 +784,13 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ### Admin Pages
 - `/admin` - Admin dashboard with navigation cards
-- `/admin/projects` - Project management (CRUD, pagination, search, sorting)
+- `/admin/projects` - **Project management (v10.1.0 - Unified)** (CRUD, card/list toggle, server-side search, CSV export, partner support)
 - `/admin/partners` - **Partner management (v6.0.0)** (CRUD, pagination, search)
 - `/admin/quick-add` - **Sports Match Builder + Sheet Import (v6.0.0)**
 - `/admin/bitly` - Bitly link management and sync
 - `/admin/hashtags` - Hashtag color management
-- `/admin/categories` - Hashtag category management
+- `/admin/categories` - **Hashtag category management (v9.3.0 - Unified)** (Card/list toggle, modal CRUD)
+- `/admin/users` - **User management (v9.3.0 - Unified)** (Card/list toggle, modal CRUD)
 - `/admin/filter` - Advanced hashtag filtering tool
 - `/admin/variables` - Variable & metrics configuration
 - `/admin/charts` - Chart configuration management
@@ -798,12 +799,15 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ### API Endpoints
 
-**Projects**
+**Projects** (v10.1.0 - Enhanced Search)
 - `GET /api/projects` - List projects with pagination, search, and sorting
   - Default mode: cursor pagination by updatedAt desc (nextCursor)
   - Sort/Search mode: offset pagination with totalMatched/nextOffset
+  - Search: Searches eventName, viewSlug, editSlug, hashtags, categorizedHashtags
+  - **Fixed v10.1.0**: MongoDB regex bug ($regex object + $options conflict)
   - sortField: eventName | eventDate | images | fans | attendees
   - sortOrder: asc | desc
+  - Includes partner data population (partner1, partner2 with logos/emojis)
 - `POST /api/projects` - Create new project
 - `PUT /api/projects` - Update existing project
 - `DELETE /api/projects` - Delete project
@@ -1033,6 +1037,196 @@ For production issues:
 3. Verify MongoDB connection
 4. Review notification counts and recent entries
 5. See detailed troubleshooting guide in `MULTI_USER_NOTIFICATIONS.md`
+
+---
+
+## Unified Admin System (Version 9.3.0+ / v10.1.0 Enhanced)
+
+### Overview
+
+The Unified Admin System provides a consistent, reusable architecture for admin pages with card/list toggle, server-side search, modal CRUD operations, and responsive design. It eliminates code duplication across admin pages while maintaining flexibility for page-specific features.
+
+**Status**: Production-Ready  
+**Migrated Pages**: Categories (v9.3.0), Users (v9.3.0), Projects (v10.1.0)  
+**Key Achievement**: Server-side search with zero client-side filtering
+
+### Core Components
+
+#### 1. UnifiedAdminPage (`components/UnifiedAdminPage.tsx`)
+**Role**: Master wrapper orchestrating hero, search, view toggle, and data display  
+**Features**:
+- Auto-detects client-side vs server-side search mode
+- Manages view mode persistence (localStorage)
+- Handles search debouncing (300ms)
+- Renders UnifiedListView or UnifiedCardView based on toggle
+
+**Props**:
+```typescript
+interface UnifiedAdminPageProps<T> {
+  adapter: AdminPageAdapter<T>;           // Page-specific configuration
+  items: T[];                             // Data to display
+  isLoading?: boolean;                    // Loading state
+  title: string;                          // Page title
+  subtitle?: string;                      // Optional subtitle
+  backLink?: string;                      // Optional back button
+  actionButtons?: ActionButton[];         // Header action buttons
+  enableSearch?: boolean;                 // Client-side search (default: true)
+  enableSort?: boolean;                   // Client-side sort (default: true)
+  externalSearchValue?: string;           // Server-side search value
+  onExternalSearchChange?: (v: string) => void; // Server-side search handler
+  searchPlaceholder?: string;             // Search input placeholder
+  totalMatched?: number;                  // Total count for pagination stats
+  showPaginationStats?: boolean;          // Show "X of Y items"
+}
+```
+
+**Search Mode Detection**:
+```typescript
+const isServerSideSearch = externalSearchValue !== undefined && onExternalSearchChange !== undefined;
+// If server-side: skip internal debouncing, pass search through immediately
+// If client-side: apply debouncing and filter items locally
+```
+
+#### 2. Adapters (`lib/adapters/*.tsx`)
+**Role**: Page-specific configuration defining list/card structure and actions  
+**Pattern**: Single adapter per admin page
+
+**Example** (`lib/adapters/projectsAdapter.tsx`):
+```typescript
+export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
+  pageName: 'projects',
+  defaultView: 'list',
+  listConfig: {
+    columns: [ /* column definitions */ ],
+    rowActions: [ /* CSV, View Stats, Edit, Delete */ ]
+  },
+  cardConfig: {
+    primaryField: 'eventName',
+    secondaryField: (project) => new Date(project.eventDate).toLocaleDateString(),
+    metaFields: [ /* images, fans, merch, attendees */ ],
+    cardActions: [ /* CSV, Edit */ ]
+  },
+  searchFields: ['eventName', 'hashtags', 'categorizedHashtags'],
+  emptyStateMessage: 'No projects found.',
+  emptyStateIcon: '🍿'
+};
+```
+
+#### 3. UnifiedListView (`components/UnifiedListView.tsx`)
+**Role**: Table-based data display with sortable columns  
+**Features**:
+- Responsive table layout
+- Sortable columns (visual indicators)
+- Action buttons per row
+- Empty state handling
+
+#### 4. UnifiedCardView (`components/UnifiedCardView.tsx`)
+**Role**: Grid-based card display  
+**Features**:
+- Responsive grid (1-4 columns based on screen size)
+- Colored accent borders
+- Meta fields with icons
+- Action buttons per card
+
+#### 5. UnifiedAdminHeroWithSearch (`components/UnifiedAdminHeroWithSearch.tsx`)
+**Role**: Header with title, search, view toggle, action buttons  
+**Features**:
+- Integrated search input
+- Card/list view toggle
+- Primary action button ("Add New")
+- Optional back button
+
+### Server-Side Search Pattern (v10.1.0)
+
+**Problem**: Projects page needed database search, not client-side filtering
+
+**Solution**:
+1. Parent component manages search state with `useDebouncedValue(searchQuery, 300)`
+2. Parent passes debounced value to UnifiedAdminPage via `externalSearchValue`
+3. UnifiedAdminPage detects server mode, skips internal debouncing
+4. Parent's useEffect triggers API call when debounced value changes
+5. API returns filtered results, parent updates items
+
+**Code Pattern**:
+```typescript
+const [searchQuery, setSearchQuery] = useState('');
+const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
+
+useEffect(() => {
+  if (user) {
+    loadProjects(true); // Fetch with debouncedSearchQuery
+  }
+}, [debouncedSearchQuery, sortField, sortOrder, user]);
+
+return (
+  <UnifiedAdminPage
+    adapter={projectsAdapter}
+    items={projects}
+    enableSearch={true}
+    externalSearchValue={searchQuery}
+    onExternalSearchChange={setSearchQuery}
+    showPaginationStats={true}
+    totalMatched={totalMatched}
+  />
+);
+```
+
+### Key Learnings
+
+**1. Conflicting useEffects Are Silent Killers**
+- Problem: Initial load effect depended on `[user, loadProjects]`, search effect on `[debouncedSearchQuery]`
+- When search changed, `loadProjects` recreated, initial load fired again
+- Solution: Initial load only depends on `[user]`, search effect owns all data loading
+
+**2. Double Debouncing = Broken Search**
+- Problem: Parent debounced (300ms) + UnifiedAdminPage debounced (300ms) = 600ms + search never fired
+- Solution: Server-side mode skips component debouncing
+
+**3. MongoDB Regex: Object vs String**
+```typescript
+// ❌ WRONG: Can't mix RegExp object + $options
+{ $regex: new RegExp(query, 'i'), $options: 'i' }
+
+// ✅ CORRECT: RegExp already has flags
+{ $regex: new RegExp(query, 'i') }
+```
+
+### Migration Status
+
+| Page | Status | Version | Features |
+|------|--------|---------|----------|
+| Categories | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
+| Users | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
+| Projects | ✅ Migrated | v10.1.0 | Card/list, modal CRUD, **server search**, partner logos, CSV export |
+| Partners | 🔄 Pending | - | Custom implementation (to be migrated) |
+| Hashtags | 🔄 Pending | - | Custom implementation (to be migrated) |
+
+### Files
+
+**Core Components**:
+- `components/UnifiedAdminPage.tsx` - Master wrapper
+- `components/UnifiedAdminHeroWithSearch.tsx` - Header with search
+- `components/UnifiedListView.tsx` - Table view
+- `components/UnifiedCardView.tsx` - Grid view
+- `components/UnifiedAdminViewToggle.tsx` - Card/list switcher
+
+**Adapters**:
+- `lib/adapters/categoriesAdapter.tsx`
+- `lib/adapters/usersAdapter.tsx`
+- `lib/adapters/projectsAdapter.tsx`
+- `lib/adapters/index.ts` - Central exports
+
+**Types**:
+- `lib/adminDataAdapters.ts` - Adapter type definitions
+- `lib/adminViewState.ts` - View persistence
+- `lib/types/api.ts` - DTO interfaces
+
+### Performance
+
+- **Search**: <200ms response (MongoDB aggregation pipeline)
+- **View Toggle**: <50ms (localStorage read/write)
+- **Pagination**: Cursor-based (default) or offset-based (search/sort)
+- **Debouncing**: 300ms to reduce API calls
 
 ---
 

@@ -1,5 +1,132 @@
 # MessMass Development Learnings
 
+## [v10.1.0] - 2025-11-02T21:22:00.000Z — Unified Projects Page & MongoDB Search Fix
+
+### Issue
+Projects page search completely broken with MongoDB error "options set in both $regex and $options". Additionally, projects page lacked unified admin system (card/list toggle, consistent design).
+
+### Root Causes
+
+**1. MongoDB Regex Bug**
+- API route (`/app/api/projects/route.ts` line 149) had: `{ $regex: regex, $options: 'i' }`
+- The `regex` variable was already a `RegExp` object with `'i'` flag built-in
+- MongoDB doesn't allow both `$regex` object AND `$options` parameter
+- Result: 500 error on every search attempt
+
+**2. Missing Unified Admin Pattern**
+- Projects page had custom implementation
+- Categories and Users pages had unified card/list toggle
+- Inconsistent UX across admin pages
+
+**3. Multiple Search Issues**
+- Double hero rendering (custom + UnifiedAdminPage)
+- Input losing focus during typing
+- Conflicting useEffects fighting over loadProjects()
+- Double debouncing (parent + UnifiedAdminPage)
+
+### Solution
+
+**Phase 1: Migrate to Unified System**
+- Updated `ProjectDTO` interface with `partner1`, `partner2`, `styleIdEnhanced`, `remoteFans`
+- Enhanced `projectsAdapter.tsx` with partner logos, CSV export, full actions
+- Created unified projects page using `UnifiedAdminPage` component
+- Added server-side search support to `UnifiedAdminPage`
+
+**Phase 2: Fix Server-Side Search**
+- Added `externalSearchValue` and `onExternalSearchChange` props to `UnifiedAdminPage`
+- Removed double debouncing (parent handles debounce, UnifiedAdminPage passes through)
+- Fixed conflicting useEffects (initial load vs search)
+- Used `useDebouncedValue` hook for proper 300ms debounce
+
+**Phase 3: Fix MongoDB Query**
+- Removed duplicate `$options: 'i'` from hashtag search
+- RegExp object already case-insensitive
+- Single source of truth for regex flags
+
+### Key Learnings
+
+**1. MongoDB Regex: Object vs String Pattern**
+```typescript
+// ❌ WRONG: Both object + options
+{ $regex: new RegExp(query, 'i'), $options: 'i' }
+
+// ✅ CORRECT: Object already has flags
+{ $regex: new RegExp(query, 'i') }
+
+// ✅ ALSO CORRECT: String + options
+{ $regex: query, $options: 'i' }
+```
+**Lesson**: Never mix RegExp objects with $options parameter.
+
+**2. Debug Logs Are Essential**
+- Added console.logs showed exact error: "options set in both $regex and $options"
+- Without logs, would have spent hours debugging frontend
+- **Lesson**: Add debug logs at API boundaries when search doesn't work
+
+**3. Conflicting useEffects Are Silent Killers**
+- Initial load effect depended on `[user, loadProjects]`
+- Search effect depended on `[debouncedSearchQuery, sortField, sortOrder]`
+- When search changed, `loadProjects` recreated, initial load fired again
+- Result: Search results overwritten by full list
+- **Lesson**: Each data-loading concern should have ONE owner useEffect
+
+**4. Double Debouncing = No Search**
+- Parent: `useDebouncedValue(searchQuery, 300)`
+- UnifiedAdminPage: `useDebouncedValue(searchTerm, 300)`
+- Total: 600ms delay + search never fires
+- **Lesson**: Server-side search should skip component-level debouncing
+
+**5. Unified Components Need Server-Side Mode**
+- UnifiedAdminPage was client-side only initially
+- Added `externalSearchValue` prop for server control
+- Auto-detects mode: `isServerSideSearch = externalSearchValue !== undefined`
+- **Lesson**: Unified components must support both client and server modes
+
+**6. Version Numbers Matter**
+- Product owner expected version updates with each fix
+- Versioning tracks deployment state
+- **Lesson**: Bump minor version (10.0.0 → 10.1.0) for feature fixes
+
+### Impact
+
+**User Experience**:
+- ✅ Search works correctly on projects page
+- ✅ Card/list toggle with persistent state
+- ✅ Consistent UX with Categories and Users pages
+- ✅ Smooth typing (no focus loss)
+- ✅ Partner logos displayed in both views
+
+**Technical**:
+- ✅ Server-side search with 300ms debounce
+- ✅ Database-only search (no client-side fallback)
+- ✅ Proper error handling (500 → 200 OK)
+- ✅ Clean useEffect separation
+
+**Performance**:
+- Before: 500 error on every search
+- After: <200ms search response time
+- MongoDB aggregation pipeline with regex search
+
+### Files Modified
+
+**Core Files**:
+- `app/admin/projects/page.tsx` - Unified implementation
+- `app/admin/projects/page-original.tsx` - Backup of old version
+- `components/UnifiedAdminPage.tsx` - Server-side search support
+- `lib/adapters/projectsAdapter.tsx` - Partner support + actions
+- `lib/types/api.ts` - Updated ProjectDTO interface
+- `app/api/projects/route.ts` - Fixed MongoDB regex bug
+
+### Version
+
+**Before**: v9.4.0 (broken search, custom page)
+**After**: v10.1.0 (working search, unified system)
+
+### Category
+Frontend / Backend / Database / UX
+
+---
+
 ## [v10.0.0] - 2025-01-27T00:00:00.000Z — Database Cleanup and Optimization
 
 ### Issue
