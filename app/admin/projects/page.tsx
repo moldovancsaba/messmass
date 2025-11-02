@@ -131,10 +131,9 @@ export default function ProjectsPageUnified() {
     }
   }, [debouncedSearchQuery, sortField, sortOrder]);
   
-  // Initial load
+  // Initial load - only on mount when user becomes available
   useEffect(() => {
     if (user) {
-      loadProjects();
       // Load available styles
       (async () => {
         try {
@@ -148,7 +147,8 @@ export default function ProjectsPageUnified() {
         }
       })();
     }
-  }, [user, loadProjects]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // Only run when user changes, not when loadProjects changes
   
   // Auto-reload on visibility change
   useEffect(() => {
