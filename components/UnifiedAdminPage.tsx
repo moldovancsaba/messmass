@@ -108,7 +108,9 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
   const [internalSearchTerm, setInternalSearchTerm] = useState('');
   const searchTerm = isServerSideSearch ? externalSearchValue : internalSearchTerm;
   const setSearchTerm = isServerSideSearch ? onExternalSearchChange : setInternalSearchTerm;
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, 300);
+  // WHAT: Only debounce for client-side search (server-side should debounce in parent)
+  // WHY: Avoid double-debouncing when parent already handles it
+  const debouncedSearchTerm = isServerSideSearch ? searchTerm : useDebouncedValue(searchTerm, 300);
 
   // WHAT: Sort state
   // WHY: Track current sort field and order

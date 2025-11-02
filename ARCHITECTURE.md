@@ -3189,11 +3189,47 @@ BITLY_ORGANIZATION_GUID=...
 BITLY_GROUP_GUID=...
 ```
 
+### Project Slug Access Control
+
+**Purpose:** UUID-based slugs for secure, password-less access to projects.
+
+**Implementation:**
+- **`viewSlug`** (UUID v4): Read-only public access to `/stats/[slug]`
+- **`editSlug`** (UUID v4): Editor access to `/edit/[slug]`
+
+**Key Features:**
+1. **Auto-Generated**: Created on project creation via `lib/slugUtils.ts`
+2. **Unique Constraint**: Both slugs indexed as unique in database
+3. **Security**: UUIDs provide ~2^122 combinations (brute-force resistant)
+4. **No Passwords Required**: Direct URL access without additional authentication
+5. **Revocable**: Can regenerate slugs to revoke access
+
+**Usage Pattern:**
+```typescript
+// Generate on project creation
+import { generateProjectSlugs } from '@/lib/slugUtils';
+const { viewSlug, editSlug } = await generateProjectSlugs();
+
+// Find project by slug
+const project = await findProjectByViewSlug(viewSlug);
+const editable = await findProjectByEditSlug(editSlug);
+```
+
+**Why UUID Slugs:**
+- Eliminates need for separate password management per project
+- Shareable URLs (e.g., for clients, stakeholders)
+- Stateless - no session/auth required for project access
+- Simple revocation: regenerate slug → old URL invalid
+
+**Example URLs:**
+- View: `https://messmass.com/stats/00825405-0018-4483-8854-e18c25f7607d`
+- Edit: `https://messmass.com/edit/8fffdaa5-838c-4bf3-a382-0ba62a589faf`
+
 ### Database Schema Summary
 
 | Collection | Purpose | Indexes |
 |------------|---------|----------|
-| `projects` | Event records with stats | eventDate, updatedAt, slug |
+| `projects` | Event records with stats | eventDate, updatedAt, viewSlug (unique), editSlug (unique) |
 | `partners` | Partner organizations | name, createdAt |
 | `bitly_links` | Bitly link metadata | bitlink, createdAt |
 | `bitly_project_links` | Link-project associations (many-to-many) | projectId, linkId |
