@@ -222,9 +222,9 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         handler: (project) => {
           // WHAT: Navigate to stats editor (main application function)
           // WHY: This is the primary purpose of MessMass - editing event statistics
-          if (project.editSlug) {
-            window.location.href = `/edit/${project.editSlug}`;
-          }
+          // FALLBACK: Use _id if editSlug is not available (backward compatibility)
+          const slug = project.editSlug || project._id;
+          window.location.href = `/edit/${slug}`;
         },
         title: 'Edit event statistics (clicker & manual input)',
       },
@@ -310,9 +310,9 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         handler: (project) => {
           // WHAT: Navigate to stats editor (main application function)
           // WHY: This is the primary purpose of MessMass - editing event statistics
-          if (project.editSlug) {
-            window.location.href = `/edit/${project.editSlug}`;
-          }
+          // FALLBACK: Use _id if editSlug is not available (backward compatibility)
+          const slug = project.editSlug || project._id;
+          window.location.href = `/edit/${slug}`;
         },
         title: 'Edit event statistics',
       },
