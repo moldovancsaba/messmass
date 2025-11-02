@@ -720,9 +720,9 @@ const value = project.remoteImages;
 ### Image Layout System (v9.3.0)
 
 **Aspect Ratio Support**:
-- **16:9** (Landscape) - 2 grid units width, ideal for event banners
-- **9:16** (Portrait) - 0.5 grid units width, mobile-first content
-- **1:1** (Square) - 1 grid unit width, social media format
+- **9:16** (Portrait) - 1 grid unit width (narrow, mobile-first content)
+- **1:1** (Square) - 2 grid units width (medium, social media format)
+- **16:9** (Landscape) - 3 grid units width (wide, event banners)
 
 **Automatic Width Calculation**:
 - IMAGE charts derive width from `aspectRatio` field automatically

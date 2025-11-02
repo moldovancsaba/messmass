@@ -2850,10 +2850,10 @@ export function calculateImageWidth(aspectRatio: '16:9' | '9:16' | '1:1'): numbe
   // Calculate width to maintain aspect ratio
   
   switch (aspectRatio) {
-    case '16:9': return 2;   // 2 grid units (twice as wide as tall)
-    case '9:16': return 0.5; // 0.5 grid units (half as wide as tall)
-    case '1:1':  return 1;   // 1 grid unit (square)
-    default:     return 2;   // Fallback to 16:9
+    case '9:16': return 1;   // Portrait: 1 grid unit (narrow, baseline)
+    case '1:1':  return 2;   // Square: 2 grid units (medium width)
+    case '16:9': return 3;   // Landscape: 3 grid units (wide)
+    default:     return 3;   // Fallback to landscape
   }
 }
 ```
@@ -2972,8 +2972,8 @@ npm run ts-node scripts/migrations/add-aspect-ratio-to-image-charts.ts
 
 **Consistent Row Heights**:
 - All charts maintain **1 unit height** (portrait chart height as baseline)
-- Widths calculated automatically: 16:9 → 2x, 9:16 → 0.5x, 1:1 → 1x
-- CSS Grid handles fractional units gracefully
+- Widths calculated automatically: 9:16 → 1 unit, 1:1 → 2 units, 16:9 → 3 units
+- CSS Grid handles integer units for clean layout math
 
 ### Chart Calculator Integration
 

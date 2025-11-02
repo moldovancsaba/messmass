@@ -12,9 +12,9 @@
 - Consistent row heights across mixed-ratio grids
 
 ✅ **Aspect Ratio Configuration**
-- **16:9 (Landscape)**: 2 grid units width, ideal for event banners
-- **9:16 (Portrait)**: 0.5 grid units width, mobile-first content
-- **1:1 (Square)**: 1 grid unit width, social media format
+- **9:16 (Portrait)**: 1 grid unit width (narrow, mobile-first content)
+- **1:1 (Square)**: 2 grid units width (medium, social media format)
+- **16:9 (Landscape)**: 3 grid units width (wide, event banners)
 - Aspect ratio selector in Chart Algorithm Manager (IMAGE type only)
 - Default selection: 16:9 (backward compatible)
 
@@ -112,11 +112,11 @@ Improve IMAGE chart flexibility and maintainability:
 **Layout Examples**:
 ```
 Mixed Aspect Ratio Grid:
-┌─────────────────────────┬────────┬────────┐
-│ 16:9 Landscape (2 units)│ 1:1    │ 9:16   │
-│ Image Chart             │ Square │ Port.  │
-└─────────────────────────┴────────┴────────┘
-  ↑ 2 grid columns          ↑ 1      ↑ 0.5
+┌───────────────────────────────────┬─────────────────┬─────────┐
+│ 16:9 Landscape (3 units)     │ 1:1 Square (2) │ 9:16 (1) │
+│ Wide Image Chart             │ Medium        │ Narrow   │
+└───────────────────────────────────┴─────────────────┴─────────┘
+  ↑ 3 grid units                ↑ 2 units       ↑ 1 unit
 ```
 
 **Build Status**:
