@@ -44,6 +44,7 @@ interface ChartConfigFormData {
   subtitle?: string;
   showTotal?: boolean;
   totalLabel?: string;
+  aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio (v9.3.0) for automatic grid width calculation
 }
 
 // Sample project stats for testing formulas
@@ -852,6 +853,27 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onCancel
                 <option value="bar">Bar Chart (5 elements)</option>
               </select>
             </div>
+
+            {/* WHAT: Image Aspect Ratio Selector (v9.3.0) */}
+            {/* WHY: Determines grid width automatically from aspect ratio */}
+            {/* HOW: Portrait (1 unit), Square (2 units), Landscape (3 units) */}
+            {formData.type === 'image' && (
+              <div className="form-group">
+                <label className="form-label">Image Aspect Ratio *</label>
+                <select
+                  className="form-input"
+                  value={formData.aspectRatio || '16:9'}
+                  onChange={(e) => setFormData({ ...formData, aspectRatio: e.target.value as '16:9' | '9:16' | '1:1' })}
+                >
+                  <option value="16:9">🖼️ Landscape (16:9) → 3 grid units</option>
+                  <option value="9:16">📱 Portrait (9:16) → 1 grid unit</option>
+                  <option value="1:1">⬜ Square (1:1) → 2 grid units</option>
+                </select>
+                <small className="form-help">
+                  💡 Aspect ratio determines automatic grid width for consistent row heights
+                </small>
+              </div>
+            )}
 
             <div className="form-group">
               <label className="form-label">Order</label>

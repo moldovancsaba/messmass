@@ -81,6 +81,11 @@ export interface ChartConfiguration {
   subtitle?: string; // Optional subtitle/description
   showTotal?: boolean; // Whether to show total value above bars
   totalLabel?: string; // Custom label for total (e.g., "possible merch sales", "Advertisement Value")
+  
+  // WHAT: Image chart aspect ratio (v9.3.0)
+  // WHY: Determines grid width automatically - Portrait (1 unit), Square (2 units), Landscape (3 units)
+  // HOW: Used by calculateImageWidth() to compute chart width from aspect ratio
+  aspectRatio?: '16:9' | '9:16' | '1:1'; // Optional: Only for image charts
 }
 
 /**
