@@ -465,8 +465,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   };
 
   // Helper: should show variable in clicker/manual by name
-  const canShowInClicker = (name: string) => !!varsConfig.find(v => v.name === name)?.visibleInClicker
-  const canShowInManual = (name: string) => !!varsConfig.find(v => v.name === name)?.editableInManual
+  const canShowInClicker = (name: string) => !!varsConfig.find(v => v.name === name)?.flags?.visibleInClicker
+  const canShowInManual = (name: string) => !!varsConfig.find(v => v.name === name)?.flags?.editableInManual
 
   // Get all hashtag representations for display
   const allHashtagRepresentations = getAllHashtagRepresentations({ hashtags, categorizedHashtags });
@@ -574,8 +574,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             })
             .filter((v): v is VariableWithFlags => !!v && !v.derived)
           const filtered = editMode === 'clicker'
-            ? items.filter(v => v.visibleInClicker)
-            : items.filter(v => v.editableInManual)
+            ? items.filter(v => v.flags.visibleInClicker)
+            : items.filter(v => v.flags.editableInManual)
           // WHAT: Hide group block if no variables are visible in current mode
           // WHY: Prevents empty "Success Manager" or other titled blocks from appearing
           if (filtered.length === 0) return null
@@ -678,8 +678,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           const customVars = varsConfig.filter(v => v.isCustom && (v.type === 'count' || v.type === 'numeric'))
           if (customVars.length === 0) return null
           const showAny = editMode === 'clicker'
-            ? customVars.some(v => v.visibleInClicker)
-            : customVars.some(v => v.editableInManual)
+            ? customVars.some(v => v.flags.visibleInClicker)
+            : customVars.some(v => v.flags.editableInManual)
           if (!showAny) return null
           return (
             <ColoredCard>
@@ -687,13 +687,13 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               <div className="stats-cards-row">
                 {editMode === 'clicker' ? (
                   <>
-                    {customVars.filter(v => v.visibleInClicker).map(v => (
+                    {customVars.filter(v => v.flags.visibleInClicker).map(v => (
                       <StatCard key={v.name} label={v.label} value={getStat(v.name)} onIncrement={() => incrementDynamic(v.name)} onDecrement={() => decrementDynamic(v.name)} />
                     ))}
                   </>
                 ) : (
                   <>
-                    {customVars.filter(v => v.editableInManual).map(v => (
+                    {customVars.filter(v => v.flags.editableInManual).map(v => (
                       <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
                     ))}
                   </>
