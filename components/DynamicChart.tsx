@@ -51,12 +51,16 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     const imageUrl = typeof result.kpiValue === 'string'
       ? result.kpiValue
       : (result.elements[0]?.value as string || '');
+    // WHAT: Extract aspectRatio from result (comes from chart configuration)
+    // WHY: Image needs to know its aspect ratio to display correctly (portrait/square/landscape)
+    const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
     return (
       <ImageChart
         title={result.title}
         imageUrl={imageUrl}
         subtitle={result.subtitle}
         className={className}
+        aspectRatio={aspectRatio || '1:1'}
       />
     );
   }
