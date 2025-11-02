@@ -594,14 +594,14 @@ export default function VisualizationPage() {
                           
                           <div className="chart-controls">
                             {/* WHAT: Chart width selector supporting integer and decimal values
-                                WHY: Decimal width 3.2 enables precise height matching between mixed aspect ratios
-                                HOW: CSS Grid fr units natively support decimal values (e.g., 3.2fr)
-                                NOTE: Width 3.2 units pairs with width 10 to match heights of 9:16 portrait
+                                WHY: Decimal width 3.15 enables precise height matching between mixed aspect ratios
+                                HOW: CSS Grid fr units natively support decimal values (e.g., 3.15fr)
+                                NOTE: Width 3.15 units pairs with width 10 to match heights of 9:16 portrait
                                       and 16:9 landscape IMAGE BOXES in the same row.
                                       Mathematical basis:
-                                      - Portrait box (9:16): height = width × (16/9) = 3.2 × 1.778 = 5.69 units
+                                      - Portrait box (9:16): height = width × (16/9) = 3.15 × 1.778 = 5.60 units
                                       - Landscape box (16:9): height = width × (9/16) = 10 × 0.5625 = 5.63 units
-                                      - Height difference: ~1% (0.06 units - imperceptible) */}
+                                      - Height difference: ~0.5% (0.03 units - imperceptible) */}
                             <select
                               value={chart.width}
                               onChange={(e) => updateChartWidth(block, index, parseFloat(e.target.value))}
@@ -610,7 +610,7 @@ export default function VisualizationPage() {
                               <option value={1}>Width: 1 unit</option>
                               <option value={2}>Width: 2 units</option>
                               <option value={3}>Width: 3 units</option>
-                              <option value={3.2}>Width: 3.2 units</option>
+                              <option value={3.15}>Width: 3.15 units</option>
                               <option value={4}>Width: 4 units</option>
                               <option value={5}>Width: 5 units</option>
                               <option value={6}>Width: 6 units</option>
