@@ -11,6 +11,5 @@ export { usersAdapter } from './usersAdapter';
 export { chartsAdapter } from './chartsAdapter';
 export { filterAdapter } from './filterAdapter';
 export { clickerAdapter } from './clickerAdapter';
-// TODO: Add missing adapters when implemented
-// export { insightsAdapter } from './insightsAdapter';
-// export { kycAdapter } from './kycAdapter';
+export { insightsAdapter } from './insightsAdapter';
+export { kycAdapter } from './kycAdapter';
