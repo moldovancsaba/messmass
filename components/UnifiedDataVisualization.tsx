@@ -210,12 +210,27 @@ export default function UnifiedDataVisualization({
                     // HOW: Use aspectRatio from result or chart config
                     let calculatedWidth = chart.width ?? 1;
                     
-                    if (result.type === 'image' && 'aspectRatio' in result) {
-                      // WHAT: Extract aspectRatio from chart result (comes from chart config)
-                      // WHY: Image width determined by aspect ratio, not manual setting
-                      const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
-                      if (aspectRatio) {
-                        calculatedWidth = calculateImageWidth(aspectRatio);
+                    if (result.type === 'image') {
+                      console.log('🖼️ [IMAGE CHART DEBUG]', {
+                        chartId: chart.chartId,
+                        hasAspectRatioInResult: 'aspectRatio' in result,
+                        aspectRatioValue: (result as any).aspectRatio,
+                        currentWidth: calculatedWidth,
+                        fullResult: result
+                      });
+                      
+                      if ('aspectRatio' in result) {
+                        // WHAT: Extract aspectRatio from chart result (comes from chart config)
+                        // WHY: Image width determined by aspect ratio, not manual setting
+                        const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
+                        if (aspectRatio) {
+                          calculatedWidth = calculateImageWidth(aspectRatio);
+                          console.log('✅ [ASPECT RATIO APPLIED]', { aspectRatio, calculatedWidth });
+                        } else {
+                          console.warn('⚠️ [ASPECT RATIO NULL]', { aspectRatio });
+                        }
+                      } else {
+                        console.warn('❌ [NO ASPECT RATIO IN RESULT]', { resultKeys: Object.keys(result) });
                       }
                     }
                     
