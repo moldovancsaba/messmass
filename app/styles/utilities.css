@@ -332,3 +332,24 @@
   white-space: nowrap;
   border-width: 0;
 }
+
+/* WHAT: Text overflow with gradient fade-out effect
+ * WHY: When text is longer than container, fade to transparent instead of abrupt cut
+ * HOW: Linear gradient mask overlays text, fading last 5% to background color
+ * USAGE: Apply to text containers with overflow */
+.text-fade-end {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.text-fade-end::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5%;
+  height: 100%;
+  background: linear-gradient(to right, transparent 0%, var(--mm-white) 100%);
+  pointer-events: none;
+}

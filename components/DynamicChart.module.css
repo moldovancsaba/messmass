@@ -219,37 +219,37 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--mm-space-3); /* 0.75rem */
 }
 
-/* WHAT: Single bar row with legend and bar side-by-side
- * WHY: Aligns legend text vertically with bar center
- * HOW: Grid with auto-sized legend column and flexible bar column */
+/* WHAT: Single bar row with bar and legend side-by-side
+ * WHY: Fixed 50/50 layout ensures consistent bar widths regardless of legend text length
+ * HOW: Grid with equal columns (1fr 1fr), bar on left, legend on right */
 .barRow {
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr; /* CRITICAL: Equal 50%/50% split */
+  gap: var(--mm-space-4); /* 1rem gap between bar and legend */
   align-items: center; /* CRITICAL: Vertically centers legend with bar */
 }
 
-/* WHAT: Legend text with value - left side of row
- * WHY: Display label with formatted value, vertically centered with bar
- * HOW: Text content naturally sizes the column width */
+/* WHAT: Legend text with value - right side of row (50% width)
+ * WHY: Display label with formatted value, fixed width with text fade-out
+ * HOW: Fixed 50% width, overflow handled by .text-fade-end utility class */
 .barLegend {
-  font-size: 0.875rem;
+  font-size: var(--mm-font-size-sm); /* 0.875rem */
   color: var(--mm-gray-700);
-  white-space: nowrap;
+  /* Note: overflow/white-space handled by .text-fade-end utility class */
 }
 
-/* WHAT: Bar container - right side of row
+/* WHAT: Bar container - left side of row (50% width)
  * WHY: Visual representation of value with rounded background
- * HOW: Fixed height with overflow hidden for rounded corners */
+ * HOW: Fixed height with overflow hidden for rounded corners, width constrained by grid */
 .barContainer {
   width: 100%;
   height: 24px;
   background: rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
+  border-radius: var(--mm-radius-xl); /* 12px */
   overflow: hidden;
 }
 
@@ -258,8 +258,8 @@
  * HOW: CSS variables set inline per element for width and color */
 .barFill {
   height: 100%;
-  border-radius: 12px;
-  transition: width 0.3s ease;
+  border-radius: var(--mm-radius-xl); /* 12px */
+  transition: width var(--transition-base); /* 0.15s */
   width: var(--bar-width, 0%);
   background: var(--bar-color, #667eea);
 }

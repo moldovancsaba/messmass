@@ -345,9 +345,6 @@ const BarChart: React.FC<{
     
     return (
       <div key={element.id} className={styles.barRow}>
-        <div className={styles.barLegend}>
-          <span>{element.label}: {formatChartValue(displayValue, { formatting: element.formatting, type: element.type })}</span>
-        </div>
         <div className={styles.barContainer}>
           <div 
             className={styles.barFill} 
@@ -356,6 +353,9 @@ const BarChart: React.FC<{
               ['--bar-color' as string]: element.color
             } as React.CSSProperties}
           />
+        </div>
+        <div className={`${styles.barLegend} text-fade-end`}>
+          <span>{element.label}: {formatChartValue(displayValue, { formatting: element.formatting, type: element.type })}</span>
         </div>
       </div>
     );
