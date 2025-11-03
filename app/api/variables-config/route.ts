@@ -115,11 +115,60 @@ export async function GET() {
 // POST /api/variables-config
 // WHAT: Create or update a variable in variables_metadata
 // WHY: Allow dynamic variable creation without code changes
-// HOW: Upsert to MongoDB, invalidate cache
+// HOW: Professional MongoDB upsert with proper $set / $setOnInsert separation
+// 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MongoDB Upsert Pattern - Comprehensive Guide
+// ═══════════════════════════════════════════════════════════════════════════════
+// 
+// PROBLEM:
+// When using upsert: true, MongoDB requires careful separation of:
+//   • $set: Fields updated on BOTH insert and update
+//   • $setOnInsert: Fields set ONLY on insert (ignored on update)
+//   • A field CANNOT appear in both operators (causes conflict error)
+// 
+// SOLUTION:
+// Two distinct patterns based on whether document exists:
+// 
+// PATTERN 1: NEW DOCUMENT (INSERT)
+// • Check: !existing (document doesn't exist yet)
+// • Strategy:
+//   - $setOnInsert: { name, isSystem, createdAt } (immutable defaults)
+//   - $set: { updatedAt, ...explicitlyProvidedFields }
+//   - For missing required fields: Add defaults to $setOnInsert (NOT $set)
+// • Example:
+//   User provides: { name: 'stats.vipGuests', label: 'VIP', type: 'count' }
+//   Result:
+//     $setOnInsert: { name, isSystem: false, createdAt, category: 'Custom' }
+//     $set: { updatedAt, label: 'VIP', type: 'count' }
+// 
+// PATTERN 2: EXISTING DOCUMENT (UPDATE)
+// • Check: existing (document already in database)
+// • Strategy:
+//   - $set ONLY: { updatedAt, ...explicitlyProvidedFields }
+//   - NO $setOnInsert (ignored anyway since doc exists)
+// • Example:
+//   User updates: { name: 'stats.female', label: 'Women' }
+//   Result:
+//     $set: { updatedAt, label: 'Women' }
+// 
+// KEY RULES:
+// ✅ DO: Use $setOnInsert for immutable fields (name, createdAt, isSystem)
+// ✅ DO: Use $set for updateable fields (label, type, category, flags)
+// ✅ DO: Check (!('field' in $set)) before adding to $setOnInsert
+// ❌ DON'T: Put same field in both $set and $setOnInsert
+// ❌ DON'T: Use $setOnInsert when updating existing docs
+// 
+// NAMING CONVENTION:
+// • Variable names MUST use format: stats.variableName
+// • Examples: stats.female, stats.vipGuests, stats.remoteImages
+// • See: VARIABLES_DATABASE_SCHEMA.md (line 21)
+// 
+// ═══════════════════════════════════════════════════════════════════════════════
 // 
 // Body examples:
-// 1) Update existing: { name: 'female', label: 'Women', flags: { ... } }
-// 2) Create custom: { name: 'vipGuests', label: 'VIP Guests', type: 'count', category: 'Event', ... }
+// 1) Create new: { name: 'stats.vipGuests', label: 'VIP Guests', type: 'count', category: 'Event' }
+// 2) Update existing: { name: 'stats.female', label: 'Women', flags: { visibleInClicker: true } }
 export async function POST(request: NextRequest) {
   try {
     const db = await getDb();
@@ -137,12 +186,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // WHAT: Name validation - allow stats.camelCase format
-    // WHY: Database stores variables with stats. prefix for Single Reference System
-    if (!/^(stats\.)?[a-zA-Z][a-zA-Z0-9]*$/.test(name)) {
+    // WHAT: Name validation - REQUIRE stats.camelCase format
+    // WHY: Database stores variables with stats. prefix for Single Reference System (see VARIABLES_DATABASE_SCHEMA.md)
+    // RULE: Variable names MUST follow: stats.variableName (e.g., stats.female, stats.vipGuests)
+    if (!/^stats\.[a-zA-Z][a-zA-Z0-9]*$/.test(name)) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Invalid variable name format. Use camelCase or stats.camelCase (e.g., fanCount or stats.fanCount)' 
+        error: 'Invalid variable name format. Must use stats.camelCase (e.g., stats.fanCount, stats.vipGuests)' 
       }, { status: 400 });
     }
 
@@ -170,46 +220,90 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // WHAT: Build update document
-    // WHY: Merge new data with existing, preserve system flag
-    // NOTE: Don't include 'name' in $set to avoid MongoDB conflict error
-    const updateDoc: Partial<VariableMetadata> = {
-      updatedAt: now,
-    };
+    // WHAT: Professional MongoDB upsert pattern - proper field separation
+    // WHY: Prevent path conflicts between $set and $setOnInsert operators
+    // PRINCIPLE: $setOnInsert = defaults for INSERT only, $set = updates for both INSERT and UPDATE
+    // REFERENCE: MongoDB docs - https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/
+    
+    const updateOperation: any = {};
 
-    // Update metadata if provided
-    if (label) updateDoc.label = label;
-    if (type) updateDoc.type = type;
-    if (category) updateDoc.category = category;
-    if (description !== undefined) updateDoc.description = description;
-    if (unit !== undefined) updateDoc.unit = unit;
-    if (typeof derived === 'boolean') updateDoc.derived = derived;
-    if (formula !== undefined) updateDoc.formula = formula;
-    if (flags) updateDoc.flags = flags;
-    if (typeof order === 'number') updateDoc.order = order;
-    if (alias !== undefined) updateDoc.alias = alias;
+    if (!existing) {
+      // PATTERN 1: Creating NEW variable (INSERT)
+      // STRATEGY: Put DEFAULTS in $setOnInsert, explicit values in $set
+      // RATIONALE: $set applies to both insert and update, $setOnInsert only to insert
+      
+      updateOperation.$setOnInsert = {
+        name,                    // Immutable after creation
+        isSystem: false,        // Default for custom variables
+        createdAt: now,         // Set once at creation
+      };
 
-    // WHAT: Upsert variable - separate create vs update fields
-    // WHY: Avoid MongoDB conflict when same field is in $set and $setOnInsert
+      // WHAT: Build $set document with ONLY provided values
+      // WHY: These override defaults and apply at insert time
+      updateOperation.$set = {
+        updatedAt: now,         // Always update timestamp
+      };
+
+      // CRITICAL: Add fields to $set ONLY if explicitly provided
+      // This prevents conflicts - a field cannot be in both operators
+      if (label) updateOperation.$set.label = label;
+      if (type) updateOperation.$set.type = type;
+      if (category) updateOperation.$set.category = category;
+      if (description !== undefined) updateOperation.$set.description = description;
+      if (unit !== undefined) updateOperation.$set.unit = unit;
+      if (typeof derived === 'boolean') updateOperation.$set.derived = derived;
+      if (formula !== undefined) updateOperation.$set.formula = formula;
+      if (flags) updateOperation.$set.flags = flags;
+      if (typeof order === 'number') updateOperation.$set.order = order;
+      if (alias !== undefined) updateOperation.$set.alias = alias;
+
+      // WHAT: Apply defaults in $setOnInsert for fields NOT in $set
+      // WHY: Ensures required fields have values even if not provided
+      if (!('label' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.label = name; // Fallback to name
+      }
+      if (!('type' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.type = 'count'; // Default type
+      }
+      if (!('category' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.category = 'Custom'; // Default category
+      }
+      if (!('derived' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.derived = false; // Default not derived
+      }
+      if (!('flags' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.flags = { visibleInClicker: false, editableInManual: true };
+      }
+      if (!('order' in updateOperation.$set)) {
+        updateOperation.$setOnInsert.order = 999; // Default to end of list
+      }
+
+    } else {
+      // PATTERN 2: Updating EXISTING variable (UPDATE)
+      // STRATEGY: Use $set ONLY, no $setOnInsert
+      // RATIONALE: Document already exists, $setOnInsert is ignored
+      
+      updateOperation.$set = {
+        updatedAt: now,         // Always update timestamp
+      };
+
+      // WHAT: Build partial update document
+      // WHY: Only update fields that were explicitly provided (partial updates)
+      if (label) updateOperation.$set.label = label;
+      if (type) updateOperation.$set.type = type;
+      if (category) updateOperation.$set.category = category;
+      if (description !== undefined) updateOperation.$set.description = description;
+      if (unit !== undefined) updateOperation.$set.unit = unit;
+      if (typeof derived === 'boolean') updateOperation.$set.derived = derived;
+      if (formula !== undefined) updateOperation.$set.formula = formula;
+      if (flags) updateOperation.$set.flags = flags;
+      if (typeof order === 'number') updateOperation.$set.order = order;
+      if (alias !== undefined) updateOperation.$set.alias = alias;
+    }
+
     const result = await col.updateOne(
       { name },
-      {
-        $set: updateDoc,
-        $setOnInsert: {
-          // WHAT: Fields only set on INSERT (not on update)
-          // WHY: Avoid conflict with $set fields
-          name,
-          isSystem: false, // Custom variables are never system
-          createdAt: now,
-          // WHAT: Default values if not provided in updateDoc
-          ...(!label && { label: name }),
-          ...(!type && { type: 'count' }),
-          ...(!category && { category: 'Custom' }),
-          ...(!derived && { derived: false }),
-          ...(!flags && { flags: { visibleInClicker: false, editableInManual: true } }),
-          ...(typeof order !== 'number' && { order: 999 }),
-        }
-      },
+      updateOperation,
       { upsert: true }
     );
 

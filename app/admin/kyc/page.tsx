@@ -466,6 +466,8 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
 function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: () => void }) {
   const [label, setLabel] = useState(variable.label || '');
   const [category, setCategory] = useState(variable.category || '');
+  const [visibleInClicker, setVisibleInClicker] = useState(variable.flags?.visibleInClicker ?? false);
+  const [editableInManual, setEditableInManual] = useState(variable.flags?.editableInManual ?? true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -494,6 +496,16 @@ function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: 
           <label className="form-label">Type</label>
           <input className="form-input" value={variable.type} disabled />
         </div>
+        <div className="flex gap-4 items-center grid-col-span-2">
+          <label className="flex gap-2 items-center">
+            <input type="checkbox" checked={visibleInClicker} onChange={(e) => setVisibleInClicker(e.target.checked)} />
+            <span className="text-sm">Visible in Clicker</span>
+          </label>
+          <label className="flex gap-2 items-center">
+            <input type="checkbox" checked={editableInManual} onChange={(e) => setEditableInManual(e.target.checked)} />
+            <span className="text-sm">Editable in Manual</span>
+          </label>
+        </div>
       </div>
       {error && <div className="text-error text-xs mt-2">{error}</div>}
       <div className="flex justify-end gap-2 mt-4">
@@ -513,6 +525,7 @@ function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: 
                 description: variable.description,
                 derived: !!variable.derived,
                 formula: variable.formula,
+                flags: { visibleInClicker, editableInManual },
               });
               if (!data?.success) throw new Error(data?.error || "Failed to save");
               onClose();
