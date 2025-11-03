@@ -611,6 +611,8 @@ export default function VisualizationPage() {
                               <option value={1}>Width: 1 unit</option>
                               <option value={2}>Width: 2 units</option>
                               <option value={3}>Width: 3 units</option>
+                              <option value={Math.PI}>Width: π units (3.14159...)</option>
+                              <option value={3.15}>Width: 3.15 units</option>
                               <option value={3.16}>Width: 3.16 units</option>
                               <option value={4}>Width: 4 units</option>
                               <option value={5}>Width: 5 units</option>
