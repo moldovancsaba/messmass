@@ -3,6 +3,8 @@
 import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
+import { getIconForEmoji } from '@/lib/iconMapping';
+import MaterialIcon from './MaterialIcon';
 import TextChart from './charts/TextChart';
 import ImageChart from './charts/ImageChart';
 import styles from './DynamicChart.module.css';
@@ -225,16 +227,17 @@ const PieChart: React.FC<{
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
-              <text
-                x="110"
-                y="120"
-                textAnchor="middle"
-                className="chart-emoji"
-                fontSize="42"
-                fill="#1a202c"
-              >
-                {result.emoji || '📊'}
-              </text>
+              {/* WHAT: Material Icon at pie chart center (v10.4.0) */}
+              {/* WHY: Replaces emoji with scalable, professional icon */}
+              <foreignObject x="68" y="78" width="84" height="84">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <MaterialIcon
+                    name={result.icon || (result.emoji ? getIconForEmoji(result.emoji) : 'analytics')}
+                    variant={result.iconVariant || 'outlined'}
+                    style={{ fontSize: '42px', color: '#1a202c' }}
+                  />
+                </div>
+              </foreignObject>
             </svg>
           </div>
           {result.total !== undefined && (
@@ -266,16 +269,17 @@ const PieChart: React.FC<{
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
-              <text
-                x="90"
-                y="98"
-                textAnchor="middle"
-                className="chart-emoji"
-                fontSize="36"
-                fill="#1a202c"
-              >
-                {result.emoji || '📊'}
-              </text>
+              {/* WHAT: Material Icon at pie chart center (v10.4.0) */}
+              {/* WHY: Replaces emoji with scalable, professional icon */}
+              <foreignObject x="55" y="63" width="70" height="70">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <MaterialIcon
+                    name={result.icon || (result.emoji ? getIconForEmoji(result.emoji) : 'analytics')}
+                    variant={result.iconVariant || 'outlined'}
+                    style={{ fontSize: '36px', color: '#1a202c' }}
+                  />
+                </div>
+              </foreignObject>
             </svg>
           </div>
         </div>
@@ -501,13 +505,18 @@ const KPIChart: React.FC<{
           ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
         } as React.CSSProperties}
       >
-        {/* Large emoji at the top */}
-        {result.emoji && (
+        {/* WHAT: Material Icon at top of KPI chart (v10.4.0) */}
+        {/* WHY: Replaces emoji with scalable, professional icon */}
+        {(result.icon || result.emoji) && (
           <div 
             className={styles.kpiEmoji}
             style={{ ['--kpi-emoji-size' as string]: emojiSize } as React.CSSProperties}
           >
-            {result.emoji}
+            <MaterialIcon
+              name={result.icon || (result.emoji ? getIconForEmoji(result.emoji) : 'analytics')}
+              variant={result.iconVariant || 'outlined'}
+              style={{ fontSize: emojiSize }}
+            />
           </div>
         )}
         
@@ -592,7 +601,8 @@ export const ChartContainer: React.FC<{
         onClick={exportChartAsPNG}
         title="Download chart as PNG"
       >
-        📥 Download PNG
+        <MaterialIcon name="download" variant="outlined" style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />
+        Download PNG
       </button>
       
       {/* Beautiful rounded container that will be captured */}

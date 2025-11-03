@@ -74,6 +74,17 @@ export default async function RootLayout({
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >
       <head>
+        {/* WHAT: Google Material Icons font families
+            WHY: Replace emoji with Material Icons throughout the app
+            HOW: Load both Outlined and Rounded variants for flexibility */}
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" 
+          rel="stylesheet"
+        />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" 
+          rel="stylesheet"
+        />
         <GoogleAnalytics />
       </head>
       <body>

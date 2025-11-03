@@ -40,7 +40,9 @@ interface ChartConfigFormData {
     description?: string;
     formatting?: { rounded: boolean; prefix?: string; suffix?: string; }; // WHAT: New flexible formatting
   }[];
-  emoji?: string;
+  icon?: string; // WHAT: Material Icon name (v10.4.0)
+  iconVariant?: 'outlined' | 'rounded'; // WHAT: Icon variant (v10.4.0)
+  emoji?: string; // DEPRECATED: Legacy field for backward compatibility
   subtitle?: string;
   showTotal?: boolean;
   totalLabel?: string;
@@ -972,32 +974,49 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   )}
                 </div>
                 
-                {/* ROW 2: Show Emoji + Input Field */}
+                {/* ROW 2: Show Icon + Input Field (v10.4.0 Material Icons) */}
                 <div className="formatting-row">
                   <label className="formatting-checkbox">
                     <input
                       type="checkbox"
-                      checked={!!formData.emoji}
+                      checked={!!formData.icon}
                       onChange={(e) => {
                         setFormData({ 
                           ...formData, 
-                          emoji: e.target.checked ? '📊' : undefined 
+                          icon: e.target.checked ? 'analytics' : undefined,
+                          iconVariant: e.target.checked ? 'outlined' : formData.iconVariant
                         });
                       }}
                     />
-                    <span>Show Emoji</span>
+                    <span>Show Icon</span>
                   </label>
-                  {formData.emoji !== undefined && formData.emoji !== '' && (
-                    <input
-                      type="text"
-                      className="form-input emoji-input-field"
-                      value={formData.emoji || ''}
-                      onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
-                      placeholder="e.g., 📊"
-                      maxLength={2}
-                    />
+                  {formData.icon !== undefined && formData.icon !== '' && (
+                    <div style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={formData.icon || ''}
+                        onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                        placeholder="analytics, trending_up, star, etc."
+                        style={{ flex: 2 }}
+                      />
+                      <select
+                        className="form-input"
+                        value={formData.iconVariant || 'outlined'}
+                        onChange={(e) => setFormData({ ...formData, iconVariant: e.target.value as 'outlined' | 'rounded' })}
+                        style={{ flex: 1 }}
+                      >
+                        <option value="outlined">Outlined</option>
+                        <option value="rounded">Rounded</option>
+                      </select>
+                    </div>
                   )}
                 </div>
+                {formData.icon && (
+                  <p className="text-xs text-gray-600 mt-1" style={{ marginLeft: '140px' }}>
+                    💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'underline' }}>fonts.google.com/icons</a>
+                  </p>
+                )}
                 
                 {/* ROW 3: Show Subtitle + Input Field */}
                 <div className="formatting-row">

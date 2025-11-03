@@ -88,7 +88,9 @@ export function calculateChartSafe(
       chartId: configuration.chartId,
       title: configuration.title,
       type: configuration.type,
-      emoji: configuration.emoji,
+      icon: configuration.icon, // WHAT: Pass through Material Icon name (v10.4.0)
+      iconVariant: configuration.iconVariant, // WHAT: Pass through icon variant (v10.4.0)
+      emoji: configuration.emoji, // WHAT: Legacy emoji for backward compatibility
       subtitle: `Data incomplete: ${validation.completeness}%`,
       totalLabel: configuration.totalLabel,
       elements: [],
@@ -394,7 +396,9 @@ export function calculateChart(
     chartId: configuration.chartId,
     title: configuration.title,
     type: configuration.type,
-    emoji: configuration.emoji,
+    icon: configuration.icon, // WHAT: Material Icon name (v10.4.0)
+    iconVariant: configuration.iconVariant, // WHAT: Material Icon variant (v10.4.0)
+    emoji: configuration.emoji, // WHAT: Legacy emoji for backward compatibility
     subtitle: configuration.subtitle,
     totalLabel: configuration.totalLabel,
     elements,
@@ -444,7 +448,9 @@ export function calculateChartsBatchSafe(
       chartId: config.chartId,
       title: config.title,
       type: config.type,
-      emoji: config.emoji,
+      icon: config.icon, // WHAT: Material Icon name (v10.4.0)
+      iconVariant: config.iconVariant, // WHAT: Material Icon variant (v10.4.0)
+      emoji: config.emoji, // WHAT: Legacy emoji for backward compatibility
       subtitle: `Data incomplete: ${validation.completeness}%`,
       totalLabel: config.totalLabel,
       elements: [],

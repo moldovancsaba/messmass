@@ -77,7 +77,27 @@ export interface ChartConfiguration {
   lastModifiedBy?: string; // Admin user ID who last modified this configuration
   
   // Optional configuration properties
+  /** 
+   * WHAT: Material Icon name (v10.4.0 - replaces emoji)
+   * WHY: Professional, scalable icons with automatic color inheritance
+   * HOW: Use icon names from Google Material Icons (e.g., 'analytics', 'star', 'trending_up')
+   * Browse: https://fonts.google.com/icons
+   */
+  icon?: string;
+  
+  /**
+   * WHAT: Material Icon variant (v10.4.0)
+   * WHY: Supports both Outlined (default) and Rounded styles
+   */
+  iconVariant?: 'outlined' | 'rounded';
+  
+  /**
+   * @deprecated Use `icon` field instead (v10.4.0)
+   * WHAT: Legacy emoji field for backward compatibility
+   * WHY: Maintained temporarily during migration period
+   */
   emoji?: string; // Chart center emoji for pie charts (e.g., "👥", "📍", "🌐")
+  
   subtitle?: string; // Optional subtitle/description
   showTotal?: boolean; // Whether to show total value above bars
   totalLabel?: string; // Custom label for total (e.g., "possible merch sales", "Advertisement Value")
@@ -172,7 +192,16 @@ export interface ChartCalculationResult {
   chartId: string;
   title: string;
   type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // Chart type
+  
+  /** WHAT: Material Icon name (v10.4.0) */
+  icon?: string;
+  
+  /** WHAT: Material Icon variant (v10.4.0) */
+  iconVariant?: 'outlined' | 'rounded';
+  
+  /** @deprecated Use `icon` field instead (v10.4.0) */
   emoji?: string; // Chart emoji from configuration
+  
   subtitle?: string; // Chart subtitle from configuration
   totalLabel?: string; // Custom total label from configuration
   elements: {
