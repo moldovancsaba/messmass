@@ -151,7 +151,9 @@ export async function GET() {
       order: config.order,
       isActive: config.isActive,
       elements: config.elements,
-      emoji: config.emoji,
+      icon: config.icon, // v10.4.0: Material Icon name
+      iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
+      emoji: config.emoji, // DEPRECATED: Legacy field
       subtitle: config.subtitle,
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
@@ -204,7 +206,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, emoji, subtitle, showTotal, totalLabel, aspectRatio } = body;
+    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
@@ -236,8 +238,8 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
     
-    // WHAT: Include all configuration fields
-    // WHY: element.formatting and aspectRatio must be persisted to database
+    // WHAT: Include all configuration fields including icon (v10.4.0)
+    // WHY: element.formatting, aspectRatio, icon, and iconVariant must be persisted to database
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -245,7 +247,9 @@ export async function POST(request: NextRequest) {
       order,
       isActive: isActive ?? true,
       elements,
-      emoji,
+      icon, // v10.4.0: Material Icon name
+      iconVariant, // v10.4.0: Icon variant (outlined/rounded)
+      emoji, // DEPRECATED: Legacy field
       subtitle,
       showTotal,
       totalLabel,
