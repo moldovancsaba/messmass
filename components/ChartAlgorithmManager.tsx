@@ -992,7 +992,27 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 {/* ROW 2: Icon Field (v10.4.0 Material Icons - Always Visible) */}
                 <div className="form-group">
                   <label className="form-label">Icon (Optional)</label>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {/* WHAT: Live icon preview */}
+                    {/* WHY: Users need to see the icon as they type */}
+                    {formData.icon && formData.icon.trim() && (
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        minWidth: '48px',
+                        height: '48px',
+                        border: '2px solid #e5e7eb',
+                        borderRadius: '0.5rem',
+                        background: '#f9fafb'
+                      }}>
+                        <MaterialIcon
+                          name={formData.icon}
+                          variant={formData.iconVariant || 'outlined'}
+                          style={{ fontSize: '2rem', color: '#374151' }}
+                        />
+                      </div>
+                    )}
                     <input
                       type="text"
                       className="form-input"
