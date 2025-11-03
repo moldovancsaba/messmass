@@ -10,6 +10,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import FormModal from '@/components/modals/FormModal';
+import MaterialIcon from '@/components/MaterialIcon';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -826,7 +827,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }
                             }}
                           >
-                            ⬇️ CSV
+                            <MaterialIcon name="download" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            CSV
                           </button>
                           
                           {/* Edit Statistics Share Button */}
@@ -840,7 +842,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                               }}
                               title={`Share edit page for ${project.eventName} statistics`}
                             >
-                              📝 Edit Stats
+                              <MaterialIcon name="bar_chart" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                              Edit Stats
                             </button>
                           )}
                           
@@ -853,7 +856,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             }}
                             title="Edit project name and date"
                           >
-                            ✏️ Edit
+                            <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            Edit
                           </button>
                           
                           {/* Delete Project Button */}
@@ -861,7 +865,8 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             className="btn btn-small btn-danger action-button"
                             onClick={() => deleteProject(project._id)}
                           >
-                            🗑️ Delete
+                            <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                            Delete
                           </button>
                         </div>
                       </td>

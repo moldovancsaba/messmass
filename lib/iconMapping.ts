@@ -59,6 +59,7 @@ export const EMOJI_TO_ICON_MAP: Record<string, string> = {
   '🗑️': 'delete',
   '📖': 'menu_book',
   '📍': 'location_on',
+  '🏆': 'emoji_events',
   
   // Content Types
   '📝': 'description',
@@ -68,7 +69,6 @@ export const EMOJI_TO_ICON_MAP: Record<string, string> = {
   '💡': 'lightbulb',
   '⭐': 'star',
   '🔮': 'psychology', // Prediction
-  '🏆': 'emoji_events', // Benchmark
 };
 
 /**
