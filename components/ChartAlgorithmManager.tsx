@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AdminHero from './AdminHero';
 import ColoredCard from './ColoredCard';
 import FormModal from './modals/FormModal';
+import MaterialIcon from './MaterialIcon';
+import { getIconForEmoji } from '@/lib/iconMapping';
 import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
@@ -502,7 +504,16 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                   <tr key={config._id}>
                     <td>
                       <div className={styles.chartTitleCell}>
-                        {config.emoji && <span className={styles.chartEmoji}>{config.emoji}</span>}
+                        {/* WHAT: Display Material Icon with fallback to emoji (v10.4.0) */}
+                        {(config.icon || config.emoji) && (
+                          <span className={styles.chartEmoji}>
+                            <MaterialIcon
+                              name={config.icon || (config.emoji ? getIconForEmoji(config.emoji) : 'analytics')}
+                              variant={(config as any).iconVariant || 'outlined'}
+                              style={{ fontSize: '1.5rem' }}
+                            />
+                          </span>
+                        )}
                         <strong>{config.title}</strong>
                         <br />
                         <small className={styles.chartId}>ID: {config.chartId}</small>
@@ -974,49 +985,32 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   )}
                 </div>
                 
-                {/* ROW 2: Show Icon + Input Field (v10.4.0 Material Icons) */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
+                {/* ROW 2: Icon Field (v10.4.0 Material Icons - Always Visible) */}
+                <div className="form-group">
+                  <label className="form-label">Icon (Optional)</label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <input
-                      type="checkbox"
-                      checked={!!formData.icon}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          icon: e.target.checked ? 'analytics' : undefined,
-                          iconVariant: e.target.checked ? 'outlined' : formData.iconVariant
-                        });
-                      }}
+                      type="text"
+                      className="form-input"
+                      value={formData.icon || ''}
+                      onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                      placeholder="analytics, trending_up, star, lightbulb, etc."
+                      style={{ flex: 2 }}
                     />
-                    <span>Show Icon</span>
-                  </label>
-                  {formData.icon !== undefined && formData.icon !== '' && (
-                    <div style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={formData.icon || ''}
-                        onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        placeholder="analytics, trending_up, star, etc."
-                        style={{ flex: 2 }}
-                      />
-                      <select
-                        className="form-input"
-                        value={formData.iconVariant || 'outlined'}
-                        onChange={(e) => setFormData({ ...formData, iconVariant: e.target.value as 'outlined' | 'rounded' })}
-                        style={{ flex: 1 }}
-                      >
-                        <option value="outlined">Outlined</option>
-                        <option value="rounded">Rounded</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
-                {formData.icon && (
-                  <p className="text-xs text-gray-600 mt-1" style={{ marginLeft: '140px' }}>
+                    <select
+                      className="form-input"
+                      value={formData.iconVariant || 'outlined'}
+                      onChange={(e) => setFormData({ ...formData, iconVariant: e.target.value as 'outlined' | 'rounded' })}
+                      style={{ flex: 1 }}
+                    >
+                      <option value="outlined">Outlined</option>
+                      <option value="rounded">Rounded</option>
+                    </select>
+                  </div>
+                  <small className="form-help">
                     💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'underline' }}>fonts.google.com/icons</a>
-                  </p>
-                )}
+                  </small>
+                </div>
                 
                 {/* ROW 3: Show Subtitle + Input Field */}
                 <div className="formatting-row">
