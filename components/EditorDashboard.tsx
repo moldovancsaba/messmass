@@ -6,6 +6,7 @@ import { evaluateFormula } from '@/lib/formulaEngine';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import UnifiedHashtagInput from './UnifiedHashtagInput';
 import ImageUploadField from './ImageUploadField';
+import ImageUploader from './ImageUploader';
 import TextareaField from './TextareaField';
 import { 
   mergeHashtagSystems, 
@@ -19,13 +20,14 @@ import { apiPut } from '@/lib/apiClient';
 interface VariableWithFlags {
   name: string;
   label: string;
-  type: 'count' | 'numeric' | 'currency' | 'percentage' | 'text';
+  type: 'count' | 'numeric' | 'currency' | 'percentage' | 'boolean' | 'date' | 'text' | 'textarea' | 'texthyper' | 'textmedia';
   category: string;
   derived?: boolean;
   flags: { visibleInClicker: boolean; editableInManual: boolean };
   isCustom?: boolean;
   clickerOrder?: number;
   manualOrder?: number;
+  linkedContentAsset?: string; // Content Library slug for media variables
 }
 
 interface Project {
@@ -592,12 +594,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   // WHY: Variables are stored as stats.female but MongoDB structure is { stats: { female: 120 } }
                   const normalizedName = normalizeKey(v.name);
                   const isRemoteFans = normalizedName === 'remoteFans' || v.name === 'remoteFans';
-                  const isTextField = normalizedName.startsWith('reportText');
-                  const isImageField = normalizedName.startsWith('reportImage');
                   
-                  // WHAT: Render text input for reportText* variables
-                  // WHY: Multi-line text notes need textarea, not numeric input
-                  if (isTextField) {
+                  // WHAT: Render based on variable type (new type system)
+                  // WHY: Each type has specific UI requirements
+                  
+                  // WHAT: textarea - Multi-line text content
+                  if (v.type === 'textarea') {
                     return (
                       <TextareaField
                         key={v.name}
@@ -609,16 +611,48 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                     );
                   }
                   
-                  // WHAT: Render image upload for reportImage* variables
-                  // WHY: Images need upload UI with preview, not text input
-                  if (isImageField) {
+                  // WHAT: textmedia - Image upload to ImgBB
+                  if (v.type === 'textmedia') {
                     return (
-                      <ImageUploadField
-                        key={v.name}
-                        label={v.label}
-                        value={getTextField(v.name)}
-                        onSave={(url) => saveImageUrl(v.name, url)}
-                      />
+                      <div key={v.name} style={{ gridColumn: '1 / -1', maxWidth: '600px' }}>
+                        <ImageUploader
+                          label={v.label}
+                          value={getTextField(v.name)}
+                          onChange={(url) => saveImageUrl(v.name, url || '')}
+                          maxSizeMB={10}
+                        />
+                      </div>
+                    );
+                  }
+                  
+                  // WHAT: texthyper - URL, email, phone (single line with validation hint)
+                  if (v.type === 'texthyper') {
+                    return (
+                      <div key={v.name} className="form-group">
+                        <label className="form-label-block">{v.label}</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={getTextField(v.name)}
+                          onChange={(e) => saveTextField(v.name, e.target.value)}
+                          placeholder="URL, email, phone, or social handle"
+                        />
+                      </div>
+                    );
+                  }
+                  
+                  // WHAT: text - Single line text (title, name, short notes)
+                  if (v.type === 'text') {
+                    return (
+                      <div key={v.name} className="form-group">
+                        <label className="form-label-block">{v.label}</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={getTextField(v.name)}
+                          onChange={(e) => saveTextField(v.name, e.target.value)}
+                        />
+                      </div>
                     );
                   }
                   

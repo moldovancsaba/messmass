@@ -21,13 +21,14 @@ interface VariableFlags {
 interface Variable {
   name: string;
   label: string;
-  type: "numeric" | "percentage" | "currency" | "count" | "text";
+  type: "numeric" | "percentage" | "currency" | "count" | "text" | "textarea" | "texthyper" | "textmedia" | "boolean" | "date";
   category: string;
   description?: string;
   derived?: boolean;
   formula?: string;
   flags: VariableFlags;
   isCustom?: boolean;
+  isSystem?: boolean;  // System variables cannot be deleted
 }
 
 function computeSource(v: Variable): "manual" | "system" | "derived" | "text" {
@@ -68,6 +69,7 @@ export default function KycVariablesPage() {
           formula: v.formula,
           flags: v.flags || { visibleInClicker: false, editableInManual: false },
           isCustom: !!v.isCustom,
+          isSystem: !!v.isSystem,
         }));
         setVariables(vars);
       }
@@ -224,6 +226,25 @@ export default function KycVariablesPage() {
                       <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
                       Edit
                     </button>
+                    {!v.isSystem && (
+                      <button 
+                        className="btn btn-small btn-danger" 
+                        onClick={async () => {
+                          if (!confirm(`Delete variable "${v.label}" (${v.name})?`)) return;
+                          try {
+                            const res = await fetch(`/api/variables-config?name=${encodeURIComponent(v.name)}`, { method: 'DELETE' });
+                            const data = await res.json();
+                            if (!data.success) throw new Error(data.error);
+                            await load();
+                          } catch (e: any) {
+                            alert(`Failed to delete: ${e.message}`);
+                          }
+                        }}
+                      >
+                        <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               </ColoredCard>
@@ -327,13 +348,16 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
         <div>
           <label className="form-label-block">Type</label>
           <select className="form-select" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Variable['type'] })}>
-            <option value="count">count</option>
-            <option value="numeric">numeric</option>
-            <option value="currency">currency</option>
-            <option value="percentage">percentage</option>
-            <option value="boolean">boolean</option>
-            <option value="date">date</option>
-            <option value="text">text</option>
+            <option value="count">count - Whole numbers (0, 1, 2...)</option>
+            <option value="numeric">numeric - Decimal numbers (0.5, 3.14...)</option>
+            <option value="currency">currency - Money values (€/$)</option>
+            <option value="percentage">percentage - Percentage (0-100%)</option>
+            <option value="boolean">boolean - True/False checkbox</option>
+            <option value="date">date - Date picker</option>
+            <option value="text">text - Single line text (title, name)</option>
+            <option value="textarea">textarea - Multi-line text content</option>
+            <option value="texthyper">texthyper - URL, email, phone, social</option>
+            <option value="textmedia">textmedia - Image upload (ImgBB)</option>
           </select>
         </div>
         <div>
@@ -344,6 +368,57 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
           <label className="form-label-block">Description (optional)</label>
           <textarea className="form-input" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What does this track?" />
         </div>
+        
+        {/* Type-specific fields */}
+        {(form.type === 'text' || form.type === 'textarea') && (
+          <div className="grid-col-span-2">
+            <label className="form-label-block">Max Length (optional)</label>
+            <input className="form-input" type="number" placeholder="e.g. 500" />
+          </div>
+        )}
+        
+        {form.type === 'texthyper' && (
+          <div className="grid-col-span-2">
+            <label className="form-label-block">Subtype</label>
+            <select className="form-select">
+              <option value="url">URL</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="social">Social Handle</option>
+            </select>
+          </div>
+        )}
+        
+        {form.type === 'textmedia' && (
+          <div className="grid-col-span-2">
+            <label className="form-label-block">Max File Size (MB)</label>
+            <input className="form-input" type="number" placeholder="Default: 10MB" defaultValue="10" />
+          </div>
+        )}
+        
+        {form.type === 'currency' && (
+          <div className="grid-col-span-2">
+            <label className="form-label-block">Currency Symbol</label>
+            <select className="form-select">
+              <option value="€">€ Euro</option>
+              <option value="$">$ Dollar</option>
+              <option value="£">£ Pound</option>
+            </select>
+          </div>
+        )}
+        
+        {(form.type === 'count' || form.type === 'numeric') && (
+          <>
+            <div>
+              <label className="form-label-block">Min Value (optional)</label>
+              <input className="form-input" type="number" placeholder="e.g. 0" />
+            </div>
+            <div>
+              <label className="form-label-block">Max Value (optional)</label>
+              <input className="form-input" type="number" placeholder="e.g. 1000" />
+            </div>
+          </>
+        )}
         <div className="flex gap-4 items-center grid-col-span-2">
           <label className="flex gap-2 items-center">
             <input type="checkbox" checked={form.visibleInClicker} onChange={(e) => setForm({ ...form, visibleInClicker: e.target.checked })} />
@@ -359,7 +434,12 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
       <div className="flex justify-end gap-2 mt-4">
         <button className="btn btn-small btn-secondary" onClick={onClose} disabled={form.saving}>Cancel</button>
         <button className="btn btn-small btn-primary" disabled={form.saving} onClick={async () => {
-          if (!form.name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(form.name)) { setForm({ ...form, error: 'Provide a valid camelCase name' }); return; }
+          // WHAT: Allow stats.variableName format (database format)
+          // WHY: Variables are stored as stats.variableName in database
+          if (!form.name || !/^(stats\.)?[a-zA-Z][a-zA-Z0-9]*$/.test(form.name)) { 
+            setForm({ ...form, error: 'Name must be camelCase or stats.camelCase (e.g., fanCount or stats.fanCount)' }); 
+            return; 
+          }
           if (!form.label || !form.category) { setForm({ ...form, error: 'Label and Category are required' }); return; }
           try {
             setForm(prev => ({ ...prev, saving: true, error: '' }));
@@ -384,13 +464,13 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
 }
 
 function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: () => void }) {
-  const [label, setLabel] = useState(variable.label);
-  const [category, setCategory] = useState(variable.category);
+  const [label, setLabel] = useState(variable.label || '');
+  const [category, setCategory] = useState(variable.category || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const canRename = !!variable.isCustom;
-  const [name, setName] = useState(variable.name);
+  const [name, setName] = useState(variable.name || '');
 
   return (
     <div>

@@ -143,29 +143,35 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // WHAT: Validate type-specific content
-    // WHY: Images need URL, text blocks need text content
-    if (body.type === 'image') {
-      if (!body.content?.url) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Image assets require content.url (ImgBB URL)'
-          } as ContentAssetResponse,
-          { status: 400 }
-        );
-      }
-    } else if (body.type === 'text') {
-      if (!body.content?.text) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Text assets require content.text'
-          } as ContentAssetResponse,
-          { status: 400 }
-        );
+    // WHAT: Validate type-specific content (only for Global Assets)
+    // WHY: Global Assets need content, Variable Definitions don't (filled per-project)
+    const isVariable = body.isVariable === true;
+    
+    if (!isVariable) {
+      // WHAT: Global Asset mode - content is required
+      if (body.type === 'image') {
+        if (!body.content?.url) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Global image assets require content.url (ImgBB URL)'
+            } as ContentAssetResponse,
+            { status: 400 }
+          );
+        }
+      } else if (body.type === 'text') {
+        if (!body.content?.text) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Global text assets require content.text'
+            } as ContentAssetResponse,
+            { status: 400 }
+          );
+        }
       }
     }
+    // WHAT: Variable Definition mode - content is optional (will be filled per-project in Manual Edit)
     
     // WHAT: Generate or validate slug
     // WHY: Slug is the unique identifier for asset references in formulas
@@ -215,6 +221,7 @@ export async function POST(request: NextRequest) {
       content: body.content,
       category: body.category || 'Uncategorized',
       tags: body.tags || [],
+      isVariable: body.isVariable || false, // WHAT: Flag for Variable Definition vs Global Asset
       uploadedBy: undefined, // TODO: Add user session tracking
       usageCount: 0, // Initially zero, updated by usage tracking system
       createdAt: now,

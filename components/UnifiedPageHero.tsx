@@ -27,6 +27,7 @@ interface UnifiedPageHeroProps {
   onExportPDF?: () => void; // PDF export callback
   pageStyle?: PageStyleEnhanced;
   children?: React.ReactNode; // For additional content like dates
+  layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Layout variation control
 }
 
 export default function UnifiedPageHero({
@@ -39,7 +40,8 @@ export default function UnifiedPageHero({
   onExportCSV,
   onExportPDF,
   pageStyle,
-  children
+  children,
+  layoutMode = 'dual-partners' // WHAT: Default to existing dual-partners layout
 }: UnifiedPageHeroProps) {
   const styleCss = pageStyle ? `
     .admin-container { 
@@ -58,25 +60,38 @@ export default function UnifiedPageHero({
     <div className={styles.container}>
       {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
       <ColoredCard className={`admin-header ${styles.headerCard}`}>
-        {/* WHAT: Partner logos layout - desktop: left | center | right, mobile: vertical */}
-        <div className={styles.heroLayout}>
-          {/* WHAT: Partner 1 (Home team) - Left side */}
-          {partner1 && (
-            <div className={styles.partnerContainer}>
-              {partner1.logoUrl ? (
-                <img 
-                  src={partner1.logoUrl} 
-                  alt={partner1.name}
-                  className={styles.partnerLogo}
-                  title={partner1.name}
-                />
-              ) : (
-                <div className={styles.partnerEmoji} title={partner1.name}>
+        {/* WHAT: Partner logos layout - adaptive based on layoutMode */}
+        <div className={layoutMode === 'single-partner-spotlight' ? styles.heroLayoutSpotlight : styles.heroLayout}>
+          {/* WHAT: Partner 1 - Layout varies by mode
+               WHY: single-partner-spotlight shows icon left, logo right; dual-partners shows full partner left */}
+          {layoutMode === 'single-partner-spotlight' ? (
+            /* WHAT: Single partner spotlight mode - icon on left */
+            partner1?.emoji ? (
+              <div className={styles.partnerIconOnly}>
+                <div className={styles.partnerEmojiLarge} title={partner1.name}>
                   {partner1.emoji}
                 </div>
-              )}
-              <div className={styles.partnerName}>{partner1.name}</div>
-            </div>
+              </div>
+            ) : null
+          ) : (
+            /* WHAT: Dual partners mode - full partner display on left */
+            partner1 && (
+              <div className={styles.partnerContainer}>
+                {partner1.logoUrl ? (
+                  <img 
+                    src={partner1.logoUrl} 
+                    alt={partner1.name}
+                    className={styles.partnerLogo}
+                    title={partner1.name}
+                  />
+                ) : (
+                  <div className={styles.partnerEmoji} title={partner1.name}>
+                    {partner1.emoji}
+                  </div>
+                )}
+                <div className={styles.partnerName}>{partner1.name}</div>
+              </div>
+            )
           )}
 
           {/* WHAT: Center content - Title and hashtags */}
@@ -87,10 +102,6 @@ export default function UnifiedPageHero({
             
             {/* Beautiful Bubble Hashtags Display with Category Prefixes */}
             {(() => {
-              // Debug: Log the data we're receiving
-              console.log('UnifiedPageHero - hashtags:', hashtags);
-              console.log('UnifiedPageHero - categorizedHashtags:', categorizedHashtags);
-              
               const displayHashtags: React.ReactElement[] = [];
               
               // Add traditional hashtags (ColoredHashtagBubble will add the # prefix)
@@ -140,8 +151,6 @@ export default function UnifiedPageHero({
                 });
               }
               
-              console.log('Total displayHashtags created:', displayHashtags.length);
-              
               return displayHashtags.length > 0 ? (
                 <div className={styles.hashtagsWrapper}>
                   {displayHashtags}
@@ -150,23 +159,39 @@ export default function UnifiedPageHero({
             })()}
           </div>
 
-          {/* WHAT: Partner 2 (Away team) - Right side */}
-          {partner2 && (
-            <div className={styles.partnerContainer}>
-              {partner2.logoUrl ? (
+          {/* WHAT: Right side - varies by mode
+               WHY: single-partner-spotlight shows partner1 logo; dual-partners shows partner2 */}
+          {layoutMode === 'single-partner-spotlight' ? (
+            /* WHAT: Single partner spotlight mode - logo on right */
+            partner1?.logoUrl ? (
+              <div className={styles.partnerLogoOnly}>
                 <img 
-                  src={partner2.logoUrl} 
-                  alt={partner2.name}
-                  className={styles.partnerLogo}
-                  title={partner2.name}
+                  src={partner1.logoUrl} 
+                  alt={partner1.name}
+                  className={styles.partnerLogoLarge}
+                  title={partner1.name}
                 />
-              ) : (
-                <div className={styles.partnerEmoji} title={partner2.name}>
-                  {partner2.emoji}
-                </div>
-              )}
-              <div className={styles.partnerName}>{partner2.name}</div>
-            </div>
+              </div>
+            ) : null
+          ) : (
+            /* WHAT: Dual partners mode - partner2 on right */
+            partner2 && (
+              <div className={styles.partnerContainer}>
+                {partner2.logoUrl ? (
+                  <img 
+                    src={partner2.logoUrl} 
+                    alt={partner2.name}
+                    className={styles.partnerLogo}
+                    title={partner2.name}
+                  />
+                ) : (
+                  <div className={styles.partnerEmoji} title={partner2.name}>
+                    {partner2.emoji}
+                  </div>
+                )}
+                <div className={styles.partnerName}>{partner2.name}</div>
+              </div>
+            )
           )}
         </div>
 

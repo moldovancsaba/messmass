@@ -65,6 +65,9 @@ export interface ContentAsset {
   category: string;          // "Partner Report", "Sponsors", "Event Assets", etc.
   tags: string[];            // ["partner", "logo", "2024", "Q4"]
   
+  // Workflow Mode
+  isVariable?: boolean;      // true = Variable Definition (event-specific), false = Global Asset (reusable)
+  
   // Metadata
   uploadedBy?: string;       // Admin user ID who created this asset
   usageCount: number;        // Number of charts referencing this asset (auto-calculated)
@@ -111,6 +114,7 @@ export interface ContentAssetFormData {
   content: ContentAssetContent; // Type-specific content
   category: string;          // Organizational category
   tags: string[];            // Array of tag strings
+  isVariable?: boolean;      // true = Variable Definition (event-specific), false = Global Asset (reusable)
 }
 
 /**
@@ -198,10 +202,15 @@ export function generateSlug(title: string): string {
  * @returns true if valid format
  */
 export function isValidSlug(slug: string): boolean {
-  // WHAT: Slug must be lowercase alphanumeric with hyphens only
-  // WHY: Ensures URL safety and consistency
-  const slugRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-  return slugRegex.test(slug);
+  // WHAT: Allow stats.camelCase format for database field names (NO MAPPING)
+  // WHY: Content Library defines exact database variable names
+  // FORMAT: stats.variableName (e.g., stats.fanSelfiePortrait1)
+  const statsRegex = /^stats\.[a-zA-Z][a-zA-Z0-9]*$/;
+  
+  // WHAT: Legacy kebab-case format still supported for backward compatibility
+  const kebabRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  
+  return statsRegex.test(slug) || kebabRegex.test(slug);
 }
 
 /**

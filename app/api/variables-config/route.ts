@@ -23,7 +23,7 @@ interface VariableFlags {
 
 interface VariableMetadata {
   _id: any; // MongoDB ObjectId
-  name: string; // Full database path: "stats.female", "stats.remoteImages"
+  name: string; // Database field name: "female", "remoteImages" (no stats. prefix)
   label: string; // Display name: "Female", "Remote Images"
   type: VariableType;
   category: string; // "Images", "Demographics", etc.
@@ -118,8 +118,8 @@ export async function GET() {
 // HOW: Upsert to MongoDB, invalidate cache
 // 
 // Body examples:
-// 1) Update existing: { name: 'stats.female', label: 'Women', flags: { ... } }
-// 2) Create custom: { name: 'stats.vipGuests', label: 'VIP Guests', type: 'count', category: 'Event', ... }
+// 1) Update existing: { name: 'female', label: 'Women', flags: { ... } }
+// 2) Create custom: { name: 'vipGuests', label: 'VIP Guests', type: 'count', category: 'Event', ... }
 export async function POST(request: NextRequest) {
   try {
     const db = await getDb();
@@ -137,12 +137,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // WHAT: Name validation (allow dots for full paths like "stats.female")
-    // WHY: Ensure consistent naming convention
-    if (!/^[a-zA-Z][a-zA-Z0-9_.]*$/.test(name)) {
+    // WHAT: Name validation - allow stats.camelCase format
+    // WHY: Database stores variables with stats. prefix for Single Reference System
+    if (!/^(stats\.)?[a-zA-Z][a-zA-Z0-9]*$/.test(name)) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Invalid variable name format. Use camelCase with optional dots (e.g., stats.female)' 
+        error: 'Invalid variable name format. Use camelCase or stats.camelCase (e.g., fanCount or stats.fanCount)' 
       }, { status: 400 });
     }
 
@@ -172,8 +172,8 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Build update document
     // WHY: Merge new data with existing, preserve system flag
+    // NOTE: Don't include 'name' in $set to avoid MongoDB conflict error
     const updateDoc: Partial<VariableMetadata> = {
-      name,
       updatedAt: now,
     };
 
@@ -189,22 +189,25 @@ export async function POST(request: NextRequest) {
     if (typeof order === 'number') updateDoc.order = order;
     if (alias !== undefined) updateDoc.alias = alias;
 
-    // WHAT: Upsert variable
-    // WHY: Update if exists, create if new
+    // WHAT: Upsert variable - separate create vs update fields
+    // WHY: Avoid MongoDB conflict when same field is in $set and $setOnInsert
     const result = await col.updateOne(
       { name },
       {
         $set: updateDoc,
         $setOnInsert: {
+          // WHAT: Fields only set on INSERT (not on update)
+          // WHY: Avoid conflict with $set fields
           name,
-          label: label || name,
-          type: type || 'count',
-          category: category || 'Custom',
-          derived: derived || false,
-          flags: flags || { visibleInClicker: false, editableInManual: true },
           isSystem: false, // Custom variables are never system
-          order: order || 999,
           createdAt: now,
+          // WHAT: Default values if not provided in updateDoc
+          ...(!label && { label: name }),
+          ...(!type && { type: 'count' }),
+          ...(!category && { category: 'Custom' }),
+          ...(!derived && { derived: false }),
+          ...(!flags && { flags: { visibleInClicker: false, editableInManual: true } }),
+          ...(typeof order !== 'number' && { order: 999 }),
         }
       },
       { upsert: true }
@@ -227,6 +230,70 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to upsert variable' 
+    }, { status: 500 });
+  }
+}
+
+// DELETE /api/variables-config?name=variableName
+// WHAT: Delete a custom variable
+// WHY: Allow cleanup of unused or test variables
+// RESTRICTION: Only custom variables (isSystem=false) can be deleted
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get('name');
+
+    if (!name) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Variable name is required' 
+      }, { status: 400 });
+    }
+
+    const db = await getDb();
+    const col = db.collection<VariableMetadata>(COLLECTION);
+
+    // WHAT: Check if variable exists and is deletable
+    // WHY: Prevent deletion of system variables
+    const existing = await col.findOne({ name });
+
+    if (!existing) {
+      return NextResponse.json({ 
+        success: false, 
+        error: `Variable "${name}" not found` 
+      }, { status: 404 });
+    }
+
+    if (existing.isSystem) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Cannot delete system variables' 
+      }, { status: 403 });
+    }
+
+    // WHAT: Delete the variable
+    const result = await col.deleteOne({ name });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Failed to delete variable' 
+      }, { status: 500 });
+    }
+
+    // WHAT: Invalidate cache
+    invalidateCache();
+    console.log(`🗑️ Deleted variable: ${name}`);
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Variable "${name}" deleted successfully` 
+    });
+  } catch (error) {
+    console.error('❌ Failed to delete variable:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to delete variable' 
     }, { status: 500 });
   }
 }

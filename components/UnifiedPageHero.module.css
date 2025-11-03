@@ -43,6 +43,17 @@
   margin-bottom: var(--mm-space-4);
 }
 
+/* WHAT: Spotlight layout - single partner with icon left, logo right
+ * WHY: Alternative layout for reporting pages focusing on one partner
+ * HOW: Same flex structure as heroLayout but different element styling */
+.heroLayoutSpotlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-6);
+  margin-bottom: var(--mm-space-4);
+}
+
 /* WHAT: Center content container
  * WHY: Flexible width to accommodate title and hashtags */
 .centerContent {
@@ -97,6 +108,43 @@
   text-align: center;
   max-width: 140px;
   overflow-wrap: break-word;
+}
+
+/* WHAT: Icon-only container for spotlight layout left side
+ * WHY: Shows only the partner emoji/icon without name label */
+.partnerIconOnly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+/* WHAT: Large emoji for spotlight layout
+ * WHY: Prominent icon display on left side */
+.partnerEmojiLarge {
+  font-size: 8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* WHAT: Logo-only container for spotlight layout right side
+ * WHY: Shows only the partner logo without name label */
+.partnerLogoOnly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+/* WHAT: Large logo for spotlight layout
+ * WHY: Prominent logo display on right side */
+.partnerLogoLarge {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: var(--mm-radius-lg);
 }
 
 /* WHAT: Hashtags display wrapper - center aligned
@@ -155,7 +203,8 @@
   /* WHAT: Vertical layout for partners on mobile
    * WHY: Better readability and space usage on small screens
    * HOW: Stack partner1, title, partner2 vertically */
-  .heroLayout {
+  .heroLayout,
+  .heroLayoutSpotlight {
     flex-direction: column;
     gap: var(--mm-space-4);
   }
@@ -179,6 +228,23 @@
 
   .partnerEmoji {
     font-size: 7rem;
+  }
+
+  /* WHAT: Spotlight mode adjustments for mobile
+   * WHY: Larger display in vertical stack */
+  .partnerEmojiLarge {
+    font-size: 10rem;
+  }
+
+  .partnerLogoLarge {
+    width: 200px;
+    height: 200px;
+  }
+
+  .partnerIconOnly,
+  .partnerLogoOnly {
+    width: 100%;
+    min-width: unset;
   }
 }
 

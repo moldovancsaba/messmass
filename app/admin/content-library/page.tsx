@@ -172,7 +172,7 @@ export default function ContentLibraryPage() {
     <div className="page-container">
       <AdminHero
         title="📚 Content Library"
-        subtitle="Manage images and text blocks for charts"
+        subtitle="Define image and text variables for event-specific content"
         backLink="/admin"
         showSearch
         searchValue={searchTerm}
@@ -180,7 +180,7 @@ export default function ContentLibraryPage() {
         searchPlaceholder="Search by title, slug, tags..."
         actionButtons={[
           {
-            label: '📷 Upload Image',
+            label: '📷 New Image Variable',
             onClick: () => {
               setCreateType('image');
               setShowCreateModal(true);
@@ -188,7 +188,7 @@ export default function ContentLibraryPage() {
             variant: 'primary'
           },
           {
-            label: '📝 New Text',
+            label: '📝 New Text Variable',
             onClick: () => {
               setCreateType('text');
               setShowCreateModal(true);
@@ -197,8 +197,8 @@ export default function ContentLibraryPage() {
           }
         ]}
         badges={[
-          { text: 'CMS', variant: 'primary' },
-          { text: `${filteredAssets.length} Assets`, variant: 'success' }
+          { text: 'Variable Registry', variant: 'primary' },
+          { text: `${filteredAssets.length} Variables`, variant: 'success' }
         ]}
       />
       
@@ -508,6 +508,7 @@ function CreateAssetModal({
     imageHeight: 0,
     aspectRatio: '16:9' as '16:9' | '9:16' | '1:1',
     textContent: '',
+    isVariable: true, // WHAT: true = variable definition, false = global asset with content
     saving: false,
     error: ''
   });
@@ -548,15 +549,21 @@ function CreateAssetModal({
         return;
       }
       
-      if (type === 'image' && !form.imageUrl) {
-        setForm(prev => ({ ...prev, error: 'Please upload an image', saving: false }));
-        return;
+      // WHAT: Content validation based on mode
+      // WHY: Global Assets require content, Variable Definitions don't
+      if (!form.isVariable) {
+        // Global Asset mode - content is required
+        if (type === 'image' && !form.imageUrl) {
+          setForm(prev => ({ ...prev, error: 'Please upload an image for global assets', saving: false }));
+          return;
+        }
+        
+        if (type === 'text' && !form.textContent) {
+          setForm(prev => ({ ...prev, error: 'Text content is required for global assets', saving: false }));
+          return;
+        }
       }
-      
-      if (type === 'text' && !form.textContent) {
-        setForm(prev => ({ ...prev, error: 'Text content is required', saving: false }));
-        return;
-      }
+      // Variable Definition mode - content is optional (filled per-project)
       
       const body: ContentAssetFormData = {
         title: form.title,
@@ -565,6 +572,7 @@ function CreateAssetModal({
         type,
         category: form.category || 'Uncategorized',
         tags: form.tags,
+        isVariable: form.isVariable, // WHAT: Flag to distinguish variable definitions from global assets
         content: type === 'image'
           ? {
               url: form.imageUrl,
@@ -602,9 +610,9 @@ function CreateAssetModal({
       isOpen={true}
       onClose={onClose}
       onSubmit={handleSubmit}
-      title={type === 'image' ? '📷 Upload Image' : '📝 New Text Block'}
+      title={type === 'image' ? '📷 New Image Variable' : '📝 New Text Variable'}
       size="lg"
-      submitText={form.saving ? 'Creating...' : 'Create'}
+      submitText={form.saving ? 'Creating...' : 'Create Variable'}
       disableSubmit={form.saving}
     >
       <div className="grid gap-3">
@@ -614,6 +622,35 @@ function CreateAssetModal({
           </div>
         )}
         
+        {/* WHAT: Toggle between Variable Definition vs Global Asset */}
+        <div style={{ background: '#f3f4f6', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="assetMode"
+                checked={form.isVariable}
+                onChange={() => setForm({ ...form, isVariable: true })}
+              />
+              <span className="font-semibold">📋 Variable Definition</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="assetMode"
+                checked={!form.isVariable}
+                onChange={() => setForm({ ...form, isVariable: false })}
+              />
+              <span className="font-semibold">🌐 Global Asset</span>
+            </label>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            {form.isVariable 
+              ? '📋 Define field for event-specific content (filled per-project in Manual Edit)'
+              : '🌐 Upload reusable content (e.g., company logo, shared across all projects)'}
+          </p>
+        </div>
+        
         <div className="grid gap-3 grid-1fr-1fr">
           <div>
             <label className="form-label-block">Title *</label>
@@ -621,7 +658,7 @@ function CreateAssetModal({
               className="form-input"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Partner ABC Logo"
+              placeholder={form.isVariable ? "Event Photo 1" : "MessMass Logo"}
             />
           </div>
           
@@ -631,7 +668,7 @@ function CreateAssetModal({
               className="form-input"
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              placeholder="partner-abc-logo"
+              placeholder={form.isVariable ? "event-photo-1" : "messmass-logo"}
             />
           </div>
         </div>
@@ -698,7 +735,14 @@ function CreateAssetModal({
             </div>
             
             <div>
-              <label className="form-label-block">Upload Image *</label>
+              <label className="form-label-block">
+                Upload Image {form.isVariable ? '(Optional)' : '*'}
+              </label>
+              <p className="text-sm text-gray-600 mb-2">
+                {form.isVariable 
+                  ? 'Define field now. Upload event-specific images in Manual Edit per project.'
+                  : 'Upload reusable image (e.g., company logo) shared across all projects.'}
+              </p>
               <ImageUploadField
                 label=""
                 value={form.imageUrl}
@@ -710,13 +754,22 @@ function CreateAssetModal({
         
         {type === 'text' && (
           <div>
-            <label className="form-label-block">Text Content *</label>
+            <label className="form-label-block">
+              Text Content {form.isVariable ? '(Optional)' : '*'}
+            </label>
+            <p className="text-sm text-gray-600 mb-2">
+              {form.isVariable 
+                ? 'Define field now. Add event-specific text in Manual Edit per project.'
+                : 'Add reusable text content shared across all projects.'}
+            </p>
             <textarea
               className="form-input"
               rows={8}
               value={form.textContent}
               onChange={(e) => setForm({ ...form, textContent: e.target.value })}
-              placeholder="Enter your text content here..."
+              placeholder={form.isVariable 
+                ? 'Optional: Add placeholder text or leave empty...'
+                : 'Enter global text content...'}
             />
             <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
               {form.textContent.length} characters

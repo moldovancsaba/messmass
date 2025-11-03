@@ -170,6 +170,8 @@ export async function generateProjectSlugs(): Promise<{
 
 /**
  * Find a project by its view slug
+ * WHAT: Populates partner1 and partner2 data from partner references
+ * WHY: Stats pages need partner logos and emojis for hero display
  */
 export async function findProjectByViewSlug(viewSlug: string): Promise<Project | null> {
   try {
@@ -179,14 +181,60 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
 
     const project = await collection.findOne({ viewSlug });
     
-    if (project) {
-      return {
-        ...project,
-        _id: project._id.toString()
-      } as Project;
+    if (!project) {
+      return null;
+    }
+
+    // WHAT: Populate partner data if partner IDs exist
+    // WHY: Frontend needs partner logos and emojis for display
+    const partnersCollection = db.collection('partners');
+    const partnerIds = [
+      (project as any).partner1Id,
+      (project as any).partner2Id
+    ]
+      .filter(id => id && ObjectId.isValid(id))
+      .map(id => new ObjectId(id));
+    
+    const partnersData = partnerIds.length > 0
+      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+      : [];
+    
+    const partnersMap = new Map(
+      partnersData.map(p => [p._id.toString(), p])
+    );
+
+    const result: any = {
+      ...project,
+      _id: project._id.toString()
+    };
+
+    // Add partner1 data if available
+    if ((project as any).partner1Id) {
+      const partner1 = partnersMap.get((project as any).partner1Id.toString());
+      if (partner1) {
+        result.partner1 = {
+          _id: partner1._id.toString(),
+          name: partner1.name,
+          emoji: partner1.emoji,
+          logoUrl: partner1.logoUrl
+        };
+      }
+    }
+
+    // Add partner2 data if available
+    if ((project as any).partner2Id) {
+      const partner2 = partnersMap.get((project as any).partner2Id.toString());
+      if (partner2) {
+        result.partner2 = {
+          _id: partner2._id.toString(),
+          name: partner2.name,
+          emoji: partner2.emoji,
+          logoUrl: partner2.logoUrl
+        };
+      }
     }
     
-    return null;
+    return result as Project;
   } catch (error) {
     console.error('Error finding project by view slug:', error);
     throw error;
@@ -195,6 +243,8 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
 
 /**
  * Find a project by its edit slug
+ * WHAT: Populates partner1 and partner2 data from partner references
+ * WHY: Edit pages need partner logos and emojis for hero display
  */
 export async function findProjectByEditSlug(editSlug: string): Promise<Project | null> {
   try {
@@ -204,14 +254,60 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
 
     const project = await collection.findOne({ editSlug });
     
-    if (project) {
-      return {
-        ...project,
-        _id: project._id.toString()
-      } as Project;
+    if (!project) {
+      return null;
+    }
+
+    // WHAT: Populate partner data if partner IDs exist
+    // WHY: Frontend needs partner logos and emojis for display
+    const partnersCollection = db.collection('partners');
+    const partnerIds = [
+      (project as any).partner1Id,
+      (project as any).partner2Id
+    ]
+      .filter(id => id && ObjectId.isValid(id))
+      .map(id => new ObjectId(id));
+    
+    const partnersData = partnerIds.length > 0
+      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+      : [];
+    
+    const partnersMap = new Map(
+      partnersData.map(p => [p._id.toString(), p])
+    );
+
+    const result: any = {
+      ...project,
+      _id: project._id.toString()
+    };
+
+    // Add partner1 data if available
+    if ((project as any).partner1Id) {
+      const partner1 = partnersMap.get((project as any).partner1Id.toString());
+      if (partner1) {
+        result.partner1 = {
+          _id: partner1._id.toString(),
+          name: partner1.name,
+          emoji: partner1.emoji,
+          logoUrl: partner1.logoUrl
+        };
+      }
+    }
+
+    // Add partner2 data if available
+    if ((project as any).partner2Id) {
+      const partner2 = partnersMap.get((project as any).partner2Id.toString());
+      if (partner2) {
+        result.partner2 = {
+          _id: partner2._id.toString(),
+          name: partner2.name,
+          emoji: partner2.emoji,
+          logoUrl: partner2.logoUrl
+        };
+      }
     }
     
-    return null;
+    return result as Project;
   } catch (error) {
     console.error('Error finding project by edit slug:', error);
     throw error;

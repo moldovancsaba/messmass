@@ -22,6 +22,7 @@ interface UnifiedStatsHeroProps {
   onExportCSV?: () => void;
   onExportPDF?: () => void; // PDF export callback
   extraContent?: React.ReactNode; // Optional controls or info injected by pages (e.g., export toggles)
+  layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Pass layout mode to UnifiedPageHero
 }
 
 export default function UnifiedStatsHero({
@@ -35,7 +36,8 @@ export default function UnifiedStatsHero({
   pageStyle,
   onExportCSV,
   onExportPDF,
-  extraContent
+  extraContent,
+  layoutMode = 'single-partner-spotlight' // WHAT: Default to spotlight for reporting pages
 }: UnifiedStatsHeroProps) {
   const formatDate = (dateString: string) => {
     try {
@@ -56,6 +58,7 @@ export default function UnifiedStatsHero({
       onExportCSV={onExportCSV}
       onExportPDF={onExportPDF}
       pageStyle={pageStyle}
+      layoutMode={layoutMode}
     >
       {/* Creation and Update Dates + Extra Controls */}
       <div className={styles.datesContainer}>
