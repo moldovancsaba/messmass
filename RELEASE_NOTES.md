@@ -1,5 +1,99 @@
 # MessMass Release Notes
 
+## [v10.5.0] — 2025-11-03T13:59:00.000Z
+
+### Added
+
+✅ **Single-Partner Spotlight Hero Layout for Stats Pages**
+- Added `layoutMode` prop to `UnifiedPageHero` component
+- Two modes: `'dual-partners'` (default) | `'single-partner-spotlight'` (new)
+- Spotlight layout displays partner icon (left) | title (centered) | partner logo (right)
+- Desktop: Horizontal layout with 8rem emoji, 160px logo
+- Mobile: Vertical stack with larger sizes (10rem emoji, 200px logo)
+- `UnifiedStatsHero` defaults to spotlight mode for reporting pages
+
+✅ **Partner Data Population in Stats API**
+- Added partner lookup in `findProjectByViewSlug()` function
+- Added partner lookup in `findProjectByEditSlug()` function
+- Populates `partner1` and `partner2` objects from `partners` collection
+- Resolves ObjectId references to full partner documents with emoji and logoUrl
+- Stats pages now display partner branding correctly
+
+### Technical Details
+
+**Component Updates** (3 files):
+- `components/UnifiedPageHero.tsx`
+  - Added `layoutMode` prop with conditional rendering logic
+  - Spotlight mode renders icon-only left, logo-only right
+  - Gracefully handles missing emoji/logo (renders null)
+  - Removed debug console.log statements
+- `components/UnifiedPageHero.module.css`
+  - Added `.heroLayoutSpotlight` flex container
+  - Added `.partnerIconOnly` (120px min-width)
+  - Added `.partnerEmojiLarge` (8rem font-size)
+  - Added `.partnerLogoOnly` (120px min-width)
+  - Added `.partnerLogoLarge` (160x160px with contain fit)
+  - Mobile responsive adjustments (10rem emoji, 200px logo)
+- `components/UnifiedStatsHero.tsx`
+  - Added `layoutMode` prop passthrough
+  - Defaults to `'single-partner-spotlight'` for stats pages
+
+**Database Integration** (1 file):
+- `lib/slugUtils.ts`
+  - `findProjectByViewSlug()`: Added partner population logic
+  - `findProjectByEditSlug()`: Added partner population logic
+  - Queries `partners` collection using `partner1Id` and `partner2Id`
+  - Builds partner map and attaches full partner objects to result
+  - Includes `_id`, `name`, `emoji`, `logoUrl` fields
+
+**Design System Compliance**:
+- ✅ Uses design tokens exclusively (`var(--mm-space-*)`, `var(--mm-radius-*)`)
+- ✅ CSS Modules (no inline styles)
+- ✅ Responsive breakpoints for mobile/tablet/desktop
+- ✅ Strategic comments explaining what and why
+
+**Layout Behavior**:
+
+**Desktop (>768px)**:
+```
+┌─────────────┬──────────────────────┬─────────────┐
+│ Emoji Icon  │   Event Title        │  Partner    │
+│   (8rem)    │   (Centered)         │  Logo       │
+│             │   + Hashtags         │  (160px)    │
+└─────────────┴──────────────────────┴─────────────┘
+```
+
+**Mobile (≤768px)**:
+```
+┌──────────────────────┐
+│   Emoji Icon         │
+│   (10rem)            │
+├──────────────────────┤
+│   Event Title        │
+│   (Centered)         │
+│   + Hashtags         │
+├──────────────────────┤
+│   Partner Logo       │
+│   (200px)            │
+└──────────────────────┘
+```
+
+**Backward Compatibility**: ✅ 100%
+- Existing pages default to `'dual-partners'` mode
+- No breaking changes to props or API
+- Stats pages automatically use spotlight mode
+- Edit pages can opt-in via explicit `layoutMode` prop
+
+**Version**: `10.4.1` → `10.5.0` (MINOR increment - new feature)
+
+**Why MINOR Version**:
+- New user-facing feature (spotlight layout mode)
+- New prop added to component API
+- Enhanced stats page hero display
+- No breaking changes
+
+---
+
 ## [v10.4.0] — 2025-11-03T07:22:00.000Z
 
 ### Fixed

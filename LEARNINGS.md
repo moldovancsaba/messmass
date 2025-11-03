@@ -1,5 +1,139 @@
 # MessMass Development Learnings
 
+## [v10.5.0] - 2025-11-03T13:59:00.000Z — Partner Data Population: ObjectId References Must Be Resolved
+
+### Context
+Stats pages were not displaying partner emojis and logos despite partner data being correctly stored in the database with `partner1Id` and `partner2Id` fields.
+
+### Problem
+**Root Cause**: API endpoints were not populating partner references from the `partners` collection.
+
+**What went wrong**:
+- Projects store `partner1Id` and `partner2Id` as ObjectId references
+- `findProjectByViewSlug()` function performed basic `findOne()` without lookup
+- Result: API returned `partner1Id` and `partner2Id` (ObjectIds) but not actual partner objects
+- Frontend received references instead of populated data (name, emoji, logoUrl)
+- Hero component had no data to display
+
+### Solution
+Added MongoDB aggregation to resolve partner references:
+
+```typescript
+// CORRECT: Populate partner data
+const partnersCollection = db.collection('partners');
+const partnerIds = [
+  project.partner1Id,
+  project.partner2Id
+]
+  .filter(id => id && ObjectId.isValid(id))
+  .map(id => new ObjectId(id));
+
+const partnersData = partnerIds.length > 0
+  ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+  : [];
+
+const partnersMap = new Map(
+  partnersData.map(p => [p._id.toString(), p])
+);
+
+// Attach to result
+if (project.partner1Id) {
+  const partner1 = partnersMap.get(project.partner1Id.toString());
+  if (partner1) {
+    result.partner1 = {
+      _id: partner1._id.toString(),
+      name: partner1.name,
+      emoji: partner1.emoji,
+      logoUrl: partner1.logoUrl
+    };
+  }
+}
+```
+
+### Key Learnings
+
+**1. MongoDB References Don't Auto-Populate**
+```
+Database Storage:          API Return (Wrong):      API Return (Correct):
+{ partner1Id: ObjectId }   { partner1Id: '...' }    { partner1: { name, emoji, logoUrl } }
+```
+**Lesson**: MongoDB stores references, not embedded documents. Always resolve ObjectIds manually via lookup.
+
+**2. Check Complete Data Flow Path**
+- ✅ Database: Has `partner1Id` and `partner2Id` (correct)
+- ✅ Projects API: Populates partners (correct)
+- ❓ Stats API: Missing population logic (BUG)
+- ✅ Frontend: Expects `partner1` and `partner2` objects (correct)
+
+**Lesson**: When adding new fields, verify ALL API endpoints that return the same data type.
+
+**3. Efficient Batch Lookup Pattern**
+```typescript
+// EFFICIENT: Single query for all partners
+const partnerIds = projects
+  .flatMap(p => [p.partner1Id, p.partner2Id])
+  .filter(Boolean);
+const partners = await partnersCollection.find({ _id: { $in: partnerIds } }).toArray();
+
+// INEFFICIENT: N+1 queries
+for (const project of projects) {
+  project.partner1 = await partnersCollection.findOne({ _id: project.partner1Id });
+  project.partner2 = await partnersCollection.findOne({ _id: project.partner2Id });
+}
+```
+**Lesson**: Use `$in` operator with Map lookup for O(1) population instead of N+1 queries.
+
+**4. Graceful Null Handling**
+```typescript
+// CORRECT: Check existence at every step
+if (project.partner1Id) {  // Check ID exists
+  const partner1 = partnersMap.get(project.partner1Id.toString());  // Lookup
+  if (partner1) {  // Check partner exists in collection
+    result.partner1 = { /* ... */ };
+  }
+}
+```
+**Lesson**: Not all projects have partners. Not all partner IDs resolve to existing documents. Handle null safely.
+
+**5. Consistency Across Similar Functions**
+- `findProjectByViewSlug()`: Added partner population (fixed)
+- `findProjectByEditSlug()`: Added partner population (fixed)
+- Both functions share identical population logic
+
+**Lesson**: When fixing a bug in one function, search for similar functions and apply the same fix.
+
+### Impact
+
+**User Experience**:
+- ✅ Partner emoji now displays on left side of stats hero (8rem size)
+- ✅ Partner logo now displays on right side of stats hero (160px size)
+- ✅ Title remains centered between icon and logo
+- ✅ Mobile: Vertical stack with larger sizes (10rem, 200px)
+
+**Technical**:
+- ✅ Two functions updated with identical partner population logic
+- ✅ Efficient batch lookup using `$in` operator and Map
+- ✅ 100% backward compatible (projects without partners work)
+- ✅ No N+1 query issues
+
+### Files Modified
+
+**Core Files**:
+- `lib/slugUtils.ts`
+  - `findProjectByViewSlug()`: Added 45 lines of partner population logic
+  - `findProjectByEditSlug()`: Added 45 lines of partner population logic
+
+### Version
+
+**Before**: v10.4.1  
+**After**: v10.5.0 (MINOR increment - new feature: spotlight layout + partner population)
+
+### Category
+
+Backend / Database / API / MongoDB / Data Population
+
+---
+
 ## [v10.4.0] - 2025-11-03T07:22:00.000Z — Chart Icon Edit Modal: Form State Must Match Database Schema
 
 ### Context
