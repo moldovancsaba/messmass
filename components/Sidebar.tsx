@@ -6,13 +6,15 @@ import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
 import { useSidebar } from '@/contexts/SidebarContext';
+import MaterialIcon from '@/components/MaterialIcon';
 
 /* What: Navigation item structure
-   Why: Type-safe navigation configuration with icons and paths */
+   Why: Type-safe navigation configuration with Material Icons */
 interface NavItem {
   label: string;
   path: string;
-  icon: string; // emoji for now, can be replaced with icon library later
+  icon: string; // Material Icon name
+  iconVariant?: 'outlined' | 'rounded';
 }
 
 interface NavSection {
@@ -35,49 +37,49 @@ export default function Sidebar() {
    * WHY: AdminLayout needs to know collapse state to adjust main content margin */
   const { isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen } = useSidebar();
   
-  /* What: Navigation structure organized by functional sections
-     Why: Logical grouping makes it easier to find admin features */
+  /* What: Navigation structure organized by functional sections with Material Icons
+     Why: Logical grouping with consistent icon system across entire app */
   const navSections: NavSection[] = [
     {
       title: 'Content',
       items: [
-        { label: 'Dashboard', path: '/admin', icon: '📊' },
-        { label: 'Events', path: '/admin/projects', icon: '🍿' },
-        { label: 'Partners', path: '/admin/partners', icon: '🤝' },
-        { label: 'Quick Add', path: '/admin/quick-add', icon: '⚡' },
-        { label: 'Filters', path: '/admin/filter', icon: '🔍' },
+        { label: 'Dashboard', path: '/admin', icon: 'analytics' },
+        { label: 'Events', path: '/admin/projects', icon: 'event' },
+        { label: 'Partners', path: '/admin/partners', icon: 'handshake' },
+        { label: 'Quick Add', path: '/admin/quick-add', icon: 'bolt' },
+        { label: 'Filters', path: '/admin/filter', icon: 'search' },
       ],
     },
     {
       title: 'Configuration',
       items: [
-        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: '🏷️' },
-        { label: 'Category Manager', path: '/admin/categories', icon: '🌍' },
-        { label: 'Algorithms', path: '/admin/charts', icon: '📈' },
-        { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: '↔️' },
+        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: 'label' },
+        { label: 'Category Manager', path: '/admin/categories', icon: 'public' },
+        { label: 'Algorithms', path: '/admin/charts', icon: 'trending_up' },
+        { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: 'swap_horiz' },
       ],
     },
     {
       title: 'Analytics',
       items: [
-        { label: 'Insights', path: '/admin/insights', icon: '💡' },
+        { label: 'Insights', path: '/admin/insights', icon: 'lightbulb' },
       ],
     },
     {
       title: 'Settings',
       items: [
-        { label: 'KYC Variables', path: '/admin/kyc', icon: '🔐' },
-        { label: 'Reporting', path: '/admin/visualization', icon: '👁️' },
-        { label: 'Styles', path: '/admin/design', icon: '🎨' },
-        { label: 'Bitly Management', path: '/admin/bitly', icon: '🔗' },
-        { label: 'Users', path: '/admin/users', icon: '👥' },
-        { label: 'Cache Management', path: '/admin/cache', icon: '🗑️' },
+        { label: 'KYC Variables', path: '/admin/kyc', icon: 'lock' },
+        { label: 'Reporting', path: '/admin/visualization', icon: 'visibility' },
+        { label: 'Styles', path: '/admin/design', icon: 'palette' },
+        { label: 'Bitly Management', path: '/admin/bitly', icon: 'link' },
+        { label: 'Users', path: '/admin/users', icon: 'group' },
+        { label: 'Cache Management', path: '/admin/cache', icon: 'delete' },
       ],
     },
     {
       title: 'Help',
       items: [
-        { label: 'User Guide', path: '/admin/help', icon: '📖' },
+        { label: 'User Guide', path: '/admin/help', icon: 'menu_book' },
       ],
     },
   ];
@@ -197,7 +199,13 @@ export default function Sidebar() {
                       className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}
                       title={isCollapsed ? item.label : ''}
                     >
-                      <span className={styles.navIcon}>{item.icon}</span>
+                      <span className={styles.navIcon}>
+                        <MaterialIcon
+                          name={item.icon}
+                          variant={item.iconVariant || 'outlined'}
+                          style={{ fontSize: '1.25rem' }}
+                        />
+                      </span>
                       {!isCollapsed && (
                         <span className={styles.navLabel}>{item.label}</span>
                       )}
