@@ -1,5 +1,126 @@
 # MessMass Development Learnings
 
+## [v10.4.0] - 2025-11-03T07:22:00.000Z — Chart Icon Edit Modal: Form State Must Match Database Schema
+
+### Context
+Chart icons (Material Icons v10.4.0) were not appearing in the edit modal despite being correctly stored in MongoDB. Users reported empty icon input fields and missing icons on reporting pages.
+
+### Problem
+**Root Cause**: Form state initialization in `startEditing()` function was incomplete.
+
+**What went wrong**:
+- Database schema includes: `icon` (string), `iconVariant` (string), `emoji` (deprecated)
+- Form state mapping only included: `emoji`
+- Missing fields: `icon`, `iconVariant`
+- Result: Form displayed empty fields even when database contained valid icon data
+
+### Solution
+Ensured complete 1:1 mapping between database schema and form state:
+
+```typescript
+// ✅ CORRECT: Complete mapping
+setEditingConfig({
+  _id: config._id,
+  chartId: config.chartId,
+  // ... other fields
+  icon: config.icon,              // v10.4.0: Material Icon name
+  iconVariant: config.iconVariant, // v10.4.0: Icon variant
+  emoji: config.emoji,             // Legacy field (backward compatibility)
+  // ... remaining fields
+});
+
+// For new charts:
+setEditingConfig({
+  // ...
+  icon: '',                   // Default: empty
+  iconVariant: 'outlined',    // Default: outlined
+  emoji: '📊',                 // Default: chart emoji
+});
+```
+
+### Key Learnings
+
+**1. Form State MUST Mirror Database Schema Exactly**
+```
+Database Schema Fields = Form State Fields
+
+If database has:        Form state must have:
+- icon                  - icon
+- iconVariant           - iconVariant  
+- emoji                 - emoji
+```
+**Lesson**: Any field stored in database that users can edit MUST be included in form initialization, even if it's optional or has defaults.
+
+**2. Check All Code Paths When Adding New Fields**
+- ✅ API endpoint: Returns `icon` and `iconVariant` (correct)
+- ✅ Database: Stores `icon` and `iconVariant` (correct)
+- ✅ Chart calculator: Passes through `icon` and `iconVariant` (correct)
+- ✅ Display component: Renders `icon` via MaterialIcon (correct)
+- ❌ Edit form: Missing `icon` and `iconVariant` in state mapping (BUG)
+
+**Lesson**: When adding new database fields, grep for all usages and ensure consistency across entire data flow: API → State → UI → API.
+
+**3. Default Values for New Records**
+```typescript
+// ✅ CORRECT: Explicit defaults prevent undefined/null
+icon: '',               // Empty string, not undefined
+iconVariant: 'outlined', // Sensible default, not null
+
+// ❌ WRONG: Missing defaults cause DB inconsistency
+// icon field would be undefined in new charts
+```
+**Lesson**: Always provide explicit default values for optional fields, even if empty string.
+
+**4. Backward Compatibility During Migrations**
+- Old system: `emoji` field (deprecated)
+- New system: `icon` + `iconVariant` fields
+- Solution: Keep all three fields, with fallback logic in display component
+
+```typescript
+// Display component fallback chain:
+result.icon || (result.emoji ? getIconForEmoji(result.emoji) : 'analytics')
+```
+**Lesson**: During field migrations, maintain both old and new fields until all data is migrated, using fallback logic in rendering.
+
+**5. TypeScript Interfaces Don't Prevent Runtime Bugs**
+- TypeScript interface included `icon?: string` and `iconVariant?: string`
+- Code compiled successfully
+- Runtime bug: Fields were undefined because they weren't mapped
+
+**Lesson**: Optional TypeScript fields (`?`) hide initialization bugs. Compiler checks types, not data flow completeness.
+
+### Impact
+
+**User Experience**:
+- ✅ Icon input field now shows existing icon name when editing
+- ✅ IconVariant dropdown displays current selection
+- ✅ Update button persists icon changes
+- ✅ Icons display correctly on reporting pages
+- ✅ No missing icon placeholders
+
+**Technical**:
+- ✅ 2 lines added to edit state mapping
+- ✅ 2 lines added to new chart defaults
+- ✅ 100% backward compatible (emoji fallback preserved)
+
+### Files Modified
+
+**Core Files**:
+- `components/ChartAlgorithmManager.tsx`
+  - Lines 298-299: Added `icon` and `iconVariant` to edit state
+  - Lines 318-319: Added default values for new charts
+
+### Version
+
+**Before**: v10.3.0  
+**After**: v10.4.0 (MINOR increment - bug fix for user-facing feature)
+
+### Category
+
+Frontend / State Management / Database Schema / Bug Fix
+
+---
+
 ## [v10.2.3] - 2025-11-02T23:45:00.000Z — Hotfix: Corrected Aspect Ratio Box Height Calculation
 
 ### Context

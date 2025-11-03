@@ -1,5 +1,62 @@
 # MessMass Release Notes
 
+## [v10.4.0] — 2025-11-03T07:22:00.000Z
+
+### Fixed
+
+✅ **Chart Icon Edit Modal - Missing Icon Fields**
+- Fixed icon input field not showing existing icon name when editing charts
+- Fixed iconVariant dropdown not displaying current variant (outlined/rounded)
+- Fixed missing icon placeholders on reporting pages
+- Root cause: `startEditing()` function in ChartAlgorithmManager was not mapping `icon` and `iconVariant` fields from database to form state
+
+### Technical Details
+
+**Problem**:
+- Icons stored in database (v10.4.0 Material Icons system) were not loading into edit form
+- Form state only included deprecated `emoji` field, missing new `icon` and `iconVariant` fields
+- Result: Empty icon input field, missing icons on reports, Update button appeared not to work
+
+**Solution**:
+- Added `icon` and `iconVariant` to form state mapping in `startEditing()` function (existing charts)
+- Added default values for new chart creation (`icon: ''`, `iconVariant: 'outlined'`)
+- Ensures complete database schema consistency between storage and UI
+
+**Files Modified** (1 file):
+- `components/ChartAlgorithmManager.tsx`
+  - Line 298-299: Added `icon: config.icon` and `iconVariant: config.iconVariant` to edit state
+  - Line 318-319: Added default icon fields for new chart creation
+
+**Database Schema**:
+```json
+{
+  "icon": "analytics",
+  "iconVariant": "outlined",
+  "emoji": "📊"  // deprecated, kept for backward compatibility
+}
+```
+
+**Impact**:
+- ✅ Icon input field now populates with existing icon name
+- ✅ IconVariant dropdown shows current selection
+- ✅ Update button persists icon changes correctly
+- ✅ All KPI/Pie chart icons display on reporting pages
+- ✅ No missing icon placeholders
+
+**Version**: `10.3.0` → `10.4.0` (MINOR increment - bug fix affecting user-facing feature)
+
+**Why MINOR Version**:
+- Critical bug fix for Material Icons system (v10.4.0 feature)
+- Completes icon migration functionality
+- No breaking changes
+- No API contract changes
+
+**Backward Compatibility**: ✅ 100%
+- Existing charts with `emoji` field continue working via fallback
+- Charts with `icon` field now fully editable
+
+---
+
 ## [v10.3.0] — 2025-11-03T00:15:00.000Z
 
 ### Added

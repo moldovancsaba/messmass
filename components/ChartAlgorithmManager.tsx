@@ -295,6 +295,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         order: config.order,
         isActive: config.isActive,
         elements: config.elements,
+        icon: config.icon, // v10.4.0: Material Icon name
+        iconVariant: config.iconVariant, // v10.4.0: Icon variant
         emoji: config.emoji,
         subtitle: config.subtitle,
         showTotal: config.showTotal,
@@ -313,6 +315,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         elements: [
           { id: 'element1', label: '', formula: '', color: '#10b981', description: '' }
         ],
+        icon: '', // v10.4.0: Material Icon name (default empty)
+        iconVariant: 'outlined', // v10.4.0: Icon variant (default outlined)
         emoji: '📊',
         showTotal: false,
         totalLabel: ''
