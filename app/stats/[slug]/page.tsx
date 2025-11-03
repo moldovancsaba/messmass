@@ -59,6 +59,13 @@ interface ProjectStats {
   otherPrice?: number;
 }
 
+interface Partner {
+  _id: string;
+  name: string;
+  emoji: string;
+  logoUrl?: string;
+}
+
 interface Project {
   eventName: string;
   eventDate: string;
@@ -66,6 +73,8 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] }; // Categorized hashtags
   allHashtagRepresentations?: string[]; // All possible representations
   stats: ProjectStats;
+  partner1?: Partner | null; // Home team
+  partner2?: Partner | null; // Away team
   createdAt: string;
   updatedAt: string;
 }
@@ -396,6 +405,8 @@ export default function StatsPage() {
           title={project.eventName}
           hashtags={project.hashtags || []}
           categorizedHashtags={project.categorizedHashtags || {}}
+          partner1={project.partner1 || null}
+          partner2={project.partner2 || null}
           createdDate={project.createdAt}
           lastUpdatedDate={project.updatedAt}
           pageStyle={pageStyle || undefined}

@@ -9,6 +9,7 @@ import {
   type ProjectStats as ValidatedProjectStats,
   type ValidationResult as DataValidationResult
 } from './dataValidator';
+import { type ContentAsset } from './contentAssetTypes';
 
 /**
  * DYNAMIC VARIABLE CACHE - KYC as Single Source of Truth
@@ -88,6 +89,154 @@ export function fetchAvailableVariablesSync(): AvailableVariable[] {
 
   console.warn('⚠️ Synchronous variable fetch called - returning cached data only');
   return variablesCache?.data || [];
+}
+
+/**
+ * CONTENT ASSET CACHE - CMS as Complementary Source
+ * 
+ * WHAT: In-memory cache for content assets from MongoDB content_assets collection
+ * WHY: Expensive to fetch all assets from database on every formula evaluation
+ * HOW: Cache for 5 minutes, same TTL as variables cache
+ * 
+ * @example
+ * Asset slug "logo-abc" with URL "https://i.ibb.co/abc123"
+ * Formula [MEDIA:logo-abc] resolves to the URL value
+ */
+let assetsCache: {
+  data: ContentAsset[];
+  timestamp: number;
+} | null = null;
+
+const ASSETS_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (same as variables)
+
+function isAssetsCacheValid(): boolean {
+  if (!assetsCache) return false;
+  return Date.now() - assetsCache.timestamp < ASSETS_CACHE_TTL_MS;
+}
+
+/**
+ * WHAT: Fetch all content assets from CMS dynamically
+ * WHY: Chart formulas may reference images/text via [MEDIA:slug] or [TEXT:slug] tokens
+ * HOW: Call /api/content-assets with 5-minute cache
+ * 
+ * @returns Promise resolving to array of all content assets
+ */
+export async function fetchContentAssets(): Promise<ContentAsset[]> {
+  try {
+    // Check cache first
+    if (isAssetsCacheValid() && assetsCache) {
+      console.log('✅ Content assets cache hit (formulaEngine)');
+      return assetsCache.data;
+    }
+
+    console.log('📚 Fetching content assets from CMS API...');
+    const response = await fetch('/api/content-assets', { cache: 'no-store' });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch content assets: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !Array.isArray(data.assets)) {
+      throw new Error('Invalid content assets API response');
+    }
+
+    // Update cache
+    assetsCache = {
+      data: data.assets,
+      timestamp: Date.now()
+    };
+
+    console.log(`✅ Loaded ${data.assets.length} content assets from CMS`);
+    return data.assets;
+  } catch (error) {
+    console.error('❌ Failed to fetch content assets from CMS:', error);
+    // Return empty array on error (graceful degradation)
+    return [];
+  }
+}
+
+/**
+ * WHAT: Synchronous content asset fetching for server-side use
+ * WHY: Some contexts cannot use async/await (e.g., synchronous validation)
+ * HOW: Returns cached data only
+ * 
+ * @returns Array of content assets from cache or empty array
+ */
+export function fetchContentAssetsSync(): ContentAsset[] {
+  // Check cache first
+  if (isAssetsCacheValid() && assetsCache) {
+    return assetsCache.data;
+  }
+
+  console.warn('⚠️ Synchronous content asset fetch called - returning cached data only');
+  return assetsCache?.data || [];
+}
+
+/**
+ * WHAT: Resolve content asset token to its content value
+ * WHY: Formulas like [MEDIA:logo-abc] need to resolve to actual image URL or text content
+ * HOW: Match token prefix (MEDIA/TEXT), find asset by slug, return content
+ * 
+ * @param token - Token string like "MEDIA:logo-abc" or "TEXT:summary"
+ * @param assets - Array of content assets to search
+ * @returns Content value (URL for images, text for text blocks) or 'NA' if not found
+ * 
+ * @example
+ * resolveContentAssetToken('MEDIA:logo-abc', assets)
+ * // returns "https://i.ibb.co/abc123" (image URL)
+ * 
+ * resolveContentAssetToken('TEXT:summary', assets)
+ * // returns "This is the executive summary..." (text content)
+ */
+export function resolveContentAssetToken(
+  token: string,
+  assets: ContentAsset[]
+): string | 'NA' {
+  // WHAT: Parse token into prefix and slug
+  // WHY: Token format is "MEDIA:slug" or "TEXT:slug"
+  const parts = token.split(':');
+  if (parts.length !== 2) {
+    console.warn(`⚠️ Invalid asset token format: ${token}`);
+    return 'NA';
+  }
+  
+  const [prefix, slug] = parts;
+  
+  // WHAT: Validate token prefix
+  // WHY: Only MEDIA and TEXT tokens are supported
+  if (prefix !== 'MEDIA' && prefix !== 'TEXT') {
+    console.warn(`⚠️ Unknown asset token prefix: ${prefix}`);
+    return 'NA';
+  }
+  
+  // WHAT: Find asset by slug
+  // WHY: Slug is the unique identifier for content assets
+  const asset = assets.find(a => a.slug === slug);
+  if (!asset) {
+    console.warn(`⚠️ Asset not found: ${token}`);
+    return 'NA';
+  }
+  
+  // WHAT: Validate type matches prefix
+  // WHY: MEDIA tokens must reference images, TEXT tokens must reference text
+  if (prefix === 'MEDIA' && asset.type !== 'image') {
+    console.warn(`⚠️ Expected image, got text: ${token}`);
+    return 'NA';
+  }
+  if (prefix === 'TEXT' && asset.type !== 'text') {
+    console.warn(`⚠️ Expected text, got image: ${token}`);
+    return 'NA';
+  }
+  
+  // WHAT: Return content value
+  // WHY: Images return URL, text returns text content
+  if (asset.type === 'image') {
+    return asset.content.url || 'NA';
+  } else {
+    return asset.content.text || 'NA';
+  }
 }
 
 /**
@@ -186,16 +335,17 @@ interface ProjectStats {
 
 /**
  * Extracts all variable names used in a formula
- * Variables are identified by the pattern [variableName] or [PARAM:key] or [MANUAL:key]
+ * Variables are identified by the pattern [variableName] or [PARAM:key] or [MANUAL:key] or [MEDIA:slug] or [TEXT:slug]
  * SINGLE REFERENCE SYSTEM: Lowercase field names match database exactly
  * @param formula - The formula string to analyze
  * @returns Array of variable names found in the formula
  */
 export function extractVariablesFromFormula(formula: string): string[] {
-  // WHAT: Match [stats.fieldName], [PARAM:key], [MANUAL:key] with full database paths
-  // WHY: Database paths include dots (e.g., stats.female, stats.remoteImages)
-  // REGEX: Allow letters, numbers, underscores, colons, AND DOTS
-  const variableRegex = /\[([a-zA-Z0-9_:.]+)\]/g;
+  // WHAT: Match [stats.fieldName], [PARAM:key], [MANUAL:key], [MEDIA:slug], [TEXT:slug] with full database paths
+  // WHY: Database paths include dots (e.g., stats.female, stats.remoteImages) AND content asset tokens use colons
+  // REGEX: Allow letters, numbers, underscores, colons, dots, AND hyphens (for content asset slugs)
+  // EXAMPLES: [stats.female], [PARAM:multiplier], [MANUAL:benchmark], [MEDIA:logo-abc], [TEXT:summary-text]
+  const variableRegex = /\[([a-zA-Z0-9_:.\-]+)\]/g;
   const variables: string[] = [];
   let match;
   
@@ -286,16 +436,32 @@ export function validateFormula(formula: string): FormulaValidationResult {
  * @param formula - Formula with [stats.fieldName] tokens
  * @param stats - Project statistics object
  * @param parameters - Optional [PARAM:key] tokens
- * @param manualData - Optional [MANUAL:key] tokens  
+ * @param manualData - Optional [MANUAL:key] tokens
+ * @param contentAssets - Optional content assets for [MEDIA:slug] and [TEXT:slug] tokens
  * @returns Formula with tokens replaced by values
  */
 function substituteVariables(
   formula: string, 
   stats: ProjectStats, 
   parameters?: Record<string, number>,
-  manualData?: Record<string, number>
+  manualData?: Record<string, number>,
+  contentAssets?: ContentAsset[]
 ): string {
   let processedFormula = formula;
+
+  // WHAT: Support [MEDIA:slug] and [TEXT:slug] tokens for content assets
+  // WHY: Charts can reference images and text blocks from CMS
+  // HOW: Resolve slug to actual content (URL for images, text for text blocks)
+  if (contentAssets && contentAssets.length > 0) {
+    processedFormula = processedFormula.replace(/\[(MEDIA|TEXT):([a-z0-9-]+)\]/g, (_match, prefix, slug) => {
+      const token = `${prefix}:${slug}`;
+      const value = resolveContentAssetToken(token, contentAssets);
+      // WHAT: Wrap string values in quotes for safe evaluation
+      // WHY: Text content and URLs may contain spaces or special chars
+      // NOTE: For image/text charts, the value is used directly (not evaluated)
+      return value === 'NA' ? '"NA"' : `"${value.replace(/"/g, '\\"')}"`;
+    });
+  }
 
   // Support [PARAM:key] tokens for parameterized values
   if (parameters) {
@@ -453,17 +619,19 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
  * @param stats - Project statistics for variable values
  * @param parameters - Optional parameters for [PARAM:x] token resolution
  * @param manualData - Optional manual data for [MANUAL:x] token resolution (aggregated analytics)
+ * @param contentAssets - Optional content assets for [MEDIA:slug] and [TEXT:slug] token resolution
  * @returns Numeric result or 'NA' for errors/invalid results
  */
 export function evaluateFormula(
   formula: string, 
   stats: ProjectStats, 
   parameters?: Record<string, number>,
-  manualData?: Record<string, number>
+  manualData?: Record<string, number>,
+  contentAssets?: ContentAsset[]
 ): number | 'NA' {
   try {
-    // Step 1: Substitute variables with actual values (including parameters and manual data)
-    const formulaWithValues = substituteVariables(formula, stats, parameters, manualData);
+    // Step 1: Substitute variables with actual values (including parameters, manual data, and content assets)
+    const formulaWithValues = substituteVariables(formula, stats, parameters, manualData, contentAssets);
     
     // Step 2: Process mathematical functions
     const formulaWithFunctions = processMathFunctions(formulaWithValues);
@@ -508,18 +676,26 @@ export function getAvailableVariables(): AvailableVariable[] {
 }
 
 /**
- * WHAT: Checks if a specific variable exists in KYC system
- * WHY: Dynamic validation against 92 variables, not hardcoded 37
- * HOW: Look up variable name in cached KYC variables
+ * WHAT: Checks if a specific variable exists in KYC system or is a content asset token
+ * WHY: Dynamic validation against 92 variables, not hardcoded 37 + content asset tokens
+ * HOW: Look up variable name in cached KYC variables OR validate content asset token format
  * 
- * @param variableName - Full database path (e.g., "stats.female", "stats.bitlyTotalClicks")
- * @returns Boolean indicating if variable exists in KYC
+ * @param variableName - Full database path (e.g., "stats.female", "stats.bitlyTotalClicks") or content asset token (e.g., "MEDIA:logo-abc", "TEXT:summary")
+ * @returns Boolean indicating if variable exists in KYC or is a valid content asset token
  */
 export function isValidVariable(variableName: string): boolean {
-  // WHAT: Strip PARAM: and MANUAL: prefixes (always valid)
+  // WHAT: Strip PARAM:, MANUAL:, MEDIA:, TEXT: prefixes (always valid)
   // WHY: These are resolved at runtime, not database fields
   if (variableName.startsWith('PARAM:') || variableName.startsWith('MANUAL:')) {
     return true;
+  }
+  
+  // WHAT: Content asset tokens are always valid (validated at runtime)
+  // WHY: [MEDIA:slug] and [TEXT:slug] resolve from content_assets collection
+  // HOW: Check prefix and slug format (lowercase alphanumeric with hyphens)
+  if (variableName.startsWith('MEDIA:') || variableName.startsWith('TEXT:')) {
+    const slug = variableName.split(':')[1];
+    return /^[a-z0-9-]+$/.test(slug); // Valid slug format
   }
 
   // WHAT: Check if variable exists in cached KYC data
@@ -574,10 +750,10 @@ export function validateStatsForFormula(
   // WHY: Need to know what data the formula depends on
   const usedVariables = extractVariablesFromFormula(formula);
   
-  // WHAT: Filter out special tokens (PARAM, MANUAL) - handled externally
-  // WHY: These are not part of stats and resolved at runtime
+  // WHAT: Filter out special tokens (PARAM, MANUAL, MEDIA, TEXT) - handled externally
+  // WHY: These are not part of stats and resolved at runtime from other sources
   const statsVariables = usedVariables.filter(
-    v => !v.startsWith('PARAM:') && !v.startsWith('MANUAL:')
+    v => !v.startsWith('PARAM:') && !v.startsWith('MANUAL:') && !v.startsWith('MEDIA:') && !v.startsWith('TEXT:')
   );
   
   // WHAT: Map formula variables to stats field names
@@ -630,13 +806,15 @@ export function validateStatsForFormula(
  * @param stats - Project statistics (may be incomplete)
  * @param parameters - Optional parameters for [PARAM:x] tokens
  * @param manualData - Optional manual data for [MANUAL:x] tokens
+ * @param contentAssets - Optional content assets for [MEDIA:slug] and [TEXT:slug] tokens
  * @returns Evaluation result or 'NA' on error
  */
 export function evaluateFormulaSafe(
   formula: string,
   stats: Partial<ProjectStats>,
   parameters?: Record<string, number>,
-  manualData?: Record<string, number>
+  manualData?: Record<string, number>,
+  contentAssets?: ContentAsset[]
 ): number | 'NA' {
   try {
     // WHAT: Ensure derived metrics exist
@@ -645,7 +823,7 @@ export function evaluateFormulaSafe(
     
     // WHAT: Standard formula evaluation with enriched stats
     // WHY: Now guaranteed to have derived fields
-    return evaluateFormula(formula, enriched, parameters, manualData);
+    return evaluateFormula(formula, enriched, parameters, manualData, contentAssets);
   } catch (error) {
     console.error('Safe formula evaluation error:', error);
     return 'NA';

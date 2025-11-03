@@ -44,6 +44,8 @@ export async function GET(
       categorizedHashtags: project.categorizedHashtags || {}, // Include categorized structure
       allHashtagRepresentations: allHashtags, // Include all representations for search
       stats: project.stats,
+      partner1: project.partner1 || null, // Include partner 1 data (home team)
+      partner2: project.partner2 || null, // Include partner 2 data (away team)
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     };

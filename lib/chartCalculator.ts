@@ -3,7 +3,8 @@
 // Handles PieChart, HorizontalBar, and KPI chart types with "NA" error substitution
 
 import { ChartConfiguration, ChartCalculationResult } from './chartConfigTypes';
-import { evaluateFormula, evaluateFormulasBatch, evaluateFormulaSafe, validateStatsForFormula } from './formulaEngine';
+import { evaluateFormula, evaluateFormulasBatch, evaluateFormulaSafe, validateStatsForFormula, fetchContentAssetsSync, resolveContentAssetToken } from './formulaEngine';
+import { type ContentAsset } from './contentAssetTypes';
 import { 
   validateProjectStats, 
   ensureDerivedMetrics, 
@@ -73,6 +74,11 @@ export function calculateChartSafe(
   configuration: ChartConfiguration,
   stats: Partial<ProjectStats>
 ): ChartCalculationResult & { dataQuality?: DataValidationResult } {
+  // WHAT: Fetch content assets for [MEDIA:slug] and [TEXT:slug] token resolution
+  // WHY: Enables charts to reference centralized content asset CMS
+  // HOW: Synchronous fetch with 5-minute cache, non-blocking if API fails
+  const contentAssets = fetchContentAssetsSync();
+  
   // WHAT: Validate and enrich stats before calculation
   // WHY: Ensure minimum data quality and derived metrics exist
   const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
@@ -101,9 +107,9 @@ export function calculateChartSafe(
     };
   }
   
-  // WHAT: Perform standard chart calculation with enriched stats
-  // WHY: Now guaranteed to have minimum required data
-  const result = calculateChart(configuration, enrichedStats);
+  // WHAT: Perform standard chart calculation with enriched stats and content assets
+  // WHY: Now guaranteed to have minimum required data + content asset support
+  const result = calculateChart(configuration, enrichedStats, contentAssets);
   
   // WHAT: Attach data quality metadata to result
   // WHY: Enable UI to show quality indicators
@@ -118,11 +124,13 @@ export function calculateChartSafe(
  * Applies formula evaluation to each element and handles errors gracefully
  * @param configuration - Chart configuration with formulas
  * @param stats - Project statistics for variable substitution
+ * @param contentAssets - Optional content assets for [MEDIA:slug] and [TEXT:slug] token resolution
  * @returns Chart calculation result with evaluated values or "NA" for errors
  */
 export function calculateChart(
   configuration: ChartConfiguration,
-  stats: ProjectStats
+  stats: ProjectStats,
+  contentAssets?: ContentAsset[]
 ): ChartCalculationResult {
   console.log(`🧮 Calculating chart: ${configuration.title} (${configuration.type})`);
   console.log('Configuration elements:', configuration.elements);
@@ -218,28 +226,42 @@ export function calculateChart(
   
   // Special handling for image charts
   if (configuration.type === 'image') {
-    // WHAT: Image charts display URLs stored in stats fields (e.g., stats.reportImage1)
+    // WHAT: Image charts display URLs stored in stats fields (e.g., stats.reportImage1) or content assets ([MEDIA:slug])
     // WHY: Images are string URLs, not numeric calculations
-    // HOW: Extract string value directly from stats field
+    // HOW: Extract string value directly from stats field OR resolve content asset token
     if (elements.length > 0 && configuration.elements.length > 0) {
       kpiValue = elements[0].value;
       
-      // WHAT: If numeric evaluation failed, try direct stats field access for strings
-      // WHY: evaluateFormula returns 'NA' for string fields
-      // HOW: Check if formula is simple [fieldName] pattern and extract string value
+      // WHAT: If numeric evaluation failed, try content asset token or direct stats field access
+      // WHY: evaluateFormula returns 'NA' for string fields and content asset tokens
+      // HOW: Check if formula is [MEDIA:slug] pattern, then try simple [fieldName] pattern
       if (kpiValue === 'NA' && configuration.elements[0].formula) {
-        // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
-        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
-        if (simpleFieldMatch) {
-          const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
-          // Convert to camelCase (e.g., reportImage1)
-          const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-          const fieldValue = (stats as any)[camelFieldName];
-          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
-            kpiValue = fieldValue as any; // Allow string values for image URLs
-            console.log(`✅ Image URL for "${configuration.title}": ${fieldValue}`);
-          } else {
-            console.warn(`⚠️ Image chart "${configuration.title}" has no valid URL in stats.${camelFieldName}`);
+        // WHAT: First, try content asset token resolution ([MEDIA:slug])
+        // WHY: Enables centralized image management from content asset CMS
+        if (contentAssets && configuration.elements[0].formula.includes('[MEDIA:')) {
+          const resolvedValue = resolveContentAssetToken(configuration.elements[0].formula, contentAssets);
+          if (resolvedValue !== 'NA') {
+            kpiValue = resolvedValue as any; // Resolved URL from content asset
+            console.log(`✅ Image URL from content asset for "${configuration.title}": ${resolvedValue}`);
+          }
+        }
+        
+        // WHAT: If content asset resolution failed, try legacy stats field access
+        // WHY: Backward compatibility with existing stats.reportImage1 pattern
+        if (kpiValue === 'NA') {
+          // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
+          const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+          if (simpleFieldMatch) {
+            const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
+            // Convert to camelCase (e.g., reportImage1)
+            const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+            const fieldValue = (stats as any)[camelFieldName];
+            if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+              kpiValue = fieldValue as any; // Allow string values for image URLs
+              console.log(`✅ Image URL for "${configuration.title}": ${fieldValue}`);
+            } else {
+              console.warn(`⚠️ Image chart "${configuration.title}" has no valid URL in stats.${camelFieldName}`);
+            }
           }
         }
       }
@@ -252,28 +274,43 @@ export function calculateChart(
   
   // Special handling for text charts
   else if (configuration.type === 'text') {
-    // WHAT: Text charts display string content from stats fields (e.g., stats.reportText1)
+    // WHAT: Text charts display string content from stats fields (e.g., stats.reportText1) or content assets ([TEXT:slug])
     // WHY: Text content is strings, not numeric calculations
-    // HOW: Extract string value directly from stats field
+    // HOW: Extract string value directly from stats field OR resolve content asset token
     if (elements.length > 0 && configuration.elements.length > 0) {
       kpiValue = elements[0].value;
       
-      // WHAT: If numeric evaluation failed, try direct stats field access for strings
-      // WHY: evaluateFormula returns 'NA' for string fields
-      // HOW: Check if formula is simple [fieldName] pattern and extract string value
+      // WHAT: If numeric evaluation failed, try content asset token or direct stats field access
+      // WHY: evaluateFormula returns 'NA' for string fields and content asset tokens
+      // HOW: Check if formula is [TEXT:slug] pattern, then try simple [fieldName] pattern
       if (kpiValue === 'NA' && configuration.elements[0].formula) {
-        // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
-        const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
-        if (simpleFieldMatch) {
-          const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
-          // Convert to camelCase (e.g., reportText1)
-          const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-          const fieldValue = (stats as any)[camelFieldName];
-          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
-            kpiValue = fieldValue as any; // Allow string values for text content
-            console.log(`✅ Text content for "${configuration.title}": ${fieldValue.substring(0, 50)}...`);
-          } else {
-            console.warn(`⚠️ Text chart "${configuration.title}" has no valid content in stats.${camelFieldName}`);
+        // WHAT: First, try content asset token resolution ([TEXT:slug])
+        // WHY: Enables centralized text management from content asset CMS
+        if (contentAssets && configuration.elements[0].formula.includes('[TEXT:')) {
+          const resolvedValue = resolveContentAssetToken(configuration.elements[0].formula, contentAssets);
+          if (resolvedValue !== 'NA') {
+            kpiValue = resolvedValue as any; // Resolved text content from content asset
+            const preview = typeof resolvedValue === 'string' ? resolvedValue.substring(0, 50) : String(resolvedValue);
+            console.log(`✅ Text content from content asset for "${configuration.title}": ${preview}...`);
+          }
+        }
+        
+        // WHAT: If content asset resolution failed, try legacy stats field access
+        // WHY: Backward compatibility with existing stats.reportText1 pattern
+        if (kpiValue === 'NA') {
+          // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
+          const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
+          if (simpleFieldMatch) {
+            const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
+            // Convert to camelCase (e.g., reportText1)
+            const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
+            const fieldValue = (stats as any)[camelFieldName];
+            if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+              kpiValue = fieldValue as any; // Allow string values for text content
+              console.log(`✅ Text content for "${configuration.title}": ${fieldValue.substring(0, 50)}...`);
+            } else {
+              console.warn(`⚠️ Text chart "${configuration.title}" has no valid content in stats.${camelFieldName}`);
+            }
           }
         }
       }
@@ -431,11 +468,17 @@ export function calculateChartsBatchSafe(
 ): Array<ChartCalculationResult & { dataQuality?: DataValidationResult }> {
   console.log(`🧮 Safe batch calculating ${configurations.length} charts...`);
   
+  // WHAT: Fetch content assets once for all charts
+  // WHY: More efficient than fetching per chart + 5-minute cache reduces API calls
+  // HOW: Synchronous fetch from cached content asset registry
+  const contentAssets = fetchContentAssetsSync();
+  
   // WHAT: Validate and enrich stats once for all charts
   // WHY: More efficient than validating per chart
   const { stats: enrichedStats, validation } = prepareStatsForAnalytics(stats);
   
   console.log(`📊 Data quality: ${validation.dataQuality} (${validation.completeness}% complete)`);
+  console.log(`🖼️ Content assets available: ${contentAssets.length}`);
   
   // WHAT: If data is insufficient, return error states for all charts
   // WHY: Prevent calculation with incomplete data
@@ -461,10 +504,10 @@ export function calculateChartsBatchSafe(
     }));
   }
   
-  // WHAT: Calculate all charts with enriched stats
-  // WHY: Standard calculation now guaranteed to have required data
+  // WHAT: Calculate all charts with enriched stats and content assets
+  // WHY: Standard calculation now guaranteed to have required data + content asset tokens
   return configurations.map(config => ({
-    ...calculateChart(config, enrichedStats),
+    ...calculateChart(config, enrichedStats, contentAssets),
     dataQuality: validation
   }));
 }
@@ -482,10 +525,14 @@ export function calculateChartsBatch(
 ): ChartCalculationResult[] {
   console.log(`🧮 [Calculator] Batch calculating ${configurations.length} charts...`);
   
+  // WHAT: Fetch content assets once for batch calculation
+  // WHY: More efficient with 5-minute cache
+  const contentAssets = fetchContentAssetsSync();
+  
   const results: ChartCalculationResult[] = [];
   
   configurations.forEach(config => {
-    const result = calculateChart(config, stats);
+    const result = calculateChart(config, stats, contentAssets);
     results.push(result);
   });
   
@@ -590,8 +637,12 @@ export function validateChartWithStats(
   const errors: string[] = [];
   const warnings: string[] = [];
   
+  // WHAT: Fetch content assets for validation
+  // WHY: Validate content asset token resolution during chart testing
+  const contentAssets = fetchContentAssetsSync();
+  
   // Perform the calculation
-  const calculationResult = calculateChart(configuration, stats);
+  const calculationResult = calculateChart(configuration, stats, contentAssets);
   
   // Check for formula evaluation errors
   calculationResult.elements.forEach(element => {

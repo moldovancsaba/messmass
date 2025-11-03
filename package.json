@@ -77,7 +77,8 @@
     "db:cleanup-empty": "npx tsx -r dotenv/config scripts/cleanupEmptyCollections.ts dotenv_config_path=.env.local",
     "migrate:emoji-to-icon": "npx tsx -r dotenv/config scripts/migrateEmojiToIcon.ts dotenv_config_path=.env.local",
     "chart:check-icons": "npx tsx -r dotenv/config scripts/checkChartIcons.ts dotenv_config_path=.env.local",
-    "chart:fix-icons": "npx tsx -r dotenv/config scripts/fixInvalidIcons.ts dotenv_config_path=.env.local"
+    "chart:fix-icons": "npx tsx -r dotenv/config scripts/fixInvalidIcons.ts dotenv_config_path=.env.local",
+    "content:setup-indexes": "npx tsx -r dotenv/config scripts/setup-content-assets-indexes.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

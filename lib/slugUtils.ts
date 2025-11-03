@@ -13,6 +13,18 @@ interface Project {
   eventDate: string;
   hashtags?: string[]; // Array of hashtag strings
   categorizedHashtags?: CategorizedHashtagMap; // Categorized hashtags
+  partner1?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
+  partner2?: {
+    _id: string;
+    name: string;
+    emoji: string;
+    logoUrl?: string;
+  } | null;
   stats: {
     remoteImages: number;
     hostessImages: number;

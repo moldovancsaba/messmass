@@ -1,0 +1,966 @@
+'use client';
+
+// app/admin/content-library/page.tsx
+// WHAT: Content Management System admin interface
+// WHY: Enable non-technical users to manage images and text blocks for charts
+// HOW: Search, filter, upload, edit, and delete assets with usage tracking
+
+import React, { useState, useEffect, useMemo } from 'react';
+import AdminHero from '@/components/AdminHero';
+import ColoredCard from '@/components/ColoredCard';
+import { FormModal } from '@/components/modals';
+import ImageUploadField from '@/components/ImageUploadField';
+import MaterialIcon from '@/components/MaterialIcon';
+import {
+  type ContentAsset,
+  type ContentAssetFormData,
+  type ChartReference,
+  formatAssetToken,
+  generateSlug,
+  isValidSlug
+} from '@/lib/contentAssetTypes';
+
+export default function ContentLibraryPage() {
+  // State management
+  const [assets, setAssets] = useState<ContentAsset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'image' | 'text'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'createdAt' | 'title' | 'usageCount'>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Modal states
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createType, setCreateType] = useState<'image' | 'text'>('image');
+  const [editingAsset, setEditingAsset] = useState<ContentAsset | null>(null);
+  const [deletingAsset, setDeletingAsset] = useState<ContentAsset | null>(null);
+  const [usageInfo, setUsageInfo] = useState<{ asset: ContentAsset; charts: ChartReference[] } | null>(null);
+  
+  // Load assets
+  useEffect(() => {
+    loadAssets();
+  }, []);
+  
+  const loadAssets = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/content-assets');
+      const data = await response.json();
+      
+      if (data.success) {
+        setAssets(data.assets || []);
+        console.log(`✅ Loaded ${data.assets?.length || 0} content assets`);
+      } else {
+        console.error('❌ Failed to load assets:', data.error);
+      }
+    } catch (error) {
+      console.error('❌ Error loading assets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // WHAT: Get unique categories from existing assets
+  // WHY: Dynamic category filter based on actual data
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(assets.map(a => a.category).filter(Boolean)));
+    return ['all', ...cats.sort()];
+  }, [assets]);
+  
+  // WHAT: Filter and sort assets
+  // WHY: Support search, type filter, category filter, and sorting
+  const filteredAssets = useMemo(() => {
+    let filtered = [...assets];
+    
+    // Text search
+    if (searchTerm) {
+      const query = searchTerm.toLowerCase();
+      filtered = filtered.filter(asset =>
+        asset.title.toLowerCase().includes(query) ||
+        asset.description?.toLowerCase().includes(query) ||
+        asset.slug.toLowerCase().includes(query) ||
+        asset.tags.some(tag => tag.toLowerCase().includes(query))
+      );
+    }
+    
+    // Type filter
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(asset => asset.type === typeFilter);
+    }
+    
+    // Category filter
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(asset => asset.category === categoryFilter);
+    }
+    
+    // Sort
+    filtered.sort((a, b) => {
+      let compareA: any = a[sortBy];
+      let compareB: any = b[sortBy];
+      
+      if (sortBy === 'title') {
+        compareA = compareA.toLowerCase();
+        compareB = compareB.toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return compareA > compareB ? 1 : -1;
+      } else {
+        return compareA < compareB ? 1 : -1;
+      }
+    });
+    
+    return filtered;
+  }, [assets, searchTerm, typeFilter, categoryFilter, sortBy, sortOrder]);
+  
+  // WHAT: Copy asset reference token to clipboard
+  // WHY: Quick insertion into chart formulas
+  const copyToken = (asset: ContentAsset) => {
+    const token = formatAssetToken(asset.type, asset.slug);
+    navigator.clipboard.writeText(token);
+    alert(`✅ Copied: ${token}`);
+  };
+  
+  // WHAT: Check asset usage before deletion
+  // WHY: Warn user if asset is referenced in charts
+  const checkUsage = async (asset: ContentAsset) => {
+    try {
+      const response = await fetch(`/api/content-assets/usage?slug=${asset.slug}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setUsageInfo({ asset, charts: data.charts });
+      }
+    } catch (error) {
+      console.error('❌ Error checking usage:', error);
+    }
+  };
+  
+  // WHAT: Delete asset (with force flag if needed)
+  // WHY: Safe deletion with usage validation
+  const deleteAsset = async (force = false) => {
+    if (!deletingAsset) return;
+    
+    try {
+      const forceParam = force ? '?force=true' : '';
+      const response = await fetch(`/api/content-assets?slug=${deletingAsset.slug}${forceParam}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        setDeletingAsset(null);
+        loadAssets();
+      } else {
+        if (data.error.includes('currently used')) {
+          // Show usage info
+          await checkUsage(deletingAsset);
+        } else {
+          alert(`❌ ${data.error}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error deleting asset:', error);
+      alert('Failed to delete asset');
+    }
+  };
+  
+  return (
+    <div className="page-container">
+      <AdminHero
+        title="📚 Content Library"
+        subtitle="Manage images and text blocks for charts"
+        backLink="/admin"
+        showSearch
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Search by title, slug, tags..."
+        actionButtons={[
+          {
+            label: '📷 Upload Image',
+            onClick: () => {
+              setCreateType('image');
+              setShowCreateModal(true);
+            },
+            variant: 'primary'
+          },
+          {
+            label: '📝 New Text',
+            onClick: () => {
+              setCreateType('text');
+              setShowCreateModal(true);
+            },
+            variant: 'success'
+          }
+        ]}
+        badges={[
+          { text: 'CMS', variant: 'primary' },
+          { text: `${filteredAssets.length} Assets`, variant: 'success' }
+        ]}
+      />
+      
+      {/* Filters */}
+      <ColoredCard accentColor="#10b981" hoverable={false}>
+        <div className="grid gap-3 grid-1fr-1fr-1fr-1fr">
+          {/* Type Filter */}
+          <div>
+            <label className="form-label">Type</label>
+            <select
+              className="form-select"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as any)}
+            >
+              <option value="all">All Types</option>
+              <option value="image">🖼️ Images</option>
+              <option value="text">📝 Text</option>
+            </select>
+          </div>
+          
+          {/* Category Filter */}
+          <div>
+            <label className="form-label">Category</label>
+            <select
+              className="form-select"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat === 'all' ? 'All Categories' : cat}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Sort By */}
+          <div>
+            <label className="form-label">Sort By</label>
+            <select
+              className="form-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+            >
+              <option value="createdAt">📅 Date Created</option>
+              <option value="title">🔤 Title</option>
+              <option value="usageCount">📊 Usage Count</option>
+            </select>
+          </div>
+          
+          {/* Sort Order */}
+          <div>
+            <label className="form-label">Order</label>
+            <select
+              className="form-select"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as any)}
+            >
+              <option value="desc">⬇️ Descending</option>
+              <option value="asc">⬆️ Ascending</option>
+            </select>
+          </div>
+        </div>
+      </ColoredCard>
+      
+      {/* Assets Grid */}
+      {loading && (
+        <ColoredCard accentColor="#6366f1" hoverable={false} className="text-center">
+          <div className="text-4xl mb-4">📚</div>
+          <div>Loading content library...</div>
+        </ColoredCard>
+      )}
+      
+      {!loading && filteredAssets.length === 0 && (
+        <ColoredCard accentColor="#f59e0b" hoverable={false} className="text-center">
+          <div className="text-4xl mb-4">🔍</div>
+          <div>No assets found. Try adjusting your filters or create a new asset.</div>
+        </ColoredCard>
+      )}
+      
+      {!loading && filteredAssets.length > 0 && (
+        <div className="grid gap-3 mt-3">
+          {filteredAssets.map(asset => (
+            <ColoredCard key={asset._id?.toString()} accentColor="#3b82f6" hoverable={false}>
+              <AssetCard
+                asset={asset}
+                onEdit={() => setEditingAsset(asset)}
+                onDelete={() => setDeletingAsset(asset)}
+                onCopyToken={() => copyToken(asset)}
+                onViewUsage={() => checkUsage(asset)}
+              />
+            </ColoredCard>
+          ))}
+        </div>
+      )}
+      
+      {/* Create Asset Modal */}
+      {showCreateModal && (
+        <CreateAssetModal
+          type={createType}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            setShowCreateModal(false);
+            loadAssets();
+          }}
+        />
+      )}
+      
+      {/* Edit Asset Modal */}
+      {editingAsset && (
+        <EditAssetModal
+          asset={editingAsset}
+          onClose={() => setEditingAsset(null)}
+          onSuccess={() => {
+            setEditingAsset(null);
+            loadAssets();
+          }}
+        />
+      )}
+      
+      {/* Delete Confirmation Modal */}
+      {deletingAsset && !usageInfo && (
+        <FormModal
+          isOpen={true}
+          onClose={() => setDeletingAsset(null)}
+          onSubmit={async () => await deleteAsset(false)}
+          title="⚠️ Delete Asset"
+          size="md"
+          submitText="Delete"
+        >
+          <div>
+            <p className="mb-3">
+              Are you sure you want to delete <strong>{deletingAsset.title}</strong>?
+            </p>
+            <p className="text-gray-600">This action cannot be undone.</p>
+          </div>
+        </FormModal>
+      )}
+      
+      {/* Usage Info Modal */}
+      {usageInfo && (
+        <FormModal
+          isOpen={true}
+          onClose={() => {
+            setUsageInfo(null);
+            setDeletingAsset(null);
+          }}
+          onSubmit={async () => {
+            await deleteAsset(true);
+            setUsageInfo(null);
+          }}
+          title="⚠️ Asset In Use"
+          size="lg"
+          submitText="Force Delete Anyway"
+        >
+          <div>
+            <p className="mb-3">
+              <strong>{usageInfo.asset.title}</strong> is currently used in <strong>{usageInfo.charts.length}</strong> chart(s):
+            </p>
+            
+            <div className="mb-4" style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem' }}>
+              {usageInfo.charts.map((chart, idx) => (
+                <div key={idx} style={{ padding: '0.5rem', borderBottom: idx < usageInfo.charts.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
+                  <div><strong>{chart.title}</strong></div>
+                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    ID: {chart.chartId} | Type: {chart.type}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <p className="text-red-600 font-bold">
+              Deleting this asset will break these charts. Are you sure?
+            </p>
+          </div>
+        </FormModal>
+      )}
+    </div>
+  );
+}
+
+// WHAT: Asset card component for grid display
+// WHY: Reusable card with all asset actions
+function AssetCard({
+  asset,
+  onEdit,
+  onDelete,
+  onCopyToken,
+  onViewUsage
+}: {
+  asset: ContentAsset;
+  onEdit: () => void;
+  onDelete: () => void;
+  onCopyToken: () => void;
+  onViewUsage: () => void;
+}) {
+  const token = formatAssetToken(asset.type, asset.slug);
+  
+  return (
+    <div>
+      <div className="flex items-start justify-between gap-3">
+        {/* Preview & Metadata */}
+        <div className="flex-1">
+          <div className="flex items-start gap-3">
+            {/* Preview */}
+            {asset.type === 'image' && asset.content.url && (
+              <div style={{ width: '120px', height: '80px', borderRadius: '0.5rem', overflow: 'hidden', flexShrink: 0 }}>
+                <img
+                  src={asset.content.url}
+                  alt={asset.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            )}
+            
+            {asset.type === 'text' && (
+              <div style={{ width: '120px', height: '80px', borderRadius: '0.5rem', background: '#f9fafb', padding: '0.5rem', overflow: 'hidden', flexShrink: 0, fontSize: '0.75rem', color: '#6b7280' }}>
+                {asset.content.text?.substring(0, 100)}...
+              </div>
+            )}
+            
+            {/* Metadata */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="mt-0 mb-0">{asset.title}</h3>
+                <span className="badge badge-info">{asset.type === 'image' ? '🖼️ Image' : '📝 Text'}</span>
+                {asset.usageCount > 0 && (
+                  <span
+                    className="badge badge-success"
+                    style={{ cursor: 'pointer' }}
+                    onClick={onViewUsage}
+                    title="Click to view usage"
+                  >
+                    Used in {asset.usageCount} chart{asset.usageCount !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+              
+              <code className="variable-ref" style={{ fontSize: '0.875rem' }}>{token}</code>
+              
+              {asset.description && (
+                <p className="text-gray-600 mt-2 mb-0">{asset.description}</p>
+              )}
+              
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="badge badge-secondary">{asset.category}</span>
+                {asset.tags.map((tag, idx) => (
+                  <span key={idx} className="badge badge-secondary">{tag}</span>
+                ))}
+              </div>
+              
+              {asset.type === 'image' && asset.content.width && asset.content.height && (
+                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                  {asset.content.width} × {asset.content.height}
+                  {asset.content.aspectRatio && ` | ${asset.content.aspectRatio}`}
+                  {asset.content.fileSize && ` | ${Math.round(asset.content.fileSize / 1024)} KB`}
+                </div>
+              )}
+              
+              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                Created: {new Date(asset.createdAt).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Actions */}
+        <div className="flex flex-col gap-2">
+          <button className="btn btn-small btn-secondary" onClick={onCopyToken} title="Copy reference token">
+            <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            Copy Token
+          </button>
+          <button className="btn btn-small btn-primary" onClick={onEdit}>
+            <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            Edit
+          </button>
+          <button className="btn btn-small btn-danger" onClick={onDelete}>
+            <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// WHAT: Create asset modal component
+// WHY: Separate modal for image vs text creation
+function CreateAssetModal({
+  type,
+  onClose,
+  onSuccess
+}: {
+  type: 'image' | 'text';
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    slug: '',
+    category: '',
+    tags: [] as string[],
+    tagInput: '',
+    imageUrl: '',
+    imageWidth: 0,
+    imageHeight: 0,
+    aspectRatio: '16:9' as '16:9' | '9:16' | '1:1',
+    textContent: '',
+    saving: false,
+    error: ''
+  });
+  
+  // Auto-generate slug from title
+  useEffect(() => {
+    if (form.title && !form.slug) {
+      setForm(prev => ({ ...prev, slug: generateSlug(form.title) }));
+    }
+  }, [form.title]);
+  
+  const addTag = () => {
+    if (form.tagInput.trim() && !form.tags.includes(form.tagInput.trim())) {
+      setForm(prev => ({
+        ...prev,
+        tags: [...prev.tags, prev.tagInput.trim()],
+        tagInput: ''
+      }));
+    }
+  };
+  
+  const removeTag = (tag: string) => {
+    setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+  };
+  
+  const handleSubmit = async () => {
+    setForm(prev => ({ ...prev, saving: true, error: '' }));
+    
+    try {
+      // Validation
+      if (!form.title) {
+        setForm(prev => ({ ...prev, error: 'Title is required', saving: false }));
+        return;
+      }
+      
+      if (!form.slug || !isValidSlug(form.slug)) {
+        setForm(prev => ({ ...prev, error: 'Invalid slug format', saving: false }));
+        return;
+      }
+      
+      if (type === 'image' && !form.imageUrl) {
+        setForm(prev => ({ ...prev, error: 'Please upload an image', saving: false }));
+        return;
+      }
+      
+      if (type === 'text' && !form.textContent) {
+        setForm(prev => ({ ...prev, error: 'Text content is required', saving: false }));
+        return;
+      }
+      
+      const body: ContentAssetFormData = {
+        title: form.title,
+        description: form.description || undefined,
+        slug: form.slug,
+        type,
+        category: form.category || 'Uncategorized',
+        tags: form.tags,
+        content: type === 'image'
+          ? {
+              url: form.imageUrl,
+              width: form.imageWidth || undefined,
+              height: form.imageHeight || undefined,
+              aspectRatio: form.aspectRatio
+            }
+          : {
+              text: form.textContent
+            }
+      };
+      
+      const response = await fetch('/api/content-assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        onSuccess();
+      } else {
+        setForm(prev => ({ ...prev, error: data.error || 'Failed to create asset', saving: false }));
+      }
+    } catch (error) {
+      console.error('❌ Error creating asset:', error);
+      setForm(prev => ({ ...prev, error: 'Network error', saving: false }));
+    }
+  };
+  
+  return (
+    <FormModal
+      isOpen={true}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      title={type === 'image' ? '📷 Upload Image' : '📝 New Text Block'}
+      size="lg"
+      submitText={form.saving ? 'Creating...' : 'Create'}
+      disableSubmit={form.saving}
+    >
+      <div className="grid gap-3">
+        {form.error && (
+          <div style={{ padding: '1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '0.5rem' }}>
+            {form.error}
+          </div>
+        )}
+        
+        <div className="grid gap-3 grid-1fr-1fr">
+          <div>
+            <label className="form-label-block">Title *</label>
+            <input
+              className="form-input"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="Partner ABC Logo"
+            />
+          </div>
+          
+          <div>
+            <label className="form-label-block">Slug *</label>
+            <input
+              className="form-input"
+              value={form.slug}
+              onChange={(e) => setForm({ ...form, slug: e.target.value })}
+              placeholder="partner-abc-logo"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="form-label-block">Description</label>
+          <textarea
+            className="form-input"
+            rows={2}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Optional description for search..."
+          />
+        </div>
+        
+        <div className="grid gap-3 grid-1fr-1fr">
+          <div>
+            <label className="form-label-block">Category</label>
+            <input
+              className="form-input"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              placeholder="Partners, Sponsors, etc."
+            />
+          </div>
+          
+          <div>
+            <label className="form-label-block">Tags</label>
+            <div className="flex gap-2">
+              <input
+                className="form-input"
+                value={form.tagInput}
+                onChange={(e) => setForm({ ...form, tagInput: e.target.value })}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                placeholder="Add tag..."
+              />
+              <button type="button" className="btn btn-small btn-secondary" onClick={addTag}>
+                Add
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.tags.map(tag => (
+                <span key={tag} className="badge badge-primary" style={{ cursor: 'pointer' }} onClick={() => removeTag(tag)}>
+                  {tag} ✕
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {type === 'image' && (
+          <>
+            <div>
+              <label className="form-label-block">Aspect Ratio</label>
+              <select
+                className="form-select"
+                value={form.aspectRatio}
+                onChange={(e) => setForm({ ...form, aspectRatio: e.target.value as any })}
+              >
+                <option value="16:9">16:9 (Landscape)</option>
+                <option value="1:1">1:1 (Square)</option>
+                <option value="9:16">9:16 (Portrait)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="form-label-block">Upload Image *</label>
+              <ImageUploadField
+                label=""
+                value={form.imageUrl}
+                onSave={(url) => setForm({ ...form, imageUrl: url })}
+              />
+            </div>
+          </>
+        )}
+        
+        {type === 'text' && (
+          <div>
+            <label className="form-label-block">Text Content *</label>
+            <textarea
+              className="form-input"
+              rows={8}
+              value={form.textContent}
+              onChange={(e) => setForm({ ...form, textContent: e.target.value })}
+              placeholder="Enter your text content here..."
+            />
+            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+              {form.textContent.length} characters
+            </div>
+          </div>
+        )}
+      </div>
+    </FormModal>
+  );
+}
+
+// WHAT: Edit asset modal component
+// WHY: Pre-populated form with slug change warning
+function EditAssetModal({
+  asset,
+  onClose,
+  onSuccess
+}: {
+  asset: ContentAsset;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [form, setForm] = useState({
+    title: asset.title,
+    description: asset.description || '',
+    slug: asset.slug,
+    category: asset.category,
+    tags: [...asset.tags],
+    tagInput: '',
+    imageUrl: asset.content.url || '',
+    aspectRatio: asset.content.aspectRatio || '16:9',
+    textContent: asset.content.text || '',
+    saving: false,
+    error: ''
+  });
+  
+  const slugChanged = form.slug !== asset.slug;
+  
+  const addTag = () => {
+    if (form.tagInput.trim() && !form.tags.includes(form.tagInput.trim())) {
+      setForm(prev => ({
+        ...prev,
+        tags: [...prev.tags, prev.tagInput.trim()],
+        tagInput: ''
+      }));
+    }
+  };
+  
+  const removeTag = (tag: string) => {
+    setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+  };
+  
+  const handleSubmit = async () => {
+    setForm(prev => ({ ...prev, saving: true, error: '' }));
+    
+    try {
+      if (!form.title) {
+        setForm(prev => ({ ...prev, error: 'Title is required', saving: false }));
+        return;
+      }
+      
+      if (!isValidSlug(form.slug)) {
+        setForm(prev => ({ ...prev, error: 'Invalid slug format', saving: false }));
+        return;
+      }
+      
+      const body: ContentAssetFormData = {
+        _id: asset._id?.toString(),
+        title: form.title,
+        description: form.description || undefined,
+        slug: form.slug,
+        type: asset.type,
+        category: form.category,
+        tags: form.tags,
+        content: asset.type === 'image'
+          ? {
+              url: form.imageUrl,
+              width: asset.content.width,
+              height: asset.content.height,
+              aspectRatio: form.aspectRatio as any
+            }
+          : {
+              text: form.textContent
+            }
+      };
+      
+      const response = await fetch('/api/content-assets', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        onSuccess();
+      } else {
+        setForm(prev => ({ ...prev, error: data.error || 'Failed to update asset', saving: false }));
+      }
+    } catch (error) {
+      console.error('❌ Error updating asset:', error);
+      setForm(prev => ({ ...prev, error: 'Network error', saving: false }));
+    }
+  };
+  
+  return (
+    <FormModal
+      isOpen={true}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      title={`✏️ Edit ${asset.type === 'image' ? 'Image' : 'Text'}`}
+      size="lg"
+      submitText={form.saving ? 'Saving...' : 'Save Changes'}
+      disableSubmit={form.saving}
+    >
+      <div className="grid gap-3">
+        {form.error && (
+          <div style={{ padding: '1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '0.5rem' }}>
+            {form.error}
+          </div>
+        )}
+        
+        {slugChanged && (
+          <div style={{ padding: '1rem', background: '#fef3c7', color: '#92400e', borderRadius: '0.5rem' }}>
+            ⚠️ <strong>Warning:</strong> Changing the slug will break existing chart references. Old token: <code>[{asset.type === 'image' ? 'MEDIA' : 'TEXT'}:{asset.slug}]</code>
+          </div>
+        )}
+        
+        {asset.usageCount > 0 && (
+          <div style={{ padding: '1rem', background: '#dbeafe', color: '#1e40af', borderRadius: '0.5rem' }}>
+            ℹ️ This asset is currently used in <strong>{asset.usageCount}</strong> chart(s).
+          </div>
+        )}
+        
+        <div className="grid gap-3 grid-1fr-1fr">
+          <div>
+            <label className="form-label-block">Title *</label>
+            <input
+              className="form-input"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+            />
+          </div>
+          
+          <div>
+            <label className="form-label-block">Slug *</label>
+            <input
+              className="form-input"
+              value={form.slug}
+              onChange={(e) => setForm({ ...form, slug: e.target.value })}
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="form-label-block">Description</label>
+          <textarea
+            className="form-input"
+            rows={2}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+        </div>
+        
+        <div className="grid gap-3 grid-1fr-1fr">
+          <div>
+            <label className="form-label-block">Category</label>
+            <input
+              className="form-input"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            />
+          </div>
+          
+          <div>
+            <label className="form-label-block">Tags</label>
+            <div className="flex gap-2">
+              <input
+                className="form-input"
+                value={form.tagInput}
+                onChange={(e) => setForm({ ...form, tagInput: e.target.value })}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              />
+              <button type="button" className="btn btn-small btn-secondary" onClick={addTag}>
+                Add
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.tags.map(tag => (
+                <span key={tag} className="badge badge-primary" style={{ cursor: 'pointer' }} onClick={() => removeTag(tag)}>
+                  {tag} ✕
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {asset.type === 'image' && (
+          <>
+            <div>
+              <label className="form-label-block">Aspect Ratio</label>
+              <select
+                className="form-select"
+                value={form.aspectRatio}
+                onChange={(e) => setForm({ ...form, aspectRatio: e.target.value as any })}
+              >
+                <option value="16:9">16:9 (Landscape)</option>
+                <option value="1:1">1:1 (Square)</option>
+                <option value="9:16">9:16 (Portrait)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="form-label-block">Image</label>
+              {form.imageUrl && (
+                <div style={{ marginBottom: '1rem', borderRadius: '0.5rem', overflow: 'hidden', maxHeight: '200px' }}>
+                  <img src={form.imageUrl} alt="Preview" style={{ width: '100%', objectFit: 'contain' }} />
+                </div>
+              )}
+              <ImageUploadField
+                label="Change Image"
+                value={form.imageUrl}
+                onSave={(url) => setForm({ ...form, imageUrl: url })}
+              />
+            </div>
+          </>
+        )}
+        
+        {asset.type === 'text' && (
+          <div>
+            <label className="form-label-block">Text Content *</label>
+            <textarea
+              className="form-input"
+              rows={8}
+              value={form.textContent}
+              onChange={(e) => setForm({ ...form, textContent: e.target.value })}
+            />
+            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+              {form.textContent.length} characters
+            </div>
+          </div>
+        )}
+      </div>
+    </FormModal>
+  );
+}

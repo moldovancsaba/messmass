@@ -5,10 +5,19 @@ import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagC
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedPageHero.module.css';
 
+interface Partner {
+  _id: string;
+  name: string;
+  emoji: string;
+  logoUrl?: string;
+}
+
 interface UnifiedPageHeroProps {
   title: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  partner1?: Partner | null;
+  partner2?: Partner | null;
   statusBadge?: {
     role: string;
     level: string;
@@ -24,6 +33,8 @@ export default function UnifiedPageHero({
   title,
   hashtags = [],
   categorizedHashtags = {},
+  partner1,
+  partner2,
   statusBadge,
   onExportCSV,
   onExportPDF,
@@ -47,8 +58,29 @@ export default function UnifiedPageHero({
     <div className={styles.container}>
       {styleCss && <style dangerouslySetInnerHTML={{ __html: styleCss }} />}
       <ColoredCard className={`admin-header ${styles.headerCard}`}>
-        <div className="admin-header-content">
-          <div className="admin-branding">
+        {/* WHAT: Partner logos layout - desktop: left | center | right, mobile: vertical */}
+        <div className={styles.heroLayout}>
+          {/* WHAT: Partner 1 (Home team) - Left side */}
+          {partner1 && (
+            <div className={styles.partnerContainer}>
+              {partner1.logoUrl ? (
+                <img 
+                  src={partner1.logoUrl} 
+                  alt={partner1.name}
+                  className={styles.partnerLogo}
+                  title={partner1.name}
+                />
+              ) : (
+                <div className={styles.partnerEmoji} title={partner1.name}>
+                  {partner1.emoji}
+                </div>
+              )}
+              <div className={styles.partnerName}>{partner1.name}</div>
+            </div>
+          )}
+
+          {/* WHAT: Center content - Title and hashtags */}
+          <div className={styles.centerContent}>
             <h1 className="admin-title">{title}</h1>
             {/* WHAT: Style name badge removed - not relevant for viewers
                 WHY: Internal configuration detail not needed in public view */}
@@ -117,7 +149,28 @@ export default function UnifiedPageHero({
               ) : null;
             })()}
           </div>
-          
+
+          {/* WHAT: Partner 2 (Away team) - Right side */}
+          {partner2 && (
+            <div className={styles.partnerContainer}>
+              {partner2.logoUrl ? (
+                <img 
+                  src={partner2.logoUrl} 
+                  alt={partner2.name}
+                  className={styles.partnerLogo}
+                  title={partner2.name}
+                />
+              ) : (
+                <div className={styles.partnerEmoji} title={partner2.name}>
+                  {partner2.emoji}
+                </div>
+              )}
+              <div className={styles.partnerName}>{partner2.name}</div>
+            </div>
+          )}
+        </div>
+
+        <div className="admin-header-content">
           <div className="admin-user-info">
             <div className="admin-badge">
               {statusBadge && (

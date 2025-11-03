@@ -3,10 +3,19 @@ import UnifiedPageHero from './UnifiedPageHero';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedStatsHero.module.css';
 
+interface Partner {
+  _id: string;
+  name: string;
+  emoji: string;
+  logoUrl?: string;
+}
+
 interface UnifiedStatsHeroProps {
   title: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  partner1?: Partner | null;
+  partner2?: Partner | null;
   createdDate: string;
   lastUpdatedDate: string;
   pageStyle?: PageStyleEnhanced;
@@ -19,6 +28,8 @@ export default function UnifiedStatsHero({
   title,
   hashtags = [],
   categorizedHashtags = {},
+  partner1,
+  partner2,
   createdDate,
   lastUpdatedDate,
   pageStyle,
@@ -39,6 +50,8 @@ export default function UnifiedStatsHero({
       title={title}
       hashtags={hashtags}
       categorizedHashtags={categorizedHashtags}
+      partner1={partner1}
+      partner2={partner2}
       statusBadge={undefined}
       onExportCSV={onExportCSV}
       onExportPDF={onExportPDF}
