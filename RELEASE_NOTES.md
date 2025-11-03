@@ -1,5 +1,66 @@
 # MessMass Release Notes
 
+## [v10.3.0] — 2025-11-03T00:15:00.000Z
+
+### Added
+
+✅ **User Guide: Image Layout Patterns (New Documentation)**
+- Created comprehensive `IMAGE_LAYOUT_GUIDE.md` (424 lines)
+- 10 common layout patterns with visual ASCII diagrams
+- Step-by-step implementation instructions
+- Quick reference table for all patterns
+- Responsive behavior documentation
+- Pro tips and troubleshooting section
+
+**Documented Patterns**:
+1. Portrait + Landscape (Equal Heights) - Primary use case
+2. Landscape + Landscape
+3. Portrait + Portrait
+4. Text + Portrait
+5. Landscape + Text
+6. Text + Landscape + Text (Sandwich)
+7. Three Portraits
+8. Single Full-Width Landscape (Hero)
+9. KPI + Portrait + KPI (Dashboard)
+10. Portrait + Landscape + Portrait (Symmetrical)
+
+### Fixed
+
+✅ **Finalized Width Value: 3.16 units**
+- Removed test options (π, 3.15)
+- Confirmed 3.16 as mathematically optimal and user-tested perfect
+- Single clean dropdown option for portrait width
+
+### Technical Details
+
+**New Documentation** (1 file):
+- `IMAGE_LAYOUT_GUIDE.md` - Complete user guide with 10 patterns
+  - Mathematical formulas for each pattern
+  - Visual ASCII art previews
+  - Implementation steps
+  - Responsive breakpoints
+  - Troubleshooting guide
+
+**Code Cleanup** (1 file):
+- `app/admin/visualization/page.tsx`
+  - Removed π (Math.PI) test option
+  - Removed 3.15 test option
+  - Kept only 3.16 as final value
+
+**Version**: `10.2.4` → `10.3.0` (MINOR increment - new feature documentation)
+
+**Why MINOR Version**:
+- New user-facing documentation (feature)
+- No API changes
+- No breaking changes
+- Enhanced user experience through better guidance
+
+**Backward Compatibility**: ✅ 100%
+- Code changes are cleanup only (removed test values)
+- 3.16 was already present in previous version
+
+---
+
 ## [v10.2.4] — 2025-11-03T00:03:00.000Z
 
 ### Fixed
