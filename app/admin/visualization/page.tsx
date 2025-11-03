@@ -11,6 +11,7 @@ import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import MaterialIcon from '@/components/MaterialIcon';
 
 // Available chart type for chart assignment
 interface AvailableChart {
@@ -484,13 +485,15 @@ export default function VisualizationPage() {
                         onClick={() => setEditingBlock(block)}
                         className="btn btn-small btn-primary action-button"
                       >
-                        ✏️ Edit
+                        <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDeleteBlock(block._id!)}
                         className="btn btn-small btn-danger action-button"
                       >
-                        🗑️ Delete
+                        <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        Delete
                       </button>
                       <span className="drag-handle" title="Drag to reorder">⮕️</span>
                     </div>

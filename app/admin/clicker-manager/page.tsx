@@ -5,6 +5,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import { apiPost, apiDelete } from '@/lib/apiClient';
+import MaterialIcon from '@/components/MaterialIcon';
 
 // WHAT: Clicker Manager - Configure variable groups for Editor clicker UI
 // WHY: Admin control over which variables appear in clicker and their grouping/order
@@ -109,9 +110,9 @@ export default function ClickerManagerPage() {
         subtitle="Configure variable groups and ordering for Editor clicker UI"
         backLink="/admin"
         actionButtons={[
-          { label: '➕ New Group', onClick: () => setCreateOpen(true), variant: 'primary' },
-          { label: '🌱 Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
-          { label: '🗑️ Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
+          { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary' },
+          { label: 'Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
+          { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
         ]}
         badges={[
           { text: 'Clicker Configuration', variant: 'primary' },
@@ -206,7 +207,7 @@ export default function ClickerManagerPage() {
                           }}
                           className="form-checkbox"
                         />
-                        <span className="text-sm font-medium">✏️ Manual</span>
+                        <span className="text-sm font-medium">Manual</span>
                       </label>
                     </div>
 
@@ -229,7 +230,8 @@ export default function ClickerManagerPage() {
                       className="btn btn-small btn-primary"
                       onClick={() => setEditingGroup(group)}
                     >
-                      ✏️ Edit
+                      <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                      Edit
                     </button>
                   </div>
                 </div>

@@ -12,6 +12,7 @@ import PageStyleEditor from '@/components/PageStyleEditor';
 import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
+import MaterialIcon from '@/components/MaterialIcon';
 
 export default function AdminDesignPage() {
   /* WHAT: Typography font selection state
@@ -565,7 +566,8 @@ export default function AdminDesignPage() {
                       if (globalStyle) handleEditStyle(globalStyle);
                     }}
                   >
-                    ✏️ Edit Global Default
+                    <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                    Edit Global Default
                   </button>
                 </div>
               </ColoredCard>
@@ -676,7 +678,8 @@ export default function AdminDesignPage() {
                         className="btn btn-small btn-secondary flex-1"
                         onClick={() => handleEditStyle(style)}
                       >
-                        ✏️ Edit
+                        <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        Edit
                       </button>
                       {!style.isGlobalDefault && style._id && (
                         <button 
@@ -684,7 +687,7 @@ export default function AdminDesignPage() {
                           onClick={() => handleDeleteStyle(style._id!, style.name)}
                           title="Delete style"
                         >
-                          🗑️
+                          <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem' }} />
                         </button>
                       )}
                     </div>

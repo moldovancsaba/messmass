@@ -76,7 +76,6 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
     rowActions: [
       {
         label: 'Edit',
-        icon: '✏️',
         variant: 'primary',
         handler: (category) => {
           console.log('Edit category:', category._id);
@@ -85,7 +84,6 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
       },
       {
         label: 'Delete',
-        icon: '🗑️',
         variant: 'danger',
         handler: (category) => {
           if (confirm(`Delete category "${category.name}"?`)) {
@@ -132,7 +130,6 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
     cardActions: [
       {
         label: 'Edit',
-        icon: '✏️',
         variant: 'primary',
         handler: (category) => {
           console.log('Edit category:', category._id);
@@ -140,7 +137,6 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
       },
       {
         label: 'Delete',
-        icon: '🗑️',
         variant: 'danger',
         handler: (category) => {
           if (confirm(`Delete "${category.name}"?`)) {

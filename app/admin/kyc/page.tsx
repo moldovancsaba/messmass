@@ -5,6 +5,7 @@ import AdminHero from "@/components/AdminHero";
 import ColoredCard from "@/components/ColoredCard";
 import { apiPost } from "@/lib/apiClient";
 import { FormModal } from "@/components/modals";
+import MaterialIcon from "@/components/MaterialIcon";
 
 // WHAT: KYC Variables Admin Page
 // WHY: Centralized catalog of all variables (manual/system/derived) powering analytics and clicker
@@ -109,8 +110,8 @@ export default function KycVariablesPage() {
         searchPlaceholder="Search variables..."
         actionButtons={[
           { label: "New Variable", onClick: () => setCreateOpen(true), variant: "primary" },
-          { label: "⬇️ Export CSV", onClick: () => exportCSV(filtered), variant: "secondary" },
-          { label: "⬇️ Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
+          { label: "Export CSV", onClick: () => exportCSV(filtered), variant: "secondary" },
+          { label: "Export JSON", onClick: () => exportJSON(filtered), variant: "secondary" },
         ]}
         badges={[
           { text: "KYC", variant: "primary" },
@@ -219,7 +220,10 @@ export default function KycVariablesPage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <button className="btn btn-small btn-primary" onClick={() => setActiveVar(v)}>✏️ Edit</button>
+                    <button className="btn btn-small btn-primary" onClick={() => setActiveVar(v)}>
+                      <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                      Edit
+                    </button>
                   </div>
                 </div>
               </ColoredCard>
@@ -234,7 +238,7 @@ export default function KycVariablesPage() {
         isOpen={!!activeVar}
         onClose={() => { setActiveVar(null); load(); }}
         onSubmit={async () => {}}
-        title="✏️ Edit Variable"
+        title="Edit Variable"
         size="lg"
         customFooter={<div />}
       >

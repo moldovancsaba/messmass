@@ -13,6 +13,7 @@ import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import FormModal from '@/components/modals/FormModal';
+import MaterialIcon from '@/components/MaterialIcon';
 import type { PartnerResponse } from '@/lib/partner.types';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 // TEMP FIX: countryToFlag removed until we implement client-safe version
@@ -1225,7 +1226,8 @@ export default function PartnersAdminPage() {
                           className="btn btn-small btn-primary action-button"
                           title="Edit partner"
                         >
-                          ✏️ Edit
+                          <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                          Edit
                         </button>
                         <button
                           onClick={() => {
@@ -1235,7 +1237,8 @@ export default function PartnersAdminPage() {
                           className="btn btn-small btn-danger action-button"
                           title="Delete partner"
                         >
-                          🗑️ Delete
+                          <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                          Delete
                         </button>
                       </div>
                     </td>
