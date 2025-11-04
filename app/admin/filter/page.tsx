@@ -722,7 +722,7 @@ function HashtagFilterPageContent() {
                     <h3 className="project-item-title">
                       {projectItem.viewSlug ? (
                         <a 
-          href={`/report/${project.viewSlug}`}
+          href={`/report/${projectItem.viewSlug}`}
                           className="project-link"
                           target="_blank"
                           rel="noopener noreferrer"
