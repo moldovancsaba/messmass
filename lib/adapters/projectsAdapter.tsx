@@ -210,7 +210,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         variant: 'secondary',
         handler: (project) => {
           if (project.viewSlug) {
-            window.open(`/stats/${project.viewSlug}`, '_blank');
+            window.open(`/report/${project.viewSlug}`, '_blank');
           }
         },
         title: 'View public report page',
@@ -309,7 +309,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         variant: 'secondary',
         handler: (project) => {
           if (project.viewSlug) {
-            window.open(`/stats/${project.viewSlug}`, '_blank');
+            window.open(`/report/${project.viewSlug}`, '_blank');
           }
         },
         title: 'View public report page',

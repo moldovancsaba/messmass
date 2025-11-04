@@ -47,7 +47,7 @@ export default function UnifiedProjectsSection({
             <h3 className={styles.projectName}>
               {project.viewSlug ? (
                 <a
-                  href={`/stats/${project.viewSlug}`}
+          href={`/report/${project.viewSlug}`}
                   className={styles.projectLink}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -369,7 +369,7 @@ export default function HashtagStatsPage() {
                   <h3 className="project-item-title">
                     {projectItem.viewSlug ? (
                       <a 
-                        href={`/stats/${projectItem.viewSlug}`}
+              href={`/report/${project.viewSlug}`}
                         className="project-link"
                         target="_blank"
                         rel="noopener noreferrer"

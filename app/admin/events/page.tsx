@@ -299,7 +299,7 @@ export default function ProjectsPageUnified() {
         setProjects(prev => [result.project, ...prev]);
         setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
         setShowNewProjectForm(false);
-        alert(`Project \"${result.project.eventName}\" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nStats Link: /stats/${result.project.viewSlug}`);
+        alert(`Project \"${result.project.eventName}\" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nReport Link: /report/${result.project.viewSlug}`);
       } else {
         alert(`Failed to create project: ${result.error || 'Unknown error'}`);
       }

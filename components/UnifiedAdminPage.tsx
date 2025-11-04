@@ -164,8 +164,9 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
       result = clientSideSearch(result, debouncedSearchTerm, adapter.searchFields);
     }
 
-    // Apply sorting if enabled
-    if (enableSort && sortField && sortOrder) {
+    // WHAT: Apply sorting if enabled AND not using server-side sorting
+    // WHY: Server-side sorting already sorted the data - don't re-sort client-side
+    if (enableSort && !isServerSideSort && sortField && sortOrder) {
       result = clientSideSort(result, sortField, sortOrder);
     }
 

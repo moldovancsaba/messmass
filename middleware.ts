@@ -131,8 +131,8 @@ export const config = {
     // WHAT: Admin pages (protected area)
     '/admin/:path*',
     
-    // WHAT: Public stats pages (rate limiting applies)
-    '/stats/:path*',
+    // WHAT: Public report pages (rate limiting applies)
+    '/report/:path*',
     
     // WHAT: Exclude static files and assets
     '/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.ico).*)',
