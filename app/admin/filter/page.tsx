@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import styles from '../../stats/[slug]/stats.module.css';
+import styles from '../../report/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
