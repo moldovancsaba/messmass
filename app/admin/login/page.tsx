@@ -44,7 +44,9 @@ export default function AdminLogin() {
       })
       const data = await response.json().catch(() => ({}))
       if (response.ok) {
-        router.push('/admin')
+        // WHAT: Use window.location instead of router.push to force full page reload
+        // WHY: Ensures cookie is fully set in browser before middleware checks authentication
+        window.location.href = '/admin'
       } else {
         setError(data.error || 'Invalid credentials')
       }
