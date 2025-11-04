@@ -89,25 +89,26 @@
 
 /* ===== Sidebar Header ===== */
 .sidebarHeader {
-  /* What: Logo and collapse toggle container
-     Why: Branding and responsive control */
+  /* WHAT: Logo container with FIXED positioning to prevent jumping
+     WHY: Logo must stay in same position when sidebar collapses */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* Left align */
   padding: var(--mm-space-6) var(--mm-space-4);
   border-bottom: 1px solid var(--mm-border-color-default);
   min-height: 72px;
 }
 
 .logo {
-  /* What: Logo link with clean typography
-     Why: Flat design, no gradients */
+  /* WHAT: Logo container with FIXED width to prevent jumping
+     WHY: Logo icon must stay in exact same position */
   display: flex;
   align-items: center;
-  gap: var(--mm-space-3);
+  gap: var(--mm-space-2);
   text-decoration: none;
   color: var(--mm-gray-900);
   transition: opacity var(--transition-base);
+  padding-left: var(--mm-space-3); /* Align icon left edge with menu icons */
 }
 
 .logo:hover {
@@ -140,12 +141,11 @@
 }
 
 .collapseToggle {
-  /* WHAT: Collapse/expand button positioned OUTSIDE sidebar
-     WHY: Better UX - clearer affordance, floating on main content area */
+  /* WHAT: Collapse/expand button STICKING to sidebar edge
+     WHY: Must move with sidebar, not stay centered */
   position: fixed;
   top: var(--mm-space-6);
   left: 280px; /* Full sidebar width */
-  transform: translateX(-50%);
   z-index: calc(var(--z-fixed) + 5); /* Above sidebar */
   background: var(--mm-white);
   border: 1px solid var(--mm-border-color-default);
@@ -156,7 +156,7 @@
   font-size: var(--mm-font-size-lg);
   line-height: 1;
   box-shadow: var(--mm-shadow-md);
-  transition: all var(--transition-base);
+  transition: left var(--transition-base); /* Only animate left position */
   width: 32px;
   height: 32px;
   display: flex;
@@ -164,10 +164,10 @@
   justify-content: center;
 }
 
-/* WHAT: Adjust position when sidebar is collapsed
-   WHY: Button follows sidebar edge */
-.sidebar.collapsed ~ .collapseToggle {
-  left: 80px; /* Collapsed sidebar width */
+/* WHAT: Button follows collapsed sidebar edge
+   WHY: Must stick to sidebar, not float in middle */
+.collapsed ~ .collapseToggle {
+  left: 80px !important; /* Collapsed sidebar width */
 }
 
 .collapseToggle:hover {

@@ -104,20 +104,26 @@ export default function ProjectsPageUnified() {
       const params = new URLSearchParams();
       params.set('limit', String(PAGE_SIZE));
       
-      // Server-side search
-      if (q) {
-        params.set('q', q);
-        params.set('offset', '0');
-        console.log('🔎 API call with search:', q, 'URL:', `/api/projects?${params.toString()}`);
-      } else if (sortField && sortOrder) {
-        // Server-side sorting
+      // WHAT: Always include sort params if set (works with or without search)
+      // WHY: Sorting must work on initial load and during search
+      if (sortField && sortOrder) {
         params.set('sortField', sortField);
         params.set('sortOrder', sortOrder);
-        params.set('offset', '0');
-        console.log('📦 API call with sort:', sortField, sortOrder);
+      }
+      
+      // WHAT: Add search query if present
+      // WHY: Search can work WITH sorting
+      if (q) {
+        params.set('q', q);
+        console.log('🔎 API call with search + sort:', { q, sortField, sortOrder });
+      } else if (sortField && sortOrder) {
+        console.log('📦 API call with sort only:', sortField, sortOrder);
       } else {
         console.log('📦 API call default (no search/sort)');
       }
+      
+      // Always use offset 0 for first page
+      params.set('offset', '0');
       
       const response = await fetch(`/api/projects?${params.toString()}`, { cache: 'no-store' });
       console.log('✅ API response received, success:', response.ok);
@@ -420,8 +426,8 @@ export default function ProjectsPageUnified() {
     return (
       <div className="loading-container">
         <div className="loading-card">
-          <div className="text-4xl mb-4">📁</div>
-          <div className="text-gray-600">Loading projects...</div>
+          <div className="text-4xl mb-4">📅</div>
+          <div className="text-gray-600">Loading events...</div>
         </div>
       </div>
     );

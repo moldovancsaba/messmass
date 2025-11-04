@@ -39,9 +39,9 @@ interface NavCard {
    Colors: Match design token system from theme.css */
 const navCards: NavCard[] = [
   {
-    href: '/admin/projects',
-    icon: '🍿',
-    title: 'Manage Projects',
+    href: '/admin/events',
+    icon: '📅',
+    title: 'Manage Events',
     description: 'Create, edit, delete, and organize all your events',
     accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
   },

@@ -194,9 +194,8 @@ export default function Sidebar() {
         <nav className={styles.sidebarNav}>
           {navSections.map((section) => (
             <div key={section.title} className={styles.navSection}>
-              {!isCollapsed && (
-                <h3 className={styles.sectionTitle}>{section.title}</h3>
-              )}
+              {/* WHAT: Section titles removed to prevent menu jumping
+                  WHY: User request - cleaner UI without section headers */}
               
               <ul className={styles.navList}>
                 {section.items.map((item) => (
