@@ -437,12 +437,7 @@ export default function ProjectsPageUnified() {
         adapter={enhancedAdapter}
         items={projects}
         isLoading={loading}
-        title={
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <MaterialIcon name="event" variant="outlined" style={{ fontSize: '1.5rem' }} />
-            Manage Events
-          </span>
-        }
+        title="📅 Manage Events"
         subtitle="Manage all events, statistics, and sharing options"
         backLink="/admin"
         enableSearch={true}
