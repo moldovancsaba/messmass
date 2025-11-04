@@ -1457,10 +1457,38 @@ textarea::placeholder {
 }
 
 /* Stats cards grid within sections */
+/* WHAT: 6-column grid for groups in clicker/manual modes */
+/* WHY: Image uploaders and text inputs appear side-by-side, not stacked */
+/* HOW: Fixed 6 columns on desktop, auto-fill scales with fewer items */
 .stats-cards-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
+}
+
+/* WHAT: Variable type-based grid spanning rules */
+/* WHY: Different input types need different widths in 6-column layout */
+/* HOW: CSS classes applied based on variable type */
+
+/* Full-width text areas (6 columns) */
+.stats-cards-row > [class*="TextareaField"] {
+  grid-column: span 6;
+}
+
+/* Half-width image uploaders (3 columns) */
+.stats-cards-row > [class*="ImageUploader"] {
+  grid-column: span 3;
+}
+
+/* Full-width form groups with single-line inputs (for text, texthyper types) */
+.stats-cards-row > .form-group {
+  grid-column: span 6;
+}
+
+/* Standard stat cards and input cards (1 column each by default) */
+.stats-cards-row > .stat-card,
+.stats-cards-row > .input-card {
+  grid-column: span 1;
 }
 
 .stats-cards-row-age {
@@ -1489,6 +1517,25 @@ textarea::placeholder {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  
+  /* WHAT: Tablet - 4 columns for groups */
+  /* WHY: Better fit for medium screens */
+  .stats-cards-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  /* Adjust spans for 4-column layout */
+  .stats-cards-row > [class*="TextareaField"] {
+    grid-column: span 4;
+  }
+  
+  .stats-cards-row > [class*="ImageUploader"] {
+    grid-column: span 2;
+  }
+  
+  .stats-cards-row > .form-group {
+    grid-column: span 4;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1504,9 +1551,23 @@ textarea::placeholder {
     font-size: 1.25rem;
   }
   
+  /* WHAT: Mobile responsive - 2 columns for better readability */
+  /* WHY: Maintains side-by-side layout on mobile for paired items */
   .stats-cards-row {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
+  }
+  
+  /* Adjust spans for 2-column mobile layout */
+  .stats-cards-row > [class*="TextareaField"],
+  .stats-cards-row > [class*="ImageUploader"],
+  .stats-cards-row > .form-group {
+    grid-column: span 2; /* Full width on mobile */
+  }
+  
+  .stats-cards-row > .stat-card,
+  .stats-cards-row > .input-card {
+    grid-column: span 1; /* Side-by-side on mobile */
   }
   
   .merch-cards-grid {

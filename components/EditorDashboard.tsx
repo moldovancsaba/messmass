@@ -614,14 +614,13 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   // WHAT: textmedia - Image upload to ImgBB
                   if (v.type === 'textmedia') {
                     return (
-                      <div key={v.name} style={{ gridColumn: '1 / -1', maxWidth: '600px' }}>
-                        <ImageUploader
-                          label={v.label}
-                          value={getTextField(v.name)}
-                          onChange={(url) => saveImageUrl(v.name, url || '')}
-                          maxSizeMB={10}
-                        />
-                      </div>
+                      <ImageUploader
+                        key={v.name}
+                        label={v.label}
+                        value={getTextField(v.name)}
+                        onChange={(url) => saveImageUrl(v.name, url || '')}
+                        maxSizeMB={10}
+                      />
                     );
                   }
                   

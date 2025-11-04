@@ -319,7 +319,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         iconVariant: 'outlined', // v10.4.0: Icon variant (default outlined)
         emoji: '📊',
         showTotal: false,
-        totalLabel: ''
+        totalLabel: '',
+        aspectRatio: '16:9' // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
       });
     }
     setShowEditor(true);
