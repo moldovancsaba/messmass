@@ -2,8 +2,8 @@
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
 
-- **Version**: v10.4.0
-- **Last Updated**: 2025-11-03T07:22:00.000Z
+- **Version**: v10.6.0
+- **Last Updated**: 2025-11-04T21:48:00.000Z
 - **Website**: https://messmass.doneisbetter.com
 - **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
 
@@ -109,6 +109,7 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 | **HASHTAG_SYSTEM.md** | Unified hashtag system with category colors |
 | **BITLY_INTEGRATION_GUIDE.md** | Bitly API integration, analytics, many-to-many associations |
 || **AUTHENTICATION_AND_ACCESS.md** | **Complete authentication system**: Admin auth, page passwords, security layers, audit (v8.16.0 - consolidated) |
+|| **API_PUBLIC.md** | **Public API Documentation**: Bearer token auth, rate limits, endpoints, examples (v10.5.1+) |
 || **ADMIN_LAYOUT_SYSTEM.md** | Admin navigation, sidebar, responsive layout patterns |
 | **CARD_SYSTEM.md** | ColoredCard component API and usage patterns |
 | **NOTIFICATION_INTEGRATION_GUIDE.md** | Multi-user notification system implementation |

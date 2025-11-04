@@ -15,6 +15,10 @@ export interface UserDoc {
   role: UserRole
   password: string // Note: per project requirements, we store generated plaintext-like token (MD5-style)
   lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
+  // API Access fields (v10.5.1+)
+  apiKeyEnabled?: boolean // Enable/disable API access for this user (default: false)
+  apiUsageCount?: number // Track API calls made with this user's key
+  lastAPICallAt?: string // ISO 8601 with milliseconds - last successful API request
   createdAt: string // ISO 8601 with milliseconds
   updatedAt: string // ISO 8601 with milliseconds
 }
@@ -114,5 +118,72 @@ export async function listUsers(): Promise<UserDoc[]> {
   const col = await getUsersCollection()
   const docs = await col.find({}).sort({ createdAt: -1 }).toArray()
   return docs
+}
+
+/**
+ * findUserByPassword
+ * WHAT: Finds a user by their password token (used as API key)
+ * WHY: Enables Bearer token authentication for public API endpoints
+ * 
+ * SECURITY NOTE: This is a temporary design pattern for v1 Unified Access Management.
+ * Password serves dual purpose: login credential + API key when apiKeyEnabled=true.
+ * 
+ * ROADMAP: In v2, migrate to dedicated hashed API keys stored separately from login passwords.
+ * This will enable:
+ *   - Separate key rotation without affecting login
+ *   - Multiple keys per user with scopes
+ *   - Granular revocation
+ * 
+ * Current implementation prioritizes:
+ *   - Immediate user attribution (know exactly who called what)
+ *   - Zero new storage concepts (reuse existing password field)
+ *   - Fast delivery with audit trail
+ */
+export async function findUserByPassword(password: string): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  // WHAT: Query by password field (acts as API key)
+  // WHY: Bearer token in Authorization header is the user's password
+  return col.findOne({ password })
+}
+
+/**
+ * updateAPIUsage
+ * WHAT: Increments API usage counter and updates lastAPICallAt timestamp
+ * WHY: Track API activity for audit trail and usage analytics
+ */
+export async function updateAPIUsage(id: string): Promise<void> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return
+  
+  const now = new Date().toISOString()
+  
+  // WHAT: Atomic increment of usage counter + timestamp update
+  // WHY: Prevents race conditions in concurrent API calls
+  await col.updateOne(
+    { _id: new ObjectId(id) },
+    { 
+      $inc: { apiUsageCount: 1 },
+      $set: { lastAPICallAt: now, updatedAt: now }
+    }
+  )
+}
+
+/**
+ * toggleAPIAccess
+ * WHAT: Enable or disable API access for a user
+ * WHY: Admin control over who can use Bearer token authentication
+ */
+export async function toggleAPIAccess(id: string, enabled: boolean): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return null
+  
+  const now = new Date().toISOString()
+  
+  await col.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { apiKeyEnabled: enabled, updatedAt: now } }
+  )
+  
+  return findUserById(id)
 }
 

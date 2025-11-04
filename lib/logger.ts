@@ -362,10 +362,11 @@ export function logDatabaseError(operation: string, collection: string, err: Err
 // WHY: Track startup, shutdown, and configuration changes
 
 export function logAppStart(version: string, environment: string): void {
+  // WHAT: Log application startup without Node.js version
+  // WHY: Edge Runtime doesn't support process.version API
   info('Application starting', {
     version,
     environment,
-    nodeVersion: process.version,
     tags: ['lifecycle', 'startup'],
   });
 }

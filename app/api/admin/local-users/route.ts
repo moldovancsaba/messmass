@@ -84,6 +84,11 @@ export async function GET(request: NextRequest) {
         email: u.email,
         name: u.name,
         role: u.role,
+        // WHAT: Include API access fields (v10.5.1+)
+        // WHY: Admin UI needs to display/manage API access settings
+        apiKeyEnabled: u.apiKeyEnabled || false,
+        apiUsageCount: u.apiUsageCount || 0,
+        lastAPICallAt: u.lastAPICallAt,
         createdAt: u.createdAt,
         updatedAt: u.updatedAt
       })),
@@ -137,6 +142,11 @@ export async function POST(request: NextRequest) {
         email: created.email,
         name: created.name,
         role: created.role,
+        // WHAT: New users have API access disabled by default
+        // WHY: Security best practice - require explicit enable
+        apiKeyEnabled: created.apiKeyEnabled || false,
+        apiUsageCount: created.apiUsageCount || 0,
+        lastAPICallAt: created.lastAPICallAt,
         createdAt: created.createdAt,
         updatedAt: created.updatedAt
       },
