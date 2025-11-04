@@ -217,7 +217,9 @@ export function getRateLimitConfig(request: NextRequest): RateLimitConfig {
   const method = request.method;
   
   // WHAT: Authentication endpoints - strictest limits
-  if (pathname.startsWith('/api/admin/login') || pathname.startsWith('/api/auth')) {
+  // WHY: Prevent brute-force login attacks
+  // EXCEPTION: Logout (DELETE) uses normal write limits, not auth limits
+  if ((pathname.startsWith('/api/admin/login') || pathname.startsWith('/api/auth')) && method !== 'DELETE') {
     return RATE_LIMITS.AUTH;
   }
   

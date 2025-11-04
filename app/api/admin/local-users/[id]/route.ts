@@ -26,31 +26,43 @@ export async function PUT(
     // Check authentication
     const admin = await getAdminUser()
     if (!admin) {
+      console.log('❌ PUT /api/admin/local-users/[id]: No admin user found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Only super-admin can regenerate passwords
     if (admin.role !== 'super-admin') {
+      console.log(`❌ PUT /api/admin/local-users/[id]: User ${admin.email} is not super-admin (role: ${admin.role})`)
       return NextResponse.json({ error: 'Forbidden: Only super-admin can regenerate passwords' }, { status: 403 })
     }
 
     const userId = params.id
     const body = await request.json()
+    
+    console.log(`🔍 PUT /api/admin/local-users/${userId}:`, { body, adminEmail: admin.email })
 
     // Validate user ID
     if (!ObjectId.isValid(userId)) {
+      console.log(`❌ Invalid ObjectId: ${userId}`)
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
     const client = await clientPromise
     const db = client.db(config.dbName)
-    const usersCollection = db.collection('local_users')
+    const usersCollection = db.collection('users')
 
     // Check if user exists
+    console.log(`🔍 Looking for user with _id: ${userId}`)
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
     if (!user) {
+      console.log(`❌ User not found with _id: ${userId}`)
+      const allUsers = await usersCollection.find({}).toArray()
+      console.log(`📋 Total users in collection: ${allUsers.length}`)
+      console.log(`📋 User IDs in collection:`, allUsers.map(u => u._id.toString()))
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+    
+    console.log(`✅ Found user: ${user.email}`)
 
     // Handle password regeneration
     if (body.regeneratePassword) {
@@ -113,7 +125,7 @@ export async function DELETE(
 
     const client = await clientPromise
     const db = client.db(config.dbName)
-    const usersCollection = db.collection('local_users')
+    const usersCollection = db.collection('users')
 
     // Check if user exists
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })

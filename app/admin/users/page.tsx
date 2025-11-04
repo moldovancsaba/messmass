@@ -158,8 +158,10 @@ export default function AdminUsersPageUnified() {
           } else {
             setError(data.error || 'Failed to regenerate password');
           }
-        } catch {
-          setError('Failed to regenerate password');
+        } catch (err) {
+          console.error('❌ Regenerate password error:', err);
+          const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate password';
+          setError(errorMessage);
         }
       }
     });
