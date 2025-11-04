@@ -240,41 +240,30 @@ export default function ProjectsPageUnified() {
   // Handle sorting
   const handleSort = (field: string) => {
     const typedField = field as SortField;
+    // WHAT: Three-state cycle: asc → desc → null (clear sort)
+    // WHY: User can toggle through states by clicking same column
     if (sortField === typedField) {
       if (sortOrder === 'asc') {
         setSortOrder('desc');
       } else if (sortOrder === 'desc') {
+        // Clear sorting
         setSortField(null);
         setSortOrder(null);
       }
     } else {
+      // New field clicked - start with ascending
       setSortField(typedField);
       setSortOrder('asc');
     }
+    
+    // WHAT: Reset pagination when sort changes
+    // WHY: New sort order = new result set from beginning
     setNextCursor(null);
     setSearchOffset(null);
     setSortOffset(null);
-    setLoading(true);
     
-    // Sync to URL
-    const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
-    const currentField = sortField;
-    const currentOrder = sortOrder;
-    let nextField: SortField = typedField;
-    let nextOrder: SortOrder = 'asc';
-    if (currentField === typedField) {
-      nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
-    }
-    if (nextOrder) {
-      params.set('sortField', nextField as string);
-      params.set('sortOrder', nextOrder);
-    } else {
-      params.delete('sortField');
-      params.delete('sortOrder');
-    }
-    router.replace(`?${params.toString()}`, { scroll: false });
-    
-    setTimeout(() => loadProjects(true), 0);
+    // NOTE: No router.replace() - useEffect at line 238 will trigger loadProjects
+    // automatically when sortField/sortOrder change. This prevents page reload.
   };
   
   // Create project

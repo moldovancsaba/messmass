@@ -8,6 +8,7 @@
 import React from 'react';
 import { CardViewConfig, getNestedValue } from '@/lib/adminDataAdapters';
 import ColoredCard from './ColoredCard';
+import MaterialIcon from './MaterialIcon';
 import styles from './UnifiedCardView.module.css';
 
 interface UnifiedCardViewProps<T> {
@@ -174,7 +175,13 @@ export default function UnifiedCardView<T extends { _id: string }>({
                         `}
                         title={action.title}
                       >
-                        {action.icon && <span className={styles.actionIcon}>{action.icon}</span>}
+                        {action.icon && (
+                          <MaterialIcon 
+                            name={action.icon} 
+                            variant="outlined" 
+                            style={{ fontSize: '1rem', marginRight: '0.25rem' }} 
+                          />
+                        )}
                         <span className={styles.actionLabel}>{action.label}</span>
                       </button>
                     ))}
