@@ -1,74 +1,25 @@
 /* components/UnifiedAdminViewToggle.module.css */
-/* WHAT: Styling for view mode toggle button */
-/* WHY: Consistent button group UI with active state indicators */
-/* DESIGN SYSTEM: Uses theme.css tokens for colors and spacing */
+/* WHAT: Minimal styling for view mode toggle using unified button system
+   WHY: Leverages centralized .btn .btn-small .btn-secondary classes from components.css
+   DESIGN SYSTEM: Consistent with hero buttons across admin pages */
 
 .toggleContainer {
+  /* WHAT: Flex container for button group
+     WHY: Group buttons with small gap */
   display: inline-flex;
-  gap: 0;
-  border: 1px solid var(--mm-color-neutral-300);
-  border-radius: var(--mm-radius-md);
-  overflow: hidden;
-  background: var(--mm-color-neutral-50);
+  gap: var(--mm-space-2);
 }
 
-.toggleButton {
-  display: flex;
-  align-items: center;
-  gap: var(--mm-spacing-xs);
-  padding: var(--mm-spacing-sm) var(--mm-spacing-md);
-  border: none;
-  background: transparent;
-  color: var(--mm-color-neutral-700);
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-right: 1px solid var(--mm-color-neutral-300);
+/* WHAT: Inactive button state (when not selected)
+   WHY: Match inactive state styling without gradients */
+.inactive {
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
+  border: 1px solid var(--mm-border-color-default);
 }
 
-.toggleButton:last-child {
-  border-right: none;
-}
-
-.toggleButton:hover {
-  background: var(--mm-color-neutral-100);
-  color: var(--mm-color-neutral-900);
-}
-
-.toggleButton:focus-visible {
-  outline: 2px solid var(--mm-color-primary-500);
-  outline-offset: -2px;
-  z-index: 1;
-}
-
-.toggleButton.active {
-  background: var(--mm-color-primary-500);
-  color: white;
-  font-weight: var(--mm-font-weight-semibold);
-}
-
-.toggleButton.active:hover {
-  background: var(--mm-color-primary-600);
-}
-
-.icon {
-  font-size: var(--mm-font-size-lg);
-  line-height: 1;
-}
-
-.label {
-  font-size: var(--mm-font-size-sm);
-}
-
-/* WHAT: Responsive hide labels on mobile */
-/* WHY: Save space on small screens, icons are self-explanatory */
-@media (max-width: 640px) {
-  .label {
-    display: none;
-  }
-  
-  .toggleButton {
-    padding: var(--mm-spacing-sm);
-  }
+.inactive:hover {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+  border-color: var(--mm-border-color-hover);
 }

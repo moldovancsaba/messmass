@@ -17,41 +17,50 @@
 }
 
 .headerContent {
-  /* What: Inner content container with padding
-     Why: Consistent spacing and flex layout */
+  /* WHAT: Inner content container with constrained width to prevent overflow
+     WHY: Logout button frequently goes off-screen without max-width */
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  max-width: 100%; /* Prevent overflow */
   padding: 0 var(--mm-space-6);
   gap: var(--mm-space-4);
 }
 
 /* ===== Left Section ===== */
 .headerLeft {
-  /* What: Left section for search or quick actions
-     Why: Flex grow to push right section to the right */
+  /* WHAT: Left section for search or quick actions with overflow control
+     WHY: Allow shrinking to prevent pushing right section off-screen */
   flex: 1;
+  min-width: 0; /* Allow flex item to shrink below content size */
   display: flex;
   align-items: center;
   gap: var(--mm-space-4);
 }
 
 .welcomeText {
-  /* What: Welcome message text
-     Why: Friendly greeting for the user */
+  /* WHAT: Welcome message text with overflow control
+     WHY: Prevent long names from pushing logout button off-screen */
   font-size: var(--mm-font-size-base);
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ===== Right Section ===== */
 .headerRight {
-  /* What: Right section with user info and actions
-     Why: Grouped user-related controls */
+  /* WHAT: Right section with user info and actions, constrained to prevent overflow
+     WHY: Prevent logout button and user info from going off-screen */
   display: flex;
   align-items: center;
   gap: var(--mm-space-4);
+  flex-shrink: 0; /* Prevent shrinking below content size */
+  flex-wrap: wrap; /* Allow wrapping on very small screens */
+  justify-content: flex-end;
+  max-width: 100%; /* Prevent overflow */
 }
 
 .notificationsBell {

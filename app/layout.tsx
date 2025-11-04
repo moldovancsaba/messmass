@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Roboto, Poppins, Montserrat } from 'next/font/google';
+import { Inter, Roboto, Poppins, Montserrat, Pacifico } from 'next/font/google';
 import './globals.css';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import { HashtagDataProvider } from '../contexts/HashtagDataProvider';
@@ -34,11 +34,24 @@ const montserrat = Montserrat({
   display: 'swap',
 });
 
+/* What: Pacifico font for MessMass branding
+   Why: User-requested font for logo text next to icon */
+const pacifico = Pacifico({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-pacifico',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'MessMass - Event Statistics Dashboard',
   description: 'Real-time collaborative event statistics tracking',
   keywords: ['Event Statistics', 'Real-time Collaboration', 'Dashboard', 'Next.js'],
   authors: [{ name: 'MessMass Team' }],
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export const viewport: Viewport = {
@@ -69,7 +82,7 @@ export default async function RootLayout({
   return (
     <html 
       lang="en" 
-      className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable}`}
+      className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable} ${pacifico.variable}`}
       data-font={selectedFont}
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >

@@ -104,62 +104,78 @@
      Why: Flat design, no gradients */
   display: flex;
   align-items: center;
-  gap: var(--mm-space-2);
+  gap: var(--mm-space-3);
   text-decoration: none;
-  color: var(--mm-color-primary-600);
-  font-weight: var(--mm-font-weight-bold);
-  font-size: var(--mm-font-size-xl);
-  transition: color var(--transition-base);
+  color: var(--mm-gray-900);
+  transition: opacity var(--transition-base);
 }
 
 .logo:hover {
-  color: var(--mm-color-primary-700);
+  opacity: 0.8;
 }
 
 .logoText {
+  /* WHAT: 'messmass' text in Pacifico Google Font (black color)
+     WHY: User-requested branding style */
+  font-family: var(--font-pacifico);
+  font-size: 1.5rem;
+  color: #000000;
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .logoIcon {
   /* What: Abbreviated logo for collapsed state
-     Why: MM instead of full MessMass */
+     WHY: No longer used - logo stays same size */
   font-size: var(--mm-font-size-2xl);
 }
 
 .logoImage {
-  /* What: Full logo image for expanded sidebar
-     Why: Display MessMass logo at appropriate size */
-  height: 40px;
+  /* WHAT: Logo icon aligned with sidebar menu icons (1.25rem height)
+     WHY: Visual consistency - matches MaterialIcon fontSize in navIcon */
+  height: 1.25rem;
   width: auto;
   object-fit: contain;
-}
-
-.logoImageCollapsed {
-  /* What: Compact logo for collapsed sidebar
-     Why: Fit logo in narrow collapsed state */
-  height: 32px;
-  width: auto;
-  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .collapseToggle {
-  /* What: Collapse/expand button
-     Why: Toggle sidebar width on desktop/tablet */
-  background: transparent;
+  /* WHAT: Collapse/expand button positioned OUTSIDE sidebar
+     WHY: Better UX - clearer affordance, floating on main content area */
+  position: fixed;
+  top: var(--mm-space-6);
+  left: 280px; /* Full sidebar width */
+  transform: translateX(-50%);
+  z-index: calc(var(--z-fixed) + 5); /* Above sidebar */
+  background: var(--mm-white);
   border: 1px solid var(--mm-border-color-default);
-  border-radius: var(--mm-radius-sm);
-  padding: var(--mm-space-1) var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2);
   color: var(--mm-gray-600);
   cursor: pointer;
   font-size: var(--mm-font-size-lg);
   line-height: 1;
+  box-shadow: var(--mm-shadow-md);
   transition: all var(--transition-base);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* WHAT: Adjust position when sidebar is collapsed
+   WHY: Button follows sidebar edge */
+.sidebar.collapsed ~ .collapseToggle {
+  left: 80px; /* Collapsed sidebar width */
 }
 
 .collapseToggle:hover {
   background: var(--mm-gray-100);
   color: var(--mm-gray-900);
   border-color: var(--mm-border-color-hover);
+  box-shadow: var(--mm-shadow-lg);
+  transform: translateX(-50%) translateY(-2px);
 }
 
 .collapseToggle:focus-visible {

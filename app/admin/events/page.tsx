@@ -14,6 +14,7 @@ import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
 import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
+import MaterialIcon from '@/components/MaterialIcon';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 
@@ -93,7 +94,11 @@ export default function ProjectsPageUnified() {
       if (isSearchMode) {
         // Keep existing UI, just mark as searching
       } else {
-        setLoading(true);
+        if (resetList) {
+          setLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
       }
       
       const params = new URLSearchParams();
@@ -121,6 +126,9 @@ export default function ProjectsPageUnified() {
       if (data.success) {
         if (resetList) {
           setProjects(data.projects);
+        } else {
+          // WHAT: Append to existing list for Load More
+          setProjects(prev => [...prev, ...data.projects]);
         }
         setNextCursor(data.pagination?.mode === 'cursor' ? (data.pagination?.nextCursor || null) : null);
         setSearchOffset(data.pagination?.mode === 'search' ? (data.pagination?.nextOffset ?? null) : null);
@@ -133,8 +141,53 @@ export default function ProjectsPageUnified() {
       console.error('Failed to load projects:', error);
     } finally {
       setLoading(false);
+      setIsLoadingMore(false);
     }
   }, [debouncedSearchQuery, sortField, sortOrder]);
+  
+  // WHAT: Load more events handler
+  // WHY: Pagination support to load next page of results
+  const handleLoadMore = async () => {
+    const q = debouncedSearchQuery.trim();
+    setIsLoadingMore(true);
+    
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', String(PAGE_SIZE));
+      
+      // Determine which pagination mode to use
+      if (q && searchOffset !== null) {
+        // Search mode with offset
+        params.set('q', q);
+        params.set('offset', String(searchOffset));
+      } else if (sortField && sortOrder && sortOffset !== null) {
+        // Sort mode with offset
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+        params.set('offset', String(sortOffset));
+      } else if (nextCursor) {
+        // Default cursor mode
+        params.set('cursor', nextCursor);
+      } else {
+        // No more results
+        return;
+      }
+      
+      const response = await fetch(`/api/projects?${params.toString()}`, { cache: 'no-store' });
+      const data = await response.json();
+      
+      if (data.success) {
+        setProjects(prev => [...prev, ...data.projects]);
+        setNextCursor(data.pagination?.mode === 'cursor' ? (data.pagination?.nextCursor || null) : null);
+        setSearchOffset(data.pagination?.mode === 'search' ? (data.pagination?.nextOffset ?? null) : null);
+        setSortOffset(data.pagination?.mode === 'sort' ? (data.pagination?.nextOffset ?? null) : null);
+      }
+    } catch (error) {
+      console.error('Failed to load more projects:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
   
   // Initial load - only on mount when user becomes available
   useEffect(() => {
@@ -384,13 +437,18 @@ export default function ProjectsPageUnified() {
         adapter={enhancedAdapter}
         items={projects}
         isLoading={loading}
-        title="🍿 Manage Projects"
-        subtitle="Manage all event projects, statistics, and sharing options"
+        title={
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <MaterialIcon name="event" variant="outlined" style={{ fontSize: '1.5rem' }} />
+            Manage Events
+          </span>
+        }
+        subtitle="Manage all events, statistics, and sharing options"
         backLink="/admin"
         enableSearch={true}
         externalSearchValue={searchQuery}
-        onExternalSearchChange={setSearchQuery}
-        searchPlaceholder="Search projects..."
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search events..."
         showPaginationStats={true}
         totalMatched={totalMatched}
         enableSort={true}
@@ -399,22 +457,45 @@ export default function ProjectsPageUnified() {
         onSortChange={handleSort}
         actionButtons={[
           {
-            label: 'Add New Project',
+            label: 'Add New Event',
             onClick: () => setShowNewProjectForm(true),
             variant: 'primary',
             icon: '➕',
-            title: 'Create a new project'
+            title: 'Create a new event'
           }
         ]}
       />
       
-      {/* Create Project Modal */}
+      {/* WHAT: Load More button for pagination
+          WHY: Allow users to load additional events beyond first page */}
+      {(nextCursor || searchOffset !== null || sortOffset !== null) && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--mm-space-6)', marginTop: 'var(--mm-space-4)' }}>
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+            className="btn btn-secondary"
+            style={{ minWidth: '200px' }}
+          >
+            {isLoadingMore ? 'Loading...' : `Load ${PAGE_SIZE} More Events`}
+          </button>
+        </div>
+      )}
+      
+      {/* WHAT: End of list indicator
+          WHY: Show when all events have been loaded */}
+      {!nextCursor && searchOffset === null && sortOffset === null && projects.length > 0 && (
+        <div style={{ textAlign: 'center', padding: 'var(--mm-space-6)', color: 'var(--mm-gray-600)' }}>
+          — All {totalMatched} events loaded —
+        </div>
+      )}
+      
+      {/* Create Event Modal */}
       <FormModal
         isOpen={showNewProjectForm}
         onClose={() => setShowNewProjectForm(false)}
         onSubmit={createNewProject}
-        title="➕ Create New Project"
-        submitText="Create Project"
+        title="➕ Create New Event"
+        submitText="Create Event"
         isSubmitting={isCreatingProject}
         size="lg"
       >
@@ -469,14 +550,14 @@ export default function ProjectsPageUnified() {
         </div>
       </FormModal>
       
-      {/* Edit Project Modal */}
+      {/* Edit Event Modal */}
       {editingProject && (
         <FormModal
           isOpen={showEditProjectForm}
           onClose={() => setShowEditProjectForm(false)}
           onSubmit={updateProject}
-          title="✏️ Edit Project"
-          submitText="Update Project"
+          title="✏️ Edit Event"
+          submitText="Update Event"
           isSubmitting={isUpdatingProject}
           size="lg"
         >

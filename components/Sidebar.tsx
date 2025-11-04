@@ -44,7 +44,7 @@ export default function Sidebar() {
       title: 'Content',
       items: [
         { label: 'Dashboard', path: '/admin', icon: 'analytics' },
-        { label: 'Events', path: '/admin/projects', icon: 'event' },
+        { label: 'Events', path: '/admin/events', icon: 'event' },
         { label: 'Partners', path: '/admin/partners', icon: 'handshake' },
         { label: 'Quick Add', path: '/admin/quick-add', icon: 'bolt' },
         { label: 'Filters', path: '/admin/filter', icon: 'search' },
@@ -154,6 +154,17 @@ export default function Sidebar() {
         />
       )}
       
+      {/* WHAT: Desktop/tablet collapse toggle - positioned OUTSIDE sidebar
+          WHY: Better UX - clearer affordance for sidebar control */}
+      <button
+        className={styles.collapseToggle}
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        title={isCollapsed ? 'Expand' : 'Collapse'}
+      >
+        {isCollapsed ? '»' : '«'}
+      </button>
+      
       {/* What: Main sidebar navigation
          Why: Core navigation structure with responsive behavior */}
       <aside
@@ -166,24 +177,16 @@ export default function Sidebar() {
            Why: Branding and responsive control */}
         <div className={styles.sidebarHeader}>
           <Link href="/admin" className={styles.logo}>
+            {/* WHAT: Logo icon stays same size in both states
+                WHY: Visual consistency - only text hides on collapse */}
+            <img src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} />
+            
+            {/* WHAT: 'messmass' text in Pacifico font, only visible when expanded
+                WHY: User-requested branding with Google Font */}
             {!isCollapsed && (
-              <img src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} />
-            )}
-            {isCollapsed && (
-              <img src="/messmass-logo.png" alt="MM" className={styles.logoImageCollapsed} />
+              <span className={styles.logoText}>messmass</span>
             )}
           </Link>
-          
-          {/* What: Desktop/tablet collapse toggle
-             Why: Allow users to maximize content area */}
-          <button
-            className={styles.collapseToggle}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            title={isCollapsed ? 'Expand' : 'Collapse'}
-          >
-            {isCollapsed ? '»' : '«'}
-          </button>
         </div>
         
         {/* What: Scrollable navigation sections

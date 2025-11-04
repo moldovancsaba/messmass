@@ -40,32 +40,32 @@ export default function UnifiedAdminViewToggle({
       role="group"
       aria-label="View mode selector"
     >
-      {/* WHAT: List view button */}
-      {/* WHY: Activate table-based list layout */}
+      {/* WHAT: List view button with unified hero button style
+           WHY: Consistency with other action buttons using btn btn-small classes */}
       <button
         type="button"
         onClick={() => onViewChange('list')}
-        className={`${styles.toggleButton} ${currentView === 'list' ? styles.active : ''}`}
+        className={`btn btn-small ${currentView === 'list' ? 'btn-secondary' : styles.inactive}`}
         aria-label="List view"
         aria-pressed={currentView === 'list'}
         title="Switch to list view"
       >
-        <span className={styles.icon} aria-hidden="true">☰</span>
-        <span className={styles.label}>List</span>
+        <span aria-hidden="true">☰</span>
+        <span>List</span>
       </button>
 
-      {/* WHAT: Card view button */}
-      {/* WHY: Activate grid-based card layout */}
+      {/* WHAT: Card view button with unified hero button style
+           WHY: Consistency with other action buttons using btn btn-small classes */}
       <button
         type="button"
         onClick={() => onViewChange('card')}
-        className={`${styles.toggleButton} ${currentView === 'card' ? styles.active : ''}`}
+        className={`btn btn-small ${currentView === 'card' ? 'btn-secondary' : styles.inactive}`}
         aria-label="Card view"
         aria-pressed={currentView === 'card'}
         title="Switch to card view"
       >
-        <span className={styles.icon} aria-hidden="true">▦</span>
-        <span className={styles.label}>Cards</span>
+        <span aria-hidden="true">▦</span>
+        <span>Cards</span>
       </button>
     </div>
   );
