@@ -266,6 +266,8 @@ select:focus,
   border-radius: var(--border-radius);
   padding: 1rem;
   box-shadow: var(--mm-shadow-sm);
+  width: 100%; /* WHAT: Force full width of grid cell */
+  box-sizing: border-box; /* WHAT: Include padding in width calculation */
 }
 
 /* Calculated value row with muted styling */
@@ -450,6 +452,8 @@ textarea::placeholder {
   box-shadow: var(--shadow);
   transition: all var(--transition-slow);
   position: relative; /* What: establish stacking context for absolute-positioned decrement button; Why: keeps UI tidy and predictable */
+  width: 100%; /* WHAT: Force full width of grid cell; WHY: Buttons should fill allocated space */
+  box-sizing: border-box; /* WHAT: Include padding in width calculation */
 }
 
 /* What: adds a thin top accent bar using solid primary color; Why: flat design, no gradients */
