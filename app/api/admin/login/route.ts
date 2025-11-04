@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Update lastLogin timestamp for successful login
     // WHY: Track when users last accessed the system
-    if (user._id) {
+    if (user?._id) {
       await updateUserLastLogin(user._id.toString())
     }
 
