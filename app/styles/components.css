@@ -151,13 +151,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-2);
-  align-items: flex-end;
+  align-items: stretch; /* WHAT: Full width buttons in vertical list */
 }
 
-/* WHAT: Minimum width for action buttons to maintain visual consistency
- * WHY: Ensures Edit/Delete buttons have same width across all admin pages */
+/* WHAT: Action buttons with left-aligned content and Material Icons
+ * WHY: Consistent button styling across all admin pages with icon+text layout */
+.action-buttons-container .btn,
 .action-button {
-  min-width: 80px;
+  min-width: 112px;
+  justify-content: flex-start; /* WHAT: Left-align icon and text */
+  white-space: nowrap; /* WHAT: Prevent text wrapping */
 }
 
 /* WHAT: Drag handle for reorderable items

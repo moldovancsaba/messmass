@@ -92,7 +92,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
     rowActions: [
       {
         label: 'Regenerate',
-        icon: '🔄',
+        icon: 'refresh',
         variant: 'secondary',
         handler: (user) => {
           // WHAT: Regenerate password action (overridden by page component)
@@ -103,7 +103,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
       },
       {
         label: 'Delete',
-        icon: '🗑️',
+        icon: 'delete',
         variant: 'danger',
         handler: (user) => {
           // WHAT: Delete user action (overridden by page component)
@@ -142,7 +142,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
     cardActions: [
       {
         label: 'Regenerate',
-        icon: '🔄',
+        icon: 'refresh',
         variant: 'secondary',
         handler: (user) => {
           // WHAT: Regenerate password action (overridden by page component)
@@ -152,7 +152,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
       },
       {
         label: 'Delete',
-        icon: '🗑️',
+        icon: 'delete',
         variant: 'danger',
         handler: (user) => {
           // WHAT: Delete user action (overridden by page component)
