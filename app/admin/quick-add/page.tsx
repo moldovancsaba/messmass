@@ -6,7 +6,7 @@ import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
 import PartnerSelector from '@/components/PartnerSelector';
 import type { PartnerResponse } from '@/lib/partner.types';
-import styles from '@/app/admin/projects/PartnerLogos.module.css';
+import styles from '@/app/admin/events/PartnerLogos.module.css';
 import { apiPost } from '@/lib/apiClient';
 
 /* What: Quick Add from Sheet page for bulk event import

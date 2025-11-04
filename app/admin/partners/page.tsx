@@ -21,7 +21,7 @@ import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbH
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import styles from './PartnerManager.module.css';
-import logoStyles from '../projects/PartnerLogos.module.css';
+import styles from '../events/PartnerLogos.module.css';
 
 // WHAT: Bitly link option for multi-select
 interface BitlyLinkOption {
