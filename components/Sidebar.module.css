@@ -126,6 +126,22 @@
   font-size: var(--mm-font-size-2xl);
 }
 
+.logoImage {
+  /* What: Full logo image for expanded sidebar
+     Why: Display MessMass logo at appropriate size */
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logoImageCollapsed {
+  /* What: Compact logo for collapsed sidebar
+     Why: Fit logo in narrow collapsed state */
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
 .collapseToggle {
   /* What: Collapse/expand button
      Why: Toggle sidebar width on desktop/tablet */

@@ -166,8 +166,12 @@ export default function Sidebar() {
            Why: Branding and responsive control */}
         <div className={styles.sidebarHeader}>
           <Link href="/admin" className={styles.logo}>
-            {!isCollapsed && <span className={styles.logoText}>MessMass</span>}
-            {isCollapsed && <span className={styles.logoIcon}>MM</span>}
+            {!isCollapsed && (
+              <img src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} />
+            )}
+            {isCollapsed && (
+              <img src="/messmass-logo.png" alt="MM" className={styles.logoImageCollapsed} />
+            )}
           </Link>
           
           {/* What: Desktop/tablet collapse toggle

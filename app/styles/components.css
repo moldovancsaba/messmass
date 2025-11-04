@@ -1257,6 +1257,23 @@ textarea::placeholder {
   height: 64px;
 }
 
+.login-logo-container {
+  /* What: Container for MessMass logo on login page
+     Why: Center and size the logo appropriately */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-logo {
+  /* What: MessMass logo image styling
+     Why: Appropriate size for login page branding */
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
 .login-title {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
