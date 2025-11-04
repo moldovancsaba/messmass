@@ -1489,6 +1489,7 @@ textarea::placeholder {
 .stats-cards-row > .stat-card,
 .stats-cards-row > .input-card {
   grid-column: span 1;
+  width: 100%; /* WHAT: Ensure cards fill their grid cell completely */
 }
 
 .stats-cards-row-age {
