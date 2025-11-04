@@ -85,21 +85,19 @@ export default function ProjectsPageUnified() {
   
   // WHAT: Load projects with database-only logic (no client-side filtering)
   // WHY: Fix search issues by using only server-side search/sort/pagination
-  const loadProjects = useCallback(async (resetList = true) => {
+  const loadProjects = useCallback(async (resetList = true, showLoadingSpinner = false) => {
     const q = debouncedSearchQuery.trim();
     const isSearchMode = !!q;
     
     try {
-      // Don't show full loading spinner during search typing
-      if (isSearchMode) {
-        // Keep existing UI, just mark as searching
-      } else {
-        if (resetList) {
-          setLoading(true);
-        } else {
-          setIsLoadingMore(true);
-        }
+      // WHAT: Only show full loading spinner on initial page load
+      // WHY: Prevent UI flash during search/sort operations
+      if (showLoadingSpinner) {
+        setLoading(true);
+      } else if (!resetList) {
+        setIsLoadingMore(true);
       }
+      // Otherwise: silent fetch (no loading state change)
       
       const params = new URLSearchParams();
       params.set('limit', String(PAGE_SIZE));
@@ -218,7 +216,7 @@ export default function ProjectsPageUnified() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        loadProjects();
+        loadProjects(true, false); // Silent reload, no spinner
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -232,7 +230,9 @@ export default function ProjectsPageUnified() {
     console.log('🔍 Search effect triggered:', { debouncedSearchQuery, sortField, sortOrder, user: !!user });
     if (user) {
       console.log('🚀 Calling loadProjects with search:', debouncedSearchQuery);
-      loadProjects(true);
+      // WHAT: Silent fetch - no loading spinner to prevent UI flash
+      // WHY: Makes search/sort feel instant without page reload
+      loadProjects(true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchQuery, sortField, sortOrder, user]);

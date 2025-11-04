@@ -14,6 +14,9 @@
   z-index: calc(var(--z-sticky) + 1);
   display: flex;
   align-items: center;
+  /* WHAT: Ensure full width minus sidebar on desktop
+     WHY: Prevent header content overflow by calculating available width */
+  width: 100%;
 }
 
 .headerContent {
@@ -244,11 +247,12 @@
   }
 }
 
-/* What: Add left margin for sidebar on desktop
-   Why: Account for fixed sidebar width */
+/* What: Add left margin for sidebar on desktop and reduce width accordingly
+   Why: Account for fixed sidebar width while maintaining full viewport coverage */
 @media (min-width: 768px) {
   .topHeader {
     margin-left: 280px; /* Full sidebar width */
+    width: calc(100% - 280px); /* Subtract sidebar width from full width */
   }
 }
 
@@ -257,6 +261,7 @@
 @media (min-width: 768px) and (max-width: 1279px) {
   .topHeader {
     margin-left: 80px; /* Collapsed sidebar width */
+    width: calc(100% - 80px); /* Subtract sidebar width from full width */
   }
 }
 
@@ -265,5 +270,6 @@
 @media (max-width: 767px) {
   .topHeader {
     margin-left: 0;
+    width: 100%; /* Full width on mobile */
   }
 }
