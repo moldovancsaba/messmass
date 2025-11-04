@@ -14,6 +14,7 @@ export interface UserDoc {
   name: string
   role: UserRole
   password: string // Note: per project requirements, we store generated plaintext-like token (MD5-style)
+  lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
   createdAt: string // ISO 8601 with milliseconds
   updatedAt: string // ISO 8601 with milliseconds
 }
@@ -92,6 +93,17 @@ export async function deleteUser(id: string): Promise<boolean> {
   if (!ObjectId.isValid(id)) return false
   const res = await col.deleteOne({ _id: new ObjectId(id) })
   return res.deletedCount === 1
+}
+
+/**
+ * updateUserLastLogin
+ * Updates the lastLogin timestamp for a user.
+ */
+export async function updateUserLastLogin(id: string): Promise<void> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return
+  const now = new Date().toISOString()
+  await col.updateOne({ _id: new ObjectId(id) }, { $set: { lastLogin: now } })
 }
 
 /**

@@ -7,7 +7,7 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
-import { findUserByEmail } from '@/lib/users'
+import { findUserByEmail, updateUserLastLogin } from '@/lib/users'
 import { env } from '@/lib/config'
 
 // Legacy env-based admin password has been removed. Authentication is fully DB-backed.
@@ -43,6 +43,12 @@ export async function POST(request: NextRequest) {
       // Simple brute force protection delay
       await new Promise((r) => setTimeout(r, 800))
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    // WHAT: Update lastLogin timestamp for successful login
+    // WHY: Track when users last accessed the system
+    if (user._id) {
+      await updateUserLastLogin(user._id.toString())
     }
 
     // Note: Legacy bootstrap via env password is removed.
@@ -118,11 +124,35 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
     const cookieStore = await cookies()
+    const isProduction = env.get('NODE_ENV') === 'production'
+    
+    // WHAT: Delete cookie with same attributes as login to ensure browser removes it
+    // WHY: Cookie deletion must match the original cookie's domain/path/secure settings
+    const host = request.headers.get('host') || ''
+    const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined
+    
+    console.log('🚪 Logout requested')
+    console.log('🗑️  Deleting cookie with domain:', domain || 'none (localhost)')
+    
+    // Delete via cookieStore
     cookieStore.delete('admin-session')
-    return NextResponse.json({ success: true, message: 'Logged out successfully' })
+    
+    // Also set explicit deletion response cookie
+    const response = NextResponse.json({ success: true, message: 'Logged out successfully' })
+    response.cookies.set('admin-session', '', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 0, // Delete immediately
+      path: '/',
+      domain,
+    })
+    
+    console.log('✅ Logout successful')
+    return response
   } catch (error) {
     console.error('Admin logout error:', error)
     return NextResponse.json({ error: 'Logout failed' }, { status: 500 })
