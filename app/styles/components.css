@@ -1461,12 +1461,12 @@ textarea::placeholder {
 }
 
 /* Stats cards grid within sections */
-/* WHAT: 6-column grid for groups in clicker/manual modes */
-/* WHY: Image uploaders and text inputs appear side-by-side, not stacked */
-/* HOW: Fixed 6 columns on desktop, auto-fill scales with fewer items */
+/* WHAT: Auto-fit grid that stretches items when fewer than 6 */
+/* WHY: Buttons should fill available width, max 6 columns */
+/* HOW: auto-fit allows items to stretch, minmax ensures max 6 columns */
 .stats-cards-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
 }
 
@@ -1523,10 +1523,10 @@ textarea::placeholder {
     gap: 1.5rem;
   }
   
-  /* WHAT: Tablet - 4 columns for groups */
-  /* WHY: Better fit for medium screens */
+  /* WHAT: Tablet - auto-fit with smaller minimum */
+  /* WHY: Better fit for medium screens, items stretch to fill */
   .stats-cards-row {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
   
   /* Adjust spans for 4-column layout */
@@ -1556,10 +1556,10 @@ textarea::placeholder {
     font-size: 1.25rem;
   }
   
-  /* WHAT: Mobile responsive - 2 columns for better readability */
-  /* WHY: Maintains side-by-side layout on mobile for paired items */
+  /* WHAT: Mobile responsive - auto-fit with mobile-friendly minimum */
+  /* WHY: Items stretch to fill width, max 2-3 per row on mobile */
   .stats-cards-row {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.75rem;
   }
   
