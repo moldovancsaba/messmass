@@ -157,7 +157,7 @@ export default function Sidebar() {
       {/* WHAT: Desktop/tablet collapse toggle - positioned OUTSIDE sidebar
           WHY: Better UX - clearer affordance for sidebar control */}
       <button
-        className={styles.collapseToggle}
+        className={`${styles.collapseToggle} ${isCollapsed ? styles.collapseToggleCollapsed : ''}`}
         onClick={() => setIsCollapsed(!isCollapsed)}
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         title={isCollapsed ? 'Expand' : 'Collapse'}

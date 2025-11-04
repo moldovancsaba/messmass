@@ -205,7 +205,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         title: 'Download CSV export',
       },
       {
-        label: 'View Stats',
+        label: 'Report',
         icon: 'visibility',
         variant: 'secondary',
         handler: (project) => {
@@ -213,7 +213,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
             window.open(`/stats/${project.viewSlug}`, '_blank');
           }
         },
-        title: 'View public statistics page',
+        title: 'View public report page',
       },
       {
         label: 'Edit Stats',
@@ -304,6 +304,17 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
     ],
     cardActions: [
       {
+        label: 'Report',
+        icon: 'visibility',
+        variant: 'secondary',
+        handler: (project) => {
+          if (project.viewSlug) {
+            window.open(`/stats/${project.viewSlug}`, '_blank');
+          }
+        },
+        title: 'View public report page',
+      },
+      {
         label: 'Edit Stats',
         icon: 'bar_chart',
         variant: 'primary',
@@ -315,56 +326,6 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
           window.location.href = `/edit/${slug}`;
         },
         title: 'Edit event statistics',
-      },
-      {
-        label: 'Edit',
-        icon: 'edit',
-        variant: 'secondary',
-        handler: (project) => {
-          // This will be overridden by the page component
-          console.log('Edit project:', project._id);
-        },
-        title: 'Edit project details',
-      },
-      {
-        label: 'CSV',
-        icon: 'download',
-        variant: 'secondary',
-        handler: async (project) => {
-          try {
-            const timestamp = new Date().getTime();
-            const id = project.viewSlug || project._id;
-            const res = await fetch(`/api/projects/stats/${id}?refresh=${timestamp}`);
-            const data = await res.json();
-            if (!data.success || !data.project) {
-              alert('Failed to fetch project stats');
-              return;
-            }
-            const p = data.project;
-            const esc = (v: any) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-            const rows: Array<[string, string | number]> = [];
-            rows.push(['Event Name', p.eventName]);
-            rows.push(['Event Date', p.eventDate]);
-            Object.entries(p.stats || {}).forEach(([k, v]) => {
-              rows.push([k, typeof v === 'number' || typeof v === 'string' ? v : '']);
-            });
-            const header = ['Variable', 'Value'];
-            const csv = [header, ...rows].map(([k, v]) => `${esc(k)},${esc(v)}`).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const base = p.eventName.replace(/[^a-zA-Z0-9]/g, '_') || 'event';
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${base}_variables.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          } catch (e) {
-            alert('Export failed');
-          }
-        },
-        title: 'Download CSV export',
       },
     ],
   },

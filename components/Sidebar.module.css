@@ -89,14 +89,14 @@
 
 /* ===== Sidebar Header ===== */
 .sidebarHeader {
-  /* WHAT: Logo container with FIXED positioning to prevent jumping
-     WHY: Logo must stay in same position when sidebar collapses */
+  /* WHAT: Logo container with EXACT height to prevent jumping
+     WHY: Logo must stay pixel-perfect in same position */
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Left align */
   padding: var(--mm-space-6) var(--mm-space-4);
   border-bottom: 1px solid var(--mm-border-color-default);
-  min-height: 72px;
+  height: 72px; /* FIXED height, not min-height */
 }
 
 .logo {
@@ -141,11 +141,11 @@
 }
 
 .collapseToggle {
-  /* WHAT: Collapse/expand button STICKING to sidebar edge
-     WHY: Must move with sidebar, not stay centered */
+  /* WHAT: Collapse/expand button EXACTLY at sidebar right edge
+     WHY: Must move with sidebar collapse/expand */
   position: fixed;
   top: var(--mm-space-6);
-  left: 280px; /* Full sidebar width */
+  left: 280px; /* Full sidebar width - button ON the edge */
   z-index: calc(var(--z-fixed) + 5); /* Above sidebar */
   background: var(--mm-white);
   border: 1px solid var(--mm-border-color-default);
@@ -156,7 +156,7 @@
   font-size: var(--mm-font-size-lg);
   line-height: 1;
   box-shadow: var(--mm-shadow-md);
-  transition: left var(--transition-base); /* Only animate left position */
+  transition: left 0.3s ease; /* Same duration as sidebar width transition */
   width: 32px;
   height: 32px;
   display: flex;
@@ -164,10 +164,10 @@
   justify-content: center;
 }
 
-/* WHAT: Button follows collapsed sidebar edge
-   WHY: Must stick to sidebar, not float in middle */
-.collapsed ~ .collapseToggle {
-  left: 80px !important; /* Collapsed sidebar width */
+/* WHAT: Button moves to collapsed sidebar edge
+   WHY: Controlled by JS class, not CSS sibling selector */
+.collapseToggleCollapsed {
+  left: 80px; /* Collapsed sidebar width */
 }
 
 .collapseToggle:hover {
@@ -175,7 +175,7 @@
   color: var(--mm-gray-900);
   border-color: var(--mm-border-color-hover);
   box-shadow: var(--mm-shadow-lg);
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateY(-2px); /* REMOVED translateX */
 }
 
 .collapseToggle:focus-visible {
