@@ -287,7 +287,7 @@ export default function QuickAddPage() {
       
       // Reset form after 2 seconds and redirect
       setTimeout(() => {
-        router.push('/admin/projects');
+        router.push('/admin/events');
       }, 2000);
       
     } catch (err: any) {
@@ -439,7 +439,7 @@ export default function QuickAddPage() {
       
       // Reset form after 2 seconds and redirect
       setTimeout(() => {
-        router.push('/admin/projects');
+        router.push('/admin/events');
       }, 2000);
       
     } catch (err: any) {
@@ -554,7 +554,7 @@ export default function QuickAddPage() {
       
       // Reset form after 2 seconds and redirect
       setTimeout(() => {
-        router.push('/admin/projects');
+        router.push('/admin/events');
       }, 2000);
       
     } catch (err: any) {
@@ -580,7 +580,7 @@ export default function QuickAddPage() {
       <AdminHero
         title="⚡ Quick Add"
         subtitle="Quickly create events: Sports Matches, Partner Events, or Suggested Fixtures"
-        backLink="/admin/projects"
+        backLink="/admin/events"
       />
       
       {/* WHAT: Tab navigation for different quick add methods
@@ -1094,7 +1094,7 @@ export default function QuickAddPage() {
                             const resp = await apiPost('/api/sports-db/fixtures/draft', { eventId: fx.eventId });
                             if (!resp.success) throw new Error(resp.error || 'Failed');
                             setSuccess('Draft event created');
-                            setTimeout(() => { router.push('/admin/projects'); }, 1200);
+                            setTimeout(() => { router.push('/admin/events'); }, 1200);
                           } catch (e: any) {
                             setError(e.message || 'Failed to create draft');
                           } finally {

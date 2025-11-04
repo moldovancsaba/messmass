@@ -154,15 +154,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     }
   };
 
-  // WHAT: Handle notification click - navigate to project and mark as read
-  // WHY: Allow users to view project details directly from notification
+  // WHAT: Handle notification click - navigate to events page and mark as read
+  // WHY: Allow users to view events details directly from notification
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.readBy.includes(currentUserId)) {
       markAsRead(notification._id);
     }
     
-    // Navigate to admin projects page
-    window.location.href = `/admin/projects`;
+    // Navigate to admin events page
+    window.location.href = `/admin/events`;
   };
 
   // WHAT: Format timestamp to relative time

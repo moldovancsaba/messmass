@@ -93,11 +93,11 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
         <div className={styles.sectionHeader}>
           <h2 className="section-title">📊 Project Management</h2>
           <a 
-            href="/admin/projects"
+            href="/admin/events"
             className={`btn btn-primary ${styles.manageButton}`}
-            title="Manage all projects - create, edit, delete, and organize"
+            title="Manage all events - create, edit, delete, and organize"
           >
-            📊 Manage Projects
+            📅 Manage Events
           </a>
         </div>
         
