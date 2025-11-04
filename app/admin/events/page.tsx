@@ -442,7 +442,7 @@ export default function ProjectsPageUnified() {
         backLink="/admin"
         enableSearch={true}
         externalSearchValue={searchQuery}
-        onSearchChange={setSearchQuery}
+        onExternalSearchChange={setSearchQuery}
         searchPlaceholder="Search events..."
         showPaginationStats={true}
         totalMatched={totalMatched}
