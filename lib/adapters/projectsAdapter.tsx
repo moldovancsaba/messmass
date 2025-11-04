@@ -164,7 +164,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
     rowActions: [
       {
         label: 'CSV',
-        icon: '⬇️',
+        icon: 'download',
         variant: 'secondary',
         handler: async (project) => {
           try {
@@ -206,7 +206,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'View Stats',
-        icon: '👁️',
+        icon: 'visibility',
         variant: 'secondary',
         handler: (project) => {
           if (project.viewSlug) {
@@ -217,7 +217,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'Edit Stats',
-        icon: '📊',
+        icon: 'bar_chart',
         variant: 'primary',
         handler: (project) => {
           // WHAT: Navigate to stats editor (main application function)
@@ -230,7 +230,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'Edit',
-        icon: '✏️',
+        icon: 'edit',
         variant: 'secondary',
         handler: (project) => {
           // This will be overridden by the page component
@@ -240,7 +240,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'Delete',
-        icon: '🗑️',
+        icon: 'delete',
         variant: 'danger',
         handler: async (project) => {
           if (confirm(`Delete event "${project.eventName}"?`)) {
@@ -305,7 +305,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
     cardActions: [
       {
         label: 'Edit Stats',
-        icon: '📊',
+        icon: 'bar_chart',
         variant: 'primary',
         handler: (project) => {
           // WHAT: Navigate to stats editor (main application function)
@@ -318,7 +318,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'Edit',
-        icon: '✏️',
+        icon: 'edit',
         variant: 'secondary',
         handler: (project) => {
           // This will be overridden by the page component
@@ -328,7 +328,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
       },
       {
         label: 'CSV',
-        icon: '⬇️',
+        icon: 'download',
         variant: 'secondary',
         handler: async (project) => {
           try {

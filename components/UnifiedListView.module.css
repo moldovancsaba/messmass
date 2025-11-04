@@ -98,36 +98,50 @@
 }
 
 /* WHAT: Actions cell styling */
-/* WHY: Right-aligned action buttons with proper spacing */
+/* WHY: Vertical action button layout for better hierarchy and mobile responsiveness */
 .actionsHeader {
-  text-align: right !important;
-  width: 180px;
-  min-width: 180px;
+  text-align: center !important;
+  width: 10rem;
+  min-width: 10rem;
 }
 
 .actionsCell {
-  text-align: right;
+  text-align: left;
+  padding: var(--mm-spacing-3) var(--mm-spacing-4) var(--mm-spacing-3) var(--mm-spacing-3) !important;
+  vertical-align: middle;
 }
 
 .actionButtons {
   display: flex;
-  gap: var(--mm-spacing-xs, 8px);
-  justify-content: flex-end;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--mm-spacing-3);
+  align-items: stretch;
 }
 
 .actionButton {
   display: inline-flex;
   align-items: center;
-  gap: var(--mm-spacing-xs, 6px);
-  padding: var(--mm-spacing-xs, 6px) var(--mm-spacing-sm, 12px);
-  border: 1px solid transparent;
-  border-radius: var(--mm-radius-md, 6px);
+  justify-content: flex-start;
+  gap: var(--mm-spacing-2);
+  min-width: 100%;
+  width: 100%;
+  padding: var(--mm-spacing-2) var(--mm-spacing-3);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   white-space: nowrap;
+  text-align: left;
+}
+
+.actionButton:hover {
+  background: var(--mm-gray-50);
+  border-color: var(--mm-gray-400);
+  color: var(--mm-gray-900);
 }
 
 .actionButton:focus-visible {
@@ -140,30 +154,34 @@
 .actionButton.variant-primary {
   background: var(--mm-color-primary-500);
   color: white;
+  border-color: var(--mm-color-primary-500);
 }
 
 .actionButton.variant-primary:hover {
   background: var(--mm-color-primary-600);
+  border-color: var(--mm-color-primary-600);
 }
 
 .actionButton.variant-secondary {
-  background: var(--mm-gray-100);
+  background: var(--mm-white);
   color: var(--mm-gray-700);
   border-color: var(--mm-gray-300);
 }
 
 .actionButton.variant-secondary:hover {
-  background: var(--mm-gray-200);
+  background: var(--mm-gray-50);
   border-color: var(--mm-gray-400);
 }
 
 .actionButton.variant-danger {
-  background: var(--mm-error, #ef4444);
+  background: var(--mm-error);
   color: white;
+  border-color: var(--mm-error);
 }
 
 .actionButton.variant-danger:hover {
-  background: #dc2626;
+  background: var(--mm-error-dark, #dc2626);
+  border-color: var(--mm-error-dark, #dc2626);
 }
 
 .actionIcon {
@@ -252,7 +270,15 @@
   }
   
   .actionsHeader {
-    width: 80px;
-    min-width: 80px;
+    width: 8rem;
+    min-width: 8rem;
+  }
+  
+  .actionsCell {
+    padding: var(--mm-spacing-2) var(--mm-spacing-3) var(--mm-spacing-2) var(--mm-spacing-2) !important;
+  }
+  
+  .actionButtons {
+    gap: var(--mm-spacing-2);
   }
 }

@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { ListViewConfig } from '@/lib/adminDataAdapters';
+import MaterialIcon from '@/components/MaterialIcon';
 import styles from './UnifiedListView.module.css';
 
 interface UnifiedListViewProps<T> {
@@ -173,8 +174,17 @@ export default function UnifiedListView<T extends { _id: string }>({
                                 ${action.className || ''}
                               `}
                               title={action.title}
+                              aria-label={action.label}
                             >
-                              {action.icon && <span className={styles.actionIcon}>{action.icon}</span>}
+                              {action.icon && (
+                                <span className={styles.actionIcon}>
+                                  {typeof action.icon === 'string' ? (
+                                    <MaterialIcon name={action.icon} variant="outlined" style={{ fontSize: '1.125rem' }} />
+                                  ) : (
+                                    action.icon
+                                  )}
+                                </span>
+                              )}
                               <span className={styles.actionLabel}>{action.label}</span>
                             </button>
                           ))}
