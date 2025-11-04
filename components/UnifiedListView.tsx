@@ -113,7 +113,7 @@ export default function UnifiedListView<T extends { _id: string }>({
                 );
               })}
               {config.rowActions && config.rowActions.length > 0 && (
-                <th className={styles.actionsHeader}>Actions</th>
+                <th>Actions</th>
               )}
             </tr>
           </thead>
@@ -159,36 +159,28 @@ export default function UnifiedListView<T extends { _id: string }>({
                       </td>
                     ))}
                     {config.rowActions && config.rowActions.length > 0 && (
-                      <td className={styles.actionsCell}>
-                        <div className={styles.actionButtons}>
-                          {config.rowActions.map((action, idx) => (
-                            <button
-                              key={idx}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                action.handler(item);
-                              }}
-                              className={`
-                                ${styles.actionButton}
-                                ${action.variant ? styles[`variant-${action.variant}`] : styles['variant-primary']}
-                                ${action.className || ''}
-                              `}
-                              title={action.title}
-                              aria-label={action.label}
-                            >
-                              {action.icon && (
-                                <span className={styles.actionIcon}>
-                                  {typeof action.icon === 'string' ? (
-                                    <MaterialIcon name={action.icon} variant="outlined" style={{ fontSize: '1.125rem' }} />
-                                  ) : (
-                                    action.icon
-                                  )}
-                                </span>
-                              )}
-                              <span className={styles.actionLabel}>{action.label}</span>
-                            </button>
-                          ))}
-                        </div>
+                      <td className="actions-cell">
+                        {config.rowActions.map((action, idx) => (
+                          <button
+                            key={idx}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              action.handler(item);
+                            }}
+                            className={`btn btn-small btn-${action.variant || 'primary'} ${action.className || ''}`}
+                            title={action.title}
+                            aria-label={action.label}
+                          >
+                            {action.icon && (
+                              typeof action.icon === 'string' ? (
+                                <MaterialIcon name={action.icon} variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                              ) : (
+                                action.icon
+                              )
+                            )}
+                            {action.label}
+                          </button>
+                        ))}
                       </td>
                     )}
                   </tr>

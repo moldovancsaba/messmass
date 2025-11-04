@@ -97,101 +97,9 @@
   vertical-align: middle;
 }
 
-/* WHAT: Actions cell styling */
-/* WHY: Vertical action button layout for better hierarchy and mobile responsiveness */
-.actionsHeader {
-  text-align: center !important;
-  width: 10rem;
-  min-width: 10rem;
-}
-
-.actionsCell {
-  text-align: left;
-  padding: var(--mm-spacing-3) var(--mm-spacing-4) var(--mm-spacing-3) var(--mm-spacing-3) !important;
-  vertical-align: middle;
-}
-
-.actionButtons {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-spacing-3);
-  align-items: stretch;
-}
-
-.actionButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--mm-spacing-2);
-  min-width: 100%;
-  width: 100%;
-  padding: var(--mm-spacing-2) var(--mm-spacing-3);
-  border: 1px solid var(--mm-gray-300);
-  border-radius: var(--mm-radius-md);
-  background: var(--mm-white);
-  color: var(--mm-gray-700);
-  font-size: var(--mm-font-size-sm);
-  font-weight: var(--mm-font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-  text-align: left;
-}
-
-.actionButton:hover {
-  background: var(--mm-gray-50);
-  border-color: var(--mm-gray-400);
-  color: var(--mm-gray-900);
-}
-
-.actionButton:focus-visible {
-  outline: 2px solid var(--mm-color-primary-500);
-  outline-offset: 2px;
-}
-
-/* WHAT: Action button variants */
-/* WHY: Visual differentiation for different action types */
-.actionButton.variant-primary {
-  background: var(--mm-color-primary-500);
-  color: white;
-  border-color: var(--mm-color-primary-500);
-}
-
-.actionButton.variant-primary:hover {
-  background: var(--mm-color-primary-600);
-  border-color: var(--mm-color-primary-600);
-}
-
-.actionButton.variant-secondary {
-  background: var(--mm-white);
-  color: var(--mm-gray-700);
-  border-color: var(--mm-gray-300);
-}
-
-.actionButton.variant-secondary:hover {
-  background: var(--mm-gray-50);
-  border-color: var(--mm-gray-400);
-}
-
-.actionButton.variant-danger {
-  background: var(--mm-error);
-  color: white;
-  border-color: var(--mm-error);
-}
-
-.actionButton.variant-danger:hover {
-  background: var(--mm-error-dark, #dc2626);
-  border-color: var(--mm-error-dark, #dc2626);
-}
-
-.actionIcon {
-  font-size: var(--mm-font-size-base);
-  line-height: 1;
-}
-
-.actionLabel {
-  font-size: var(--mm-font-size-sm);
-}
+/* WHAT: Actions cell styling - REMOVED */
+/* WHY: Using centralized .actions-cell from layout.css for consistency with Partners page */
+/* See: app/styles/layout.css lines 177-190 for the unified pattern */
 
 /* WHAT: Loading skeleton styling */
 /* WHY: Visual feedback during data loading */
@@ -269,16 +177,5 @@
     padding: var(--mm-spacing-xs, 6px);
   }
   
-  .actionsHeader {
-    width: 8rem;
-    min-width: 8rem;
-  }
-  
-  .actionsCell {
-    padding: var(--mm-spacing-2) var(--mm-spacing-3) var(--mm-spacing-2) var(--mm-spacing-2) !important;
-  }
-  
-  .actionButtons {
-    gap: var(--mm-spacing-2);
-  }
+  /* Mobile: Actions cell inherits from layout.css */
 }
