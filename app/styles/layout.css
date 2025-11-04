@@ -176,16 +176,17 @@
 /* Actions Layout */
 .actions-cell {
   display: flex;
+  flex-direction: column; /* WHAT: Vertical list of action buttons */
   gap: var(--space-2);
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch; /* WHAT: Full width buttons in vertical list */
 }
 
 /* Uniform action buttons across admin tables */
 .actions-cell .btn {
   min-width: 112px;
-  justify-content: center;
+  justify-content: flex-start; /* WHAT: Left-align button content with icon */
   border-radius: var(--radius-xl);
+  white-space: nowrap; /* WHAT: Prevent button text wrapping */
 }
 
 /* ========================================
