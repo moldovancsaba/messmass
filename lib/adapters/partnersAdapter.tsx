@@ -140,7 +140,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         ),
       },
     ],
-    // WHAT: Row action buttons (Edit, Delete)
+    // WHAT: Row action buttons (Edit, Report, Delete)
     rowActions: [
       {
         label: 'Edit',
@@ -151,6 +151,21 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
           // This would be replaced with actual edit handler from parent
         },
         title: 'Edit partner',
+      },
+      {
+        label: 'Report',
+        icon: '📊',
+        variant: 'secondary',
+        handler: (partner) => {
+          // WHAT: Open partner report page in new tab
+          // WHY: Allow viewing shareable partner profile with events
+          if (partner.viewSlug) {
+            window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+          } else {
+            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+          }
+        },
+        title: 'View partner report',
       },
       {
         label: 'Delete',
@@ -218,6 +233,20 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         variant: 'primary',
         handler: (partner) => {
           console.log('Edit partner:', partner._id);
+        },
+      },
+      {
+        label: 'Report',
+        icon: '📊',
+        variant: 'secondary',
+        handler: (partner) => {
+          // WHAT: Open partner report page in new tab
+          // WHY: Allow viewing shareable partner profile with events
+          if (partner.viewSlug) {
+            window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+          } else {
+            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+          }
         },
       },
       {

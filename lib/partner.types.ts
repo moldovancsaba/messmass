@@ -104,6 +104,10 @@ export interface Partner {
   // WHY: Permanent CDN-hosted logo for display in UI (uploaded from sportsDb.badge or footballData.crest)
   logoUrl?: string;
   
+  // WHAT: Shareable URL slug for public partner report page
+  // WHY: Allow creating password-protected partner profiles accessible via /partner-report/[slug]
+  viewSlug?: string;
+  
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
