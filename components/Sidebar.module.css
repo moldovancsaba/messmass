@@ -405,7 +405,10 @@
   }
   
   .collapseToggle {
-    display: none; /* No collapse toggle on mobile */
+    /* WHAT: Hide collapse toggle on mobile entirely */
+    /* WHY: Mobile uses drawer pattern, no collapse/expand needed */
+    display: none !important;
+    visibility: hidden;
   }
 }
 

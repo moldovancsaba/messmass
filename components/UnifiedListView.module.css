@@ -157,25 +157,101 @@
   max-width: 400px;
 }
 
-/* WHAT: Responsive adjustments for mobile */
-/* WHY: Maintain usability on small screens */
+/* WHAT: Responsive adjustments for mobile - CARD-STYLE LAYOUT */
+/* WHY: Hide unnecessary columns, show all actions under event name */
 @media (max-width: 768px) {
+  /* WHAT: Transform table into mobile-friendly card layout */
+  /* WHY: Better UX on narrow screens - vertical stacking */
+  
+  .tableWrapper {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden; /* No horizontal scroll needed */
+  }
+  
   .table {
-    font-size: var(--mm-font-size-xs);
+    font-size: var(--mm-font-size-sm);
   }
   
-  .table thead th,
-  .table tbody td {
-    padding: var(--mm-spacing-sm, 12px);
-  }
-  
-  .actionLabel {
+  /* WHAT: Hide table header entirely on mobile */
+  /* WHY: Card layout doesn't need column headers */
+  .table thead {
     display: none;
   }
   
-  .actionButton {
-    padding: var(--mm-spacing-xs, 6px);
+  /* WHAT: Make each row a card */
+  /* WHY: Better visual separation and readability */
+  .table tbody {
+    display: block;
   }
   
-  /* Mobile: Actions cell inherits from layout.css */
+  .row {
+    display: block;
+    margin-bottom: var(--mm-spacing-md, 16px);
+    border: 1px solid var(--mm-gray-200);
+    border-radius: var(--mm-radius-md, 6px);
+    padding: var(--mm-spacing-md, 16px);
+    background: var(--mm-white);
+  }
+  
+  .row:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* WHAT: Stack table cells vertically */
+  /* WHY: Mobile card layout pattern */
+  .table tbody td {
+    display: block;
+    width: 100% !important;
+    padding: 0;
+    border: none;
+  }
+  
+  /* WHAT: Hide Date, Images, Total Fans, Attendees columns */
+  /* WHY: User requirement - show only Event Name and Actions on mobile */
+  .table tbody td:nth-child(2), /* Date */
+  .table tbody td:nth-child(3), /* Images */
+  .table tbody td:nth-child(4), /* Total Fans */
+  .table tbody td:nth-child(5)  /* Attendees */ {
+    display: none !important;
+  }
+  
+  /* WHAT: Event Name cell - full width at top */
+  .table tbody td:first-child {
+    margin-bottom: var(--mm-spacing-md, 16px);
+    padding-bottom: var(--mm-spacing-md, 16px);
+    border-bottom: 1px solid var(--mm-gray-200);
+  }
+  
+  /* WHAT: Actions cell - full width below Event Name */
+  /* WHY: All action buttons stacked vertically for easy tapping */
+  .table .actions-cell {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mm-spacing-xs, 8px);
+    margin-top: var(--mm-spacing-sm, 12px);
+  }
+  
+  /* WHAT: Make action buttons full-width and easy to tap */
+  .table .actions-cell .btn {
+    width: 100% !important;
+    font-size: var(--mm-font-size-sm);
+    padding: var(--mm-spacing-sm, 12px);
+    justify-content: center;
+    text-align: center;
+  }
+  
+  /* WHAT: Loading skeleton rows */
+  .skeletonRow {
+    display: block;
+    margin-bottom: var(--mm-spacing-md, 16px);
+    border: 1px solid var(--mm-gray-200);
+    border-radius: var(--mm-radius-md, 6px);
+    padding: var(--mm-spacing-md, 16px);
+  }
+  
+  .skeletonRow td {
+    display: block;
+    margin-bottom: var(--mm-spacing-sm, 12px);
+  }
 }

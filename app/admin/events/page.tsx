@@ -379,8 +379,8 @@ export default function ProjectsPageUnified() {
     setSharePopupOpen(true);
   };
   
-  // WHAT: Create enhanced adapter with custom Edit handler
-  // WHY: Override default Edit action to open modal instead of logging
+  // WHAT: Create enhanced adapter with custom action handlers
+  // WHY: Override Report/Edit Stats to open share modal, Edit to open edit modal
   // NOTE: Must be called before any early returns (React Hooks rules)
   const enhancedAdapter = React.useMemo(() => ({
     ...projectsAdapter,
@@ -393,6 +393,18 @@ export default function ProjectsPageUnified() {
             handler: (project: ProjectDTO) => editProject(project)
           };
         }
+        if (action.label === 'Report') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'stats')
+          };
+        }
+        if (action.label === 'Edit Stats') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'edit')
+          };
+        }
         return action;
       })
     },
@@ -403,6 +415,18 @@ export default function ProjectsPageUnified() {
           return {
             ...action,
             handler: (project: ProjectDTO) => editProject(project)
+          };
+        }
+        if (action.label === 'Report') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'stats')
+          };
+        }
+        if (action.label === 'Edit Stats') {
+          return {
+            ...action,
+            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'edit')
           };
         }
         return action;

@@ -209,24 +209,22 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         icon: 'visibility',
         variant: 'secondary',
         handler: (project) => {
-          if (project.viewSlug) {
-            window.open(`/report/${project.viewSlug}`, '_blank');
-          }
+          // WHAT: Open share modal for report page (handler overridden by page component)
+          // WHY: Allow sharing report link AND visiting report page
+          console.log('Report:', project._id);
         },
-        title: 'View public report page',
+        title: 'Share and view report page',
       },
       {
         label: 'Edit Stats',
         icon: 'bar_chart',
         variant: 'primary',
         handler: (project) => {
-          // WHAT: Navigate to stats editor (main application function)
-          // WHY: This is the primary purpose of MessMass - editing event statistics
-          // FALLBACK: Use _id if editSlug is not available (backward compatibility)
-          const slug = project.editSlug || project._id;
-          window.location.href = `/edit/${slug}`;
+          // WHAT: Open share modal for edit page (handler overridden by page component)
+          // WHY: Allow sharing edit link AND visiting clicker/editor
+          console.log('Edit Stats:', project._id);
         },
-        title: 'Edit event statistics (clicker & manual input)',
+        title: 'Share and edit event statistics',
       },
       {
         label: 'Edit',
@@ -308,24 +306,22 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         icon: 'visibility',
         variant: 'secondary',
         handler: (project) => {
-          if (project.viewSlug) {
-            window.open(`/report/${project.viewSlug}`, '_blank');
-          }
+          // WHAT: Open share modal for report page (handler overridden by page component)
+          // WHY: Allow sharing report link AND visiting report page
+          console.log('Report:', project._id);
         },
-        title: 'View public report page',
+        title: 'Share and view report page',
       },
       {
         label: 'Edit Stats',
         icon: 'bar_chart',
         variant: 'primary',
         handler: (project) => {
-          // WHAT: Navigate to stats editor (main application function)
-          // WHY: This is the primary purpose of MessMass - editing event statistics
-          // FALLBACK: Use _id if editSlug is not available (backward compatibility)
-          const slug = project.editSlug || project._id;
-          window.location.href = `/edit/${slug}`;
+          // WHAT: Open share modal for edit page (handler overridden by page component)
+          // WHY: Allow sharing edit link AND visiting clicker/editor
+          console.log('Edit Stats:', project._id);
         },
-        title: 'Edit event statistics',
+        title: 'Share and edit event statistics',
       },
     ],
   },

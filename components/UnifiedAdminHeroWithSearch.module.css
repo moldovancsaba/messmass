@@ -132,24 +132,58 @@
 }
 
 /* WHAT: Responsive adjustments for mobile */
-/* WHY: Full-width layout on small screens */
+/* WHY: Full-width layout on small screens, prevent overflow */
 @media (max-width: 640px) {
   .heroContainer {
     padding: var(--mm-spacing-md, 16px);
+    /* WHAT: Prevent horizontal overflow */
+    overflow-x: hidden;
+  }
+  
+  .heroContent {
+    /* WHAT: Ensure content stays within container bounds */
+    max-width: 100%;
+    overflow-x: hidden;
   }
   
   .heroTitle {
     font-size: var(--mm-font-size-2xl);
+    /* WHAT: Allow title to wrap on very narrow screens */
+    word-wrap: break-word;
   }
   
   .heroSubtitle {
     font-size: var(--mm-font-size-sm);
   }
   
+  .heroLeft {
+    /* WHAT: Prevent search container from overflowing */
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .searchContainer {
+    /* WHAT: Force search input to stay within bounds */
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0; /* Allow shrinking below content size */
+  }
+  
+  .searchInput {
+    /* WHAT: Ensure input doesn't overflow */
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
   .heroRight {
     flex-direction: column;
     align-items: stretch;
     gap: var(--mm-spacing-sm, 12px);
+    /* WHAT: Prevent button group from overflowing */
+    width: 100%;
+    max-width: 100%;
   }
   
   .actionButtons {
@@ -159,6 +193,9 @@
   
   .actionButtons button {
     width: 100%;
+    /* WHAT: Ensure button text wraps if too long */
+    white-space: normal;
+    text-align: center;
   }
   
   .viewToggleWrapper {
