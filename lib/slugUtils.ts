@@ -179,7 +179,16 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    const project = await collection.findOne({ viewSlug });
+    // WHAT: Try to find by viewSlug first, then fall back to _id
+    // WHY: Old projects don't have viewSlug field populated (backward compatibility)
+    let project = await collection.findOne({ viewSlug });
+    
+    // WHAT: Fallback to _id if viewSlug not found
+    // WHY: Support old projects created before slug system
+    if (!project && ObjectId.isValid(viewSlug)) {
+      console.log('⚠️ View slug not found, trying _id fallback:', viewSlug);
+      project = await collection.findOne({ _id: new ObjectId(viewSlug) });
+    }
     
     if (!project) {
       return null;
@@ -252,7 +261,17 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    const project = await collection.findOne({ editSlug });
+    // WHAT: Try to find by editSlug first, then fall back to _id
+    // WHY: Old projects don't have editSlug field populated (backward compatibility)
+    // HOW: Use $or query to check both editSlug and _id fields
+    let project = await collection.findOne({ editSlug });
+    
+    // WHAT: Fallback to _id if editSlug not found
+    // WHY: Support old projects created before slug system
+    if (!project && ObjectId.isValid(editSlug)) {
+      console.log('⚠️ Edit slug not found, trying _id fallback:', editSlug);
+      project = await collection.findOne({ _id: new ObjectId(editSlug) });
+    }
     
     if (!project) {
       return null;
