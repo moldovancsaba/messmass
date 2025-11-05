@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import { apiPost, apiDelete } from '@/lib/apiClient';
@@ -105,18 +105,14 @@ export default function ClickerManagerPage() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="↔️ Clicker Manager"
         subtitle="Configure variable groups and ordering for Editor clicker UI"
         backLink="/admin"
         actionButtons={[
-          { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary' },
+          { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕' },
           { label: 'Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
           { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
-        ]}
-        badges={[
-          { text: 'Clicker Configuration', variant: 'primary' },
-          { text: `${groups.length} Groups`, variant: 'success' },
         ]}
       />
 

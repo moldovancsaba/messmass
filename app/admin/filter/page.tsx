@@ -6,7 +6,7 @@ import styles from '../../report/[slug]/stats.module.css';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import HashtagMultiSelect from '@/components/HashtagMultiSelect';
 import SharePopup from '@/components/SharePopup';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import { apiPost } from '@/lib/apiClient';
 
@@ -348,7 +348,7 @@ function HashtagFilterPageContent() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🔍 Hashtag Filter"
         subtitle="Filter projects by multiple hashtags and generate shareable URLs"
         backLink="/admin"
