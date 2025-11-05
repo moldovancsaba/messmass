@@ -15,6 +15,11 @@ interface UserDTO {
   createdAt: string;
   updatedAt: string;
   lastLogin?: string;
+  // WHAT: API access fields (v10.6.0+)
+  // WHY: Track API key usage and status for external integrations
+  apiKeyEnabled?: boolean;
+  apiUsageCount?: number;
+  lastAPICallAt?: string;
 }
 
 /**
@@ -55,13 +60,49 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
               borderRadius: '12px',
               fontSize: '0.875rem',
               fontWeight: 500,
-              backgroundColor: user.role === 'admin' ? '#dbeafe' : '#f3f4f6',
-              color: user.role === 'admin' ? '#1e40af' : '#374151',
+              backgroundColor: user.role === 'api' ? '#dcfce7' : user.role === 'admin' ? '#dbeafe' : '#f3f4f6',
+              color: user.role === 'api' ? '#166534' : user.role === 'admin' ? '#1e40af' : '#374151',
             }}
           >
-            {user.role}
+            {user.role === 'api' ? '🔑 API' : user.role === 'admin' ? '👤 Admin' : user.role}
           </span>
         ),
+      },
+      {
+        key: 'apiAccess',
+        label: 'API Access',
+        sortable: false,
+        width: '120px',
+        render: (user) => (
+          <span style={{ fontSize: '0.875rem' }}>
+            {user.apiKeyEnabled ? '✅ Enabled' : '❌ Disabled'}
+          </span>
+        ),
+      },
+      {
+        key: 'apiUsageCount',
+        label: 'API Usage',
+        sortable: true,
+        width: '110px',
+        render: (user) => (
+          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            {(user.apiUsageCount || 0).toLocaleString()}
+          </span>
+        ),
+      },
+      {
+        key: 'lastAPICallAt',
+        label: 'Last API Call',
+        sortable: true,
+        width: '140px',
+        render: (user) =>
+          user.lastAPICallAt ? (
+            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+              {new Date(user.lastAPICallAt).toLocaleDateString()}
+            </span>
+          ) : (
+            <span className="text-gray-400 text-sm">Never</span>
+          ),
       },
       {
         key: 'lastLogin',
@@ -123,7 +164,23 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         key: 'role',
         label: 'Role',
         icon: '👤',
-        render: (user) => user.role,
+        render: (user) => {
+          const icon = user.role === 'api' ? '🔑' : '👤'
+          const label = user.role === 'api' ? 'API User' : 'Admin User'
+          return `${icon} ${label}`
+        },
+      },
+      {
+        key: 'apiAccess',
+        label: 'API Access',
+        icon: '🔐',
+        render: (user) => user.apiKeyEnabled ? '✅ Enabled' : '❌ Disabled',
+      },
+      {
+        key: 'apiUsage',
+        label: 'API Usage',
+        icon: '📊',
+        render: (user) => `${(user.apiUsageCount || 0).toLocaleString()} calls`,
       },
       {
         key: 'lastLogin',

@@ -28,6 +28,7 @@ export default function AdminUsersPageUnified() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [role, setRole] = useState<'admin' | 'api'>('admin');
   const [creating, setCreating] = useState(false);
   
   // Modal states
@@ -110,18 +111,21 @@ export default function AdminUsersPageUnified() {
     try {
       const data = await apiPost('/api/admin/local-users', {
         email: email.trim(),
-        name: name.trim()
+        name: name.trim(),
+        role: role
       });
       if (data.success) {
         const userEmail = email.trim();
+        const userRole = role;
         setEmail('');
         setName('');
+        setRole('admin');
         setShowCreateModal(false);
         setPasswordModal({
           isOpen: true,
           password: data.password,
           userEmail: userEmail,
-          title: 'User Created Successfully'
+          title: userRole === 'api' ? 'API Key Generated' : 'User Created Successfully'
         });
         await refreshUsers();
       } else {
@@ -167,6 +171,38 @@ export default function AdminUsersPageUnified() {
     });
   };
 
+  // Toggle API access handler
+  const onToggleAPIAccess = async (user: AdminUser) => {
+    const newState = !user.apiKeyEnabled
+    setConfirmModal({
+      isOpen: true,
+      title: newState ? 'Enable API Access' : 'Disable API Access',
+      message: newState 
+        ? `Enable API access for ${user.email}? They can immediately use their password as an API key.`
+        : `Disable API access for ${user.email}? Active integrations may break.`,
+      confirmText: newState ? 'Enable' : 'Disable',
+      isDangerous: !newState,
+      onConfirm: async () => {
+        try {
+          const data = await apiPut(
+            `/api/admin/local-users/${user.id}/api-access`,
+            { enabled: newState }
+          )
+          if (data.success) {
+            await refreshUsers()
+            if (newState && data.recommendation) {
+              alert(data.recommendation)
+            }
+          } else {
+            setError(data.error || 'Failed to toggle API access')
+          }
+        } catch {
+          setError('Failed to toggle API access')
+        }
+      }
+    })
+  }
+
   // Delete user handler
   const onDelete = async (user: AdminUser) => {
     setConfirmModal({
@@ -196,21 +232,39 @@ export default function AdminUsersPageUnified() {
     ...usersAdapter,
     listConfig: {
       ...usersAdapter.listConfig,
-      rowActions: usersAdapter.listConfig.rowActions?.map(action => ({
-        ...action,
-        handler: action.label === 'Regenerate' 
-          ? onRegenerate
-          : onDelete
-      })),
+      rowActions: [
+        {
+          label: (user: any) => user.apiKeyEnabled ? 'Disable API' : 'Enable API',
+          icon: (user: any) => user.apiKeyEnabled ? '🔒' : '🔓',
+          variant: (user: any) => user.apiKeyEnabled ? 'warning' : 'success',
+          handler: onToggleAPIAccess,
+          title: 'Toggle API access'
+        },
+        ...usersAdapter.listConfig.rowActions?.map(action => ({
+          ...action,
+          handler: action.label === 'Regenerate' 
+            ? onRegenerate
+            : onDelete
+        })) || []
+      ],
     },
     cardConfig: {
       ...usersAdapter.cardConfig,
-      cardActions: usersAdapter.cardConfig.cardActions?.map(action => ({
-        ...action,
-        handler: action.label === 'Regenerate' 
-          ? onRegenerate
-          : onDelete
-      })),
+      cardActions: [
+        {
+          label: (user: any) => user.apiKeyEnabled ? 'Disable API' : 'Enable API',
+          icon: (user: any) => user.apiKeyEnabled ? '🔒' : '🔓',
+          variant: (user: any) => user.apiKeyEnabled ? 'warning' : 'success',
+          handler: onToggleAPIAccess,
+          title: 'Toggle API access'
+        },
+        ...usersAdapter.cardConfig.cardActions?.map(action => ({
+          ...action,
+          handler: action.label === 'Regenerate' 
+            ? onRegenerate
+            : onDelete
+        })) || []
+      ],
     },
   };
 
@@ -259,6 +313,7 @@ export default function AdminUsersPageUnified() {
           setShowCreateModal(false);
           setEmail('');
           setName('');
+          setRole('admin');
         }}
         onSubmit={onCreateUser}
         title="➕ Create New Admin User"
@@ -294,9 +349,38 @@ export default function AdminUsersPageUnified() {
           />
         </div>
 
+        <div className="form-group mb-6">
+          <label className="form-label-block text-sm text-gray-700">
+            User Type *
+          </label>
+          <select 
+            className="form-input" 
+            value={role} 
+            onChange={(e) => setRole(e.target.value as 'admin' | 'api')}
+          >
+            <option value="admin">Admin User (Dashboard Access)</option>
+            <option value="api">API User (Programmatic Access)</option>
+          </select>
+          <p className="form-help-text mt-2">
+            Admin users log in via web interface. API users authenticate with Bearer tokens.
+          </p>
+        </div>
+
+        {role === 'api' && (
+          <div className="info-box mb-6">
+            <p style={{ marginBottom: '8px' }}><strong>API User Configuration:</strong></p>
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <li>✅ API access automatically enabled</li>
+              <li>✅ 32-character API key generated</li>
+              <li>✅ Bearer token authentication</li>
+              <li>❌ No web dashboard access</li>
+            </ul>
+          </div>
+        )}
+
         <div className="form-group" style={{ padding: '12px', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #fbbf24' }}>
           <p style={{ fontSize: '0.875rem', color: '#92400e', margin: 0 }}>
-            <strong>Note:</strong> A secure password will be generated automatically and displayed after creation.
+            <strong>Note:</strong> A secure {role === 'api' ? 'API key' : 'password'} will be generated automatically and displayed after creation.
           </p>
         </div>
       </FormModal>

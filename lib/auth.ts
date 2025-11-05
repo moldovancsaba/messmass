@@ -9,8 +9,13 @@ export interface AdminUser {
   id: string
   name: string
   email: string
-  role: 'admin' | 'super-admin'
+  role: 'admin' | 'super-admin' | 'api'
   permissions: string[]
+  // WHAT: API access fields (v10.6.0+)
+  // WHY: Track API key usage and status for external integrations
+  apiKeyEnabled?: boolean
+  apiUsageCount?: number
+  lastAPICallAt?: string
 }
 
 /**
@@ -74,7 +79,12 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     name: user.name,
     email: user.email,
     role: user.role,
-    permissions
+    permissions,
+    // WHAT: Include API access fields in AdminUser view model
+    // WHY: Frontend needs these for display and toggle functionality
+    apiKeyEnabled: user.apiKeyEnabled,
+    apiUsageCount: user.apiUsageCount,
+    lastAPICallAt: user.lastAPICallAt
   }
 }
 

@@ -117,6 +117,11 @@ export async function POST(request: NextRequest) {
     const emailRaw = (body?.email || '').toString()
     const name = (body?.name || '').toString()
     const email = emailRaw.toLowerCase()
+    
+    // WHAT: Accept role from request body, validate it
+    // WHY: Enable creation of API users with automatic API access
+    const requestedRole = body?.role || 'admin'
+    const role = ['admin', 'api'].includes(requestedRole) ? requestedRole : 'admin'
 
     if (!email || !name) {
       return NextResponse.json({ success: false, error: 'Email and name are required' }, { status: 400 })
@@ -125,12 +130,17 @@ export async function POST(request: NextRequest) {
     // Generate MD5-style password (looks like MD5 hash; simple random per project rule)
     const password = generateMD5StylePassword()
     const now = new Date().toISOString()
+    
+    // WHAT: Auto-enable API access for 'api' role users
+    // WHY: API users need immediate access without additional toggle step
+    const apiKeyEnabled = (role === 'api')
 
     const created = await createUser({
       email,
       name,
-      role: 'admin',
+      role,
       password,
+      apiKeyEnabled,
       createdAt: now,
       updatedAt: now
     })
