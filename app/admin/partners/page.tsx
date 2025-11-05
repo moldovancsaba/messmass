@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
@@ -1040,7 +1040,7 @@ export default function PartnersAdminPage() {
   // WHY: Matches design system used in /admin/projects and other admin pages
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🤝 Partner Management"
         subtitle="Manage organizations that own or operate events: clubs, federations, venues, brands"
         backLink="/admin"
@@ -1048,7 +1048,6 @@ export default function PartnersAdminPage() {
         searchValue={searchTerm}
         onSearchChange={(value) => setSearchTerm(value)}
         searchPlaceholder="Search partners..."
-        onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
         actionButtons={[
           {
             label: 'Add Partner',

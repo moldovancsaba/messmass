@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ProjectSelector from '@/components/ProjectSelector';
 import PartnerSelector from '@/components/PartnerSelector';
 import FormModal from '@/components/modals/FormModal';
@@ -835,7 +835,7 @@ export default function BitlyAdminPage() {
   // WHY: Matches design system used in /admin/projects and other admin pages
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="🔗 Bitly Link Management"
         subtitle="Manage Bitly link associations, track click analytics, and connect shortened URLs to your MessMass events"
         backLink="/admin"
@@ -843,7 +843,6 @@ export default function BitlyAdminPage() {
         searchValue={searchTerm}
         onSearchChange={(value) => setSearchTerm(value)}
         searchPlaceholder="Search Bitly links..."
-        onSearchKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
         actionButtons={[
           {
             label: 'Get Links from Bitly',

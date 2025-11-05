@@ -6,7 +6,7 @@ import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import vizStyles from './Visualization.module.css';
@@ -312,13 +312,11 @@ export default function VisualizationPage() {
 
   return (
     <div className="page-container">
-      <AdminHero
+      <UnifiedAdminHeroWithSearch
         title="👁️ Visualization Manager"
         subtitle="Manage data visualization blocks and chart layouts"
         backLink="/admin"
-        badges={[
-          { text: `${dataBlocks.length} Data Blocks`, variant: 'primary' }
-        ]}
+        showSearch={false}
       />
       {/* DEPRECATED: Grid Settings removed - system now auto-calculates from chart widths */}
 
