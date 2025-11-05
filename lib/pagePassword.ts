@@ -206,7 +206,9 @@ export async function generateShareableLink(
   let url = baseUrl;
   switch (pageType) {
     case 'stats':
-      url += `/stats/${pageId}`;
+      // WHAT: Use /report/ path instead of /stats/
+      // WHY: Pages were renamed from stats to report
+      url += `/report/${pageId}`;
       break;
     case 'edit':
       url += `/edit/${pageId}`;
