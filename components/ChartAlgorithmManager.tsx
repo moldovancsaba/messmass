@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import AdminHero from './AdminHero';
+import UnifiedAdminHeroWithSearch from './UnifiedAdminHeroWithSearch';
 import ColoredCard from './ColoredCard';
 import FormModal from './modals/FormModal';
 import MaterialIcon from './MaterialIcon';
@@ -437,23 +437,19 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
 
   return (
     <div className="chart-algorithm-manager">
-      {/* WHAT: AdminHero with search and New Chart button
-          WHY: Match Events management style */}
-      <AdminHero 
-        title="Chart Algorithm Manager"
+      {/* WHAT: UnifiedAdminHeroWithSearch for responsive design
+          WHY: Match Events management style with mobile responsiveness */}
+      <UnifiedAdminHeroWithSearch 
+        title="📊 Chart Algorithm Manager"
         subtitle="Configure chart algorithms, data processing & visualization settings"
-        badges={[
-          { text: `${configurations.length} Total`, variant: 'primary' },
-          { text: `${configurations.filter(c => c.isActive).length} Active`, variant: 'success' },
-          ...(user ? [{ text: user.name, variant: 'secondary' as const }] : [])
-        ]}
         backLink="/admin"
+        showSearch
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         searchPlaceholder="Search charts by title, ID, or type..."
         actionButtons={[
-          { label: 'New Chart', onClick: () => startEditing(), variant: 'primary' as const },
-          { label: 'Validate All', onClick: () => validateAllFormulas(), variant: 'secondary' as const },
+          { label: 'New Chart', onClick: () => startEditing(), variant: 'primary', icon: '➕' },
+          { label: 'Validate All', onClick: () => validateAllFormulas(), variant: 'secondary' },
         ]}
       />
 

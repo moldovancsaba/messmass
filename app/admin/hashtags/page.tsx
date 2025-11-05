@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminHero from '@/components/AdminHero';
+import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import HashtagEditor from '@/components/HashtagEditor';
 import ColoredCard from '@/components/ColoredCard';
 
@@ -82,8 +82,9 @@ export default function HashtagManagerPage() {
 
   return (
     <div className="page-container">
-      <AdminHero
-        title="Hashtag Manager"
+      <UnifiedAdminHeroWithSearch
+        title="🏷️ Hashtag Manager"
+        subtitle="Manage hashtag colors and browse all project hashtags"
         backLink="/admin"
         // WHAT: Enable HERO search to control Project Hashtags below.
         // WHY: Removes duplicated "All Hashtags" section and unifies filtering UX in the header.
