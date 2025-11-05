@@ -1,29 +1,24 @@
-// app/admin/partners/page.tsx
-// WHAT: Admin interface for managing partners (organizations that own/operate events)
-// WHY: Centralized management for clubs, federations, venues, brands
-// DESIGN SYSTEM: Uses AdminHero, modal pattern, standardized table layout matching /admin/projects
-
 'use client';
 
-import { useState, useEffect } from 'react';
+// WHAT: Refactored Partners admin page using UnifiedAdminPage + partnersAdapter
+// WHY: Eliminate hardcoded table HTML, use unified system with Report button support
+// MIGRATION: From hardcoded table to adapter-based system (matches /admin/events pattern)
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
-import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
-import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
-import BitlyLinksSelector from '@/components/BitlyLinksSelector';
-import FormModal from '@/components/modals/FormModal';
-import MaterialIcon from '@/components/MaterialIcon';
-import type { PartnerResponse } from '@/lib/partner.types';
-import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
-// TEMP FIX: countryToFlag removed until we implement client-safe version
-// TODO: Fetch country data via API in useEffect instead of direct import
-import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import styles from './PartnerManager.module.css';
-import logoStyles from '../events/PartnerLogos.module.css';
+import { partnersAdapter } from '@/lib/adapters/partnersAdapter';
+import type { PartnerResponse } from '@/lib/partner.types';
+import UnifiedAdminPage from '@/components/UnifiedAdminPage';
+import FormModal from '@/components/modals/FormModal';
+import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
+import BitlyLinksSelector from '@/components/BitlyLinksSelector';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
+import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 
-// WHAT: Bitly link option for multi-select
+const PAGE_SIZE = 20;
+
 interface BitlyLinkOption {
   _id: string;
   bitlink: string;
@@ -31,44 +26,33 @@ interface BitlyLinkOption {
   long_url: string;
 }
 
-export default function PartnersAdminPage() {
-  // WHAT: Component state management
-  // WHY: Tracks partners, UI state, and user inputs
+export default function PartnersAdminPageUnified() {
+  const { user, loading: authLoading } = useAdminAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Data state
   const [partners, setPartners] = useState<PartnerResponse[]>([]);
   const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
-  // WHAT: Pagination state following /admin/projects pattern
-  // WHY: Handle potentially large partner databases efficiently
-  const [totalMatched, setTotalMatched] = useState(0);
+  // Search & Pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [nextOffset, setNextOffset] = useState<number | null>(0);
-  const PAGE_SIZE = 20;
+  const [totalMatched, setTotalMatched] = useState(0);
   
-  // WHAT: Search state with debouncing
-  // WHY: Allow users to filter partners by name or hashtags
-  const [searchTerm, setSearchTerm] = useState('');
-  const debouncedTerm = useDebouncedValue(searchTerm, 300);
-  
-  // WHAT: Sorting state
-  // WHY: Enable user-controlled table sorting
+  // Sorting state
   type SortField = 'name' | 'createdAt' | 'updatedAt' | null;
   type SortOrder = 'asc' | 'desc' | null;
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   
-  // WHAT: Form states for add/edit modals
+  // Modal states - Create
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [editingPartner, setEditingPartner] = useState<PartnerResponse | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // WHAT: Form data for new partner
   const [newPartnerData, setNewPartnerData] = useState({
     name: '',
     emoji: '',
@@ -76,8 +60,11 @@ export default function PartnersAdminPage() {
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
   });
+  const [isCreatingPartner, setIsCreatingPartner] = useState(false);
   
-  // WHAT: Form data for editing partner
+  // Modal states - Edit
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<PartnerResponse | null>(null);
   const [editPartnerData, setEditPartnerData] = useState({
     name: '',
     emoji: '',
@@ -87,16 +74,13 @@ export default function PartnersAdminPage() {
     logoUrl: undefined as string | undefined,
     sportsDb: undefined as any,
   });
+  const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
   
-  // WHAT: SportsDB search state
-  // WHY: Track team search and linking status
+  // SportsDB search state
   const [sportsDbSearch, setSportsDbSearch] = useState('');
   const [sportsDbResults, setSportsDbResults] = useState<any[]>([]);
   const [sportsDbSearching, setSportsDbSearching] = useState(false);
   const [sportsDbLinking, setSportsDbLinking] = useState(false);
-  
-  // WHAT: Manual SportsDB entry state
-  // WHY: Allow manual override when API doesn't have team or returns wrong data
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [manualEntryData, setManualEntryData] = useState({
     venueName: '',
@@ -106,14 +90,8 @@ export default function PartnersAdminPage() {
     founded: '',
     logoUrl: '',
   });
-
-  // WHAT: Debounced search value via centralized hook
-  // WHY: Consistent debounce behavior across admin pages
-  // NOTE: Hook trims and delays updates by 300ms
   
-
-  // WHAT: Hydrate sort state from URL (if present)
-  // WHY: Allow shareable sorted views via URL parameters
+  // Hydrate sort state from URL
   useEffect(() => {
     const sf = searchParams?.get('sortField') as SortField | null;
     const so = searchParams?.get('sortOrder') as SortOrder | null;
@@ -122,43 +100,120 @@ export default function PartnersAdminPage() {
     if (sf && allowedFields.includes(sf)) setSortField(sf);
     if (so && allowedOrders.includes(so)) setSortOrder(so);
   }, [searchParams]);
-
-  // WHAT: Load first page when search/sort changes
-  // WHY: Fresh search or sort requires restarting pagination
+  
+  // WHAT: Load partners with server-side search/sort/pagination
+  // WHY: Match events page pattern with database-only logic
+  const loadPartners = useCallback(async (resetList = true, showLoadingSpinner = false) => {
+    const q = debouncedSearchQuery.trim();
+    
+    try {
+      if (showLoadingSpinner) {
+        setLoading(true);
+      } else if (!resetList) {
+        setIsLoadingMore(true);
+      }
+      
+      const params = new URLSearchParams();
+      params.set('limit', String(PAGE_SIZE));
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+      
+      if (q) {
+        params.set('search', q);
+      }
+      
+      params.set('offset', '0');
+      
+      const response = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
+      const data = await response.json();
+      
+      if (data.success) {
+        if (resetList) {
+          setPartners(data.partners);
+        } else {
+          setPartners(prev => [...prev, ...data.partners]);
+        }
+        setTotalMatched(data.pagination.total);
+        setNextOffset(data.pagination.hasMore ? PAGE_SIZE : null);
+      }
+    } catch (error) {
+      console.error('Failed to load partners:', error);
+      setError('Failed to load partners');
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [debouncedSearchQuery, sortField, sortOrder]);
+  
+  // WHAT: Load more partners handler
+  // WHY: Pagination support to load next page of results
+  const handleLoadMore = async () => {
+    const q = debouncedSearchQuery.trim();
+    if (nextOffset === null || isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', String(PAGE_SIZE));
+      params.set('offset', String(nextOffset));
+      
+      if (sortField && sortOrder) {
+        params.set('sortField', sortField);
+        params.set('sortOrder', sortOrder);
+      }
+      
+      if (q) {
+        params.set('search', q);
+      }
+      
+      const response = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
+      const data = await response.json();
+      
+      if (data.success) {
+        setPartners(prev => [...prev, ...data.partners]);
+        setNextOffset(data.pagination.hasMore ? nextOffset + PAGE_SIZE : null);
+      }
+    } catch (error) {
+      console.error('Failed to load more partners:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+  
+  // Initial load
   useEffect(() => {
-    loadData(!!debouncedTerm); // Pass true if searching
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedTerm, sortField, sortOrder]);
-
-  // WHAT: Reload data when page becomes visible
-  // WHY: Ensure fresh data after user navigates back from Bitly page where they modified partner associations
+    if (user) {
+      loadPartners(true, true);
+    }
+  }, [user, loadPartners]);
+  
+  // Reload on search/sort changes
+  useEffect(() => {
+    if (user) {
+      loadPartners(true, false);
+    }
+  }, [debouncedSearchQuery, sortField, sortOrder, user]);
+  
+  // Reload when page becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('🔄 Page became visible, reloading partners data...');
-        loadData(!!debouncedTerm);
+      if (document.visibilityState === 'visible' && user) {
+        loadPartners(true, false);
       }
     };
-
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedTerm, sortField, sortOrder]);
-
-  // WHAT: Debug logging for partners state changes
-  // WHY: Track when and how partners array is updated
-  useEffect(() => {
-    console.log('🔵 Partners state changed:', partners.length, 'partners');
-    if (partners.length > 0) {
-      console.log('First 3 partner IDs:', partners.slice(0, 3).map(p => p._id));
-      console.log('Last 3 partner IDs:', partners.slice(-3).map(p => p._id));
-    }
-  }, [partners]);
-
+  }, [loadPartners, user]);
+  
   // WHAT: Lazy load Bitly links only when needed
-  // WHY: Fetching 3000+ links on page load is slow - only load when opening modals
+  // WHY: Performance optimization - only load when opening modals
   async function loadBitlyLinks() {
-    if (allBitlyLinks.length > 0) return; // Already loaded
+    if (allBitlyLinks.length > 0) return;
     
     try {
       const bitlyRes = await fetch('/api/bitly/links?includeUnassigned=true&limit=1000');
@@ -175,115 +230,10 @@ export default function PartnersAdminPage() {
       console.error('Failed to load Bitly links:', err);
     }
   }
-
-  // WHAT: Load first page of partners with search and sorting
-  // WHY: Start fresh pagination when search/sort changes
-  async function loadData(isSearch = false) {
-    try {
-      if (isSearch) {
-        setIsSearching(true);
-      } else {
-        setLoading(true);
-      }
-      setError('');
-      if (!isSearch) {
-        setPartners([]); // Clear existing partners only for non-search loads
-      }
-
-      // WHAT: Build partners API URL with pagination, search, and sorting
-      // WHY: Load only 20 partners at a time for performance
-      const params = new URLSearchParams();
-      params.set('limit', PAGE_SIZE.toString());
-      params.set('offset', '0');
-      
-      if (debouncedTerm) {
-        params.set('search', debouncedTerm);
-      }
-      
-      if (sortField && sortOrder) {
-        params.set('sortField', sortField);
-        params.set('sortOrder', sortOrder);
-      }
-      
-      // WHAT: Fetch first page of partners
-      const partnersRes = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
-      const partnersData = await partnersRes.json();
-
-      if (partnersData.success && partnersData.partners) {
-        setPartners(partnersData.partners);
-        setTotalMatched(partnersData.pagination.total);
-        setNextOffset(partnersData.pagination.hasMore ? PAGE_SIZE : null);
-      }
-    } catch (err) {
-      setError('Failed to load data. Please refresh the page.');
-      console.error('Load error:', err);
-    } finally {
-      setLoading(false);
-      setIsSearching(false);
-    }
-  }
-
-  // WHAT: Load more partners (pagination)
-  // WHY: "Load 20 more" button functionality
-  async function loadMore() {
-    if (nextOffset === null || loadingMore) return;
-
-    console.log('🔄 === LOAD MORE STARTED ===');
-    console.log('Current partners count:', partners.length);
-    console.log('Next offset:', nextOffset);
-
-    try {
-      setLoadingMore(true);
-      setError('');
-
-      const params = new URLSearchParams();
-      params.set('limit', PAGE_SIZE.toString());
-      params.set('offset', nextOffset.toString());
-      
-      if (debouncedTerm) {
-        params.set('search', debouncedTerm);
-      }
-      
-      if (sortField && sortOrder) {
-        params.set('sortField', sortField);
-        params.set('sortOrder', sortOrder);
-      }
-
-      console.log('📡 Fetching partners from API...');
-      const res = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
-      const data = await res.json();
-      console.log('✅ API Response:', data);
-      console.log('New partners received:', data.partners?.length);
-
-      if (data.success && data.partners) {
-        console.log('📝 Updating partners state...');
-        console.log('Previous partners:', partners.length);
-        
-        setPartners(prev => {
-          const updated = [...prev, ...data.partners];
-          console.log('🎯 Partners after merge:', updated.length);
-          console.log('Sample new partner IDs:', data.partners.slice(0, 3).map((p: any) => p._id));
-          return updated;
-        });
-        
-        const newOffset = data.pagination.hasMore ? nextOffset + PAGE_SIZE : null;
-        console.log('📌 New offset:', newOffset);
-        setNextOffset(newOffset);
-        
-        console.log('✅ State updates complete');
-      }
-    } catch (err) {
-      setError('Failed to load more partners.');
-      console.error('❌ Load more error:', err);
-    } finally {
-      setLoadingMore(false);
-      console.log('🏁 === LOAD MORE COMPLETED ===');
-    }
-  }
-
+  
   // WHAT: Handle sorting column click
   // WHY: Three-state cycle per column: asc → desc → clear
-  function handleSort(field: SortField) {
+  const handleSortChange = (field: string) => {
     if (sortField === field) {
       if (sortOrder === 'asc') {
         setSortOrder('desc');
@@ -292,45 +242,37 @@ export default function PartnersAdminPage() {
         setSortOrder(null);
       }
     } else {
-      setSortField(field);
+      setSortField(field as SortField);
       setSortOrder('asc');
     }
     
-    // WHAT: Sync to URL query for shareable state
+    // Sync to URL
     const params = new URLSearchParams(Array.from(searchParams?.entries() || []));
-    const currentField = sortField;
-    const currentOrder = sortOrder;
-    let nextField: SortField = field;
-    let nextOrder: SortOrder = 'asc';
-    if (currentField === field) {
-      nextOrder = currentOrder === 'asc' ? 'desc' : currentOrder === 'desc' ? null : 'asc';
-    }
-    if (nextOrder) {
-      params.set('sortField', nextField as string);
-      params.set('sortOrder', nextOrder);
+    if (field && sortOrder !== 'desc') {
+      params.set('sortField', field);
+      params.set('sortOrder', sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       params.delete('sortField');
       params.delete('sortOrder');
     }
     router.replace(`?${params.toString()}`, { scroll: false });
-  }
-
+  };
+  
   // WHAT: Handle adding a new partner
-  // WHY: Allows creation of organization entities
-  async function handleAddPartner(e: React.FormEvent) {
-    e.preventDefault();
+  // WHY: Create organization entities
+  const handleAddPartner = async () => {
     setError('');
     setSuccessMessage('');
-
+    
     if (!newPartnerData.name.trim() || !newPartnerData.emoji.trim()) {
       setError('Name and emoji are required');
       return;
     }
-
+    
     try {
-      setIsSubmitting(true);
+      setIsCreatingPartner(true);
       const data = await apiPost('/api/partners', newPartnerData);
-
+      
       if (data.success) {
         setSuccessMessage(`✓ Partner "${newPartnerData.name}" created successfully!`);
         setShowAddForm(false);
@@ -341,603 +283,81 @@ export default function PartnersAdminPage() {
           categorizedHashtags: {},
           bitlyLinkIds: [],
         });
-        loadData(); // Reload to show new partner
+        loadPartners();
       } else {
         setError(data.error || 'Failed to create partner');
       }
     } catch (err) {
       setError('Network error. Please try again.');
-      console.error('Add partner error:', err);
+      console.error('Create partner error:', err);
     } finally {
-      setIsSubmitting(false);
+      setIsCreatingPartner(false);
     }
-  }
-
-  // WHAT: Calculate simple string similarity for fuzzy matching
-  // WHY: Handle typos like "Alaborg" -> "Aalborg"
-  // RETURNS: Similarity score 0-1 (higher = more similar)
-  function stringSimilarity(str1: string, str2: string): number {
-    const s1 = str1.toLowerCase();
-    const s2 = str2.toLowerCase();
-    
-    // Exact match
-    if (s1 === s2) return 1.0;
-    
-    // Contains match (substring)
-    if (s1.includes(s2) || s2.includes(s1)) return 0.8;
-    
-    // Levenshtein distance approximation (character overlap)
-    const longer = s1.length > s2.length ? s1 : s2;
-    const shorter = s1.length > s2.length ? s2 : s1;
-    
-    let matches = 0;
-    for (let i = 0; i < shorter.length; i++) {
-      if (longer.includes(shorter[i])) {
-        matches++;
-      }
-    }
-    
-    return matches / longer.length;
-  }
+  };
   
-  // WHAT: Search TheSportsDB for teams by name OR by pasted team URL
-  // WHY: Allow direct linking when user provides a team profile URL (e.g., https://www.thesportsdb.com/team/134003-fehérvár)
-  // NOTE: Free API tier has limitations - may not return all teams the website shows
-  async function searchSportsDbTeams() {
-    if (!sportsDbSearch.trim()) return;
-
-    try {
-      setSportsDbSearching(true);
-
-      // WHAT: Detect TheSportsDB team URL and extract ID
-      const urlMatch = sportsDbSearch.match(/thesportsdb\.com\/team\/(\d+)/i);
-      if (urlMatch && urlMatch[1]) {
-        const teamIdFromUrl = urlMatch[1];
-        console.log('🔎 Detected TheSportsDB team URL. Extracted ID:', teamIdFromUrl);
-
-        // Fetch exact team by ID via lookup
-        const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamIdFromUrl}`);
-        const lookupData = await lookupRes.json();
-        console.log('Lookup response for URL ID:', lookupData);
-
-        if (lookupData.success && lookupData.result) {
-          const team = lookupData.result;
-          // Validate that returned ID matches extracted ID
-          if (team.idTeam !== teamIdFromUrl) {
-            setError(`TheSportsDB returned a different team (got ${team.idTeam}). Please try manual entry.`);
-            setSportsDbResults([]);
-          } else {
-            // Show only this exact team as the sole result
-            setSportsDbResults([team]);
-            setError('');
-          }
-        } else {
-          setError(lookupData.error || 'Failed to fetch team from TheSportsDB by URL');
-          setSportsDbResults([]);
-        }
-        return; // Done handling URL flow
-      }
-
-      // Fallback: normal name search
-      const params = new URLSearchParams();
-      params.set('type', 'team');
-      params.set('query', sportsDbSearch);
-
-      const res = await fetch(`/api/sports-db/search?${params.toString()}`);
-      const data = await res.json();
-
-      if (data.success && data.results) {
-        // WHAT: Show all API results without client-side filtering
-        // WHY: TheSportsDB API search is already good, filtering removes valid results
-        // EXAMPLE: "zagreb" finds "Dinamo Zagreb", "Cedevita Zagreb", etc.
-        const searchLower = sportsDbSearch.toLowerCase();
-        
-        // WHAT: Sort by relevance (best matches first)
-        // WHY: Teams with search term at start appear first
-        const sorted = [...data.results].sort((a: any, b: any) => {
-          const nameA = a.strTeam.toLowerCase();
-          const nameB = b.strTeam.toLowerCase();
-          
-          // Exact match first
-          if (nameA === searchLower) return -1;
-          if (nameB === searchLower) return 1;
-          
-          // Starts with search term
-          const startsA = nameA.startsWith(searchLower);
-          const startsB = nameB.startsWith(searchLower);
-          if (startsA && !startsB) return -1;
-          if (startsB && !startsA) return 1;
-          
-          // Contains search term (all results should match this)
-          return 0;
-        });
-        
-        console.log(`🔍 Search results: ${data.results.length} teams found for "${sportsDbSearch}"`);
-        setSportsDbResults(sorted);
-      } else {
-        setError(data.error || 'Failed to search TheSportsDB');
-        setSportsDbResults([]);
-      }
-    } catch (err) {
-      setError('Network error while searching TheSportsDB');
-      console.error('SportsDB search error:', err);
-      setSportsDbResults([]);
-    } finally {
-      setSportsDbSearching(false);
-    }
-  }
-
-  // WHAT: Link partner to TheSportsDB team and fetch enriched data
-  // WHY: Store stadium capacity, league info, badges for chart benchmarking
-  // PARAMS: teamId - TheSportsDB team ID, teamData - optional team data from search (bypasses lookup API)
-  async function linkToSportsDbTeam(teamId: string, teamData?: any) {
-    console.log('🔗 === LINK TO SPORTSDB STARTED ===');
-    console.log('Team ID:', teamId);
-    console.log('Team Data Provided:', teamData ? 'Yes (from search)' : 'No (will use lookup API)');
-    console.log('Editing Partner:', editingPartner);
+  // WHAT: Handle updating an existing partner
+  // WHY: Allows editing partner details
+  const handleUpdatePartner = async () => {
+    setError('');
+    setSuccessMessage('');
     
-    if (!editingPartner) {
-      console.error('❌ No partner being edited!');
+    if (!editingPartner || !editPartnerData.name.trim() || !editPartnerData.emoji.trim()) {
+      setError('Name and emoji are required');
       return;
     }
-
-    // WHAT: Confirm replacement if partner already has SportsDB data
-    // WHY: Prevent accidental overwrites of existing links
-    if (editPartnerData.sportsDb?.teamId) {
-      console.log('⚠️ Partner already has SportsDB link, asking for confirmation...');
-      if (!confirm('This partner is already linked to a team. Replace the existing link?')) {
-        console.log('❌ User cancelled replacement');
-        return;
-      }
-      console.log('✅ User confirmed replacement');
-    }
-
-    try {
-      console.log('🔄 Setting linking state to true...');
-      setSportsDbLinking(true);
-      setError('');
-
-      let team: any;
-      
-      // WHAT: Use provided team data or fetch from lookup API
-      // WHY: Search data is reliable, lookup API has bugs (returns wrong teams)
-      if (teamData) {
-        console.log('✅ Using team data from search results (bypassing lookup API)');
-        team = teamData;
-      } else {
-        // WHAT: Fetch full team details from TheSportsDB API
-        // WHY: Fallback for re-sync or when team data not provided
-        console.log('🔍 Fetching team details from TheSportsDB lookup API...');
-        const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
-        console.log('API Response Status:', lookupRes.status);
-        
-        const lookupData = await lookupRes.json();
-        console.log('API Response Data:', lookupData);
-
-        if (!lookupData.success || !lookupData.result) {
-          console.error('❌ Failed to fetch team details:', lookupData.error);
-          setError('Failed to fetch team details from TheSportsDB');
-          return;
-        }
-
-        team = lookupData.result;
-        console.log('✅ Team details received from lookup:', team.strTeam);
-        
-        // WHAT: Validate that returned team ID matches requested ID
-        // WHY: TheSportsDB lookup API sometimes returns wrong team (known bug)
-        if (team.idTeam !== teamId) {
-          console.error(`❌ TheSportsDB API returned wrong team! Requested: ${teamId}, Got: ${team.idTeam}`);
-          setError(`TheSportsDB API error: Requested team ${teamId} but received ${team.strTeam} (${team.idTeam}). This team cannot be linked due to API issues.`);
-          return;
-        }
-      }
-
-      // WHAT: Build comprehensive SportsDB enrichment object with ALL available fields
-      // WHY: Store complete team profile for KYC and future analytics
-      const sportsDbData = {
-        // Core Identifiers
-        teamId: team.idTeam,
-        strTeam: team.strTeam,
-        strTeamShort: team.strTeamShort,
-        strAlternate: team.strAlternate,
-        
-        // Sport & League
-        strSport: team.strSport,
-        strLeague: team.strLeague,
-        leagueId: team.idLeague,
-        
-        // Venue/Stadium
-        strStadium: team.strStadium,
-        venueId: team.idVenue,
-        intStadiumCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        strStadiumThumb: team.strStadiumThumb,
-        strStadiumDescription: team.strStadiumDescription,
-        strStadiumLocation: team.strStadiumLocation,
-        
-        // Team Details
-        intFormedYear: team.intFormedYear,
-        strCountry: team.strCountry,
-        strDescriptionEN: team.strDescriptionEN,
-        
-        // Visual Assets
-        strTeamBadge: team.strBadge,
-        strTeamLogo: team.strTeamLogo,
-        strTeamJersey: team.strTeamJersey,
-        strTeamBanner: team.strTeamBanner,
-        strTeamFanart1: team.strTeamFanart1,
-        strTeamFanart2: team.strTeamFanart2,
-        strTeamFanart3: team.strTeamFanart3,
-        strTeamFanart4: team.strTeamFanart4,
-        
-        // Social Media & Web
-        strWebsite: team.strWebsite,
-        strFacebook: team.strFacebook,
-        strTwitter: team.strTwitter,
-        strInstagram: team.strInstagram,
-        
-        // Sync Metadata
-        lastSynced: new Date().toISOString(),
-        
-        // Legacy fields (backward compatibility)
-        leagueName: team.strLeague,
-        venueName: team.strStadium,
-        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        founded: team.intFormedYear,
-        country: team.strCountry,
-        website: team.strWebsite,
-        badge: team.strBadge,
-      };
-      
-      // WHAT: Auto-generate categorized hashtags from team data
-      // WHY: Enrich partner with sport, league, and location hashtags for filtering
-      console.log('🏷️ Generating hashtags from SportsDB team data...');
-      const generatedHashtags = generateSportsDbHashtags(team);
-      console.log('Generated hashtags:', generatedHashtags);
-      
-      // WHAT: Merge with existing partner hashtags
-      // WHY: Preserve manually added hashtags while adding auto-generated ones
-      const enrichedHashtags = mergeSportsDbHashtags(
-        editPartnerData.categorizedHashtags,
-        generatedHashtags
-      );
-      console.log('Enriched hashtags:', enrichedHashtags);
-
-      // WHAT: Upload badge to ImgBB for permanent hosting
-      // WHY: Display logo in UI without depending on TheSportsDB URLs
-      let logoUrl: string | undefined;
-      if (team.strBadge) {
-        console.log('🖼️ Uploading logo to ImgBB...');
-        console.log('Badge URL:', team.strBadge);
-        try {
-          const imgbbData = await apiPost('/api/partners/upload-logo', {
-            badgeUrl: team.strBadge,
-            partnerName: editingPartner.name,
-          });
-          console.log('ImgBB Response Data:', imgbbData);
-          
-          if (imgbbData.success && imgbbData.logoUrl) {
-            logoUrl = imgbbData.logoUrl;
-            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
-          } else {
-            console.warn('⚠️ Logo upload failed:', imgbbData.error);
-            console.warn('Continuing without logo...');
-          }
-        } catch (logoErr) {
-          console.error('❌ Logo upload error:', logoErr);
-          // Continue without logo - non-blocking error
-        }
-      } else {
-        console.log('ℹ️ No badge URL provided, skipping logo upload');
-      }
-
-      // WHAT: Update partner with SportsDB data and logo via PUT /api/partners
-      // WHY: Persist enrichment data to MongoDB for chart system
-      console.log('💾 Saving to database...');
-      console.log('Partner ID:', editingPartner._id);
-      console.log('SportsDB Data:', sportsDbData);
-      console.log('Logo URL:', logoUrl);
-      
-      const updateData = await apiPut('/api/partners', {
-        partnerId: editingPartner._id,
-        sportsDb: sportsDbData,
-        logoUrl: logoUrl, // Add ImgBB logo URL
-        categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
-      });
-      console.log('Database Update Response Data:', updateData);
-
-      if (updateData.success) {
-        console.log('✅ Partner linked successfully, updating UI...');
-        console.log('SportsDB data:', sportsDbData);
-        console.log('Logo URL:', logoUrl);
-        
-        // WHAT: Update local state to show enriched data immediately
-        // WHY: Force React re-render by creating completely new state object
-        setEditPartnerData({
-          name: editPartnerData.name,
-          emoji: editPartnerData.emoji,
-          hashtags: editPartnerData.hashtags,
-          categorizedHashtags: enrichedHashtags, // Add auto-generated hashtags
-          bitlyLinkIds: editPartnerData.bitlyLinkIds,
-          logoUrl: logoUrl,
-          sportsDb: sportsDbData, // Add new SportsDB data
-        });
-        
-        // WHAT: Clear search results after successful link
-        setSportsDbSearch('');
-        setSportsDbResults([]);
-        
-        // WHAT: Show success message
-        setSuccessMessage(`✓ Successfully linked to ${team.strTeam}`);
-        
-        // WHAT: Update partners list state directly to show logo immediately
-        // WHY: Avoid waiting for API reload, instant UI feedback
-        setPartners(prevPartners => 
-          prevPartners.map(p => 
-            p._id === editingPartner._id 
-              ? { ...p, logoUrl, sportsDb: sportsDbData }
-              : p
-          )
-        );
-        
-        // WHAT: Also update editingPartner to keep modal data in sync
-        setEditingPartner(prev => prev ? { ...prev, logoUrl, sportsDb: sportsDbData } : null);
-        
-        // WHAT: Reload partners list to ensure database sync
-        loadData();
-        
-        console.log('✅ UI state updated, logo should now be visible in list');
-      } else {
-        console.error('❌ Failed to save:', updateData.error);
-        setError(updateData.error || 'Failed to save SportsDB link');
-      }
-    } catch (err) {
-      console.error('❌ === EXCEPTION CAUGHT ===');
-      console.error('Error type:', typeof err);
-      console.error('Error:', err);
-      if (err instanceof Error) {
-        console.error('Error message:', err.message);
-        console.error('Error stack:', err.stack);
-      }
-      setError('Network error while linking to TheSportsDB');
-    } finally {
-      console.log('🏁 Linking process finished, resetting state...');
-      setSportsDbLinking(false);
-      console.log('🔗 === LINK TO SPORTSDB COMPLETED ===');
-    }
-  }
-
-  // WHAT: Re-sync existing SportsDB data from API
-  // WHY: Update capacity, league info if changed on TheSportsDB
-  async function resyncSportsDbData() {
-    if (!editingPartner || !editPartnerData.sportsDb?.teamId) return;
-
-    try {
-      setSportsDbLinking(true);
-      setError('');
-
-      const teamId = editPartnerData.sportsDb.teamId;
-      const lookupRes = await fetch(`/api/sports-db/lookup?type=team&id=${teamId}`);
-      const lookupData = await lookupRes.json();
-
-      if (!lookupData.success || !lookupData.result) {
-        setError('Failed to re-sync team details from TheSportsDB');
-        return;
-      }
-
-      const team = lookupData.result;
-
-      // WHAT: Build comprehensive SportsDB enrichment object with ALL available fields
-      // WHY: Store complete team profile for KYC and future analytics (same as linkToSportsDbTeam)
-      const sportsDbData = {
-        // Core Identifiers
-        teamId: team.idTeam,
-        strTeam: team.strTeam,
-        strTeamShort: team.strTeamShort,
-        strAlternate: team.strAlternate,
-        
-        // Sport & League
-        strSport: team.strSport,
-        strLeague: team.strLeague,
-        leagueId: team.idLeague,
-        
-        // Venue/Stadium
-        strStadium: team.strStadium,
-        venueId: team.idVenue,
-        intStadiumCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        strStadiumThumb: team.strStadiumThumb,
-        strStadiumDescription: team.strStadiumDescription,
-        strStadiumLocation: team.strStadiumLocation,
-        
-        // Team Details
-        intFormedYear: team.intFormedYear,
-        strCountry: team.strCountry,
-        strDescriptionEN: team.strDescriptionEN,
-        
-        // Visual Assets
-        strTeamBadge: team.strBadge,
-        strTeamLogo: team.strTeamLogo,
-        strTeamJersey: team.strTeamJersey,
-        strTeamBanner: team.strTeamBanner,
-        strTeamFanart1: team.strTeamFanart1,
-        strTeamFanart2: team.strTeamFanart2,
-        strTeamFanart3: team.strTeamFanart3,
-        strTeamFanart4: team.strTeamFanart4,
-        
-        // Social Media & Web
-        strWebsite: team.strWebsite,
-        strFacebook: team.strFacebook,
-        strTwitter: team.strTwitter,
-        strInstagram: team.strInstagram,
-        
-        // Sync Metadata
-        lastSynced: new Date().toISOString(),
-        
-        // Legacy fields (backward compatibility)
-        leagueName: team.strLeague,
-        venueName: team.strStadium,
-        venueCapacity: team.intStadiumCapacity ? parseInt(team.intStadiumCapacity, 10) : undefined,
-        founded: team.intFormedYear,
-        country: team.strCountry,
-        website: team.strWebsite,
-        badge: team.strBadge,
-      };
-      
-      // WHAT: Auto-generate categorized hashtags from re-synced team data
-      // WHY: Update hashtags if team metadata changed (e.g., league change)
-      const generatedHashtags = generateSportsDbHashtags(team);
-      const enrichedHashtags = mergeSportsDbHashtags(
-        editPartnerData.categorizedHashtags,
-        generatedHashtags
-      );
-
-      // WHAT: Upload badge to ImgBB during re-sync
-      // WHY: Update logo if badge URL changed
-      let logoUrl: string | undefined;
-      if (team.strBadge) {
-        try {
-          const imgbbData = await apiPost('/api/partners/upload-logo', {
-            badgeUrl: team.strBadge,
-            partnerName: editingPartner.name,
-          });
-          if (imgbbData.success && imgbbData.logoUrl) {
-            logoUrl = imgbbData.logoUrl;
-          }
-        } catch (logoErr) {
-          console.error('Logo upload error during re-sync:', logoErr);
-        }
-      }
-
-      const updateData = await apiPut('/api/partners', {
-        partnerId: editingPartner._id,
-        sportsDb: sportsDbData,
-        logoUrl: logoUrl, // Update logo URL
-        categorizedHashtags: enrichedHashtags, // Update auto-generated hashtags
-      });
-
-      if (updateData.success) {
-        setSuccessMessage(`✓ Successfully re-synced data from TheSportsDB`);
-        setEditPartnerData(prev => ({
-          ...prev,
-          sportsDb: sportsDbData,
-          logoUrl: logoUrl, // Update logo URL in local state
-          categorizedHashtags: enrichedHashtags, // Update hashtags in local state
-        }));
-        loadData();
-      } else {
-        setError(updateData.error || 'Failed to re-sync SportsDB data');
-      }
-    } catch (err) {
-      setError('Network error while re-syncing TheSportsDB data');
-      console.error('SportsDB re-sync error:', err);
-    } finally {
-      setSportsDbLinking(false);
-    }
-  }
-
-  // WHAT: Handle manual SportsDB data entry
-  // WHY: Fallback when API doesn't have team or returns wrong data
-  async function handleManualEntry(e: React.FormEvent) {
-    e.preventDefault();
-    
-    if (!editingPartner) return;
     
     try {
-      setSportsDbLinking(true);
-      setError('');
-      
-      // WHAT: Build SportsDB data from manual input
-      const sportsDbData = {
-        teamId: undefined, // No API team ID
-        leagueId: undefined,
-        venueId: undefined,
-        venueCapacity: manualEntryData.venueCapacity ? parseInt(manualEntryData.venueCapacity, 10) : undefined,
-        venueName: manualEntryData.venueName || undefined,
-        leagueName: manualEntryData.leagueName || undefined,
-        founded: manualEntryData.founded || undefined,
-        country: manualEntryData.country || undefined,
-        website: undefined,
-        badge: manualEntryData.logoUrl || undefined,
-        lastSynced: new Date().toISOString(),
-      };
-      
-      // WHAT: Upload logo to ImgBB if URL provided
-      let logoUrl: string | undefined;
-      if (manualEntryData.logoUrl) {
-        console.log('🖼️ Uploading manually provided logo to ImgBB...');
-        try {
-          const imgbbData = await apiPost('/api/partners/upload-logo', {
-            badgeUrl: manualEntryData.logoUrl,
-            partnerName: editingPartner.name,
-          });
-          if (imgbbData.success && imgbbData.logoUrl) {
-            logoUrl = imgbbData.logoUrl;
-            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
-          }
-        } catch (logoErr) {
-          console.error('❌ Logo upload error:', logoErr);
-        }
-      }
-      
-      // WHAT: Save to database
-      const updateData = await apiPut('/api/partners', {
+      setIsUpdatingPartner(true);
+      const data = await apiPut('/api/partners', {
         partnerId: editingPartner._id,
-        sportsDb: sportsDbData,
-        logoUrl: logoUrl,
+        ...editPartnerData,
       });
       
-      if (updateData.success) {
-        setSuccessMessage('✓ Successfully added manual sports data');
-        
-        // Update local state
-        setEditPartnerData({
-          name: editPartnerData.name,
-          emoji: editPartnerData.emoji,
-          hashtags: editPartnerData.hashtags,
-          categorizedHashtags: editPartnerData.categorizedHashtags,
-          bitlyLinkIds: editPartnerData.bitlyLinkIds,
-          logoUrl: logoUrl,
-          sportsDb: sportsDbData,
-        });
-        
-        // Update partners list
-        setPartners(prevPartners => 
-          prevPartners.map(p => 
-            p._id === editingPartner._id 
-              ? { ...p, logoUrl, sportsDb: sportsDbData }
-              : p
-          )
-        );
-        
-        setEditingPartner(prev => prev ? { ...prev, logoUrl, sportsDb: sportsDbData } : null);
-        
-        // Clear manual entry form
-        setShowManualEntry(false);
-        setManualEntryData({
-          venueName: '',
-          venueCapacity: '',
-          leagueName: '',
-          country: '',
-          founded: '',
-          logoUrl: '',
-        });
-        
-        loadData();
+      if (data.success) {
+        setSuccessMessage(`✓ Partner "${editPartnerData.name}" updated successfully!`);
+        setShowEditForm(false);
+        setEditingPartner(null);
+        loadPartners();
       } else {
-        setError(updateData.error || 'Failed to save manual sports data');
+        setError(data.error || 'Failed to update partner');
       }
     } catch (err) {
-      setError('Network error while saving manual sports data');
-      console.error('Manual entry error:', err);
+      setError('Network error. Please try again.');
+      console.error('Update partner error:', err);
     } finally {
-      setSportsDbLinking(false);
+      setIsUpdatingPartner(false);
     }
-  }
+  };
+  
+  // WHAT: Handle deleting a partner
+  // WHY: Remove organizations from system
+  const handleDeletePartner = async (partnerId: string, partnerName: string) => {
+    if (!confirm(`Delete partner "${partnerName}"? This action cannot be undone.`)) {
+      return;
+    }
+    
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      const data = await apiDelete(`/api/partners?partnerId=${partnerId}`);
+      
+      if (data.success) {
+        setSuccessMessage(`✓ Partner "${partnerName}" deleted successfully`);
+        loadPartners();
+      } else {
+        setError(data.error || 'Failed to delete partner');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+      console.error('Delete partner error:', err);
+    }
+  };
   
   // WHAT: Open edit modal with partner data
-  // WHY: Populate form with existing partner values including SportsDB enrichment
-  function openEditForm(partner: PartnerResponse) {
-    console.log('✏️ Opening edit form for partner:', partner._id, partner.name);
-    loadBitlyLinks(); // Lazy load links when opening form
+  // WHY: Populate form with existing partner values
+  const openEditForm = (partner: PartnerResponse) => {
+    loadBitlyLinks();
     setEditingPartner(partner);
     setEditPartnerData({
       name: partner.name,
@@ -948,79 +368,60 @@ export default function PartnersAdminPage() {
       logoUrl: partner.logoUrl,
       sportsDb: partner.sportsDb,
     });
-    // WHAT: Clear SportsDB search state when opening edit form
-    // WHY: Start fresh for each edit session
     setSportsDbSearch('');
     setSportsDbResults([]);
     setShowEditForm(true);
-  }
-
-  // WHAT: Handle updating an existing partner
-  // WHY: Allows editing partner details
-  async function handleUpdatePartner(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    if (!editingPartner || !editPartnerData.name.trim() || !editPartnerData.emoji.trim()) {
-      setError('Name and emoji are required');
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const data = await apiPut('/api/partners', {
-        partnerId: editingPartner._id,
-        ...editPartnerData,
-      });
-
-      if (data.success) {
-        setSuccessMessage(`✓ Partner "${editPartnerData.name}" updated successfully!`);
-        setShowEditForm(false);
-        setEditingPartner(null);
-        loadData(); // Reload to show updated partner
-      } else {
-        setError(data.error || 'Failed to update partner');
+  };
+  
+  // WHAT: Override adapter handlers with real functions
+  // WHY: Adapter has placeholder handlers - inject actual logic from page
+  const partnersAdapterWithHandlers = useMemo(() => {
+    return {
+      ...partnersAdapter,
+      listConfig: {
+        ...partnersAdapter.listConfig,
+        rowActions: partnersAdapter.listConfig.rowActions?.map(action => ({
+          ...action,
+          handler: (partner: PartnerResponse) => {
+            if (action.label === 'Edit') {
+              openEditForm(partner);
+            } else if (action.label === 'Delete') {
+              handleDeletePartner(partner._id, partner.name);
+            } else if (action.label === 'Report') {
+              // Report button handler from adapter
+              if (partner.viewSlug) {
+                window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+              } else {
+                alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+              }
+            }
+          }
+        }))
+      },
+      cardConfig: {
+        ...partnersAdapter.cardConfig,
+        cardActions: partnersAdapter.cardConfig.cardActions?.map(action => ({
+          ...action,
+          handler: (partner: PartnerResponse) => {
+            if (action.label === 'Edit') {
+              openEditForm(partner);
+            } else if (action.label === 'Delete') {
+              handleDeletePartner(partner._id, partner.name);
+            } else if (action.label === 'Report') {
+              // Report button handler from adapter
+              if (partner.viewSlug) {
+                window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+              } else {
+                alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+              }
+            }
+          }
+        }))
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
-      console.error('Update partner error:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  // WHAT: Handle deleting a partner
-  // WHY: Remove organizations from system
-  async function handleDeletePartner(partnerId: string, partnerName: string) {
-    console.log('🗑️ Delete button clicked for:', partnerId, partnerName);
-    if (!confirm(`Delete partner "${partnerName}"? This action cannot be undone.`)) {
-      console.log('❌ Delete cancelled by user');
-      return;
-    }
-
-    setError('');
-    setSuccessMessage('');
-
-    try {
-      const data = await apiDelete(`/api/partners?partnerId=${partnerId}`);
-
-      if (data.success) {
-        setSuccessMessage(`✓ Partner "${partnerName}" deleted successfully`);
-        loadData(); // Reload to remove deleted partner
-      } else {
-        setError(data.error || 'Failed to delete partner');
-      }
-    } catch (err) {
-      setError('Network error. Please try again.');
-      console.error('Delete partner error:', err);
-    }
-  }
-
-  // WHAT: Auth check wrapper
-  // WHY: Ensure user is authenticated before showing partners management
-  const { user, loading: authLoading } = useAdminAuth();
-
+    };
+  }, [partnersAdapter]);
+  
+  // Loading state
   if (authLoading || loading) {
     return (
       <div className="loading-container">
@@ -1031,38 +432,44 @@ export default function PartnersAdminPage() {
       </div>
     );
   }
-
+  
   if (!user) {
-    return null; // Will redirect to login
+    return null;
   }
-
-  // WHAT: AdminHero component for standardized header
-  // WHY: Matches design system used in /admin/projects and other admin pages
+  
   return (
-    <div className="page-container">
-      <UnifiedAdminHeroWithSearch
+    <>
+      <UnifiedAdminPage
+        adapter={partnersAdapterWithHandlers}
+        items={partners}
+        isLoading={loading}
         title="🤝 Partner Management"
         subtitle="Manage organizations that own or operate events: clubs, federations, venues, brands"
         backLink="/admin"
-        showSearch
-        searchValue={searchTerm}
-        onSearchChange={(value) => setSearchTerm(value)}
-        searchPlaceholder="Search partners..."
         actionButtons={[
           {
             label: 'Add Partner',
-            icon: '+',
             onClick: () => {
-              loadBitlyLinks(); // Lazy load links when opening form
+              loadBitlyLinks();
               setShowAddForm(true);
             },
             variant: 'primary',
+            icon: '+',
             title: 'Create a new partner organization'
           }
         ]}
+        enableSearch
+        externalSearchValue={searchQuery}
+        onExternalSearchChange={setSearchQuery}
+        searchPlaceholder="Search partners..."
+        totalMatched={totalMatched}
+        showPaginationStats
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={handleSortChange}
       />
-
-      {/* WHAT: Status messages with proper spacing */}
+      
+      {/* Error/Success Messages */}
       {error && (
         <div className="alert alert-danger mb-4">
           {error}
@@ -1073,600 +480,142 @@ export default function PartnersAdminPage() {
           {successMessage}
         </div>
       )}
-
-      {/* WHAT: Pagination stats header */}
-      {!loading && partners.length > 0 && (
-        <div className={logoStyles.paginationStats}>
-          <div className={logoStyles.paginationText}>
-            Showing {partners.length} of {totalMatched} partners
-          </div>
-        </div>
-      )}
-
-      {/* WHAT: Partners table with standardized structure */}
-      <div className="projects-table-container">
-        <div className="table-overflow-hidden">
-          {partners.length === 0 ? (
-            /* WHAT: Empty state */
-            <div className="admin-empty-state">
-              <div className="admin-empty-icon">🤝</div>
-              <div className="admin-empty-title">No Partners Yet</div>
-              <div className="admin-empty-subtitle">
-                Click &quot;Add Partner&quot; above to create your first partner organization
-              </div>
-            </div>
-          ) : (
-            /* WHAT: Standardized table matching projects page structure */
-            <table className="projects-table table-full-width table-inherit-radius">
-              <thead>
-                <tr>
-                  <th className={styles.colIcon}>Icon</th>
-                  <th className={styles.colFlag}>Flag</th>
-                  <th className={styles.colLogo}>Logo</th>
-                  <th 
-                    onClick={() => handleSort('name')} 
-                    className={`sortable-th ${styles.colName}`}
-                  >
-                    Name
-                    {sortField === 'name' && (
-                      <span className="sort-indicator">
-                        {sortOrder === 'asc' ? '▲' : '▼'}
-                      </span>
-                    )}
-                  </th>
-                  <th className={styles.colHashtags}>Hashtags</th>
-                  <th className={styles.colBitlyLinks}>Bitly Links</th>
-                  <th 
-                    onClick={() => handleSort('updatedAt')} 
-                    className={`sortable-th ${styles.colUpdated}`}
-                  >
-                    Updated
-                    {sortField === 'updatedAt' && (
-                      <span className="sort-indicator">
-                        {sortOrder === 'asc' ? '▲' : '▼'}
-                      </span>
-                    )}
-                  </th>
-                  <th className={styles.colActions}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {partners.map((partner, index) => {
-                  // Debug: Log button rendering for first and last 3 items
-                  if (index < 3 || index >= partners.length - 3) {
-                    console.log(`🔳 Rendering row ${index} for partner:`, partner._id, partner.name);
-                  }
-                  return (
-                  <tr key={partner._id}>
-                    <td className={styles.emojiCell}>{partner.emoji}</td>
-                    <td className={styles.flagCell}>
-                      {/* WHAT: Display country flag from SportsDB data */}
-                      {/* WHY: Visual identification of partner's country */}
-                      {/* TEMP: Removed countryToFlag due to MongoDB import in client component */}
-                      —
-                    </td>
-                    <td className={styles.logoCell}>
-                      {/* WHAT: Display partner logo from ImgBB */}
-                      {/* WHY: Show team badge for visual identification */}
-                      {partner.logoUrl ? (
-                        <img
-                          src={partner.logoUrl}
-                          alt={`${partner.name} logo`}
-                          className={styles.logoImage}
-                          title={`${partner.name} logo`}
-                        />
-                      ) : (
-                        <span className={styles.logoPlaceholder}>—</span>
-                      )}
-                    </td>
-                    <td className="font-medium">{partner.name}</td>
-                    <td>
-                      {/* WHAT: Display hashtags as bubbles */}
-                      <div className={styles.hashtagsContainer}>
-                        {/* Traditional hashtags */}
-                        {partner.hashtags && partner.hashtags.map(hashtag => (
-                          <ColoredHashtagBubble
-                            key={`general-${hashtag}`}
-                            hashtag={hashtag}
-                            small={true}
-                            interactive={false}
-                            projectCategorizedHashtags={partner.categorizedHashtags}
-                            autoResolveColor={true}
-                          />
-                        ))}
-                        {/* Categorized hashtags */}
-                        {partner.categorizedHashtags && Object.entries(partner.categorizedHashtags).map(([category, hashtags]) =>
-                          hashtags.map(hashtag => (
-                            <ColoredHashtagBubble
-                              key={`${category}-${hashtag}`}
-                              hashtag={`${category}:${hashtag}`}
-                              showCategoryPrefix={true}
-                              small={true}
-                              interactive={false}
-                            />
-                          ))
-                        )}
-                        {!partner.hashtags?.length && !Object.keys(partner.categorizedHashtags || {}).length && (
-                          <span className="text-gray-400 text-sm">No hashtags</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      {/* WHAT: Display Bitly links */}
-                      {partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
-                        <div className={styles.bitlyLinksContainer}>
-                          {partner.bitlyLinks.map(link => (
-                            <a
-                              key={link._id}
-                              href={`https://${link.bitlink}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="link link-primary text-sm"
-                              title={link.title}
-                            >
-                              {link.bitlink}
-                            </a>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm">No links</span>
-                      )}
-                    </td>
-                    <td className="text-sm text-gray-600">
-                      {new Date(partner.updatedAt).toLocaleDateString()}
-                    </td>
-                    <td className="actions-cell">
-                      <div className="action-buttons-container">
-                        <button
-                          onClick={() => {
-                            console.log('🔵 Edit button clicked (inline) for:', partner._id);
-                            openEditForm(partner);
-                          }}
-                          className="btn btn-small btn-primary action-button"
-                          title="Edit partner"
-                        >
-                          <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            console.log('🔴 Delete button clicked (inline) for:', partner._id);
-                            handleDeletePartner(partner._id, partner.name);
-                          }}
-                          className="btn btn-small btn-danger action-button"
-                          title="Delete partner"
-                        >
-                          <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-
-      {/* WHAT: Load More button */}
-      <div className="p-4 text-center">
-        {nextOffset !== null ? (
+      
+      {/* Load More Button */}
+      {nextOffset !== null && partners.length > 0 && (
+        <div style={{ padding: '1rem', textAlign: 'center' }}>
           <button 
             className="btn btn-small btn-secondary" 
-            disabled={loadingMore} 
-            onClick={loadMore}
+            disabled={isLoadingMore} 
+            onClick={handleLoadMore}
           >
-            {loadingMore ? 'Loading…' : 'Load 20 more'}
+            {isLoadingMore ? 'Loading…' : 'Load 20 more'}
           </button>
-        ) : (
-          partners.length > 0 && (
-            <span className="text-gray-500 text-sm">No more items</span>
-          )
-        )}
-      </div>
-
-      {/* WHAT: Add Partner Modal migrated to unified FormModal
-       * WHY: Consistent modal behavior across all admin pages */}
+        </div>
+      )}
+      
+      {/* Add Partner Modal */}
       <FormModal
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}
-        onSubmit={async () => {
-          const syntheticEvent = new Event('submit', { cancelable: true }) as any;
-          await handleAddPartner(syntheticEvent);
-        }}
+        onSubmit={handleAddPartner}
         title="+ Add Partner"
         submitText="Create Partner"
-        isSubmitting={isSubmitting}
+        isSubmitting={isCreatingPartner}
         size="lg"
       >
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Partner Name *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={newPartnerData.name}
-                    onChange={(e) => setNewPartnerData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter partner name (e.g., FC Barcelona, UEFA, Camp Nou)"
-                    required
-                    autoFocus
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Partner Emoji *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={newPartnerData.emoji}
-                    onChange={(e) => setNewPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
-                    placeholder="⚽ 🏟️ 🏆 (single emoji)"
-                    required
-                    maxLength={4}
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Choose an emoji to represent this partner
-                  </p>
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Hashtags (optional)</label>
-                  <UnifiedHashtagInput
-                    generalHashtags={newPartnerData.hashtags}
-                    onGeneralChange={(hashtags) => 
-                      setNewPartnerData(prev => ({ ...prev, hashtags }))
-                    }
-                    categorizedHashtags={newPartnerData.categorizedHashtags}
-                    onCategorizedChange={(categorizedHashtags) => 
-                      setNewPartnerData(prev => ({ ...prev, categorizedHashtags }))
-                    }
-                    placeholder="Search or add hashtags..."
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Bitly Links (optional)</label>
-                  <BitlyLinksSelector
-                    selectedLinkIds={newPartnerData.bitlyLinkIds}
-                    availableLinks={allBitlyLinks}
-                    onChange={(linkIds) => 
-                      setNewPartnerData(prev => ({ ...prev, bitlyLinkIds: linkIds }))
-                    }
-                    placeholder="Search and add Bitly links..."
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Search by bitlink or title, click to add. Remove with ✕ button.
-                  </p>
-                </div>
+        <div className="form-group mb-4">
+          <label className="form-label-block">Partner Name *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={newPartnerData.name}
+            onChange={(e) => setNewPartnerData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="Enter partner name (e.g., FC Barcelona, UEFA, Camp Nou)"
+            required
+            autoFocus
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Partner Emoji *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={newPartnerData.emoji}
+            onChange={(e) => setNewPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
+            placeholder="⚽ 🏟️ 🏆 (single emoji)"
+            required
+            maxLength={4}
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Hashtags (optional)</label>
+          <UnifiedHashtagInput
+            generalHashtags={newPartnerData.hashtags}
+            onGeneralChange={(hashtags) => 
+              setNewPartnerData(prev => ({ ...prev, hashtags }))
+            }
+            categorizedHashtags={newPartnerData.categorizedHashtags}
+            onCategorizedChange={(categorizedHashtags) => 
+              setNewPartnerData(prev => ({ ...prev, categorizedHashtags }))
+            }
+            placeholder="Search or add hashtags..."
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Bitly Links (optional)</label>
+          <BitlyLinksSelector
+            selectedLinkIds={newPartnerData.bitlyLinkIds}
+            onChange={(bitlyLinkIds) => 
+              setNewPartnerData(prev => ({ ...prev, bitlyLinkIds }))
+            }
+            availableLinks={allBitlyLinks}
+          />
+        </div>
       </FormModal>
-
-      {/* WHAT: Edit Partner Modal migrated to unified FormModal
-       * WHY: Consistent modal behavior across all admin pages */}
-      {editingPartner && (
-        <FormModal
-          isOpen={showEditForm}
-          onClose={() => setShowEditForm(false)}
-          onSubmit={async () => {
-            const syntheticEvent = new Event('submit', { cancelable: true }) as any;
-            await handleUpdatePartner(syntheticEvent);
-          }}
-          title="✏️ Edit Partner"
-          submitText="Update Partner"
-          isSubmitting={isSubmitting}
-          size="lg"
-        >
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Partner Name *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={editPartnerData.name}
-                    onChange={(e) => setEditPartnerData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter partner name"
-                    required
-                    autoFocus
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Partner Emoji *</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={editPartnerData.emoji}
-                    onChange={(e) => setEditPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
-                    placeholder="⚽ 🏟️ 🏆"
-                    required
-                    maxLength={4}
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Hashtags (optional)</label>
-                  <UnifiedHashtagInput
-                    generalHashtags={editPartnerData.hashtags}
-                    onGeneralChange={(hashtags) => 
-                      setEditPartnerData(prev => ({ ...prev, hashtags }))
-                    }
-                    categorizedHashtags={editPartnerData.categorizedHashtags}
-                    onCategorizedChange={(categorizedHashtags) => 
-                      setEditPartnerData(prev => ({ ...prev, categorizedHashtags }))
-                    }
-                    placeholder="Search or add hashtags..."
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Bitly Links (optional)</label>
-                  <BitlyLinksSelector
-                    selectedLinkIds={editPartnerData.bitlyLinkIds}
-                    availableLinks={allBitlyLinks}
-                    onChange={(linkIds) => 
-                      setEditPartnerData(prev => ({ ...prev, bitlyLinkIds: linkIds }))
-                    }
-                    placeholder="Search and add Bitly links..."
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Search by bitlink or title, click to add. Remove with ✕ button.
-                  </p>
-                </div>
-
-                {/* WHAT: SportsDB Team Linking Section */}
-                {/* WHY: Allow enriching partner with sports club metadata (capacity, league, badge) */}
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Link to TheSportsDB (optional)</label>
-                  
-                  {/* WHAT: Display existing SportsDB link if present */}
-                  {editPartnerData.sportsDb && (
-                    <div className={styles.sportsDbPanel}>
-                      <div className={styles.sportsDbPanelInner}>
-                        {/* WHAT: Display team badge if available */}
-                        {editPartnerData.sportsDb.badge && (
-                          <img
-                            src={editPartnerData.sportsDb.badge}
-                            alt="Team badge"
-                            className={styles.sportsDbBadge}
-                          />
-                        )}
-                        <div className={styles.sportsDbInfo}>
-                          <div className={styles.sportsDbTitle}>
-                            ✓ Linked to TheSportsDB
-                          </div>
-                          {editPartnerData.sportsDb.leagueName && (
-                            <div className={styles.sportsDbInfoLine}>
-                              League: {editPartnerData.sportsDb.leagueName}
-                            </div>
-                          )}
-                          {editPartnerData.sportsDb.venueName && (
-                            <div className={styles.sportsDbInfoLine}>
-                              Venue: {editPartnerData.sportsDb.venueName}
-                              {editPartnerData.sportsDb.venueCapacity && (
-                                <span> ({editPartnerData.sportsDb.venueCapacity.toLocaleString()} capacity)</span>
-                              )}
-                            </div>
-                          )}
-                          {editPartnerData.sportsDb.country && (
-                            <div className={styles.sportsDbInfoLine}>
-                              Country: {editPartnerData.sportsDb.country}
-                            </div>
-                          )}
-                          {editPartnerData.sportsDb.founded && (
-                            <div className={styles.sportsDbInfoLine}>
-                              Founded: {editPartnerData.sportsDb.founded}
-                            </div>
-                          )}
-                          {editPartnerData.sportsDb.lastSynced && (
-                            <div className={styles.sportsDbSyncTime}>
-                              Last synced: {new Date(editPartnerData.sportsDb.lastSynced).toLocaleString()}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      {/* WHAT: Re-sync button to update SportsDB data */}
-                      {/* WHY: Capacity and league info may change over time */}
-                      <button
-                        type="button"
-                        onClick={resyncSportsDbData}
-                        disabled={sportsDbLinking}
-                        className={`btn btn-small btn-secondary ${styles.sportsDbResyncButton}`}
-                      >
-                        {sportsDbLinking ? '🔄 Syncing...' : '🔄 Re-sync from TheSportsDB'}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* WHAT: Search interface for finding teams */}
-                  {/* WHY: Allow admin to search TheSportsDB by team name */}
-                  <div className={styles.sportsDbSearchContainer}>
-                    <input
-                      type="text"
-                      className={`form-input ${styles.sportsDbSearchInput}`}
-                      value={sportsDbSearch}
-                      onChange={(e) => setSportsDbSearch(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          searchSportsDbTeams();
-                        }
-                      }}
-                      placeholder="Search TheSportsDB by team name..."
-                    />
-                    <button
-                      type="button"
-                      onClick={searchSportsDbTeams}
-                      disabled={sportsDbSearching || !sportsDbSearch.trim()}
-                      className="btn btn-small btn-primary"
-                    >
-                      {sportsDbSearching ? '🔍 Searching...' : '🔍 Search'}
-                    </button>
-                  </div>
-
-                  {/* WHAT: Display search results with link buttons */}
-                  {/* WHY: Show matching teams with relevant metadata for admin selection */}
-                  {sportsDbResults.length > 0 && (
-                    <div className={styles.sportsDbResults}>
-                      {sportsDbResults.map((team) => (
-                        <div
-                          key={team.idTeam}
-                          className={styles.teamResultItem}
-                        >
-                          {/* WHAT: Team badge thumbnail */}
-                          {team.strBadge && (
-                            <img
-                              src={team.strBadge}
-                              alt={team.strTeam}
-                              className={styles.teamResultBadge}
-                            />
-                          )}
-                          <div className={styles.teamResultInfo}>
-                            <div className={styles.teamResultName}>
-                              {team.strTeam}
-                            </div>
-                            {/* WHAT: Show sport type to differentiate multi-sport clubs */}
-                            {/* WHY: Aalborg has handball, soccer teams - user needs to know which */}
-                            {team.strSport && (
-                              <div className={styles.teamResultSport}>
-                                🏅 {team.strSport}
-                              </div>
-                            )}
-                            {team.strLeague && (
-                              <div className={styles.teamResultLeague}>
-                                {team.strLeague}
-                              </div>
-                            )}
-                            {team.strCountry && (
-                              <div className={styles.teamResultCountry}>
-                                🌍 {team.strCountry}
-                              </div>
-                            )}
-                            {team.intStadiumCapacity && (
-                              <div className={styles.teamResultCapacity}>
-                                🏟️ Capacity: {parseInt(team.intStadiumCapacity, 10).toLocaleString()}
-                              </div>
-                            )}
-                          </div>
-                          {/* WHAT: Link button with team data to bypass buggy lookup API */}
-                          {/* WHY: Search API works correctly, lookup API returns wrong teams */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              console.log('👆 LINK BUTTON CLICKED for team:', team.idTeam, team.strTeam);
-                              linkToSportsDbTeam(team.idTeam, team);
-                            }}
-                            disabled={sportsDbLinking}
-                            className="btn btn-small btn-primary"
-                          >
-                            {sportsDbLinking ? '🔗 Linking...' : '🔗 Link'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* WHAT: Manual entry button */}
-                  {/* WHY: Fallback when team not in API or API returns wrong data */}
-                  <button
-                    type="button"
-                    onClick={() => setShowManualEntry(true)}
-                    className={styles.manualEntryButton}
-                  >
-                    🖊️ Can&apos;t find it? Enter manually (Recommended for missing teams)
-                  </button>
-
-                  <p className="text-xs text-gray-600 mt-2">
-                    <strong>Note:</strong> TheSportsDB FREE API has limitations - it may not return all teams shown on their website. 
-                    If you can&apos;t find your team, use the manual entry button above.
-                  </p>
-                </div>
-        </FormModal>
-      )}
-
-      {/* WHAT: Manual Sports Data Entry Modal migrated to unified FormModal
-       * WHY: Consistent modal behavior across all admin pages */}
+      
+      {/* Edit Partner Modal */}
       <FormModal
-        isOpen={showManualEntry}
-        onClose={() => setShowManualEntry(false)}
-        onSubmit={async () => {
-          const syntheticEvent = new Event('submit', { cancelable: true }) as any;
-          await handleManualEntry(syntheticEvent);
-        }}
-        title="🖊️ Enter Sports Data Manually"
-        subtitle="Use this form when TheSportsDB doesn't have the team or returns incorrect data. All fields are optional."
-        submitText="Save Sports Data"
-        isSubmitting={sportsDbLinking}
+        isOpen={showEditForm}
+        onClose={() => setShowEditForm(false)}
+        onSubmit={handleUpdatePartner}
+        title="Edit Partner"
+        submitText="Update Partner"
+        isSubmitting={isUpdatingPartner}
         size="lg"
       >
-                
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Venue Name</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manualEntryData.venueName}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, venueName: e.target.value }))}
-                    placeholder="e.g., Jutlander Bank Arena"
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Venue Capacity</label>
-                  <input
-                    type="number"
-                    className="form-input"
-                    value={manualEntryData.venueCapacity}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, venueCapacity: e.target.value }))}
-                    placeholder="e.g., 5000"
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">League Name</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manualEntryData.leagueName}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, leagueName: e.target.value }))}
-                    placeholder="e.g., Danish Mens Handball League"
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Country</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manualEntryData.country}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, country: e.target.value }))}
-                    placeholder="e.g., Denmark"
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Founded Year</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manualEntryData.founded}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, founded: e.target.value }))}
-                    placeholder="e.g., 2000"
-                  />
-                </div>
-
-                <div className="form-group mb-4">
-                  <label className="form-label-block">Logo URL</label>
-                  <input
-                    type="url"
-                    className="form-input"
-                    value={manualEntryData.logoUrl}
-                    onChange={(e) => setManualEntryData(prev => ({ ...prev, logoUrl: e.target.value }))}
-                    placeholder="https://example.com/logo.png"
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    Logo will be uploaded to ImgBB for permanent hosting
-                  </p>
-                </div>
+        <div className="form-group mb-4">
+          <label className="form-label-block">Partner Name *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={editPartnerData.name}
+            onChange={(e) => setEditPartnerData(prev => ({ ...prev, name: e.target.value }))}
+            required
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Partner Emoji *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={editPartnerData.emoji}
+            onChange={(e) => setEditPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
+            required
+            maxLength={4}
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Hashtags</label>
+          <UnifiedHashtagInput
+            generalHashtags={editPartnerData.hashtags}
+            onGeneralChange={(hashtags) => 
+              setEditPartnerData(prev => ({ ...prev, hashtags }))
+            }
+            categorizedHashtags={editPartnerData.categorizedHashtags}
+            onCategorizedChange={(categorizedHashtags) => 
+              setEditPartnerData(prev => ({ ...prev, categorizedHashtags }))
+            }
+            placeholder="Search or add hashtags..."
+          />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Bitly Links</label>
+          <BitlyLinksSelector
+            selectedLinkIds={editPartnerData.bitlyLinkIds}
+            onChange={(bitlyLinkIds) => 
+              setEditPartnerData(prev => ({ ...prev, bitlyLinkIds }))
+            }
+            availableLinks={allBitlyLinks}
+          />
+        </div>
       </FormModal>
-    </div>
+    </>
   );
 }
