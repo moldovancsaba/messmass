@@ -272,14 +272,21 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>MessMass Version 6.0.0</strong><br />
-            Last Updated: 2025-01-21T11:14:00.000Z (UTC)
+            <strong>MessMass Version 10.6.0</strong><br />
+            Last Updated: 2025-11-05T12:58:00.000Z (UTC)
           </p>
           <p>
-            For additional help, contact your system administrator or refer to the{' '}
+            <strong>Quick Links:</strong><br />
+            <a href="/api-docs" target="_blank" rel="noopener noreferrer">
+              📚 Public API Documentation
+            </a>
+            {' '}•{' '}
             <a href="https://github.com/moldovancsaba/messmass" target="_blank" rel="noopener noreferrer">
-              GitHub repository
-            </a>.
+              GitHub Repository
+            </a>
+          </p>
+          <p>
+            For additional help, contact your system administrator.
           </p>
         </footer>
       </div>
