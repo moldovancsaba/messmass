@@ -396,13 +396,23 @@ export default function ProjectsPageUnified() {
         if (action.label === 'Report') {
           return {
             ...action,
-            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'stats')
+            handler: (project: ProjectDTO) => {
+              // WHAT: Use viewSlug for report page (stats type)
+              // WHY: SharePopup needs the correct slug to generate the right URL
+              const slug = project.viewSlug || project._id;
+              handleShareOpen(slug, 'stats');
+            }
           };
         }
         if (action.label === 'Edit Stats') {
           return {
             ...action,
-            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'edit')
+            handler: (project: ProjectDTO) => {
+              // WHAT: Use editSlug for edit page (edit type)
+              // WHY: SharePopup needs the correct slug to generate the right URL
+              const slug = project.editSlug || project._id;
+              handleShareOpen(slug, 'edit');
+            }
           };
         }
         return action;
@@ -420,13 +430,23 @@ export default function ProjectsPageUnified() {
         if (action.label === 'Report') {
           return {
             ...action,
-            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'stats')
+            handler: (project: ProjectDTO) => {
+              // WHAT: Use viewSlug for report page (stats type)
+              // WHY: SharePopup needs the correct slug to generate the right URL
+              const slug = project.viewSlug || project._id;
+              handleShareOpen(slug, 'stats');
+            }
           };
         }
         if (action.label === 'Edit Stats') {
           return {
             ...action,
-            handler: (project: ProjectDTO) => handleShareOpen(project._id, 'edit')
+            handler: (project: ProjectDTO) => {
+              // WHAT: Use editSlug for edit page (edit type)
+              // WHY: SharePopup needs the correct slug to generate the right URL
+              const slug = project.editSlug || project._id;
+              handleShareOpen(slug, 'edit');
+            }
           };
         }
         return action;
