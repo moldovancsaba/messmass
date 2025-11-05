@@ -37,42 +37,36 @@ export default function Sidebar() {
    * WHY: AdminLayout needs to know collapse state to adjust main content margin */
   const { isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen } = useSidebar();
   
-  /* What: Navigation structure organized by functional sections with Material Icons
-     Why: Logical grouping with consistent icon system across entire app */
+  /* WHAT: Reorganized navigation structure per user requirements
+     WHY: More intuitive order - removed Dashboard (logo serves same purpose),
+          grouped logically from core content to admin tools */
   const navSections: NavSection[] = [
     {
-      title: 'Content',
+      title: 'Core',
       items: [
-        { label: 'Dashboard', path: '/admin', icon: 'analytics' },
-        { label: 'Events', path: '/admin/events', icon: 'event' },
         { label: 'Partners', path: '/admin/partners', icon: 'handshake' },
-        { label: 'Quick Add', path: '/admin/quick-add', icon: 'bolt' },
+        { label: 'Events', path: '/admin/events', icon: 'event' },
         { label: 'Filters', path: '/admin/filter', icon: 'search' },
       ],
     },
     {
-      title: 'Configuration',
+      title: 'Management',
       items: [
-        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: 'label' },
-        { label: 'Category Manager', path: '/admin/categories', icon: 'public' },
+        { label: 'Users', path: '/admin/users', icon: 'group' },
+        { label: 'Insights', path: '/admin/insights', icon: 'lightbulb' },
+        { label: 'KYC', path: '/admin/kyc', icon: 'lock' },
         { label: 'Algorithms', path: '/admin/charts', icon: 'trending_up' },
         { label: 'Clicker Manager', path: '/admin/clicker-manager', icon: 'swap_horiz' },
+        { label: 'Bitly Manager', path: '/admin/bitly', icon: 'link' },
+        { label: 'Hashtag Manager', path: '/admin/hashtags', icon: 'label' },
+        { label: 'Category Manager', path: '/admin/categories', icon: 'public' },
       ],
     },
     {
-      title: 'Analytics',
+      title: 'System',
       items: [
-        { label: 'Insights', path: '/admin/insights', icon: 'lightbulb' },
-      ],
-    },
-    {
-      title: 'Settings',
-      items: [
-        { label: 'KYC Variables', path: '/admin/kyc', icon: 'lock' },
         { label: 'Reporting', path: '/admin/visualization', icon: 'visibility' },
         { label: 'Styles', path: '/admin/design', icon: 'palette' },
-        { label: 'Bitly Management', path: '/admin/bitly', icon: 'link' },
-        { label: 'Users', path: '/admin/users', icon: 'group' },
         { label: 'Cache Management', path: '/admin/cache', icon: 'delete' },
       ],
     },

@@ -496,6 +496,13 @@ export default function ProjectsPageUnified() {
             variant: 'primary',
             icon: '➕',
             title: 'Create a new event'
+          },
+          {
+            label: 'Quick Add',
+            onClick: () => router.push('/admin/quick-add'),
+            variant: 'secondary',
+            icon: '⚡',
+            title: 'Bulk import events from spreadsheet or match builder'
           }
         ]}
       />
