@@ -1,0 +1,176 @@
+/* app/api-docs/page.module.css */
+/* WHAT: Styles for API documentation page with GitHub-flavored markdown rendering */
+/* WHY: Make docs readable and professional for external developers */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 3rem;
+}
+
+/* GitHub-flavored markdown styles */
+.markdown {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #24292f;
+}
+
+.markdown h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.markdown h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.markdown h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown p {
+  margin-bottom: 1rem;
+}
+
+.markdown a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown a:hover {
+  text-decoration: underline;
+}
+
+.markdown code {
+  background: #f6f8fa;
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 85%;
+}
+
+.markdown pre {
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #d0d7de;
+}
+
+.markdown pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: 85%;
+}
+
+.markdown ul, .markdown ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.markdown li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.markdown table th,
+.markdown table td {
+  padding: 8px 13px;
+  border: 1px solid #d0d7de;
+}
+
+.markdown table th {
+  background: #f6f8fa;
+  font-weight: 600;
+  text-align: left;
+}
+
+.markdown table tr:nth-child(even) {
+  background: #f6f8fa;
+}
+
+.markdown blockquote {
+  border-left: 4px solid #d0d7de;
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-bottom: 1rem;
+  color: #57606a;
+}
+
+.markdown hr {
+  height: 1px;
+  background: #d0d7de;
+  border: none;
+  margin: 2rem 0;
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+  }
+
+  .markdown h1 {
+    font-size: 1.5rem;
+  }
+
+  .markdown h2 {
+    font-size: 1.25rem;
+  }
+
+  .markdown h3 {
+    font-size: 1.1rem;
+  }
+
+  .markdown pre {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .markdown table {
+    font-size: 14px;
+  }
+}
