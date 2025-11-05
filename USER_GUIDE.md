@@ -1,7 +1,7 @@
 # 📖 MessMass User Guide
 
-**Version:** 8.16.0  
-**Last Updated:** 2025-10-30T11:51:00.000Z (UTC)  
+**Version:** 10.6.0  
+**Last Updated:** 2025-11-05T12:55:00.000Z (UTC)  
 **Status:** Production
 
 Complete guide for using the MessMass enterprise event statistics dashboard and management platform.
@@ -14,14 +14,16 @@ Complete guide for using the MessMass enterprise event statistics dashboard and 
 2. [Getting Started](#getting-started)
 3. [Project Management](#project-management)
 4. [Partners Management](#partners-management)
-5. [Quick Add Methods](#quick-add-methods)
-6. [Hashtag System](#hashtag-system)
-7. [Bitly Integration](#bitly-integration)
-8. [Variables & Metrics](#variables--metrics)
-9. [Analytics & Charts](#analytics--charts)
-10. [Notifications](#notifications)
-11. [Advanced Features](#advanced-features)
-12. [Best Practices](#best-practices)
+5. [User Management & API Access](#user-management--api-access) ⭐ NEW
+6. [Public API Documentation](#public-api-documentation) ⭐ NEW
+7. [Quick Add Methods](#quick-add-methods)
+8. [Hashtag System](#hashtag-system)
+9. [Bitly Integration](#bitly-integration)
+10. [Variables & Metrics](#variables--metrics)
+11. [Analytics & Charts](#analytics--charts)
+12. [Notifications](#notifications)
+13. [Advanced Features](#advanced-features)
+14. [Best Practices](#best-practices)
 
 ---
 
@@ -62,13 +64,19 @@ MessMass is an enterprise-grade event statistics platform designed for collectin
 
 The dashboard provides quick access to all management functions:
 
-- **Project Management** (📊): Create and manage events
-- **Partner Management** (🤝): Manage organizations
+- **Events** (📊): Create and manage events
+- **Partners** (🤝): Manage organizations  
+- **Users** (👥): Create admin and API users ⭐ NEW
 - **Bitly Links** (🔗): Import and manage tracking links
 - **Quick Add** (⚡): Bulk import events
 - **Hashtag Categories** (🏷️): Configure categorization
 - **Variables** (📈): Customize metrics
+- **Charts** (📈): Manage chart configurations
+- **Visualization** (👁️): Configure data blocks
+- **Clicker Manager** (🎮): Manage clicker buttons
+- **Filter** (🔍): Hashtag filtering
 - **Help & Docs** (❓): Access documentation
+- **API Docs** (📚): Public API reference at [/api-docs](https://messmass.com/api-docs) ⭐ NEW
 
 ### Navigation
 
@@ -315,6 +323,205 @@ Direct partner assignment in project edit modal is planned for a future release.
 3. Confirm deletion
 
 **⚠️ Warning**: Deleting a partner does NOT delete associated events. Events will remain but lose the partner link.
+
+---
+
+## User Management & API Access
+
+### Overview
+
+MessMass supports two types of users:
+
+1. **Admin Users** - Access web dashboard, manage events/partners/settings
+2. **API Users** - Programmatic access via Bearer token authentication (no dashboard access)
+
+### Creating Users
+
+1. Navigate to **User Management** (`/admin/users`)
+2. Click **"➕ Add User"** button
+3. Fill in the modal:
+   - **Email**: User's email address (used for login/identification)
+   - **Name**: Full name
+   - **User Type**: Select role
+     - **Admin User (Dashboard Access)** - Can log in to web interface
+     - **API User (Programmatic Access)** - Gets automatic API access with generated key
+4. Click **"Create User"**
+5. **IMPORTANT**: Copy the password/API key from the modal (shown only once!)
+6. Share securely with the user
+
+### User Types Explained
+
+#### Admin Users
+- **Purpose**: Human users who manage the platform via web interface
+- **Login**: `https://messmass.com/admin/login` with email + password
+- **Permissions**: Full CRUD access to all resources
+- **API Access**: Disabled by default (can be enabled via toggle)
+- **Use Case**: Event managers, marketing teams, administrators
+
+#### API Users
+- **Purpose**: External systems that need programmatic data access
+- **Authentication**: Bearer token (the password IS the API key)
+- **Login**: Cannot log in to web dashboard (security boundary)
+- **API Access**: Automatically enabled on creation
+- **Use Case**: Partner integrations, data pipelines, mobile apps
+
+### Managing API Access
+
+#### Enable API Access for Admin Users
+
+1. Find the admin user in the list
+2. Click **🔓 Enable API** button
+3. Confirm the dialog
+4. User can now use their password as an API key
+5. **Tip**: Click "Regenerate" to create a long random API key
+
+#### Disable API Access
+
+1. Find the user with API access enabled
+2. Click **🔒 Disable API** button  
+3. Confirm the warning
+4. API calls with that key will immediately return 403 Forbidden
+
+**Protection**: Cannot disable if user made API calls within last 5 minutes (prevents breaking active integrations).
+
+### Monitoring API Usage
+
+The user list shows real-time API metrics:
+
+- **API Access**: ✅ Enabled / ❌ Disabled
+- **API Usage**: Total number of API calls made
+- **Last API Call**: Timestamp of most recent API request
+
+**Use Case**: Monitor which integrations are active, track usage patterns, identify inactive keys.
+
+### Regenerating Passwords/API Keys
+
+1. Find the user
+2. Click **🔄 Regenerate** button
+3. Confirm the action
+4. **Copy the new password/API key** (shown only once)
+5. Old password/key is immediately invalidated
+
+**When to Regenerate**:
+- Suspected key compromise
+- Regular security rotation (90 days recommended)
+- User forgot their password
+- Converting admin password to proper API key (longer, more random)
+
+### Deleting Users
+
+1. Find the user
+2. Click **🗑️ Delete** button
+3. Confirm deletion
+4. User and all their API keys are permanently removed
+
+**⚠️ Warning**: Deletion is permanent. Active API integrations will break immediately.
+
+---
+
+## Public API Documentation
+
+### Accessing the Docs
+
+**Web Interface**: [https://messmass.com/api-docs](https://messmass.com/api-docs)
+
+The API documentation page provides:
+- Complete endpoint reference
+- Authentication guide
+- Rate limiting information
+- Code examples (Node.js, Python, cURL)
+- Error handling guide
+- Testing scenarios
+
+### Quick Start (For External Developers)
+
+#### Step 1: Get API Access
+
+Contact your MessMass administrator to:
+1. Create an API user account for you
+2. Receive your 32-character API key
+
+#### Step 2: Test Authentication
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://messmass.com/api/public/partners
+```
+
+Expected: HTTP 200 with partners JSON.
+
+#### Step 3: Explore Endpoints
+
+Available endpoints:
+
+- **`GET /api/public/partners`** - List all partners with pagination
+- **`GET /api/public/partners/{id}`** - Get partner by MongoDB ObjectId  
+- **`GET /api/public/partners/{id}/events`** - Get partner's events
+- **`GET /api/public/events/{id}`** - Get event by MongoDB ObjectId
+
+### API Features
+
+✅ **Bearer Token Authentication** - Standard OAuth 2.0 pattern  
+✅ **Rate Limiting** - 1000 requests/minute for authenticated users  
+✅ **Pagination** - Limit/offset support on all list endpoints  
+✅ **Search & Sorting** - Filter and order results  
+✅ **ISO 8601 Timestamps** - All dates in `YYYY-MM-DDTHH:MM:SS.sssZ` format  
+✅ **CORS Enabled** - Cross-origin requests allowed  
+✅ **Comprehensive Errors** - Detailed error codes and messages
+
+### Example Use Cases
+
+#### Partner Website Integration
+
+```javascript
+// Fetch all events for a specific partner and display on website
+const response = await fetch(
+  'https://messmass.com/api/public/partners/PARTNER_ID/events',
+  {
+    headers: { 'Authorization': 'Bearer API_KEY' }
+  }
+)
+const { events } = await response.json()
+// Display events on partner website
+```
+
+#### Mobile App Data Sync
+
+```python
+import requests
+
+API_KEY = os.getenv('MESSMASS_API_KEY')
+headers = {'Authorization': f'Bearer {API_KEY}'}
+
+# Sync all partners and events to local mobile database
+partners = requests.get(
+    'https://messmass.com/api/public/partners',
+    headers=headers
+).json()['partners']
+
+for partner in partners:
+    events = requests.get(
+        f'https://messmass.com/api/public/partners/{partner["id"]}/events',
+        headers=headers
+    ).json()['events']
+    save_to_local_db(partner, events)
+```
+
+#### Analytics Dashboard
+
+```bash
+# Export event data for external BI tool
+curl -H "Authorization: Bearer API_KEY" \
+  "https://messmass.com/api/public/events/EVENT_ID?includeStats=true" \
+  | jq '.event.stats' > event_metrics.json
+```
+
+### Getting Help with API
+
+- **Documentation**: [https://messmass.com/api-docs](https://messmass.com/api-docs)
+- **Testing Guide**: See `API_ACCESS_TESTING_GUIDE.md` in repository
+- **Implementation Plan**: See `API_ACCESS_ENHANCEMENT_PLAN.md` for architecture
+- **Support**: Contact your MessMass administrator
 
 ---
 
@@ -1433,6 +1640,15 @@ Feature requests are welcome! Submit via your organization's feedback channel.
 
 ---
 
-**MessMass Version 6.0.0**  
-**Last Updated: 2025-01-21T11:14:00.000Z (UTC)**  
+**MessMass User Guide**  
+**Version:** 10.6.0  
+**Last Updated:** 2025-11-05T12:55:00.000Z (UTC)  
+**Status:** Production Ready
+
+**Quick Links:**
+- 📚 [Public API Documentation](https://messmass.com/api-docs)
+- 🔧 [Technical Architecture](ARCHITECTURE.md)
+- 🔐 [Authentication Guide](AUTHENTICATION_AND_ACCESS.md)
+- 🏗️ [Development Guide](WARP.md)
+
 **© 2025 MessMass Platform**
