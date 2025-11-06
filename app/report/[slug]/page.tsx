@@ -169,7 +169,7 @@ export default function StatsPage() {
   // Check authentication on component mount
   useEffect(() => {
     if (slug) {
-      const authenticated = isAuthenticated(slug, 'stats');
+      const authenticated = isAuthenticated(slug, 'event-report');
       setIsAuthorized(authenticated);
       setCheckingAuth(false);
       
@@ -335,7 +335,7 @@ export default function StatsPage() {
     return (
       <PagePasswordLogin
         pageId={slug}
-        pageType="stats"
+        pageType="event-report"
         onSuccess={handleLoginSuccess}
         title={project ? `${project.eventName} - Statistics Access` : 'Statistics Access Required'}
         description={project ? 

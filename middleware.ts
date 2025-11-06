@@ -133,6 +133,7 @@ export const config = {
     
     // WHAT: Public report pages (rate limiting applies)
     '/report/:path*',
+    '/partner-report/:path*',
     
     // WHAT: Exclude static files and assets
     '/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.ico).*)',

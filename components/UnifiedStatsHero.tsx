@@ -21,7 +21,7 @@ interface UnifiedStatsHeroProps {
   pageStyle?: PageStyleEnhanced;
   onExportCSV?: () => void;
   onExportPDF?: () => void; // PDF export callback
-  extraContent?: React.ReactNode; // Optional controls or info injected by pages (e.g., export toggles)
+  extraContent?: React.ReactNode;
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Pass layout mode to UnifiedPageHero
 }
 

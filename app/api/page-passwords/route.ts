@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!['stats', 'edit', 'filter'].includes(pageType)) {
+    if (!['event-report', 'partner-report', 'edit', 'filter'].includes(pageType)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid pageType. Must be stats, edit, or filter' },
+        { success: false, error: 'Invalid pageType. Must be event-report, partner-report, edit, or filter' },
         { status: 400 }
       );
     }
@@ -84,9 +84,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (!['stats', 'edit', 'filter'].includes(pageType)) {
+    if (!['event-report', 'partner-report', 'edit', 'filter'].includes(pageType)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid pageType. Must be stats, edit, or filter' },
+        { success: false, error: 'Invalid pageType. Must be event-report, partner-report, edit, or filter' },
         { status: 400 }
       );
     }

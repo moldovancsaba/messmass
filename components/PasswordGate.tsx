@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { PageType } from '@/lib/pagePassword';
 
 /**
  * PasswordGate
@@ -26,7 +27,7 @@ export default function PasswordGate({
   buttonLabel = "Unlock",
 }: {
   pageId: string;
-  pageType: "stats" | "edit" | "filter";
+  pageType: PageType;
   children?: React.ReactNode;
   onSuccess?: () => void;
   className?: string;

@@ -23,10 +23,12 @@ interface UnifiedPageHeroProps {
     level: string;
     status: string;
   };
+  createdDate?: string; // ISO date string
+  lastUpdatedDate?: string; // ISO date string
   onExportCSV?: () => void;
   onExportPDF?: () => void; // PDF export callback
   pageStyle?: PageStyleEnhanced;
-  children?: React.ReactNode; // For additional content like dates
+  children?: React.ReactNode; // For additional content
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Layout variation control
 }
 
@@ -37,6 +39,8 @@ export default function UnifiedPageHero({
   partner1,
   partner2,
   statusBadge,
+  createdDate,
+  lastUpdatedDate,
   onExportCSV,
   onExportPDF,
   pageStyle,
@@ -209,7 +213,24 @@ export default function UnifiedPageHero({
           </div>
         </div>
         
-        {/* Additional Content (like dates) */}
+        {/* WHAT: Date metadata with unified styling */}
+        {(createdDate || lastUpdatedDate) && (
+          <div className={styles.dateMetadata}>
+            {createdDate && (
+              <span className={styles.dateItem}>
+                Created: {new Date(createdDate).toLocaleDateString()}
+              </span>
+            )}
+            {createdDate && lastUpdatedDate && <span className={styles.dateDivider}>•</span>}
+            {lastUpdatedDate && (
+              <span className={styles.dateItem}>
+                Last Updated: {new Date(lastUpdatedDate).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        )}
+        
+        {/* Additional Content */}
         {children && (
           <div className={styles.additionalContent}>
             {children}

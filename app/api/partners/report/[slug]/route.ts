@@ -37,11 +37,16 @@ export async function GET(
     }
 
     // Fetch all events associated with this partner
-    // Events have partnerId field that references partner _id
+    // WHAT: Events can reference partner as partner1Id OR partner2Id (home/away)
+    // WHY: Sports Match Builder creates events with two partners
+    const partnerObjectId = new ObjectId(partner._id);
     const events = await db
       .collection('projects')
       .find({
-        partnerId: new ObjectId(partner._id)
+        $or: [
+          { partner1Id: partnerObjectId },
+          { partner2Id: partnerObjectId }
+        ]
       })
       .sort({ eventDate: -1 }) // Most recent events first
       .project({
@@ -51,6 +56,8 @@ export async function GET(
         viewSlug: 1,
         hashtags: 1,
         categorizedHashtags: 1,
+        createdAt: 1,
+        updatedAt: 1,
         'stats.remoteImages': 1,
         'stats.hostessImages': 1,
         'stats.selfies': 1,
@@ -79,6 +86,8 @@ export async function GET(
         viewSlug: event.viewSlug,
         hashtags: event.hashtags || [],
         categorizedHashtags: event.categorizedHashtags || {},
+        createdAt: event.createdAt,
+        updatedAt: event.updatedAt,
         stats: event.stats || {}
       })),
       totalEvents: events.length

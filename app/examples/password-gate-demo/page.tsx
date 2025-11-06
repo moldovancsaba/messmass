@@ -17,7 +17,7 @@ export default function PasswordGateDemoPage() {
   const [generated, setGenerated] = useState<null | { url: string; password: string }>(null);
   const [generating, setGenerating] = useState(false);
   const pageId = "demo-event";
-  const pageType = "stats" as const;
+  const pageType = "event-report" as const;
 
   async function generate() {
     setGenerating(true);

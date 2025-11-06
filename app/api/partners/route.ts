@@ -428,6 +428,7 @@ async function populateBitlyLinks(db: any, partner: any): Promise<PartnerRespons
     _id: partner._id.toString(),
     name: partner.name,
     emoji: partner.emoji,
+    viewSlug: partner.viewSlug, // WHAT: Include viewSlug for partner report pages
     hashtags: partner.hashtags || [],
     categorizedHashtags: partner.categorizedHashtags || {},
     bitlyLinks,

@@ -1,15 +1,17 @@
 'use client';
 
-// WHAT: Public partner report page with basic info and related events
-// WHY: Allow sharing partner profiles with stakeholders, similar to event stats pages
+// WHAT: Partner report page with SharePopup modal and admin-style event cards
+// WHY: Consistent UX - share modal like admin pages, event cards matching admin events display
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import StandardState from '@/components/StandardState';
+import UnifiedPageHero from '@/components/UnifiedPageHero';
+import ColoredCard from '@/components/ColoredCard';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import { exportPageToPDF } from '@/lib/export/pdf';
-import styles from './page.module.css';
+import styles from './PartnerReport.module.css';
 
 interface Partner {
   _id: string;
@@ -27,7 +29,10 @@ interface Event {
   eventName: string;
   eventDate: string;
   hashtags?: string[];
+  categorizedHashtags?: { [categoryName: string]: string[] };
   viewSlug?: string;
+  createdAt: string;
+  updatedAt: string;
   stats: {
     remoteImages?: number;
     hostessImages?: number;
@@ -51,6 +56,7 @@ export default function PartnerReportPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  
   
   // Fetch partner data
   const fetchPartnerData = useCallback(async () => {
@@ -78,7 +84,7 @@ export default function PartnerReportPage() {
   // Check authentication on mount
   useEffect(() => {
     if (slug) {
-      const authenticated = isAuthenticated(slug, 'stats');
+      const authenticated = isAuthenticated(slug, 'partner-report');
       setIsAuthorized(authenticated);
       setCheckingAuth(false);
       
@@ -184,7 +190,7 @@ export default function PartnerReportPage() {
     return (
       <PagePasswordLogin
         pageId={slug}
-        pageType="stats"
+        pageType="partner-report"
         onSuccess={handleLoginSuccess}
       />
     );
@@ -201,172 +207,165 @@ export default function PartnerReportPage() {
   }
   
   return (
-    <div className={styles.container} id="partner-report-container">
-      {/* Hero Block with Partner Info */}
-      <div className={styles.hero}>
-        <div className={styles.heroContent}>
-          <div className={styles.heroHeader}>
-            <div className={styles.partnerInfo}>
-              {partner.logoUrl && (
-                <img 
-                  src={partner.logoUrl} 
-                  alt={`${partner.name} logo`}
-                  className={styles.partnerLogo}
-                />
-              )}
-              <div className={styles.partnerTitle}>
-                <span className={styles.partnerEmoji}>{partner.emoji}</span>
-                <h1 className={styles.partnerName}>{partner.name}</h1>
+    <div className="page-bg-gray">
+      <div className={styles.pageContainer}>
+        {/* WHAT: Main content container matching filter page layout
+             WHY: Consistent wrapper structure with max-width and centering */}
+        <div className={styles.contentWrapper} id="partner-report-container">
+          {/* WHAT: Use UnifiedPageHero with single-partner-spotlight mode
+               WHY: Centralized styling system, consistent with event reports */}
+          <UnifiedPageHero
+            title={partner.name}
+            hashtags={partner.hashtags}
+            categorizedHashtags={partner.categorizedHashtags}
+            partner1={{
+              _id: partner._id,
+              name: partner.name,
+              emoji: partner.emoji,
+              logoUrl: partner.logoUrl
+            }}
+          layoutMode="single-partner-spotlight"
+          createdDate={partner.createdAt}
+          lastUpdatedDate={partner.updatedAt}
+          onExportCSV={handleExportCSV}
+          onExportPDF={handleExportPDF}
+        >
+            {/* WHAT: Totals Summary Grid - uses CSS module
+                 WHY: Key metrics displayed in responsive grid without inline styles */}
+            {totals && (
+              <div className={styles.totalsGrid}>
+                <div className={styles.totalItem}>
+                  <div className={styles.totalValue}>
+                    {totals.totalEvents}
+                  </div>
+                  <div className={styles.totalLabel}>
+                    Total Events
+                  </div>
+                </div>
+                <div className={styles.totalItem}>
+                  <div className={styles.totalValue}>
+                    {totals.totalImages.toLocaleString()}
+                  </div>
+                  <div className={styles.totalLabel}>
+                    Total Images
+                  </div>
+                </div>
+                <div className={styles.totalItem}>
+                  <div className={styles.totalValue}>
+                    {totals.totalFans.toLocaleString()}
+                  </div>
+                  <div className={styles.totalLabel}>
+                    Total Fans
+                  </div>
+                </div>
+                <div className={styles.totalItem}>
+                  <div className={styles.totalValue}>
+                    {totals.totalAttendees.toLocaleString()}
+                  </div>
+                  <div className={styles.totalLabel}>
+                    Total Attendees
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className={styles.exportButtons}>
-              <button 
-                onClick={handleExportCSV}
-                className={styles.exportButton}
-                title="Export events to CSV"
-              >
-                📊 Export CSV
-              </button>
-              <button 
-                onClick={handleExportPDF}
-                className={styles.exportButton}
-                title="Export report to PDF"
-              >
-                📄 Export PDF
-              </button>
-            </div>
-          </div>
+            )}
+          </UnifiedPageHero>
           
-          {/* Hashtags */}
-          {(partner.hashtags && partner.hashtags.length > 0) || 
-           (partner.categorizedHashtags && Object.keys(partner.categorizedHashtags).length > 0) ? (
-            <div className={styles.hashtagsSection}>
-              <div className={styles.hashtags}>
-                {partner.hashtags?.map((hashtag, idx) => (
-                  <ColoredHashtagBubble 
-                    key={`general-${idx}`}
-                    hashtag={hashtag}
-                  />
-                ))}
-                {partner.categorizedHashtags && Object.entries(partner.categorizedHashtags).map(([category, tags]) =>
-                  tags.map((tag, idx) => (
-                    <ColoredHashtagBubble
-                      key={`${category}-${idx}`}
-                      hashtag={tag}
-                      showCategoryPrefix={true}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-          ) : null}
-          
-          {/* Metadata */}
-          <div className={styles.metadata}>
-            <span className={styles.metaItem}>
-              Created: {new Date(partner.createdAt).toLocaleDateString()}
-            </span>
-            <span className={styles.metaDivider}>•</span>
-            <span className={styles.metaItem}>
-              Last Updated: {new Date(partner.updatedAt).toLocaleDateString()}
-            </span>
-          </div>
-          
-          {/* Totals Summary */}
-          {totals && (
-            <div className={styles.totalsGrid}>
-              <div className={styles.totalCard}>
-                <div className={styles.totalValue}>{totals.totalEvents}</div>
-                <div className={styles.totalLabel}>Total Events</div>
-              </div>
-              <div className={styles.totalCard}>
-                <div className={styles.totalValue}>{totals.totalImages.toLocaleString()}</div>
-                <div className={styles.totalLabel}>Total Images</div>
-              </div>
-              <div className={styles.totalCard}>
-                <div className={styles.totalValue}>{totals.totalFans.toLocaleString()}</div>
-                <div className={styles.totalLabel}>Total Fans</div>
-              </div>
-              <div className={styles.totalCard}>
-                <div className={styles.totalValue}>{totals.totalAttendees.toLocaleString()}</div>
-                <div className={styles.totalLabel}>Total Attendees</div>
-              </div>
+          {/* WHAT: Events list section with admin-style cards
+               WHY: Match admin events page display with full details, stats, partners */}
+          {events.length > 0 && (
+            <div className={styles.eventsSection}>
+              <ColoredCard>
+                <h2 className={styles.eventsTitle}>
+                  📊 Related Events ({events.length})
+                </h2>
+                <div className={styles.eventsGrid}>
+                  {events.map((event) => {
+                    const totalImages = (event.stats.remoteImages || 0) + 
+                                       (event.stats.hostessImages || 0) + 
+                                       (event.stats.selfies || 0);
+                    const totalFans = (event.stats.remoteFans || 0) + (event.stats.stadium || 0);
+                    
+                    return (
+                      <div key={event._id} className={styles.eventCard}>
+                        {/* Event Name and Link */}
+                        <div className={styles.eventHeader}>
+                          {event.viewSlug ? (
+                            <a
+                              href={`/report/${event.viewSlug}`}
+                              className={styles.eventLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={`View ${event.eventName}`}
+                            >
+                              {event.eventName}
+                            </a>
+                          ) : (
+                            <span className={styles.eventName}>{event.eventName}</span>
+                          )}
+                        </div>
+                        
+                        {/* Event Date */}
+                        <div className={styles.eventDate}>
+                          📅 {new Date(event.eventDate).toLocaleDateString()}
+                        </div>
+                        
+                        {/* Event Stats */}
+                        <div className={styles.eventStats}>
+                          <div className={styles.statItem}>
+                            <span className={styles.statLabel}>📷 Images:</span>
+                            <span className={styles.statValue}>{totalImages.toLocaleString()}</span>
+                          </div>
+                          <div className={styles.statItem}>
+                            <span className={styles.statLabel}>👥 Fans:</span>
+                            <span className={styles.statValue}>{totalFans.toLocaleString()}</span>
+                          </div>
+                          {event.stats.eventAttendees ? (
+                            <div className={styles.statItem}>
+                              <span className={styles.statLabel}>🏟️ Attendees:</span>
+                              <span className={styles.statValue}>
+                                {event.stats.eventAttendees.toLocaleString()}
+                              </span>
+                            </div>
+                          ) : null}
+                        </div>
+                        
+                        {/* Hashtags */}
+                        {(event.hashtags?.length || Object.keys(event.categorizedHashtags || {}).length) ? (
+                          <div className={styles.eventHashtags}>
+                            {event.hashtags?.slice(0, 4).map((hashtag) => (
+                              <ColoredHashtagBubble
+                                key={`general-${hashtag}`}
+                                hashtag={hashtag}
+                                small
+                                interactive={false}
+                                projectCategorizedHashtags={event.categorizedHashtags}
+                                autoResolveColor
+                              />
+                            ))}
+                            {event.categorizedHashtags &&
+                              Object.entries(event.categorizedHashtags)
+                                .slice(0, 2)
+                                .map(([category, hashtags]) =>
+                                  hashtags.slice(0, 2).map((hashtag) => (
+                                    <ColoredHashtagBubble
+                                      key={`${category}-${hashtag}`}
+                                      hashtag={`${category}:${hashtag}`}
+                                      showCategoryPrefix
+                                      small
+                                      interactive={false}
+                                    />
+                                  ))
+                                )}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ColoredCard>
             </div>
           )}
         </div>
-      </div>
-      
-      {/* Events List */}
-      <div className={styles.eventsSection}>
-        <h2 className={styles.sectionTitle}>Related Events ({events.length})</h2>
-        
-        {events.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p>No events found for this partner</p>
-          </div>
-        ) : (
-          <div className={styles.eventsList}>
-            {events.map((event) => {
-              const totalImages = (event.stats.remoteImages || 0) + (event.stats.hostessImages || 0) + (event.stats.selfies || 0);
-              const totalFans = (event.stats.remoteFans || 0) + (event.stats.stadium || 0);
-              
-              return (
-                <div key={event._id} className={styles.eventCard}>
-                  <div className={styles.eventHeader}>
-                    <h3 className={styles.eventName}>{event.eventName}</h3>
-                    <span className={styles.eventDate}>
-                      {new Date(event.eventDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  <div className={styles.eventStats}>
-                    <div className={styles.statItem}>
-                      <span className={styles.statValue}>{totalImages.toLocaleString()}</span>
-                      <span className={styles.statLabel}>Images</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statValue}>{totalFans.toLocaleString()}</span>
-                      <span className={styles.statLabel}>Fans</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statValue}>
-                        {(event.stats.eventAttendees || 0).toLocaleString()}
-                      </span>
-                      <span className={styles.statLabel}>Attendees</span>
-                    </div>
-                  </div>
-                  
-                  {event.hashtags && event.hashtags.length > 0 && (
-                    <div className={styles.eventHashtags}>
-                      {event.hashtags.slice(0, 3).map((hashtag, idx) => (
-                        <span key={idx} className={styles.hashtagTag}>
-                          #{hashtag}
-                        </span>
-                      ))}
-                      {event.hashtags.length > 3 && (
-                        <span className={styles.hashtagMore}>
-                          +{event.hashtags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  
-                  {event.viewSlug && (
-                    <a 
-                      href={`/report/${event.viewSlug}`}
-                      className={styles.viewEventLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Report →
-                    </a>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
     </div>
   );

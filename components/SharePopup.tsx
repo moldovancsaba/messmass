@@ -91,8 +91,10 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
 
   const getPageTypeDisplay = () => {
     switch (pageType) {
-      case 'stats':
-        return 'Statistics Page';
+      case 'event-report':
+        return 'Event Report';
+      case 'partner-report':
+        return 'Partner Report';
       case 'edit':
         return 'Edit Page';
       case 'filter':

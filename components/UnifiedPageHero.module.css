@@ -183,6 +183,30 @@
   gap: var(--mm-space-2);
 }
 
+/* WHAT: Date metadata display (Created/Last Updated)
+ * WHY: Simple, compact date info matching report page styling
+ * HOW: Horizontal layout with bullet separator */
+.dateMetadata {
+  margin-top: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dateItem {
+  /* Individual date text styling */
+  color: var(--mm-gray-600);
+}
+
+.dateDivider {
+  /* Bullet separator between dates */
+  color: var(--mm-gray-400);
+  margin: 0 0.25rem;
+}
+
 /* ========================================
    RESPONSIVE LAYOUT
 ======================================== */

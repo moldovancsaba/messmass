@@ -12,6 +12,7 @@ import { partnersAdapter } from '@/lib/adapters/partnersAdapter';
 import type { PartnerResponse } from '@/lib/partner.types';
 import UnifiedAdminPage from '@/components/UnifiedAdminPage';
 import FormModal from '@/components/modals/FormModal';
+import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
@@ -65,6 +66,10 @@ export default function PartnersAdminPageUnified() {
   // Modal states - Edit
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingPartner, setEditingPartner] = useState<PartnerResponse | null>(null);
+  
+  // Share modal state
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [sharePartnerId, setSharePartnerId] = useState<string>('');
   const [editPartnerData, setEditPartnerData] = useState({
     name: '',
     emoji: '',
@@ -127,6 +132,10 @@ export default function PartnersAdminPageUnified() {
       
       params.set('offset', '0');
       
+      // WHAT: Add timestamp to force cache-busting
+      // WHY: Ensure fresh data after migrations (viewSlug addition)
+      params.set('_t', Date.now().toString());
+      
       const response = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
       
@@ -169,6 +178,10 @@ export default function PartnersAdminPageUnified() {
       if (q) {
         params.set('search', q);
       }
+      
+      // WHAT: Add timestamp to force cache-busting
+      // WHY: Ensure fresh data after migrations
+      params.set('_t', Date.now().toString());
       
       const response = await fetch(`/api/partners?${params.toString()}`, { cache: 'no-store' });
       const data = await response.json();
@@ -391,9 +404,12 @@ export default function PartnersAdminPageUnified() {
             } else if (action.label === 'Delete') {
               handleDeletePartner(partner._id, partner.name);
             } else if (action.label === 'Report') {
-              // Report button handler from adapter
+              // WHAT: Open SharePopup modal with partner report URL and password
+              // WHY: Allow admin to share partner report page with password
+              console.log('🔍 Report clicked:', { name: partner.name, viewSlug: partner.viewSlug, partnerId: partner._id });
               if (partner.viewSlug) {
-                window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+                setSharePartnerId(partner.viewSlug);
+                setSharePopupOpen(true);
               } else {
                 alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
               }
@@ -411,9 +427,11 @@ export default function PartnersAdminPageUnified() {
             } else if (action.label === 'Delete') {
               handleDeletePartner(partner._id, partner.name);
             } else if (action.label === 'Report') {
-              // Report button handler from adapter
+              // WHAT: Open SharePopup modal with partner report URL and password (card view)
+              // WHY: Same behavior as row actions - share modal for partner reports
               if (partner.viewSlug) {
-                window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+                setSharePartnerId(partner.viewSlug);
+                setSharePopupOpen(true);
               } else {
                 alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
               }
@@ -422,7 +440,7 @@ export default function PartnersAdminPageUnified() {
         }))
       }
     };
-  }, [partnersAdapter]);
+  }, [partnersAdapter, partners]); // FIXED: Add partners dependency to get fresh viewSlug data
   
   // Loading state
   if (authLoading || loading) {
@@ -559,6 +577,15 @@ export default function PartnersAdminPageUnified() {
           />
         </div>
       </FormModal>
+      
+      {/* Share Partner Report Modal */}
+      <SharePopup
+        isOpen={sharePopupOpen}
+        onClose={() => setSharePopupOpen(false)}
+        pageId={sharePartnerId}
+        pageType="partner-report"
+        customTitle="Share Partner Report"
+      />
       
       {/* Edit Partner Modal */}
       <FormModal

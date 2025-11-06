@@ -8,7 +8,7 @@ import config from '@/lib/config';
  * Page password types and interfaces for MessMass authentication system
  */
 
-export type PageType = 'stats' | 'edit' | 'filter';
+export type PageType = 'event-report' | 'partner-report' | 'edit' | 'filter';
 
 export interface PagePassword {
   _id?: string;
@@ -205,10 +205,15 @@ export async function generateShareableLink(
   
   let url = baseUrl;
   switch (pageType) {
-    case 'stats':
-      // WHAT: Use /report/ path instead of /stats/
-      // WHY: Pages were renamed from stats to report
+    case 'event-report':
+      // WHAT: Project/event report pages at /report/[slug]
+      // WHY: Public shareable event statistics pages
       url += `/report/${pageId}`;
+      break;
+    case 'partner-report':
+      // WHAT: Partner report pages at /partner-report/[slug]
+      // WHY: Public shareable partner profile pages with event listings
+      url += `/partner-report/${pageId}`;
       break;
     case 'edit':
       url += `/edit/${pageId}`;

@@ -32,7 +32,7 @@ export default function PagePasswordLogin({
         let bg: string | null = null;
         let header: string | null = null;
 
-        if (pageType === 'stats' || pageType === 'edit') {
+        if (pageType === 'event-report' || pageType === 'partner-report' || pageType === 'edit') {
           const qs = `?projectId=${encodeURIComponent(pageId)}`;
           const res = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
           if (res.ok) {
@@ -71,7 +71,7 @@ export default function PagePasswordLogin({
           try {
             // Attempt to fetch full page config to pull content background color
             const cfgRes = await fetch('/api/page-config' + (
-              pageType === 'stats' || pageType === 'edit' ? `?projectId=${encodeURIComponent(pageId)}` : ''
+              pageType === 'event-report' || pageType === 'partner-report' || pageType === 'edit' ? `?projectId=${encodeURIComponent(pageId)}` : ''
             ), { cache: 'no-store' });
             if (cfgRes.ok) {
               const cfgData = await cfgRes.json();
@@ -157,8 +157,10 @@ export default function PagePasswordLogin({
 
   const getPageTypeDisplay = () => {
     switch (pageType) {
-      case 'stats':
-        return 'Statistics';
+      case 'event-report':
+        return 'Event Report';
+      case 'partner-report':
+        return 'Partner Report';
       case 'edit':
         return 'Editor';
       case 'filter':

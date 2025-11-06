@@ -71,7 +71,7 @@ export default function ProjectsPageUnified() {
   // Share popup states
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [sharePageId, setSharePageId] = useState<string | null>(null);
-  const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | 'filter' | null>(null);
+  const [sharePageType, setSharePageType] = useState<'event-report' | 'edit' | 'filter' | null>(null);
   
   // Hydrate sort state from URL
   useEffect(() => {
@@ -373,7 +373,7 @@ export default function ProjectsPageUnified() {
   };
   
   // Share handlers
-  const handleShareOpen = (pageId: string, pageType: 'stats' | 'edit' | 'filter') => {
+  const handleShareOpen = (pageId: string, pageType: 'event-report' | 'edit' | 'filter') => {
     setSharePageId(pageId);
     setSharePageType(pageType);
     setSharePopupOpen(true);
@@ -400,7 +400,7 @@ export default function ProjectsPageUnified() {
               // WHAT: Use viewSlug for report page (stats type)
               // WHY: SharePopup needs the correct slug to generate the right URL
               const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'stats');
+              handleShareOpen(slug, 'event-report');
             }
           };
         }
@@ -434,7 +434,7 @@ export default function ProjectsPageUnified() {
               // WHAT: Use viewSlug for report page (stats type)
               // WHY: SharePopup needs the correct slug to generate the right URL
               const slug = project.viewSlug || project._id;
-              handleShareOpen(slug, 'stats');
+              handleShareOpen(slug, 'event-report');
             }
           };
         }
@@ -664,9 +664,9 @@ export default function ProjectsPageUnified() {
         isOpen={sharePopupOpen}
         onClose={() => setSharePopupOpen(false)}
         pageId={sharePageId || ''}
-        pageType={sharePageType || 'stats'}
+        pageType={sharePageType || 'event-report'}
         customTitle={
-          sharePageType === 'stats'
+          sharePageType === 'event-report'
             ? 'Share Statistics Page'
             : sharePageType === 'edit'
             ? 'Share Edit Page'

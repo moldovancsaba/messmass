@@ -1,0 +1,158 @@
+/* Partner Report Page Styles
+   WHAT: Styles for partner report page totals grid
+   WHY: Eliminates ALL inline styles from partner report page */
+
+/* WHAT: Page container with gray background */
+.pageContainer {
+  padding: var(--mm-space-4);
+}
+
+/* WHAT: Main content wrapper with max-width constraint */
+.contentWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* WHAT: Totals summary grid layout
+ * WHY: Display key metrics in responsive grid
+ * HOW: Auto-fit columns, minimum 150px width */
+.totalsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-6);
+}
+
+/* WHAT: Individual total metric card */
+.totalItem {
+  text-align: center;
+}
+
+/* WHAT: Large metric value */
+.totalValue {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 700;
+  color: var(--mm-primary-600);
+}
+
+/* WHAT: Metric label */
+.totalLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-top: var(--mm-space-1);
+}
+
+/* WHAT: Events section spacing */
+.eventsSection {
+  margin-top: var(--mm-space-lg);
+}
+
+/* WHAT: Events section title */
+.eventsTitle {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-6);
+}
+
+/* WHAT: Events grid layout
+ * WHY: Display event cards in responsive grid
+ * HOW: Auto-fit columns, minimum 300px width */
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+/* WHAT: Individual event card */
+.eventCard {
+  padding: var(--mm-space-4);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+  transition: all var(--transition-fast);
+}
+
+.eventCard:hover {
+  border-color: var(--mm-primary-300);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* WHAT: Event header with name/link */
+.eventHeader {
+  margin-bottom: var(--mm-space-3);
+}
+
+.eventName {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.eventLink {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-primary-600);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.eventLink:hover {
+  color: var(--mm-primary-700);
+  text-decoration: underline;
+}
+
+/* WHAT: Event date display */
+.eventDate {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-3);
+}
+
+/* WHAT: Event stats grid */
+.eventStats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-3);
+  padding: var(--mm-space-3);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.statValue {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+/* WHAT: Event hashtags display */
+.eventHashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: var(--mm-space-3);
+  }
+  
+  .totalsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mm-space-3);
+  }
+}

@@ -141,7 +141,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
   // SharePopup states
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [sharePageId, setSharePageId] = useState<string | null>(null);
-  const [sharePageType, setSharePageType] = useState<'stats' | 'edit' | 'filter' | null>(null);
+  const [sharePageType, setSharePageType] = useState<'event-report' | 'edit' | 'filter' | null>(null);
 
   // Hydrate sort state from URL (if present)
   useEffect(() => {
@@ -698,7 +698,7 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                             <button 
                               onClick={() => {
                                 setSharePageId(project.viewSlug!);
-                                setSharePageType('stats');
+                                setSharePageType('event-report');
                                 setSharePopupOpen(true);
                               }}
                               className={`btn btn-small btn-success ${partnerStyles.eventName}`}
@@ -1049,9 +1049,9 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
         isOpen={sharePopupOpen}
         onClose={() => setSharePopupOpen(false)}
         pageId={sharePageId || ''}
-        pageType={sharePageType || 'stats'}
+        pageType={sharePageType || 'event-report'}
         customTitle={
-          sharePageType === 'stats'
+          sharePageType === 'event-report'
             ? 'Share Statistics Page'
             : sharePageType === 'edit'
             ? 'Share Edit Page'
