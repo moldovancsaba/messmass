@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-11-03T13:59:00.000Z (UTC)
-Version: 10.5.0
+Last Updated: 2025-11-06T20:00:00.000Z (UTC)
+Version: 10.7.0
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -281,11 +281,14 @@ MessMass is an enterprise-grade event analytics platform built with Next.js 15, 
 
 ---
 
-## Partners Management System (Version 6.0.0)
+## Partners Management System (Version 6.0.0 / v10.7.0 Enhanced)
 
 ### Overview
 
 The Partners Management System provides comprehensive infrastructure for managing organizational entities (clubs, federations, venues, brands) that participate in or host events. Partners serve as the foundation for rapid event creation via the Sports Match Builder and maintain associations with Bitly tracking links for attribution.
+
+**Status**: Production-Ready (Fully migrated to UnifiedAdminPage system in v10.7.0)  
+**Key Enhancement**: Partner report pages with shareable public URLs
 
 ### Key Features
 
@@ -306,6 +309,7 @@ interface Partner {
   _id: ObjectId;
   name: string;                    // Partner name (e.g., "FC Barcelona")
   emoji: string;                   // Visual identifier (e.g., "⚽")
+  viewSlug?: string;               // URL-safe slug for partner report pages (v10.7.0)
   hashtags?: string[];             // Traditional hashtags
   categorizedHashtags?: {          // Category-specific hashtags
     [categoryName: string]: string[];
@@ -322,6 +326,7 @@ interface Partner {
   "_id": ObjectId("..."),
   "name": "Ferencvárosi TC",
   "emoji": "⚽",
+  "viewSlug": "fradi-ferencvarosi-tc-abc123",
   "hashtags": ["football", "greenwhite"],
   "categorizedHashtags": {
     "location": ["budapest", "hungary"],
@@ -418,6 +423,15 @@ import PartnerSelector from '@/components/PartnerSelector';
 - Chip-based components use success color scheme (green)
 - All spacing and typography use design tokens (`--mm-*`)
 
+**Unified Admin System Integration** (v10.7.0):
+- Partners page fully migrated to UnifiedAdminPage component
+- Reduced codebase from 1,431 lines (hardcoded HTML table) to 621 lines
+- Uses `partnersAdapter` from `lib/adapters/partnersAdapter.tsx`
+- Server-side search, sort, pagination (matches projects page pattern)
+- Card/list view toggle with localStorage persistence
+- All CRUD operations work through adapter handlers
+- Report button available in both list and card views
+
 #### 4. Sports Match Builder Integration
 
 **Quick Add Page** (`app/admin/quick-add/page.tsx`)
@@ -461,7 +475,48 @@ import PartnerSelector from '@/components/PartnerSelector';
 }
 ```
 
-#### 5. Database Integration
+#### 5. Partner Report Pages (v10.7.0)
+
+**Purpose**: Shareable public reporting pages for partners showing profile and related events
+
+**Route**: `/partner-report/[slug]/page.tsx`
+
+**Features**:
+- **Hero Block**: Partner emoji, name, logo, hashtags, timestamps (created/updated)
+- **Export Actions**: CSV and PDF export buttons
+- **Totals Summary**: Aggregate statistics across all partner events (total events, images, fans, attendees)
+- **Related Events List**: 3-column card grid with event stats (images, fans, merch, attendees)
+- **Password Protection**: Uses PagePasswordLogin component for access control
+- **Responsive Design**: Desktop 3-column grid, mobile single column
+
+**API Endpoint**:
+- `GET /api/partners/report/[slug]` - Fetches partner by viewSlug with related events
+  - Returns: Partner object + events array sorted by eventDate descending
+  - Next.js 15 compatible (async params)
+  - Authorization: Password-protected (same as project stats pages)
+
+**viewSlug Auto-Generation** (v10.7.0):
+- New partners automatically get `viewSlug` on creation (POST /api/partners)
+- Existing partners get `viewSlug` on first edit/update (PUT /api/partners)
+- Uses UUID-based slug generation (`generateUniqueViewSlug()` from `lib/slugUtils`)
+- Checks uniqueness across all partner viewSlugs to avoid collisions
+- Backward compatibility: Old partners created before feature will auto-populate on next edit
+
+**Report Button Integration**:
+- Available in partners page row actions (list view)
+- Available in partners page card actions (card view)
+- Opens `/partner-report/[viewSlug]` in new tab
+- Shows alert if partner missing viewSlug (prompts user to edit and save)
+
+**Example Report URL**: `https://messmass.app/partner-report/abc-123-partner-name`
+
+**Files**:
+- `app/partner-report/[slug]/page.tsx` (294 lines) - Report page component
+- `app/partner-report/[slug]/page.module.css` (115 lines) - Report page styles
+- `app/api/partners/report/[slug]/route.ts` (88 lines) - Report API endpoint
+- `lib/adapters/partnersAdapter.tsx` - Report button definition (lines 155-169, 239-250)
+
+#### 6. Database Integration
 
 **Collections Involved**:
 - `partners` - Partner entities
@@ -781,6 +836,7 @@ The system supports sophisticated filtering with both traditional and categorize
 - `/edit/[slug]` - Project editing interface (password protected)
 - `/filter/[slug]` - Hashtag filtering and statistics (supports both filter slugs and direct hashtag names)
 - `/hashtag/[hashtag]` - Aggregated statistics for a single hashtag (resurfaced; leverages the same style system)
+- `/partner-report/[slug]` - **Partner report page (v10.7.0)** (password protected, shows profile + related events)
 
 ### Admin Pages
 - `/admin` - Admin dashboard with navigation cards
@@ -812,11 +868,12 @@ The system supports sophisticated filtering with both traditional and categorize
 - `PUT /api/projects` - Update existing project
 - `DELETE /api/projects` - Delete project
 
-**Partners** (v6.0.0)
+**Partners** (v6.0.0 / v10.7.0 Enhanced)
 - `GET /api/partners` - List partners with pagination, search, and sorting
-- `POST /api/partners` - Create new partner
-- `PUT /api/partners` - Update existing partner
+- `POST /api/partners` - Create new partner (auto-generates viewSlug in v10.7.0)
+- `PUT /api/partners` - Update existing partner (auto-generates viewSlug if missing in v10.7.0)
 - `DELETE /api/partners` - Delete partner
+- `GET /api/partners/report/[slug]` - **Fetch partner report data (v10.7.0)** (by viewSlug, includes related events)
 
 **Bitly Integration**
 - `GET /api/bitly/links` - List Bitly links with pagination and search
@@ -1198,7 +1255,7 @@ return (
 | Categories | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
 | Users | ✅ Migrated | v9.3.0 | Card/list, modal CRUD, client search |
 | Projects | ✅ Migrated | v10.1.0 | Card/list, modal CRUD, **server search**, partner logos, CSV export |
-| Partners | 🔄 Pending | - | Custom implementation (to be migrated) |
+| Partners | ✅ Migrated | v10.7.0 | Card/list, modal CRUD, **server search**, Report button, 810 lines removed |
 | Hashtags | 🔄 Pending | - | Custom implementation (to be migrated) |
 
 ### Files
@@ -1214,6 +1271,7 @@ return (
 - `lib/adapters/categoriesAdapter.tsx`
 - `lib/adapters/usersAdapter.tsx`
 - `lib/adapters/projectsAdapter.tsx`
+- `lib/adapters/partnersAdapter.tsx` - **Added v10.7.0** (includes Report button)
 - `lib/adapters/index.ts` - Central exports
 
 **Types**:
