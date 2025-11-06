@@ -189,14 +189,16 @@ export default function PartnersAdminPageUnified() {
     if (user) {
       loadPartners(true, true);
     }
-  }, [user, loadPartners]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   
-  // Reload on search/sort changes
+  // Reload on search/sort changes (silent - no spinner)
   useEffect(() => {
     if (user) {
-      loadPartners(true, false);
+      loadPartners(true, false); // false = no loading spinner, just update data
     }
-  }, [debouncedSearchQuery, sortField, sortOrder, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchQuery, sortField, sortOrder]);
   
   // Reload when page becomes visible
   useEffect(() => {
@@ -208,7 +210,8 @@ export default function PartnersAdminPageUnified() {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [loadPartners, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   
   // WHAT: Lazy load Bitly links only when needed
   // WHY: Performance optimization - only load when opening modals
