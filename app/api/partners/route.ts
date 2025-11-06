@@ -13,6 +13,7 @@ import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import type { CreatePartnerInput, UpdatePartnerInput, PartnerResponse } from '@/lib/partner.types';
+import { generateUniqueViewSlug } from '@/lib/slugUtils';
 
 /**
  * POST /api/partners
@@ -54,6 +55,10 @@ export async function POST(request: NextRequest) {
       return new ObjectId(id);
     });
 
+    // WHAT: Generate unique viewSlug for shareable partner report page
+    // WHY: Partners need unique URL slug for public report pages
+    const viewSlug = await generateUniqueViewSlug();
+    
     // WHAT: Create partner document
     const now = new Date().toISOString();
     const client = await clientPromise;
@@ -67,6 +72,7 @@ export async function POST(request: NextRequest) {
       bitlyLinkIds: bitlyObjectIds || [],
       logoUrl: logoUrl || undefined, // Include ImgBB logo URL if provided
       sportsDb: sportsDb || undefined, // Include TheSportsDB enrichment data if provided
+      viewSlug, // Unique slug for /partner-report/[slug] page
       createdAt: now,
       updatedAt: now,
     };
@@ -244,10 +250,30 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // WHAT: Check if partner has viewSlug, generate if missing
+    // WHY: Old partners may not have viewSlug - add it on first update
+    const client = await clientPromise;
+    const db = client.db(config.dbName);
+    const existingPartner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
+    
+    if (!existingPartner) {
+      return NextResponse.json(
+        { success: false, error: 'Partner not found' },
+        { status: 404 }
+      );
+    }
+    
     // WHAT: Build update document
     const updateDoc: any = {
       updatedAt: new Date().toISOString(),
     };
+    
+    // WHAT: Generate viewSlug if partner doesn't have one
+    // WHY: Ensure all partners can use Report button functionality
+    if (!existingPartner.viewSlug) {
+      updateDoc.viewSlug = await generateUniqueViewSlug();
+      console.log(`📋 Generated viewSlug for partner ${partnerId}:`, updateDoc.viewSlug);
+    }
 
     if (name !== undefined) updateDoc.name = name.trim();
     if (emoji !== undefined) updateDoc.emoji = emoji.trim();
@@ -273,9 +299,6 @@ export async function PUT(request: NextRequest) {
     }
 
     // WHAT: Update partner in database
-    const client = await clientPromise;
-    const db = client.db(config.dbName);
-    
     const result = await db.collection('partners').updateOne(
       { _id: new ObjectId(partnerId) },
       { $set: updateDoc }
