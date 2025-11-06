@@ -24,10 +24,11 @@ export default function HelpPage() {
           <h2>Table of Contents</h2>
           <ul>
             <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#sharing">Sharing Reports (Event & Partner)</a></li>
             <li><a href="#stats-page">Understanding the Stats Page</a></li>
-            <li><a href="#live-tracking">Live Event Tracking</a></li>
+            <li><a href="#live-tracking">Live Event Tracking (Clicker)</a></li>
+            <li><a href="#kyc-management">KYC Management (Variables)</a></li>
             <li><a href="#exporting">Exporting Data</a></li>
-            <li><a href="#sharing">Sharing Results</a></li>
             <li><a href="#metrics">Understanding Metrics</a></li>
             <li><a href="#hashtags">Hashtag System</a></li>
             <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -87,33 +88,275 @@ export default function HelpPage() {
         </section>
 
         <section id="live-tracking" className={styles.section}>
-          <h2>⚡ Live Event Tracking</h2>
+          <h2>⚡ Live Event Tracking (Clicker)</h2>
           
-          <h3>Using the Edit Page</h3>
+          <h3>Accessing the Event Editor</h3>
+          <ol>
+            <li>Go to <strong>Events</strong> page (<code>/admin/events</code>)</li>
+            <li>Click on the <strong>event name</strong> (blue link) to open the editor</li>
+            <li>Or use the direct URL: <code>/edit/[event-slug]</code></li>
+          </ol>
+
+          <h3>Editor Modes</h3>
           <p>
-            During live events, use the edit page to collect real-time statistics:
+            The editor provides two modes for data entry:
           </p>
 
-          <h4>Clicker Mode</h4>
+          <h4>1. Clicker Mode (Default)</h4>
+          <p>
+            Fast, button-based data entry organized in groups:
+          </p>
           <ul>
-            <li>Quick increment/decrement buttons for fast data entry</li>
-            <li>Perfect for high-traffic events</li>
-            <li>Real-time updates visible to all viewers</li>
+            <li><strong>Images Group:</strong> Remote Images, Hostess Images, Selfies
+              <ul>
+                <li>Shows live KPI chart: "All Images Taken"</li>
+              </ul>
+            </li>
+            <li><strong>Location Group:</strong> Remote Fans, Stadium
+              <ul>
+                <li>Shows live KPI chart: "Total Fans"</li>
+              </ul>
+            </li>
+            <li><strong>Demographics Group:</strong> Female, Male, Gen Alpha, Gen Y/Z, Gen X, Boomer</li>
+            <li><strong>Merchandise Group:</strong> Merched, Jersey, Scarf, Flags, Baseball Cap, Other</li>
           </ul>
 
-          <h4>Manual Mode</h4>
+          <h4>Clicker Interaction Methods</h4>
           <ul>
-            <li>Enter exact numbers when you have accurate counts</li>
-            <li>Useful for post-event data entry</li>
-            <li>Includes fields for success manager metrics</li>
+            <li><strong>Single Click:</strong> Increment by +1</li>
+            <li><strong>Double Click:</strong> Increment by +10 (fast entry for large crowds)</li>
+            <li><strong>Right Click:</strong> Decrement by -1 (undo mistakes)</li>
           </ul>
 
-          <h3>Safety Tips</h3>
+          <h4>Visual Feedback</h4>
           <ul>
-            <li>Save frequently to prevent data loss</li>
-            <li>Use the undo feature if you make a mistake</li>
-            <li>Multiple people can track simultaneously</li>
+            <li>Button shows current value below the label</li>
+            <li>KPI charts update in real-time as you click</li>
+            <li>All connected users see updates instantly (WebSocket)</li>
           </ul>
+
+          <h4>2. Manual Input Mode</h4>
+          <p>
+            Precise data entry using text fields:
+          </p>
+          <ul>
+            <li>Toggle to Manual Mode using the switch at the top</li>
+            <li>All editable variables appear as text input fields</li>
+            <li>Enter exact numbers (e.g., when copying from spreadsheets)</li>
+            <li>Includes Success Manager metrics (attendees, ticket purchases, visits, etc.)</li>
+            <li>Click <strong>"Save"</strong> to update all fields at once</li>
+          </ul>
+
+          <h3>Success Manager Metrics (Optional Section)</h3>
+          <p>
+            Click <strong>"Show Success Manager Metrics"</strong> to expand additional fields:
+          </p>
+          <ul>
+            <li>Event Attendees</li>
+            <li>Event Ticket Purchases</li>
+            <li>Value Proposition Visits/Purchases</li>
+            <li>Event Results (Home/Visitor scores)</li>
+            <li>Visit Sources (QR Code, Short URL, Web, Social)</li>
+          </ul>
+
+          <h3>Real-Time Collaboration</h3>
+          <ul>
+            <li><strong>Live Updates:</strong> All connected users see changes instantly</li>
+            <li><strong>Connection Status:</strong> Green dot = connected, Red = disconnected</li>
+            <li><strong>Auto-Reconnect:</strong> WebSocket reconnects automatically on network issues</li>
+            <li><strong>Multiple Users:</strong> Multiple people can edit simultaneously</li>
+            <li><strong>Conflict Resolution:</strong> Last write wins (updates merge automatically)</li>
+          </ul>
+
+          <h3>Best Practices</h3>
+          <ul>
+            <li>Use <strong>Clicker Mode</strong> during live events for speed</li>
+            <li>Use <strong>Manual Mode</strong> for post-event data correction or bulk imports</li>
+            <li>Double-click clicker buttons for large counts (e.g., stadium attendance)</li>
+            <li>Right-click to quickly undo accidental clicks</li>
+            <li>Monitor the KPI charts to verify data accuracy in real-time</li>
+          </ul>
+        </section>
+
+        <section id="kyc-management" className={styles.section}>
+          <h2>📋 KYC Management (Variables & Metrics)</h2>
+          
+          <h3>What is KYC Management?</h3>
+          <p>
+            KYC Management (<code>/admin/kyc</code>) is the admin interface for configuring all variables (metrics) tracked in MessMass. It controls:
+          </p>
+          <ul>
+            <li>Which variables appear in the <strong>Clicker Mode</strong></li>
+            <li>Which variables are editable in <strong>Manual Input Mode</strong></li>
+            <li>Display labels (aliases) shown in the UI</li>
+            <li>Variable organization and ordering</li>
+          </ul>
+
+          <h3>Variable Types</h3>
+          <h4>1. System Variables (96 built-in)</h4>
+          <ul>
+            <li><strong>Images:</strong> remoteImages, hostessImages, selfies</li>
+            <li><strong>Fans:</strong> remoteFans, stadium</li>
+            <li><strong>Demographics:</strong> female, male, genAlpha, genYZ, genX, boomer</li>
+            <li><strong>Merchandise:</strong> merched, jersey, scarf, flags, baseballCap, other</li>
+            <li><strong>Visits:</strong> visitQrCode, visitShortUrl, visitWeb, socialVisit</li>
+            <li><strong>Event:</strong> eventAttendees, eventResultHome, eventResultVisitor</li>
+            <li><strong>Bitly:</strong> totalBitlyClicks, uniqueBitlyClicks, and 80+ country/device metrics</li>
+          </ul>
+          <p>
+            System variables have a green <strong>"System"</strong> badge and cannot be deleted.
+          </p>
+
+          <h4>2. Derived Variables (Auto-calculated)</h4>
+          <ul>
+            <li><strong>allImages:</strong> remoteImages + hostessImages + selfies</li>
+            <li><strong>totalFans:</strong> remoteFans + stadium</li>
+            <li><strong>totalVisit:</strong> Sum of all visit sources</li>
+          </ul>
+          <p>
+            Derived variables are marked with <code>type: derived</code> and cannot be manually edited (enforced).
+          </p>
+
+          <h4>3. Custom Variables (User-created)</h4>
+          <ul>
+            <li>Created by admins via KYC Management interface</li>
+            <li>Examples: vipGuests, pressCount, sponsorBooth</li>
+            <li>Stored in database just like system variables</li>
+            <li>Can be deleted (system variables cannot)</li>
+          </ul>
+
+          <h3>Variable Cards</h3>
+          <p>
+            Each variable displays a card showing:
+          </p>
+          <ul>
+            <li><strong>Name:</strong> Database field name (immutable for system variables)</li>
+            <li><strong>Alias:</strong> UI display label (editable for ALL variables)</li>
+            <li><strong>Type:</strong> number, text, or derived</li>
+            <li><strong>Category:</strong> Grouping label (e.g., Images, Fans, Merchandise)</li>
+            <li><strong>System Badge:</strong> Green "System" badge if built-in variable</li>
+            <li><strong>Visibility Flags:</strong> Two checkboxes (see below)</li>
+          </ul>
+
+          <h3>Understanding Alias vs. Name</h3>
+          <p>
+            <strong>Critical Concept:</strong> The <code>alias</code> field is ONLY a UI display label. It does NOT affect:
+          </p>
+          <ul>
+            <li>Database field names (always use <code>name</code> field)</li>
+            <li>Code references (always use <code>stats.name</code>)</li>
+            <li>Formula syntax</li>
+          </ul>
+          <p>
+            <strong>What Alias Controls:</strong>
+          </p>
+          <ul>
+            <li>Button labels in Clicker Mode</li>
+            <li>Field labels in Manual Input Mode</li>
+            <li>Chart legends and axis labels</li>
+            <li>Admin UI display text</li>
+          </ul>
+          <p>
+            <strong>Example:</strong><br />
+            Name: <code>remoteImages</code> (immutable, used in database)<br />
+            Alias: "Remote Photos" (editable, shown to users)
+          </p>
+
+          <h3>Editing an Alias</h3>
+          <ol>
+            <li>Go to <strong>KYC Management</strong> (<code>/admin/kyc</code>)</li>
+            <li>Find the variable card</li>
+            <li>Click into the <strong>"Alias"</strong> field</li>
+            <li>Type a new display name (e.g., change "Remote Images" to "Remote Photos")</li>
+            <li>Press Enter or click outside the field</li>
+            <li>Changes save automatically</li>
+          </ol>
+          <p>
+            <strong>Result:</strong> UI labels update immediately; database field name unchanged.
+          </p>
+
+          <h3>Visibility Flags</h3>
+          <p>
+            Each variable has two independent flags:
+          </p>
+
+          <h4>1. Visible in Clicker</h4>
+          <ul>
+            <li><strong>Purpose:</strong> Controls whether variable appears as a button in Clicker Mode</li>
+            <li><strong>Default:</strong> <code>true</code> for Images, Fans, Demographics, Merchandise; <code>false</code> for others</li>
+            <li><strong>Use Case:</strong> Hide variables that are rarely used or better suited for manual input</li>
+          </ul>
+
+          <h4>2. Editable in Manual</h4>
+          <ul>
+            <li><strong>Purpose:</strong> Controls whether variable appears in Manual Input Mode</li>
+            <li><strong>Default:</strong> <code>true</code> for all base variables; <code>false</code> for derived/text variables</li>
+            <li><strong>Use Case:</strong> Prevent manual editing of auto-calculated metrics</li>
+          </ul>
+
+          <h4>Example Scenarios</h4>
+          <ul>
+            <li><code>remoteImages</code>: visibleInClicker = ✅, editableInManual = ✅</li>
+            <li><code>allImages</code> (derived): visibleInClicker = ❌, editableInManual = ❌ (enforced)</li>
+            <li><code>eventAttendees</code>: visibleInClicker = ❌, editableInManual = ✅ (manual input only)</li>
+          </ul>
+
+          <h3>Creating a Custom Variable</h3>
+          <ol>
+            <li>Go to <strong>KYC Management</strong></li>
+            <li>Scroll to the bottom</li>
+            <li>Click <strong>"Add Variable"</strong> button</li>
+            <li>Fill in the form:
+              <ul>
+                <li><strong>Variable Name:</strong> Camelcase, no spaces (e.g., <code>vipGuests</code>)</li>
+                <li><strong>Alias (Display Label):</strong> Human-readable (e.g., "VIP Guests")</li>
+                <li><strong>Variable Type:</strong> <code>number</code> or <code>text</code></li>
+                <li><strong>Category:</strong> Select from dropdown or type new category</li>
+                <li><strong>Visible in Clicker:</strong> Show as button in editor? (checkbox)</li>
+                <li><strong>Editable in Manual:</strong> Allow manual input? (checkbox)</li>
+              </ul>
+            </li>
+            <li>Click <strong>"Create Variable"</strong></li>
+          </ol>
+          <p>
+            <strong>Result:</strong> Variable is immediately available in project editor and stored in <code>project.stats</code> when values are entered.
+          </p>
+
+          <h3>Deleting a Custom Variable</h3>
+          <p>
+            <strong>Restriction:</strong> Only custom variables (non-system) can be deleted.
+          </p>
+          <ol>
+            <li>Find the custom variable card</li>
+            <li>Click <strong>"Delete"</strong> button (only visible for custom variables)</li>
+            <li>Confirm deletion</li>
+          </ol>
+          <p>
+            <strong>⚠️ Warning:</strong> Deleting a variable removes it from the UI but does NOT delete existing data in <code>project.stats</code>. Historical data remains but is no longer visible/editable.
+          </p>
+
+          <h3>Variable Groups & Ordering</h3>
+          <p>
+            Variables in Clicker Mode are organized into groups with optional KPI charts.
+          </p>
+          <h4>Default Groups</h4>
+          <ul>
+            <li><strong>Images:</strong> remoteImages, hostessImages, selfies → Shows "All Images Taken" chart</li>
+            <li><strong>Location:</strong> remoteFans, stadium → Shows "Total Fans" chart</li>
+            <li><strong>Demographics:</strong> female, male, genAlpha, genYZ, genX, boomer</li>
+            <li><strong>Merchandise:</strong> merched, jersey, scarf, flags, baseballCap, other</li>
+          </ul>
+
+          <h4>Reordering Clicker Buttons</h4>
+          <ol>
+            <li>Go to <strong>Variables</strong> page (<code>/admin/kyc</code>)</li>
+            <li>Click <strong>"Reorder Clicker"</strong> button</li>
+            <li>Drag and drop buttons within their category</li>
+            <li>Click <strong>"Save Order"</strong></li>
+          </ol>
+          <p>
+            <strong>Result:</strong> Button order updates immediately in all project editors.
+          </p>
         </section>
 
         <section id="exporting" className={styles.section}>
@@ -145,23 +388,88 @@ export default function HelpPage() {
         </section>
 
         <section id="sharing" className={styles.section}>
-          <h2>🔗 Sharing Results</h2>
+          <h2>🔗 Sharing Reports (Event & Partner)</h2>
           
-          <h3>Creating Share Links</h3>
+          <h3>Overview</h3>
           <p>
-            Generate shareable links for your event statistics:
+            MessMass provides two types of shareable reports:
           </p>
           <ul>
-            <li><strong>Public Links:</strong> Anyone with the link can view</li>
-            <li><strong>Password Protected:</strong> Require a password for access</li>
-            <li><strong>Time-Limited:</strong> Set expiration dates for sensitive data</li>
+            <li><strong>Event Reports:</strong> Individual event statistics and analytics</li>
+            <li><strong>Partner Reports:</strong> Aggregated statistics across all events for a partner organization</li>
+          </ul>
+
+          <h3>How to Share an Event Report</h3>
+          <ol>
+            <li>Go to <strong>Events</strong> page (<code>/admin/events</code>)</li>
+            <li>Find the event you want to share</li>
+            <li>Click the <strong>"Report"</strong> button on the event row</li>
+            <li>In the Share Popup modal:
+              <ul>
+                <li>Review the generated shareable link</li>
+                <li>Copy the link using the "Copy Link" button</li>
+                <li>Note: The link is password-protected for security</li>
+              </ul>
+            </li>
+            <li>Share the link and password with your recipients</li>
+          </ol>
+
+          <h3>How to Share a Partner Report</h3>
+          <ol>
+            <li>Go to <strong>Partners</strong> page (<code>/admin/partners</code>)</li>
+            <li>Find the partner organization you want to share</li>
+            <li>Click the <strong>"Report"</strong> button on the partner row</li>
+            <li>In the Share Popup modal:
+              <ul>
+                <li>Review the generated shareable link</li>
+                <li>Copy the link using the "Copy Link" button</li>
+                <li>Note: Partner reports aggregate ALL events for that organization</li>
+              </ul>
+            </li>
+            <li>Share the link and password with your recipients</li>
+          </ol>
+
+          <h3>Report URLs</h3>
+          <ul>
+            <li><strong>Event Report:</strong> <code>/report/[event-slug]</code></li>
+            <li><strong>Partner Report:</strong> <code>/partner-report/[partner-slug]</code></li>
+            <li>Both are password-protected by default</li>
+            <li>Passwords are unique per report and auto-generated</li>
+          </ul>
+
+          <h3>What Recipients See</h3>
+          <h4>Event Report Page</h4>
+          <ul>
+            <li>Event name, date, and emoji</li>
+            <li>All KPI charts (merchandise, demographics, engagement)</li>
+            <li>Total statistics summary</li>
+            <li>Hashtags and categories</li>
+            <li>Export buttons for charts (PNG download)</li>
+          </ul>
+
+          <h4>Partner Report Page</h4>
+          <ul>
+            <li>Partner name and emoji</li>
+            <li>Total aggregated metrics across ALL events</li>
+            <li>List of all events with individual stats</li>
+            <li>Event cards with links to individual event reports</li>
+            <li>Comprehensive totals grid (images, fans, attendees, etc.)</li>
           </ul>
 
           <h3>Managing Access</h3>
           <ul>
-            <li>View who has accessed your shared links</li>
-            <li>Revoke access at any time</li>
-            <li>Update passwords without changing the link</li>
+            <li><strong>Password Protection:</strong> All report links require a password</li>
+            <li><strong>Regenerate Password:</strong> Use the Share Popup to generate a new password</li>
+            <li><strong>Revoke Access:</strong> Delete the page password to disable the link</li>
+            <li><strong>Admin Bypass:</strong> Admin users can access any report without a password</li>
+          </ul>
+
+          <h3>Best Practices</h3>
+          <ul>
+            <li>Share passwords separately from links (e.g., via different communication channel)</li>
+            <li>Use partner reports for season summaries or client presentations</li>
+            <li>Use event reports for individual game/event analysis</li>
+            <li>Regenerate passwords periodically for sensitive data</li>
           </ul>
         </section>
 
@@ -272,8 +580,8 @@ export default function HelpPage() {
 
         <footer className={styles.footer}>
           <p>
-            <strong>MessMass Version 10.6.0</strong><br />
-            Last Updated: 2025-11-05T12:58:00.000Z (UTC)
+            <strong>MessMass Version 10.8.0</strong><br />
+            Last Updated: 2025-11-06T19:33:00.000Z (UTC)
           </p>
           <p>
             <strong>Quick Links:</strong><br />
