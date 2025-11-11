@@ -600,13 +600,16 @@ export default function ProjectsPageUnified() {
           <select 
             className="form-input"
             value={newProjectData.styleId || ''}
-            onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+            onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
           >
             <option value="">— Use Default/Global —</option>
             {availableStyles.map(s => (
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Page styling (fonts, colors, gradients)
+          </p>
         </div>
         
         <div className="form-group mb-4">
@@ -679,13 +682,16 @@ export default function ProjectsPageUnified() {
             <select 
               className="form-input"
               value={editProjectData.styleId || ''}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value }))}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value || null }))}
             >
               <option value="">— Use Default/Global —</option>
               {availableStyles.map(s => (
                 <option key={s._id} value={s._id}>{s.name}</option>
               ))}
             </select>
+            <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+              💡 Page styling (fonts, colors, gradients)
+            </p>
           </div>
           
           <div className="form-group">

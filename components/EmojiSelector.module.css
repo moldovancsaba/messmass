@@ -1,0 +1,193 @@
+/* WHAT: Emoji Selector Component Styles
+   WHY: Visual emoji picker with grid layout and custom emoji management */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.inputWrapper {
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: var(--mm-space-3) var(--mm-space-4);
+  font-size: var(--mm-font-size-lg);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  transition: all var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-600);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* WHAT: Grid layout for emoji selection
+   WHY: Responsive grid that shows 8 emojis per row on desktop, fewer on mobile */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.emojiWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emojiButton {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emojiButton:hover {
+  transform: scale(1.1);
+  border-color: var(--mm-color-primary-500);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.emojiButton.selected {
+  border-color: var(--mm-color-primary-600);
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  transform: scale(1.05);
+}
+
+.removeButton {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--mm-red-500, #ef4444);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.removeButton:hover {
+  background: var(--mm-red-600, #dc2626);
+  transform: scale(1.1);
+}
+
+/* WHAT: Custom emoji editor section
+   WHY: Allow users to add their own emojis to the selector */
+.customEditor {
+  padding: var(--mm-space-3);
+  border-top: 1px solid var(--mm-gray-200);
+}
+
+.addButton {
+  width: 100%;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 500;
+  color: var(--mm-color-primary-600);
+  background: var(--mm-white);
+  border: 1px dashed var(--mm-color-primary-300);
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addButton:hover {
+  background: rgba(99, 102, 241, 0.05);
+  border-color: var(--mm-color-primary-500);
+}
+
+.addForm {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.addInput {
+  flex: 1;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-lg);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  transition: all var(--transition-fast);
+}
+
+.addInput:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-600);
+}
+
+.confirmButton,
+.cancelButton {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmButton {
+  background: var(--mm-green-500, #10b981);
+  color: white;
+}
+
+.confirmButton:hover {
+  background: var(--mm-green-600, #059669);
+}
+
+.cancelButton {
+  background: var(--mm-gray-300);
+  color: var(--mm-gray-700);
+}
+
+.cancelButton:hover {
+  background: var(--mm-gray-400);
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  }
+  
+  .emojiButton {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+}
