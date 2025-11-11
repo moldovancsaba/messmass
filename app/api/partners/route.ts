@@ -77,6 +77,8 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     };
     
+    console.log('💾 [POST /api/partners] sportsDb data:', sportsDb ? 'Present' : 'Not provided', sportsDb ? `Team: ${(sportsDb as any).strTeam}` : '');
+    
     // WHAT: Add reportTemplateId if provided
     // WHY: Allow partners to have custom report templates
     if (reportTemplateId && reportTemplateId !== '' && ObjectId.isValid(reportTemplateId)) {
@@ -288,7 +290,10 @@ export async function PUT(request: NextRequest) {
     
     // WHAT: Update TheSportsDB enrichment data if provided
     // WHY: Allow linking/unlinking partners to sports teams
-    if (sportsDb !== undefined) updateDoc.sportsDb = sportsDb;
+    if (sportsDb !== undefined) {
+      updateDoc.sportsDb = sportsDb;
+      console.log('💾 [PUT /api/partners] sportsDb update:', sportsDb ? `Team: ${(sportsDb as any).strTeam || 'Unknown'}` : 'Removing sportsDb');
+    }
     
     // WHAT: Update logo URL if provided (from ImgBB upload)
     // WHY: Display partner logo in UI
