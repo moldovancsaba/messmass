@@ -15,6 +15,7 @@ import { exportPageToPDF } from '@/lib/export/pdf';
 import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import styles from './PartnerReport.module.css';
 
 interface Partner {
@@ -66,6 +67,7 @@ export default function PartnerReportPage() {
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 6, tablet: 3, mobile: 2 });
+  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   
   
   // WHAT: Fetch partner data and report configuration (v11.0.0)
@@ -81,6 +83,22 @@ export default function PartnerReportPage() {
         setPartner(data.partner);
         setEvents(data.events || []);
         setError(null);
+        
+        // WHAT: Check if partner has direct styleId (takes precedence over template)
+        // WHY: Partners can override template styling with their own custom style
+        if (data.partner.styleId) {
+          try {
+            console.log('🎨 Partner has direct styleId:', data.partner.styleId);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.partner.styleId}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.style) {
+              setPageStyle(styleData.style);
+              console.log('✅ Loaded partner direct style:', styleData.style.name);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch partner direct style:', styleErr);
+          }
+        }
         
         // WHAT: Fetch report template for partner (v11.0.0)
         // WHY: Load visualization blocks specific to this partner
@@ -106,6 +124,22 @@ export default function PartnerReportPage() {
       
       if (data.success && data.template) {
         console.log('✅ Loaded template:', data.template.name, '(', data.resolvedFrom, ')');
+        
+        // WHAT: Fetch page style from template if not already set by partner direct styleId
+        // WHY: Template styleId is fallback if partner doesn't have direct style
+        if (data.template.styleId && !pageStyle) {
+          try {
+            console.log('🎨 Template has styleId:', data.template.styleId);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.template.styleId}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.style) {
+              setPageStyle(styleData.style);
+              console.log('✅ Loaded template style:', styleData.style.name);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch template style, using default:', styleErr);
+          }
+        }
         
         // Fetch actual data blocks
         if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
@@ -344,7 +378,14 @@ export default function PartnerReportPage() {
   }
   
   return (
-    <div className="page-bg-gray">
+    <div 
+      className="page-bg-gray"
+      style={pageStyle ? {
+        background: generateGradientCSS(pageStyle.pageBackground),
+        color: pageStyle.typography.primaryTextColor,
+        fontFamily: pageStyle.typography.fontFamily
+      } : undefined}
+    >
       <div className={styles.pageContainer}>
         {/* WHAT: Main content container matching filter page layout
              WHY: Consistent wrapper structure with max-width and centering */}

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as CreatePartnerInput;
-    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, reportTemplateId } = body;
+    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, styleId, reportTemplateId } = body;
 
     if (!name || !emoji) {
       return NextResponse.json(
@@ -78,6 +78,12 @@ export async function POST(request: NextRequest) {
     };
     
     console.log('💾 [POST /api/partners] sportsDb data:', sportsDb ? 'Present' : 'Not provided', sportsDb ? `Team: ${(sportsDb as any).strTeam}` : '');
+    
+    // WHAT: Add styleId if provided
+    // WHY: Allow partners to have custom page styling for report pages
+    if (styleId && styleId !== '' && ObjectId.isValid(styleId)) {
+      partnerDoc.styleId = new ObjectId(styleId);
+    }
     
     // WHAT: Add reportTemplateId if provided
     // WHY: Allow partners to have custom report templates
@@ -249,7 +255,7 @@ export async function PUT(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as UpdatePartnerInput;
-    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, reportTemplateId } = body;
+    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, styleId, reportTemplateId } = body;
 
     if (!partnerId || !ObjectId.isValid(partnerId)) {
       return NextResponse.json(
@@ -307,6 +313,17 @@ export async function PUT(request: NextRequest) {
         }
         return new ObjectId(id);
       });
+    }
+    
+    // WHAT: Update styleId if provided
+    // WHY: Allow changing partner's page style for report pages
+    if (styleId !== undefined) {
+      if (styleId === '' || styleId === null) {
+        // Remove styleId (use default/global)
+        updateDoc.styleId = null;
+      } else if (ObjectId.isValid(styleId)) {
+        updateDoc.styleId = new ObjectId(styleId);
+      }
     }
     
     // WHAT: Update reportTemplateId if provided
@@ -456,6 +473,8 @@ async function populateBitlyLinks(db: any, partner: any): Promise<PartnerRespons
     bitlyLinks,
     logoUrl: partner.logoUrl, // WHAT: Include ImgBB-hosted logo URL
     sportsDb: partner.sportsDb, // WHAT: Include TheSportsDB enrichment data
+    styleId: partner.styleId ? partner.styleId.toString() : undefined, // WHAT: Page style for partner reports
+    reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined, // WHAT: Report template for partner reports
     createdAt: partner.createdAt,
     updatedAt: partner.updatedAt,
   };

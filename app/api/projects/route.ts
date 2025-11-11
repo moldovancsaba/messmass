@@ -521,6 +521,9 @@ export async function POST(request: NextRequest) {
     // WHY: Migrated from old styleId to new styleIdEnhanced field name
     if (styleId && styleId !== null && styleId !== 'null') {
       project.styleIdEnhanced = styleId;
+      console.log('🎨 [POST /api/projects] Setting styleIdEnhanced:', styleId);
+    } else {
+      console.log('🎨 [POST /api/projects] No styleId provided:', { styleId });
     }
     
     // WHAT: Add partner references for Sports Match projects
@@ -536,6 +539,9 @@ export async function POST(request: NextRequest) {
     // WHY: Allow events to have custom report templates
     if (reportTemplateId && reportTemplateId !== '' && reportTemplateId !== 'null' && ObjectId.isValid(reportTemplateId)) {
       project.reportTemplateId = new ObjectId(reportTemplateId);
+      console.log('📊 [POST /api/projects] Setting reportTemplateId:', reportTemplateId);
+    } else {
+      console.log('📊 [POST /api/projects] No reportTemplateId provided:', { reportTemplateId });
     }
 
     // Enhanced hashtag processing to handle both traditional and categorized hashtags
@@ -746,9 +752,13 @@ export async function PUT(request: NextRequest) {
     if (styleId === null || styleId === 'null') {
       // Remove styleIdEnhanced to use global/default style
       unsetData.styleIdEnhanced = '';
+      console.log('🎨 [PUT /api/projects] Removing styleIdEnhanced');
     } else if (styleId && styleId !== undefined) {
       // Set specific styleIdEnhanced
       setData.styleIdEnhanced = styleId;
+      console.log('🎨 [PUT /api/projects] Setting styleIdEnhanced:', styleId);
+    } else {
+      console.log('🎨 [PUT /api/projects] No styleId in request');
     }
     // If styleId is not provided in the request, don't modify existing styleIdEnhanced
     
@@ -757,9 +767,13 @@ export async function PUT(request: NextRequest) {
     if (reportTemplateId === null || reportTemplateId === '' || reportTemplateId === 'null') {
       // Remove reportTemplateId (use partner or default template)
       unsetData.reportTemplateId = '';
+      console.log('📊 [PUT /api/projects] Removing reportTemplateId');
     } else if (reportTemplateId && reportTemplateId !== undefined && ObjectId.isValid(reportTemplateId)) {
       // Set specific reportTemplateId
       setData.reportTemplateId = new ObjectId(reportTemplateId);
+      console.log('📊 [PUT /api/projects] Setting reportTemplateId:', reportTemplateId);
+    } else if (reportTemplateId !== undefined) {
+      console.log('📊 [PUT /api/projects] Invalid reportTemplateId:', { reportTemplateId });
     }
     // If reportTemplateId is not provided in the request, don't modify existing reportTemplateId
     

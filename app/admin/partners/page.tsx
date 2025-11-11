@@ -64,6 +64,7 @@ export default function PartnersAdminPageUnified() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
+    styleId: '' as string | null,
     reportTemplateId: '' as string | null,
     sportsDb: undefined as any,
     logoUrl: undefined as string | undefined
@@ -85,6 +86,7 @@ export default function PartnersAdminPageUnified() {
     bitlyLinkIds: [] as string[],
     logoUrl: undefined as string | undefined,
     sportsDb: undefined as any,
+    styleId: '' as string | null,
     reportTemplateId: '' as string | null
   });
   const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
@@ -332,6 +334,7 @@ export default function PartnersAdminPageUnified() {
           hashtags: [],
           categorizedHashtags: {},
           bitlyLinkIds: [],
+          styleId: '',
           reportTemplateId: '',
           sportsDb: undefined,
           logoUrl: undefined
@@ -420,7 +423,8 @@ export default function PartnersAdminPageUnified() {
       bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
       logoUrl: partner.logoUrl,
       sportsDb: partner.sportsDb,
-      reportTemplateId: (partner as any).reportTemplateId || ''
+      styleId: partner.styleId || '',
+      reportTemplateId: partner.reportTemplateId || ''
     });
     setSportsDbSearch('');
     setSportsDbResults([]);
@@ -631,6 +635,23 @@ export default function PartnersAdminPageUnified() {
         </div>
         
         <div className="form-group mb-4">
+          <label className="form-label-block">Page Style</label>
+          <select 
+            className="form-input"
+            value={newPartnerData.styleId || ''}
+            onChange={(e) => setNewPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
+          >
+            <option value="">— Use Default/Global —</option>
+            {availableStyles.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
+          </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Page styling (fonts, colors, gradients) for partner report page
+          </p>
+        </div>
+        
+        <div className="form-group mb-4">
           <label className="form-label-block">Report Template</label>
           <select 
             className="form-input"
@@ -731,6 +752,23 @@ export default function PartnersAdminPageUnified() {
             }
             availableLinks={allBitlyLinks}
           />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Page Style</label>
+          <select 
+            className="form-input"
+            value={editPartnerData.styleId || ''}
+            onChange={(e) => setEditPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
+          >
+            <option value="">— Use Default/Global —</option>
+            {availableStyles.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
+          </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Page styling (fonts, colors, gradients) for partner report page
+          </p>
         </div>
         
         <div className="form-group mb-4">

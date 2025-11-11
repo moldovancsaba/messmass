@@ -302,7 +302,7 @@ export default function ProjectsPageUnified() {
         eventValuePropositionVisited: 0, eventValuePropositionPurchases: 0
       };
       
-      const result = await apiPost('/api/projects', {
+      const payload = {
         eventName: newProjectData.eventName.trim(),
         eventDate: newProjectData.eventDate,
         hashtags: newProjectData.hashtags,
@@ -310,7 +310,14 @@ export default function ProjectsPageUnified() {
         stats: defaultStats,
         styleId: newProjectData.styleId || null,
         reportTemplateId: newProjectData.reportTemplateId || null
+      };
+      
+      console.log('📤 [CREATE EVENT] Sending payload:', {
+        styleId: payload.styleId,
+        reportTemplateId: payload.reportTemplateId
       });
+      
+      const result = await apiPost('/api/projects', payload);
       
       if (result.success) {
         setProjects(prev => [result.project, ...prev]);
@@ -352,7 +359,7 @@ export default function ProjectsPageUnified() {
     setIsUpdatingProject(true);
     
     try {
-      const result = await apiPut('/api/projects', {
+      const payload = {
         projectId: editingProject._id,
         eventName: editProjectData.eventName.trim(),
         eventDate: editProjectData.eventDate,
@@ -361,7 +368,15 @@ export default function ProjectsPageUnified() {
         stats: editingProject.stats,
         styleId: editProjectData.styleId || null,
         reportTemplateId: editProjectData.reportTemplateId || null
+      };
+      
+      console.log('📤 [UPDATE EVENT] Sending payload:', {
+        projectId: payload.projectId,
+        styleId: payload.styleId,
+        reportTemplateId: payload.reportTemplateId
       });
+      
+      const result = await apiPut('/api/projects', payload);
       
       if (result.success) {
         setProjects(prev => prev.map(p => 

@@ -8,14 +8,49 @@ import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
-/* WHAT: GET - List all enhanced page styles
- * WHY: Retrieve available styles for admin UI
- * RETURNS: Array of PageStyleEnhanced objects */
+/* WHAT: GET - List all enhanced page styles OR fetch single style by ID
+ * WHY: Retrieve available styles for admin UI or fetch specific style for rendering
+ * QUERY: styleId (optional) - if provided, returns single style
+ * RETURNS: Array of PageStyleEnhanced objects OR single style object */
 export async function GET(request: NextRequest) {
   try {
     const client = await clientPromise;
     const db = client.db();
+    const { searchParams } = new URL(request.url);
+    const styleId = searchParams.get('styleId');
     
+    // WHAT: Fetch single style by ID
+    // WHY: Allow report pages to load their assigned style
+    if (styleId) {
+      if (!ObjectId.isValid(styleId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid styleId' },
+          { status: 400 }
+        );
+      }
+      
+      const style = await db
+        .collection('page_styles_enhanced')
+        .findOne({ _id: new ObjectId(styleId) });
+      
+      if (!style) {
+        return NextResponse.json(
+          { success: false, error: 'Style not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json({
+        success: true,
+        style: {
+          ...style,
+          _id: style._id.toString()
+        }
+      });
+    }
+    
+    // WHAT: List all styles
+    // WHY: Admin UI needs full list for dropdowns
     const styles = await db
       .collection('page_styles_enhanced')
       .find({})

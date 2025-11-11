@@ -108,6 +108,14 @@ export interface Partner {
   // WHY: Allow creating password-protected partner profiles accessible via /partner-report/[slug]
   viewSlug?: string;
   
+  // WHAT: Page style ID reference for partner report styling
+  // WHY: Allow custom visual themes for partner report pages (fonts, colors, gradients)
+  styleId?: ObjectId;
+  
+  // WHAT: Report template ID reference for partner report layout
+  // WHY: Define which visualization blocks and charts to show on partner reports
+  reportTemplateId?: ObjectId;
+  
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
@@ -129,7 +137,8 @@ export interface CreatePartnerInput {
   bitlyLinkIds?: string[]; // String IDs from client
   logoUrl?: string;
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
-  reportTemplateId?: string; // Report template ID for partner default
+  styleId?: string | null; // Page style ID for partner report styling
+  reportTemplateId?: string | null; // Report template ID for partner default
 }
 
 /**
@@ -145,15 +154,18 @@ export interface UpdatePartnerInput {
   bitlyLinkIds?: string[];
   logoUrl?: string;
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
-  reportTemplateId?: string; // Report template ID for partner default
+  styleId?: string | null; // Page style ID for partner report styling
+  reportTemplateId?: string | null; // Report template ID for partner default
 }
 
 /**
  * WHAT: Partner response with populated Bitly links
  * WHY: Return full link details to client for display
  */
-export interface PartnerResponse extends Omit<Partner, '_id' | 'bitlyLinkIds'> {
+export interface PartnerResponse extends Omit<Partner, '_id' | 'bitlyLinkIds' | 'styleId' | 'reportTemplateId'> {
   _id: string;
+  styleId?: string; // Page style ID as string for client
+  reportTemplateId?: string; // Report template ID as string for client
   bitlyLinks?: Array<{
     _id: string;
     bitlink: string;
