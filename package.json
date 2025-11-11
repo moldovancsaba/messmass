@@ -84,7 +84,8 @@
     "migrate:api-fields": "npx tsx -r dotenv/config scripts/migrations/addApiFieldsToUsers.ts dotenv_config_path=.env.local",
     "migrate:partner-viewslug": "npx tsx -r dotenv/config scripts/addViewSlugToPartners.ts dotenv_config_path=.env.local",
     "generate:partner-passwords": "npx tsx -r dotenv/config scripts/generatePartnerReportPasswords.ts dotenv_config_path=.env.local",
-    "migrate:report-templates": "npx tsx -r dotenv/config scripts/migrateToReportTemplates.ts dotenv_config_path=.env.local"
+    "migrate:report-templates": "npx tsx -r dotenv/config scripts/migrateToReportTemplates.ts dotenv_config_path=.env.local",
+    "migrate:viz-to-wukf": "npx tsx -r dotenv/config scripts/migrateGlobalVisualizationToWUKF.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

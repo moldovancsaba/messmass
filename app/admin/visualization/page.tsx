@@ -23,6 +23,15 @@ interface AvailableChart {
   emoji?: string;
 }
 
+interface ReportTemplate {
+  _id: string;
+  name: string;
+  type: 'event' | 'partner' | 'global';
+  isDefault: boolean;
+  dataBlocks: Array<{ blockId: string; order: number }>;
+  gridSettings: { desktopUnits: number; tabletUnits: number; mobileUnits: number };
+}
+
 export default function VisualizationPage() {
   const router = useRouter();
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
@@ -30,6 +39,11 @@ export default function VisualizationPage() {
   const [loading, setLoading] = useState(true);
   const [editingBlock, setEditingBlock] = useState<DataVisualizationBlock | null>(null);
   const [showCreateBlock, setShowCreateBlock] = useState(false);
+  
+  // WHAT: Template selection state
+  // WHY: Allow editing different report templates on this page
+  const [templates, setTemplates] = useState<ReportTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
@@ -54,11 +68,74 @@ export default function VisualizationPage() {
   });
 
   useEffect(() => {
-    loadDataBlocks();
+    loadTemplates();
     loadAvailableCharts();
     loadChartConfigs();
-    loadGridSettings();
   }, []);
+  
+  // WHAT: Load templates and select default on mount
+  // WHY: Populate template selector
+  const loadTemplates = async () => {
+    try {
+      const response = await fetch('/api/report-templates?includeAssociations=false');
+      const data = await response.json();
+      if (data.success && data.templates) {
+        setTemplates(data.templates);
+        // Auto-select default template
+        const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
+        if (defaultTemplate) {
+          setSelectedTemplateId(defaultTemplate._id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load templates:', error);
+    }
+  };
+  
+  // WHAT: Load blocks and grid for selected template
+  // WHY: Each template has its own visualization config
+  useEffect(() => {
+    if (selectedTemplateId) {
+      loadTemplateConfig(selectedTemplateId);
+    }
+  }, [selectedTemplateId]);
+  
+  const loadTemplateConfig = async (templateId: string) => {
+    try {
+      setLoading(true);
+      const template = templates.find(t => t._id === templateId);
+      if (!template) return;
+      
+      // Load data blocks for this template
+      const blockIds = template.dataBlocks.map(b => b.blockId);
+      if (blockIds.length > 0) {
+        const response = await fetch('/api/data-blocks');
+        const data = await response.json();
+        if (data.success) {
+          // Filter blocks that belong to this template and sort by order
+          const templateBlocks = data.blocks
+            .filter((b: DataVisualizationBlock) => blockIds.includes(b._id))
+            .sort((a: DataVisualizationBlock, b: DataVisualizationBlock) => {
+              const aRef = template.dataBlocks.find(ref => ref.blockId === a._id);
+              const bRef = template.dataBlocks.find(ref => ref.blockId === b._id);
+              return (aRef?.order || 0) - (bRef?.order || 0);
+            });
+          setDataBlocks(templateBlocks);
+        }
+      } else {
+        setDataBlocks([]);
+      }
+      
+      // Set grid settings from template
+      setGridUnits(template.gridSettings);
+      setGridForm(template.gridSettings);
+      
+    } catch (error) {
+      console.error('Failed to load template config:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadDataBlocks = async () => {
     try {
