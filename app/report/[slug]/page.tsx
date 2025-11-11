@@ -123,6 +123,22 @@ export default function StatsPage() {
       if (data.success) {
         setProject(data.project);
         setError(null);
+        
+        // WHAT: Check if project has direct styleIdEnhanced (highest priority)
+        // WHY: Projects can override template styling with their own custom style
+        if (data.project.styleIdEnhanced) {
+          try {
+            console.log('🎨 Project has direct styleIdEnhanced:', data.project.styleIdEnhanced);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.project.styleIdEnhanced}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.style) {
+              setPageStyle(styleData.style);
+              console.log('✅ Loaded project direct style:', styleData.style.name);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch project direct style:', styleErr);
+          }
+        }
       } else {
         setError(data.error || 'Failed to load project');
       }
@@ -161,17 +177,20 @@ export default function StatsPage() {
       if (data.success && data.template) {
         const template = data.template;
         
-        // Set page style from template
-        if (template.styleId) {
+        // WHAT: Fetch page style from template if not already set by project direct styleId
+        // WHY: Template styleId is fallback if project doesn't have direct style
+        if (template.styleId && !pageStyle) {
           // Fetch the actual style document
           try {
-            const styleResponse = await fetch(`/api/page-config?projectId=${encodeURIComponent(projectIdentifier)}`, { cache: 'no-store' });
+            console.log('🎨 Template has styleId:', template.styleId);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${template.styleId}`, { cache: 'no-store' });
             const styleData = await styleResponse.json();
-            if (styleData.success && styleData.config?.pageStyle) {
-              setPageStyle(styleData.config.pageStyle);
+            if (styleData.success && styleData.style) {
+              setPageStyle(styleData.style);
+              console.log('✅ Loaded template style:', styleData.style.name);
             }
           } catch (styleErr) {
-            console.warn('⚠️  Could not fetch style, using default');
+            console.warn('⚠️  Could not fetch template style, using default:', styleErr);
           }
         }
         

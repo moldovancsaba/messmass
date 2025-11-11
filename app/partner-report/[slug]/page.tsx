@@ -84,7 +84,11 @@ export default function PartnerReportPage() {
         setEvents(data.events || []);
         setError(null);
         
-        // WHAT: Check if partner has direct styleId (takes precedence over template)
+        // WHAT: Fetch report template BEFORE checking partner style (v11.1.0)
+        // WHY: Template fetch needs to check pageStyle state, so template must be fetched first
+        await fetchReportTemplate(slug);
+        
+        // WHAT: Check if partner has direct styleId (takes precedence over template style)
         // WHY: Partners can override template styling with their own custom style
         if (data.partner.styleId) {
           try {
@@ -93,16 +97,12 @@ export default function PartnerReportPage() {
             const styleData = await styleResponse.json();
             if (styleData.success && styleData.style) {
               setPageStyle(styleData.style);
-              console.log('✅ Loaded partner direct style:', styleData.style.name);
+              console.log('✅ Loaded partner direct style (OVERRIDE):', styleData.style.name);
             }
           } catch (styleErr) {
             console.warn('⚠️  Could not fetch partner direct style:', styleErr);
           }
         }
-        
-        // WHAT: Fetch report template for partner (v11.0.0)
-        // WHY: Load visualization blocks specific to this partner
-        await fetchReportTemplate(slug);
       } else {
         setError(data.error || 'Failed to load partner');
       }
@@ -125,22 +125,24 @@ export default function PartnerReportPage() {
       if (data.success && data.template) {
         console.log('✅ Loaded template:', data.template.name, '(', data.resolvedFrom, ')');
         
-        // WHAT: Fetch page style from template if not already set by partner direct styleId
-        // WHY: Template styleId is fallback if partner doesn't have direct style
-        if (data.template.styleId && !pageStyle) {
+        // WHAT: Fetch page style from template (will be overridden if partner has direct styleId)
+        // WHY: Template styleId is the BASE style that may be overridden later
+        if (data.template.styleId) {
           try {
-            console.log('🎨 Template has styleId:', data.template.styleId);
+            console.log('🎨 Template has styleId - fetching:', data.template.styleId);
             const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.template.styleId}`, { cache: 'no-store' });
             const styleData = await styleResponse.json();
             if (styleData.success && styleData.style) {
               setPageStyle(styleData.style);
-              console.log('✅ Loaded template style:', styleData.style.name);
+              console.log('✅ Loaded template style (may be overridden by partner direct style):', styleData.style.name);
             }
           } catch (styleErr) {
             console.warn('⚠️  Could not fetch template style, using default:', styleErr);
           }
         }
-        
+        // WHAT: Fetch actual data blocks from template
+        // WHY: Load visualization configuration for partner report
+        console.log('📊 Template has', data.template.dataBlocks?.length || 0, 'data blocks');
         // Fetch actual data blocks
         if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
           const blockResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
@@ -155,12 +157,16 @@ export default function PartnerReportPage() {
               .filter(Boolean)
               .sort((a: any, b: any) => a.order - b.order);
             
+            console.log('✅ Loaded', orderedBlocks.length, 'data blocks:', orderedBlocks.map((b: any) => b.name).join(', '));
             setDataBlocks(orderedBlocks);
+          } else {
+            console.warn('⚠️  Failed to fetch data blocks');
           }
         }
         
         // Set grid settings
         if (data.template.gridSettings) {
+          console.log('📐 Setting grid units:', data.template.gridSettings);
           setGridUnits(data.template.gridSettings);
         }
       }
