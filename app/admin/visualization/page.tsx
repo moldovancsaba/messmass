@@ -107,14 +107,14 @@ export default function VisualizationPage() {
       if (!template) return;
       
       // Load data blocks for this template
-      const blockIds = template.dataBlocks.map(b => b.blockId);
+      const blockIds = template.dataBlocks.map(b => b.blockId).filter((id): id is string => id != null);
       if (blockIds.length > 0) {
         const response = await fetch('/api/data-blocks');
         const data = await response.json();
         if (data.success) {
           // Filter blocks that belong to this template and sort by order
           const templateBlocks = data.blocks
-            .filter((b: DataVisualizationBlock) => blockIds.includes(b._id))
+            .filter((b: DataVisualizationBlock) => b._id && blockIds.includes(b._id))
             .sort((a: DataVisualizationBlock, b: DataVisualizationBlock) => {
               const aRef = template.dataBlocks.find(ref => ref.blockId === a._id);
               const bRef = template.dataBlocks.find(ref => ref.blockId === b._id);
@@ -127,8 +127,16 @@ export default function VisualizationPage() {
       }
       
       // Set grid settings from template
-      setGridUnits(template.gridSettings);
-      setGridForm(template.gridSettings);
+      setGridUnits({
+        desktop: template.gridSettings.desktopUnits,
+        tablet: template.gridSettings.tabletUnits,
+        mobile: template.gridSettings.mobileUnits
+      });
+      setGridForm({
+        desktop: template.gridSettings.desktopUnits,
+        tablet: template.gridSettings.tabletUnits,
+        mobile: template.gridSettings.mobileUnits
+      });
       
     } catch (error) {
       console.error('Failed to load template config:', error);
@@ -137,17 +145,11 @@ export default function VisualizationPage() {
     }
   };
 
-  const loadDataBlocks = async () => {
-    try {
-      const response = await fetch('/api/data-blocks');
-      const data = await response.json();
-      if (data.success) {
-        setDataBlocks(data.blocks);
-      }
-    } catch (error) {
-      console.error('Failed to load data blocks:', error);
-    } finally {
-      setLoading(false);
+  // WHAT: Reload template config after changes
+  // WHY: Keep UI in sync with database
+  const reloadCurrentTemplate = async () => {
+    if (selectedTemplateId) {
+      await loadTemplateConfig(selectedTemplateId);
     }
   };
   
@@ -176,18 +178,55 @@ export default function VisualizationPage() {
     }
   };
 
-// Load grid settings for responsive previews
-  const loadGridSettings = async () => {
+  // WHAT: Save updated template configuration
+  // WHY: Persist changes to selected template
+  const saveTemplateConfig = async (updatedDataBlocks?: DataVisualizationBlock[]) => {
+    if (!selectedTemplateId) return;
+    
+    const template = templates.find(t => t._id === selectedTemplateId);
+    if (!template) return;
+    
+    const blocksToSave = updatedDataBlocks || dataBlocks;
+    const dataBlockRefs = blocksToSave
+      .filter(block => block._id)
+      .map((block, index) => ({
+        blockId: block._id!,
+        order: index
+      }));
+    
     try {
-      const response = await fetch('/api/grid-settings');
+      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dataBlocks: dataBlockRefs,
+          gridSettings: {
+            desktopUnits: gridUnits.desktop,
+            tabletUnits: gridUnits.tablet,
+            mobileUnits: gridUnits.mobile
+          }
+        })
+      });
+      
       const data = await response.json();
-      if (data.success && data.settings) {
-        const gs = data.settings;
-        setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
-        setGridForm({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+      if (data.success) {
+        // Update local templates state
+        setTemplates(prev => prev.map(t => 
+          t._id === selectedTemplateId 
+            ? { 
+                ...t, 
+                dataBlocks: dataBlockRefs, 
+                gridSettings: {
+                  desktopUnits: gridUnits.desktop,
+                  tabletUnits: gridUnits.tablet,
+                  mobileUnits: gridUnits.mobile
+                }
+              }
+            : t
+        ));
       }
     } catch (error) {
-      console.error('Failed to load grid settings:', error);
+      console.error('Failed to save template config:', error);
     }
   };
   
@@ -198,21 +237,33 @@ export default function VisualizationPage() {
       return;
     }
     
+    if (!selectedTemplateId) {
+      alert('Please select a template first');
+      return;
+    }
+    
     try {
       // WHAT: Use apiPost() for automatic CSRF token handling
       const data = await apiPost('/api/data-blocks', blockForm);
       
       if (data.success) {
-        await loadDataBlocks();
+        // Add new block to current template
+        const newBlock = data.block;
+        const updatedBlocks = [...dataBlocks, newBlock];
+        setDataBlocks(updatedBlocks);
+        
+        // Save to template
+        await saveTemplateConfig(updatedBlocks);
+        
         setShowCreateBlock(false);
         setBlockForm({
           name: '',
           charts: [],
           order: 0,
           isActive: true,
-          showTitle: true // NEW: Default to showing title
+          showTitle: true
         });
-        alert('Data block created successfully!');
+        alert('Data block created and added to template!');
       } else {
         alert('Failed to create block: ' + data.error);
       }
@@ -228,7 +279,13 @@ export default function VisualizationPage() {
       const data = await apiPut('/api/data-blocks', block);
       
       if (data.success) {
-        await loadDataBlocks();
+        // Update local state
+        const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
+        setDataBlocks(updatedBlocks);
+        
+        // Save to template
+        await saveTemplateConfig(updatedBlocks);
+        
         setEditingBlock(null);
         alert('Block updated successfully!');
       } else {
@@ -250,7 +307,13 @@ export default function VisualizationPage() {
       const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
       
       if (data.success) {
-        await loadDataBlocks();
+        // Remove from local state
+        const updatedBlocks = dataBlocks.filter(b => b._id !== blockId);
+        setDataBlocks(updatedBlocks);
+        
+        // Save to template
+        await saveTemplateConfig(updatedBlocks);
+        
         alert('Block deleted successfully!');
       } else {
         alert('Failed to delete block: ' + data.error);
@@ -395,12 +458,61 @@ export default function VisualizationPage() {
         backLink="/admin"
         showSearch={false}
       />
-      {/* DEPRECATED: Grid Settings removed - system now auto-calculates from chart widths */}
+      
+      {/* WHAT: Template Selector Card
+          WHY: Allow selecting which template to edit */}
+      <ColoredCard accentColor="#3b82f6" hoverable={false}>
+        <div className={vizStyles.templateSelector}>
+          <div className={vizStyles.templateSelectorHeader}>
+            <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
+            <p className={vizStyles.templateSelectorSubtitle}>
+              Choose a template to configure its visualization blocks and charts
+            </p>
+          </div>
+          
+          <div className={vizStyles.templateSelectorControls}>
+            <select
+              className={vizStyles.templateDropdown}
+              value={selectedTemplateId || ''}
+              onChange={(e) => setSelectedTemplateId(e.target.value)}
+            >
+              <option value="" disabled>Select a template...</option>
+              {templates.map(template => (
+                <option key={template._id} value={template._id}>
+                  {template.isDefault && '⭐ '}
+                  {template.name} ({template.type})
+                </option>
+              ))}
+            </select>
+            
+            {selectedTemplateId && (
+              <div className={vizStyles.templateInfo}>
+                <span className={vizStyles.templateInfoItem}>
+                  📊 {dataBlocks.length} blocks
+                </span>
+                <span className={vizStyles.templateInfoItem}>
+                  🔲 {gridUnits.desktop}x grid
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </ColoredCard>
+      
+      {!selectedTemplateId && (
+        <ColoredCard accentColor="#f59e0b">
+          <div className="info-box">
+            <h4 className="info-box-title">⚠️ No Template Selected</h4>
+            <p>Please select a report template above to configure its visualization blocks.</p>
+          </div>
+        </ColoredCard>
+      )}
 
-      {/* WHAT: Last major card section on page (blocks within this may exist but this is the last main section)
-          WHY: No mb-8 on last section */}
-      <ColoredCard accentColor="#6366f1" hoverable={false}>
-        <h2 className="section-title mb-6">Data Visualization Blocks</h2>
+      {/* WHAT: Data Visualization Blocks Section
+          WHY: Only show when template is selected */}
+      {selectedTemplateId && (
+        <ColoredCard accentColor="#6366f1" hoverable={false}>
+          <h2 className="section-title mb-6">Data Visualization Blocks</h2>
         
         {/* Responsive Grid Info */}
         <div className="info-box">
@@ -740,6 +852,7 @@ export default function VisualizationPage() {
           </div>
         )}
       </ColoredCard>
+      )}
 
       {/* WHAT: Edit Block Modal migrated to unified FormModal
        * WHY: Consistent modal behavior across all admin pages */}
