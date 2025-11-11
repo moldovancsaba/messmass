@@ -76,6 +76,8 @@ export async function GET(
         logoUrl: partner.logoUrl,
         hashtags: partner.hashtags || [],
         categorizedHashtags: partner.categorizedHashtags || {},
+        styleId: partner.styleId ? partner.styleId.toString() : undefined,
+        reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined,
         createdAt: partner.createdAt,
         updatedAt: partner.updatedAt
       },
