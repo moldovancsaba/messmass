@@ -1,0 +1,283 @@
+/* WHAT: TheSportsDB Search Component Styles
+   WHY: Search interface for linking partners to sports teams */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+/* WHAT: Search input row
+   WHY: Side-by-side input + button layout */
+.searchRow {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  padding: var(--mm-space-3) var(--mm-space-4);
+  font-size: var(--mm-font-size-base);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  transition: all var(--transition-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-600);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.searchButton {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  font-size: var(--mm-font-size-base);
+  font-weight: 600;
+  color: white;
+  background: var(--mm-color-primary-600);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.searchButton:hover:not(:disabled) {
+  background: var(--mm-color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.searchButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* WHAT: Error message styling
+   WHY: Clear visual feedback for failed searches */
+.errorMessage {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--mm-radius-md);
+  color: var(--mm-red-700, #b91c1c);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Search results container
+   WHY: Scrollable list of team results */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.resultsCount {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--mm-space-2);
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+/* WHAT: Individual team result card
+   WHY: Clean card layout with logo, info, and link button */
+.resultCard {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-3);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.resultCard:hover {
+  border-color: var(--mm-color-primary-400);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.resultLogo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.resultInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  min-width: 0;
+}
+
+.resultName {
+  margin: 0;
+  font-size: var(--mm-font-size-base);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+.resultMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+.resultStadium {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+.linkButton {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 600;
+  color: white;
+  background: var(--mm-green-600, #059669);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.linkButton:hover {
+  background: var(--mm-green-700, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+/* WHAT: Linked team display
+   WHY: Show currently linked team with unlink option */
+.linkedTeam {
+  padding: var(--mm-space-4);
+  background: rgba(16, 185, 129, 0.05);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--mm-radius-lg);
+}
+
+.linkedTeamHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-3);
+}
+
+.linkedBadge {
+  padding: var(--mm-space-1) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 600;
+  color: var(--mm-green-700, #047857);
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: var(--mm-radius-full);
+}
+
+.unlinkButton {
+  padding: var(--mm-space-1) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 500;
+  color: var(--mm-red-700, #b91c1c);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--mm-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.unlinkButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.linkedTeamContent {
+  display: flex;
+  gap: var(--mm-space-4);
+  align-items: flex-start;
+}
+
+.linkedLogo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.linkedInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.linkedName {
+  margin: 0;
+  font-size: var(--mm-font-size-xl);
+  font-weight: 700;
+  color: var(--mm-gray-900);
+}
+
+.linkedMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+}
+
+/* WHAT: Mobile responsive adjustments
+   WHY: Maintain usability on small screens */
+@media (max-width: 640px) {
+  .searchRow {
+    flex-direction: column;
+  }
+  
+  .searchButton {
+    width: 100%;
+  }
+  
+  .resultCard {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .resultInfo {
+    align-items: center;
+  }
+  
+  .resultMeta {
+    justify-content: center;
+  }
+  
+  .linkButton {
+    width: 100%;
+  }
+  
+  .linkedTeamContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .linkedMeta {
+    justify-content: center;
+  }
+}

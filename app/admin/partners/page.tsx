@@ -15,6 +15,8 @@ import FormModal from '@/components/modals/FormModal';
 import SharePopup from '@/components/SharePopup';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
 import BitlyLinksSelector from '@/components/BitlyLinksSelector';
+import EmojiSelector from '@/components/EmojiSelector';
+import TheSportsDBSearch from '@/components/TheSportsDBSearch';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import { generateSportsDbHashtags, mergeSportsDbHashtags } from '@/lib/sportsDbHashtagEnricher';
 
@@ -36,6 +38,7 @@ export default function PartnersAdminPageUnified() {
   const [partners, setPartners] = useState<PartnerResponse[]>([]);
   const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
   const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
+  const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState('');
@@ -61,7 +64,9 @@ export default function PartnersAdminPageUnified() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
-    reportTemplateId: '' as string | null
+    reportTemplateId: '' as string | null,
+    sportsDb: undefined as any,
+    logoUrl: undefined as string | undefined
   });
   const [isCreatingPartner, setIsCreatingPartner] = useState(false);
   
@@ -217,6 +222,19 @@ export default function PartnersAdminPageUnified() {
           console.error('Failed to load report templates', e);
         }
       })();
+      
+      // Load available page styles
+      (async () => {
+        try {
+          const res = await fetch('/api/page-styles-enhanced');
+          const data = await res.json();
+          if (data.success) {
+            setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
+          }
+        } catch (e) {
+          console.error('Failed to load page styles', e);
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -314,7 +332,9 @@ export default function PartnersAdminPageUnified() {
           hashtags: [],
           categorizedHashtags: {},
           bitlyLinkIds: [],
-          reportTemplateId: ''
+          reportTemplateId: '',
+          sportsDb: undefined,
+          logoUrl: undefined
         });
         loadPartners();
       } else {
@@ -558,15 +578,30 @@ export default function PartnersAdminPageUnified() {
         
         <div className="form-group mb-4">
           <label className="form-label-block">Partner Emoji *</label>
-          <input
-            type="text"
-            className="form-input"
+          <EmojiSelector
             value={newPartnerData.emoji}
-            onChange={(e) => setNewPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
-            placeholder="⚽ 🏟️ 🏆 (single emoji)"
-            required
-            maxLength={4}
+            onChange={(emoji) => setNewPartnerData(prev => ({ ...prev, emoji }))}
           />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">TheSportsDB</label>
+          <TheSportsDBSearch
+            linkedTeam={newPartnerData.sportsDb}
+            onLink={(team) => {
+              setNewPartnerData(prev => ({
+                ...prev,
+                sportsDb: team,
+                logoUrl: team.strTeamBadge
+              }));
+            }}
+            onUnlink={() => {
+              setNewPartnerData(prev => ({ ...prev, sportsDb: undefined }));
+            }}
+          />
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
+          </p>
         </div>
         
         <div className="form-group mb-4">
@@ -640,19 +675,36 @@ export default function PartnersAdminPageUnified() {
             value={editPartnerData.name}
             onChange={(e) => setEditPartnerData(prev => ({ ...prev, name: e.target.value }))}
             required
+            autoFocus
           />
         </div>
         
         <div className="form-group mb-4">
           <label className="form-label-block">Partner Emoji *</label>
-          <input
-            type="text"
-            className="form-input"
+          <EmojiSelector
             value={editPartnerData.emoji}
-            onChange={(e) => setEditPartnerData(prev => ({ ...prev, emoji: e.target.value }))}
-            required
-            maxLength={4}
+            onChange={(emoji) => setEditPartnerData(prev => ({ ...prev, emoji }))}
           />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">TheSportsDB</label>
+          <TheSportsDBSearch
+            linkedTeam={editPartnerData.sportsDb}
+            onLink={(team) => {
+              setEditPartnerData(prev => ({
+                ...prev,
+                sportsDb: team,
+                logoUrl: team.strTeamBadge || prev.logoUrl
+              }));
+            }}
+            onUnlink={() => {
+              setEditPartnerData(prev => ({ ...prev, sportsDb: undefined }));
+            }}
+          />
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
+          </p>
         </div>
         
         <div className="form-group mb-4">
