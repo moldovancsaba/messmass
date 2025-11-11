@@ -35,6 +35,7 @@ export default function PartnersAdminPageUnified() {
   // Data state
   const [partners, setPartners] = useState<PartnerResponse[]>([]);
   const [allBitlyLinks, setAllBitlyLinks] = useState<BitlyLinkOption[]>([]);
+  const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState('');
@@ -60,6 +61,7 @@ export default function PartnersAdminPageUnified() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     bitlyLinkIds: [] as string[],
+    reportTemplateId: '' as string | null
   });
   const [isCreatingPartner, setIsCreatingPartner] = useState(false);
   
@@ -78,6 +80,7 @@ export default function PartnersAdminPageUnified() {
     bitlyLinkIds: [] as string[],
     logoUrl: undefined as string | undefined,
     sportsDb: undefined as any,
+    reportTemplateId: '' as string | null
   });
   const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
   
@@ -201,6 +204,19 @@ export default function PartnersAdminPageUnified() {
   useEffect(() => {
     if (user) {
       loadPartners(true, true);
+      
+      // Load available report templates
+      (async () => {
+        try {
+          const res = await fetch('/api/report-templates?includeAssociations=false');
+          const data = await res.json();
+          if (data.success) {
+            setAvailableTemplates(data.templates.map((t: any) => ({ _id: t._id, name: t.name, type: t.type })));
+          }
+        } catch (e) {
+          console.error('Failed to load report templates', e);
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -298,6 +314,7 @@ export default function PartnersAdminPageUnified() {
           hashtags: [],
           categorizedHashtags: {},
           bitlyLinkIds: [],
+          reportTemplateId: ''
         });
         loadPartners();
       } else {
@@ -383,6 +400,7 @@ export default function PartnersAdminPageUnified() {
       bitlyLinkIds: partner.bitlyLinks?.map(link => link._id) || [],
       logoUrl: partner.logoUrl,
       sportsDb: partner.sportsDb,
+      reportTemplateId: (partner as any).reportTemplateId || ''
     });
     setSportsDbSearch('');
     setSportsDbResults([]);
@@ -576,6 +594,23 @@ export default function PartnersAdminPageUnified() {
             availableLinks={allBitlyLinks}
           />
         </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Report Template</label>
+          <select 
+            className="form-input"
+            value={newPartnerData.reportTemplateId || ''}
+            onChange={(e) => setNewPartnerData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+          >
+            <option value="">— Use Default Template —</option>
+            {availableTemplates.map(t => (
+              <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+            ))}
+          </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 All events from this partner will use this template by default
+          </p>
+        </div>
       </FormModal>
       
       {/* Share Partner Report Modal */}
@@ -644,6 +679,23 @@ export default function PartnersAdminPageUnified() {
             }
             availableLinks={allBitlyLinks}
           />
+        </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Report Template</label>
+          <select 
+            className="form-input"
+            value={editPartnerData.reportTemplateId || ''}
+            onChange={(e) => setEditPartnerData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+          >
+            <option value="">— Use Default Template —</option>
+            {availableTemplates.map(t => (
+              <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+            ))}
+          </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 All events from this partner will use this template by default
+          </p>
         </div>
       </FormModal>
     </>

@@ -16,17 +16,18 @@ import {
 /**
  * GET /api/report-templates
  * 
- * WHAT: List all report templates with optional filtering
- * WHY: Admin UI needs to display and manage templates
+ * WHAT: List all report templates with optional filtering and associations
+ * WHY: Admin UI needs to display and manage templates with associated entities
  * 
  * Query Parameters:
  * - type: Filter by template type ('event' | 'partner' | 'global')
  * - includeDefault: Include default template (default: true)
+ * - includeAssociations: Include associated projects/partners (default: true)
  * 
  * Response:
  * {
  *   success: true,
- *   templates: ReportTemplate[],
+ *   templates: ReportTemplate[] (with associatedProjects and associatedPartners),
  *   count: number
  * }
  */
@@ -35,9 +36,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const typeFilter = searchParams.get('type');
     const includeDefault = searchParams.get('includeDefault') !== 'false';
+    const includeAssociations = searchParams.get('includeAssociations') !== 'false';
 
     const db = await getDb();
     const templatesCollection = db.collection('report_templates');
+    const projectsCollection = db.collection('projects');
+    const partnersCollection = db.collection('partners');
 
     // Build query
     const query: any = {};
@@ -53,13 +57,54 @@ export async function GET(request: NextRequest) {
       .sort({ isDefault: -1, name: 1 })  // Default first, then alphabetically
       .toArray();
 
+    // Fetch associated entities for each template
+    const templatesWithAssociations = await Promise.all(
+      templates.map(async (template) => {
+        const baseTemplate = {
+          ...template,
+          _id: template._id.toString()
+        };
+
+        if (!includeAssociations) {
+          return baseTemplate;
+        }
+
+        // Find projects using this template
+        const associatedProjects = await projectsCollection
+          .find(
+            { reportTemplateId: template._id },
+            { projection: { _id: 1, eventName: 1, eventDate: 1 } }
+          )
+          .toArray();
+
+        // Find partners using this template
+        const associatedPartners = await partnersCollection
+          .find(
+            { reportTemplateId: template._id },
+            { projection: { _id: 1, name: 1, emoji: 1 } }
+          )
+          .toArray();
+
+        return {
+          ...baseTemplate,
+          associatedProjects: associatedProjects.map(p => ({
+            _id: p._id.toString(),
+            eventName: p.eventName,
+            eventDate: p.eventDate
+          })),
+          associatedPartners: associatedPartners.map(p => ({
+            _id: p._id.toString(),
+            name: p.name,
+            emoji: p.emoji || '🎯'
+          }))
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      templates: templates.map(t => ({
-        ...t,
-        _id: t._id.toString()
-      })),
-      count: templates.length
+      templates: templatesWithAssociations,
+      count: templatesWithAssociations.length
     });
 
   } catch (error) {

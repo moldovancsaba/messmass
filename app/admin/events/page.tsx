@@ -28,6 +28,7 @@ export default function ProjectsPageUnified() {
   // Data state
   const [projects, setProjects] = useState<ProjectDTO[]>([]);
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
+  const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
@@ -52,7 +53,8 @@ export default function ProjectsPageUnified() {
     eventDate: '',
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
-    styleId: '' as string | null
+    styleId: '' as string | null,
+    reportTemplateId: '' as string | null
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   
@@ -64,7 +66,8 @@ export default function ProjectsPageUnified() {
     eventDate: '',
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
-    styleId: '' as string | null
+    styleId: '' as string | null,
+    reportTemplateId: '' as string | null
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
@@ -208,6 +211,19 @@ export default function ProjectsPageUnified() {
           console.error('Failed to load enhanced styles', e);
         }
       })();
+      
+      // Load available report templates
+      (async () => {
+        try {
+          const res = await fetch('/api/report-templates?includeAssociations=false');
+          const data = await res.json();
+          if (data.success) {
+            setAvailableTemplates(data.templates.map((t: any) => ({ _id: t._id, name: t.name, type: t.type })));
+          }
+        } catch (e) {
+          console.error('Failed to load report templates', e);
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only run when user changes, not when loadProjects changes
@@ -292,12 +308,13 @@ export default function ProjectsPageUnified() {
         hashtags: newProjectData.hashtags,
         categorizedHashtags: newProjectData.categorizedHashtags,
         stats: defaultStats,
-        styleId: newProjectData.styleId || null
+        styleId: newProjectData.styleId || null,
+        reportTemplateId: newProjectData.reportTemplateId || null
       });
       
       if (result.success) {
         setProjects(prev => [result.project, ...prev]);
-        setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
+        setNewProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '' });
         setShowNewProjectForm(false);
         alert(`Project \"${result.project.eventName}\" created successfully!\n\nEdit Link: /edit/${result.project.editSlug}\nReport Link: /report/${result.project.viewSlug}`);
       } else {
@@ -319,7 +336,8 @@ export default function ProjectsPageUnified() {
       eventDate: project.eventDate,
       hashtags: project.hashtags || [],
       categorizedHashtags: project.categorizedHashtags || {},
-      styleId: project.styleIdEnhanced || ''
+      styleId: project.styleIdEnhanced || '',
+      reportTemplateId: (project as any).reportTemplateId || ''
     });
     setShowEditProjectForm(true);
   };
@@ -341,7 +359,8 @@ export default function ProjectsPageUnified() {
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
         stats: editingProject.stats,
-        styleId: editProjectData.styleId || null
+        styleId: editProjectData.styleId || null,
+        reportTemplateId: editProjectData.reportTemplateId || null
       });
       
       if (result.success) {
@@ -351,7 +370,7 @@ export default function ProjectsPageUnified() {
             : p
         ));
         
-        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '' });
+        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '' });
         setEditingProject(null);
         setShowEditProjectForm(false);
         
@@ -589,6 +608,23 @@ export default function ProjectsPageUnified() {
             ))}
           </select>
         </div>
+        
+        <div className="form-group mb-4">
+          <label className="form-label-block">Report Template</label>
+          <select 
+            className="form-input"
+            value={newProjectData.reportTemplateId || ''}
+            onChange={(e) => setNewProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+          >
+            <option value="">— Use Partner or Default Template —</option>
+            {availableTemplates.map(t => (
+              <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+            ))}
+          </select>
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 If not set, this event will use its partner's template or the default template
+          </p>
+        </div>
       </FormModal>
       
       {/* Edit Event Modal */}
@@ -650,6 +686,23 @@ export default function ProjectsPageUnified() {
                 <option key={s._id} value={s._id}>{s.name}</option>
               ))}
             </select>
+          </div>
+          
+          <div className="form-group">
+            <label>Report Template</label>
+            <select 
+              className="form-input"
+              value={editProjectData.reportTemplateId || ''}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, reportTemplateId: e.target.value }))}
+            >
+              <option value="">— Use Partner or Default Template —</option>
+              {availableTemplates.map(t => (
+                <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
+              ))}
+            </select>
+            <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+              💡 If not set, this event will use its partner's template or the default template
+            </p>
           </div>
           
           <div className="form-group">
