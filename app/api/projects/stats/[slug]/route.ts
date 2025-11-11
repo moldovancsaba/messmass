@@ -46,6 +46,8 @@ export async function GET(
       stats: project.stats,
       partner1: project.partner1 || null, // Include partner 1 data (home team)
       partner2: project.partner2 || null, // Include partner 2 data (away team)
+      styleIdEnhanced: (project as any).styleIdEnhanced ? (project as any).styleIdEnhanced.toString() : null, // Page style for report
+      reportTemplateId: (project as any).reportTemplateId ? (project as any).reportTemplateId.toString() : null, // Report template
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     };
