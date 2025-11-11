@@ -160,8 +160,14 @@
 
 .templateSelectorControls {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--mm-space-4);
+}
+
+.templateSelectorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
   flex-wrap: wrap;
 }
 
@@ -204,7 +210,7 @@
 }
 
 @media (max-width: 768px) {
-  .templateSelectorControls {
+  .templateSelectorRow {
     flex-direction: column;
     align-items: stretch;
   }

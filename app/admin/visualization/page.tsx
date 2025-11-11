@@ -45,6 +45,16 @@ export default function VisualizationPage() {
   const [templates, setTemplates] = useState<ReportTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   
+  // WHAT: Template creation modal state
+  // WHY: Allow creating new templates from this page
+  const [showCreateTemplate, setShowCreateTemplate] = useState(false);
+  const [templateForm, setTemplateForm] = useState({
+    name: '',
+    description: '',
+    type: 'event' as 'event' | 'partner' | 'global',
+    isDefault: false
+  });
+  
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
@@ -438,6 +448,55 @@ export default function VisualizationPage() {
       return next;
     });
   };
+  
+  // WHAT: Create new template
+  // WHY: Allow creating templates with empty config, then auto-select
+  const handleCreateTemplate = async () => {
+    if (!templateForm.name.trim()) {
+      alert('Template name is required');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/report-templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: templateForm.name.trim(),
+          description: templateForm.description.trim(),
+          type: templateForm.type,
+          isDefault: templateForm.isDefault,
+          dataBlocks: [],
+          gridSettings: {
+            desktopUnits: 4,
+            tabletUnits: 2,
+            mobileUnits: 1
+          }
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success && data.template) {
+        // Reload templates list
+        await loadTemplates();
+        // Auto-select newly created template
+        setSelectedTemplateId(data.template._id);
+        // Close modal and reset form
+        setShowCreateTemplate(false);
+        setTemplateForm({
+          name: '',
+          description: '',
+          type: 'event',
+          isDefault: false
+        });
+      } else {
+        alert(data.error || 'Failed to create template');
+      }
+    } catch (error) {
+      console.error('Failed to create template:', error);
+      alert('Failed to create template');
+    }
+  };
 
   if (loading) {
     return (
@@ -471,19 +530,28 @@ export default function VisualizationPage() {
           </div>
           
           <div className={vizStyles.templateSelectorControls}>
-            <select
-              className={vizStyles.templateDropdown}
-              value={selectedTemplateId || ''}
-              onChange={(e) => setSelectedTemplateId(e.target.value)}
-            >
-              <option value="" disabled>Select a template...</option>
-              {templates.map(template => (
-                <option key={template._id} value={template._id}>
-                  {template.isDefault && '⭐ '}
-                  {template.name} ({template.type})
-                </option>
-              ))}
-            </select>
+            <div className={vizStyles.templateSelectorRow}>
+              <select
+                className={vizStyles.templateDropdown}
+                value={selectedTemplateId || ''}
+                onChange={(e) => setSelectedTemplateId(e.target.value)}
+              >
+                <option value="" disabled>Select a template...</option>
+                {templates.map(template => (
+                  <option key={template._id} value={template._id}>
+                    {template.isDefault && '⭐ '}
+                    {template.name} ({template.type})
+                  </option>
+                ))}
+              </select>
+              
+              <button
+                onClick={() => setShowCreateTemplate(true)}
+                className="btn btn-small btn-primary"
+              >
+                ➕ New Template
+              </button>
+            </div>
             
             {selectedTemplateId && (
               <div className={vizStyles.templateInfo}>
@@ -498,6 +566,90 @@ export default function VisualizationPage() {
           </div>
         </div>
       </ColoredCard>
+      
+      {/* WHAT: Create Template Modal
+          WHY: Allow creating new report templates with empty config */}
+      <FormModal
+        isOpen={showCreateTemplate}
+        onClose={() => {
+          setShowCreateTemplate(false);
+          setTemplateForm({ name: '', description: '', type: 'event', isDefault: false });
+        }}
+        onSubmit={handleCreateTemplate}
+        title="➕ Create New Report Template"
+        size="md"
+      >
+        <div className="form-section">
+          <div className="form-group mb-4">
+            <label className="form-label-block">Template Name *</label>
+            <input
+              type="text"
+              value={templateForm.name}
+              onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+              placeholder="e.g., Partner Annual Report, Event Dashboard"
+              className="form-input"
+            />
+          </div>
+          
+          <div className="form-group mb-4">
+            <label className="form-label-block">Description</label>
+            <textarea
+              value={templateForm.description}
+              onChange={(e) => setTemplateForm({ ...templateForm, description: e.target.value })}
+              placeholder="Optional description of this template's purpose"
+              className="form-input"
+              rows={3}
+            />
+          </div>
+          
+          <div className="form-group mb-4">
+            <label className="form-label-block">Template Type *</label>
+            <div className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="templateType"
+                  value="event"
+                  checked={templateForm.type === 'event'}
+                  onChange={(e) => setTemplateForm({ ...templateForm, type: e.target.value as 'event' | 'partner' | 'global' })}
+                />
+                <span>Event Report</span>
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="templateType"
+                  value="partner"
+                  checked={templateForm.type === 'partner'}
+                  onChange={(e) => setTemplateForm({ ...templateForm, type: e.target.value as 'event' | 'partner' | 'global' })}
+                />
+                <span>Partner Report</span>
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="templateType"
+                  value="global"
+                  checked={templateForm.type === 'global'}
+                  onChange={(e) => setTemplateForm({ ...templateForm, type: e.target.value as 'event' | 'partner' | 'global' })}
+                />
+                <span>Global Default</span>
+              </label>
+            </div>
+          </div>
+          
+          <div className="form-group mb-4">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={templateForm.isDefault}
+                onChange={(e) => setTemplateForm({ ...templateForm, isDefault: e.target.checked })}
+              />
+              <span>Set as default template</span>
+            </label>
+          </div>
+        </div>
+      </FormModal>
       
       {!selectedTemplateId && (
         <ColoredCard accentColor="#f59e0b">
