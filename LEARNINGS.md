@@ -1,5 +1,196 @@
 # MessMass Development Learnings
 
+## [v11.1.0] - 2025-11-11T13:53:00.000Z — Feature Parity: Partners Need Same Capabilities as Events
+
+### Context
+Partner report pages lacked custom styling capabilities that were already available for event reports. Users testing on localhost found no Page Style selector in partner forms and partner reports using default gray styling regardless of template settings.
+
+### Problem
+**Root Cause**: Style system was implemented for Events but never extended to Partners.
+
+**What was missing**:
+- Partner types: No `styleId` field in TypeScript interfaces
+- Partner API: No logic to save/load `styleId` field
+- Partner forms: No UI dropdown to select page styles
+- Partner report page: No style fetching or application logic
+- Page Styles API: No support for fetching single style by ID
+
+### Solution
+Implemented complete style system for Partners with 5-file changes:
+
+```typescript
+// 1. Types: Add styleId to Partner interfaces
+export interface Partner {
+  styleId?: ObjectId;           // NEW: Page style reference
+  reportTemplateId?: ObjectId;  // NOW PROPERLY TYPED
+}
+
+export interface CreatePartnerInput {
+  styleId?: string | null;      // NEW: For create operations
+}
+
+// 2. API: Save and load styleId
+if (styleId && styleId !== '' && ObjectId.isValid(styleId)) {
+  partnerDoc.styleId = new ObjectId(styleId);
+}
+
+// 3. UI: Add Page Style dropdown
+<select 
+  className="form-input"
+  value={newPartnerData.styleId || ''}
+  onChange={(e) => setNewPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
+>
+  <option value="">— Use Default/Global —</option>
+  {availableStyles.map(s => (
+    <option key={s._id} value={s._id}>{s.name}</option>
+  ))}
+</select>
+
+// 4. Report Page: Fetch and apply style
+if (data.partner.styleId) {
+  const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.partner.styleId}`);
+  const styleData = await styleResponse.json();
+  if (styleData.success) {
+    setPageStyle(styleData.style);
+  }
+}
+
+// 5. Apply to page container
+<div style={pageStyle ? {
+  background: generateGradientCSS(pageStyle.pageBackground),
+  color: pageStyle.typography.primaryTextColor,
+  fontFamily: pageStyle.typography.fontFamily
+} : undefined}>
+```
+
+### Key Learnings
+
+**1. Feature Parity Between Similar Entities**
+```
+Events Have:           Partners Should Have:
+- styleId field        - styleId field
+- Style selector UI    - Style selector UI
+- Style application    - Style application
+- API support          - API support
+```
+**Lesson**: When one entity type has a feature, check if similar entity types need it too. Partners and Events are parallel entities - they should have parallel capabilities.
+
+**2. Complete Feature Implementation Checklist**
+When adding a new field to an entity:
+- ✅ TypeScript types (interface definitions)
+- ✅ Database schema (MongoDB collections)
+- ✅ API endpoints (POST/PUT/GET handlers)
+- ✅ UI forms (create/edit modals)
+- ✅ Display logic (report pages, dashboards)
+- ✅ Helper functions (serialization, validation)
+
+**Lesson**: Missing ANY step breaks the feature. Use this checklist for every new field.
+
+**3. Style Resolution Hierarchy**
+```typescript
+// Partner Reports Priority:
+1. Partner Direct Style (partner.styleId)
+2. Partner Template Style (template.styleId)
+3. Default Template Style (default template.styleId)
+4. Global Default Style (isGlobalDefault: true)
+5. No Style (gray background)
+
+// Event Reports Priority (unchanged):
+1. Event Direct → 2. Event Template → 3. Partner Template → 4. Default → 5. Global → 6. None
+```
+**Lesson**: Implement hierarchy with early returns - check highest priority first, fall back progressively.
+
+**4. API Enhancement: Fetch by ID vs List All**
+```typescript
+// ✅ CORRECT: Support both patterns
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const styleId = searchParams.get('styleId');
+  
+  if (styleId) {
+    // Fetch single style by ID
+    const style = await db.collection('page_styles_enhanced')
+      .findOne({ _id: new ObjectId(styleId) });
+    return NextResponse.json({ success: true, style });
+  }
+  
+  // Fetch all styles (existing behavior)
+  const styles = await db.collection('page_styles_enhanced')
+    .find({}).toArray();
+  return NextResponse.json({ success: true, styles });
+}
+```
+**Lesson**: When adding "fetch by ID" capability, preserve existing "list all" behavior. One endpoint, two modes.
+
+**5. TypeScript ObjectId vs String Handling**
+```typescript
+// Database: ObjectId format
+styleId: ObjectId("...")
+
+// API Response: String format
+styleId: partner.styleId ? partner.styleId.toString() : undefined
+
+// Client State: String format
+styleId: '' as string | null
+
+// API Request: Validate and convert back
+if (styleId && ObjectId.isValid(styleId)) {
+  partnerDoc.styleId = new ObjectId(styleId);
+}
+```
+**Lesson**: MongoDB uses ObjectId, client uses strings. Always serialize to string in API responses, deserialize in API handlers.
+
+**6. Backward Compatibility with Optional Fields**
+```typescript
+// ✅ CORRECT: Optional with graceful fallback
+styleId?: ObjectId;  // Optional - existing partners don't have it
+
+// Partner report page
+if (!pageStyle) {
+  // Falls back to default gray background
+  // No errors, no crashes
+}
+```
+**Lesson**: New fields should be optional. Existing records without the field should work unchanged.
+
+### Impact
+
+**User Experience**:
+- ✅ Partners now have custom-branded report pages
+- ✅ Consistent UX: Partners UI matches Events UI
+- ✅ White-label support: Different styles per partner
+- ✅ No migration needed: Existing partners work unchanged
+
+**Technical**:
+- ✅ 5 files modified with 187 lines added/changed
+- ✅ 100% backward compatible
+- ✅ TypeScript strict mode throughout
+- ✅ Complete feature implementation (types → API → UI → display)
+
+### Files Modified
+
+**Type Definitions**:
+- `lib/partner.types.ts`: Added `styleId` to all interfaces (26 lines)
+
+**API Layer**:
+- `app/api/partners/route.ts`: Save/load `styleId` (22 lines)
+- `app/api/page-styles-enhanced/route.ts`: Fetch by ID support (40 lines)
+
+**UI Layer**:
+- `app/admin/partners/page.tsx`: Style selector dropdowns (52 lines)
+- `app/partner-report/[slug]/page.tsx`: Fetch and apply styles (47 lines)
+
+### Version
+
+**Before**: v11.0.0  
+**After**: v11.1.0 (MINOR increment - new feature: Partner page styles)
+
+### Category
+
+Feature Parity / Partners / Styling / API / TypeScript
+
+---
+
 ## [v10.5.0] - 2025-11-03T13:59:00.000Z — Partner Data Population: ObjectId References Must Be Resolved
 
 ### Context

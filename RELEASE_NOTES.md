@@ -1,5 +1,144 @@
 # MessMass Release Notes
 
+## [v11.1.0] — 2025-11-11T13:53:00.000Z
+
+### Added
+
+✅ **Complete Page Style System for Partners**
+- Added `styleId` field to Partner types (TypeScript interfaces)
+- Partners can now have custom page styling for their report pages
+- Page Style dropdown added to Create Partner modal
+- Page Style dropdown added to Edit Partner modal
+- Partner report pages fetch and apply assigned page styles
+- Style resolution hierarchy: Partner direct → Template → Default → Global
+- Brought Partners to feature parity with Events for style customization
+
+✅ **Enhanced Page Styles API**
+- GET `/api/page-styles-enhanced?styleId=...` now supports fetching single style by ID
+- Returns single style object when styleId query parameter provided
+- Returns all styles array when no query parameter (existing behavior)
+- Validates ObjectId format and returns proper error codes (400/404)
+
+### Changed
+
+🔄 **Partner API Enhancements**
+- POST `/api/partners` now accepts and saves `styleId` field
+- PUT `/api/partners` now accepts and updates `styleId` field
+- GET `/api/partners` response includes `styleId` as string
+- `populateBitlyLinks` helper serializes ObjectId to string for client
+- Full parity with Events API for style management
+
+🔄 **Partner Report Page Improvements**
+- Fetches partner direct `styleId` from partner data
+- Fetches template `styleId` from report template
+- Prioritizes partner direct style over template style
+- Applies custom gradients, colors, and fonts dynamically
+- Falls back to default gray background when no style assigned
+
+### Technical Details
+
+**Modified Files** (5 files):
+- `lib/partner.types.ts` (26 lines changed)
+  - Added `styleId?: ObjectId` to Partner interface
+  - Added `styleId?: string | null` to CreatePartnerInput
+  - Added `styleId?: string | null` to UpdatePartnerInput
+  - Added `styleId?: string` to PartnerResponse
+  - Added `reportTemplateId?: ObjectId` to Partner interface (proper typing)
+
+- `app/api/partners/route.ts` (22 lines changed)
+  - POST: Added `styleId` to request body destructuring
+  - POST: Added logic to save `styleId` as ObjectId
+  - PUT: Added `styleId` to request body destructuring
+  - PUT: Added update logic with null handling
+  - populateBitlyLinks: Added `styleId` and `reportTemplateId` to response
+
+- `app/admin/partners/page.tsx` (52 lines changed)
+  - Added `styleId` to `newPartnerData` state
+  - Added `styleId` to `editPartnerData` state
+  - Added Page Style dropdown to Create Partner modal
+  - Added Page Style dropdown to Edit Partner modal
+  - Updated `openEditForm` to populate `styleId`
+  - Updated reset logic to include `styleId`
+
+- `app/partner-report/[slug]/page.tsx` (47 lines changed)
+  - Added `PageStyleEnhanced` and `generateGradientCSS` imports
+  - Added `pageStyle` state
+  - Added style fetching for partner direct `styleId`
+  - Added style fetching for template `styleId`
+  - Applied `pageStyle` to page container with inline styles
+  - Priority: Partner direct → Template → Default
+
+- `app/api/page-styles-enhanced/route.ts` (40 lines changed)
+  - Enhanced GET endpoint to support `styleId` query parameter
+  - Returns single style when `styleId` provided
+  - Returns all styles when no `styleId` (existing behavior)
+  - Added ObjectId validation and error handling
+
+**Database Schema Changes**:
+```javascript
+// partners collection - NEW FIELDS
+{
+  _id: ObjectId("..."),
+  name: "FC Barcelona",
+  // ... existing fields
+  styleId: ObjectId("..."),           // NEW: Page style reference
+  reportTemplateId: ObjectId("..."),  // NOW PROPERLY TYPED
+}
+```
+
+**API Changes**:
+- POST `/api/partners` - Accepts `styleId` in request body
+- PUT `/api/partners` - Accepts `styleId` in request body
+- GET `/api/partners` - Returns `styleId` and `reportTemplateId` as strings
+- GET `/api/page-styles-enhanced?styleId=...` - Fetch single style by ID
+
+**Design System Compliance**:
+- ✅ Uses design tokens exclusively (CSS variables)
+- ✅ CSS Modules for partner forms
+- ✅ Inline styles only for dynamic `pageStyle` application
+- ✅ Strategic comments explaining what and why
+- ✅ TypeScript strict mode throughout
+
+**Style Resolution Hierarchy**:
+
+For Partner Reports:
+1. **Partner Direct Style** - Partner has `styleId` field set
+2. **Partner Template Style** - Partner's reportTemplate has `styleId`
+3. **Default Template Style** - Default reportTemplate has `styleId`
+4. **Global Default Style** - Marked as `isGlobalDefault: true`
+5. **No Style** - Uses default CSS (gray background)
+
+For Event Reports (unchanged):
+1. Event Direct Style → 2. Event Template → 3. Partner Template → 4. Default Template → 5. Global → 6. None
+
+**Backward Compatibility**: ✅ 100%
+- Existing partners without `styleId` continue to work
+- Default gray background shown when no style assigned
+- No breaking changes to existing functionality
+- Partner API properly serializes ObjectIds to strings
+
+**Version**: `11.0.0` → `11.1.0` (MINOR increment)
+- New feature: Partner page style customization
+- Enhanced API: Page styles fetch by ID
+- No breaking changes
+- Maintains backward compatibility
+
+**Benefits**:
+1. **Brand Consistency**: Partners can have custom-branded report pages
+2. **Feature Parity**: Partners now have same capabilities as Events
+3. **White-Label Support**: Different styles for different partner organizations
+4. **Flexible Hierarchy**: Multiple levels of style inheritance
+5. **Zero Migration**: Existing partners work unchanged
+
+**Testing**:
+- Manual testing required on localhost
+- Test partner style assignment in admin UI
+- Test partner report page style rendering
+- Verify style priority (direct → template → default)
+- Verify backward compatibility with existing partners
+
+---
+
 ## [v10.7.0] — 2025-11-06T20:00:00.000Z
 
 ### Added
