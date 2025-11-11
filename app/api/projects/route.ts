@@ -270,7 +270,8 @@ export async function GET(request: NextRequest) {
           stats: project.stats,
           viewSlug: project.viewSlug,
           editSlug: project.editSlug,
-          styleId: project.styleId || null,
+          styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
+          reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt
         };
@@ -377,7 +378,8 @@ export async function GET(request: NextRequest) {
         stats: project.stats,
         viewSlug: project.viewSlug,
         editSlug: project.editSlug,
-        styleId: project.styleId || null,               // Project-specific style reference
+        styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null, // Project-specific style reference
+        reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null, // Project-specific report template
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
         // WHAT: Add data quality metadata for frontend consumption
