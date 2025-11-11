@@ -129,6 +129,7 @@ export interface CreatePartnerInput {
   bitlyLinkIds?: string[]; // String IDs from client
   logoUrl?: string;
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
+  reportTemplateId?: string; // Report template ID for partner default
 }
 
 /**
@@ -144,6 +145,7 @@ export interface UpdatePartnerInput {
   bitlyLinkIds?: string[];
   logoUrl?: string;
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
+  reportTemplateId?: string; // Report template ID for partner default
 }
 
 /**

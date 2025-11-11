@@ -447,8 +447,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId + partner references
-    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId + partner references + reportTemplateId
+    const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId } = body;
 
     if (!eventName || !eventDate || !stats) {
       return NextResponse.json(
@@ -530,6 +530,12 @@ export async function POST(request: NextRequest) {
     }
     if (partner2Id && ObjectId.isValid(partner2Id)) {
       project.partner2Id = new ObjectId(partner2Id);
+    }
+    
+    // WHAT: Add reportTemplateId if provided
+    // WHY: Allow events to have custom report templates
+    if (reportTemplateId && reportTemplateId !== '' && reportTemplateId !== 'null' && ObjectId.isValid(reportTemplateId)) {
+      project.reportTemplateId = new ObjectId(reportTemplateId);
     }
 
     // Enhanced hashtag processing to handle both traditional and categorized hashtags
@@ -663,8 +669,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId
-    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId
+    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId } = body;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -745,6 +751,17 @@ export async function PUT(request: NextRequest) {
       setData.styleIdEnhanced = styleId;
     }
     // If styleId is not provided in the request, don't modify existing styleIdEnhanced
+    
+    // WHAT: Handle reportTemplateId assignment/removal
+    // WHY: Allow events to override partner or default report templates
+    if (reportTemplateId === null || reportTemplateId === '' || reportTemplateId === 'null') {
+      // Remove reportTemplateId (use partner or default template)
+      unsetData.reportTemplateId = '';
+    } else if (reportTemplateId && reportTemplateId !== undefined && ObjectId.isValid(reportTemplateId)) {
+      // Set specific reportTemplateId
+      setData.reportTemplateId = new ObjectId(reportTemplateId);
+    }
+    // If reportTemplateId is not provided in the request, don't modify existing reportTemplateId
     
     // Build the update operation object
     const updateOperation: any = { $set: setData };

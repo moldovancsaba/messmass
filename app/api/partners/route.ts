@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as CreatePartnerInput;
-    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl } = body;
+    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, reportTemplateId } = body;
 
     if (!name || !emoji) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const client = await clientPromise;
     const db = client.db(config.dbName);
     
-    const partnerDoc = {
+    const partnerDoc: any = {
       name: name.trim(),
       emoji: emoji.trim(),
       hashtags: hashtags || [],
@@ -76,6 +76,12 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now,
     };
+    
+    // WHAT: Add reportTemplateId if provided
+    // WHY: Allow partners to have custom report templates
+    if (reportTemplateId && reportTemplateId !== '' && ObjectId.isValid(reportTemplateId)) {
+      partnerDoc.reportTemplateId = new ObjectId(reportTemplateId);
+    }
 
     const result = await db.collection('partners').insertOne(partnerDoc);
 
@@ -241,7 +247,7 @@ export async function PUT(request: NextRequest) {
 
     // WHAT: Parse and validate request body
     const body = await request.json() as UpdatePartnerInput;
-    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl } = body;
+    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, reportTemplateId } = body;
 
     if (!partnerId || !ObjectId.isValid(partnerId)) {
       return NextResponse.json(
@@ -296,6 +302,17 @@ export async function PUT(request: NextRequest) {
         }
         return new ObjectId(id);
       });
+    }
+    
+    // WHAT: Update reportTemplateId if provided
+    // WHY: Allow changing partner's default report template
+    if (reportTemplateId !== undefined) {
+      if (reportTemplateId === '' || reportTemplateId === null) {
+        // Remove reportTemplateId (use default)
+        updateDoc.reportTemplateId = null;
+      } else if (ObjectId.isValid(reportTemplateId)) {
+        updateDoc.reportTemplateId = new ObjectId(reportTemplateId);
+      }
     }
 
     // WHAT: Update partner in database
