@@ -3,14 +3,18 @@
 // WHAT: Partner report page with SharePopup modal and admin-style event cards
 // WHY: Consistent UX - share modal like admin pages, event cards matching admin events display
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import StandardState from '@/components/StandardState';
 import UnifiedPageHero from '@/components/UnifiedPageHero';
+import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import ColoredCard from '@/components/ColoredCard';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import { exportPageToPDF } from '@/lib/export/pdf';
+import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { calculateActiveCharts } from '@/lib/chartCalculator';
+import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import styles from './PartnerReport.module.css';
 
 interface Partner {
@@ -57,8 +61,15 @@ export default function PartnerReportPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   
+  // WHAT: Template and visualization state (v11.0.0)
+  // WHY: Support visualization blocks in partner reports
+  const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
+  const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
+  const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 6, tablet: 3, mobile: 2 });
   
-  // Fetch partner data
+  
+  // WHAT: Fetch partner data and report configuration (v11.0.0)
+  // WHY: Load both partner details and visualization template
   const fetchPartnerData = useCallback(async () => {
     setLoading(true);
     try {
@@ -70,6 +81,10 @@ export default function PartnerReportPage() {
         setPartner(data.partner);
         setEvents(data.events || []);
         setError(null);
+        
+        // WHAT: Fetch report template for partner (v11.0.0)
+        // WHY: Load visualization blocks specific to this partner
+        await fetchReportTemplate(slug);
       } else {
         setError(data.error || 'Failed to load partner');
       }
@@ -80,6 +95,63 @@ export default function PartnerReportPage() {
       setLoading(false);
     }
   }, [slug]);
+  
+  // WHAT: Fetch report template configuration (v11.0.0)
+  // WHY: Get visualization blocks and grid settings for partner
+  const fetchReportTemplate = useCallback(async (partnerSlug: string) => {
+    try {
+      console.log('🎨 Fetching partner report template:', partnerSlug);
+      const response = await fetch(`/api/report-config/${encodeURIComponent(partnerSlug)}?type=partner`, { cache: 'no-store' });
+      const data = await response.json();
+      
+      if (data.success && data.template) {
+        console.log('✅ Loaded template:', data.template.name, '(', data.resolvedFrom, ')');
+        
+        // Fetch actual data blocks
+        if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
+          const blockResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
+          const blockData = await blockResponse.json();
+          
+          if (blockData.success) {
+            const orderedBlocks = data.template.dataBlocks
+              .map((ref: any) => {
+                const block = blockData.blocks.find((b: any) => b._id === ref.blockId || b._id.toString() === ref.blockId);
+                return block ? { ...block, order: ref.order } : null;
+              })
+              .filter(Boolean)
+              .sort((a: any, b: any) => a.order - b.order);
+            
+            setDataBlocks(orderedBlocks);
+          }
+        }
+        
+        // Set grid settings
+        if (data.template.gridSettings) {
+          setGridUnits(data.template.gridSettings);
+        }
+      }
+    } catch (err) {
+      console.error('⚠️  Failed to fetch report template:', err);
+      // Continue without template - just show event list
+    }
+  }, []);
+  
+  // WHAT: Fetch chart configurations for visualization
+  // WHY: Need chart definitions to calculate aggregate stats
+  useEffect(() => {
+    const fetchCharts = async () => {
+      try {
+        const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
+        const data = await response.json();
+        if (data.success) {
+          setChartConfigurations(data.configurations);
+        }
+      } catch (err) {
+        console.error('Failed to fetch chart configurations:', err);
+      }
+    };
+    fetchCharts();
+  }, []);
   
   // Check authentication on mount
   useEffect(() => {
@@ -159,27 +231,92 @@ export default function PartnerReportPage() {
     );
   };
   
-  // Calculate totals from events
-  const totals = React.useMemo(() => {
+  // WHAT: Calculate aggregate stats from all partner events (v11.0.0)
+  // WHY: Charts need aggregated data to render partner-level visualizations
+  // HOW: Sum all stats across events, calculate averages and totals
+  const aggregateStats = useMemo(() => {
+    if (!events || events.length === 0) return {};
+    
+    // Initialize aggregator with all possible fields
+    const aggregate: any = {
+      // Totals for summation
+      remoteImages: 0,
+      hostessImages: 0,
+      selfies: 0,
+      remoteFans: 0,
+      stadium: 0,
+      indoor: 0,
+      outdoor: 0,
+      female: 0,
+      male: 0,
+      genAlpha: 0,
+      genYZ: 0,
+      genX: 0,
+      boomer: 0,
+      merched: 0,
+      jersey: 0,
+      scarf: 0,
+      flags: 0,
+      baseballCap: 0,
+      other: 0,
+      eventAttendees: 0,
+      eventTicketPurchases: 0,
+      // Visit tracking
+      visitQrCode: 0,
+      visitShortUrl: 0,
+      visitWeb: 0,
+      visitFacebook: 0,
+      visitInstagram: 0,
+      visitYoutube: 0,
+      visitTiktok: 0,
+      visitX: 0,
+      visitTrustpilot: 0,
+      // Count of events
+      _eventCount: events.length
+    };
+    
+    // Sum all stats across events
+    events.forEach(event => {
+      Object.keys(event.stats).forEach(key => {
+        const value = (event.stats as any)[key];
+        if (typeof value === 'number') {
+          aggregate[key] = (aggregate[key] || 0) + value;
+        }
+      });
+    });
+    
+    console.log('📊 Calculated aggregate stats for', events.length, 'events:', aggregate);
+    return aggregate;
+  }, [events]);
+  
+  // WHAT: Calculate chart results from aggregate stats
+  // WHY: UnifiedDataVisualization needs chart results to render
+  const chartResults = useMemo(() => {
+    if (!chartConfigurations || chartConfigurations.length === 0 || !aggregateStats || Object.keys(aggregateStats).length === 0) {
+      return [];
+    }
+    
+    try {
+      const results = calculateActiveCharts(chartConfigurations, aggregateStats);
+      console.log('✅ Calculated', results.length, 'chart results from aggregate stats');
+      return results;
+    } catch (err) {
+      console.error('❌ Failed to calculate chart results:', err);
+      return [];
+    }
+  }, [chartConfigurations, aggregateStats]);
+  
+  // Calculate simple totals for hero display
+  const totals = useMemo(() => {
     if (!events || events.length === 0) return null;
     
-    return events.reduce((acc, event) => {
-      const images = (event.stats.remoteImages || 0) + (event.stats.hostessImages || 0) + (event.stats.selfies || 0);
-      const fans = (event.stats.remoteFans || 0) + (event.stats.stadium || 0);
-      
-      return {
-        totalEvents: acc.totalEvents + 1,
-        totalImages: acc.totalImages + images,
-        totalFans: acc.totalFans + fans,
-        totalAttendees: acc.totalAttendees + (event.stats.eventAttendees || 0)
-      };
-    }, {
-      totalEvents: 0,
-      totalImages: 0,
-      totalFans: 0,
-      totalAttendees: 0
-    });
-  }, [events]);
+    return {
+      totalEvents: events.length,
+      totalImages: aggregateStats.remoteImages + aggregateStats.hostessImages + aggregateStats.selfies,
+      totalFans: aggregateStats.remoteFans + aggregateStats.stadium,
+      totalAttendees: aggregateStats.eventAttendees
+    };
+  }, [events, aggregateStats]);
   
   // Show password gate if not authorized
   if (checkingAuth) {
@@ -269,6 +406,21 @@ export default function PartnerReportPage() {
               </div>
             )}
           </UnifiedPageHero>
+          
+          {/* WHAT: Visualization blocks section (v11.0.0)
+               WHY: Display partner-level aggregate stats with charts
+               HOW: Use UnifiedDataVisualization with aggregate chart results */}
+          {dataBlocks.length > 0 && chartResults.length > 0 && (
+            <div className={styles.visualizationSection}>
+              <UnifiedDataVisualization
+                blocks={dataBlocks}
+                chartResults={chartResults}
+                loading={false}
+                gridUnits={gridUnits}
+                useChartContainer={true}
+              />
+            </div>
+          )}
           
           {/* WHAT: Events list section with admin-style cards
                WHY: Match admin events page display with full details, stats, partners */}

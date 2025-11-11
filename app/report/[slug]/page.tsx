@@ -134,35 +134,101 @@ export default function StatsPage() {
     }
   }, [slug]);
 
-  // Function to fetch page configuration
+  // WHAT: Fetch report configuration using new template resolution API (v11.0.0)
+  // WHY: Support per-partner and per-event report customization
+  // HOW: Template hierarchy - Project → Partner → Default → Hardcoded
   const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
     try {
-      const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
-      console.log('🎨 [Stats] Fetching page config with:', { projectIdentifier, qs });
+      if (!projectIdentifier) {
+        console.warn('⚠️  [Stats] No project identifier provided');
+        return;
+      }
+
+      console.log('🎨 [Stats] Fetching report config with template system:', { projectIdentifier });
       
-      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
+      // Use new template resolution API
+      const response = await fetch(`/api/report-config/${encodeURIComponent(projectIdentifier)}?type=project`, { cache: 'no-store' });
       const data = await response.json();
 
-      console.log('🎨 [Stats] Page config response:', {
+      console.log('🎨 [Stats] Report config response:', {
         success: data.success,
-        blocksCount: data.config?.dataBlocks?.length,
-        blocks: data.config?.dataBlocks?.map((b: any) => ({
-          name: b.name,
-          charts: b.charts?.length,
-          isActive: b.isActive
-        }))
+        templateName: data.template?.name,
+        resolvedFrom: data.resolvedFrom,
+        source: data.source,
+        blocksCount: data.template?.dataBlocks?.length
       });
 
-      if (data.success) {
-        setPageStyle(data.config.pageStyle);
-        setDataBlocks(data.config.dataBlocks);
-        if (data.config.gridSettings) {
-          const gs = data.config.gridSettings;
+      if (data.success && data.template) {
+        const template = data.template;
+        
+        // Set page style from template
+        if (template.styleId) {
+          // Fetch the actual style document
+          try {
+            const styleResponse = await fetch(`/api/page-config?projectId=${encodeURIComponent(projectIdentifier)}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.config?.pageStyle) {
+              setPageStyle(styleData.config.pageStyle);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch style, using default');
+          }
+        }
+        
+        // Convert template dataBlocks to page dataBlocks
+        // Template has blockId references, need to fetch actual blocks
+        if (template.dataBlocks && template.dataBlocks.length > 0) {
+          // For now, fetch blocks from old API to get full block data
+          // TODO: In future, report-config API should return hydrated blocks
+          const blockResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
+          const blockData = await blockResponse.json();
+          
+          if (blockData.success) {
+            // Map template block references to actual blocks
+            const orderedBlocks = template.dataBlocks
+              .map((ref: any) => {
+                const block = blockData.blocks.find((b: any) => b._id === ref.blockId || b._id.toString() === ref.blockId);
+                if (!block) return null;
+                
+                // Apply template overrides if present
+                return {
+                  ...block,
+                  showTitle: ref.overrides?.showTitle ?? block.showTitle,
+                  name: ref.overrides?.customTitle || block.name
+                };
+              })
+              .filter(Boolean);
+            
+            setDataBlocks(orderedBlocks);
+            console.log(`✅ [Stats] Loaded ${orderedBlocks.length} blocks from template "${template.name}" (${data.resolvedFrom})`);
+          }
+        }
+        
+        // Set grid settings from template
+        if (template.gridSettings) {
+          const gs = template.gridSettings;
           setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
         }
       }
     } catch (err) {
-      console.error('❌ [Stats] Failed to fetch page config:', err);
+      console.error('❌ [Stats] Failed to fetch report config:', err);
+      // Fallback to old API if new one fails
+      try {
+        console.log('🔄 [Stats] Falling back to legacy page-config API');
+        const fallbackResponse = await fetch(`/api/page-config?projectId=${encodeURIComponent(projectIdentifier || '')}`, { cache: 'no-store' });
+        const fallbackData = await fallbackResponse.json();
+        
+        if (fallbackData.success) {
+          setPageStyle(fallbackData.config.pageStyle);
+          setDataBlocks(fallbackData.config.dataBlocks);
+          if (fallbackData.config.gridSettings) {
+            const gs = fallbackData.config.gridSettings;
+            setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+          }
+        }
+      } catch (fallbackErr) {
+        console.error('❌ [Stats] Fallback API also failed:', fallbackErr);
+      }
     }
   }, []);
 

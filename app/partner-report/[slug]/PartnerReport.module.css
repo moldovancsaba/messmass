@@ -43,6 +43,14 @@
   margin-top: var(--mm-space-1);
 }
 
+/* WHAT: Visualization section spacing (v11.0.0)
+ * WHY: Separate visualization blocks from event list
+ * HOW: Add top margin for visual separation */
+.visualizationSection {
+  margin-top: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+}
+
 /* WHAT: Events section spacing */
 .eventsSection {
   margin-top: var(--mm-space-lg);
