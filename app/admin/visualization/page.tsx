@@ -858,7 +858,7 @@ export default function VisualizationPage() {
                             const result = previewResults[chart.chartId];
                             if (!result) return null;
                             return (
-                              <div key={`${block._id}-${chart.chartId}`} className={`${vizStyles.chartItem} chart-width-${chart.width} chart-min-height`}>
+                              <div key={`${block._id}-${chart.chartId}`} className={vizStyles.chartItem}>
                                 <ChartContainer
                                   title={result.title}
                                   subtitle={result.subtitle}
@@ -876,19 +876,42 @@ export default function VisualizationPage() {
                       </div>
 
                       {/* WHAT: Dynamic responsive grid styling per block ID
-                           WHY: CSS modules can't handle dynamic class names with runtime IDs,
-                                so we keep minimal <style jsx> for dynamic grid column rules only.
-                                All static styles moved to Visualization.module.css */}
+                           WHY: Match UnifiedDataVisualization fr-based proportional grid system
+                           HOW: Build fr units from chart widths (e.g., [2, 2, 3] → "2fr 2fr 3fr") */}
                       <style jsx>{`
-                        .chart-width-1 { grid-column: span 1; }
-                        .chart-width-2 { grid-column: span 2; }
-                        @media (min-width: 768px) and (max-width: 1023px) {
-                          .charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.tablet)}, minmax(0, 1fr)) !important; }
+                        /* Desktop: Auto-calculated fr units from chart widths (matches report pages) */
+                        .charts-grid-${block._id || 'preview'} { 
+                          grid-template-columns: ${block.charts
+                            .sort((a, b) => a.order - b.order)
+                            .map(c => `${Math.max(1, c.width || 1)}fr`)
+                            .join(' ')} !important;
+                          justify-items: stretch !important;
+                          align-items: start;
                         }
-                        @media (min-width: 1024px) {
-                          .charts-grid-${block._id || 'preview'} { grid-template-columns: repeat(${Math.max(1, gridUnits.desktop)}, minmax(0, 1fr)) !important; }
+                        /* Tablet: Auto-wrap with 300px minimum width per chart */
+                        @media (max-width: 1023px) {
+                          .charts-grid-${block._id || 'preview'} { 
+                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important; 
+                          }
                         }
-                        .charts-grid-${block._id || 'preview'} :global(.chart-container) { min-width: 0 !important; max-width: none !important; width: 100% !important; }
+                        /* Mobile: Force single column */
+                        @media (max-width: 767px) {
+                          .charts-grid-${block._id || 'preview'} { 
+                            grid-template-columns: 1fr !important; 
+                          }
+                        }
+                        /* Chart container overrides */
+                        .charts-grid-${block._id || 'preview'} :global(.chart-container) { 
+                          min-width: 0 !important; 
+                          max-width: none !important; 
+                          width: 100% !important; 
+                        }
+                        .charts-grid-${block._id || 'preview'} :global(.chart-legend) { 
+                          min-width: 0 !important; 
+                          width: 100% !important; 
+                          max-width: 100% !important; 
+                          overflow: hidden; 
+                        }
                       `}</style>
                     </>
                   )}

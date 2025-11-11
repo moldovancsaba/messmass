@@ -2,41 +2,14 @@
 /* WHAT: Centralized styles for data visualization management page
    WHY: Replace dynamic <style jsx> with static CSS module using design tokens */
 
-/* Charts grid base */
+/* WHAT: Charts grid base - fr-based proportional columns
+   WHY: Match UnifiedDataVisualization rendering with chart width ratios
+   HOW: Dynamic grid-template-columns set via inline styles (e.g., "2fr 2fr 3fr") */
 .chartsGridBase {
   display: grid;
-  grid-template-columns: 1fr;
-  justify-items: stretch;
-  align-items: start;
-  grid-auto-flow: row;
   gap: var(--mm-space-4);
-}
-
-/* Chart width utilities */
-.chartWidth1 {
-  grid-column: span 1;
-}
-
-.chartWidth2 {
-  grid-column: span 2;
-}
-
-/* Responsive grid for tablets */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .chartsGridTablet {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-/* Responsive grid for desktop */
-@media (min-width: 1024px) {
-  .chartsGridDesktop4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-  
-  .chartsGridDesktop6 {
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-  }
+  width: 100%;
+  /* grid-template-columns set dynamically per block via <style jsx> */
 }
 
 /* Unified chart item */
