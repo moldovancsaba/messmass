@@ -165,10 +165,15 @@ const PieChart: React.FC<{
     
     // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
     // WHY: Create branded two-tone pie charts
+    // HOW: Safety checks to ensure colors are valid strings
     return validElements.map((el, idx) => {
-      if (idx === 0) return pageStyle.typography.primaryTextColor;
-      if (idx === 1) return pageStyle.typography.secondaryTextColor;
-      return el.color; // Fall back to original color for 3+ segments
+      if (idx === 0 && pageStyle.typography?.primaryTextColor) {
+        return pageStyle.typography.primaryTextColor;
+      }
+      if (idx === 1 && pageStyle.typography?.secondaryTextColor) {
+        return pageStyle.typography.secondaryTextColor;
+      }
+      return el.color; // Fall back to original color
     });
   };
   
@@ -220,11 +225,12 @@ const PieChart: React.FC<{
   const portraitSegments = createSegments(80, 90, 90);
   const landscapeSegments = createSegments(100, 110, 110);
 
-  const legend = validElements.map((element) => {
+  const legend = validElements.map((element, idx) => {
     const percentage = ((element.value / totalValue) * 100).toFixed(1);
+    const legendColor = segmentColors[idx];
     return (
       <div key={element.id} className={styles.legendItem}>
-        <div className={styles.legendColor} style={{ ['--legend-color' as string]: element.color, backgroundColor: element.color } as React.CSSProperties}></div>
+        <div className={styles.legendColor} style={{ ['--legend-color' as string]: legendColor, backgroundColor: legendColor } as React.CSSProperties}></div>
         <span>{element.label}: {formatChartValue(element.value, { formatting: element.formatting, type: element.type })} ({percentage}%)</span>
       </div>
     );
@@ -358,7 +364,10 @@ const BarChart: React.FC<{
   
   // WHAT: Override bar color with pageStyle primaryTextColor if available
   // WHY: Apply brand color to all bars for consistent styling
-  const barColor = pageStyle?.typography.primaryTextColor || validElements[0]?.color || '#3b82f6';
+  // HOW: Safety check to ensure color is a valid string
+  const barColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string')
+    ? pageStyle.typography.primaryTextColor
+    : (validElements[0]?.color || '#3b82f6');
   
   // WHAT: Create bar rows with legend and bar side-by-side per row
   // WHY: Vertical alignment of legend text with bar (centered)
@@ -501,8 +510,13 @@ const KPIChart: React.FC<{
   
   // WHAT: Use pageStyle colors for KPI if available
   // WHY: Apply brand colors for consistent styling
-  const kpiTextColor = pageStyle?.typography.primaryTextColor || result.elements[0]?.color || '#10b981';
-  const kpiBackground = pageStyle?.contentBoxBackground.solidColor || '#ffffff';
+  // HOW: Safety checks to ensure colors are valid strings
+  const kpiTextColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string')
+    ? pageStyle.typography.primaryTextColor
+    : (result.elements[0]?.color || '#10b981');
+  const kpiBackground = (pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string')
+    ? pageStyle.contentBoxBackground.solidColor
+    : '#ffffff';
   
   // Convert hex to RGB for dynamic color usage
   const hexToRgb = (hex: string) => {
