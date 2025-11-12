@@ -143,8 +143,10 @@ export default function KPICard({
         datasets: [
           {
             data: sparklineData,
-            borderColor: `var(--mm-color-${color}-500)`,
-            backgroundColor: `var(--mm-color-${color}-100)`,
+            // WHAT: Validate color before using in CSS variable
+            // WHY: Prevent undefined from creating invalid CSS variable names
+            borderColor: (color && typeof color === 'string') ? `var(--mm-color-${color}-500)` : 'var(--mm-color-primary-500)',
+            backgroundColor: (color && typeof color === 'string') ? `var(--mm-color-${color}-100)` : 'var(--mm-color-primary-100)',
             borderWidth: 2,
             fill: true,
             tension: 0.4, // Smooth curves

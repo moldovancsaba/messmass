@@ -129,12 +129,16 @@ function ColoredHashtagBubbleComponent({
     });
   }
 
+  // WHAT: Validate backgroundColor before using in style
+  // WHY: React calls .trim() on style values, will crash if undefined
+  const safeBackgroundColor = (backgroundColor && typeof backgroundColor === 'string' && backgroundColor.trim()) ? backgroundColor : '#3b82f6';
+  
   return (
     <span 
       className={bubbleClasses}
       style={{ 
-        backgroundColor: backgroundColor,
-        background: backgroundColor, // Ensure both properties are set
+        backgroundColor: safeBackgroundColor,
+        background: safeBackgroundColor, // Ensure both properties are set
         color: 'white', // Force text color to always be white
         cursor: interactive ? 'pointer' : 'default',
         position: 'relative',
@@ -143,7 +147,7 @@ function ColoredHashtagBubbleComponent({
         gap: removable ? '0.25rem' : '0',
         ...customStyle 
       }}
-      title={`Hashtag color: ${backgroundColor}`}
+      title={`Hashtag color: ${safeBackgroundColor}`}
       onClick={handleClick}
     >
       #{displayText}

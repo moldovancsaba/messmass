@@ -114,7 +114,9 @@ export default function PieChart({
         backgroundColor: filtered.map((item, index) => {
           /* What: Use custom color or fall back to theme colors
              Why: Allow chart-specific colors while maintaining consistency */
-          if (item.color) return item.color;
+          // WHAT: Validate item.color before using
+          // WHY: Prevent undefined from being returned to Chart.js
+          if (item.color && typeof item.color === 'string' && item.color.trim()) return item.color;
           
           // Cycle through theme chart colors with full opacity for pie charts
           const colors = [
