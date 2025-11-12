@@ -144,7 +144,7 @@ export default function CategorizedHashtagInput({
           <div className="category-info">
             <div 
               className="category-indicator"
-              style={{ backgroundColor: category.color }}
+              style={{ backgroundColor: (category.color && typeof category.color === 'string' && category.color.trim()) ? category.color : '#667eea' }}
               title={`${category.name} category`}
             />
             <label className="category-label">
