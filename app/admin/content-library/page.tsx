@@ -11,6 +11,7 @@ import ColoredCard from '@/components/ColoredCard';
 import { FormModal } from '@/components/modals';
 import ImageUploadField from '@/components/ImageUploadField';
 import MaterialIcon from '@/components/MaterialIcon';
+import styles from './page.module.css';
 import {
   type ContentAsset,
   type ContentAssetFormData,
@@ -359,15 +360,17 @@ export default function ContentLibraryPage() {
               <strong>{usageInfo.asset.title}</strong> is currently used in <strong>{usageInfo.charts.length}</strong> chart(s):
             </p>
             
-            <div className="mb-4" style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem' }}>
-              {usageInfo.charts.map((chart, idx) => (
-                <div key={idx} style={{ padding: '0.5rem', borderBottom: idx < usageInfo.charts.length - 1 ? '1px solid #e5e7eb' : 'none' }}>
-                  <div><strong>{chart.title}</strong></div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    ID: {chart.chartId} | Type: {chart.type}
+            <div className="mb-4">
+              <div className={styles.usageList}>
+                {usageInfo.charts.map((chart, idx) => (
+                  <div key={idx} className={styles.usageListItem}>
+                    <div><strong>{chart.title}</strong></div>
+                    <div className={styles.usageListMeta}>
+                      ID: {chart.chartId} | Type: {chart.type}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             
             <p className="text-red-600 font-bold">
@@ -405,17 +408,17 @@ function AssetCard({
           <div className="flex items-start gap-3">
             {/* Preview */}
             {asset.type === 'image' && asset.content.url && (
-              <div style={{ width: '120px', height: '80px', borderRadius: '0.5rem', overflow: 'hidden', flexShrink: 0 }}>
+              <div className={styles.thumb}>
                 <img
                   src={asset.content.url}
                   alt={asset.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  className={styles.thumbImg}
                 />
               </div>
             )}
             
             {asset.type === 'text' && (
-              <div style={{ width: '120px', height: '80px', borderRadius: '0.5rem', background: '#f9fafb', padding: '0.5rem', overflow: 'hidden', flexShrink: 0, fontSize: '0.75rem', color: '#6b7280' }}>
+              <div className={styles.textThumb}>
                 {asset.content.text?.substring(0, 100)}...
               </div>
             )}
@@ -427,8 +430,7 @@ function AssetCard({
                 <span className="badge badge-info">{asset.type === 'image' ? '🖼️ Image' : '📝 Text'}</span>
                 {asset.usageCount > 0 && (
                   <span
-                    className="badge badge-success"
-                    style={{ cursor: 'pointer' }}
+                    className={`badge badge-success ${styles.clickable}`}
                     onClick={onViewUsage}
                     title="Click to view usage"
                   >
@@ -437,7 +439,7 @@ function AssetCard({
                 )}
               </div>
               
-              <code className="variable-ref" style={{ fontSize: '0.875rem' }}>{token}</code>
+              <code className={`variable-ref ${styles.token}`}>{token}</code>
               
               {asset.description && (
                 <p className="text-gray-600 mt-2 mb-0">{asset.description}</p>
@@ -451,14 +453,14 @@ function AssetCard({
               </div>
               
               {asset.type === 'image' && asset.content.width && asset.content.height && (
-                <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                <div className={`${styles.meta} ${styles.mtSpace2}`}>
                   {asset.content.width} × {asset.content.height}
                   {asset.content.aspectRatio && ` | ${asset.content.aspectRatio}`}
                   {asset.content.fileSize && ` | ${Math.round(asset.content.fileSize / 1024)} KB`}
                 </div>
               )}
               
-              <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+              <div className={`${styles.meta} ${styles.mtSpace2}`}>
                 Created: {new Date(asset.createdAt).toLocaleDateString()}
               </div>
             </div>
@@ -468,15 +470,15 @@ function AssetCard({
         {/* Actions */}
         <div className="flex flex-col gap-2">
           <button className="btn btn-small btn-secondary" onClick={onCopyToken} title="Copy reference token">
-            <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            <MaterialIcon name="content_copy" variant="outlined" className={styles.iconInline} />
             Copy Token
           </button>
           <button className="btn btn-small btn-primary" onClick={onEdit}>
-            <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            <MaterialIcon name="edit" variant="outlined" className={styles.iconInline} />
             Edit
           </button>
           <button className="btn btn-small btn-danger" onClick={onDelete}>
-            <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+            <MaterialIcon name="delete" variant="outlined" className={styles.iconInline} />
             Delete
           </button>
         </div>
@@ -617,13 +619,13 @@ function CreateAssetModal({
     >
       <div className="grid gap-3">
         {form.error && (
-          <div style={{ padding: '1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '0.5rem' }}>
-            {form.error}
+          <div className={styles.errorBox}>
+            <strong>⚠️ {form.error}</strong>
           </div>
         )}
         
         {/* WHAT: Toggle between Variable Definition vs Global Asset */}
-        <div style={{ background: '#f3f4f6', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>
+        <div className={styles.infoBox}>
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -711,7 +713,7 @@ function CreateAssetModal({
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {form.tags.map(tag => (
-                <span key={tag} className="badge badge-primary" style={{ cursor: 'pointer' }} onClick={() => removeTag(tag)}>
+                <span key={tag} className={`badge badge-primary ${styles.removeableTag}`} onClick={() => removeTag(tag)}>
                   {tag} ✕
                 </span>
               ))}
@@ -771,7 +773,7 @@ function CreateAssetModal({
                 ? 'Optional: Add placeholder text or leave empty...'
                 : 'Enter global text content...'}
             />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+            <div className={styles.helpText}>
               {form.textContent.length} characters
             </div>
           </div>
@@ -888,19 +890,19 @@ function EditAssetModal({
     >
       <div className="grid gap-3">
         {form.error && (
-          <div style={{ padding: '1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '0.5rem' }}>
-            {form.error}
+          <div className={styles.errorBox}>
+            <strong>⚠️ {form.error}</strong>
           </div>
         )}
         
         {slugChanged && (
-          <div style={{ padding: '1rem', background: '#fef3c7', color: '#92400e', borderRadius: '0.5rem' }}>
+          <div className={styles.warningBox}>
             ⚠️ <strong>Warning:</strong> Changing the slug will break existing chart references. Old token: <code>[{asset.type === 'image' ? 'MEDIA' : 'TEXT'}:{asset.slug}]</code>
           </div>
         )}
         
         {asset.usageCount > 0 && (
-          <div style={{ padding: '1rem', background: '#dbeafe', color: '#1e40af', borderRadius: '0.5rem' }}>
+          <div className={styles.noticeBox}>
             ℹ️ This asset is currently used in <strong>{asset.usageCount}</strong> chart(s).
           </div>
         )}
@@ -960,7 +962,7 @@ function EditAssetModal({
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {form.tags.map(tag => (
-                <span key={tag} className="badge badge-primary" style={{ cursor: 'pointer' }} onClick={() => removeTag(tag)}>
+                <span key={tag} className={`badge badge-primary ${styles.removeableTag}`} onClick={() => removeTag(tag)}>
                   {tag} ✕
                 </span>
               ))}
@@ -986,8 +988,8 @@ function EditAssetModal({
             <div>
               <label className="form-label-block">Image</label>
               {form.imageUrl && (
-                <div style={{ marginBottom: '1rem', borderRadius: '0.5rem', overflow: 'hidden', maxHeight: '200px' }}>
-                  <img src={form.imageUrl} alt="Preview" style={{ width: '100%', objectFit: 'contain' }} />
+                <div className={styles.imagePreview}>
+                  <img src={form.imageUrl} alt="Preview" />
                 </div>
               )}
               <ImageUploadField
@@ -1008,7 +1010,7 @@ function EditAssetModal({
               value={form.textContent}
               onChange={(e) => setForm({ ...form, textContent: e.target.value })}
             />
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+            <div className={styles.helpText}>
               {form.textContent.length} characters
             </div>
           </div>

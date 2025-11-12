@@ -1,0 +1,129 @@
+/* WHAT: Thumbnail container for image previews
+   WHY: Replaces inline styles with design tokens and consistent sizing */
+.thumb {
+  width: 7.5rem; /* 120px */
+  height: 5rem;  /* 80px */
+  border-radius: var(--mm-radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* WHAT: Text preview box for text assets */
+.textThumb {
+  width: 7.5rem; /* 120px */
+  height: 5rem;  /* 80px */
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-gray-50);
+  padding: var(--mm-space-2);
+  overflow: hidden;
+  flex-shrink: 0;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+}
+
+/* WHAT: Usage list container with scroll */
+.usageList {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+}
+
+/* WHAT: Usage list item with divider except last */
+.usageListItem {
+  padding: var(--mm-space-2);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+.usageListItem:last-child {
+  border-bottom: none;
+}
+
+/* WHAT: Subtext/meta styling */
+.usageListMeta,
+.meta {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+}
+
+/* WHAT: Variable token styling */
+.token {
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Clickable badge improvements */
+.clickable {
+  cursor: pointer;
+}
+
+/* WHAT: Inline icon size and spacing within buttons */
+.iconInline {
+  font-size: var(--mm-font-size-sm);
+  margin-right: var(--mm-space-1);
+}
+
+/* WHAT: Error message box */
+.errorBox {
+  padding: var(--mm-space-4);
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: var(--mm-radius-lg);
+}
+
+/* WHAT: Info message boxes */
+.infoBox {
+  background: var(--mm-gray-100);
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+  margin-bottom: var(--mm-space-4);
+}
+
+.warningBox {
+  padding: var(--mm-space-4);
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: var(--mm-radius-lg);
+}
+
+.noticeBox {
+  padding: var(--mm-space-4);
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: var(--mm-radius-lg);
+}
+
+/* WHAT: Clickable tags for removal */
+.removeableTag {
+  cursor: pointer;
+}
+
+/* WHAT: Help text */
+.helpText {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  margin-top: var(--mm-space-2);
+}
+
+/* WHAT: Image preview container */
+.imagePreview {
+  margin-bottom: var(--mm-space-4);
+  border-radius: var(--mm-radius-lg);
+  overflow: hidden;
+  max-height: 200px;
+}
+
+.imagePreview img {
+  width: 100%;
+  object-fit: contain;
+}
+
+/* WHAT: Utility - top margin spacing */
+.mtSpace2 {
+  margin-top: var(--mm-space-2);
+}

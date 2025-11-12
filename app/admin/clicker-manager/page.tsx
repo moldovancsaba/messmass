@@ -6,6 +6,7 @@ import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
 import { apiPost, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
+import styles from './page.module.css';
 
 // WHAT: Clicker Manager - Configure variable groups for Editor clicker UI
 // WHY: Admin control over which variables appear in clicker and their grouping/order
@@ -239,7 +240,7 @@ export default function ClickerManagerPage() {
                       className="btn btn-small btn-primary"
                       onClick={() => setEditingGroup(group)}
                     >
-                      <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                      <MaterialIcon name="edit" variant="outlined" className={styles.iconInline} />
                       Edit
                     </button>
                   </div>
@@ -436,7 +437,7 @@ function GroupForm({
       {/* WHAT: Mode visibility controls */}
       {/* WHY: Determine which edit modes show this group */}
       <div className="mt-4">
-        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Visibility in Edit Modes</label>
+        <label className={`form-label-block ${styles.sectionLabel}`}>Visibility in Edit Modes</label>
         <div className="flex gap-6">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -460,8 +461,8 @@ function GroupForm({
       </div>
 
       <div className="mt-4">
-        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Variables in Group ({form.variables.length})</label>
-        <div className="grid gap-2 mt-2" style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+        <label className={`form-label-block ${styles.sectionLabel}`}>Variables in Group ({form.variables.length})</label>
+        <div className={`grid gap-2 mt-2 ${styles.variableListContainer}`}>
           {form.variables.length === 0 && (
             <div className="text-center text-gray-500 py-4 text-sm">
               No variables added yet. Add variables from the list below.
@@ -472,37 +473,33 @@ function GroupForm({
             return (
               <div
                 key={varName}
-                className="flex items-center justify-between gap-3 p-3 bg-white rounded border border-gray-300"
-                style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+                className={`flex items-center justify-between gap-3 p-3 bg-white rounded border border-gray-300 ${styles.variableItem}`}
               >
                 <div className="flex items-center gap-3 flex-1">
-                  <span className="text-sm font-mono text-gray-500" style={{ minWidth: '32px' }}>#{index + 1}</span>
+                  <span className={`text-sm font-mono text-gray-500 ${styles.orderNum}`}>#{index + 1}</span>
                   <div className="flex-1">
                     <span className="font-medium text-gray-900 block">{varDef?.label || varName}</span>
-                    <code className="variable-ref text-xs text-gray-600" style={{ fontSize: '11px', padding: '2px 6px', backgroundColor: '#f3f4f6', marginTop: '4px', display: 'inline-block' }}>{varName}</code>
+                    <code className={`variable-ref text-xs text-gray-600 ${styles.varCode}`}>{varName}</code>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <button
-                    className="btn btn-small btn-secondary"
+                    className={`btn btn-small btn-secondary ${styles.reorderBtn}`}
                     onClick={() => moveUp(index)}
                     disabled={index === 0}
-                    style={{ minWidth: '36px', opacity: index === 0 ? 0.5 : 1 }}
                   >
                     ↑
                   </button>
                   <button
-                    className="btn btn-small btn-secondary"
+                    className={`btn btn-small btn-secondary ${styles.reorderBtn}`}
                     onClick={() => moveDown(index)}
                     disabled={index === form.variables.length - 1}
-                    style={{ minWidth: '36px', opacity: index === form.variables.length - 1 ? 0.5 : 1 }}
                   >
                     ↓
                   </button>
                   <button
-                    className="btn btn-small btn-danger"
+                    className={`btn btn-small btn-danger ${styles.removeBtn}`}
                     onClick={() => removeVariable(varName)}
-                    style={{ minWidth: '36px' }}
                   >
                     ✕
                   </button>
@@ -514,26 +511,24 @@ function GroupForm({
       </div>
 
       <div className="mt-4">
-        <label className="form-label-block" style={{ marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#374151' }}>Add Variables</label>
+        <label className={`form-label-block ${styles.sectionLabel}`}>Add Variables</label>
         <input
           type="text"
-          className="form-input mb-3"
+          className={`form-input mb-3 ${styles.searchInput}`}
           placeholder="Search variables..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: '10px 12px', fontSize: '14px' }}
         />
-        <div className="grid gap-2 max-h-300 overflow-y-auto" style={{ backgroundColor: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+        <div className={`grid gap-2 max-h-300 overflow-y-auto ${styles.variableListContainer}`}>
           {availableVars.map((v) => (
             <button
               key={v.name}
-              className="flex items-center justify-between gap-3 p-3 bg-white border border-gray-300 rounded hover:bg-blue-50 hover:border-blue-400 text-left transition-colors"
+              className={`flex items-center justify-between gap-3 p-3 bg-white border border-gray-300 rounded hover:bg-blue-50 hover:border-blue-400 text-left transition-colors ${styles.variableItem}`}
               onClick={() => addVariable(v.name)}
-              style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
             >
               <div className="flex-1">
                 <span className="font-medium text-gray-900 block">{v.label}</span>
-                <code className="variable-ref text-xs text-gray-600" style={{ fontSize: '11px', padding: '2px 6px', backgroundColor: '#f3f4f6' }}>{v.name}</code>
+                <code className={`variable-ref text-xs text-gray-600 ${styles.varCode}`}>{v.name}</code>
               </div>
               <span className="text-green-600 font-semibold whitespace-nowrap">+ Add</span>
             </button>

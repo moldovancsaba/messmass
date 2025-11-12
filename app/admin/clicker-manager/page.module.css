@@ -1,0 +1,63 @@
+/* WHAT: Clicker Manager page styles using design tokens
+   WHY: Replace inline styles with maintainable CSS module classes */
+
+/* WHAT: Inline icon styling within buttons */
+.iconInline {
+  font-size: var(--mm-font-size-sm);
+  margin-right: var(--mm-space-1);
+}
+
+/* WHAT: Form section labels */
+.sectionLabel {
+  margin-bottom: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 600;
+  color: var(--mm-gray-700);
+}
+
+/* WHAT: Variable list containers with subtle backgrounds */
+.variableListContainer {
+  background-color: var(--mm-gray-50);
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+}
+
+/* WHAT: Individual variable item cards */
+.variableItem {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* WHAT: Order number badge */
+.orderNum {
+  min-width: 2rem;
+}
+
+/* WHAT: Variable code display */
+.varCode {
+  font-size: 0.6875rem; /* 11px */
+  padding: var(--mm-space-1) var(--mm-space-2);
+  background-color: var(--mm-gray-100);
+  margin-top: var(--mm-space-1);
+  display: inline-block;
+}
+
+/* WHAT: Reorder buttons with minimum width and disabled opacity */
+.reorderBtn {
+  min-width: 2.25rem; /* 36px */
+}
+
+.reorderBtn:disabled {
+  opacity: 0.5;
+}
+
+/* WHAT: Remove button with fixed width */
+.removeBtn {
+  min-width: 2.25rem; /* 36px */
+}
+
+/* WHAT: Search input sizing */
+.searchInput {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  font-size: var(--mm-font-size-sm);
+}
