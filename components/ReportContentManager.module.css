@@ -1,0 +1,124 @@
+.container {
+  display: grid;
+  gap: var(--mm-space-4);
+}
+
+.section {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mm-space-3);
+}
+
+.sectionTitle {
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin: 0;
+}
+
+.controlsRow {
+  display: flex;
+  gap: var(--mm-space-2);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-300);
+  background: var(--mm-gray-50);
+  color: var(--mm-gray-900);
+  cursor: pointer;
+}
+
+.btnPrimary {
+  background: var(--mm-primary-500);
+  color: var(--mm-white);
+  border-color: var(--mm-primary-600);
+}
+
+.btnDanger {
+  background: var(--mm-red-500);
+  color: var(--mm-white);
+  border-color: var(--mm-red-600);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--mm-space-3);
+}
+
+.card {
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-3);
+  background: var(--mm-white);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mm-space-2);
+}
+
+.slotBadge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: var(--mm-gray-100);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-sm);
+  padding: 2px 6px;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-700);
+}
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: var(--mm-radius-md);
+  background-color: var(--mm-gray-100);
+  object-fit: cover;
+  margin-bottom: var(--mm-space-2);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2);
+}
+
+.inlineRow {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.note {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 96px;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-2);
+}
+
+.hiddenInput { display: none; }
+
+.separator {
+  height: 1px;
+  background: var(--mm-gray-200);
+  margin: var(--mm-space-2) 0;
+}

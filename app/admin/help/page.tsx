@@ -309,7 +309,7 @@ export default function HelpPage() {
             <li>Fill in the form:
               <ul>
                 <li><strong>Variable Name:</strong> Camelcase, no spaces (e.g., <code>vipGuests</code>)</li>
-                <li><strong>Alias (Display Label):</strong> Human-readable (e.g., "VIP Guests")</li>
+                <li><strong>Alias (Display Label):</strong> Human-readable (e.g., &ldquo;VIP Guests&rdquo;)</li>
                 <li><strong>Variable Type:</strong> <code>number</code> or <code>text</code></li>
                 <li><strong>Category:</strong> Select from dropdown or type new category</li>
                 <li><strong>Visible in Clicker:</strong> Show as button in editor? (checkbox)</li>
@@ -403,7 +403,7 @@ export default function HelpPage() {
           <ol>
             <li>Go to <strong>Events</strong> page (<code>/admin/events</code>)</li>
             <li>Find the event you want to share</li>
-            <li>Click the <strong>"Report"</strong> button on the event row</li>
+            <li>Click the <strong>&ldquo;Report&rdquo;</strong> button on the event row</li>
             <li>In the Share Popup modal:
               <ul>
                 <li>Review the generated shareable link</li>
@@ -418,7 +418,7 @@ export default function HelpPage() {
           <ol>
             <li>Go to <strong>Partners</strong> page (<code>/admin/partners</code>)</li>
             <li>Find the partner organization you want to share</li>
-            <li>Click the <strong>"Report"</strong> button on the partner row</li>
+            <li>Click the <strong>&ldquo;Report&rdquo;</strong> button on the partner row</li>
             <li>In the Share Popup modal:
               <ul>
                 <li>Review the generated shareable link</li>

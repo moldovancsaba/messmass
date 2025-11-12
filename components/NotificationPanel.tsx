@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './NotificationPanel.module.css';
 import { apiPut } from '@/lib/apiClient';
 
@@ -36,14 +36,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const [showNewIndicator, setShowNewIndicator] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // WHAT: Fetch notifications when panel opens
-  // WHY: Load fresh data each time user clicks the bell
-  useEffect(() => {
-    if (isOpen) {
-      fetchNotifications();
-    }
-  }, [isOpen]);
-
   // WHAT: Close panel when clicking outside
   // WHY: Standard UX pattern for dropdown panels
   useEffect(() => {
@@ -61,7 +53,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // WHAT: Fetch notifications from API with exclude archived filter
   // WHY: Display recent activities in the panel, hide archived items
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/notifications?limit=20&excludeArchived=true');
@@ -86,7 +78,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     } finally {
       setLoading(false);
     }
-  };
+  }, [previousUnreadCount]);
+
+  // WHAT: Fetch notifications when panel opens
+  // WHY: Load fresh data each time user clicks the bell
+  useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen, fetchNotifications]);
 
   // WHAT: Mark notification as read when clicked
   // WHY: Dismiss notifications and clear badge count

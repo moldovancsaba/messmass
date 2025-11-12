@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // WHAT: Generate unique asset hashes for cache-busting
+  // WHY: Ensures browsers always fetch latest version after deployment
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
   eslint: {
     // Disable ESLint during builds to prevent dependency conflicts
     ignoreDuringBuilds: true,
@@ -23,6 +28,51 @@ const nextConfig = {
         source: '/hashtag/:hashtag*',
         destination: '/filter/:hashtag',
         permanent: true, // 301 redirect for SEO preservation
+      },
+    ];
+  },
+  // WHAT: Aggressive cache-busting headers for HTML and assets
+  // WHY: Browser caching causes stale UI issues after deployments
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      {
+        // WHAT: Cache static assets with versioned URLs (Next.js auto-hashes these)
+        // WHY: Safe to cache aggressively since URLs change when content changes
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // WHAT: Short cache for favicon with version param support
+        // WHY: Favicons are notoriously cached; allow quick updates
+        source: '/favicon.png',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
       },
     ];
   },

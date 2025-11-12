@@ -19,7 +19,7 @@
  * Created: 2025-10-19T13:30:00.000Z
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, MetricCard, InsightCard } from '@/components/analytics';
 import type { LineChartDataset } from '@/components/analytics';
 import type { Insight } from '@/lib/insightsEngine';
@@ -64,15 +64,11 @@ export default function ExecutiveDashboard() {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<'30d' | '90d'>('30d');
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, [period]);
-
   /**
    * WHAT: Fetch all dashboard data in parallel
    * WHY: Minimize loading time with concurrent requests
    */
-  async function fetchDashboardData() {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       // WHAT: Calculate date range based on period
@@ -116,7 +112,11 @@ export default function ExecutiveDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [period]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   // WHAT: Prepare trend chart datasets
   const trendDatasets: LineChartDataset[] = trends && trends.labels?.length

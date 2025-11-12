@@ -1,5 +1,40 @@
 # MessMass Release Notes
 
+## [v11.8.0] — 2025-11-12T19:36:45.000Z
+
+### Summary
+- Minor version bump for release commit to main.
+- No functional changes vs. v11.7.1; formalizes the new Report Content manager (images/texts) in Clicker and documentation sync.
+
+### Notes
+- Build, lint, and type-check verified prior to commit.
+
+---
+
+## [v11.7.1] — 2025-11-12T19:21:45.000Z
+
+### Added
+
+- 🧰 Report Content Manager in Clicker (single page per event):
+  - Image Slots: Bulk upload to ImgBB, replace/clear per slot, swap slots, compact indices (advanced).
+  - Text Slots: Bulk add (one line per slot), inline edit per slot, clear/swap, compact indices (advanced).
+  - Stable fields preserved: [stats.reportImageN], [stats.reportTextN] — unlimited up to 500 by default.
+  - Deletion keeps holes by default; compaction is optional with confirmation.
+
+### Storage & Compatibility
+
+- Images stored on ImgBB; URLs saved in stats.reportImageN.
+- Texts saved as raw strings in stats.reportTextN (markdown-safe; rendering unchanged).
+- Existing charts continue to work without changes.
+
+### Technical Notes
+
+- Reused existing /api/upload-image route and ImageUploader patterns.
+- No schema changes; slots are created on demand.
+- UI follows design tokens; no inline styles (CSS module).
+
+---
+
 ## [v11.7.0] — 2025-11-12T20:15:00.000Z
 
 ### Changed

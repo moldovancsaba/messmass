@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   keywords: ['Event Statistics', 'Real-time Collaboration', 'Dashboard', 'Next.js'],
   authors: [{ name: 'MessMass Team' }],
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+    icon: `/favicon.png?v=${Date.now()}`,
+    apple: `/favicon.png?v=${Date.now()}`,
   },
 };
 
@@ -89,13 +89,13 @@ export default async function RootLayout({
       <head>
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
-            HOW: Load both Outlined and Rounded variants for flexibility */}
+            HOW: Load both Outlined and Rounded variants with display=swap for performance */}
         <link 
-          href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" 
+          href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" 
           rel="stylesheet"
         />
         <link 
-          href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" 
+          href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=swap" 
           rel="stylesheet"
         />
         <GoogleAnalytics />

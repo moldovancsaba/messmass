@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './BitlyLinksEditor.module.css';
 import { apiPost, apiDelete } from '@/lib/apiClient';
 
@@ -33,14 +33,9 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // WHAT: Load links for this project on mount
-  useEffect(() => {
-    loadLinks();
-  }, [projectId]);
-
   // WHAT: Fetch all Bitly links associated with this project via junction table
   // WHY: Many-to-many system - links can be shared across multiple projects
-  async function loadLinks() {
+  const loadLinks = useCallback(async () => {
     try {
       setLoading(true);
       // WHAT: Use project-specific metrics API to get associated links
@@ -74,7 +69,12 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
     } finally {
       setLoading(false);
     }
-  }
+  }, [projectId]);
+
+  // WHAT: Load links for this project on mount
+  useEffect(() => {
+    loadLinks();
+  }, [loadLinks]);
 
   // WHAT: Handle adding a new Bitly link to this project
   async function handleAddLink(e: React.FormEvent) {

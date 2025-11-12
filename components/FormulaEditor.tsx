@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { validateFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { buildReferenceToken } from '@/lib/variableRefs';
 
@@ -63,41 +63,7 @@ export default function FormulaEditor({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
-  // Validate formula on change with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (String(formula || '').trim()) {
-        validateCurrentFormula();
-      } else {
-        const result: ValidationResult = { isValid: true, usedVariables: [] };
-        setValidation(result);
-        if (onValidate) onValidate(result);
-      }
-    }, 300); // Debounce 300ms
-
-    return () => clearTimeout(timer);
-  }, [formula]);
-
-  useEffect(() => {
-    // Load KYC variables on mount
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/variables-config', { cache: 'no-store' });
-        const data = await res.json();
-        if (data?.success && Array.isArray(data.variables)) {
-          setKycVariables(data.variables as KYCVariable[]);
-        }
-      } catch (e) {
-        console.error('Failed to load KYC variables', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  const validateCurrentFormula = () => {
+  const validateCurrentFormula = useCallback(() => {
     try {
       const result = validateFormula(formula);
       const usedVariables = extractVariablesFromFormula(formula);
@@ -135,7 +101,42 @@ export default function FormulaEditor({
       setValidation(errorResult);
       if (onValidate) onValidate(errorResult);
     }
-  };
+  }, [formula, onValidate]);
+
+  // Validate formula on change with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (String(formula || '').trim()) {
+        validateCurrentFormula();
+      } else {
+        const result: ValidationResult = { isValid: true, usedVariables: [] };
+        setValidation(result);
+        if (onValidate) onValidate(result);
+      }
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(timer);
+  }, [formula, onValidate, validateCurrentFormula]);
+
+  useEffect(() => {
+    // Load KYC variables on mount
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/variables-config', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.variables)) {
+          setKycVariables(data.variables as KYCVariable[]);
+        }
+      } catch (e) {
+        console.error('Failed to load KYC variables', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
 
   // Filter variables for picker
   const getFilteredVariables = () => {

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -132,38 +132,9 @@ export default function BitlyAdminPage() {
       .catch(err => console.error('Failed to load partners:', err));
   }, []);
 
-  // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
-  // WHY: Ensures bidirectional updates (e.g., partner associations) are synced without manual refresh
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Reload appropriate function based on current mode
-        if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
-          loadSearch();
-        } else {
-          loadInitialData();
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
-
-  // WHAT: Load first page when search/sort/favorite changes
-  // WHY: Fresh search or sort requires restarting pagination
-  useEffect(() => {
-    // WHAT: Use different loading function based on whether this is initial load or search
-    // WHY: Prevents full page loading screen during search - matches Projects page UX
-    if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
-      loadSearch();
-    } else {
-      loadInitialData();
-    }
-  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
-
   // WHAT: Load initial page of links (first mount only)
   // WHY: Shows full loading screen on initial page load
-  async function loadInitialData() {
+  const loadInitialData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -215,12 +186,12 @@ export default function BitlyAdminPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
 
   // WHAT: Load links during search/sort operations (no full loading screen)
   // WHY: Prevents white flash reload effect during search - updates results inline
   // PATTERN: Matches app/admin/projects/ProjectsPageClient.tsx search behavior
-  async function loadSearch() {
+  const loadSearch = useCallback(async () => {
     try {
       setIsSearching(true);
       setError('');
@@ -272,7 +243,36 @@ export default function BitlyAdminPage() {
     } finally {
       setIsSearching(false);
     }
-  }
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly]);
+
+  // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
+  // WHY: Ensures bidirectional updates (e.g., partner associations) are synced without manual refresh
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Reload appropriate function based on current mode
+        if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
+          loadSearch();
+        } else {
+          loadInitialData();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly, loadSearch, loadInitialData]);
+
+  // WHAT: Load first page when search/sort/favorite changes
+  // WHY: Fresh search or sort requires restarting pagination
+  useEffect(() => {
+    // WHAT: Use different loading function based on whether this is initial load or search
+    // WHY: Prevents full page loading screen during search - matches Projects page UX
+    if (debouncedTerm || sortField || sortOrder || showFavoritesOnly) {
+      loadSearch();
+    } else {
+      loadInitialData();
+    }
+  }, [debouncedTerm, sortField, sortOrder, showFavoritesOnly, loadSearch, loadInitialData]);
 
   // WHAT: Load more links (pagination)
   // WHY: "Load 20 more" button functionality

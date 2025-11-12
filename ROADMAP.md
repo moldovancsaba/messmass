@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.6.0
-Last Updated: 2025-11-12T18:02:00.000Z (UTC)
+Current Version: 11.8.0
+Last Updated: 2025-11-12T19:36:45.000Z (UTC)
 
 ---
 
@@ -27,6 +27,11 @@ Last Updated: 2025-11-12T18:02:00.000Z (UTC)
 ---
 
 ## 🔧 Operational Initiatives
+
+### Report Content Slots Management (Q4 2025)
+- Priority: High
+- Status: Active — Phase 1 delivered in v11.7.1 (Clicker integration)
+- Next: Optional markdown rendering presets for reportTextN; multi-ratio preview helper for images
 
 ### Style System Hardening (Q1 2026)
 **Priority**: Critical  

@@ -115,6 +115,41 @@ All documentation updated per mandatory protocol:
 
 ---
 
+## [2025-11-12T19:36:45.000Z] v11.7.1 → v11.8.0 — Release commit to main
+
+- Purpose: Follow versioning protocol (minor bump before commit), sync docs, and push to main.
+- Affected: package.json, README.md, ROADMAP.md, TASKLIST.md, RELEASE_NOTES.md, WARP.md, ARCHITECTURE.md.
+
+---
+
+## [2025-11-12T19:21:45.000Z] v11.7.0 → v11.7.1 — Report Content Slots in Clicker
+
+User Request
+- Manage report images without limits; use numbered slots (stats.reportImageN) and do the same for texts (stats.reportTextN). Manage everything from a single page (the Clicker).
+
+Solution
+- Added ReportContentManager in Clicker: bulk ImgBB uploads to next free image slots; bulk text add (one line per slot); per-slot replace/clear; swap; optional compact indices with confirmation. Keeps holes by default.
+
+Files Modified
+- components/ReportContentManager.tsx (NEW)
+- components/ReportContentManager.module.css (NEW)
+- components/EditorDashboard.tsx (integrated manager)
+- package.json (11.7.0 → 11.7.1)
+- README.md, ROADMAP.md, TASKLIST.md, RELEASE_NOTES.md, WARP.md (version/timestamp sync)
+
+Backward Compatibility
+- Charts continue using [stats.reportImageN] and [stats.reportTextN] unchanged.
+- Storage remains on ImgBB.
+
+Manual Verification (to run)
+1) npm run dev
+2) Open /edit/[slug] → Report Content section.
+3) Bulk upload 2–3 images → slots fill sequentially.
+4) Paste 3 lines of text → reportText slots fill sequentially.
+5) Clear and swap to confirm stable operations.
+
+---
+
 ## Task Delivery Log Format
 
 Each entry must include:

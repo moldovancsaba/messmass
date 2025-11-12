@@ -20,7 +20,7 @@
  * Created: 2025-10-19T13:45:00.000Z
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { InsightCard } from '@/components/analytics';
 import type { Insight } from '@/lib/insightsEngine';
 import styles from './InsightsDashboard.module.css';
@@ -41,10 +41,6 @@ export default function InsightsDashboard() {
   useEffect(() => {
     fetchInsights();
   }, []);
-
-  useEffect(() => {
-    applyFiltersAndSort();
-  }, [insights, priorityFilter, categoryFilter, sortBy, searchTerm]);
 
   /**
    * WHAT: Fetch all insights from analytics aggregates
@@ -71,7 +67,7 @@ export default function InsightsDashboard() {
    * WHAT: Apply filters and sorting to insights
    * WHY: Show relevant insights based on user selection
    */
-  function applyFiltersAndSort() {
+  const applyFiltersAndSort = useCallback(() => {
     let filtered = [...insights];
 
     // WHAT: Filter by priority
@@ -108,7 +104,11 @@ export default function InsightsDashboard() {
     });
 
     setFilteredInsights(filtered);
-  }
+  }, [insights, priorityFilter, categoryFilter, sortBy, searchTerm]);
+
+  useEffect(() => {
+    applyFiltersAndSort();
+  }, [applyFiltersAndSort]);
 
   /**
    * WHAT: Handle insight action (mark as reviewed/actioned)
