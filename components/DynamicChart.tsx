@@ -175,7 +175,8 @@ const PieChart: React.FC<{
       if (idx === 1 && pageStyle.typography?.secondaryTextColor && typeof pageStyle.typography.secondaryTextColor === 'string' && pageStyle.typography.secondaryTextColor.trim()) {
         return pageStyle.typography.secondaryTextColor;
       }
-      return el.color || '#3b82f6'; // Fall back to original color or default blue
+      // CRITICAL: Validate el.color before returning to prevent .trim() crash
+      return (el.color && typeof el.color === 'string' && el.color.trim()) ? el.color : '#3b82f6';
     });
   };
   
