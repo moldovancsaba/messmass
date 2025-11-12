@@ -7,6 +7,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import StandardState from '@/components/StandardState';
+import ResourceLoader from '@/components/ResourceLoader';
 import UnifiedPageHero from '@/components/UnifiedPageHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import ColoredCard from '@/components/ColoredCard';
@@ -373,17 +374,31 @@ export default function PartnerReportPage() {
     );
   }
   
-  // Show loading state
-  if (loading) {
-    return <StandardState variant="loading" message="Loading partner report..." />;
-  }
-  
   // Show error state
   if (error || !partner) {
     return <StandardState variant="error" message={error || 'Partner not found'} />;
   }
   
+  // WHAT: Collect logo URLs for preloading
+  // WHY: Prevent logo pop-in after page renders
+  const logoUrls = [partner?.logoUrl].filter(Boolean) as string[];
+  
+  // WHAT: Use ResourceLoader to wait for all critical resources
+  // WHY: Prevent visual flashing - show branded loading screen until everything is ready
   return (
+    <ResourceLoader
+      partner={partner ? {
+        name: partner.name,
+        emoji: partner.emoji,
+        logoUrl: partner.logoUrl
+      } : null}
+      isLoading={loading}
+      logoUrls={logoUrls}
+      fontFamily={pageStyle?.typography.fontFamily}
+      hasPageStyle={true} // Always consider style loaded (uses default if no custom)
+      minLoadingTime={500}
+    >
+      {/* WHAT: Partner report content after all resources loaded */}
     <div 
       className="page-bg-gray"
       style={pageStyle ? {
@@ -567,5 +582,6 @@ export default function PartnerReportPage() {
         </div>
       </div>
     </div>
+    </ResourceLoader>
   );
 }
