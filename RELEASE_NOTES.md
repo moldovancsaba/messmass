@@ -1,5 +1,72 @@
 # MessMass Release Notes
 
+## [v11.2.0] — 2025-11-12T14:15:00.000Z
+
+### Fixed
+
+🐛 **React .trim() Crash from Undefined CSS Values**
+- Fixed `TypeError: a.trim is not a function` errors in chart rendering
+- Added validation for all CSS custom property values before React style processing
+- Bar chart colors now validate `element.color` before setting `--bar-color` CSS variable
+- Hero typography colors validated before CSS injection (primaryTextColor, headingColor)
+- Triple-check validation pattern: truthy + typeof string + .trim() with fallback
+
+### Changed
+
+🔄 **DynamicChart.tsx**
+- Added `safeBarColor` validation in BarChart component (Line 390-397)
+- Prevents undefined/null from being passed to CSS variables
+- Fallback hierarchy: barColor → element.color → '#3b82f6'
+
+🔄 **UnifiedPageHero.tsx**
+- Added `safePrimaryTextColor` validation before CSS injection (Lines 52-67)
+- Added `safeHeadingColor` validation before CSS injection (Lines 52-67)
+- Prevents undefined colors in dynamically injected style tags
+- Fallback to '#1f2937' (dark gray) when pageStyle missing
+
+### Technical Details
+
+**Root Cause**:
+- React calls `.trim()` on CSS custom property values and style props
+- Throws error when values are `undefined`, `null`, or non-string types
+- Occurred when pageStyle or element colors were not provided
+
+**Validation Pattern**:
+```tsx
+const safeColor = (
+  value && 
+  typeof value === 'string' && 
+  value.trim()
+) ? value : fallbackColor;
+```
+
+**Files Modified** (2 files):
+- `components/DynamicChart.tsx` (8 lines added)
+- `components/UnifiedPageHero.tsx` (6 lines added)
+
+**Build Status**: ✅ Successful
+- No TypeScript errors
+- All 76 static pages generated
+- npm run build: Exit code 0
+
+**Regression Risk**: Low
+- Only defensive null-safety additions
+- No logic changes
+- Fallback behavior identical to before
+- No API changes
+
+**Design System Compliance**: ✅ Maintained
+- Hardcoded fallback colors only used when pageStyle unavailable
+- Design tokens apply everywhere else via CSS modules
+- Inline styles limited to dynamic/computed values
+
+**Version**: `11.1.0` → `11.2.0` (MINOR increment)
+- Bug fix: Critical crash prevention
+- No new features
+- No breaking changes
+
+---
+
 ## [v11.1.0] — 2025-11-11T13:53:00.000Z
 
 ### Added

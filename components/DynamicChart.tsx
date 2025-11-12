@@ -228,9 +228,12 @@ const PieChart: React.FC<{
   const legend = validElements.map((element, idx) => {
     const percentage = ((element.value / totalValue) * 100).toFixed(1);
     const legendColor = segmentColors[idx];
+    // WHAT: Validate legendColor before using in CSS custom property
+    // WHY: React calls .trim() on CSS variable values, will crash if undefined
+    const safeLegendColor = (legendColor && typeof legendColor === 'string' && legendColor.trim()) ? legendColor : '#3b82f6';
     return (
       <div key={element.id} className={styles.legendItem}>
-        <div className={styles.legendColor} style={{ ['--legend-color' as string]: legendColor, backgroundColor: legendColor } as React.CSSProperties}></div>
+        <div className={styles.legendColor} style={{ ['--legend-color' as string]: safeLegendColor, backgroundColor: safeLegendColor } as React.CSSProperties}></div>
         <span>{element.label}: {formatChartValue(element.value, { formatting: element.formatting, type: element.type })} ({percentage}%)</span>
       </div>
     );
@@ -384,6 +387,15 @@ const BarChart: React.FC<{
     
     const barWidth = ((element.value as number) / maxValue) * 100;
     
+    // WHAT: Validate barColor for this specific element
+    // WHY: React calls .trim() on CSS variable values, will crash if undefined/null
+    // HOW: Use barColor if valid, fallback to element.color or default blue
+    const safeBarColor = (barColor && typeof barColor === 'string' && barColor.trim()) 
+      ? barColor 
+      : (element.color && typeof element.color === 'string' && element.color.trim()) 
+        ? element.color 
+        : '#3b82f6';
+    
     return (
       <div key={element.id} className={styles.barRow}>
         <div className={styles.barContainer}>
@@ -391,7 +403,7 @@ const BarChart: React.FC<{
             className={styles.barFill} 
             style={{ 
               ['--bar-width' as string]: `${barWidth}%`, 
-              ['--bar-color' as string]: barColor
+              ['--bar-color' as string]: safeBarColor
             } as React.CSSProperties}
           />
         </div>
@@ -536,15 +548,20 @@ const KPIChart: React.FC<{
   const labelSize = isLandscape ? '1.25rem' : '1.1rem';
   const padding = isLandscape ? '3rem' : '2rem';
   
+  // WHAT: Validate all CSS custom property values
+  // WHY: React calls .trim() on CSS variable values, will crash if undefined/null
+  const safeKpiTextColor = (kpiTextColor && typeof kpiTextColor === 'string' && kpiTextColor.trim()) ? kpiTextColor : '#10b981';
+  const safeKpiBackground = (kpiBackground && typeof kpiBackground === 'string' && kpiBackground.trim()) ? kpiBackground : '#ffffff';
+  
   return (
     <div className={`${className} ${styles.kpiContainer}`}>
       <div 
         className={styles.kpiBox}
         style={{
           ['--kpi-padding' as string]: padding,
-          ['--kpi-bg' as string]: kpiBackground,
+          ['--kpi-bg' as string]: safeKpiBackground,
           ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
-          backgroundColor: kpiBackground
+          backgroundColor: safeKpiBackground
         } as React.CSSProperties}
       >
         {/* WHAT: Material Icon at top of KPI chart (v10.4.0) */}
@@ -567,9 +584,9 @@ const KPIChart: React.FC<{
           className={styles.kpiValue}
           style={{
             ['--kpi-value-size' as string]: valueSize,
-            ['--kpi-color' as string]: kpiTextColor,
+            ['--kpi-color' as string]: safeKpiTextColor,
             ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
-            color: kpiTextColor
+            color: safeKpiTextColor
           } as React.CSSProperties}
         >
           {formatKPIValue(kpiValue)}

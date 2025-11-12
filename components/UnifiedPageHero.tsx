@@ -49,16 +49,22 @@ export default function UnifiedPageHero({
   layoutMode = 'dual-partners', // WHAT: Default to existing dual-partners layout
   hidePartnerEmoji = false // WHAT: Default to showing emoji
 }: UnifiedPageHeroProps) {
+  // WHAT: Validate color values before injecting into CSS
+  // WHY: Prevent undefined/null from appearing in CSS which causes React .trim() errors
+  // HOW: Check each color value is string and non-empty before using
+  const safePrimaryTextColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor : '#1f2937';
+  const safeHeadingColor = (pageStyle?.typography?.headingColor && typeof pageStyle.typography.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? pageStyle.typography.headingColor : '#1f2937';
+  
   const styleCss = pageStyle ? `
     .admin-container { 
       background: ${generateGradientCSS(pageStyle.pageBackground)}; 
-      color: ${pageStyle.typography.primaryTextColor};
+      color: ${safePrimaryTextColor};
     }
     .admin-header { 
       background: ${generateGradientCSS(pageStyle.heroBackground)}; 
     }
     .admin-title {
-      color: ${pageStyle.typography.headingColor};
+      color: ${safeHeadingColor};
     }
   ` : '';
 
