@@ -214,11 +214,16 @@ export default function EditPage() {
     return (
       <div 
         className="page-bg-gray"
-        style={pageStyle ? {
-          background: generateGradientCSS(pageStyle.pageBackground),
-          color: pageStyle.typography.primaryTextColor,
-          fontFamily: pageStyle.typography.fontFamily
-        } : undefined}
+        style={(() => {
+          if (!pageStyle) return undefined;
+          const safeColor = (pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor : undefined;
+          const safeFont = (pageStyle.typography?.fontFamily && typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily : undefined;
+          return {
+            background: generateGradientCSS(pageStyle.pageBackground),
+            color: safeColor,
+            fontFamily: safeFont
+          };
+        })()}
       >
         <EditorDashboard project={project} />
       </div>
