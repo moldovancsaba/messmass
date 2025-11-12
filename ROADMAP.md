@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.1.0
-Last Updated: 2025-11-11T13:53:00.000Z (UTC)
+Current Version: 11.6.0
+Last Updated: 2025-11-12T18:02:00.000Z (UTC)
 
 ---
 
@@ -51,20 +51,29 @@ Last Updated: 2025-11-11T13:53:00.000Z (UTC)
 
 ---
 
-### Search & Paging Unification (Q2 2026)
+### Search & Paging Unification (v11.6.0 - COMPLETED)
 **Priority**: High  
+**Status**: ✅ **Complete**  
+**Completed**: 2025-11-12T18:02:00.000Z (UTC)  
 **Dependencies**: Hashtags API pagination (v5.0.0)
 
 **Objective**: Extend server-side search + pagination to all admin pages for consistent UX.
 
 **Actions**:
-- Apply to Admin → Hashtags
-- Apply to Admin → Categories
-- Apply to Admin → Charts  
-- Apply to Admin → Users
-- Evaluate public pages (/hashtag) for similar search UX
+- ✅ Apply to Admin → Hashtags (already complete)
+- ✅ Apply to Admin → Categories (v11.6.0)
+- ✅ Apply to Admin → Charts (v11.6.0)
+- ⏸️ Apply to Admin → Users (deferred to Q2 2026)
+- ⏸️ Evaluate public pages (/hashtag) for similar search UX (deferred to Q2 2026)
 
-**Acceptance**: Consistent HERO search, server search with offset/limit, and "Load 20 more" button on each page.
+**Acceptance**: ✅ Consistent HERO search, server search with offset/limit, and "Load 20 more" button on Categories and Charts pages.
+
+**Implementation Notes**:
+- All admin pages now use consistent pagination pattern
+- Debounced search (300ms) reduces API calls
+- "Load 20 more" button with remaining count display
+- Pagination stats show "X of Y" results
+- Performance improved for large datasets (1000+ items)
 
 ---
 

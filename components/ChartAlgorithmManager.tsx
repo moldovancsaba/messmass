@@ -70,13 +70,22 @@ const SAMPLE_STATS = {
 export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerProps) {
   const [configurations, setConfigurations] = useState<ChartConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editingConfig, setEditingConfig] = useState<ChartConfigFormData | null>(null);
   
-  /* WHAT: Search and sort state
-     WHY: Match Events management functionality */
+  // WHAT: Server-side pagination state
+  // WHY: Consistent pattern with Projects, Hashtags, and Categories pages
+  const [totalMatched, setTotalMatched] = useState(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
+  const PAGE_SIZE = 20;
+  
+  // WHAT: Search and sort state
+  // WHY: Server-side search and sort for performance
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<'title' | 'type' | 'status'>('title');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [sortField, setSortField] = useState<'title' | 'type' | 'order'>('title');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   
   // WHAT: Dynamic variable state from KYC system
@@ -84,11 +93,28 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
   const [availableVariables, setAvailableVariables] = useState<AvailableVariable[]>([]);
   const [variablesLoading, setVariablesLoading] = useState(true);
   
-  // Load configurations AND variables on mount
+  // Load variables on mount
   useEffect(() => {
-    loadConfigurations();
     loadVariablesFromKYC();
   }, []);
+  
+  // WHAT: Debounce search term to avoid excessive API calls
+  // WHY: Wait 300ms after user stops typing before triggering search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+  
+  // WHAT: Load first page when search or sort changes
+  // WHY: Server-side search/sort requires fresh query
+  useEffect(() => {
+    if (debouncedTerm || sortField || sortOrder) {
+      loadSearch();
+    } else {
+      loadInitialData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm, sortField, sortOrder]);
   
   // WHAT: Fetch all variables from KYC system
   // WHY: Chart configurator needs access to all 92 variables
@@ -114,15 +140,27 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     }
   };
 
-  const loadConfigurations = async () => {
+  // WHAT: Load initial page of charts (first mount only)
+  // WHY: Shows full loading screen on initial page load
+  const loadInitialData = async () => {
     try {
-      console.log('🔄 Loading chart configurations...');
-      const response = await fetch('/api/chart-config');
+      setLoading(true);
+      setConfigurations([]);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      params.set('sortField', sortField);
+      params.set('sortOrder', sortOrder);
+
+      const response = await fetch(`/api/chart-config?${params.toString()}`);
       const data = await response.json();
       
       if (data.success) {
-        console.log('✅ Chart configurations loaded:', data.configurations.length);
-        setConfigurations(data.configurations.sort((a: ChartConfiguration, b: ChartConfiguration) => a.order - b.order));
+        console.log(`✅ Loaded ${data.configurations.length} of ${data.pagination?.totalMatched || 0} chart configurations`);
+        setConfigurations(data.configurations || []);
+        setTotalMatched(data.pagination?.totalMatched || 0);
+        setNextOffset(data.pagination?.nextOffset ?? null);
       } else {
         console.error('❌ Failed to load configurations:', data.error);
       }
@@ -130,6 +168,74 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       console.error('❌ Error loading configurations:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // WHAT: Load charts during search/sort (no full loading screen)
+  // WHY: Prevents white flash reload effect during search
+  const loadSearch = async () => {
+    try {
+      setIsSearching(true);
+      setConfigurations([]);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      params.set('sortField', sortField);
+      params.set('sortOrder', sortOrder);
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+
+      const response = await fetch(`/api/chart-config?${params.toString()}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log(`✅ Loaded ${data.configurations.length} of ${data.pagination?.totalMatched || 0} chart configurations (search: "${debouncedTerm}")`);
+        setConfigurations(data.configurations || []);
+        setTotalMatched(data.pagination?.totalMatched || 0);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+      } else {
+        console.error('❌ Failed to load configurations:', data.error);
+      }
+    } catch (error) {
+      console.error('❌ Error loading configurations:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // WHAT: Load more charts (pagination)
+  // WHY: "Load 20 more" button functionality
+  const loadMore = async () => {
+    if (nextOffset === null || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', nextOffset.toString());
+      params.set('sortField', sortField);
+      params.set('sortOrder', sortOrder);
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+
+      const response = await fetch(`/api/chart-config?${params.toString()}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setConfigurations(prev => [...prev, ...(data.configurations || [])]);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setTotalMatched(data.pagination?.totalMatched || totalMatched);
+      }
+    } catch (error) {
+      console.error('❌ Failed to load more configurations:', error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -157,7 +263,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     
     if (result.success) {
       console.log(`✅ Chart configuration updated successfully (modal open)`);
-      await loadConfigurations(); // Reload the list
+      // Reload current view
+      if (debouncedTerm || sortField || sortOrder) {
+        await loadSearch();
+      } else {
+        await loadInitialData();
+      }
       
       // CRITICAL: Return the updated configuration so Editor can refresh its formData
       console.log('📦 aspectRatio AFTER save (from API):', result.configuration?.aspectRatio);
@@ -191,7 +302,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     
     if (result.success) {
       console.log(`✅ Chart configuration ${isUpdate ? 'updated' : 'created'} successfully`);
-      await loadConfigurations(); // Reload the list
+      // Reload current view
+      if (debouncedTerm || sortField || sortOrder) {
+        await loadSearch();
+      } else {
+        await loadInitialData();
+      }
       setShowEditor(false); // Close modal
       setEditingConfig(null);
     } else {
@@ -215,7 +331,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       
       if (result.success) {
         console.log('✅ Chart configuration deleted successfully');
-        await loadConfigurations(); // Reload the list
+        // Reload current view
+        if (debouncedTerm || sortField || sortOrder) {
+          await loadSearch();
+        } else {
+          await loadInitialData();
+        }
       } else {
         alert(`Failed to delete configuration: ${result.error}`);
       }
@@ -239,7 +360,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       const result = await response.json();
       
       if (result.success) {
-        await loadConfigurations();
+        // Reload current view
+        if (debouncedTerm || sortField || sortOrder) {
+          await loadSearch();
+        } else {
+          await loadInitialData();
+        }
       }
     } catch (error) {
       console.error('❌ Error toggling configuration:', error);
@@ -277,7 +403,12 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         })
       ]);
       
-      await loadConfigurations();
+      // Reload current view
+      if (debouncedTerm || sortField || sortOrder) {
+        await loadSearch();
+      } else {
+        await loadInitialData();
+      }
     } catch (error) {
       console.error('❌ Error reordering configurations:', error);
     }
@@ -384,42 +515,12 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
   };
 
 
-  /* WHAT: Filter and sort configurations
-     WHY: Implement search and sort like Events management */
-  const filteredAndSortedConfigurations = useMemo(() => {
-    let filtered = configurations;
-    
-    // Apply search filter
-    if (String(searchTerm || '').trim()) {
-      const term = String(searchTerm).toLowerCase();
-      filtered = filtered.filter(config => 
-        config.title.toLowerCase().includes(term) ||
-        config.chartId.toLowerCase().includes(term) ||
-        config.type.toLowerCase().includes(term)
-      );
-    }
-    
-    // Apply sorting
-    const sorted = [...filtered].sort((a, b) => {
-      let comparison = 0;
-      
-      if (sortField === 'title') {
-        comparison = a.title.localeCompare(b.title);
-      } else if (sortField === 'type') {
-        comparison = a.type.localeCompare(b.type);
-      } else if (sortField === 'status') {
-        comparison = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0);
-      }
-      
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
-    
-    return sorted;
-  }, [configurations, searchTerm, sortField, sortOrder]);
+  // WHAT: Server-side search/sort means configurations are already filtered
+  // WHY: No need for client-side filtering
   
-  /* WHAT: Toggle sort field and order
-     WHY: Click column header to sort */
-  const handleSort = (field: 'title' | 'type' | 'status') => {
+  // WHAT: Toggle sort field and order
+  // WHY: Click column header to sort (server-side)
+  const handleSort = (field: 'title' | 'type' | 'order') => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -481,32 +582,27 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                     </span>
                   )}
                 </th>
-                <th onClick={() => handleSort('status')} className="sortable-th">
+                <th>
                   Status
-                  {sortField === 'status' && (
-                    <span className="sort-indicator">
-                      {sortOrder === 'asc' ? '▲' : '▼'}
-                    </span>
-                  )}
                 </th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredAndSortedConfigurations.length === 0 ? (
+              {configurations.length === 0 ? (
                 <tr>
                   <td colSpan={4} className={styles.emptyState}>
                     <div className={styles.emptyIcon}>📊</div>
                     <div className={styles.emptyTitle}>
-                      {searchTerm ? 'No charts match your search' : 'No Chart Configurations Found'}
+                      {debouncedTerm ? 'No charts match your search' : 'No Chart Configurations Found'}
                     </div>
                     <div className={styles.emptyDescription}>
-                      {searchTerm ? 'Try adjusting your search terms' : 'Create your first chart configuration to get started.'}
+                      {debouncedTerm ? 'Try adjusting your search terms' : 'Create your first chart configuration to get started.'}
                     </div>
                   </td>
                 </tr>
               ) : (
-                filteredAndSortedConfigurations.map((config, index) => (
+                configurations.map((config, index) => (
                   <tr key={config._id}>
                     <td>
                       <div className={styles.chartTitleCell}>
@@ -567,6 +663,28 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
           </table>
         </div>
       </div>
+
+      {/* WHAT: Load More button for pagination
+          WHY: Matches Projects, Hashtags, and Categories pages */}
+      {!loading && !isSearching && nextOffset !== null && configurations.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--mm-space-6)', marginBottom: 'var(--mm-space-6)' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={loadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? 'Loading...' : `Load 20 more (${totalMatched - configurations.length} remaining)`}
+          </button>
+        </div>
+      )}
+
+      {/* WHAT: Pagination stats
+          WHY: Show current results vs total matched */}
+      {!loading && !isSearching && configurations.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--mm-gray-500)', fontSize: '0.875rem', marginBottom: 'var(--mm-space-4)' }}>
+          Showing {configurations.length} of {totalMatched} chart configurations
+        </div>
+      )}
 
       {/* Chart Configuration Editor Modal */}
       {showEditor && editingConfig && (

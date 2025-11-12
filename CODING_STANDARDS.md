@@ -1,7 +1,7 @@
 # MessMass Coding Standards
 
-**Version:** 9.1.0  
-**Last Updated:** 2025-11-01T15:48:00.000Z (UTC)
+**Version:** 11.6.0  
+**Last Updated:** 2025-11-12T18:02:00.000Z (UTC)
 
 ---
 
@@ -86,6 +86,56 @@ grep -r "FormModal\|ColoredCard\|UnifiedHashtagInput" REUSABLE_COMPONENTS_INVENT
 ---
 
 ## 🚫 Prohibited Patterns
+
+### Avoid .trim() Unless Absolutely Necessary
+
+**Rule:** Do NOT use `.trim()` on strings unless there is a specific, documented reason.
+
+**Why:**
+- String trimming can cause unexpected data loss or comparison failures
+- Users may intentionally include leading/trailing whitespace
+- Trim operations mask underlying data quality issues
+- Can break exact-match comparisons and database lookups
+- Makes debugging harder by hiding the actual data state
+
+**When .trim() IS Allowed:**
+- ✅ Sanitizing user input from form fields (with comment explaining why)
+- ✅ Parsing external data sources with inconsistent formatting
+- ✅ Normalizing search queries (with explicit documentation)
+
+**When .trim() Is PROHIBITED:**
+- ❌ Default string processing without justification
+- ❌ "Just in case" defensive programming
+- ❌ Processing data already in the database
+- ❌ Comparing strings without understanding data source
+- ❌ API responses or internal data flow
+
+**Examples:**
+
+```typescript
+// ❌ WRONG: Unnecessary trim that can hide issues
+const name = formData.name.trim();
+const email = user.email.trim();
+const slug = project.slug.trim();
+
+// ✅ CORRECT: Only trim when truly needed with explanation
+// WHAT: Trim user input from search box
+// WHY: Users may accidentally add spaces while typing
+const searchQuery = userInput.trim();
+
+// ✅ CORRECT: No trim, preserve data as-is
+const name = formData.name;
+const email = user.email;
+const slug = project.slug;
+```
+
+**If You Need .trim():**
+1. **Ask why** - Is there a data quality issue upstream?
+2. **Document it** - Add comment explaining the specific reason
+3. **Fix the source** - Better to prevent bad data than clean it everywhere
+4. **Test without it** - Verify trim is actually necessary
+
+**Pattern:** Preserve data fidelity by default. Only transform when required.
 
 ### Inline Styles Are Forbidden
 
@@ -604,6 +654,7 @@ If you encounter any other legitimate need for inline styles:
 4. **Custom modal implementations** instead of FormModal/BaseModal
 5. **Custom card components** instead of ColoredCard
 6. **Deviation from reference implementations** without justification
+7. **Unnecessary .trim()** calls without documented justification
 
 ### Consequences of Non-Compliance
 
@@ -614,6 +665,7 @@ If you encounter any other legitimate need for inline styles:
 | Not using existing components | **Rejection** - use reference implementation |
 | Not searching codebase first | **Rejection** - demonstrate research |
 | Creating duplicate patterns | **Rejection** - consolidate with existing |
+| Unnecessary .trim() calls | **Rejection** - remove or justify with comment |
 
 ### Verification Commands
 
@@ -628,6 +680,9 @@ grep -r "[3-9][0-9]*px\|[0-9]\{3,\}px" --include="*.css" --include="*.module.css
 
 # Check for inline style props in JSX
 grep -r 'style={{' --include="*.tsx" --include="*.jsx" components/ app/
+
+# Check for .trim() usage (review each for justification)
+grep -r "\.trim()" --include="*.ts" --include="*.tsx" app/ components/ lib/
 
 # Run build
 npm run build
@@ -705,4 +760,4 @@ grep -r "var(--mm-" --include="*.css" components/
 
 ---
 
-*This document is part of the MessMass technical standards and must be followed by all contributors, including AI development tools. Version 8.24.0 - Last Updated: 2025-11-01T15:00:00.000Z*
+*This document is part of the MessMass technical standards and must be followed by all contributors, including AI development tools. Version 11.5.0 - Last Updated: 2025-11-12T16:34:00.000Z*

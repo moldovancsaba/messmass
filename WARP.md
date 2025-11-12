@@ -241,6 +241,7 @@ The project features a **completely unified hashtag system** with consistent com
 - **ESLint validation** required before commits
 - **No test files** - MVP factory approach (tests prohibited)
 - **No inline styles** - The `style` prop is PROHIBITED on DOM elements (see `CODING_STANDARDS.md`)
+- **Avoid .trim()** - Do NOT use `.trim()` on strings unless absolutely necessary with documented reason (see `CODING_STANDARDS.md`)
 
 ### Timestamp Format (Mandatory)
 **All timestamps MUST use:** `YYYY-MM-DDTHH:MM:SS.sssZ`
@@ -936,4 +937,4 @@ For detailed information, see:
 
 ---
 
-*Version: 9.3.0 | Last Updated: 2025-11-01T19:45:00.000Z (UTC) | Status: Production-Ready*
+*Version: 11.6.0 | Last Updated: 2025-11-12T18:02:00.000Z (UTC) | Status: Production-Ready*

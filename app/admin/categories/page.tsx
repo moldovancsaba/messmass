@@ -19,10 +19,23 @@ export default function CategoriesPageUnified() {
   // Core data state
   const [categories, setCategories] = useState<HashtagCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // WHAT: Client-side sorting state
-  // WHY: Categories are small dataset, no need for server-side sorting
+  // WHAT: Server-side pagination state
+  // WHY: Consistent pattern with Projects and Hashtags pages
+  const [totalMatched, setTotalMatched] = useState(0);
+  const [nextOffset, setNextOffset] = useState<number | null>(0);
+  const PAGE_SIZE = 20;
+  
+  // WHAT: Search state
+  // WHY: Filter categories on server-side for performance
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  
+  // WHAT: Client-side sorting state (keeping for now, small dataset)
+  // WHY: Categories dataset is small, client-side sort is sufficient
   type SortField = 'name' | 'order' | 'createdAt' | null;
   type SortOrder = 'asc' | 'desc' | null;
   const [sortField, setSortField] = useState<SortField>(null);
@@ -38,43 +51,129 @@ export default function CategoriesPageUnified() {
     order: 0
   });
 
-  // Load categories data
+  // WHAT: Debounce search term to avoid excessive API calls
+  // WHY: Wait 300ms after user stops typing before triggering search
   useEffect(() => {
-    const loadCategories = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/hashtag-categories', { cache: 'no-store' });
-        const data = await res.json();
-        if (data.success) {
-          setCategories(data.categories || []);
-          setError(null);
-        } else {
-          setError(data.error || 'Failed to load categories');
-        }
-      } catch (err) {
-        console.error('Failed to fetch categories:', err);
-        setError('Failed to load categories');
-      } finally {
-        setLoading(false);
-      }
-    };
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
-    loadCategories();
-  }, []);
+  // WHAT: Load first page when search term changes
+  // WHY: Server-side search requires fresh query
+  useEffect(() => {
+    if (debouncedTerm) {
+      loadSearch();
+    } else {
+      loadInitialData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTerm]);
 
-  // Refresh after create/update/delete
-  const refreshCategories = async () => {
-    setLoading(true);
+  // WHAT: Load initial page of categories (first mount only)
+  // WHY: Shows full loading screen on initial page load
+  const loadInitialData = async () => {
     try {
-      const res = await fetch('/api/hashtag-categories', { cache: 'no-store' });
+      setLoading(true);
+      setError(null);
+      setCategories([]);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+
+      const res = await fetch(`/api/hashtag-categories?${params.toString()}`, { cache: 'no-store' });
       const data = await res.json();
+      
       if (data.success) {
         setCategories(data.categories || []);
+        setTotalMatched(data.pagination?.totalMatched || 0);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setError(null);
+      } else {
+        setError(data.error || 'Failed to load categories');
       }
     } catch (err) {
-      console.error('Failed to refresh categories:', err);
+      console.error('Failed to fetch categories:', err);
+      setError('Failed to load categories');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // WHAT: Load categories during search (no full loading screen)
+  // WHY: Prevents white flash reload effect during search
+  const loadSearch = async () => {
+    try {
+      setIsSearching(true);
+      setError(null);
+      setCategories([]);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', '0');
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+
+      const res = await fetch(`/api/hashtag-categories?${params.toString()}`, { cache: 'no-store' });
+      const data = await res.json();
+      
+      if (data.success) {
+        setCategories(data.categories || []);
+        setTotalMatched(data.pagination?.totalMatched || 0);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setError(null);
+      } else {
+        setError(data.error || 'Failed to load categories');
+      }
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
+      setError('Failed to load categories');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // WHAT: Load more categories (pagination)
+  // WHY: "Load 20 more" button functionality
+  const loadMore = async () => {
+    if (nextOffset === null || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE.toString());
+      params.set('offset', nextOffset.toString());
+      
+      if (debouncedTerm) {
+        params.set('search', debouncedTerm);
+      }
+
+      const res = await fetch(`/api/hashtag-categories?${params.toString()}`, { cache: 'no-store' });
+      const data = await res.json();
+      
+      if (data.success) {
+        setCategories(prev => [...prev, ...(data.categories || [])]);
+        setNextOffset(data.pagination?.nextOffset ?? null);
+        setTotalMatched(data.pagination?.totalMatched || totalMatched);
+      }
+    } catch (err) {
+      console.error('Failed to load more categories:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // WHAT: Refresh after create/update/delete
+  // WHY: Reload current view (search or initial) to show changes
+  const refreshCategories = async () => {
+    if (debouncedTerm) {
+      await loadSearch();
+    } else {
+      await loadInitialData();
     }
   };
 
@@ -233,8 +332,8 @@ export default function CategoriesPageUnified() {
 
   return (
     <>
-      {/* WHAT: Unified admin page with automatic search, sort, view toggle
-          WHY: Replaces 200+ lines of manual table/grid markup with 10 lines */}
+      {/* WHAT: Unified admin page with server-side search
+          WHY: Consistent with Projects and Hashtags pages */}
       <UnifiedAdminPage
         adapter={adapterWithHandlers as any}
         items={categories as any}
@@ -242,10 +341,16 @@ export default function CategoriesPageUnified() {
         subtitle="Manage hashtag categories with colors and display order"
         backLink="/admin"
         enableSearch={true}
+        externalSearchValue={searchTerm}
+        onExternalSearchChange={setSearchTerm}
+        searchPlaceholder="Search categories..."
         enableSort={true}
         sortField={sortField}
         sortOrder={sortOrder}
         onSortChange={handleSort}
+        totalMatched={totalMatched}
+        showPaginationStats={true}
+        isLoading={loading || isSearching}
         actionButtons={[
           {
             label: 'New Category',
@@ -255,6 +360,20 @@ export default function CategoriesPageUnified() {
           }
         ]}
       />
+
+      {/* WHAT: Load More button for pagination
+          WHY: Matches Projects page pattern */}
+      {!loading && !isSearching && nextOffset !== null && categories.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--mm-space-6)' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={loadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? 'Loading...' : `Load 20 more (${totalMatched - categories.length} remaining)`}
+          </button>
+        </div>
+      )}
 
       {/* WHAT: Keep existing modal components unchanged
           WHY: Modal logic is separate from display logic */}

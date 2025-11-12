@@ -109,11 +109,31 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
 }
 
 /**
- * GET /api/chart-config - Fetch all chart configurations
- * Returns all active and inactive chart configurations sorted by order
+ * GET /api/chart-config - Fetch chart configurations with pagination and search
+ * 
+ * Query Parameters:
+ * - search: Search term to filter by title, chartId, or type (case-insensitive)
+ * - offset: Starting position for pagination (default: 0)
+ * - limit: Maximum number of items to return (default: 20, max: 100)
+ * - sortField: Field to sort by (title, type, order, createdAt)
+ * - sortOrder: Sort direction (asc, desc)
+ * 
+ * Response Format:
+ * {
+ *   success: true,
+ *   configurations: ChartConfiguration[],
+ *   pagination: {
+ *     mode: 'paginated',
+ *     limit: 20,
+ *     offset: 0,
+ *     nextOffset: 20 | null,
+ *     totalMatched: number
+ *   }
+ * }
+ * 
  * Admin authentication required
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     console.log('📊 Fetching chart configurations from database...');
     
@@ -126,22 +146,64 @@ export async function GET() {
       );
     }
     
+    // WHAT: Parse pagination and search parameters from query string
+    // WHY: Consistent pattern with /api/hashtag-categories and /api/projects
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const limitParam = searchParams.get('limit');
+    const offsetParam = searchParams.get('offset');
+    const sortFieldParam = searchParams.get('sortField') || 'order';
+    const sortOrderParam = searchParams.get('sortOrder') || 'asc';
+    
+    // WHAT: Validate and constrain limit (1-100), default 20
+    // WHY: Prevents excessive database loads and ensures consistent page sizes
+    const limit = Math.min(Math.max(Number(limitParam) || 20, 1), 100);
+    const offset = Math.max(Number(offsetParam) || 0, 0);
+    
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('chart_configurations');
 
-    // Get collection stats for debugging
-    const stats = await collection.estimatedDocumentCount();
-    console.log(`📈 Chart configurations collection has ${stats} documents`);
+    // WHAT: Build search filter for title, chartId, or type (case-insensitive)
+    // WHY: Allow flexible search across key chart fields
+    const searchFilter = search
+      ? {
+          $or: [
+            { title: { $regex: new RegExp(search, 'i') } },
+            { chartId: { $regex: new RegExp(search, 'i') } },
+            { type: { $regex: new RegExp(search, 'i') } }
+          ]
+        }
+      : {};
 
-    // Note: Removed automatic initialization - admin has full control over chart configurations
+    // WHAT: Count total matching documents for pagination metadata
+    // WHY: Client needs totalMatched to show "X of Y" and know when last page is reached
+    const totalMatched = await collection.countDocuments(searchFilter);
 
+    // WHAT: Build sort object based on parameters
+    // WHY: Allow flexible sorting on title, type, order, createdAt
+    const sortField = ['title', 'type', 'order', 'createdAt'].includes(sortFieldParam) 
+      ? sortFieldParam 
+      : 'order';
+    const sortOrder = sortOrderParam === 'desc' ? -1 : 1;
+    const sortObj: any = { [sortField]: sortOrder };
+    
+    // WHAT: Add secondary sort by createdAt for consistent ordering
+    // WHY: When primary field has duplicates, createdAt ensures stable sort
+    if (sortField !== 'createdAt') {
+      sortObj.createdAt = -1;
+    }
+
+    // WHAT: Fetch paginated configurations
+    // WHY: Skip/limit implement pagination efficiently
     const configurations = await collection
-      .find({})
-      .sort({ order: 1, createdAt: -1 })
+      .find(searchFilter)
+      .sort(sortObj)
+      .skip(offset)
+      .limit(limit)
       .toArray();
 
-    console.log(`✅ Found ${configurations.length} chart configurations`);
+    console.log(`✅ Retrieved ${configurations.length} of ${totalMatched} chart configurations (offset: ${offset}, search: "${search}")`);
 
     const formattedConfigurations = configurations.map(config => ({
       _id: config._id.toString(),
@@ -164,13 +226,20 @@ export async function GET() {
       lastModifiedBy: config.lastModifiedBy
     }));
 
+    // WHAT: Calculate nextOffset for "Load More" button
+    // WHY: null indicates last page, number indicates more items available
+    const hasMore = offset + configurations.length < totalMatched;
+    const nextOffset = hasMore ? offset + limit : null;
+
     return NextResponse.json({
       success: true,
       configurations: formattedConfigurations,
-      debug: {
-        databaseName: MONGODB_DB,
-        collectionCount: stats,
-        configurationsFound: configurations.length
+      pagination: {
+        mode: 'paginated' as const,
+        limit,
+        offset,
+        nextOffset,
+        totalMatched
       }
     });
 

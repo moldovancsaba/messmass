@@ -1,5 +1,173 @@
 # MessMass Development Learnings
 
+## [v11.5.0] - 2025-11-12T16:16:00.000Z — String .trim() Causes Data Integrity Issues
+
+### Context
+Multiple bugs were traced back to unnecessary use of `.trim()` on strings throughout the codebase. Data comparisons were failing, lookups were breaking, and debugging was difficult because the actual data state was being masked.
+
+### Problem
+**Root Cause**: Overuse of `.trim()` as "defensive programming" without understanding the data flow.
+
+**What went wrong**:
+- Trimming strings "just in case" without specific justification
+- Database queries failing because search values were trimmed but stored values weren't
+- Exact-match comparisons failing due to whitespace differences
+- Data integrity issues hidden by automatic trimming
+- Debugging complicated by not seeing the actual data state
+
+### Solution
+Established strict rules about when `.trim()` is allowed:
+
+```typescript
+// ❌ PROHIBITED: Default trimming without justification
+const slug = project.slug.trim();
+const email = user.email.trim();
+const viewSlug = data.viewSlug.trim();
+
+// ✅ CORRECT: Preserve data as-is
+const slug = project.slug;
+const email = user.email;
+const viewSlug = data.viewSlug;
+
+// ✅ ALLOWED: Explicit user input sanitization with comment
+// WHAT: Trim search query
+// WHY: Users may accidentally add spaces while typing
+const searchQuery = userSearchInput.trim();
+```
+
+### Key Learnings
+
+**1. Preserve Data Fidelity by Default**
+```
+Rule: Don't transform data unless you have a specific, documented reason.
+
+Data flow:
+Database → API → State → UI → Display
+
+At each step: Preserve the data EXACTLY as received.
+Only transform when:
+- Sanitizing user input (form submissions)
+- Normalizing external data sources
+- Explicit business requirement (with comment)
+```
+**Lesson**: Data transformations should be explicit and justified, not automatic "just in case" operations.
+
+**2. .trim() Masks Underlying Issues**
+```typescript
+// Problem: Database has inconsistent data (some with spaces)
+// Bad solution: Trim everywhere
+const match = items.find(item => item.name.trim() === query.trim());
+
+// Good solution: Fix data quality at source
+// Run data migration to clean database
+// Then use exact matches
+const match = items.find(item => item.name === query);
+```
+**Lesson**: If you need `.trim()` everywhere, you have a data quality problem. Fix the source, don't patch symptoms.
+
+**3. String Comparisons Must Match Data State**
+```typescript
+// ❌ WRONG: Comparing trimmed to untrimmed
+if (slug.trim() === project.viewSlug) { ... }  // Fails if project.viewSlug has spaces
+
+// ✅ CORRECT: Either both trimmed or both untrimmed
+if (slug === project.viewSlug) { ... }  // Exact match
+
+// ✅ ALSO CORRECT: Explicit normalization on both sides
+if (slug.trim().toLowerCase() === project.viewSlug.trim().toLowerCase()) { 
+  // Documented: Case-insensitive match with whitespace normalization
+}
+```
+**Lesson**: Consistency in data handling is critical. Both sides of comparison must have same transformations.
+
+**4. When .trim() IS Appropriate**
+```typescript
+// ✅ User input from forms
+// WHAT: Save partner name from form
+// WHY: Users may accidentally add trailing spaces
+const partnerName = formData.name.trim();
+await createPartner({ name: partnerName });
+
+// ✅ Search query normalization
+// WHAT: Normalize search input
+// WHY: Improve search UX by ignoring accidental whitespace
+const normalizedQuery = userQuery.trim().toLowerCase();
+
+// ✅ External API parsing
+// WHAT: Parse CSV import
+// WHY: CSV may have inconsistent whitespace formatting
+const cleanValue = csvCell.trim();
+```
+**Lesson**: `.trim()` is appropriate for user-facing input and external data sources, with explicit documentation.
+
+**5. Debugging Invisible Characters**
+```typescript
+// ❌ HARD TO DEBUG: Where did the space go?
+console.log('Slug:', slug.trim());
+// Output: "my-project" (but was it "my-project " or " my-project"?)
+
+// ✅ EASIER TO DEBUG: See actual data
+console.log('Slug:', JSON.stringify(slug));
+// Output: "my-project " (ah, trailing space!)
+```
+**Lesson**: Preserve data in logs and debugging to see the actual state. Trimming hides problems.
+
+**6. Whitespace Can Be Intentional**
+```typescript
+// User wants centered text with spaces
+const displayName = "   TITLE   ";
+
+// ❌ WRONG: Destroys user intent
+const saved = displayName.trim(); // "TITLE"
+
+// ✅ CORRECT: Preserve user formatting
+const saved = displayName; // "   TITLE   "
+```
+**Lesson**: Not all whitespace is accidental. Respect user input unless there's a specific reason not to.
+
+### Impact
+
+**Before .trim() Rule**:
+- ❌ Random comparison failures
+- ❌ Database lookups breaking unpredictably
+- ❌ Data state hidden during debugging
+- ❌ Inconsistent string handling across codebase
+
+**After .trim() Rule**:
+- ✅ Predictable string comparisons
+- ✅ Reliable database queries
+- ✅ Transparent data flow (what you see is what's stored)
+- ✅ Explicit data transformations with documentation
+- ✅ Data quality issues surface immediately (and get fixed at source)
+
+### Files Modified
+
+**Documentation**:
+- `CODING_STANDARDS.md` - Added "Avoid .trim() Unless Absolutely Necessary" section
+- `LEARNINGS.md` - This entry
+
+**Future Verification**:
+```bash
+# Find all .trim() usage for review
+grep -r "\.trim()" --include="*.ts" --include="*.tsx" app/ components/ lib/
+
+# Each usage should have:
+# 1. Comment explaining WHY
+# 2. Specific justification (user input, external data, search)
+# 3. No "just in case" defensive trimming
+```
+
+### Version
+
+**Before**: v11.4.0 (inconsistent string handling)  
+**After**: v11.5.0 (documented .trim() rules)
+
+### Category
+
+Data Integrity / String Processing / Best Practices / Debugging
+
+---
+
 ## [v11.1.0] - 2025-11-11T13:53:00.000Z — Feature Parity: Partners Need Same Capabilities as Events
 
 ### Context
