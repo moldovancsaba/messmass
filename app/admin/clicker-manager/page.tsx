@@ -103,6 +103,18 @@ export default function ClickerManagerPage() {
     }
   };
 
+  const refreshVariables = async () => {
+    try {
+      setSaving(true);
+      // WHAT: Force invalidate cache and reload
+      // WHY: User added variable in KYC but it's not showing due to cache
+      await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+      await loadData();
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="page-container">
       <UnifiedAdminHeroWithSearch
@@ -111,6 +123,7 @@ export default function ClickerManagerPage() {
         backLink="/admin"
         actionButtons={[
           { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕' },
+          { label: 'Refresh Variables', onClick: refreshVariables, variant: 'info', disabled: saving, icon: '🔄' },
           { label: 'Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
           { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
         ]}

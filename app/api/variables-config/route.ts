@@ -328,6 +328,36 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT /api/variables-config?action=invalidateCache
+// WHAT: Force invalidate the variables cache
+// WHY: Allow immediate refresh when variables are added/updated in KYC
+export async function PUT(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
+
+    if (action === 'invalidateCache') {
+      invalidateCache();
+      console.log('🗑️ Variables cache manually invalidated');
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Cache invalidated successfully' 
+      });
+    }
+
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Unknown action' 
+    }, { status: 400 });
+  } catch (error) {
+    console.error('❌ Failed to invalidate cache:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to invalidate cache' 
+    }, { status: 500 });
+  }
+}
+
 // DELETE /api/variables-config?name=variableName
 // WHAT: Delete a custom variable
 // WHY: Allow cleanup of unused or test variables

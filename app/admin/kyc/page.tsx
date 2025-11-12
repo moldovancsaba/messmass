@@ -228,10 +228,15 @@ export default function KycVariablesPage() {
                         onClick={async () => {
                           if (!confirm(`Delete variable "${v.label}" (${v.name})?`)) return;
                           try {
-                            const res = await fetch(`/api/variables-config?name=${encodeURIComponent(v.name)}`, { method: 'DELETE' });
-                            const data = await res.json();
-                            if (!data.success) throw new Error(data.error);
-                            await load();
+                          const res = await fetch(`/api/variables-config?name=${encodeURIComponent(v.name)}`, { method: 'DELETE' });
+                          const data = await res.json();
+                          if (!data.success) throw new Error(data.error);
+                          
+                          // WHAT: Force cache invalidation so deletion reflects immediately
+                          // WHY: 5-minute cache would still show deleted variable
+                          await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+                          
+                          await load();
                           } catch (e: any) {
                             alert(`Failed to delete: ${e.message}`);
                           }
@@ -449,6 +454,11 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
               flags: { visibleInClicker: form.visibleInClicker, editableInManual: form.editableInManual },
             });
             if (!data?.success) throw new Error(data?.error || 'Failed to create variable');
+            
+            // WHAT: Force cache invalidation so Clicker Manager sees new variable immediately
+            // WHY: 5-minute cache prevents new variables from appearing
+            await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+            
             onCreated();
           } catch (e: any) {
             setForm(prev => ({ ...prev, saving: false, error: e?.message || 'Failed to create variable' }));
@@ -524,6 +534,11 @@ function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: 
                 flags: { visibleInClicker, editableInManual },
               });
               if (!data?.success) throw new Error(data?.error || "Failed to save");
+              
+              // WHAT: Force cache invalidation so changes appear immediately in Clicker Manager
+              // WHY: 5-minute cache prevents updated variables from appearing
+              await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+              
               onClose();
             } catch (e: any) {
               setError(e?.message || "Failed to save");
