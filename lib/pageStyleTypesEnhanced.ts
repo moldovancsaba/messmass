@@ -38,9 +38,10 @@ export interface ContentBoxBackground {
 /**
  * WHAT: Typography settings for the style theme
  * WHY: Customize fonts and text colors throughout the page
+ * HOW: fontFamily supports built-in fonts OR custom font names (e.g., "AS Roma")
  */
 export interface Typography {
-  fontFamily: 'inter' | 'roboto' | 'poppins';
+  fontFamily: 'inter' | 'roboto' | 'poppins' | 'AS Roma' | string;  // WHAT: Allow custom fonts
   primaryTextColor: string;    // Main text color
   secondaryTextColor: string;  // Secondary/caption text color
   headingColor: string;        // Heading elements color

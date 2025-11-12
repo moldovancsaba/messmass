@@ -162,7 +162,9 @@ export default function StylePreview({ style }: StylePreviewProps) {
       {/* Preview Info */}
       <div className={styles.previewInfo}>
         <p className={styles.infoText}>
-          <strong>Font:</strong> {style.typography.fontFamily.charAt(0).toUpperCase() + style.typography.fontFamily.slice(1)}
+          {/* WHAT: Display font name with proper capitalization
+               WHY: Show readable font name in preview, supporting multi-word fonts */}
+          <strong>Font:</strong> {style.typography.fontFamily}
         </p>
         <p className={styles.infoText}>
           <strong>Page BG:</strong> {style.pageBackground.type}
@@ -176,12 +178,15 @@ export default function StylePreview({ style }: StylePreviewProps) {
 }
 
 /* WHAT: Map font family to CSS font-family value
- * WHY: Apply correct Google Font in preview */
-function getFontFamily(font: 'inter' | 'roboto' | 'poppins'): string {
-  const fontMap = {
+ * WHY: Apply correct Google Font or custom font in preview
+ * HOW: Support both built-in fonts and custom fonts like "AS Roma" */
+function getFontFamily(font: string): string {
+  const fontMap: Record<string, string> = {
     inter: '"Inter", sans-serif',
     roboto: '"Roboto", sans-serif',
-    poppins: '"Poppins", sans-serif'
+    poppins: '"Poppins", sans-serif',
+    montserrat: '"Montserrat", sans-serif',
+    'AS Roma': '"AS Roma", sans-serif'  // WHAT: Custom AS Roma font
   };
-  return fontMap[font];
+  return fontMap[font] || fontMap[font.toLowerCase()] || `"${font}", sans-serif`;
 }

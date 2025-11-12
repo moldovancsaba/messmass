@@ -350,7 +350,9 @@ export default function PageStyleEditor({
                     <option value="roboto">Roboto</option>
                     <option value="poppins">Poppins</option>
                     <option value="montserrat">Montserrat</option>
-                    <option value="asroma">AS Roma</option>
+                    {/* WHAT: Use exact CSS font-family name as value
+                         WHY: Must match @font-face declaration in globals.css */}
+                    <option value="AS Roma">AS Roma</option>
                   </select>
                 </div>
 

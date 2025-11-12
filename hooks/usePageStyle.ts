@@ -159,14 +159,16 @@ function hexToRgb(hex: string): string {
 }
 
 /* WHAT: Map font family to CSS font-family value
- * WHY: Apply correct Google Font or custom font */
-function getFontFamily(font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma'): string {
+ * WHY: Apply correct Google Font or custom font
+ * HOW: Support both lowercase keys and exact font names like "AS Roma" */
+function getFontFamily(font: string): string {
   const fontMap: Record<string, string> = {
     inter: '"Inter", sans-serif',
     roboto: '"Roboto", sans-serif',
     poppins: '"Poppins", sans-serif',
     montserrat: '"Montserrat", sans-serif',
-    asroma: '"AS Roma", sans-serif'
+    asroma: '"AS Roma", sans-serif',  // Legacy lowercase support
+    'AS Roma': '"AS Roma", sans-serif' // WHAT: Exact font name as saved in database
   };
-  return fontMap[font] || fontMap.inter;
+  return fontMap[font] || fontMap[font.toLowerCase()] || `"${font}", sans-serif`;
 }
