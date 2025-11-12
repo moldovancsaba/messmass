@@ -108,7 +108,9 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
   // WHAT: Load first page when search or sort changes
   // WHY: Server-side search/sort requires fresh query
   useEffect(() => {
-    if (debouncedTerm || sortField || sortOrder) {
+    // WHAT: Only use loadSearch if there's actual search text
+    // WHY: sortField/sortOrder always have defaults, would incorrectly trigger loadSearch
+    if (debouncedTerm) {
       loadSearch();
     } else {
       loadInitialData();
