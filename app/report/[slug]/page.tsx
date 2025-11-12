@@ -265,7 +265,11 @@ export default function StatsPage() {
         fetchPageConfig(slug);
       }
     }
-  }, [slug, fetchProjectData, fetchPageConfig]);
+    // WHAT: Intentionally omit fetchProjectData and fetchPageConfig from deps
+    // WHY: These functions are wrapped in useCallback with dependencies that change (pageStyle)
+    // HOW: They should only run once on mount or when slug changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
