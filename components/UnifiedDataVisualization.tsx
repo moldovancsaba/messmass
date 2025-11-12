@@ -3,6 +3,7 @@ import ColoredCard from './ColoredCard';
 import { DynamicChart, ChartContainer } from './DynamicChart';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
+import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedDataVisualization.module.css';
 
 interface UnifiedDataVisualizationProps {
@@ -11,6 +12,7 @@ interface UnifiedDataVisualizationProps {
   loading?: boolean;
   gridUnits?: { desktop: number; tablet: number; mobile: number };
   useChartContainer?: boolean; // when false, render charts directly without the extra container/header
+  pageStyle?: PageStyleEnhanced; // WHAT: Optional pageStyle to apply colors to charts
 }
 
 export default function UnifiedDataVisualization({
@@ -18,7 +20,8 @@ export default function UnifiedDataVisualization({
   chartResults,
   loading = false,
   gridUnits = { desktop: 4, tablet: 2, mobile: 1 },
-  useChartContainer = true
+  useChartContainer = true,
+  pageStyle
 }: UnifiedDataVisualizationProps) {
   
   console.log('📊 [UnifiedViz] Rendering with:', {
@@ -227,6 +230,7 @@ export default function UnifiedDataVisualization({
                           result={result} 
                           chartWidth={chart.width}
                           showTitleInCard={true}
+                          pageStyle={pageStyle}
                         />
                       </div>
                     );

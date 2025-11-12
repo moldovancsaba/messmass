@@ -546,6 +546,7 @@ export default function StatsPage() {
             loading={false}
             gridUnits={gridUnits}
             useChartContainer={false}
+            pageStyle={pageStyle || undefined}
           />
         </div>
       </div>

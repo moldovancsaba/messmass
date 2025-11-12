@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
 import { getIconForEmoji } from '@/lib/iconMapping';
+import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import MaterialIcon from './MaterialIcon';
 import TextChart from './charts/TextChart';
 import ImageChart from './charts/ImageChart';
@@ -14,6 +15,7 @@ interface DynamicChartProps {
   className?: string;
   chartWidth?: number; // 1 = portrait, 2+ = landscape
   showTitleInCard?: boolean; // WHAT: Whether to show title/subtitle inside the chart card
+  pageStyle?: PageStyleEnhanced; // WHAT: Optional pageStyle to apply colors to charts
 }
 
 /**
@@ -22,7 +24,7 @@ interface DynamicChartProps {
  * WHY: Ensures all chart types (KPI, PIE, BAR) have aligned heights and proper spacing
  * HOW: Fixed-height sections prevent overlap and content clipping
  */
-export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '', chartWidth = 1, showTitleInCard = true }) => {
+export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = '', chartWidth = 1, showTitleInCard = true, pageStyle }) => {
   // Handle empty or error cases
   if (!result || !result.elements || result.elements.length === 0) {
     return (
@@ -109,19 +111,19 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
   if (result.type === 'pie') {
     return (
       <ChartCard>
-        <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} chartWidth={chartWidth} />
+        <PieChart result={result} validElements={validElements as ValidPieElement[]} totalValue={totalValue} chartWidth={chartWidth} pageStyle={pageStyle} />
       </ChartCard>
     );
   } else if (result.type === 'bar') {
     return (
       <ChartCard>
-        <BarChart result={result} chartWidth={chartWidth} />
+        <BarChart result={result} chartWidth={chartWidth} pageStyle={pageStyle} />
       </ChartCard>
     );
   } else if (result.type === 'kpi') {
     return (
       <ChartCard>
-        <KPIChart result={result} chartWidth={chartWidth} />
+        <KPIChart result={result} chartWidth={chartWidth} pageStyle={pageStyle} />
       </ChartCard>
     );
   }
@@ -152,14 +154,31 @@ const PieChart: React.FC<{
   totalValue: number;
   className?: string;
   chartWidth?: number;
-}> = ({ result, validElements, totalValue, className, chartWidth = 1 }) => {
+  pageStyle?: PageStyleEnhanced;
+}> = ({ result, validElements, totalValue, className, chartWidth = 1, pageStyle }) => {
   const isLandscape = chartWidth >= 2;
+  
+  // WHAT: Override pie segment colors with pageStyle if available
+  // WHY: Apply brand colors to pie chart for consistent styling
+  const getSegmentColors = () => {
+    if (!pageStyle) return validElements.map(el => el.color);
+    
+    // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
+    // WHY: Create branded two-tone pie charts
+    return validElements.map((el, idx) => {
+      if (idx === 0) return pageStyle.typography.primaryTextColor;
+      if (idx === 1) return pageStyle.typography.secondaryTextColor;
+      return el.color; // Fall back to original color for 3+ segments
+    });
+  };
+  
+  const segmentColors = getSegmentColors();
   
   // Create segments for both portrait and landscape layouts
   const createSegments = (radius: number, centerX: number, centerY: number) => {
     let currentAngle = 0;
     
-    return validElements.map((element) => {
+    return validElements.map((element, idx) => {
       const percentage = (element.value / totalValue) * 100;
       const angle = (element.value / totalValue) * 360;
       const startAngle = currentAngle;
@@ -186,7 +205,7 @@ const PieChart: React.FC<{
         <g key={element.id}>
           <path
             d={pathData}
-            fill={element.color}
+            fill={segmentColors[idx]}
             stroke="white"
             strokeWidth="2"
           >
@@ -223,7 +242,7 @@ const PieChart: React.FC<{
                 cx="110"
                 cy="110"
                 r="50"
-                fill="white"
+                fill={pageStyle?.contentBoxBackground.solidColor || 'white'}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -265,7 +284,7 @@ const PieChart: React.FC<{
                 cx="90"
                 cy="90"
                 r="35"
-                fill="white"
+                fill={pageStyle?.contentBoxBackground.solidColor || 'white'}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -304,7 +323,8 @@ const BarChart: React.FC<{
   result: ChartCalculationResult;
   className?: string;
   chartWidth?: number;
-}> = ({ result, className, chartWidth = 1 }) => {
+  pageStyle?: PageStyleEnhanced;
+}> = ({ result, className, chartWidth = 1, pageStyle }) => {
   // Find the maximum value for scaling
   const validElements = result.elements.filter(element => typeof element.value === 'number');
   const maxValue = Math.max(...validElements.map(element => element.value as number));
@@ -336,6 +356,10 @@ const BarChart: React.FC<{
     sampleValue: validElements[0]?.value
   });
   
+  // WHAT: Override bar color with pageStyle primaryTextColor if available
+  // WHY: Apply brand color to all bars for consistent styling
+  const barColor = pageStyle?.typography.primaryTextColor || validElements[0]?.color || '#3b82f6';
+  
   // WHAT: Create bar rows with legend and bar side-by-side per row
   // WHY: Vertical alignment of legend text with bar (centered)
   // HOW: Each row contains legend + bar in a flexbox layout
@@ -358,7 +382,7 @@ const BarChart: React.FC<{
             className={styles.barFill} 
             style={{ 
               ['--bar-width' as string]: `${barWidth}%`, 
-              ['--bar-color' as string]: element.color
+              ['--bar-color' as string]: barColor
             } as React.CSSProperties}
           />
         </div>
@@ -443,7 +467,8 @@ const KPIChart: React.FC<{
   result: ChartCalculationResult;
   className?: string;
   chartWidth?: number;
-}> = ({ result, className, chartWidth = 1 }) => {
+  pageStyle?: PageStyleEnhanced;
+}> = ({ result, className, chartWidth = 1, pageStyle }) => {
   // WHAT: Get the KPI value - support number, string, or 'NA'
   // WHY: Text/image charts may have string values
   // HOW: Keep as union type and handle formatting accordingly
@@ -474,12 +499,14 @@ const KPIChart: React.FC<{
     });
   };
   
-  // Get the color from the first element or use default
-  const kpiColor = result.elements[0]?.color || '#10b981';
+  // WHAT: Use pageStyle colors for KPI if available
+  // WHY: Apply brand colors for consistent styling
+  const kpiTextColor = pageStyle?.typography.primaryTextColor || result.elements[0]?.color || '#10b981';
+  const kpiBackground = pageStyle?.contentBoxBackground.solidColor || '#ffffff';
   
   // Convert hex to RGB for dynamic color usage
   const hexToRgb = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
     return result ? {
       r: parseInt(result[1], 16),
       g: parseInt(result[2], 16),
@@ -487,7 +514,7 @@ const KPIChart: React.FC<{
     } : { r: 16, g: 185, b: 129 }; // fallback to green
   };
   
-  const rgb = hexToRgb(kpiColor);
+  const rgb = hexToRgb(kpiTextColor);
   
   // Responsive sizing based on layout
   const emojiSize = isLandscape ? '4.5rem' : '3.5rem';
@@ -501,8 +528,9 @@ const KPIChart: React.FC<{
         className={styles.kpiBox}
         style={{
           ['--kpi-padding' as string]: padding,
-          ['--kpi-bg' as string]: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1) 100%)`,
-          ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`
+          ['--kpi-bg' as string]: kpiBackground,
+          ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
+          backgroundColor: kpiBackground
         } as React.CSSProperties}
       >
         {/* WHAT: Material Icon at top of KPI chart (v10.4.0) */}
@@ -525,8 +553,9 @@ const KPIChart: React.FC<{
           className={styles.kpiValue}
           style={{
             ['--kpi-value-size' as string]: valueSize,
-            ['--kpi-color' as string]: kpiColor,
-            ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`
+            ['--kpi-color' as string]: kpiTextColor,
+            ['--kpi-shadow' as string]: `0 2px 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
+            color: kpiTextColor
           } as React.CSSProperties}
         >
           {formatKPIValue(kpiValue)}

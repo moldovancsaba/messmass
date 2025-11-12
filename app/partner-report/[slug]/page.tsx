@@ -480,6 +480,7 @@ export default function PartnerReportPage() {
                 loading={false}
                 gridUnits={gridUnits}
                 useChartContainer={true}
+                pageStyle={pageStyle || undefined}
               />
             </div>
           )}
