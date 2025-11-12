@@ -165,15 +165,15 @@ const PieChart: React.FC<{
     
     // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
     // WHY: Create branded two-tone pie charts
-    // HOW: Safety checks to ensure colors are valid strings
+    // HOW: Null-safe checks with explicit fallbacks to prevent trim() errors
     return validElements.map((el, idx) => {
-      if (idx === 0 && pageStyle.typography?.primaryTextColor) {
+      if (idx === 0 && pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) {
         return pageStyle.typography.primaryTextColor;
       }
-      if (idx === 1 && pageStyle.typography?.secondaryTextColor) {
+      if (idx === 1 && pageStyle.typography?.secondaryTextColor && typeof pageStyle.typography.secondaryTextColor === 'string' && pageStyle.typography.secondaryTextColor.trim()) {
         return pageStyle.typography.secondaryTextColor;
       }
-      return el.color; // Fall back to original color
+      return el.color || '#3b82f6'; // Fall back to original color or default blue
     });
   };
   
@@ -248,7 +248,7 @@ const PieChart: React.FC<{
                 cx="110"
                 cy="110"
                 r="50"
-                fill={pageStyle?.contentBoxBackground.solidColor || 'white'}
+                fill={(pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) ? pageStyle.contentBoxBackground.solidColor : 'white'}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -290,7 +290,7 @@ const PieChart: React.FC<{
                 cx="90"
                 cy="90"
                 r="35"
-                fill={pageStyle?.contentBoxBackground.solidColor || 'white'}
+                fill={(pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) ? pageStyle.contentBoxBackground.solidColor : 'white'}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -364,8 +364,8 @@ const BarChart: React.FC<{
   
   // WHAT: Override bar color with pageStyle primaryTextColor if available
   // WHY: Apply brand color to all bars for consistent styling
-  // HOW: Safety check to ensure color is a valid string
-  const barColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string')
+  // HOW: Null-safe check with explicit fallback to prevent trim() errors
+  const barColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim())
     ? pageStyle.typography.primaryTextColor
     : (validElements[0]?.color || '#3b82f6');
   
@@ -510,11 +510,11 @@ const KPIChart: React.FC<{
   
   // WHAT: Use pageStyle colors for KPI if available
   // WHY: Apply brand colors for consistent styling
-  // HOW: Safety checks to ensure colors are valid strings
-  const kpiTextColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string')
+  // HOW: Null-safe checks with explicit fallbacks to prevent trim() errors
+  const kpiTextColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim())
     ? pageStyle.typography.primaryTextColor
     : (result.elements[0]?.color || '#10b981');
-  const kpiBackground = (pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string')
+  const kpiBackground = (pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim())
     ? pageStyle.contentBoxBackground.solidColor
     : '#ffffff';
   
