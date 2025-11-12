@@ -206,11 +206,15 @@ const PieChart: React.FC<{
         'Z'
       ].join(' ');
       
+      // WHAT: Validate segmentColor before using in SVG fill
+      // WHY: SVG fill doesn't support undefined/null, React will call .trim()
+      const safeSegmentColor = (segmentColors[idx] && typeof segmentColors[idx] === 'string' && segmentColors[idx].trim()) ? segmentColors[idx] : '#3b82f6';
+      
       return (
         <g key={element.id}>
           <path
             d={pathData}
-            fill={segmentColors[idx]}
+            fill={safeSegmentColor}
             stroke="white"
             strokeWidth="2"
           >
