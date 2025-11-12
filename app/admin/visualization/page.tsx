@@ -1048,11 +1048,9 @@ export default function VisualizationPage() {
                               marginBottom: '1.5rem'
                             }}>
                               {reportImages.map(chart => {
-                                // Extract image URL from chart config (formula: stats.reportImageN)
-                                const chartConfig = chartConfigs.find(c => c.chartId === chart.chartId);
-                                const imageUrl = chartConfig?.elements?.[0]?.formula?.includes('reportImage') 
-                                  ? previewResults[chart.chartId]?.kpiValue as string
-                                  : null;
+                                // WHAT: Show placeholder thumbnail for report images
+                                // WHY: Actual image URLs would require fetching project data
+                                // HOW: Use chart icon and title for now (future: fetch sample project)
                                 
                                 return (
                                   <button
@@ -1079,31 +1077,18 @@ export default function VisualizationPage() {
                                       e.currentTarget.style.boxShadow = 'none';
                                     }}
                                   >
-                                    {imageUrl ? (
-                                      <img 
-                                        src={imageUrl} 
-                                        alt={chart.title}
-                                        style={{
-                                          width: '100%',
-                                          height: '80px',
-                                          objectFit: 'cover',
-                                          borderRadius: 'var(--mm-radius-sm)'
-                                        }}
-                                      />
-                                    ) : (
-                                      <div style={{
-                                        width: '100%',
-                                        height: '80px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: 'var(--mm-gray-100)',
-                                        borderRadius: 'var(--mm-radius-sm)',
-                                        fontSize: '2rem'
-                                      }}>
-                                        🖼️
-                                      </div>
-                                    )}
+                                    <div style={{
+                                      width: '100%',
+                                      height: '80px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                      borderRadius: 'var(--mm-radius-sm)',
+                                      fontSize: '2rem'
+                                    }}>
+                                      🖼️
+                                    </div>
                                     <span style={{ fontSize: '0.75rem', color: 'var(--mm-gray-700)', textAlign: 'center' }}>
                                       {chart.title}
                                     </span>
@@ -1127,11 +1112,9 @@ export default function VisualizationPage() {
                               marginBottom: '1.5rem'
                             }}>
                               {reportTexts.map(chart => {
-                                // Extract text from chart config (formula: stats.reportTextN)
-                                const chartConfig = chartConfigs.find(c => c.chartId === chart.chartId);
-                                const textValue = chartConfig?.elements?.[0]?.formula?.includes('reportText')
-                                  ? previewResults[chart.chartId]?.kpiValue as string
-                                  : null;
+                                // WHAT: Show placeholder for report texts
+                                // WHY: Actual text content would require fetching project data
+                                // HOW: Show chart title and type info
                                 
                                 return (
                                   <button
@@ -1163,29 +1146,17 @@ export default function VisualizationPage() {
                                     <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--mm-gray-900)' }}>
                                       {chart.title}
                                     </span>
-                                    {textValue ? (
-                                      <div style={{
-                                        fontSize: '0.75rem',
-                                        color: 'var(--mm-gray-600)',
-                                        lineHeight: '1.4',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: 'vertical',
-                                        width: '100%'
-                                      }}>
-                                        {textValue}
-                                      </div>
-                                    ) : (
-                                      <div style={{
-                                        fontSize: '0.75rem',
-                                        color: 'var(--mm-gray-400)',
-                                        fontStyle: 'italic'
-                                      }}>
-                                        No text content
-                                      </div>
-                                    )}
+                                    <div style={{
+                                      fontSize: '0.75rem',
+                                      color: 'var(--mm-gray-600)',
+                                      lineHeight: '1.4',
+                                      background: 'var(--mm-gray-50)',
+                                      padding: '0.5rem',
+                                      borderRadius: 'var(--mm-radius-sm)',
+                                      fontStyle: 'italic'
+                                    }}>
+                                      📝 Text content block
+                                    </div>
                                   </button>
                                 );
                               })}
