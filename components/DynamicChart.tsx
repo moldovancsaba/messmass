@@ -161,7 +161,9 @@ const PieChart: React.FC<{
   // WHAT: Override pie segment colors with pageStyle if available
   // WHY: Apply brand colors to pie chart for consistent styling
   const getSegmentColors = () => {
-    if (!pageStyle) return validElements.map(el => el.color);
+    // WHAT: When no pageStyle, validate each element color
+    // WHY: Prevent undefined/null from reaching SVG fill/style props
+    if (!pageStyle) return validElements.map(el => (el.color && typeof el.color === 'string' && el.color.trim()) ? el.color : '#3b82f6');
     
     // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
     // WHY: Create branded two-tone pie charts
