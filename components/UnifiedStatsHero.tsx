@@ -23,6 +23,7 @@ interface UnifiedStatsHeroProps {
   onExportPDF?: () => void; // PDF export callback
   extraContent?: React.ReactNode;
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Pass layout mode to UnifiedPageHero
+  hidePartnerEmoji?: boolean; // WHAT: Optional flag to hide partner emoji
 }
 
 export default function UnifiedStatsHero({
@@ -37,7 +38,8 @@ export default function UnifiedStatsHero({
   onExportCSV,
   onExportPDF,
   extraContent,
-  layoutMode = 'single-partner-spotlight' // WHAT: Default to spotlight for reporting pages
+  layoutMode = 'single-partner-spotlight', // WHAT: Default to spotlight for reporting pages
+  hidePartnerEmoji = false // WHAT: Default to showing emoji
 }: UnifiedStatsHeroProps) {
   const formatDate = (dateString: string) => {
     try {
@@ -59,19 +61,32 @@ export default function UnifiedStatsHero({
       onExportPDF={onExportPDF}
       pageStyle={pageStyle}
       layoutMode={layoutMode}
+      hidePartnerEmoji={hidePartnerEmoji}
     >
       {/* Creation and Update Dates + Extra Controls */}
       <div className={styles.datesContainer}>
         <div className={styles.dateWrapper}>
           <span>Created:</span>
-          <span className={styles.createdDateBadge}>
+          <span 
+            className={styles.createdDateBadge}
+            style={pageStyle ? {
+              backgroundColor: pageStyle.colorScheme.primary,
+              color: '#ffffff'
+            } : undefined}
+          >
             📅 {formatDate(createdDate)}
           </span>
         </div>
 
         <div className={styles.dateWrapper}>
           <span>Last Updated:</span>
-          <span className={styles.updatedDateBadge}>
+          <span 
+            className={styles.updatedDateBadge}
+            style={pageStyle ? {
+              backgroundColor: pageStyle.colorScheme.primary,
+              color: '#ffffff'
+            } : undefined}
+          >
             📅 {formatDate(lastUpdatedDate)}
           </span>
         </div>

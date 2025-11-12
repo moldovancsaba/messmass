@@ -497,6 +497,7 @@ export default function StatsPage() {
           pageStyle={pageStyle || undefined}
           onExportCSV={exportCSV}
           onExportPDF={handleExportPDF}
+          hidePartnerEmoji={true}
           />
         </div>
 
@@ -526,6 +527,10 @@ export default function StatsPage() {
             <button
               className={styles.showInsightsButton}
               onClick={() => setShowInsights(true)}
+              style={pageStyle ? {
+                backgroundColor: pageStyle.contentBoxBackground.solidColor,
+                color: pageStyle.typography.primaryTextColor
+              } : undefined}
             >
               📊 Show Data Quality Insights
             </button>

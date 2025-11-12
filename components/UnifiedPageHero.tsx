@@ -30,6 +30,7 @@ interface UnifiedPageHeroProps {
   pageStyle?: PageStyleEnhanced;
   children?: React.ReactNode; // For additional content
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Layout variation control
+  hidePartnerEmoji?: boolean; // WHAT: Optional flag to hide partner emoji in spotlight mode
 }
 
 export default function UnifiedPageHero({
@@ -45,7 +46,8 @@ export default function UnifiedPageHero({
   onExportPDF,
   pageStyle,
   children,
-  layoutMode = 'dual-partners' // WHAT: Default to existing dual-partners layout
+  layoutMode = 'dual-partners', // WHAT: Default to existing dual-partners layout
+  hidePartnerEmoji = false // WHAT: Default to showing emoji
 }: UnifiedPageHeroProps) {
   const styleCss = pageStyle ? `
     .admin-container { 
@@ -69,8 +71,8 @@ export default function UnifiedPageHero({
           {/* WHAT: Partner 1 - Layout varies by mode
                WHY: single-partner-spotlight shows icon left, logo right; dual-partners shows full partner left */}
           {layoutMode === 'single-partner-spotlight' ? (
-            /* WHAT: Single partner spotlight mode - icon on left */
-            partner1?.emoji ? (
+            /* WHAT: Single partner spotlight mode - icon on left (optional) */
+            !hidePartnerEmoji && partner1?.emoji ? (
               <div className={styles.partnerIconOnly}>
                 <div className={styles.partnerEmojiLarge} title={partner1.name}>
                   {partner1.emoji}
@@ -100,7 +102,14 @@ export default function UnifiedPageHero({
 
           {/* WHAT: Center content - Title and hashtags */}
           <div className={styles.centerContent}>
-            <h1 className="admin-title">{title}</h1>
+            <h1 
+              className="admin-title"
+              style={pageStyle ? {
+                color: pageStyle.colorScheme.primary
+              } : undefined}
+            >
+              {title}
+            </h1>
             {/* WHAT: Style name badge removed - not relevant for viewers
                 WHY: Internal configuration detail not needed in public view */}
             
@@ -120,7 +129,11 @@ export default function UnifiedPageHero({
                       customStyle={{
                         fontSize: '1rem',
                         fontWeight: '600',
-                        padding: '0.5rem 1rem'
+                        padding: '0.5rem 1rem',
+                        ...(pageStyle ? {
+                          backgroundColor: pageStyle.colorScheme.primary,
+                          color: '#ffffff'
+                        } : {})
                       }}
                     />
                   );
@@ -145,7 +158,11 @@ export default function UnifiedPageHero({
                           customStyle={{
                             fontSize: '1rem',
                             fontWeight: '600',
-                            padding: '0.5rem 1rem'
+                            padding: '0.5rem 1rem',
+                            ...(pageStyle ? {
+                              backgroundColor: pageStyle.colorScheme.primary,
+                              color: '#ffffff'
+                            } : {})
                           }}
                           showCategoryPrefix={true}
                         />
@@ -244,6 +261,10 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportCSV}
                 className={`btn btn-primary btn-small ${styles.exportButton}`}
+                style={pageStyle ? {
+                  backgroundColor: pageStyle.colorScheme.primary,
+                  borderColor: pageStyle.colorScheme.primary
+                } : undefined}
               >
                 📊 Export CSV
               </button>
@@ -252,6 +273,10 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportPDF}
                 className={`btn btn-secondary btn-small ${styles.exportButton}`}
+                style={pageStyle ? {
+                  backgroundColor: pageStyle.colorScheme.primary,
+                  borderColor: pageStyle.colorScheme.primary
+                } : undefined}
               >
                 📄 Export PDF
               </button>
