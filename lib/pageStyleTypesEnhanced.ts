@@ -94,15 +94,35 @@ export interface PageStyleEnhanced {
  */
 export function generateGradientCSS(background: BackgroundStyle): string {
   if (background.type === 'solid') {
-    return background.solidColor || '#ffffff';
+    // WHAT: Validate solidColor is a non-empty string
+    // WHY: Prevent undefined/null from being returned
+    const solidColor = background.solidColor;
+    if (solidColor && typeof solidColor === 'string' && solidColor.trim()) {
+      return solidColor;
+    }
+    return '#ffffff'; // Fallback for invalid solid color
   }
   
   if (!background.gradientStops || background.gradientStops.length < 2) {
     return '#ffffff'; // Fallback
   }
   
+  // WHAT: Validate all gradient stops have valid color and position values
+  // WHY: Prevent "undefined 50%" or "null 50%" in CSS output
+  const validStops = background.gradientStops.filter(stop => 
+    stop.color && 
+    typeof stop.color === 'string' && 
+    stop.color.trim() &&
+    typeof stop.position === 'number' &&
+    !isNaN(stop.position)
+  );
+  
+  if (validStops.length < 2) {
+    return '#ffffff'; // Fallback if not enough valid stops
+  }
+  
   const angle = background.gradientAngle || 0;
-  const stops = background.gradientStops
+  const stops = validStops
     .map(stop => `${stop.color} ${stop.position}%`)
     .join(', ');
   
