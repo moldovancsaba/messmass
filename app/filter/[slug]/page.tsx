@@ -362,12 +362,17 @@ export default function FilterPage() {
   return (
     <div 
       className="page-bg-gray" 
-      style={pageStyle ? {
-        padding: 'var(--mm-space-4)',
-        background: generateGradientCSS(pageStyle.pageBackground),
-        color: pageStyle.typography.primaryTextColor,
-        fontFamily: pageStyle.typography.fontFamily
-      } : { padding: 'var(--mm-space-4)' }}
+      style={(() => {
+        if (!pageStyle) return { padding: 'var(--mm-space-4)' };
+        const safeColor = (pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor : undefined;
+        const safeFont = (pageStyle.typography?.fontFamily && typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily : undefined;
+        return {
+          padding: 'var(--mm-space-4)',
+          background: generateGradientCSS(pageStyle.pageBackground),
+          color: safeColor,
+          fontFamily: safeFont
+        };
+      })()}
     >
 
       {/* What: Main content container wrapper for PDF export

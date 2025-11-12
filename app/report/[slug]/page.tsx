@@ -469,16 +469,23 @@ export default function StatsPage() {
      - Proper spacing using design system tokens
      - Optional custom page style gradients
      - Responsive padding for different screen sizes */
+  // WHAT: Validate pageStyle values before using in inline styles
+  // WHY: React calls .trim() on style values, will crash if undefined/null
+  // HOW: Triple-check each value independently with safe fallbacks
+  const safePageStyle = pageStyle ? {
+    background: generateGradientCSS(pageStyle.pageBackground),
+    color: (pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
+      ? pageStyle.typography.primaryTextColor 
+      : undefined,
+    fontFamily: (pageStyle.typography?.fontFamily && typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) 
+      ? pageStyle.typography.fontFamily 
+      : undefined
+  } : undefined;
+  
   return (
     <div 
       className={styles.pageContainer}
-      style={(pageStyle?.typography?.primaryTextColor && pageStyle?.typography?.fontFamily &&
-              typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim() &&
-              typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? {
-        background: generateGradientCSS(pageStyle.pageBackground),
-        color: pageStyle.typography.primaryTextColor,
-        fontFamily: pageStyle.typography.fontFamily
-      } : undefined}
+      style={safePageStyle}
     >
 
       {/* What: Main content container wrapper for PDF export
@@ -529,12 +536,17 @@ export default function StatsPage() {
             <button
               className={styles.showInsightsButton}
               onClick={() => setShowInsights(true)}
-              style={(pageStyle?.contentBoxBackground?.solidColor && pageStyle?.typography?.primaryTextColor && 
-                     typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim() &&
-                     typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? {
-                backgroundColor: pageStyle.contentBoxBackground.solidColor,
-                color: pageStyle.typography.primaryTextColor
-              } : undefined}
+              style={(() => {
+                // WHAT: Validate each style property independently
+                // WHY: Prevent undefined from being passed to React style prop
+                const bgColor = (pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) 
+                  ? pageStyle.contentBoxBackground.solidColor 
+                  : undefined;
+                const textColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
+                  ? pageStyle.typography.primaryTextColor 
+                  : undefined;
+                return (bgColor || textColor) ? { backgroundColor: bgColor, color: textColor } : undefined;
+              })()}
             >
               📊 Show Data Quality Insights
             </button>
