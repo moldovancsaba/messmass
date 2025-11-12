@@ -520,7 +520,7 @@ function CreateAssetModal({
     if (form.title && !form.slug) {
       setForm(prev => ({ ...prev, slug: generateSlug(form.title) }));
     }
-  }, [form.title]);
+  }, [form.title, form.slug]);
   
   const addTag = () => {
     if (form.tagInput.trim() && !form.tags.includes(form.tagInput.trim())) {

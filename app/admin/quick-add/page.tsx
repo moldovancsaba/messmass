@@ -200,7 +200,7 @@ export default function QuickAddPage() {
     if ((activeTab === 'partners' || activeTab === 'partnerEvent' || activeTab === 'suggested') && partners.length === 0) {
       loadPartners();
     }
-  }, [activeTab]);
+  }, [activeTab, partners.length]);
   
   async function loadPartners() {
     setLoadingPartners(true);

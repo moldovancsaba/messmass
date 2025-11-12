@@ -1,0 +1,14 @@
+# Backup files
+*_old_backup.*
+*_backup.*
+* 2.*
+* 3.*
+
+# Build output
+.next/
+node_modules/
+out/
+dist/
+
+# Logs
+*.log

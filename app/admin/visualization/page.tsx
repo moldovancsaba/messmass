@@ -83,34 +83,7 @@ export default function VisualizationPage() {
     loadChartConfigs();
   }, []);
   
-  // WHAT: Load templates and select default on mount
-  // WHY: Populate template selector
-  const loadTemplates = async () => {
-    try {
-      const response = await fetch('/api/report-templates?includeAssociations=false');
-      const data = await response.json();
-      if (data.success && data.templates) {
-        setTemplates(data.templates);
-        // Auto-select default template
-        const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
-        if (defaultTemplate) {
-          setSelectedTemplateId(defaultTemplate._id);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load templates:', error);
-    }
-  };
-  
-  // WHAT: Load blocks and grid for selected template
-  // WHY: Each template has its own visualization config
-  useEffect(() => {
-    if (selectedTemplateId) {
-      loadTemplateConfig(selectedTemplateId);
-    }
-  }, [selectedTemplateId]);
-  
-  const loadTemplateConfig = async (templateId: string) => {
+  const loadTemplateConfig = useCallback(async (templateId: string) => {
     try {
       setLoading(true);
       const template = templates.find(t => t._id === templateId);
@@ -153,7 +126,35 @@ export default function VisualizationPage() {
     } finally {
       setLoading(false);
     }
+  }, [templates]);
+
+  // WHAT: Load blocks and grid for selected template
+  // WHY: Each template has its own visualization config
+  useEffect(() => {
+    if (selectedTemplateId) {
+      loadTemplateConfig(selectedTemplateId);
+    }
+  }, [selectedTemplateId, loadTemplateConfig]);
+
+  // WHAT: Load templates and select default on mount
+  // WHY: Populate template selector
+  const loadTemplates = async () => {
+    try {
+      const response = await fetch('/api/report-templates?includeAssociations=false');
+      const data = await response.json();
+      if (data.success && data.templates) {
+        setTemplates(data.templates);
+        // Auto-select default template
+        const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
+        if (defaultTemplate) {
+          setSelectedTemplateId(defaultTemplate._id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load templates:', error);
+    }
   };
+  
 
   // WHAT: Reload template config after changes
   // WHY: Keep UI in sync with database

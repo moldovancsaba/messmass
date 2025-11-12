@@ -171,7 +171,7 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
     }
 
     return result;
-  }, [items, debouncedSearchTerm, sortField, sortOrder, enableSearch, enableSort, adapter.searchFields, isServerSideSearch]);
+  }, [items, debouncedSearchTerm, sortField, sortOrder, enableSearch, enableSort, adapter.searchFields, isServerSideSearch, isServerSideSort]);
 
   return (
     <div className={`page-container ${className}`}>

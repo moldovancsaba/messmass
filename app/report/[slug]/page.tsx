@@ -249,7 +249,7 @@ export default function StatsPage() {
         console.error('❌ [Stats] Fallback API also failed:', fallbackErr);
       }
     }
-  }, []);
+  }, [pageStyle]);
 
   // Check authentication on component mount
   useEffect(() => {

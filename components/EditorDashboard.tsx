@@ -741,20 +741,22 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         {/* Hashtags are now managed elsewhere in the system */}
         {/* Bitly Links Management Section - MOVED to Edit Project modal in admin/projects */}
 
-        {/* Report Content Manager (Images + Texts) */}
-        <ColoredCard>
-          <h2 className="section-title">📦 Report Content</h2>
-          {/* WHAT: Centralized management for reportImageN / reportTextN slots
-              WHY: Bulk upload images to ImgBB and bulk add/edit texts with stable slot references
-              HOW: Uses existing /api/upload-image endpoint and EditorDashboard.saveProject */}
-          <ReportContentManager
-            stats={project.stats as any}
-            onCommit={(newStats) => {
-              setProject(prev => ({ ...prev, stats: newStats as any }));
-              saveProject(newStats as any);
-            }}
-          />
-        </ColoredCard>
+        {/* Report Content Manager (Images + Texts) - MANUAL MODE ONLY */}
+        {editMode === 'manual' && (
+          <ColoredCard>
+            <h2 className="section-title">📦 Report Content</h2>
+            {/* WHAT: Centralized management for reportImageN / reportTextN slots
+                WHY: Bulk upload images to ImgBB and bulk add/edit texts with stable slot references
+                HOW: Uses existing /api/upload-image endpoint and EditorDashboard.saveProject */}
+            <ReportContentManager
+              stats={project.stats as any}
+              onCommit={(newStats) => {
+                setProject(prev => ({ ...prev, stats: newStats as any }));
+                saveProject(newStats as any);
+              }}
+            />
+          </ColoredCard>
+        )}
       </div>
     </div>
   );

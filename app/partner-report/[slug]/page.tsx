@@ -71,50 +71,6 @@ export default function PartnerReportPage() {
   const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   
   
-  // WHAT: Fetch partner data and report configuration (v11.0.0)
-  // WHY: Load both partner details and visualization template
-  const fetchPartnerData = useCallback(async () => {
-    setLoading(true);
-    try {
-      console.log('🔍 Fetching partner report for slug:', slug);
-      const response = await fetch(`/api/partners/report/${slug}`, { cache: 'no-store' });
-      const data = await response.json();
-
-      if (data.success) {
-        setPartner(data.partner);
-        setEvents(data.events || []);
-        setError(null);
-        
-        // WHAT: Fetch report template BEFORE checking partner style (v11.1.0)
-        // WHY: Template fetch needs to check pageStyle state, so template must be fetched first
-        await fetchReportTemplate(slug);
-        
-        // WHAT: Check if partner has direct styleId (takes precedence over template style)
-        // WHY: Partners can override template styling with their own custom style
-        if (data.partner.styleId) {
-          try {
-            console.log('🎨 Partner has direct styleId:', data.partner.styleId);
-            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.partner.styleId}`, { cache: 'no-store' });
-            const styleData = await styleResponse.json();
-            if (styleData.success && styleData.style) {
-              setPageStyle(styleData.style);
-              console.log('✅ Loaded partner direct style (OVERRIDE):', styleData.style.name);
-            }
-          } catch (styleErr) {
-            console.warn('⚠️  Could not fetch partner direct style:', styleErr);
-          }
-        }
-      } else {
-        setError(data.error || 'Failed to load partner');
-      }
-    } catch (err) {
-      console.error('Failed to fetch partner:', err);
-      setError('Failed to load partner data');
-    } finally {
-      setLoading(false);
-    }
-  }, [slug]);
-  
   // WHAT: Fetch report template configuration (v11.0.0)
   // WHY: Get visualization blocks and grid settings for partner
   const fetchReportTemplate = useCallback(async (partnerSlug: string) => {
@@ -176,6 +132,50 @@ export default function PartnerReportPage() {
       // Continue without template - just show event list
     }
   }, []);
+
+  // WHAT: Fetch partner data and report configuration (v11.0.0)
+  // WHY: Load both partner details and visualization template
+  const fetchPartnerData = useCallback(async () => {
+    setLoading(true);
+    try {
+      console.log('🔍 Fetching partner report for slug:', slug);
+      const response = await fetch(`/api/partners/report/${slug}`, { cache: 'no-store' });
+      const data = await response.json();
+
+      if (data.success) {
+        setPartner(data.partner);
+        setEvents(data.events || []);
+        setError(null);
+        
+        // WHAT: Fetch report template BEFORE checking partner style (v11.1.0)
+        // WHY: Template fetch needs to check pageStyle state, so template must be fetched first
+        await fetchReportTemplate(slug);
+        
+        // WHAT: Check if partner has direct styleId (takes precedence over template style)
+        // WHY: Partners can override template styling with their own custom style
+        if (data.partner.styleId) {
+          try {
+            console.log('🎨 Partner has direct styleId:', data.partner.styleId);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.partner.styleId}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.style) {
+              setPageStyle(styleData.style);
+              console.log('✅ Loaded partner direct style (OVERRIDE):', styleData.style.name);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch partner direct style:', styleErr);
+          }
+        }
+      } else {
+        setError(data.error || 'Failed to load partner');
+      }
+    } catch (err) {
+      console.error('Failed to fetch partner:', err);
+      setError('Failed to load partner data');
+    } finally {
+      setLoading(false);
+    }
+  }, [slug, fetchReportTemplate]);
   
   // WHAT: Fetch chart configurations for visualization
   // WHY: Need chart definitions to calculate aggregate stats

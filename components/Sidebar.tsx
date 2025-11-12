@@ -91,7 +91,7 @@ export default function Sidebar() {
      Why: Better UX - user expects drawer to close after navigation */
   useEffect(() => {
     setIsMobileOpen(false);
-  }, [pathname]);
+  }, [pathname, setIsMobileOpen]);
   
   /* What: Close drawer on Escape key
      Why: Accessibility requirement for modal-like overlays */
@@ -104,7 +104,7 @@ export default function Sidebar() {
     
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isMobileOpen]);
+  }, [isMobileOpen, setIsMobileOpen]);
   
   /* What: Prevent body scroll when mobile drawer is open
      Why: Better UX - focus on drawer, prevent background scrolling */

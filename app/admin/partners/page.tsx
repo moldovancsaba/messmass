@@ -4,7 +4,7 @@
 // WHY: Eliminate hardcoded table HTML, use unified system with Report button support
 // MIGRATION: From hardcoded table to adapter-based system (matches /admin/events pattern)
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -264,7 +264,7 @@ export default function PartnersAdminPageUnified() {
   
   // WHAT: Lazy load Bitly links only when needed
   // WHY: Performance optimization - only load when opening modals
-  async function loadBitlyLinks() {
+  const loadBitlyLinks = useCallback(async () => {
     if (allBitlyLinks.length > 0) return;
     
     try {
@@ -281,7 +281,7 @@ export default function PartnersAdminPageUnified() {
     } catch (err) {
       console.error('Failed to load Bitly links:', err);
     }
-  }
+  }, [allBitlyLinks]);
   
   // WHAT: Handle sorting column click
   // WHY: Three-state cycle per column: asc → desc → clear
@@ -387,7 +387,7 @@ export default function PartnersAdminPageUnified() {
   
   // WHAT: Handle deleting a partner
   // WHY: Remove organizations from system
-  const handleDeletePartner = async (partnerId: string, partnerName: string) => {
+  const handleDeletePartner = useCallback(async (partnerId: string, partnerName: string) => {
     if (!confirm(`Delete partner "${partnerName}"? This action cannot be undone.`)) {
       return;
     }
@@ -408,11 +408,11 @@ export default function PartnersAdminPageUnified() {
       setError('Network error. Please try again.');
       console.error('Delete partner error:', err);
     }
-  };
+  }, [loadPartners]);
   
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values
-  const openEditForm = (partner: PartnerResponse) => {
+  const openEditForm = useCallback((partner: PartnerResponse) => {
     loadBitlyLinks();
     setEditingPartner(partner);
     setEditPartnerData({
@@ -429,7 +429,7 @@ export default function PartnersAdminPageUnified() {
     setSportsDbSearch('');
     setSportsDbResults([]);
     setShowEditForm(true);
-  };
+  }, [loadBitlyLinks]);
   
   // WHAT: Override adapter handlers with real functions
   // WHY: Adapter has placeholder handlers - inject actual logic from page
@@ -482,7 +482,7 @@ export default function PartnersAdminPageUnified() {
         }))
       }
     };
-  }, [partnersAdapter, partners]); // FIXED: Add partners dependency to get fresh viewSlug data
+  }, [handleDeletePartner, openEditForm]); // FIXED: partnersAdapter and partners don't need to be in deps
   
   // Loading state
   if (authLoading || loading) {

@@ -35,6 +35,55 @@ function getOccupied(stats: Record<string, any>, prefix: 'reportImage' | 'report
   return items;
 }
 
+// WHAT: Auto-generate chart blocks for report content (images & texts)
+// WHY: Streamline workflow - upload in Clicker → immediately available in Visualization editor
+// HOW: Detect new/changed reportImage*/reportText* slots, create matching chart algorithms via API
+async function autoGenerateChartBlocks(newStats: Record<string, any>, oldStats: Record<string, any>) {
+  try {
+    const changes: Array<{ type: 'image' | 'text'; index: number; value: string }> = [];
+    
+    // WHAT: Detect new or changed image slots
+    // WHY: Only create/update chart blocks for modified content
+    for (const key of Object.keys(newStats)) {
+      if (key.startsWith('reportImage') && newStats[key] !== oldStats[key]) {
+        const index = parseInt(key.replace('reportImage', ''));
+        if (!isNaN(index) && newStats[key]) {
+          changes.push({ type: 'image', index, value: String(newStats[key]) });
+        }
+      } else if (key.startsWith('reportText') && newStats[key] !== oldStats[key]) {
+        const index = parseInt(key.replace('reportText', ''));
+        if (!isNaN(index) && newStats[key]) {
+          changes.push({ type: 'text', index, value: String(newStats[key]) });
+        }
+      }
+    }
+    
+    if (changes.length === 0) return;
+    
+    // WHAT: Call API to auto-generate chart blocks for each change
+    // WHY: Creates chart_algorithms documents that appear in Visualization editor
+    console.log(`🎨 Auto-generating ${changes.length} chart blocks...`);
+    
+    for (const change of changes) {
+      await fetch('/api/auto-generate-chart-block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: change.type,
+          index: change.index,
+          value: change.value
+        })
+      });
+    }
+    
+    console.log('✅ Chart blocks auto-generated successfully');
+  } catch (error) {
+    console.warn('⚠️  Failed to auto-generate chart blocks:', error);
+    // WHAT: Non-blocking error - content is saved, just chart blocks may need manual creation
+    // WHY: Don't interrupt user workflow if chart block creation fails
+  }
+}
+
 export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }: ReportContentManagerProps) {
   // UI state
   const [busy, setBusy] = useState(false);
@@ -67,6 +116,9 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         newStats[`reportImage${next}`] = String(data.url);
       }
       onCommit(newStats);
+      // WHAT: Auto-generate chart blocks for newly uploaded images
+      // WHY: Make images immediately available in Report Template editor without manual Chart Algorithm creation
+      await autoGenerateChartBlocks(newStats, stats);
     } catch (e: any) {
       setError(e?.message || 'Bulk upload failed');
     } finally {
@@ -87,6 +139,9 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
       if (!data?.success || !data?.url) throw new Error(data?.error || 'Upload failed');
       const newStats = { ...stats, [`reportImage${slotIndex}`]: String(data.url) };
       onCommit(newStats);
+      // WHAT: Auto-generate chart block for replaced image
+      // WHY: Keep chart blocks in sync with image slots
+      await autoGenerateChartBlocks(newStats, stats);
     } catch (e: any) {
       setError(e?.message || 'Replace failed');
     } finally {
@@ -129,7 +184,7 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
   };
 
   // ACTION: Bulk add texts (each non-empty line → next free slot)
-  const handleBulkAddTexts = () => {
+  const handleBulkAddTexts = async () => {
     if (!textBulkRef.current) return;
     const lines = textBulkRef.current.value.split(/\r?\n/).map((l) => l);
     const items = lines.filter((l) => l.trim().length > 0);
@@ -143,13 +198,19 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
       assigned++;
     }
     onCommit(newStats);
+    // WHAT: Auto-generate chart blocks for newly added texts
+    // WHY: Make texts immediately available in Report Template editor
+    await autoGenerateChartBlocks(newStats, stats);
     if (textBulkRef.current) textBulkRef.current.value = '';
   };
 
   // ACTION: Update single text slot
-  const saveTextAt = (slotIndex: number, value: string) => {
+  const saveTextAt = async (slotIndex: number, value: string) => {
     const newStats = { ...stats, [`reportText${slotIndex}`]: value };
     onCommit(newStats);
+    // WHAT: Auto-generate chart block for updated text
+    // WHY: Keep chart blocks in sync with text slots
+    await autoGenerateChartBlocks(newStats, stats);
   };
 
   return (

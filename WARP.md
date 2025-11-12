@@ -937,4 +937,59 @@ For detailed information, see:
 
 ---
 
-*Version: 11.8.0 | Last Updated: 2025-11-12T19:36:45.000Z (UTC) | Status: Production-Ready*
+## 🎨 Auto-Generated Chart Blocks (v11.9.0)
+
+### Streamlined Report Content Workflow
+
+**WHAT**: Automatically create chart algorithm blocks when uploading images or adding texts in Clicker
+**WHY**: Eliminate manual Chart Algorithm Manager work - content immediately usable in Visualization editor
+**HOW**: Background API creates both `chart_algorithms` and `data_blocks` on content save
+
+### Workflow Comparison
+
+**Before (v11.8.0):**
+1. Upload image in Clicker → stored as `stats.reportImage1`
+2. Go to Chart Algorithm Manager → manually create IMAGE chart referencing `stats.reportImage1`
+3. Go to Visualization editor → manually add chart block to report template
+
+**After (v11.9.0):**
+1. Upload image in Clicker → stored as `stats.reportImage3` AND auto-creates chart block
+2. Go to Visualization editor → drag-and-drop "Report Image 3" block into any template ✨
+
+### Auto-Generation Rules
+
+**Images** (`reportImageN`):
+- Chart ID: `report-image-N` (e.g., `report-image-5`)
+- Chart Type: `image`
+- Formula: `stats.reportImageN`
+- Aspect Ratio: `16:9` (default landscape, future: auto-detect from metadata)
+- Grid Width: Auto-calculated from aspect ratio (portrait=1, square=2, landscape=3)
+- Icon: `image` (Material Icons)
+
+**Texts** (`reportTextN`):
+- Chart ID: `report-text-N` (e.g., `report-text-12`)
+- Chart Type: `text`
+- Formula: `stats.reportTextN`
+- Grid Width: 2 units
+- Icon: `article` (Material Icons)
+
+### Collections Modified
+
+**chart_algorithms**: Stores chart configuration (formula, type, icon, aspect ratio)
+**data_blocks**: Wraps chart with grid settings (width, order, visibility conditions)
+
+### Migration Strategy
+
+✅ **Backward Compatible**: Old manually-created charts continue working
+✅ **Incremental**: New content auto-generates, old content stays until manual migration
+✅ **Non-Blocking**: Auto-generation failures don't interrupt content saves (warning only)
+
+### Key Files
+
+- **`components/ReportContentManager.tsx`** - Calls auto-generation API after upload/save
+- **`app/api/auto-generate-chart-block/route.ts`** - Creates/updates chart algorithms and data blocks
+- **`app/admin/visualization/page.tsx`** - Visualization editor shows auto-generated blocks
+
+---
+
+*Version: 11.9.0 | Last Updated: 2025-11-12T20:20:00.000Z (UTC) | Status: Production-Ready*
