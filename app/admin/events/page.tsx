@@ -640,7 +640,7 @@ export default function ProjectsPageUnified() {
             ))}
           </select>
           <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
-            💡 If not set, this event will use its partner's template or the default template
+            💡 If not set, this event will use its partner&apos;s template or the default template
           </p>
         </div>
       </FormModal>
@@ -722,7 +722,7 @@ export default function ProjectsPageUnified() {
               ))}
             </select>
             <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
-              💡 If not set, this event will use its partner's template or the default template
+              💡 If not set, this event will use its partner&apos;s template or the default template
             </p>
           </div>
           

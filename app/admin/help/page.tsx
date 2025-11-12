@@ -109,12 +109,12 @@ export default function HelpPage() {
           <ul>
             <li><strong>Images Group:</strong> Remote Images, Hostess Images, Selfies
               <ul>
-                <li>Shows live KPI chart: "All Images Taken"</li>
+                <li>Shows live KPI chart: &ldquo;All Images Taken&rdquo;</li>
               </ul>
             </li>
             <li><strong>Location Group:</strong> Remote Fans, Stadium
               <ul>
-                <li>Shows live KPI chart: "Total Fans"</li>
+                <li>Shows live KPI chart: &ldquo;Total Fans&rdquo;</li>
               </ul>
             </li>
             <li><strong>Demographics Group:</strong> Female, Male, Gen Alpha, Gen Y/Z, Gen X, Boomer</li>
@@ -144,12 +144,12 @@ export default function HelpPage() {
             <li>All editable variables appear as text input fields</li>
             <li>Enter exact numbers (e.g., when copying from spreadsheets)</li>
             <li>Includes Success Manager metrics (attendees, ticket purchases, visits, etc.)</li>
-            <li>Click <strong>"Save"</strong> to update all fields at once</li>
+            <li>Click <strong>&ldquo;Save&rdquo;</strong> to update all fields at once</li>
           </ul>
 
           <h3>Success Manager Metrics (Optional Section)</h3>
           <p>
-            Click <strong>"Show Success Manager Metrics"</strong> to expand additional fields:
+            Click <strong>&ldquo;Show Success Manager Metrics&rdquo;</strong> to expand additional fields:
           </p>
           <ul>
             <li>Event Attendees</li>
@@ -204,7 +204,7 @@ export default function HelpPage() {
             <li><strong>Bitly:</strong> totalBitlyClicks, uniqueBitlyClicks, and 80+ country/device metrics</li>
           </ul>
           <p>
-            System variables have a green <strong>"System"</strong> badge and cannot be deleted.
+            System variables have a green <strong>&ldquo;System&rdquo;</strong> badge and cannot be deleted.
           </p>
 
           <h4>2. Derived Variables (Auto-calculated)</h4>
@@ -234,7 +234,7 @@ export default function HelpPage() {
             <li><strong>Alias:</strong> UI display label (editable for ALL variables)</li>
             <li><strong>Type:</strong> number, text, or derived</li>
             <li><strong>Category:</strong> Grouping label (e.g., Images, Fans, Merchandise)</li>
-            <li><strong>System Badge:</strong> Green "System" badge if built-in variable</li>
+            <li><strong>System Badge:</strong> Green &ldquo;System&rdquo; badge if built-in variable</li>
             <li><strong>Visibility Flags:</strong> Two checkboxes (see below)</li>
           </ul>
 
@@ -259,15 +259,15 @@ export default function HelpPage() {
           <p>
             <strong>Example:</strong><br />
             Name: <code>remoteImages</code> (immutable, used in database)<br />
-            Alias: "Remote Photos" (editable, shown to users)
+            Alias: &ldquo;Remote Photos&rdquo; (editable, shown to users)
           </p>
 
           <h3>Editing an Alias</h3>
           <ol>
             <li>Go to <strong>KYC Management</strong> (<code>/admin/kyc</code>)</li>
             <li>Find the variable card</li>
-            <li>Click into the <strong>"Alias"</strong> field</li>
-            <li>Type a new display name (e.g., change "Remote Images" to "Remote Photos")</li>
+            <li>Click into the <strong>&ldquo;Alias&rdquo;</strong> field</li>
+            <li>Type a new display name (e.g., change &ldquo;Remote Images&rdquo; to &ldquo;Remote Photos&rdquo;)</li>
             <li>Press Enter or click outside the field</li>
             <li>Changes save automatically</li>
           </ol>
@@ -305,7 +305,7 @@ export default function HelpPage() {
           <ol>
             <li>Go to <strong>KYC Management</strong></li>
             <li>Scroll to the bottom</li>
-            <li>Click <strong>"Add Variable"</strong> button</li>
+            <li>Click <strong>&ldquo;Add Variable&rdquo;</strong> button</li>
             <li>Fill in the form:
               <ul>
                 <li><strong>Variable Name:</strong> Camelcase, no spaces (e.g., <code>vipGuests</code>)</li>
@@ -316,7 +316,7 @@ export default function HelpPage() {
                 <li><strong>Editable in Manual:</strong> Allow manual input? (checkbox)</li>
               </ul>
             </li>
-            <li>Click <strong>"Create Variable"</strong></li>
+            <li>Click <strong>&ldquo;Create Variable&rdquo;</strong></li>
           </ol>
           <p>
             <strong>Result:</strong> Variable is immediately available in project editor and stored in <code>project.stats</code> when values are entered.
@@ -328,7 +328,7 @@ export default function HelpPage() {
           </p>
           <ol>
             <li>Find the custom variable card</li>
-            <li>Click <strong>"Delete"</strong> button (only visible for custom variables)</li>
+            <li>Click <strong>&ldquo;Delete&rdquo;</strong> button (only visible for custom variables)</li>
             <li>Confirm deletion</li>
           </ol>
           <p>
@@ -341,8 +341,8 @@ export default function HelpPage() {
           </p>
           <h4>Default Groups</h4>
           <ul>
-            <li><strong>Images:</strong> remoteImages, hostessImages, selfies → Shows "All Images Taken" chart</li>
-            <li><strong>Location:</strong> remoteFans, stadium → Shows "Total Fans" chart</li>
+            <li><strong>Images:</strong> remoteImages, hostessImages, selfies → Shows &ldquo;All Images Taken&rdquo; chart</li>
+            <li><strong>Location:</strong> remoteFans, stadium → Shows &ldquo;Total Fans&rdquo; chart</li>
             <li><strong>Demographics:</strong> female, male, genAlpha, genYZ, genX, boomer</li>
             <li><strong>Merchandise:</strong> merched, jersey, scarf, flags, baseballCap, other</li>
           </ul>
@@ -350,9 +350,9 @@ export default function HelpPage() {
           <h4>Reordering Clicker Buttons</h4>
           <ol>
             <li>Go to <strong>Variables</strong> page (<code>/admin/kyc</code>)</li>
-            <li>Click <strong>"Reorder Clicker"</strong> button</li>
+            <li>Click <strong>&ldquo;Reorder Clicker&rdquo;</strong> button</li>
             <li>Drag and drop buttons within their category</li>
-            <li>Click <strong>"Save Order"</strong></li>
+            <li>Click <strong>&ldquo;Save Order&rdquo;</strong></li>
           </ol>
           <p>
             <strong>Result:</strong> Button order updates immediately in all project editors.
@@ -407,7 +407,7 @@ export default function HelpPage() {
             <li>In the Share Popup modal:
               <ul>
                 <li>Review the generated shareable link</li>
-                <li>Copy the link using the "Copy Link" button</li>
+                <li>Copy the link using the &ldquo;Copy Link&rdquo; button</li>
                 <li>Note: The link is password-protected for security</li>
               </ul>
             </li>
@@ -422,7 +422,7 @@ export default function HelpPage() {
             <li>In the Share Popup modal:
               <ul>
                 <li>Review the generated shareable link</li>
-                <li>Copy the link using the "Copy Link" button</li>
+                <li>Copy the link using the &ldquo;Copy Link&rdquo; button</li>
                 <li>Note: Partner reports aggregate ALL events for that organization</li>
               </ul>
             </li>

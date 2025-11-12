@@ -173,7 +173,7 @@ export default function PredictiveFormattingInput({
               className={styles.dropdownItemAdd}
               onClick={() => handleOptionClick(searchTerm)}
             >
-              ✚ Add "{searchTerm}"
+              ✚ Add &ldquo;{searchTerm}&rdquo;
             </div>
           </div>
         )}

@@ -487,8 +487,8 @@ export default function AdminDesignPage() {
               <p className="mb-4">The <code>style</code> prop is <strong>PROHIBITED</strong> on DOM elements.</p>
               <p className="mb-2">✅ <strong>Instead use:</strong></p>
               <ul className={styles.approvedList}>
-                <li>CSS Modules: <code>import styles from './Component.module.css'</code></li>
-                <li>Utility classes: <code>className="flex items-center gap-2"</code></li>
+                <li>CSS Modules: <code>import styles from &apos;./Component.module.css&apos;</code></li>
+                <li>Utility classes: <code>className=&ldquo;flex items-center gap-2&rdquo;</code></li>
                 <li>Design tokens: <code>var(--mm-primary-500)</code></li>
               </ul>
             </div>
@@ -556,7 +556,7 @@ export default function AdminDesignPage() {
                   <div>
                     <h3 className="font-semibold text-lg mb-1">🌐 Global Default Style</h3>
                     <p className="text-sm text-gray-600">
-                      This style is applied to all projects that don't have a specific style assigned.
+                      This style is applied to all projects that don&apos;t have a specific style assigned.
                     </p>
                   </div>
                   <button 

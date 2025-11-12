@@ -63,7 +63,9 @@ export default function UnifiedDataVisualization({
       const textContent = typeof result.kpiValue === 'string' 
         ? result.kpiValue 
         : (result.elements[0]?.value as string || '');
-      return !!(textContent && textContent.trim().length > 0);
+      // WHAT: Check length after converting to string (no .trim() needed)
+      // WHY: String(textContent) handles null/undefined safely
+      return String(textContent || '').length > 0;
     }
     
     // WHAT: Image charts valid only if kpiValue has a URL
@@ -72,7 +74,9 @@ export default function UnifiedDataVisualization({
       const imageUrl = typeof result.kpiValue === 'string'
         ? result.kpiValue
         : (result.elements[0]?.value as string || '');
-      return !!(imageUrl && imageUrl.trim().length > 0);
+      // WHAT: Check length after converting to string (no .trim() needed)
+      // WHY: String(imageUrl) handles null/undefined safely
+      return String(imageUrl || '').length > 0;
     }
     
     if (result.type === 'kpi') {

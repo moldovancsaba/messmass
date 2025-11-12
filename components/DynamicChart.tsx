@@ -161,22 +161,23 @@ const PieChart: React.FC<{
   // WHAT: Override pie segment colors with pageStyle if available
   // WHY: Apply brand colors to pie chart for consistent styling
   const getSegmentColors = () => {
-    // WHAT: When no pageStyle, validate each element color
+    // WHAT: When no pageStyle, return element colors or default
     // WHY: Prevent undefined/null from reaching SVG fill/style props
-    if (!pageStyle) return validElements.map(el => (typeof el.color === 'string' && el.color.trim()) ? el.color.trim() : '#3b82f6');
+    // HOW: Coerce to string, no .trim() needed (whitespace in hex colors is invalid anyway)
+    if (!pageStyle) return validElements.map(el => String(el.color || '#3b82f6'));
     
     // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
     // WHY: Create branded two-tone pie charts
-    // HOW: Null-safe checks with explicit fallbacks to prevent trim() errors
+    // HOW: String coercion with fallback chain
     return validElements.map((el, idx) => {
-      if (idx === 0 && typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) {
-        return pageStyle.typography.primaryTextColor.trim();
+      if (idx === 0 && pageStyle.typography?.primaryTextColor) {
+        return String(pageStyle.typography.primaryTextColor);
       }
-      if (idx === 1 && typeof pageStyle.typography?.secondaryTextColor === 'string' && pageStyle.typography.secondaryTextColor.trim()) {
-        return pageStyle.typography.secondaryTextColor.trim();
+      if (idx === 1 && pageStyle.typography?.secondaryTextColor) {
+        return String(pageStyle.typography.secondaryTextColor);
       }
-      // CRITICAL: Validate el.color before returning to prevent .trim() crash
-      return (typeof el.color === 'string' && el.color.trim()) ? el.color.trim() : '#3b82f6';
+      // Fallback to element color or default
+      return String(el.color || '#3b82f6');
     });
   };
   
@@ -209,9 +210,9 @@ const PieChart: React.FC<{
         'Z'
       ].join(' ');
       
-      // WHAT: Validate segmentColor before using in SVG fill
-      // WHY: SVG fill doesn't support undefined/null, React will call .trim()
-      const safeSegmentColor = (typeof segmentColors[idx] === 'string' && segmentColors[idx].trim()) ? segmentColors[idx].trim() : '#3b82f6';
+      // WHAT: Ensure segmentColor is always a valid string for SVG fill
+      // WHY: SVG fill requires string values
+      const safeSegmentColor = String(segmentColors[idx] || '#3b82f6');
       
       return (
         <g key={element.id}>
@@ -235,9 +236,9 @@ const PieChart: React.FC<{
   const legend = validElements.map((element, idx) => {
     const percentage = ((element.value / totalValue) * 100).toFixed(1);
     const legendColor = segmentColors[idx];
-    // WHAT: Validate legendColor before using in CSS custom property
-    // WHY: React calls .trim() on CSS variable values, will crash if undefined
-    const safeLegendColor = (typeof legendColor === 'string' && legendColor.trim()) ? legendColor.trim() : '#3b82f6';
+    // WHAT: Ensure legendColor is always a valid string for CSS
+    // WHY: CSS variables require string values
+    const safeLegendColor = String(legendColor || '#3b82f6');
     return (
       <div key={element.id} className={styles.legendItem}>
         <div className={styles.legendColor} style={{ ['--legend-color' as string]: safeLegendColor, backgroundColor: safeLegendColor } as React.CSSProperties}></div>
@@ -258,7 +259,7 @@ const PieChart: React.FC<{
                 cx="110"
                 cy="110"
                 r="50"
-                fill={(typeof pageStyle?.contentBoxBackground?.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) ? pageStyle.contentBoxBackground.solidColor.trim() : 'white'}
+                fill={String(pageStyle?.contentBoxBackground?.solidColor || 'white')}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -300,7 +301,7 @@ const PieChart: React.FC<{
                 cx="90"
                 cy="90"
                 r="35"
-                fill={(typeof pageStyle?.contentBoxBackground?.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) ? pageStyle.contentBoxBackground.solidColor.trim() : 'white'}
+                fill={String(pageStyle?.contentBoxBackground?.solidColor || 'white')}
                 stroke="#e5e7eb"
                 strokeWidth="2"
               />
@@ -374,10 +375,8 @@ const BarChart: React.FC<{
   
   // WHAT: Override bar color with pageStyle primaryTextColor if available
   // WHY: Apply brand color to all bars for consistent styling
-  // HOW: Null-safe check with explicit fallback to prevent trim() errors
-  const barColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim())
-    ? pageStyle.typography.primaryTextColor.trim()
-    : (validElements[0]?.color || '#3b82f6');
+  // HOW: String coercion with fallback chain
+  const barColor = String(pageStyle?.typography?.primaryTextColor || validElements[0]?.color || '#3b82f6');
   
   // WHAT: Create bar rows with legend and bar side-by-side per row
   // WHY: Vertical alignment of legend text with bar (centered)
@@ -394,14 +393,9 @@ const BarChart: React.FC<{
     
     const barWidth = ((element.value as number) / maxValue) * 100;
     
-    // WHAT: Validate barColor for this specific element
-    // WHY: React calls .trim() on CSS variable values, will crash if undefined/null
-    // HOW: Use barColor if valid, fallback to element.color or default blue
-    const safeBarColor = (typeof barColor === 'string' && barColor.trim()) 
-      ? barColor.trim() 
-      : (typeof element.color === 'string' && element.color.trim()) 
-        ? element.color.trim() 
-        : '#3b82f6';
+    // WHAT: Ensure barColor is always a valid string for CSS
+    // WHY: CSS variables require string values
+    const safeBarColor = String(barColor || element.color || '#3b82f6');
     
     return (
       <div key={element.id} className={styles.barRow}>
@@ -529,13 +523,9 @@ const KPIChart: React.FC<{
   
   // WHAT: Use pageStyle colors for KPI if available
   // WHY: Apply brand colors for consistent styling
-  // HOW: Null-safe checks with explicit fallbacks to prevent trim() errors
-  const kpiTextColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim())
-    ? pageStyle.typography.primaryTextColor.trim()
-    : (result.elements[0]?.color || '#10b981');
-  const kpiBackground = (typeof pageStyle?.contentBoxBackground?.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim())
-    ? pageStyle.contentBoxBackground.solidColor.trim()
-    : '#ffffff';
+  // HOW: String coercion with fallback chain
+  const kpiTextColor = String(pageStyle?.typography?.primaryTextColor || result.elements[0]?.color || '#10b981');
+  const kpiBackground = String(pageStyle?.contentBoxBackground?.solidColor || '#ffffff');
   
   // Convert hex to RGB for dynamic color usage
   const hexToRgb = (hex: string) => {
@@ -555,10 +545,10 @@ const KPIChart: React.FC<{
   const labelSize = isLandscape ? '1.25rem' : '1.1rem';
   const padding = isLandscape ? '3rem' : '2rem';
   
-  // WHAT: Validate all CSS custom property values
-  // WHY: React calls .trim() on CSS variable values, will crash if undefined/null
-  const safeKpiTextColor = (typeof kpiTextColor === 'string' && kpiTextColor.trim()) ? kpiTextColor.trim() : '#10b981';
-  const safeKpiBackground = (typeof kpiBackground === 'string' && kpiBackground.trim()) ? kpiBackground.trim() : '#ffffff';
+  // WHAT: Ensure CSS values are strings (already converted above, but keep for clarity)
+  // WHY: CSS variables require string values
+  const safeKpiTextColor = kpiTextColor;
+  const safeKpiBackground = kpiBackground;
   
   return (
     <div className={`${className} ${styles.kpiContainer}`}>

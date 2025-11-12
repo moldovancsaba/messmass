@@ -37,8 +37,9 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '', 
   /* WHAT: Calculate CSS aspect-ratio value from aspectRatio prop
      WHY: CSS aspect-ratio property requires "width / height" format
      HOW: Convert 16:9 → "16 / 9", 9:16 → "9 / 16", 1:1 → "1 / 1"
-     CRITICAL: Safe fallback prevents .trim() error when aspectRatio is undefined */
-  const cssAspectRatio = (aspectRatio || '1:1').replace(':', ' / ');
+     CRITICAL: Coerce to string to prevent crashes on null/undefined/non-string */
+  const safeAspectRatio = String(aspectRatio || '1:1');
+  const cssAspectRatio = safeAspectRatio.replace(':', ' / ');
   
   return (
     <>

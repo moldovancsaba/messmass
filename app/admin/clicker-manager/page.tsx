@@ -141,7 +141,7 @@ export default function ClickerManagerPage() {
           <div className="text-4xl mb-4">📋</div>
           <h3 className="mt-0">No Variable Groups Configured</h3>
           <p className="text-gray-600 mb-4">
-            The clicker layout is empty. Click "Seed Defaults" to create the standard layout.
+            The clicker layout is empty. Click &ldquo;Seed Defaults&rdquo; to create the standard layout.
           </p>
           <button className="btn btn-primary" onClick={seedDefaults} disabled={saving}>
             🌱 Seed Default Groups

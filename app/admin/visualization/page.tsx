@@ -1067,7 +1067,7 @@ export default function VisualizationPage() {
                 
               </div>
               <p className="info-note">
-                💡 Grid columns auto-calculated from chart widths (e.g., widths 2+2+3 = "2fr 2fr 3fr" grid).<br/>
+                💡 Grid columns auto-calculated from chart widths (e.g., widths 2+2+3 = &ldquo;2fr 2fr 3fr&rdquo; grid).<br/>
                 Tablet: auto-wrap at 300px min-width | Mobile: single column
               </p>
               
