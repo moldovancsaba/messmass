@@ -104,7 +104,7 @@ export default function UnifiedPageHero({
           <div className={styles.centerContent}>
             <h1 
               className="admin-title"
-              style={pageStyle ? {
+              style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                 color: pageStyle.colorScheme.primary
               } : undefined}
             >
@@ -130,7 +130,7 @@ export default function UnifiedPageHero({
                         fontSize: '1rem',
                         fontWeight: '600',
                         padding: '0.5rem 1rem',
-                        ...(pageStyle ? {
+                        ...((pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                           backgroundColor: pageStyle.colorScheme.primary,
                           color: '#ffffff'
                         } : {})
@@ -159,7 +159,7 @@ export default function UnifiedPageHero({
                             fontSize: '1rem',
                             fontWeight: '600',
                             padding: '0.5rem 1rem',
-                            ...(pageStyle ? {
+                            ...((pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                               backgroundColor: pageStyle.colorScheme.primary,
                               color: '#ffffff'
                             } : {})
@@ -261,7 +261,7 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportCSV}
                 className={`btn btn-primary btn-small ${styles.exportButton}`}
-                style={pageStyle ? {
+                style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                   backgroundColor: pageStyle.colorScheme.primary,
                   borderColor: pageStyle.colorScheme.primary
                 } : undefined}
@@ -273,7 +273,7 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportPDF}
                 className={`btn btn-secondary btn-small ${styles.exportButton}`}
-                style={pageStyle ? {
+                style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                   backgroundColor: pageStyle.colorScheme.primary,
                   borderColor: pageStyle.colorScheme.primary
                 } : undefined}

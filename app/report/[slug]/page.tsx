@@ -472,7 +472,9 @@ export default function StatsPage() {
   return (
     <div 
       className={styles.pageContainer}
-      style={pageStyle ? {
+      style={(pageStyle?.typography?.primaryTextColor && pageStyle?.typography?.fontFamily &&
+              typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim() &&
+              typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? {
         background: generateGradientCSS(pageStyle.pageBackground),
         color: pageStyle.typography.primaryTextColor,
         fontFamily: pageStyle.typography.fontFamily
@@ -527,7 +529,9 @@ export default function StatsPage() {
             <button
               className={styles.showInsightsButton}
               onClick={() => setShowInsights(true)}
-              style={pageStyle ? {
+              style={(pageStyle?.contentBoxBackground?.solidColor && pageStyle?.typography?.primaryTextColor && 
+                     typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim() &&
+                     typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? {
                 backgroundColor: pageStyle.contentBoxBackground.solidColor,
                 color: pageStyle.typography.primaryTextColor
               } : undefined}

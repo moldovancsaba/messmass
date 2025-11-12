@@ -401,7 +401,9 @@ export default function PartnerReportPage() {
       {/* WHAT: Partner report content after all resources loaded */}
     <div 
       className="page-bg-gray"
-      style={pageStyle ? {
+      style={(pageStyle?.typography?.primaryTextColor && pageStyle?.typography?.fontFamily &&
+              typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim() &&
+              typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? {
         background: generateGradientCSS(pageStyle.pageBackground),
         color: pageStyle.typography.primaryTextColor,
         fontFamily: pageStyle.typography.fontFamily
