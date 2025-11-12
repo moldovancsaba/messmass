@@ -66,7 +66,7 @@ export default function FormulaEditor({
   // Validate formula on change with debounce
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (formula.trim()) {
+      if (String(formula || '').trim()) {
         validateCurrentFormula();
       } else {
         const result: ValidationResult = { isValid: true, usedVariables: [] };
@@ -145,7 +145,7 @@ export default function FormulaEditor({
       filtered = filtered.filter(v => v.category === selectedCategory);
     }
 
-    if (searchTerm) {
+    if (String(searchTerm || '').trim()) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(v => 
         v.name.toLowerCase().includes(term) ||

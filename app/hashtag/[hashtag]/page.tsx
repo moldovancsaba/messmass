@@ -269,8 +269,8 @@ export default function HashtagStatsPage() {
       className="admin-container"
       style={(() => {
         if (!pageStyle) return undefined;
-        const safeColor = (pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor : undefined;
-        const safeFont = (pageStyle.typography?.fontFamily && typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily : undefined;
+        const safeColor = (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : undefined;
+        const safeFont = (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily.trim() : undefined;
         return {
           background: generateGradientCSS(pageStyle.pageBackground),
           color: safeColor,

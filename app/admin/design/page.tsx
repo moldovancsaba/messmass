@@ -340,7 +340,7 @@ export default function AdminDesignPage() {
                     <div key={token.name} className={styles.tokenItem}>
                       <div
                         className={styles.colorSwatch}
-                        style={{ backgroundColor: (token.value && typeof token.value === 'string' && token.value.trim()) ? token.value : '#cccccc' }}
+                        style={{ backgroundColor: (typeof token.value === 'string' && token.value.trim()) ? token.value.trim() : '#cccccc' }}
                       />
                       <div className={styles.tokenInfo}>
                         <code className={styles.tokenName}>{token.name}</code>
@@ -640,17 +640,17 @@ export default function AdminDesignPage() {
                     <div className="flex gap-2">
                       <div
                         className={styles.miniColorSwatch}
-                        style={{ backgroundColor: (style.colorScheme.primary && typeof style.colorScheme.primary === 'string' && style.colorScheme.primary.trim()) ? style.colorScheme.primary : '#3b82f6' }}
+                        style={{ backgroundColor: (typeof style.colorScheme.primary === 'string' && style.colorScheme.primary.trim()) ? style.colorScheme.primary.trim() : '#3b82f6' }}
                         title="Primary"
                       />
                       <div
                         className={styles.miniColorSwatch}
-                        style={{ backgroundColor: (style.colorScheme.secondary && typeof style.colorScheme.secondary === 'string' && style.colorScheme.secondary.trim()) ? style.colorScheme.secondary : '#10b981' }}
+                        style={{ backgroundColor: (typeof style.colorScheme.secondary === 'string' && style.colorScheme.secondary.trim()) ? style.colorScheme.secondary.trim() : '#10b981' }}
                         title="Secondary"
                       />
                       <div
                         className={styles.miniColorSwatch}
-                        style={{ backgroundColor: (style.colorScheme.success && typeof style.colorScheme.success === 'string' && style.colorScheme.success.trim()) ? style.colorScheme.success : '#10b981' }}
+                        style={{ backgroundColor: (typeof style.colorScheme.success === 'string' && style.colorScheme.success.trim()) ? style.colorScheme.success.trim() : '#10b981' }}
                         title="Success"
                       />
                     </div>

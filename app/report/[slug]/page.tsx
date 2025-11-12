@@ -474,11 +474,11 @@ export default function StatsPage() {
   // HOW: Triple-check each value independently with safe fallbacks
   const safePageStyle = pageStyle ? {
     background: generateGradientCSS(pageStyle.pageBackground),
-    color: (pageStyle.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
-      ? pageStyle.typography.primaryTextColor 
+    color: (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
+      ? pageStyle.typography.primaryTextColor.trim() 
       : undefined,
-    fontFamily: (pageStyle.typography?.fontFamily && typeof pageStyle.typography.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) 
-      ? pageStyle.typography.fontFamily 
+    fontFamily: (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) 
+      ? pageStyle.typography.fontFamily.trim() 
       : undefined
   } : undefined;
   
@@ -539,11 +539,11 @@ export default function StatsPage() {
               style={(() => {
                 // WHAT: Validate each style property independently
                 // WHY: Prevent undefined from being passed to React style prop
-                const bgColor = (pageStyle?.contentBoxBackground?.solidColor && typeof pageStyle.contentBoxBackground.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) 
-                  ? pageStyle.contentBoxBackground.solidColor 
+                const bgColor = (typeof pageStyle?.contentBoxBackground?.solidColor === 'string' && pageStyle.contentBoxBackground.solidColor.trim()) 
+                  ? pageStyle.contentBoxBackground.solidColor.trim() 
                   : undefined;
-                const textColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
-                  ? pageStyle.typography.primaryTextColor 
+                const textColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) 
+                  ? pageStyle.typography.primaryTextColor.trim() 
                   : undefined;
                 return (bgColor || textColor) ? { backgroundColor: bgColor, color: textColor } : undefined;
               })()}

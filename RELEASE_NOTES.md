@@ -1,5 +1,16 @@
 # MessMass Release Notes
 
+## [v11.4.0] — 2025-11-12T15:55:44.000Z
+
+### Changed
+- UI and chart components refinements across 14 files (admin pages, hashtag inputs, chart system, heroes, ImageChart)
+- Documentation and version alignments for release
+
+### Notes
+- Minor version bump as per protocol before commit; patch was previously used for local dev cycles.
+
+---
+
 ## [v11.2.0] — 2025-11-12T14:15:00.000Z
 
 ### Fixed

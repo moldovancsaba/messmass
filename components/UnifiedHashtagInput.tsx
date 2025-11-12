@@ -304,7 +304,7 @@ export default function UnifiedHashtagInput({
             {categoryColor && (
               <div 
                 className="category-indicator"
-                style={{ backgroundColor: (categoryColor && typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor : '#667eea' }}
+                style={{ backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : '#667eea' }}
               />
             )}
             <label className="group-label">{title}</label>

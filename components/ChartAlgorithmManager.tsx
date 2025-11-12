@@ -328,9 +328,10 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
 
 
   const testConfigurationFormula = (formula: string) => {
-    if (!formula.trim()) return null;
+    // SAFETY: formula might be undefined/null from legacy configs → coerce to string before .trim()
+    if (!formula || !String(formula).trim()) return null;
     
-    const validation = validateFormula(formula);
+    const validation = validateFormula(String(formula));
     if (!validation.isValid) {
       return { error: validation.error, result: null };
     }
@@ -389,8 +390,8 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
     let filtered = configurations;
     
     // Apply search filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
+    if (String(searchTerm || '').trim()) {
+      const term = String(searchTerm).toLowerCase();
       filtered = filtered.filter(config => 
         config.title.toLowerCase().includes(term) ||
         config.chartId.toLowerCase().includes(term) ||
@@ -649,7 +650,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       return false;
     }
     
-    const missingData = formData.elements.find((element, index) => !element.label.trim() || !element.formula.trim());
+    const missingData = formData.elements.find((element) => !String(element.label || '').trim() || !String(element.formula || '').trim());
     if (missingData) {
       alert('Please fill in all element labels and formulas');
       return false;
@@ -717,7 +718,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
   };
 
   const validateFormula = (elementIndex: number, formula: string) => {
-    if (!formula.trim()) {
+    // SAFETY: formula may be undefined/null → coerce to string before .trim()
+    if (!formula || !String(formula).trim()) {
       setFormulaValidation(prev => ({ ...prev, [elementIndex]: { isValid: true } }));
       return;
     }
@@ -782,7 +784,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
   
   // Test function for formulas (moved to component scope)
   const testConfigurationFormula = (formula: string) => {
-    if (!formula.trim()) return null;
+    if (!formula || !String(formula).trim()) return null;
     
     // WHAT: Validate formulas with full database paths like [stats.female]
     // WHY: Support Single Reference System with dotted notation

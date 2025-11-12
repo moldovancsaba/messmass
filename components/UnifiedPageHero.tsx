@@ -52,8 +52,8 @@ export default function UnifiedPageHero({
   // WHAT: Validate color values before injecting into CSS
   // WHY: Prevent undefined/null from appearing in CSS which causes React .trim() errors
   // HOW: Check each color value is string and non-empty before using
-  const safePrimaryTextColor = (pageStyle?.typography?.primaryTextColor && typeof pageStyle.typography.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor : '#1f2937';
-  const safeHeadingColor = (pageStyle?.typography?.headingColor && typeof pageStyle.typography.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? pageStyle.typography.headingColor : '#1f2937';
+  const safePrimaryTextColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : '#1f2937';
+  const safeHeadingColor = (typeof pageStyle?.typography?.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? pageStyle.typography.headingColor.trim() : '#1f2937';
   
   const styleCss = pageStyle ? `
     .admin-container { 
@@ -110,8 +110,8 @@ export default function UnifiedPageHero({
           <div className={styles.centerContent}>
             <h1 
               className="admin-title"
-              style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                color: pageStyle.colorScheme.primary
+              style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                color: pageStyle.colorScheme.primary.trim()
               } : undefined}
             >
               {title}
@@ -136,8 +136,8 @@ export default function UnifiedPageHero({
                         fontSize: '1rem',
                         fontWeight: '600',
                         padding: '0.5rem 1rem',
-                        ...((pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                          backgroundColor: pageStyle.colorScheme.primary,
+                        ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                          backgroundColor: pageStyle.colorScheme.primary.trim(),
                           color: '#ffffff'
                         } : {})
                       }}
@@ -165,8 +165,8 @@ export default function UnifiedPageHero({
                             fontSize: '1rem',
                             fontWeight: '600',
                             padding: '0.5rem 1rem',
-                            ...((pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                              backgroundColor: pageStyle.colorScheme.primary,
+                            ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                              backgroundColor: pageStyle.colorScheme.primary.trim(),
                               color: '#ffffff'
                             } : {})
                           }}
@@ -267,9 +267,9 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportCSV}
                 className={`btn btn-primary btn-small ${styles.exportButton}`}
-                style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                  backgroundColor: pageStyle.colorScheme.primary,
-                  borderColor: pageStyle.colorScheme.primary
+                style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                  backgroundColor: pageStyle.colorScheme.primary.trim(),
+                  borderColor: pageStyle.colorScheme.primary.trim()
                 } : undefined}
               >
                 📊 Export CSV
@@ -279,9 +279,9 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportPDF}
                 className={`btn btn-secondary btn-small ${styles.exportButton}`}
-                style={(pageStyle?.colorScheme?.primary && typeof pageStyle.colorScheme.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                  backgroundColor: pageStyle.colorScheme.primary,
-                  borderColor: pageStyle.colorScheme.primary
+                style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                  backgroundColor: pageStyle.colorScheme.primary.trim(),
+                  borderColor: pageStyle.colorScheme.primary.trim()
                 } : undefined}
               >
                 📄 Export PDF
