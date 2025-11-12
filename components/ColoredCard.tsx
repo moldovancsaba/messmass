@@ -31,7 +31,11 @@ export default function ColoredCard({
 }: ColoredCardProps) {
   // WHAT: Only use CSS variables for dynamic styling (ESLint compliant)
   // WHY: Avoid inline style props while supporting dynamic accent colors
-  const cssVars = accentColor ? { '--accent-color': accentColor } as React.CSSProperties : undefined;
+  // CRITICAL: Validate accentColor is a non-empty string before setting CSS variable
+  // BUG FIX: React calls .trim() on CSS variable values, crashes if undefined/null
+  const cssVars = (accentColor && typeof accentColor === 'string' && accentColor.trim()) 
+    ? { '--accent-color': accentColor } as React.CSSProperties 
+    : undefined;
 
   // WHAT: Filter out data attributes from rest props
   // WHY: Pass through data-* attributes for PDF export and other purposes
