@@ -1000,20 +1000,201 @@ export default function VisualizationPage() {
                   </div>
 
                   {/* Add Chart to Block */}
-                  <div className="flex-row flex-wrap">
-                    {availableCharts
-                      .filter(chart => !block.charts.some(blockChart => blockChart.chartId === chart.chartId))
-                      .map(chart => (
-                        <button
-                          key={chart.chartId}
-                          onClick={() => addChartToBlock(block, chart.chartId)}
-                          className="btn btn-small btn-secondary"
-                        >
-                          {chart.emoji || '📊'} {chart.title}
-                        </button>
-                      ))
-                    }
-                  </div>
+                  {/* WHAT: Separate regular charts, report images, and report texts for better UX */}
+                  {/* WHY: Visual thumbnails for images and text previews make selection easier */}
+                  {(() => {
+                    const unassignedCharts = availableCharts.filter(chart => 
+                      !block.charts.some(blockChart => blockChart.chartId === chart.chartId)
+                    );
+                    
+                    const regularCharts = unassignedCharts.filter(c => 
+                      !c.chartId.startsWith('report-image-') && !c.chartId.startsWith('report-text-')
+                    );
+                    const reportImages = unassignedCharts.filter(c => c.chartId.startsWith('report-image-'));
+                    const reportTexts = unassignedCharts.filter(c => c.chartId.startsWith('report-text-'));
+                    
+                    return (
+                      <>
+                        {/* Regular Charts */}
+                        {regularCharts.length > 0 && (
+                          <div>
+                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                              Standard Charts
+                            </h4>
+                            <div className="flex-row flex-wrap" style={{ marginBottom: '1.5rem' }}>
+                              {regularCharts.map(chart => (
+                                <button
+                                  key={chart.chartId}
+                                  onClick={() => addChartToBlock(block, chart.chartId)}
+                                  className="btn btn-small btn-secondary"
+                                >
+                                  {chart.emoji || '📊'} {chart.title}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Report Images with Thumbnails */}
+                        {reportImages.length > 0 && (
+                          <div>
+                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                              Report Images
+                            </h4>
+                            <div style={{ 
+                              display: 'grid', 
+                              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+                              gap: '0.75rem',
+                              marginBottom: '1.5rem'
+                            }}>
+                              {reportImages.map(chart => {
+                                // Extract image URL from chart config (formula: stats.reportImageN)
+                                const chartConfig = chartConfigs.find(c => c.chartId === chart.chartId);
+                                const imageUrl = chartConfig?.elements?.[0]?.formula?.includes('reportImage') 
+                                  ? previewResults[chart.chartId]?.kpiValue as string
+                                  : null;
+                                
+                                return (
+                                  <button
+                                    key={chart.chartId}
+                                    onClick={() => addChartToBlock(block, chart.chartId)}
+                                    style={{
+                                      border: '2px solid var(--mm-gray-300)',
+                                      borderRadius: 'var(--mm-radius-md)',
+                                      padding: '0.5rem',
+                                      background: 'var(--mm-white)',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      alignItems: 'center',
+                                      gap: '0.5rem',
+                                      transition: 'all 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.borderColor = 'var(--mm-blue-500)';
+                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.2)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.borderColor = 'var(--mm-gray-300)';
+                                      e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                  >
+                                    {imageUrl ? (
+                                      <img 
+                                        src={imageUrl} 
+                                        alt={chart.title}
+                                        style={{
+                                          width: '100%',
+                                          height: '80px',
+                                          objectFit: 'cover',
+                                          borderRadius: 'var(--mm-radius-sm)'
+                                        }}
+                                      />
+                                    ) : (
+                                      <div style={{
+                                        width: '100%',
+                                        height: '80px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        background: 'var(--mm-gray-100)',
+                                        borderRadius: 'var(--mm-radius-sm)',
+                                        fontSize: '2rem'
+                                      }}>
+                                        🖼️
+                                      </div>
+                                    )}
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--mm-gray-700)', textAlign: 'center' }}>
+                                      {chart.title}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Report Texts with Previews */}
+                        {reportTexts.length > 0 && (
+                          <div>
+                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                              Report Texts
+                            </h4>
+                            <div style={{ 
+                              display: 'grid', 
+                              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                              gap: '0.75rem',
+                              marginBottom: '1.5rem'
+                            }}>
+                              {reportTexts.map(chart => {
+                                // Extract text from chart config (formula: stats.reportTextN)
+                                const chartConfig = chartConfigs.find(c => c.chartId === chart.chartId);
+                                const textValue = chartConfig?.elements?.[0]?.formula?.includes('reportText')
+                                  ? previewResults[chart.chartId]?.kpiValue as string
+                                  : null;
+                                
+                                return (
+                                  <button
+                                    key={chart.chartId}
+                                    onClick={() => addChartToBlock(block, chart.chartId)}
+                                    style={{
+                                      border: '2px solid var(--mm-gray-300)',
+                                      borderRadius: 'var(--mm-radius-md)',
+                                      padding: '0.75rem',
+                                      background: 'var(--mm-white)',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      alignItems: 'flex-start',
+                                      gap: '0.5rem',
+                                      transition: 'all 0.2s',
+                                      textAlign: 'left',
+                                      minHeight: '100px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.borderColor = 'var(--mm-blue-500)';
+                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.2)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.borderColor = 'var(--mm-gray-300)';
+                                      e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--mm-gray-900)' }}>
+                                      {chart.title}
+                                    </span>
+                                    {textValue ? (
+                                      <div style={{
+                                        fontSize: '0.75rem',
+                                        color: 'var(--mm-gray-600)',
+                                        lineHeight: '1.4',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        width: '100%'
+                                      }}>
+                                        {textValue}
+                                      </div>
+                                    ) : (
+                                      <div style={{
+                                        fontSize: '0.75rem',
+                                        color: 'var(--mm-gray-400)',
+                                        fontStyle: 'italic'
+                                      }}>
+                                        No text content
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   
                   {availableCharts.filter(chart => !block.charts.some(blockChart => blockChart.chartId === chart.chartId)).length === 0 && (
                     <p className="info-note">
