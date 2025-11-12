@@ -1007,11 +1007,22 @@ export default function VisualizationPage() {
                       !block.charts.some(blockChart => blockChart.chartId === chart.chartId)
                     );
                     
+                    // WHAT: Detect report content charts by chartId pattern OR title pattern
+                    // WHY: Support both new auto-generated (report-image-N) and old manual ([stats.reportImageN])
                     const regularCharts = unassignedCharts.filter(c => 
-                      !c.chartId.startsWith('report-image-') && !c.chartId.startsWith('report-text-')
+                      !c.chartId.startsWith('report-image-') && 
+                      !c.chartId.startsWith('report-text-') &&
+                      !c.title.includes('[stats.reportImage') &&
+                      !c.title.includes('[stats.reportText')
                     );
-                    const reportImages = unassignedCharts.filter(c => c.chartId.startsWith('report-image-'));
-                    const reportTexts = unassignedCharts.filter(c => c.chartId.startsWith('report-text-'));
+                    const reportImages = unassignedCharts.filter(c => 
+                      c.chartId.startsWith('report-image-') || 
+                      c.title.includes('[stats.reportImage')
+                    );
+                    const reportTexts = unassignedCharts.filter(c => 
+                      c.chartId.startsWith('report-text-') || 
+                      c.title.includes('[stats.reportText')
+                    );
                     
                     return (
                       <>
