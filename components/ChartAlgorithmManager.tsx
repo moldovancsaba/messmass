@@ -449,6 +449,10 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
         searchPlaceholder="Search charts by title, ID, or type..."
         actionButtons={[
           { label: 'New Chart', onClick: () => startEditing(), variant: 'primary', icon: '➕' },
+          { label: 'Refresh Variables', onClick: async () => { 
+            await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+            await loadVariablesFromKYC();
+          }, variant: 'info', icon: '🔄', disabled: variablesLoading },
           { label: 'Validate All', onClick: () => validateAllFormulas(), variant: 'secondary' },
         ]}
       />
