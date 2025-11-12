@@ -220,10 +220,10 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         <div className={styles.sectionHeader}>
           <h3 className={styles.sectionTitle}>Report Content</h3>
           <div className={styles.controlsRow}>
-            <button className={`${styles.btn} ${tab === 'images' ? styles.btnPrimary : ''}`} onClick={() => setTab('images')}>
+            <button className={`btn btn-small ${tab === 'images' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('images')}>
               🖼️ Images
             </button>
-            <button className={`${styles.btn} ${tab === 'texts' ? styles.btnPrimary : ''}`} onClick={() => setTab('texts')}>
+            <button className={`btn btn-small ${tab === 'texts' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('texts')}>
               📝 Texts
             </button>
           </div>
@@ -239,16 +239,16 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
           <div className={styles.sectionHeader}>
             <h4 className={styles.sectionTitle}>Image Slots (reportImage1…{maxSlots})</h4>
             <div className={styles.controlsRow}>
-              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => handleBulkUpload(e.target.files)} />
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => fileInputRef.current?.click()} disabled={busy}>
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => handleBulkUpload(e.target.files)} style={{ display: 'none' }} />
+              <button className="btn btn-small btn-primary" onClick={() => fileInputRef.current?.click()} disabled={busy}>
                 📤 Bulk Upload to Next Free Slots
               </button>
               <div className={styles.inlineRow}>
-                <input className={styles.input} placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} />
-                <input className={styles.input} placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} />
-                <button className={styles.btn} onClick={() => doSwap('reportImage')} disabled={busy}>↔️ Swap</button>
+                <input className="form-input" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} style={{ width: '80px' }} />
+                <input className="form-input" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} style={{ width: '80px' }} />
+                <button className="btn btn-small btn-secondary" onClick={() => doSwap('reportImage')} disabled={busy}>↔️ Swap</button>
               </div>
-              <button className={`${styles.btn} ${styles.btnDanger}`} onClick={() => compact('reportImage')} disabled={busy}>
+              <button className="btn btn-small btn-danger" onClick={() => compact('reportImage')} disabled={busy}>
                 🧹 Compact Indices
               </button>
             </div>
@@ -260,19 +260,19 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
                 <div className={styles.cardHeader}>
                   <span className={styles.slotBadge}>reportImage{index}</span>
                   <div className={styles.controlsRow}>
-                    <label className={styles.btn}>
+                    <label className="btn btn-small btn-secondary">
                       Replace
                       <input
                         type="file"
                         accept="image/*"
-className={styles.hiddenInput}
+                        style={{ display: 'none' }}
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) replaceImageAt(index, file);
                         }}
                       />
                     </label>
-                    <button className={styles.btn} onClick={() => clearSlot('reportImage', index)}>Clear</button>
+                    <button className="btn btn-small btn-secondary" onClick={() => clearSlot('reportImage', index)}>Clear</button>
                   </div>
                 </div>
                 <img src={value} alt={`reportImage${index}`} className={styles.thumb} />
@@ -292,21 +292,21 @@ className={styles.hiddenInput}
           <div className={styles.sectionHeader}>
             <h4 className={styles.sectionTitle}>Text Slots (reportText1…{maxSlots})</h4>
             <div className={styles.controlsRow}>
-              <button className={`${styles.btn} ${styles.btnDanger}`} onClick={() => compact('reportText')} disabled={busy}>🧹 Compact Indices</button>
+              <button className="btn btn-small btn-danger" onClick={() => compact('reportText')} disabled={busy}>🧹 Compact Indices</button>
               <div className={styles.inlineRow}>
-                <input className={styles.input} placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} />
-                <input className={styles.input} placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} />
-                <button className={styles.btn} onClick={() => doSwap('reportText')} disabled={busy}>↔️ Swap</button>
+                <input className="form-input" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} style={{ width: '80px' }} />
+                <input className="form-input" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} style={{ width: '80px' }} />
+                <button className="btn btn-small btn-secondary" onClick={() => doSwap('reportText')} disabled={busy}>↔️ Swap</button>
               </div>
             </div>
           </div>
 
           <div className={styles.card}>
             <div className={styles.inlineRow}>
-              <textarea ref={textBulkRef} className={styles.textarea} placeholder="Paste texts here — one non-empty line per slot (reportTextN)"></textarea>
+              <textarea ref={textBulkRef} className="form-input" placeholder="Paste texts here — one non-empty line per slot (reportTextN)" style={{ minHeight: '96px' }}></textarea>
             </div>
             <div className={styles.inlineRow}>
-              <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleBulkAddTexts} disabled={busy}>➕ Add Lines to Next Free Slots</button>
+              <button className="btn btn-small btn-primary" onClick={handleBulkAddTexts} disabled={busy}>➕ Add Lines to Next Free Slots</button>
               <span className={styles.note}>Tip: Use Clear on individual slots to keep holes without re-numbering.</span>
             </div>
           </div>
@@ -319,13 +319,14 @@ className={styles.hiddenInput}
                 <div className={styles.cardHeader}>
                   <span className={styles.slotBadge}>reportText{index}</span>
                   <div className={styles.controlsRow}>
-                    <button className={styles.btn} onClick={() => clearSlot('reportText', index)}>Clear</button>
+                    <button className="btn btn-small btn-secondary" onClick={() => clearSlot('reportText', index)}>Clear</button>
                   </div>
                 </div>
                 <textarea
-                  className={styles.textarea}
+                  className="form-input"
                   defaultValue={value}
                   onBlur={(e) => saveTextAt(index, e.currentTarget.value)}
+                  style={{ minHeight: '96px' }}
                 />
               </div>
             ))}
