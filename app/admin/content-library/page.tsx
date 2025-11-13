@@ -11,7 +11,7 @@ import ColoredCard from '@/components/ColoredCard';
 import { FormModal } from '@/components/modals';
 import ImageUploadField from '@/components/ImageUploadField';
 import MaterialIcon from '@/components/MaterialIcon';
-import styles from './content-library.module.css';
+import styles from './page.module.css';
 import Image from 'next/image';
 import {
   type ContentAsset,
