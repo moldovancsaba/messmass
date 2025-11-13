@@ -61,41 +61,56 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
     async function loadTemplateAndCharts() {
       try {
         setLoading(true);
+        console.log('🏗️ [BuilderMode] Starting load for projectId:', projectId);
         
         // Fetch report template for this project
+        console.log('🏗️ [BuilderMode] Fetching template from:', `/api/report-config/${projectId}?type=project`);
         const templateRes = await fetch(`/api/report-config/${projectId}?type=project`);
+        console.log('🏗️ [BuilderMode] Template response status:', templateRes.status);
+        
         if (!templateRes.ok) throw new Error('Failed to load report template');
         const templateResponse = await templateRes.json();
+        console.log('🏗️ [BuilderMode] Template response:', JSON.stringify(templateResponse, null, 2));
         
         // WHAT: API returns { success, template, resolvedFrom, source }
         // WHY: Template resolution has hierarchy (project → partner → default → hardcoded)
         if (!templateResponse.success || !templateResponse.template) {
+          console.error('🏗️ [BuilderMode] Template validation failed:', { success: templateResponse.success, hasTemplate: !!templateResponse.template });
           throw new Error('No template found in API response');
         }
         
-        console.log(`🏗️ Builder Mode: Using template from ${templateResponse.resolvedFrom} (${templateResponse.source})`);
+        console.log(`🏗️ [BuilderMode] ✅ Using template from ${templateResponse.resolvedFrom} (${templateResponse.source})`);
+        console.log('🏗️ [BuilderMode] Template has', templateResponse.template.blocks?.length || 0, 'blocks');
         
         // Fetch chart configurations
+        console.log('🏗️ [BuilderMode] Fetching charts from: /api/chart-config/public');
         const chartsRes = await fetch('/api/chart-config/public');
+        console.log('🏗️ [BuilderMode] Charts response status:', chartsRes.status);
+        
         if (!chartsRes.ok) throw new Error('Failed to load chart configurations');
         const chartsResponse = await chartsRes.json();
+        console.log('🏗️ [BuilderMode] Charts response keys:', Object.keys(chartsResponse));
+        console.log('🏗️ [BuilderMode] Charts response:', JSON.stringify(chartsResponse, null, 2));
         
         // WHAT: API returns { success, configurations, meta }
         // WHY: Public chart config endpoint returns structured response
         if (!chartsResponse.success || !chartsResponse.configurations) {
+          console.error('🏗️ [BuilderMode] Charts validation failed:', { success: chartsResponse.success, hasConfigurations: !!chartsResponse.configurations });
           throw new Error('No chart configurations found in API response');
         }
         
-        console.log(`🏗️ Builder Mode: Loaded ${chartsResponse.configurations.length} chart configurations`);
+        console.log(`🏗️ [BuilderMode] ✅ Loaded ${chartsResponse.configurations.length} chart configurations`);
         
         setTemplate(templateResponse.template);
         setCharts(chartsResponse.configurations);
         setError(null);
+        console.log('🏗️ [BuilderMode] ✅ State updated successfully');
       } catch (err) {
-        console.error('BuilderMode load error:', err);
+        console.error('🏗️ [BuilderMode] ❌ Load error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load template');
       } finally {
         setLoading(false);
+        console.log('🏗️ [BuilderMode] Load complete');
       }
     }
     
@@ -104,6 +119,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
 
   // WHAT: Loading state
   if (loading) {
+    console.log('🏗️ [BuilderMode] Rendering: LOADING');
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
         <p>🔄 Loading report template...</p>
@@ -113,6 +129,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
 
   // WHAT: Error state
   if (error) {
+    console.log('🏗️ [BuilderMode] Rendering: ERROR -', error);
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: '#ef4444' }}>
         <p>❌ {error}</p>
@@ -124,7 +141,15 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   }
 
   // WHAT: No template assigned
+  console.log('🏗️ [BuilderMode] Checking template state:', { 
+    hasTemplate: !!template, 
+    hasBlocks: !!template?.blocks,
+    blocksLength: template?.blocks?.length || 0,
+    chartsLength: charts.length
+  });
+  
   if (!template || !template.blocks || template.blocks.length === 0) {
+    console.log('🏗️ [BuilderMode] Rendering: NO TEMPLATE');
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
         <p>📋 No report template assigned to this project</p>
@@ -134,6 +159,8 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
       </div>
     );
   }
+  
+  console.log('🏗️ [BuilderMode] Rendering: BUILDER GRID with', template.blocks.length, 'blocks');
 
   // WHAT: Render template with chart builders
   // WHY: Show the actual report layout with inline inputs

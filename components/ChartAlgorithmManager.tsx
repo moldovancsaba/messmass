@@ -1743,10 +1743,53 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           font-style: italic;
         }
         
+        /* WHAT: Variable picker modal overlay and container styles */
+        /* WHY: Overlay must appear above all content with centered modal */
+        .variable-picker-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          padding: 1rem;
+        }
+        
+        .variable-picker-modal {
+          background: white;
+          border-radius: 0.75rem;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          max-width: 600px;
+          width: 100%;
+          max-height: 80vh;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .variable-picker-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .variable-picker-header h4 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 1.125rem;
+          font-weight: 600;
+        }
+        
         .variable-picker-filters {
           display: flex;
           gap: 1rem;
-          margin-bottom: 1rem;
+          padding: 1.5rem;
+          padding-bottom: 1rem;
         }
         
         .variable-picker-filters input,
@@ -1759,6 +1802,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           overflow-y: auto;
           display: grid;
           gap: 0.5rem;
+          padding: 0 1.5rem 1.5rem 1.5rem;
         }
         
         .variable-picker-item {
