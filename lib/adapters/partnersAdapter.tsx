@@ -170,6 +170,17 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View partner report',
       },
       {
+        label: 'KYC Data',
+        icon: 'table_chart',
+        variant: 'secondary',
+        handler: (partner) => {
+          // WHAT: Open partner KYC data table view (aggregated across all events)
+          // WHY: Display aggregated KYC metrics in structured table format
+          window.open(`/admin/partners/${partner._id}/kyc-data`, '_blank');
+        },
+        title: 'View aggregated KYC data',
+      },
+      {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',

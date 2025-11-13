@@ -212,6 +212,17 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         title: 'Download CSV export',
       },
       {
+        label: 'KYC Data',
+        icon: 'table_chart',
+        variant: 'secondary',
+        handler: (project) => {
+          // WHAT: Open KYC data table view for this event
+          // WHY: Display all KYC variables in structured table format
+          window.open(`/admin/events/${project._id}/kyc-data`, '_blank');
+        },
+        title: 'View KYC data table',
+      },
+      {
         label: 'Report',
         icon: 'visibility',
         variant: 'secondary',
