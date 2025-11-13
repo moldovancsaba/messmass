@@ -110,6 +110,17 @@
   box-shadow: var(--mm-shadow-lg);
 }
 
+.btn-warning {
+  background: var(--mm-warning);
+  color: var(--color-white);
+}
+
+.btn-warning:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-lg);
+}
+
 .btn-danger {
   background: var(--mm-error);
   color: var(--color-white);
