@@ -438,48 +438,74 @@ export default function PartnersAdminPageUnified() {
       ...partnersAdapter,
       listConfig: {
         ...partnersAdapter.listConfig,
-        rowActions: partnersAdapter.listConfig.rowActions?.map(action => ({
-          ...action,
-          handler: (partner: PartnerResponse) => {
-            if (action.label === 'Edit') {
-              openEditForm(partner);
-            } else if (action.label === 'Delete') {
-              handleDeletePartner(partner._id, partner.name);
-            } else if (action.label === 'Report') {
-              // WHAT: Open SharePopup modal with partner report URL and password
-              // WHY: Allow admin to share partner report page with password
-              console.log('🔍 Report clicked:', { name: partner.name, viewSlug: partner.viewSlug, partnerId: partner._id });
-              if (partner.viewSlug) {
-                setSharePartnerId(partner.viewSlug);
-                setSharePopupOpen(true);
-              } else {
-                alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
-              }
-            }
+        rowActions: partnersAdapter.listConfig.rowActions?.map(action => {
+          if (action.label === 'Edit') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => openEditForm(partner)
+            };
           }
-        }))
+          if (action.label === 'Delete') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => handleDeletePartner(partner._id, partner.name)
+            };
+          }
+          if (action.label === 'Report') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => {
+                // WHAT: Open SharePopup modal with partner report URL and password
+                // WHY: Allow admin to share partner report page with password
+                console.log('🔍 Report clicked:', { name: partner.name, viewSlug: partner.viewSlug, partnerId: partner._id });
+                if (partner.viewSlug) {
+                  setSharePartnerId(partner.viewSlug);
+                  setSharePopupOpen(true);
+                } else {
+                  alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+                }
+              }
+            };
+          }
+          // WHAT: Return unchanged action for other buttons (KYC Data, etc.)
+          // WHY: Preserve adapter-defined handlers
+          return action;
+        })
       },
       cardConfig: {
         ...partnersAdapter.cardConfig,
-        cardActions: partnersAdapter.cardConfig.cardActions?.map(action => ({
-          ...action,
-          handler: (partner: PartnerResponse) => {
-            if (action.label === 'Edit') {
-              openEditForm(partner);
-            } else if (action.label === 'Delete') {
-              handleDeletePartner(partner._id, partner.name);
-            } else if (action.label === 'Report') {
-              // WHAT: Open SharePopup modal with partner report URL and password (card view)
-              // WHY: Same behavior as row actions - share modal for partner reports
-              if (partner.viewSlug) {
-                setSharePartnerId(partner.viewSlug);
-                setSharePopupOpen(true);
-              } else {
-                alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
-              }
-            }
+        cardActions: partnersAdapter.cardConfig.cardActions?.map(action => {
+          if (action.label === 'Edit') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => openEditForm(partner)
+            };
           }
-        }))
+          if (action.label === 'Delete') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => handleDeletePartner(partner._id, partner.name)
+            };
+          }
+          if (action.label === 'Report') {
+            return {
+              ...action,
+              handler: (partner: PartnerResponse) => {
+                // WHAT: Open SharePopup modal with partner report URL and password (card view)
+                // WHY: Same behavior as row actions - share modal for partner reports
+                if (partner.viewSlug) {
+                  setSharePartnerId(partner.viewSlug);
+                  setSharePopupOpen(true);
+                } else {
+                  alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+                }
+              }
+            };
+          }
+          // WHAT: Return unchanged action for other buttons (KYC Data, etc.)
+          // WHY: Preserve adapter-defined handlers
+          return action;
+        })
       }
     };
   }, [handleDeletePartner, openEditForm]); // FIXED: partnersAdapter and partners don't need to be in deps
