@@ -1,5 +1,83 @@
 # MessMass Release Notes
 
+## [v11.11.0] — 2025-11-13T09:39:00.000Z
+
+### Summary
+- **UX Fix**: Report Content section now visible in Clicker mode (previously Manual only)
+- **Problem Solved**: Users can now upload images and texts directly from Clicker interface
+- **Impact**: Streamlined workflow - upload content in Clicker, auto-generate chart blocks for reports ✨
+
+### Changed
+
+🔄 **EditorDashboard Component** (`components/EditorDashboard.tsx`)
+- Report Content Manager visibility: Manual only → Clicker + Manual modes (line 785)
+- Section now shows in both primary editing modes
+- Allows image/text uploads with auto-generated chart blocks from Clicker
+
+### User Workflow
+
+**Before (v11.10.0)**:
+- Report Content only visible in Manual mode
+- Users had to switch to Manual to upload images/texts
+- Extra mode switching for simple content uploads
+
+**After (v11.11.0)**:
+1. Go to `/edit/[slug]` in Clicker mode (default)
+2. Scroll to bottom - see 📦 Report Content section
+3. Upload images (🖼️ Images tab) or add texts (📝 Texts tab)
+4. Content auto-generates chart algorithm blocks
+5. Blocks appear immediately in Visualization editor
+
+### Features Available in Clicker
+
+✅ **Image Management**:
+- Bulk upload images to next free slots (`reportImage1...500`)
+- Replace existing images
+- Clear slots (keeps numbering)
+- Swap slot positions
+- Compact indices (re-number)
+
+✅ **Text Management**:
+- Bulk add texts (one per line → free slots)
+- Edit individual text slots with auto-save
+- Clear slots
+- Swap positions
+- Compact indices
+
+✅ **Auto-Generation**:
+- IMAGE charts with 16:9 aspect ratio
+- TEXT charts with article icon
+- Charts appear in Visualization editor's "Standard Charts" list
+- No manual Chart Algorithm Manager work required
+
+### Technical Details
+
+**Modified Files** (1 file):
+- `components/EditorDashboard.tsx` (+4 lines)
+  - Changed condition: `editMode === 'manual'` → `(editMode === 'clicker' || editMode === 'manual')`
+  - Added clarifying comments about auto-generation workflow
+
+### Build Status
+
+✅ **TypeScript**: 0 errors
+✅ **ESLint**: Clean
+✅ **Dev Server**: Compiled successfully in 1486ms
+✅ **Ready**: http://localhost:3000
+
+### User-Facing Impact
+
+🎯 **Reduced Mode Switching**: Upload content without leaving Clicker mode
+⚡ **Faster Workflow**: Single-mode operation for most event editing tasks
+📦 **Better Discovery**: Report content features more visible to users
+✨ **Consistency**: Same upload tools available in both primary edit modes
+
+### Version
+
+**Version**: `11.10.0` → `11.11.0` (MINOR increment)
+- UX improvement: Report Content section visibility expanded to Clicker mode
+
+---
+
 ## [v11.10.0] — 2025-11-13T08:15:00.000Z
 
 ### Summary

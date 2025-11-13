@@ -779,8 +779,10 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         {/* Hashtags are now managed elsewhere in the system */}
         {/* Bitly Links Management Section - MOVED to Edit Project modal in admin/projects */}
 
-        {/* Report Content Manager (Images + Texts) - MANUAL MODE ONLY */}
-        {editMode === 'manual' && (
+        {/* Report Content Manager (Images + Texts) - VISIBLE IN CLICKER & MANUAL MODES */}
+        {/* WHAT: Upload images and texts that auto-generate chart blocks for reports */}
+        {/* WHY: Content uploaded here becomes immediately available in Visualization editor */}
+        {(editMode === 'clicker' || editMode === 'manual') && (
           <ColoredCard>
             <h2 className="section-title">📦 Report Content</h2>
             {/* WHAT: Centralized management for reportImageN / reportTextN slots
