@@ -171,6 +171,8 @@ async function autoMapProjectPartners(dryRun: boolean = true) {
 
     let updated = 0;
     for (const match of matches) {
+      if (!match.partner1) continue;
+
       const update: any = {
         partner1: match.partner1.id
       };
