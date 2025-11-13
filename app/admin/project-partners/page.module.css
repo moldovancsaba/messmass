@@ -1,0 +1,273 @@
+/* WHAT: Styles for project-partner relationship management UI */
+/* WHY: Clean, functional interface for managing partner connections */
+
+.container {
+  padding: var(--mm-space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--mm-space-6);
+}
+
+.title {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 700;
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.subtitle {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-base);
+  margin: 0;
+}
+
+.backButton {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  color: var(--mm-gray-700);
+  text-decoration: none;
+  font-size: var(--mm-font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.backButton:hover {
+  background: var(--mm-gray-50);
+  border-color: var(--mm-gray-400);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-6);
+  padding: var(--mm-space-4);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+}
+
+.filters {
+  display: flex;
+  gap: var(--mm-space-2);
+}
+
+.filterButton,
+.filterActive {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
+  font-size: var(--mm-font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterButton:hover {
+  background: var(--mm-gray-50);
+  border-color: var(--mm-gray-400);
+}
+
+.filterActive {
+  background: var(--mm-primary);
+  color: var(--mm-white);
+  border-color: var(--mm-primary);
+}
+
+.filterActive:hover {
+  background: var(--mm-primary-dark);
+  border-color: var(--mm-primary-dark);
+}
+
+.autoSuggestButton {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-success);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.autoSuggestButton:hover:not(:disabled) {
+  background: var(--mm-success-dark);
+  transform: translateY(-1px);
+}
+
+.autoSuggestButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.infoBox {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  margin-bottom: var(--mm-space-6);
+  color: #1e40af;
+  font-size: var(--mm-font-size-sm);
+}
+
+.infoBox strong {
+  display: block;
+  margin-bottom: var(--mm-space-2);
+}
+
+.infoBox ol {
+  margin: 0;
+  padding-left: var(--mm-space-5);
+}
+
+.infoBox li {
+  margin-bottom: var(--mm-space-1);
+}
+
+.projectsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+.projectCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  transition: all var(--transition-fast);
+}
+
+.projectCard:hover {
+  border-color: var(--mm-gray-300);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.projectHeader {
+  margin-bottom: var(--mm-space-4);
+  padding-bottom: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.projectName {
+  font-size: var(--mm-font-size-lg);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-1) 0;
+}
+
+.editSlug {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+  font-family: 'Courier New', monospace;
+}
+
+.partnerSelectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-4);
+}
+
+.selectorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.label {
+  font-size: var(--mm-font-size-sm);
+  font-weight: 600;
+  color: var(--mm-gray-700);
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.badge {
+  font-size: var(--mm-font-size-xs);
+  font-weight: 500;
+  padding: 2px 8px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: var(--mm-radius-sm);
+}
+
+.select {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.select:hover:not(:disabled) {
+  border-color: var(--mm-gray-400);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--mm-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--mm-gray-50);
+}
+
+.savingIndicator {
+  margin-top: var(--mm-space-3);
+  padding: var(--mm-space-2);
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: var(--mm-radius-md);
+  text-align: center;
+  font-size: var(--mm-font-size-sm);
+  font-weight: 500;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-gray-500);
+  font-size: var(--mm-font-size-lg);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--mm-space-4);
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--mm-space-4);
+  }
+
+  .toolbar {
+    flex-direction: column;
+    gap: var(--mm-space-4);
+    align-items: stretch;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .partnerSelectors {
+    grid-template-columns: 1fr;
+  }
+}
