@@ -19,9 +19,15 @@ interface BuilderModeProps {
 
 interface DataBlock {
   _id: string;
-  chartId: string;
-  width?: number; // optional; fallback computed from chart type/aspect ratio
+  name: string;
+  showTitle?: boolean;
   order: number;
+  isActive: boolean;
+  charts: Array<{
+    chartId: string;
+    width?: number;
+    order: number;
+  }>;
 }
 
 interface ChartConfig {
@@ -169,9 +175,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   
   console.log('🏗️ [BuilderMode] Rendering: BUILDER GRID with', template.dataBlocks.length, 'blocks');
 
-  // WHAT: Compute fallback width for a block without width using chart info
-  const getBlockWidth = (block: DataBlock, chart?: ChartConfig): number => {
-    if (block.width && block.width > 0) return block.width;
+  // WHAT: Compute fallback width for a chart using chart info
+  // WHY: Blocks now have charts array; each chart has optional width
+  const getChartWidth = (chartItem: { width?: number }, chart?: ChartConfig): number => {
+    if (chartItem.width && chartItem.width > 0) return chartItem.width;
     if (!chart) return 3; // safe default
     switch (chart.type) {
       case 'kpi':
@@ -225,10 +232,30 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
       {template.dataBlocks
         .sort((a, b) => a.order - b.order)
         .map((block) => {
-          const chart = charts.find((c) => c.chartId === block.chartId);
+          // WHAT: Builder mode shows inputs for FIRST chart in each block
+          // WHY: Blocks can have multiple charts, but Builder needs one input per block
+          const firstChartItem = block.charts?.[0];
+          if (!firstChartItem) {
+            return (
+              <div 
+                key={block._id} 
+                style={{ 
+                  gridColumn: 'span 3',
+                  padding: '2rem',
+                  backgroundColor: '#fee',
+                  borderRadius: '0.5rem',
+                  color: '#b91c1c'
+                }}
+              >
+                ⚠️ Block has no charts: {block.name}
+              </div>
+            );
+          }
+          
+          const chart = charts.find((c) => c.chartId === firstChartItem.chartId);
           
           if (!chart) {
-            const widthNF = getBlockWidth(block, undefined);
+            const widthNF = getChartWidth(firstChartItem, undefined);
             return (
               <div 
                 key={block._id} 
@@ -240,7 +267,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                   color: '#b91c1c'
                 }}
               >
-                ⚠️ Chart not found: {block.chartId}
+                ⚠️ Chart not found: {firstChartItem.chartId}
               </div>
             );
           }
@@ -301,7 +328,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
               );
           }
           
-          const width = getBlockWidth(block, chart);
+          const width = getChartWidth(firstChartItem, chart);
           return (
             <div key={block._id} style={{ gridColumn: `span ${width}` }}>
               {builderComponent}
