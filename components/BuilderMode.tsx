@@ -78,10 +78,18 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         // Fetch chart configurations
         const chartsRes = await fetch('/api/chart-config/public');
         if (!chartsRes.ok) throw new Error('Failed to load chart configurations');
-        const chartsData = await chartsRes.json();
+        const chartsResponse = await chartsRes.json();
+        
+        // WHAT: API returns { success, configurations, meta }
+        // WHY: Public chart config endpoint returns structured response
+        if (!chartsResponse.success || !chartsResponse.configurations) {
+          throw new Error('No chart configurations found in API response');
+        }
+        
+        console.log(`🏗️ Builder Mode: Loaded ${chartsResponse.configurations.length} chart configurations`);
         
         setTemplate(templateResponse.template);
-        setCharts(chartsData);
+        setCharts(chartsResponse.configurations);
         setError(null);
       } catch (err) {
         console.error('BuilderMode load error:', err);

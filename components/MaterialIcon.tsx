@@ -34,9 +34,9 @@ interface MaterialIconProps {
 }
 
 /**
- * WHAT: Material Icon component with automatic color inheritance
- * WHY: Consistent icon rendering with parent text color (no manual color management)
- * HOW: Uses currentColor CSS keyword to inherit color from parent element
+ * WHAT: Material Icon component with automatic color inheritance and fallback
+ * WHY: Consistent icon rendering with parent text color + fallback when font fails to load
+ * HOW: Uses currentColor CSS keyword + emoji fallback for reliability
  */
 export default function MaterialIcon({ 
   name, 
@@ -50,17 +50,23 @@ export default function MaterialIcon({
     ? 'Material Icons Round' 
     : 'Material Icons Outlined';
   
+  // WHAT: Fallback emoji when Material Icons font fails to load
+  // WHY: Ensures charts always have a visual indicator even if Google Fonts is blocked
+  // HOW: Use font stack with emoji fallback, display emoji if icon text is visible
+  const fallbackEmoji = '📊'; // 📊 chart icon as universal fallback
+  
   return (
     <span 
       className={`material-icons ${className}`}
       style={{ 
-        fontFamily, 
+        fontFamily: `${fontFamily}, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`,
         color: 'currentColor', // WHAT: Inherit text color from parent
         verticalAlign: 'middle', // WHAT: Align with adjacent text
         userSelect: 'none', // WHY: Icons shouldn't be selectable as text
         ...style 
       }}
       aria-hidden="true" // WHY: Decorative icons should be hidden from screen readers
+      data-fallback={fallbackEmoji} // WHAT: Store fallback for CSS ::after pseudo-element
     >
       {name}
     </span>

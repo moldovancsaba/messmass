@@ -87,6 +87,24 @@ export default async function RootLayout({
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >
       <head>
+        {/* WHAT: Preload Material Icons fonts for instant availability
+            WHY: Prevents FOIT (Flash of Invisible Text) on report pages
+            HOW: Preload woff2 font files before stylesheet to prioritize loading */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/materialiconsoutlined/v110/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/materialiconsround/v108/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
             HOW: Load both Outlined and Rounded variants with display=swap for performance */}
