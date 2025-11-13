@@ -4,6 +4,7 @@
 // USAGE: Import and pass to UnifiedAdminPage component
 
 import React from 'react';
+import Image from 'next/image';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { ProjectDTO } from '../types/api';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
@@ -66,11 +67,14 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                 )}
                 
                 {project.partner1?.logoUrl ? (
-                  <img
+                  <Image
                     src={project.partner1.logoUrl}
                     alt={`${project.partner1.name} logo`}
-                    style={partnerLogoStyle}
+                    width={40}
+                    height={40}
+                    style={{ objectFit: 'contain', borderRadius: '4px', flexShrink: 0 }}
                     title={project.partner1.name}
+                    unoptimized
                   />
                 ) : project.partner1 ? (
                   <div style={partnerLogoPlaceholderStyle} />
@@ -79,11 +83,14 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                 <span style={eventNameStyle}>{project.eventName}</span>
                 
                 {project.partner2?.logoUrl ? (
-                  <img
+                  <Image
                     src={project.partner2.logoUrl}
                     alt={`${project.partner2.name} logo`}
-                    style={partnerLogoStyle}
+                    width={40}
+                    height={40}
+                    style={{ objectFit: 'contain', borderRadius: '4px', flexShrink: 0 }}
                     title={project.partner2.name}
+                    unoptimized
                   />
                 ) : project.partner2 ? (
                   <div style={partnerLogoPlaceholderStyle} />

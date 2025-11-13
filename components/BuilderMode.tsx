@@ -20,7 +20,7 @@ interface BuilderModeProps {
 interface DataBlock {
   _id: string;
   chartId: string;
-  width: number;
+  width?: number; // optional; fallback computed from chart type/aspect ratio
   order: number;
 }
 
@@ -45,7 +45,7 @@ interface ReportTemplate {
     tabletUnits: number;
     mobileUnits: number;
   };
-  blocks: DataBlock[];
+  dataBlocks: DataBlock[];
 }
 
 export default function BuilderMode({ projectId, stats, onSave }: BuilderModeProps) {
@@ -54,6 +54,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // WHAT: Track where the template was resolved from (project/partner/default)
+  // WHY: Show clear fallback info to users when event-level template is missing
+  const [resolvedFrom, setResolvedFrom] = useState<string | null>(null);
+  const [resolvedSource, setResolvedSource] = useState<string | null>(null);
 
   // WHAT: Fetch report template and chart configurations
   // WHY: Need to know which blocks to render and their chart definitions
@@ -80,7 +84,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         }
         
         console.log(`🏗️ [BuilderMode] ✅ Using template from ${templateResponse.resolvedFrom} (${templateResponse.source})`);
-        console.log('🏗️ [BuilderMode] Template has', templateResponse.template.blocks?.length || 0, 'blocks');
+        console.log('🏗️ [BuilderMode] Template has', templateResponse.template.dataBlocks?.length || 0, 'blocks');
+        // Save resolution meta for UI banner
+        setResolvedFrom(templateResponse.resolvedFrom || null);
+        setResolvedSource(templateResponse.source || null);
         
         // Fetch chart configurations
         console.log('🏗️ [BuilderMode] Fetching charts from: /api/chart-config/public');
@@ -143,12 +150,12 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   // WHAT: No template assigned
   console.log('🏗️ [BuilderMode] Checking template state:', { 
     hasTemplate: !!template, 
-    hasBlocks: !!template?.blocks,
-    blocksLength: template?.blocks?.length || 0,
+    hasDataBlocks: !!template?.dataBlocks,
+    dataBlocksLength: template?.dataBlocks?.length || 0,
     chartsLength: charts.length
   });
   
-  if (!template || !template.blocks || template.blocks.length === 0) {
+  if (!template || !template.dataBlocks || template.dataBlocks.length === 0) {
     console.log('🏗️ [BuilderMode] Rendering: NO TEMPLATE');
     return (
       <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
@@ -160,33 +167,73 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
     );
   }
   
-  console.log('🏗️ [BuilderMode] Rendering: BUILDER GRID with', template.blocks.length, 'blocks');
+  console.log('🏗️ [BuilderMode] Rendering: BUILDER GRID with', template.dataBlocks.length, 'blocks');
+
+  // WHAT: Compute fallback width for a block without width using chart info
+  const getBlockWidth = (block: DataBlock, chart?: ChartConfig): number => {
+    if (block.width && block.width > 0) return block.width;
+    if (!chart) return 3; // safe default
+    switch (chart.type) {
+      case 'kpi':
+        return 1;
+      case 'text':
+        return 2;
+      case 'pie':
+        return 2;
+      case 'bar':
+        return 3;
+      case 'image':
+        // infer from aspect ratio embedded in elements (Image charts have 1 element)
+        // Note: chart.elements[0].label/color may not include aspectRatio; default to 3
+        return 3;
+      default:
+        return 3;
+    }
+  };
 
   // WHAT: Render template with chart builders
   // WHY: Show the actual report layout with inline inputs
   const gridColumns = template.gridSettings.desktopUnits || 3;
   
   return (
-    <div 
-      className="builder-mode-grid" 
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-        gap: '1.5rem',
-        padding: '1rem'
-      }}
-    >
-      {template.blocks
+    <div>
+      {/* Info banner when using fallback template from partner/default */}
+      {resolvedFrom && resolvedFrom !== 'project' && (
+        <div style={{
+          margin: '0 0 1rem 0',
+          padding: '0.75rem 1rem',
+          backgroundColor: 'rgba(59,130,246,0.08)',
+          border: '1px solid rgba(59,130,246,0.25)',
+          borderRadius: '0.5rem',
+          color: '#1e40af',
+          fontSize: '0.875rem'
+        }}>
+          Using fallback template from <strong style={{ color: '#1d4ed8' }}>{resolvedFrom}</strong>
+          {resolvedSource ? `: ${resolvedSource}` : ''}
+        </div>
+      )}
+
+      <div 
+        className="builder-mode-grid" 
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+          gap: '1.5rem',
+          padding: '1rem'
+        }}
+      >
+      {template.dataBlocks
         .sort((a, b) => a.order - b.order)
         .map((block) => {
           const chart = charts.find((c) => c.chartId === block.chartId);
           
           if (!chart) {
+            const widthNF = getBlockWidth(block, undefined);
             return (
               <div 
                 key={block._id} 
                 style={{ 
-                  gridColumn: `span ${block.width}`,
+                  gridColumn: `span ${widthNF}`,
                   padding: '2rem',
                   backgroundColor: '#fee',
                   borderRadius: '0.5rem',
@@ -254,12 +301,14 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
               );
           }
           
+          const width = getBlockWidth(block, chart);
           return (
-            <div key={block._id} style={{ gridColumn: `span ${block.width}` }}>
+            <div key={block._id} style={{ gridColumn: `span ${width}` }}>
               {builderComponent}
             </div>
           );
         })}
+    </div>
     </div>
   );
 }

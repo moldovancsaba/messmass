@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { SportsDbTeam } from '@/lib/sportsDbTypes';
 import styles from './TheSportsDBSearch.module.css';
 
@@ -76,10 +77,13 @@ export default function TheSportsDBSearch({ onLink, linkedTeam, onUnlink }: TheS
           
           <div className={styles.linkedTeamContent}>
             {linkedTeam.strTeamBadge && (
-              <img
+              <Image
                 src={linkedTeam.strTeamBadge}
                 alt={linkedTeam.strTeam}
                 className={styles.linkedLogo}
+                width={80}
+                height={80}
+                unoptimized
               />
             )}
             <div className={styles.linkedInfo}>
@@ -133,10 +137,13 @@ export default function TheSportsDBSearch({ onLink, linkedTeam, onUnlink }: TheS
                 {searchResults.map((team) => (
                   <div key={team.idTeam} className={styles.resultCard}>
                     {team.strTeamBadge && (
-                      <img
+                      <Image
                         src={team.strTeamBadge}
                         alt={team.strTeam}
                         className={styles.resultLogo}
+                        width={60}
+                        height={60}
+                        unoptimized
                       />
                     )}
                     <div className={styles.resultInfo}>

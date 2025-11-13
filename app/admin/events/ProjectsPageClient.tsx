@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AdminUser } from '@/lib/auth';
 import UnifiedHashtagInput from '@/components/UnifiedHashtagInput';
@@ -683,11 +684,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           
                           {/* WHAT: Partner 1 (Home Team) logo */}
                           {project.partner1?.logoUrl ? (
-                            <img
+                            <Image
                               src={project.partner1.logoUrl}
                               alt={`${project.partner1.name} logo`}
                               className={partnerStyles.partnerLogo}
+                              width={40}
+                              height={40}
                               title={project.partner1.name}
+                              unoptimized
                             />
                           ) : project.partner1 ? (
                             <div className={partnerStyles.partnerLogoPlaceholder} />
@@ -714,11 +718,14 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
                           
                           {/* WHAT: Partner 2 (Away Team) logo */}
                           {project.partner2?.logoUrl ? (
-                            <img
+                            <Image
                               src={project.partner2.logoUrl}
                               alt={`${project.partner2.name} logo`}
                               className={partnerStyles.partnerLogo}
+                              width={40}
+                              height={40}
                               title={project.partner2.name}
+                              unoptimized
                             />
                           ) : project.partner2 ? (
                             <div className={partnerStyles.partnerLogoPlaceholder} />

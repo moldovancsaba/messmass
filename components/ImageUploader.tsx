@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import MaterialIcon from '@/components/MaterialIcon';
 
 interface ImageUploaderProps {
@@ -134,15 +135,18 @@ export default function ImageUploader({
             maxWidth: '400px',
             position: 'relative'
           }}>
-            <img 
+            <Image 
               src={value} 
               alt="Uploaded" 
+              width={400}
+              height={300}
               style={{ 
                 width: '100%', 
                 height: 'auto',
                 borderRadius: 'var(--mm-radius-md)',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }} 
+              }}
+              unoptimized 
             />
             {aspectRatio && (
               <div className="badge badge-secondary" style={{ 

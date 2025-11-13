@@ -4,6 +4,7 @@
 // USAGE: Import and pass to UnifiedAdminPage component
 
 import React from 'react';
+import Image from 'next/image';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { PartnerResponse } from '../partner.types';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
@@ -44,15 +45,16 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         width: '80px',
         render: (partner) =>
           partner.logoUrl ? (
-            <img
+            <Image
               src={partner.logoUrl}
               alt={`${partner.name} logo`}
+              width={60}
+              height={60}
               style={{
-                width: '60px',
-                height: '60px',
                 objectFit: 'contain',
                 borderRadius: '4px',
               }}
+              unoptimized
             />
           ) : (
             <span className="text-gray-400">—</span>

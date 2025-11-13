@@ -87,9 +87,17 @@ export default async function RootLayout({
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >
       <head>
+        {/* WHAT: Preconnect for Google Fonts domain resolution
+            WHY: Establish connection before downloading any font resources
+            HOW: DNS lookup and TCP handshake happen early in page load */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
         {/* WHAT: Preload Material Icons fonts for instant availability
             WHY: Prevents FOIT (Flash of Invisible Text) on report pages
-            HOW: Preload woff2 font files before stylesheet to prioritize loading */}
+            HOW: Preload woff2 font files before stylesheet to prioritize loading
+            NOTE: eslint-disable next line needed because Material Icons are not available via next/font/google */}
+        {/* eslint-disable-next-line @next/next/google-font-preconnect */}
         <link
           rel="preload"
           href="https://fonts.gstatic.com/s/materialiconsoutlined/v110/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2"
@@ -97,6 +105,7 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        {/* eslint-disable-next-line @next/next/google-font-preconnect */}
         <link
           rel="preload"
           href="https://fonts.gstatic.com/s/materialiconsround/v108/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2"
@@ -107,11 +116,17 @@ export default async function RootLayout({
         
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
-            HOW: Load both Outlined and Rounded variants with display=swap for performance */}
+            HOW: Load both Outlined and Rounded variants with display=swap for performance
+            NOTE: Material Icons must be loaded via stylesheet (not next/font/google)
+                  because they are icon fonts requiring CSS class mapping.
+                  App Router loads these globally (correct), but ESLint rule
+                  @next/next/no-page-custom-font is designed for Pages Router only. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" 
           rel="stylesheet"
         />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=swap" 
           rel="stylesheet"

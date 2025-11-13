@@ -11,7 +11,8 @@ import ColoredCard from '@/components/ColoredCard';
 import { FormModal } from '@/components/modals';
 import ImageUploadField from '@/components/ImageUploadField';
 import MaterialIcon from '@/components/MaterialIcon';
-import styles from './page.module.css';
+import styles from './content-library.module.css';
+import Image from 'next/image';
 import {
   type ContentAsset,
   type ContentAssetFormData,
@@ -409,10 +410,13 @@ function AssetCard({
             {/* Preview */}
             {asset.type === 'image' && asset.content.url && (
               <div className={styles.thumb}>
-                <img
+                <Image
                   src={asset.content.url}
                   alt={asset.title}
                   className={styles.thumbImg}
+                  width={160}
+                  height={90}
+                  unoptimized
                 />
               </div>
             )}
@@ -989,7 +993,7 @@ function EditAssetModal({
               <label className="form-label-block">Image</label>
               {form.imageUrl && (
                 <div className={styles.imagePreview}>
-                  <img src={form.imageUrl} alt="Preview" />
+                  <Image src={form.imageUrl} alt="Preview" width={320} height={180} unoptimized />
                 </div>
               )}
               <ImageUploadField

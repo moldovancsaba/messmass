@@ -7,6 +7,7 @@
 
 import React, { useState, useRef } from 'react';
 import styles from './ImageUploadField.module.css';
+import Image from 'next/image';
 
 interface ImageUploadFieldProps {
   label: string;
@@ -101,7 +102,7 @@ export default function ImageUploadField({ label, value, onSave, disabled }: Ima
         // WHAT: Show preview with replace/delete buttons
         // WHY: User can see current image and manage it
         <div className={styles.previewContainer}>
-          <img src={preview} alt={label} className={styles.preview} />
+          <Image src={preview} alt={label} className={styles.preview} width={400} height={300} unoptimized />
           <div className={styles.buttonGroup}>
             <button
               type="button"

@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
@@ -173,7 +174,7 @@ export default function Sidebar() {
           <Link href="/admin" className={styles.logo}>
             {/* WHAT: Logo icon stays same size in both states
                 WHY: Visual consistency - only text hides on collapse */}
-            <img src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} />
+            <Image src="/messmass-logo.png" alt="MessMass" className={styles.logoImage} width={32} height={32} priority />
             
             {/* WHAT: 'messmass' text in Pacifico font, only visible when expanded
                 WHY: User-requested branding with Google Font */}

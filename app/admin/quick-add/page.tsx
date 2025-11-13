@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import ColoredCard from '@/components/ColoredCard';
@@ -706,11 +707,14 @@ export default function QuickAddPage() {
                     
                     {/* Partner 1 (Home Team) logo */}
                     {matchPreview.partner1.logoUrl ? (
-                      <img
+                      <Image
                         src={matchPreview.partner1.logoUrl}
                         alt={`${matchPreview.partner1.name} logo`}
                         className={styles.previewLogo}
+                        width={40}
+                        height={40}
                         title={matchPreview.partner1.name}
+                        unoptimized
                       />
                     ) : (
                       <div className={styles.previewLogoPlaceholder} />
@@ -723,11 +727,14 @@ export default function QuickAddPage() {
                     
                     {/* Partner 2 (Away Team) logo */}
                     {matchPreview.partner2.logoUrl ? (
-                      <img
+                      <Image
                         src={matchPreview.partner2.logoUrl}
                         alt={`${matchPreview.partner2.name} logo`}
                         className={styles.previewLogo}
+                        width={40}
+                        height={40}
                         title={matchPreview.partner2.name}
+                        unoptimized
                       />
                     ) : (
                       <div className={styles.previewLogoPlaceholder} />
@@ -914,11 +921,14 @@ export default function QuickAddPage() {
                     
                     {/* Partner logo */}
                     {partnerEventPreview.partner.logoUrl ? (
-                      <img
+                      <Image
                         src={partnerEventPreview.partner.logoUrl}
                         alt={`${partnerEventPreview.partner.name} logo`}
                         className={styles.previewLogo}
+                        width={40}
+                        height={40}
                         title={partnerEventPreview.partner.name}
+                        unoptimized
                       />
                     ) : (
                       <div className={styles.previewLogoPlaceholder} />

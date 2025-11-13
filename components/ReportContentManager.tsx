@@ -6,6 +6,7 @@
 // HOW: Reuses existing /api/upload-image endpoint and EditorDashboard saveProject()
 
 import React, { useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import styles from './ReportContentManager.module.css';
 
 interface ReportContentManagerProps {
@@ -275,7 +276,7 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
                     <button className="btn btn-small btn-secondary" onClick={() => clearSlot('reportImage', index)}>Clear</button>
                   </div>
                 </div>
-                <img src={value} alt={`reportImage${index}`} className={styles.thumb} />
+                <Image src={value} alt={`reportImage${index}`} className={styles.thumb} width={320} height={180} unoptimized />
                 <div className={styles.note}>{value}</div>
               </div>
             ))}

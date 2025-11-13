@@ -6,6 +6,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { CardViewConfig, getNestedValue } from '@/lib/adminDataAdapters';
 import ColoredCard from './ColoredCard';
 import MaterialIcon from './MaterialIcon';
@@ -110,10 +111,13 @@ export default function UnifiedCardView<T extends { _id: string }>({
                 {/* WHAT: Optional image/icon at top */}
                 {config.imageField && getNestedValue(item, config.imageField as string) && (
                   <div className={styles.cardImage}>
-                    <img
+                    <Image
                       src={getNestedValue(item, config.imageField as string)}
                       alt=""
                       className={styles.image}
+                      width={120}
+                      height={120}
+                      unoptimized
                     />
                   </div>
                 )}

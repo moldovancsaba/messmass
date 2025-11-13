@@ -3,6 +3,7 @@
  * HOW: createPortal renders at document.body + CSS flexbox centering (NO JavaScript positioning) */
 
 'use client';
+import Image from 'next/image';
 
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -95,10 +96,13 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
         {/* WHAT: Image with CSS-only centering
             WHY: Flexbox on modal centers perfectly without JavaScript
             HOW: max-width/max-height constraints + object-fit contain */}
-        <img 
+        <Image 
           src={imageUrl} 
           alt={alt}
           className={styles.image}
+          width={1600}
+          height={900}
+          unoptimized
         />
       </div>
     </div>,

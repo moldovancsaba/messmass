@@ -1,5 +1,29 @@
 # MessMass Release Notes
 
+## [v11.12.0] — 2025-11-13T09:58:00.000Z
+
+### Summary
+- BuilderMode now respects API failover and renders partner template when event template is missing
+- Fixed mapping for `dataBlocks` (was incorrectly checking `blocks`)
+- Added safe width inference for blocks missing width
+
+### Changed
+
+🔧 `components/BuilderMode.tsx`
+- Use `template.dataBlocks` instead of `template.blocks`
+- Show info banner when using fallback template (partner/default)
+- Compute fallback width per chart type (kpi=1, text=2, pie=2, bar=3, image=3)
+
+### Why it matters
+- Reporting already used partner fallback; Builder now matches that behavior
+- Eliminates "No template assigned" false negative when partner template exists
+
+### Version
+
+`11.11.0` → `11.12.0` (MINOR)
+
+---
+
 ## [v11.11.0] — 2025-11-13T09:39:00.000Z
 
 ### Summary

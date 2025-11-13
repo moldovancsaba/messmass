@@ -4,6 +4,7 @@ import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedPageHero.module.css';
+import Image from 'next/image';
 
 interface Partner {
   _id: string;
@@ -90,11 +91,14 @@ export default function UnifiedPageHero({
             partner1 && (
               <div className={styles.partnerContainer}>
                 {partner1.logoUrl ? (
-                  <img 
+                  <Image 
                     src={partner1.logoUrl} 
                     alt={partner1.name}
                     className={styles.partnerLogo}
+                    width={128}
+                    height={128}
                     title={partner1.name}
+                    unoptimized
                   />
                 ) : (
                   <div className={styles.partnerEmoji} title={partner1.name}>
@@ -192,11 +196,14 @@ export default function UnifiedPageHero({
             /* WHAT: Single partner spotlight mode - logo on right */
             partner1?.logoUrl ? (
               <div className={styles.partnerLogoOnly}>
-                <img 
+                <Image 
                   src={partner1.logoUrl} 
                   alt={partner1.name}
                   className={styles.partnerLogoLarge}
+                  width={192}
+                  height={192}
                   title={partner1.name}
+                  unoptimized
                 />
               </div>
             ) : null
@@ -205,11 +212,14 @@ export default function UnifiedPageHero({
             partner2 && (
               <div className={styles.partnerContainer}>
                 {partner2.logoUrl ? (
-                  <img 
+                  <Image 
                     src={partner2.logoUrl} 
                     alt={partner2.name}
                     className={styles.partnerLogo}
+                    width={128}
+                    height={128}
                     title={partner2.name}
+                    unoptimized
                   />
                 ) : (
                   <div className={styles.partnerEmoji} title={partner2.name}>

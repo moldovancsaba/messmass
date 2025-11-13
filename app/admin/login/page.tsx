@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ColoredCard from '@/components/ColoredCard'
+import Image from 'next/image'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -63,7 +64,7 @@ export default function AdminLogin() {
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="login-logo-container">
-            <img src="/messmass-logo.png" alt="MessMass" className="login-logo" />
+            <Image src="/messmass-logo.png" alt="MessMass" className="login-logo" width={48} height={48} priority />
           </div>
           <h1 className="title login-title">
             MessMass Admin

@@ -1405,22 +1405,21 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           </div>
       </FormModal>
       
-      {/* WHAT: Variable Picker Modal - uses inline styles for now
-       * WHY: Complex nested modal requiring custom styling
-       * TODO: Could be migrated to BaseModal in future if needed */}
+      {/* WHAT: Variable Picker Modal - uses unified FormModal component
+       * WHY: Consistent with project standards, reuses existing modal infrastructure */}
       {showVariablePicker && (
-        <div className="variable-picker-overlay">
-          <div className="variable-picker-modal">
-            <div className="variable-picker-header">
-              <h4>Select Variable for Element {showVariablePicker.elementIndex + 1}</h4>
-              <button 
-                className="btn btn-small btn-secondary"
-                onClick={() => setShowVariablePicker(null)}
-              >
-                ✕
-              </button>
-            </div>
-            
+        <FormModal
+          isOpen={true}
+          onClose={() => {
+            setShowVariablePicker(null);
+            setVariableSearchTerm('');
+          }}
+          onSubmit={() => { /* Variable picker has no submit; close via item click */ }}
+          title={`Select Variable for Element ${showVariablePicker.elementIndex + 1}`}
+          size="md"
+          customFooter={<></>}
+        >
+          <div className="variable-picker-content">
             <div className="variable-picker-filters">
               <input
                 type="text"
@@ -1457,13 +1456,13 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               ))}
             </div>
           </div>
-        </div>
+        </FormModal>
       )}
 
       <style jsx>{`
-        /* WHAT: CSS-in-JS styles for ChartAlgorithmManager form and Variable Picker
+        /* WHAT: CSS-in-JS styles for ChartAlgorithmManager form elements and content
          * WHY: Component-scoped styles for complex chart editor interface
-         * NOTE: Main modal uses FormModal component, only Variable Picker uses inline */
+         * NOTE: Both main editor and variable picker use FormModal component */
         .form-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1743,53 +1742,21 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           font-style: italic;
         }
         
-        /* WHAT: Variable picker modal overlay and container styles */
-        /* WHY: Overlay must appear above all content with centered modal */
-        .variable-picker-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          padding: 1rem;
-        }
-        
-        .variable-picker-modal {
-          background: white;
-          border-radius: 0.75rem;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-          max-width: 600px;
-          width: 100%;
-          max-height: 80vh;
+        /* WHAT: Variable picker content wrapper */
+        /* WHY: Container for filters and list within FormModal */
+        .variable-picker-content {
           display: flex;
           flex-direction: column;
-        }
-        
-        .variable-picker-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem;
-          border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .variable-picker-header h4 {
-          margin: 0;
-          color: #1f2937;
-          font-size: 1.125rem;
-          font-weight: 600;
+          gap: 0;
+          min-height: 400px;
+          max-height: 60vh;
         }
         
         .variable-picker-filters {
           display: flex;
           gap: 1rem;
-          padding: 1.5rem;
-          padding-bottom: 1rem;
+          padding: 0 0 1rem 0;
+          border-bottom: 1px solid #e5e7eb;
         }
         
         .variable-picker-filters input,
@@ -1802,7 +1769,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
           overflow-y: auto;
           display: grid;
           gap: 0.5rem;
-          padding: 0 1.5rem 1.5rem 1.5rem;
+          padding: 1rem 0;
         }
         
         .variable-picker-item {

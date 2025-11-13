@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './ResourceLoader.module.css';
+import NextImage from 'next/image';
 
 interface Partner {
   name: string;
@@ -137,10 +138,13 @@ export default function ResourceLoader({
           {/* WHAT: Partner logo if available */}
           {partner?.logoUrl && (
             <div className={styles.logoWrapper}>
-              <img 
+              <NextImage 
                 src={partner.logoUrl} 
                 alt={partner.name}
                 className={styles.logo}
+                width={120}
+                height={120}
+                unoptimized
               />
             </div>
           )}
