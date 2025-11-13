@@ -65,14 +65,22 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         // Fetch report template for this project
         const templateRes = await fetch(`/api/report-config/${projectId}?type=project`);
         if (!templateRes.ok) throw new Error('Failed to load report template');
-        const templateData = await templateRes.json();
+        const templateResponse = await templateRes.json();
+        
+        // WHAT: API returns { success, template, resolvedFrom, source }
+        // WHY: Template resolution has hierarchy (project → partner → default → hardcoded)
+        if (!templateResponse.success || !templateResponse.template) {
+          throw new Error('No template found in API response');
+        }
+        
+        console.log(`🏗️ Builder Mode: Using template from ${templateResponse.resolvedFrom} (${templateResponse.source})`);
         
         // Fetch chart configurations
         const chartsRes = await fetch('/api/chart-config/public');
         if (!chartsRes.ok) throw new Error('Failed to load chart configurations');
         const chartsData = await chartsRes.json();
         
-        setTemplate(templateData);
+        setTemplate(templateResponse.template);
         setCharts(chartsData);
         setError(null);
       } catch (err) {
