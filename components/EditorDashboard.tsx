@@ -9,6 +9,7 @@ import ImageUploadField from './ImageUploadField';
 import ImageUploader from './ImageUploader';
 import TextareaField from './TextareaField';
 import ReportContentManager from './ReportContentManager';
+import BuilderMode from './BuilderMode';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -95,7 +96,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [hashtags, setHashtags] = useState<string[]>(initialProject.hashtags || []);
   const [categorizedHashtags, setCategorizedHashtags] = useState<{ [categoryName: string]: string[] }>(initialProject.categorizedHashtags || {});
-  const [editMode, setEditMode] = useState<'clicker' | 'manual'>('clicker'); // New state for edit mode
+  const [editMode, setEditMode] = useState<'clicker' | 'manual' | 'builder'>('clicker'); // Edit mode: clicker, manual, or builder
 
   // Variables-config flags fetched from API
   const [varsConfig, setVarsConfig] = useState<VariableWithFlags[]>([]);
@@ -521,20 +522,57 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 {saveStatus === 'error' && '❌ Save Error'}
                 {saveStatus === 'idle' && '📝 Ready'}
               </p>
-              {/* Mode Toggle Button */}
+              {/* Mode Toggle Button - cycles through 3 modes */}
               <button
-                onClick={() => setEditMode(editMode === 'clicker' ? 'manual' : 'clicker')}
-                className={`btn btn-small ${editMode === 'clicker' ? 'btn-primary' : 'btn-success'} btn-full mt-2`}
+                onClick={() => {
+                  if (editMode === 'clicker') setEditMode('manual');
+                  else if (editMode === 'manual') setEditMode('builder');
+                  else setEditMode('clicker');
+                }}
+                className={`btn btn-small ${
+                  editMode === 'clicker' ? 'btn-primary' :
+                  editMode === 'manual' ? 'btn-success' :
+                  'btn-warning'
+                } btn-full mt-2`}
               >
-                {editMode === 'clicker' ? '🖱️ Clicker' : '✏️ Manual'}
+                {editMode === 'clicker' && '🖱️ Clicker'}
+                {editMode === 'manual' && '✏️ Manual'}
+                {editMode === 'builder' && '🏗️ Builder'}
               </button>
+              
+              {/* Save Button - visible for Manual & Builder modes */}
+              {(editMode === 'manual' || editMode === 'builder') && (
+                <button
+                  onClick={() => {
+                    // Manual save trigger (stats already saved via auto-save on blur)
+                    saveProject(project.stats);
+                  }}
+                  disabled={saveStatus === 'saving'}
+                  className="btn btn-small btn-primary btn-full mt-2"
+                >
+                  {saveStatus === 'saving' ? '💾 Saving...' : '💾 Save'}
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <div className="content-grid">
-        {/* Groups-driven rendering only (no legacy sections) */}
+        {/* WHAT: Switch rendering based on edit mode */}
+        {/* WHY: Builder mode shows report template layout, Clicker/Manual show variable groups */}
+        {editMode === 'builder' ? (
+          <BuilderMode 
+            projectId={project._id as string} 
+            stats={project.stats as any}
+            onSave={(newStats) => {
+              setProject(prev => ({ ...prev, stats: newStats as any }));
+              saveProject(newStats as any);
+            }}
+          />
+        ) : (
+          // Clicker & Manual modes: Groups-driven rendering
+          <>
         {groups
           .filter(g => {
             // WHAT: Filter groups by visibility flags based on current edit mode
@@ -756,6 +794,8 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
               }}
             />
           </ColoredCard>
+        )}
+        </>
         )}
       </div>
     </div>
