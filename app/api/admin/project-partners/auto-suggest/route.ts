@@ -51,7 +51,7 @@ function findBestPartnerMatch(teamName: string, partners: any[]): { partner: any
     } else {
       const partnerWords = partnerLower.split(/\s+/);
       const matchingWords = teamWords.filter(word => 
-        partnerWords.some(pw => pw.includes(word) || word.includes(pw))
+        partnerWords.some((pw: string) => pw.includes(word) || word.includes(pw))
       );
       score = (matchingWords.length / teamWords.length) * 60;
     }
