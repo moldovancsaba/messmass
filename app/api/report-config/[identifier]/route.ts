@@ -23,6 +23,54 @@ async function resolveReportTemplate(
 
   console.log(`🔍 Resolving template for ${entityType}: ${identifier}`);
 
+  /**
+   * WHAT: Populate template dataBlocks with full block documents
+   * WHY: Template only has blockId references, need full blocks with chartIds
+   * HOW: Fetch data_blocks documents for each blockId in template
+   */
+  async function populateDataBlocks(template: any): Promise<any> {
+    if (!template.dataBlocks || template.dataBlocks.length === 0) {
+      return template;
+    }
+
+    const dataBlocksCollection = db.collection('data_blocks');
+    const blockIds = template.dataBlocks.map((ref: any) => 
+      typeof ref.blockId === 'string' && ObjectId.isValid(ref.blockId)
+        ? new ObjectId(ref.blockId)
+        : ref.blockId
+    );
+
+    const blocks = await dataBlocksCollection.find({
+      _id: { $in: blockIds }
+    }).toArray();
+
+    // Map blocks back to template order with full block data
+    const populatedBlocks = template.dataBlocks.map((ref: any) => {
+      const blockId = ref.blockId.toString();
+      const block = blocks.find(b => b._id.toString() === blockId);
+      
+      if (!block) {
+        console.warn(`⚠️  Block not found: ${blockId}`);
+        return null;
+      }
+
+      return {
+        _id: block._id.toString(),
+        chartId: block.chartIds?.[0] || null, // Use first chartId for Builder compatibility
+        chartIds: block.chartIds || [],
+        width: block.width || 3,
+        order: ref.order,
+        title: block.title,
+        showTitle: block.showTitle
+      };
+    }).filter((b: any) => b !== null);
+
+    return {
+      ...template,
+      dataBlocks: populatedBlocks
+    };
+  }
+
   // ==========================================
   // LEVEL 1: Project-Specific Template
   // ==========================================
@@ -47,8 +95,9 @@ async function resolveReportTemplate(
         const template = await templatesCollection.findOne({ _id: templateId });
         if (template) {
           console.log(`✅ Using project-specific template: ${template.name}`);
+          const populated = await populateDataBlocks(template);
           return {
-            template: template as ReportTemplate,
+            template: populated as ReportTemplate,
             resolvedFrom: 'project',
             source: project.eventName || project._id.toString()
           };
@@ -72,8 +121,9 @@ async function resolveReportTemplate(
           const template = await templatesCollection.findOne({ _id: templateId });
           if (template) {
             console.log(`✅ Using partner template: ${template.name} (via ${partner.name})`);
+            const populated = await populateDataBlocks(template);
             return {
-              template: template as ReportTemplate,
+              template: populated as ReportTemplate,
               resolvedFrom: 'partner',
               source: partner.name || partner._id.toString()
             };
@@ -105,8 +155,9 @@ async function resolveReportTemplate(
         const template = await templatesCollection.findOne({ _id: templateId });
         if (template) {
           console.log(`✅ Using partner-specific template: ${template.name}`);
+          const populated = await populateDataBlocks(template);
           return {
-            template: template as ReportTemplate,
+            template: populated as ReportTemplate,
             resolvedFrom: 'partner',
             source: partner.name || partner._id.toString()
           };
@@ -124,8 +175,9 @@ async function resolveReportTemplate(
     const defaultTemplate = await templatesCollection.findOne({ isDefault: true });
     if (defaultTemplate) {
       console.log(`✅ Using default template: ${defaultTemplate.name}`);
+      const populated = await populateDataBlocks(defaultTemplate);
       return {
-        template: defaultTemplate as ReportTemplate,
+        template: populated as ReportTemplate,
         resolvedFrom: 'default',
         source: 'system-default'
       };
