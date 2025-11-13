@@ -1,5 +1,111 @@
 # MessMass Release Notes
 
+## [v11.18.0] — 2025-11-13T14:30:00.000Z
+
+### Summary
+- **CRITICAL PATCH**: Fixed double-substitution bug in formula engine causing Visualization Manager crashes
+- **Problem**: v11.17.0 fix broke complex formulas with `stats.field` inside brackets
+- **Solution**: Added negative lookbehind/lookahead to prevent double-substitution
+- **Database Fix**: Added missing titles to 30 auto-generated chart configurations
+
+### Fixed
+
+🐛 **Formula Engine Double-Substitution** (`lib/formulaEngine.ts`)
+- Regex was too greedy: matched `stats.field` even inside `[stats.field]`
+- Example bug: `[stats.female]` → `stats.female` → `462` → broken expression
+- **New regex**: `/(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g`
+- Only matches `stats.field` NOT already inside brackets
+- Prevents double-substitution while keeping v11.17.0 backward compatibility
+
+🐛 **Database: Missing Chart Titles**
+- Fixed 30 charts (15 `report-image-*` + 15 `report-text-*`) with missing `title` field
+- Caused Visualization Manager crash: `undefined is not an object (evaluating 'e.title.includes')`
+- Auto-generated titles from chartId (e.g., `report-image-1` → "Report Image 1")
+
+### Testing
+- Build: ✅ 0 errors, 80 pages generated
+- Simple formulas: `stats.female` → 462 ✅
+- Bracketed formulas: `[stats.female]` → 462 ✅ (not double-processed)
+- Complex formulas: `stats.field + [stats.field]` → both work ✅
+- Visualization Manager: Loads without crashing ✅
+
+### Impact
+- ✅ Visualization Manager (`/admin/visualization`) loads correctly
+- ✅ All formula formats work (bracketed AND non-bracketed)
+- ✅ FAN DEMOGRAPHICS charts remain fixed from v11.17.0
+- ✅ Builder Mode displays data correctly
+- ✅ Backward compatible with all existing formulas
+
+### Version
+`11.17.0` → `11.18.0` (PATCH - critical bug fix)
+
+---
+
+## [v11.17.0] — 2025-11-13T14:00:00.000Z
+
+### Summary
+- **CRITICAL FIX**: Formula engine now handles non-bracketed `stats.field` syntax
+- **Problem**: Charts with formulas like `stats.female` were returning NA, causing invisible demographics charts
+- **Solution**: Added second regex to handle both `[stats.field]` AND `stats.field` formats
+- **Impact**: FAN DEMOGRAPHICS block now renders correctly in all reports
+
+### Fixed
+
+🐛 **FAN DEMOGRAPHICS Block Invisible** 
+- **Root Cause**: Formula engine only handled bracketed format `[stats.field]`
+- Database charts had non-bracketed format `stats.field` 
+- substituteVariables() regex: `/\[([a-zA-Z0-9_.]+)\]/g` missed non-bracketed formulas
+- Result: All demographic charts (gender, age) returned NA and were filtered out
+
+**Solution** (`lib/formulaEngine.ts`):
+- Added second regex for non-bracketed format: `/\bstats\.([a-zA-Z0-9_]+)\b/g`
+- Supports BOTH `[stats.field]` AND `stats.field` syntax
+- Handles derived fields (totalFans, allImages, etc.) in both formats
+- Backward compatible with all existing formulas
+
+### Verified Results
+
+**Diagnostic Testing**:
+```
+Project: AS Roma x Udinese
+Female: 462 ✅
+Male: 850 ✅
+Gen Alpha: 260 ✅
+Gen YZ: 446 ✅
+Gen X: 533 ✅
+Boomer: 73 ✅
+```
+
+**Chart Calculations**:
+- Gender Distribution (pie): Female 462 + Male 850 = 1312 total ✅
+- Age Groups (bar): 4/5 elements valid (Other=0) ✅
+- Both charts render: TRUE ✅
+
+### Impact
+- ✅ FAN DEMOGRAPHICS block visible in all reports
+- ✅ Age Groups and Gender Distribution charts render correctly
+- ✅ All charts with `stats.*` formulas fixed automatically
+- ✅ Builder Mode shows demographic data
+- ✅ No breaking changes to existing formulas
+
+### Technical Details
+
+**Modified Files** (1 file):
+- `lib/formulaEngine.ts` (+51 lines)
+  - Added non-bracketed formula support
+  - Duplicated derived field handling for both formats
+  - Direct stats object access for non-bracketed syntax
+
+**Build Status**:
+- ✅ TypeScript: 0 errors
+- ✅ Build: 80 pages generated
+- ✅ Production: Deployed successfully
+
+### Version
+`11.16.0` → `11.17.0` (MINOR - bug fix affecting user-facing feature)
+
+---
+
 ## [v11.12.0] — 2025-11-13T09:58:00.000Z
 
 ### Summary

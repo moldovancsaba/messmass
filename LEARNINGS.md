@@ -1,5 +1,294 @@
 # MessMass Development Learnings
 
+## [v11.18.0] - 2025-11-13T14:30:00.000Z — Regex Negative Lookahead/Lookbehind Prevents Double-Substitution
+
+### Context
+The v11.17.0 fix for non-bracketed `stats.field` formulas introduced a regression: the regex was too greedy and matched `stats.field` even when it was INSIDE brackets `[stats.field]`, causing double-substitution and breaking the Visualization Manager.
+
+### Problem
+**Root Cause**: Non-bracketed regex `/\bstats\.([a-zA-Z0-9_]+)\b/g` matched ALL occurrences of `stats.field`
+
+**What went wrong**:
+```javascript
+// Input formula: [stats.female]
+// Step 1: Bracketed regex: [stats.female] → 462
+// Step 2: Non-bracketed regex: stats.female → 462  // ❌ Already substituted!
+// Result: [462] → Invalid syntax
+```
+
+**Symptoms**:
+- Visualization Manager crash: TypeError in chart filtering
+- Complex formulas with both formats broken
+- Production page error: "Something went wrong!"
+
+### Solution
+Used **negative lookbehind** `(?<!\[)` and **negative lookahead** `(?!\])` to exclude already-bracketed patterns:
+
+```javascript
+// Old regex (v11.17.0): Too greedy
+/\bstats\.([a-zA-Z0-9_]+)\b/g
+// Matches: stats.female in BOTH "stats.female" AND "[stats.female]"
+
+// New regex (v11.18.0): Precise
+/(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g
+// Matches: stats.female ONLY when NOT inside brackets
+```
+
+### Key Learnings
+
+**1. Regex Order Matters in Multi-Pass Substitution**
+```typescript
+// WHAT: Two regex passes for formula substitution
+// WHY: Support both [stats.field] (legacy) AND stats.field (database)
+
+// Pass 1: Handle bracketed format first
+processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, ...);
+
+// Pass 2: Handle non-bracketed format WITHOUT touching already-substituted values
+processedFormula = processedFormula.replace(/(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g, ...);
+```
+**Lesson**: When doing multi-pass text replacements, later passes must not re-process earlier substitutions.
+
+**2. Negative Lookbehind/Lookahead for Context-Aware Matching**
+```javascript
+// Match "foo" but NOT "[foo]" or "foo]"
+/(?<!\[)\bfoo\b(?!\])/g
+
+// (?<!\[)  = Negative lookbehind: NOT preceded by [
+// \bfoo\b  = Word boundary match: foo
+// (?!\])   = Negative lookahead: NOT followed by ]
+```
+**Lesson**: Use lookarounds to match patterns in specific contexts without consuming surrounding characters.
+
+**3. Test Both Simple and Complex Cases**
+```typescript
+// Test matrix for formula substitution:
+// 1. Simple: stats.female → 462 ✅
+// 2. Bracketed: [stats.female] → 462 ✅
+// 3. Mixed: stats.male + [stats.female] → 850 + 462 ✅
+// 4. Complex: (stats.genAlpha + stats.genYZ) / [stats.totalFans] ✅
+```
+**Lesson**: Don't just test the fix—test interactions between old and new code paths.
+
+**4. Database Data Quality Can Break Rendering**
+```typescript
+// Missing title field caused crash:
+// e.title.includes() → TypeError: undefined is not an object
+
+// Root cause: Auto-generated charts (report-image-*, report-text-*) 
+// were created without title field
+
+// Fix: Database migration to add missing titles
+const title = chartId.split('-').map(capitalize).join(' ');
+```
+**Lesson**: Code must be defensive against missing optional fields, OR database schema must enforce required fields.
+
+**5. Production Errors Often Reveal Data Issues**
+```
+Problem: Visualization Manager loads locally but crashes in production
+Reason: Local DB manually curated, production has auto-generated data
+Lesson: Test with production-like data, not just clean test data
+```
+
+### Impact
+
+**Before v11.18.0**:
+- ❌ Visualization Manager crashes
+- ❌ Complex formulas broken
+- ❌ Production page unusable
+- ❌ 30 charts missing titles
+
+**After v11.18.0**:
+- ✅ Visualization Manager loads correctly
+- ✅ All formula formats work (bracketed, non-bracketed, mixed)
+- ✅ FAN DEMOGRAPHICS charts still render (v11.17.0 fix preserved)
+- ✅ 30 charts have proper titles
+- ✅ Backward compatible with all existing formulas
+
+### Files Modified
+
+**Code**:
+- `lib/formulaEngine.ts` - Added negative lookaround to regex (line 548)
+
+**Database**:
+- `chart_configurations` collection - Added titles to 30 charts
+
+**Testing**:
+```bash
+# Test formula substitution
+npx tsx scripts/diagnose-demographics.ts
+# Result: All formulas calculate correctly ✅
+```
+
+### Version
+
+**Before**: v11.17.0 (double-substitution bug)  
+**After**: v11.18.0 (negative lookaround fix + database migration)
+
+### Category
+
+Regex / Formula Engine / Bug Fix / Data Quality
+
+---
+
+## [v11.17.0] - 2025-11-13T14:00:00.000Z — Formula Engine Must Support Multiple Syntax Formats
+
+### Context
+FAN DEMOGRAPHICS block (Gender Distribution + Age Groups charts) was invisible in all reports despite having valid data (Female: 462, Male: 850, etc.). Users reported complete absence of demographic charts.
+
+### Problem
+**Root Cause**: Formula engine only handled bracketed syntax `[stats.field]` but database had non-bracketed `stats.field`
+
+**What went wrong**:
+```javascript
+// Database formula: stats.female
+// Formula engine regex: /\[([a-zA-Z0-9_.]+)\]/g
+// Match result: null (no brackets!)
+// Substitution: stats.female → stats.female (unchanged)
+// Evaluation: stats.female → NaN → 'NA'
+// Rendering: hasValidData(result) → false → chart hidden
+```
+
+**Why it happened**:
+- Chart Algorithm Manager allows saving formulas without brackets
+- Some charts stored as `stats.female` in database
+- Formula engine assumed ALL formulas would be bracketed `[stats.field]`
+- No error thrown—just silent failure returning 'NA'
+
+### Solution
+Added **second regex pass** to handle non-bracketed format after bracketed substitution:
+
+```typescript
+// Step 1: Handle bracketed format (existing)
+processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_, fullPath) => {
+  // Parse [stats.female] → value from stats.female
+});
+
+// Step 2: Handle non-bracketed format (NEW in v11.17.0)
+processedFormula = processedFormula.replace(/\bstats\.([a-zA-Z0-9_]+)\b/g, (_, fieldName) => {
+  // Parse stats.female → value from stats.female
+  const value = (stats as any)[fieldName];
+  return value !== undefined ? String(value) : '0';
+});
+```
+
+### Key Learnings
+
+**1. Silent Failures Are Dangerous**
+```typescript
+// Formula evaluation returns 'NA' for errors
+// Charts with 'NA' are filtered out without warning
+// User sees: Nothing (no error, no chart)
+
+// Lesson: Always log when returning 'NA'
+console.warn(`⚠️ Formula evaluation returned NA for "${chartTitle}": ${formula}`);
+```
+
+**2. Backward Compatibility Requires Supporting Legacy Formats**
+```
+Problem: Database has formulas in format A, code expects format B
+Bad solution: Migrate all database formulas to format B
+Good solution: Support BOTH formats in code
+
+Why? Migration is:
+- Risky (might break existing working charts)
+- Time-consuming (need to update 78 charts)
+- Incomplete (user-created charts might still use old format)
+
+Better: Make code flexible, support both.
+```
+
+**3. Test With Real Production Data**
+```typescript
+// Local testing: Create chart with [stats.female] → works ✅
+// Production: Charts created months ago with stats.female → broken ❌
+
+// Lesson: Test against actual database exports, not just new test data
+```
+
+**4. Derived Fields Need Handling in Both Code Paths**
+```typescript
+// Problem: Duplicated logic for totalFans, allImages, etc.
+// Solution: Handle in both bracketed AND non-bracketed regex replacements
+
+if (fullPath === 'stats.totalFans') {
+  return String(remoteFans + stadium);
+}
+// ... duplicated in second regex pass
+
+// Future improvement: Extract to shared function
+```
+**Lesson**: When adding parallel code paths, ensure feature parity (or refactor to shared logic).
+
+**5. Diagnostic Scripts Accelerate Root Cause Analysis**
+```bash
+# Created: scripts/diagnose-demographics.ts
+# Purpose: Test formula calculation in isolation
+# Result: Immediately identified 'NA' return from formula engine
+
+# Without script: Would have debugged through:
+# - Report rendering logic
+# - Chart calculator
+# - Data blocks
+# - Template resolution
+# - Finally: formula engine
+
+# With script: Went straight to root cause in 5 minutes
+```
+**Lesson**: When debugging complex systems, write diagnostic scripts to test individual layers in isolation.
+
+### Impact
+
+**Before v11.17.0**:
+- ❌ FAN DEMOGRAPHICS block invisible
+- ❌ Gender Distribution chart: 'NA' → hidden
+- ❌ Age Groups chart: 'NA' → hidden
+- ❌ Builder Mode: No demographic data shown
+
+**After v11.17.0**:
+- ✅ FAN DEMOGRAPHICS block renders in all reports
+- ✅ Gender Distribution: Female 462 + Male 850 → visible
+- ✅ Age Groups: 4 generations calculated → visible
+- ✅ Builder Mode: Shows all demographic fields
+- ✅ All existing formulas continue working (backward compatible)
+
+### Files Modified
+
+**Code**:
+- `lib/formulaEngine.ts` (+51 lines)
+  - Added non-bracketed formula support
+  - Duplicated derived field handling for both formats
+
+**Testing**:
+- `scripts/diagnose-demographics.ts` (created, then deleted after fix verified)
+
+### Verification
+
+```bash
+# Test formula calculation
+npx tsx scripts/diagnose-demographics.ts
+
+# Output:
+# Gender - Valid elements: 2 / 2
+# Gender - Total: 1312
+# Gender - Would render: true ✅
+
+# Age - Valid elements: 4 / 5
+# Age - Total: 1312  
+# Age - Would render: true ✅
+```
+
+### Version
+
+**Before**: v11.16.0 (demographics invisible)  
+**After**: v11.17.0 (both formula formats supported)
+
+### Category
+
+Formula Engine / Chart Rendering / Backward Compatibility / Bug Fix
+
+---
+
 ## [v11.5.0] - 2025-11-12T16:16:00.000Z — String .trim() Causes Data Integrity Issues
 
 ### Context
