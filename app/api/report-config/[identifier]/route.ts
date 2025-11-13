@@ -56,11 +56,11 @@ async function resolveReportTemplate(
 
       return {
         _id: block._id.toString(),
-        chartId: block.chartIds?.[0] || null, // Use first chartId for Builder compatibility
-        chartIds: block.chartIds || [],
+        chartId: block.charts?.[0]?.chartId || null, // Use first chart's chartId for Builder compatibility
+        chartIds: block.charts?.map((c: any) => c.chartId) || [],
         width: block.width || 3,
         order: ref.order,
-        title: block.title,
+        title: block.name,
         showTitle: block.showTitle
       };
     }).filter((b: any) => b !== null);
