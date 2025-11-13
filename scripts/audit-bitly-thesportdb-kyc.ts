@@ -80,8 +80,8 @@ async function auditBitlyAndSportsDbData() {
     // 2. Check projects with Bitly data in stats
     const projectsWithBitly = await projects.countDocuments({
       $or: [
-        { 'stats.totalBitlyClicks': { $exists: true, $ne: null, $ne: 0 } },
-        { 'stats.uniqueBitlyClicks': { $exists: true, $ne: null, $ne: 0 } },
+        { 'stats.totalBitlyClicks': { $exists: true, $ne: null, $gt: 0 } },
+        { 'stats.uniqueBitlyClicks': { $exists: true, $ne: null, $gt: 0 } },
       ]
     });
     report.projectsWithBitlyData = projectsWithBitly;
@@ -89,7 +89,7 @@ async function auditBitlyAndSportsDbData() {
     
     // 3. Check partners with Bitly links
     const partnersWithBitly = await partners.countDocuments({
-      bitlyLinkIds: { $exists: true, $ne: [], $ne: null }
+      bitlyLinkIds: { $exists: true, $nin: [null, []] }
     });
     report.partnersWithBitlyLinks = partnersWithBitly;
     console.log(`📌 Partners with Bitly links: ${partnersWithBitly}`);
@@ -104,7 +104,7 @@ async function auditBitlyAndSportsDbData() {
     
     // 5. Sample Bitly data flow
     const sampleProject = await projects.findOne({
-      'stats.totalBitlyClicks': { $exists: true, $ne: null, $ne: 0 }
+      'stats.totalBitlyClicks': { $exists: true, $ne: null, $gt: 0 }
     });
     
     if (sampleProject) {
