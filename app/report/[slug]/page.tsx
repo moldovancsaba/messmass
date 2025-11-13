@@ -194,33 +194,15 @@ export default function StatsPage() {
           }
         }
         
-        // Convert template dataBlocks to page dataBlocks
-        // Template has blockId references, need to fetch actual blocks
+        // WHAT: Use dataBlocks directly from report-config API response
+        // WHY: API now returns fully hydrated blocks with charts array
+        // HOW: API's populateDataBlocks() already fetched and structured the data
         if (template.dataBlocks && template.dataBlocks.length > 0) {
-          // For now, fetch blocks from old API to get full block data
-          // TODO: In future, report-config API should return hydrated blocks
-          const blockResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
-          const blockData = await blockResponse.json();
-          
-          if (blockData.success) {
-            // Map template block references to actual blocks
-            const orderedBlocks = template.dataBlocks
-              .map((ref: any) => {
-                const block = blockData.blocks.find((b: any) => b._id === ref.blockId || b._id.toString() === ref.blockId);
-                if (!block) return null;
-                
-                // Apply template overrides if present
-                return {
-                  ...block,
-                  showTitle: ref.overrides?.showTitle ?? block.showTitle,
-                  name: ref.overrides?.customTitle || block.name
-                };
-              })
-              .filter(Boolean);
-            
-            setDataBlocks(orderedBlocks);
-            console.log(`✅ [Stats] Loaded ${orderedBlocks.length} blocks from template "${template.name}" (${data.resolvedFrom})`);
-          }
+          setDataBlocks(template.dataBlocks);
+          console.log(`✅ [Stats] Loaded ${template.dataBlocks.length} blocks from template "${template.name}" (${data.resolvedFrom})`);
+        } else {
+          console.warn('⚠️  [Stats] Template has no dataBlocks');
+          setDataBlocks([]);
         }
         
         // Set grid settings from template

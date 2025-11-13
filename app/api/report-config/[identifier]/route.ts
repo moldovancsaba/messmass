@@ -54,14 +54,15 @@ async function resolveReportTemplate(
         return null;
       }
 
+      // WHAT: Return full block structure that UnifiedDataVisualization expects
+      // WHY: Component needs charts array with chartId, width, order for each chart
       return {
         _id: block._id.toString(),
-        chartId: block.charts?.[0]?.chartId || null, // Use first chart's chartId for Builder compatibility
-        chartIds: block.charts?.map((c: any) => c.chartId) || [],
-        width: block.width || 3,
+        name: block.name,
+        showTitle: block.showTitle ?? true,
         order: ref.order,
-        title: block.name,
-        showTitle: block.showTitle
+        isActive: block.isActive ?? true,
+        charts: block.charts || []
       };
     }).filter((b: any) => b !== null);
 
