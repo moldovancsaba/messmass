@@ -543,8 +543,9 @@ function substituteVariables(
   // Second, handle non-bracketed format: stats.fieldName (for backward compatibility)
   // WHAT: Support formulas stored as "stats.female" without brackets
   // WHY: Some charts in database have formulas without brackets
-  // HOW: Match stats.fieldName pattern and replace with value
-  processedFormula = processedFormula.replace(/\bstats\.([a-zA-Z0-9_]+)\b/g, (_match, fieldName) => {
+  // HOW: Match stats.fieldName pattern that is NOT already inside brackets
+  // NOTE: Use negative lookbehind and lookahead to avoid double-substitution
+  processedFormula = processedFormula.replace(/(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g, (_match, fieldName) => {
     // Reconstruct full path
     const fullPath = `stats.${fieldName}`;
     
