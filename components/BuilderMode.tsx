@@ -220,122 +220,142 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         </div>
       )}
 
-      <div 
-        className="builder-mode-grid" 
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-          gap: '1.5rem',
-          padding: '1rem'
-        }}
-      >
+      {/* WHAT: Render blocks as separate containers with titles */}
+      {/* WHY: Show proper block structure like the final report */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem' }}>
       {template.dataBlocks
         .sort((a, b) => a.order - b.order)
+        .filter(block => block.charts && block.charts.length > 0) // Skip empty blocks
         .map((block) => {
-          // WHAT: Builder mode shows inputs for FIRST chart in each block
-          // WHY: Blocks can have multiple charts, but Builder needs one input per block
-          const firstChartItem = block.charts?.[0];
-          if (!firstChartItem) {
-            return (
-              <div 
-                key={block._id} 
-                style={{ 
-                  gridColumn: 'span 3',
-                  padding: '2rem',
-                  backgroundColor: '#fee',
-                  borderRadius: '0.5rem',
-                  color: '#b91c1c'
-                }}
-              >
-                ⚠️ Block has no charts: {block.name}
-              </div>
-            );
-          }
-          
-          const chart = charts.find((c) => c.chartId === firstChartItem.chartId);
-          
-          if (!chart) {
-            const widthNF = getChartWidth(firstChartItem, undefined);
-            return (
-              <div 
-                key={block._id} 
-                style={{ 
-                  gridColumn: `span ${widthNF}`,
-                  padding: '2rem',
-                  backgroundColor: '#fee',
-                  borderRadius: '0.5rem',
-                  color: '#b91c1c'
-                }}
-              >
-                ⚠️ Chart not found: {firstChartItem.chartId}
-              </div>
-            );
-          }
-          
-          // WHAT: Render appropriate chart builder based on chart type
-          // WHY: Each chart type has different input requirements
-          const handleSave = (key: string, value: number | string) => {
-            const newStats = { ...stats, [key]: value };
-            onSave(newStats);
-          };
-          
-          let builderComponent;
-          
-          switch (chart.type) {
-            case 'kpi':
-              builderComponent = (
-                <ChartBuilderKPI chart={chart} stats={stats} onSave={handleSave} />
-              );
-              break;
-            case 'bar':
-              builderComponent = (
-                <ChartBuilderBar chart={chart} stats={stats} onSave={handleSave} />
-              );
-              break;
-            case 'pie':
-              builderComponent = (
-                <ChartBuilderPie chart={chart} stats={stats} onSave={handleSave} />
-              );
-              break;
-            case 'image':
-              builderComponent = (
-                <ChartBuilderImage chart={chart} stats={stats} onSave={handleSave} />
-              );
-              break;
-            case 'text':
-              builderComponent = (
-                <ChartBuilderText chart={chart} stats={stats} onSave={handleSave} />
-              );
-              break;
-            case 'value':
-              // WHAT: VALUE type renders both KPI and BAR (2 separate grid items)
-              // WHY: Skip in Builder mode to avoid duplication
-              builderComponent = (
-                <div style={{ padding: '1.5rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', border: '1px solid #fbbf24' }}>
-                  <p style={{ color: '#92400e', fontSize: '0.875rem' }}>
-                    ⚠️ VALUE charts are read-only in Builder mode (composite type)
-                  </p>
-                </div>
-              );
-              break;
-            default:
-              builderComponent = (
-                <div style={{ padding: '1.5rem', backgroundColor: '#fee', borderRadius: '0.5rem', border: '1px solid #ef4444' }}>
-                  <p style={{ color: '#b91c1c', fontSize: '0.875rem' }}>
-                    ⚠️ Unknown chart type: {chart.type}
-                  </p>
-                </div>
-              );
-          }
-          
-          const width = getChartWidth(firstChartItem, chart);
+          // WHAT: Render block container with title and grid of charts
+          // WHY: Visual grouping matches report structure
           return (
-            <div key={block._id} style={{ gridColumn: `span ${width}` }}>
-              {builderComponent}
+            <div 
+              key={block._id}
+              style={{
+                backgroundColor: '#fff',
+                border: '2px solid #e5e7eb',
+                borderRadius: '0.75rem',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Block Title */}
+              {block.showTitle !== false && (
+                <div style={{
+                  padding: '1rem 1.5rem',
+                  backgroundColor: '#f9fafb',
+                  borderBottom: '1px solid #e5e7eb',
+                  fontWeight: 600,
+                  fontSize: '1.125rem',
+                  color: '#111827'
+                }}>
+                  {block.name}
+                </div>
+              )}
+              
+              {/* Charts Grid */}
+              <div 
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+                  gap: '1.5rem',
+                  padding: '1.5rem'
+                }}
+              >
+                {block.charts
+                  .sort((a, b) => a.order - b.order)
+                  .map((chartItem) => {
+          
+                    const chart = charts.find((c) => c.chartId === chartItem.chartId);
+                    
+                    if (!chart) {
+                      const widthNF = getChartWidth(chartItem, undefined);
+                      return (
+                        <div 
+                          key={chartItem.chartId} 
+                          style={{ 
+                            gridColumn: `span ${widthNF}`,
+                            padding: '1.5rem',
+                            backgroundColor: '#fee2e2',
+                            borderRadius: '0.5rem',
+                            border: '1px solid #ef4444',
+                            color: '#b91c1c',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          ⚠️ Chart not found: {chartItem.chartId}
+                        </div>
+                      );
+                    }
+                    
+                    // WHAT: Render appropriate chart builder based on chart type
+                    // WHY: Each chart type has different input requirements
+                    const handleSave = (key: string, value: number | string) => {
+                      const newStats = { ...stats, [key]: value };
+                      onSave(newStats);
+                    };
+                    
+                    let builderComponent;
+                    
+                    switch (chart.type) {
+                      case 'kpi':
+                        builderComponent = (
+                          <ChartBuilderKPI chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'bar':
+                        builderComponent = (
+                          <ChartBuilderBar chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'pie':
+                        builderComponent = (
+                          <ChartBuilderPie chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'image':
+                        builderComponent = (
+                          <ChartBuilderImage chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'text':
+                        builderComponent = (
+                          <ChartBuilderText chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'value':
+                        // WHAT: VALUE type renders both KPI and BAR (2 separate grid items)
+                        // WHY: Skip in Builder mode to avoid duplication
+                        builderComponent = (
+                          <div style={{ padding: '1.5rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', border: '1px solid #fbbf24' }}>
+                            <p style={{ color: '#92400e', fontSize: '0.875rem' }}>
+                              ⚠️ VALUE charts are read-only in Builder mode (composite type)
+                            </p>
+                          </div>
+                        );
+                        break;
+                      default:
+                        builderComponent = (
+                          <div style={{ padding: '1.5rem', backgroundColor: '#fee2e2', borderRadius: '0.5rem', border: '1px solid #ef4444' }}>
+                            <p style={{ color: '#b91c1c', fontSize: '0.875rem' }}>
+                              ⚠️ Unknown chart type: {chart.type}
+                            </p>
+                          </div>
+                        );
+                    }
+                    
+                    const width = getChartWidth(chartItem, chart);
+                    return (
+                      <div key={chartItem.chartId} style={{ gridColumn: `span ${width}` }}>
+                        {builderComponent}
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           );
         })}
-    </div>
+      </div>
     </div>
   );
 }
