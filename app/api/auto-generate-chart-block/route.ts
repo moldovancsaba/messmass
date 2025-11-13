@@ -1,7 +1,7 @@
 // app/api/auto-generate-chart-block/route.ts
-// WHAT: Auto-generate chart algorithm blocks for reportImageN and reportTextN variables
+// WHAT: Auto-generate chart configuration blocks for reportImageN and reportTextN variables
 // WHY: Streamline workflow - upload in Clicker → immediately usable in Visualization editor
-// HOW: Create chart_algorithms document with proper structure (IMAGE or TEXT type, single element)
+// HOW: Create chart_configurations document with proper structure (IMAGE or TEXT type, single element)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
@@ -12,7 +12,7 @@ import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
 
 // WHAT: POST /api/auto-generate-chart-block - Create or update chart block for report content
-// WHY: Automatically create chart algorithms when users upload images or add texts
+// WHY: Automatically create chart configurations when users upload images or add texts
 // HOW: Detect if block exists (chartId = report-image-N or report-text-N), create or update
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const client = await clientPromise;
     const db = client.db(MONGODB_DB);
-    const chartsCollection = db.collection('chart_algorithms');
+    const chartsCollection = db.collection('chart_configurations');
     const blocksCollection = db.collection('data_blocks');
 
     // WHAT: Generate chart configuration for this slot
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       updatedAt: now
     };
 
-    // WHAT: Check if chart algorithm already exists
+    // WHAT: Check if chart configuration already exists
     // WHY: Update existing blocks instead of creating duplicates
     const existingChart = await chartsCollection.findOne({ chartId });
 
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         }
       );
 
-      console.log(`✅ Updated chart algorithm: ${chartId}`);
+      console.log(`✅ Updated chart configuration: ${chartId}`);
 
       return NextResponse.json({
         success: true,
@@ -109,11 +109,11 @@ export async function POST(request: NextRequest) {
         message: `Chart block "${chartTitle}" updated successfully`
       });
     } else {
-      // WHAT: Create new chart algorithm
+      // WHAT: Create new chart configuration
       // WHY: First time this slot is used
       const chartResult = await chartsCollection.insertOne(chartConfig);
 
-      console.log(`✅ Created chart algorithm: ${chartId}`);
+      console.log(`✅ Created chart configuration: ${chartId}`);
 
       // WHAT: Also create data_block wrapper for visualization editor
       // WHY: Visualization editor uses data_blocks as container, which references chart_algorithms
