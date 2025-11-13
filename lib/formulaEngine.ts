@@ -479,9 +479,12 @@ function substituteVariables(
     });
   }
 
-  // ABSOLUTE DATABASE PATH SYSTEM: [stats.fieldName] → value from stats.fieldName
+  // ABSOLUTE DATABASE PATH SYSTEM: [stats.fieldName] OR stats.fieldName → value from stats.fieldName
   // WHAT: Parse stats.fieldName path and access the nested value
   // WHY: Formula references must match database structure exactly
+  // HOW: Handle BOTH [stats.field] (bracketed) AND stats.field (non-bracketed) formats
+  
+  // First, handle bracketed format: [stats.fieldName]
   processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
     // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages"
     // Parse the path and access nested values
@@ -528,6 +531,58 @@ function substituteVariables(
       if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
       value = value?.[part];
     }
+    
+    if (value !== undefined && value !== null) {
+      return String(value);
+    }
+    
+    // Field doesn't exist → return 0
+    return '0';
+  });
+  
+  // Second, handle non-bracketed format: stats.fieldName (for backward compatibility)
+  // WHAT: Support formulas stored as "stats.female" without brackets
+  // WHY: Some charts in database have formulas without brackets
+  // HOW: Match stats.fieldName pattern and replace with value
+  processedFormula = processedFormula.replace(/\bstats\.([a-zA-Z0-9_]+)\b/g, (_match, fieldName) => {
+    // Reconstruct full path
+    const fullPath = `stats.${fieldName}`;
+    
+    // Handle special derived/computed fields
+    if (fullPath === 'stats.totalFans') {
+      const remoteFans = (stats as any).remoteFans ?? 
+                        ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
+      const stadium = (stats as any).stadium || 0;
+      return String(remoteFans + stadium);
+    }
+    
+    if (fullPath === 'stats.remoteFans') {
+      const remoteFans = (stats as any).remoteFans ?? 
+                        ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
+      return String(remoteFans);
+    }
+    
+    if (fullPath === 'stats.allImages') {
+      const remoteImages = (stats as any).remoteImages || 0;
+      const hostessImages = (stats as any).hostessImages || 0;
+      const selfies = (stats as any).selfies || 0;
+      return String(remoteImages + hostessImages + selfies);
+    }
+    
+    if (fullPath === 'stats.totalUnder40') {
+      const genAlpha = (stats as any).genAlpha || 0;
+      const genYZ = (stats as any).genYZ || 0;
+      return String(genAlpha + genYZ);
+    }
+    
+    if (fullPath === 'stats.totalOver40') {
+      const genX = (stats as any).genX || 0;
+      const boomer = (stats as any).boomer || 0;
+      return String(genX + boomer);
+    }
+    
+    // Access the field directly from stats object
+    const value = (stats as any)[fieldName];
     
     if (value !== undefined && value !== null) {
       return String(value);
