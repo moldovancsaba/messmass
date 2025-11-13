@@ -45,8 +45,8 @@ async function auditChartVariables() {
     console.log(`\n📊 Found ${validVariables.size} valid variables in variables_metadata`);
     console.log('Sample variables:', Array.from(validVariables).slice(0, 10).join(', '));
     
-    // WHAT: Fetch all chart algorithms
-    const charts = await db.collection<ChartAlgorithm>('chart_algorithms').find({}).toArray();
+    // WHAT: Fetch all chart configurations
+    const charts = await db.collection<ChartAlgorithm>('chart_configurations').find({}).toArray();
     
     console.log(`\n📈 Found ${charts.length} chart algorithms`);
     
