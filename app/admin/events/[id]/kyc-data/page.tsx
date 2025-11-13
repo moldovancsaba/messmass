@@ -36,18 +36,17 @@ export default function EventKYCDataPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   
-  useEffect(() => {
-    if (!id) return;
-    loadData();
-  }, [id]);
-  
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     try {
       setLoading(true);
       
-      // Fetch project data
-      const projectRes = await fetch(`/api/projects?projectId=${id}`);
+      // Fetch project data with cache-busting
+      const projectRes = await fetch(`/api/projects?projectId=${id}&_t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       const projectData = await projectRes.json();
+      
+      console.log('🔍 [KYC Event] Loaded project:', { id, eventName: projectData.projects?.[0]?.eventName });
       
       if (!projectData.success || !projectData.projects?.[0]) {
         setError('Event not found');
@@ -70,7 +69,12 @@ export default function EventKYCDataPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+  
+  useEffect(() => {
+    if (!id) return;
+    loadData();
+  }, [id, loadData]);
   
   if (authLoading || loading) {
     return (

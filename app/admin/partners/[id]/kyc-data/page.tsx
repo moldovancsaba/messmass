@@ -44,18 +44,17 @@ export default function PartnerKYCDataPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   
-  useEffect(() => {
-    if (!id) return;
-    loadData();
-  }, [id]);
-  
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     try {
       setLoading(true);
       
-      // Fetch partner data
-      const partnerRes = await fetch(`/api/partners?partnerId=${id}`);
+      // Fetch partner data with cache-busting
+      const partnerRes = await fetch(`/api/partners?partnerId=${id}&_t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       const partnerData = await partnerRes.json();
+      
+      console.log('🔍 [KYC Partner] Loaded partner:', { id, name: partnerData.partners?.[0]?.name });
       
       if (!partnerData.success || !partnerData.partners?.[0]) {
         setError('Partner not found');
@@ -99,7 +98,12 @@ export default function PartnerKYCDataPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+  
+  useEffect(() => {
+    if (!id) return;
+    loadData();
+  }, [id, loadData]);
   
   if (authLoading || loading) {
     return (
