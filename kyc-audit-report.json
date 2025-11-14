@@ -1,0 +1,164 @@
+{
+  "timestamp": "2025-11-14T20:06:42.420Z",
+  "totalProjects": 191,
+  "totalPartners": 131,
+  "totalVariables": 242,
+  "sources": {
+    "bitly_data": {
+      "totalVariables": 12,
+      "missingCount": 0,
+      "partialCount": 8,
+      "completeCount": 4,
+      "details": [
+        {
+          "variable": "totalBitlyClicks",
+          "status": "complete",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": 519
+        },
+        {
+          "variable": "uniqueBitlyClicks",
+          "status": "complete",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": 519
+        },
+        {
+          "variable": "bitlyCountry1",
+          "status": "complete",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": "HU"
+        },
+        {
+          "variable": "bitlyCountry1Clicks",
+          "status": "complete",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": 347
+        },
+        {
+          "variable": "bitlyCountry2",
+          "status": "partial",
+          "projectsWithData": 94,
+          "totalProjects": 191,
+          "sampleValue": "US"
+        },
+        {
+          "variable": "bitlyCountry2Clicks",
+          "status": "partial",
+          "projectsWithData": 94,
+          "totalProjects": 191,
+          "sampleValue": 79
+        },
+        {
+          "variable": "bitlyCountry3",
+          "status": "partial",
+          "projectsWithData": 85,
+          "totalProjects": 191,
+          "sampleValue": "IE"
+        },
+        {
+          "variable": "bitlyCountry3Clicks",
+          "status": "partial",
+          "projectsWithData": 85,
+          "totalProjects": 191,
+          "sampleValue": 21
+        },
+        {
+          "variable": "bitlyCountry4",
+          "status": "partial",
+          "projectsWithData": 74,
+          "totalProjects": 191,
+          "sampleValue": "NL"
+        },
+        {
+          "variable": "bitlyCountry4Clicks",
+          "status": "partial",
+          "projectsWithData": 74,
+          "totalProjects": 191,
+          "sampleValue": 17
+        },
+        {
+          "variable": "bitlyCountry5",
+          "status": "partial",
+          "projectsWithData": 68,
+          "totalProjects": 191,
+          "sampleValue": "GB"
+        },
+        {
+          "variable": "bitlyCountry5Clicks",
+          "status": "partial",
+          "projectsWithData": 68,
+          "totalProjects": 191,
+          "sampleValue": 17
+        }
+      ]
+    },
+    "bitly_junctions": {
+      "totalVariables": 3,
+      "missingCount": 0,
+      "partialCount": 0,
+      "completeCount": 3,
+      "details": [
+        {
+          "variable": "bitly_junctions",
+          "status": "complete",
+          "projectsWithData": 109,
+          "totalProjects": 191,
+          "sampleValue": "285 junctions total"
+        },
+        {
+          "variable": "cached_metrics",
+          "status": "partial",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": "clicks, uniqueClicks, countries"
+        },
+        {
+          "variable": "country_data",
+          "status": "partial",
+          "projectsWithData": 105,
+          "totalProjects": 191,
+          "sampleValue": "countriesData array"
+        }
+      ]
+    },
+    "thesportsdb_data": {
+      "totalVariables": 3,
+      "missingCount": 1,
+      "partialCount": 0,
+      "completeCount": 2,
+      "details": [
+        {
+          "variable": "eventResultHome",
+          "status": "complete",
+          "projectsWithData": 145,
+          "totalProjects": 191,
+          "sampleValue": 2
+        },
+        {
+          "variable": "eventResultVisitor",
+          "status": "complete",
+          "projectsWithData": 141,
+          "totalProjects": 191,
+          "sampleValue": 7
+        },
+        {
+          "variable": "eventResultWinner",
+          "status": "missing",
+          "projectsWithData": 0,
+          "totalProjects": 191
+        }
+      ]
+    }
+  },
+  "recommendations": [
+    "🔗 Bitly Data: 0 variables completely missing, 8 partially populated",
+    "   → Action: Run /api/bitly/sync to pull fresh analytics from Bitly API",
+    "   → Action: Run scripts/sync-bitly-to-project-stats.ts --apply to copy data to project.stats",
+    "⚽ TheSportsDB Data: 1 variables completely missing, 0 partially populated",
+    "   → Action: Check if TheSportsDB enrichment script exists and run it"
+  ]
+}
