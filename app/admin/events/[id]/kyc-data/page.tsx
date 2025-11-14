@@ -104,11 +104,12 @@ export default function EventKYCDataPage() {
   // Get unique categories
   const categories = ['all', ...new Set(variables.map(v => v.category))];
   
-  // Filter variables
+  // Filter variables with safe string access
   const filteredVariables = variables.filter(v => {
+    const alias = v.alias || v.name; // Fallback to name if alias missing
     const matchesSearch = !searchQuery || 
-      v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.alias.toLowerCase().includes(searchQuery.toLowerCase());
+      (v.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      alias.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || v.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -256,7 +257,7 @@ export default function EventKYCDataPage() {
                         }}
                       >
                         <td style={{ padding: '1rem' }}>
-                          <div style={{ fontWeight: 500 }}>{v.alias}</div>
+                          <div style={{ fontWeight: 500 }}>{v.alias || v.name}</div>
                           {v.isSystemVariable && (
                             <div style={{ 
                               fontSize: '0.75rem', 
