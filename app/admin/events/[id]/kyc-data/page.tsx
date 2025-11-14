@@ -25,9 +25,16 @@ interface ProjectData {
 }
 
 export default function EventKYCDataPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id;
   const router = useRouter();
   const { user, loading: authLoading } = useAdminAuth();
+  
+  // WHAT: Log URL parameters on mount
+  // WHY: Debug if all events are opening with same ID
+  React.useEffect(() => {
+    console.log('🌍 [KYC Event] Page mounted with params:', { id, allParams: params });
+  }, [id, params]);
   
   const [project, setProject] = useState<ProjectData | null>(null);
   const [variables, setVariables] = useState<VariableMetadata[]>([]);
@@ -40,20 +47,38 @@ export default function EventKYCDataPage() {
     try {
       setLoading(true);
       
-      // Fetch project data with cache-busting
+      // WHAT: Fetch project data with cache-busting
+      // WHY: Ensure fresh data on every load
+      console.log('🔍 [KYC Event] Starting load for project ID:', id);
+      
       const projectRes = await fetch(`/api/projects?projectId=${id}&_t=${Date.now()}`, {
         cache: 'no-store'
       });
       const projectData = await projectRes.json();
       
-      console.log('🔍 [KYC Event] Loaded project:', { id, eventName: projectData.projects?.[0]?.eventName });
+      console.log('🔍 [KYC Event] API Response:', {
+        success: projectData.success,
+        projectsCount: projectData.projects?.length,
+        firstProject: projectData.projects?.[0] ? {
+          _id: projectData.projects[0]._id,
+          eventName: projectData.projects[0].eventName,
+          eventDate: projectData.projects[0].eventDate
+        } : null
+      });
       
       if (!projectData.success || !projectData.projects?.[0]) {
+        console.error('❌ [KYC Event] Event not found for ID:', id);
         setError('Event not found');
         return;
       }
       
-      setProject(projectData.projects[0]);
+      const loadedProject = projectData.projects[0];
+      console.log('✅ [KYC Event] Setting project state:', {
+        _id: loadedProject._id,
+        eventName: loadedProject.eventName
+      });
+      
+      setProject(loadedProject);
       
       // Fetch variable metadata
       const varsRes = await fetch('/api/variables-config');
