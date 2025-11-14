@@ -122,10 +122,13 @@ async function syncBitlyToProjectStats(options: { dryRun?: boolean; projectId?: 
         const newTotalClicks = Math.max(currentTotalClicks, aggregatedTotalClicks);
         const newUniqueClicks = Math.max(currentUniqueClicks, aggregatedUniqueClicks);
         
-        // Check if update needed
+        // WHAT: Check if update needed (clicks changed OR country KYC fields missing)
+        // WHY: We added country KYC fields in v11.20.11, need to backfill them
+        const hasCountryData = currentStats.bitlyCountry1 !== undefined;
         const needsUpdate = 
           newTotalClicks !== currentTotalClicks ||
-          newUniqueClicks !== currentUniqueClicks;
+          newUniqueClicks !== currentUniqueClicks ||
+          !hasCountryData; // Force update if country fields don't exist yet
         
         if (!needsUpdate) {
           console.log(`✓ ${project.eventName}: Already up to date`);
@@ -139,7 +142,7 @@ async function syncBitlyToProjectStats(options: { dryRun?: boolean; projectId?: 
           uniqueBitlyClicks: newUniqueClicks,
         };
         
-        // Add country-specific clicks (top 10 countries)
+        // Add country-specific clicks (top 10 countries) in legacy format
         const topCountries = Array.from(countryClicksMap.entries())
           .sort((a, b) => b[1] - a[1])
           .slice(0, 10);
@@ -148,6 +151,15 @@ async function syncBitlyToProjectStats(options: { dryRun?: boolean; projectId?: 
           const fieldName = `bitlyClicksByCountry${country}`;
           const currentValue = currentStats[fieldName] || 0;
           updateStats[fieldName] = Math.max(currentValue, clicks);
+        });
+        
+        // WHAT: Add top 5 countries in KYC format (bitlyCountry1, bitlyCountry1Clicks, etc.)
+        // WHY: KYC variables expect this format for display in data tables
+        const top5 = topCountries.slice(0, 5);
+        top5.forEach(([country, clicks], index) => {
+          const num = index + 1; // 1-indexed
+          updateStats[`bitlyCountry${num}`] = country;
+          updateStats[`bitlyCountry${num}Clicks`] = clicks;
         });
         
         // Step 6: Apply update (or log for dry run)

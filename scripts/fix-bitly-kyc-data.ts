@@ -21,18 +21,25 @@ async function fetchBitlyAnalytics(bitlink: string) {
   const headers = { 'Authorization': `Bearer ${BITLY_ACCESS_TOKEN}` };
   
   try {
-    // Fetch click summary
-    const summaryRes = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/clicks/summary?unit=month&units=12`, { headers });
-    const summary = await summaryRes.json();
+    // Fetch all analytics in parallel
+    const [summaryRes, countriesRes, referrersRes, devicesRes] = await Promise.all([
+      fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/clicks/summary?unit=month&units=12`, { headers }),
+      fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/countries?unit=month&units=12`, { headers }),
+      fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/referrers?unit=month&units=12`, { headers }),
+      fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/devices?unit=month&units=12`, { headers }),
+    ]);
     
-    // Fetch countries
-    const countriesRes = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${bitlink}/countries?unit=month&units=12`, { headers });
+    const summary = await summaryRes.json();
     const countries = await countriesRes.json();
+    const referrers = await referrersRes.json();
+    const devices = await devicesRes.json();
     
     return {
       totalClicks: summary.total_clicks || 0,
-      uniqueClicks: summary.total_clicks || 0, // Bitly API doesn't provide unique separately
+      uniqueClicks: summary.total_clicks || 0,
       countries: countries.metrics || [],
+      referrers: referrers.metrics || [],
+      devices: devices.metrics || [],
     };
   } catch (error) {
     console.error(`   ❌ Failed to fetch analytics for ${bitlink}:`, error instanceof Error ? error.message : error);
@@ -67,6 +74,14 @@ async function syncBitlyLinks(db: any, dryRun: boolean): Promise<number> {
               'geo.countries': analytics.countries.map((c: any) => ({
                 country: c.value,
                 clicks: c.clicks
+              })),
+              referrers: analytics.referrers.map((r: any) => ({
+                referrer: r.value,
+                clicks: r.clicks
+              })),
+              devices: analytics.devices.map((d: any) => ({
+                device: d.value,
+                clicks: d.clicks
               })),
               lastSyncAt: new Date().toISOString(),
             }
@@ -116,10 +131,24 @@ async function recalculateCachedMetrics(db: any, dryRun: boolean): Promise<numbe
       .slice(0, 10)
       .map((c: any) => ({ country: c.country, clicks: c.clicks }));
     
+    const referrers = link.referrers || [];
+    const topReferrers = referrers
+      .sort((a: any, b: any) => b.clicks - a.clicks)
+      .slice(0, 10);
+    
+    const devices = link.devices || [];
+    const deviceBreakdown = devices.reduce((acc: any, d: any) => {
+      const device = d.device?.toLowerCase() || 'other';
+      acc[device] = (acc[device] || 0) + d.clicks;
+      return acc;
+    }, {});
+    
     const cachedMetrics = {
       totalClicks: link.total_clicks || 0,
       uniqueClicks: link.unique_clicks || 0,
       countriesData: topCountries,
+      referrersData: topReferrers,
+      devicesData: deviceBreakdown,
       lastSyncedAt: new Date().toISOString(),
     };
     
@@ -162,6 +191,8 @@ async function syncToProjectStats(db: any, dryRun: boolean): Promise<number> {
     let totalClicks = 0;
     let uniqueClicks = 0;
     const countryClicksMap = new Map<string, number>();
+    const referrerClicksMap = new Map<string, number>();
+    let mobileClicks = 0, desktopClicks = 0, tabletClicks = 0;
     
     junctions.forEach((j: any) => {
       if (j.cachedMetrics) {
@@ -172,6 +203,16 @@ async function syncToProjectStats(db: any, dryRun: boolean): Promise<number> {
           const current = countryClicksMap.get(c.country) || 0;
           countryClicksMap.set(c.country, current + c.clicks);
         });
+        
+        (j.cachedMetrics.referrersData || []).forEach((r: any) => {
+          const current = referrerClicksMap.get(r.referrer) || 0;
+          referrerClicksMap.set(r.referrer, current + r.clicks);
+        });
+        
+        const devices = j.cachedMetrics.devicesData || {};
+        mobileClicks += devices.mobile || 0;
+        desktopClicks += devices.desktop || 0;
+        tabletClicks += devices.tablet || 0;
       }
     });
     
@@ -184,14 +225,35 @@ async function syncToProjectStats(db: any, dryRun: boolean): Promise<number> {
     const updateStats: any = {
       totalBitlyClicks: totalClicks,
       uniqueBitlyClicks: uniqueClicks,
+      bitlyMobileClicks: mobileClicks,
+      bitlyDesktopClicks: desktopClicks,
+      bitlyTabletClicks: tabletClicks,
     };
     
-    // WHAT: Add country data in KYC format (bitlyCountry1, bitlyCountry1Clicks, etc.)
+    // WHAT: Add country data in KYC format
     topCountries.forEach(([country, clicks], index) => {
       const num = index + 1;
       updateStats[`bitlyCountry${num}`] = country;
       updateStats[`bitlyCountry${num}Clicks`] = clicks;
     });
+    
+    // WHAT: Add top referrer data
+    const topReferrers = Array.from(referrerClicksMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    
+    if (topReferrers.length > 0) {
+      updateStats.bitlyTopReferrer = topReferrers[0][0];
+      updateStats.bitlyReferrerCount = referrerClicksMap.size;
+      
+      // Social media specific
+      updateStats.bitlyFacebookClicks = referrerClicksMap.get('facebook') || 0;
+      updateStats.bitlyInstagramClicks = referrerClicksMap.get('instagram') || 0;
+      updateStats.bitlySocialClicks = (referrerClicksMap.get('facebook') || 0) + 
+                                       (referrerClicksMap.get('instagram') || 0) + 
+                                       (referrerClicksMap.get('twitter') || 0);
+      updateStats.bitlyDirectClicks = referrerClicksMap.get('direct') || 0;
+    }
     
     // WHAT: Apply update
     if (!dryRun && (totalClicks > 0 || topCountries.length > 0)) {
