@@ -261,8 +261,10 @@ export async function GET(request: NextRequest) {
       );
 
       const formatted = results.map((project: any) => {
+        const projectId = project._id.toString();
+        console.log('🔍 Formatting project:', { eventName: project.eventName, _id: projectId });
         const result: any = {
-          _id: project._id.toString(),
+          _id: projectId,
           eventName: project.eventName,
           eventDate: project.eventDate,
           hashtags: project.hashtags || [],
@@ -368,9 +370,11 @@ export async function GET(request: NextRequest) {
       // WHAT: Validate project data quality
       // WHY: Inform frontend about incomplete data for UI indicators
       const validation = validateProjectStats(project.stats || {});
+      const projectId = project._id.toString();
+      console.log('🔍 Formatting project (cursor mode):', { eventName: project.eventName, _id: projectId });
       
       const result: any = {
-        _id: project._id.toString(),
+        _id: projectId,
         eventName: project.eventName,
         eventDate: project.eventDate,
         hashtags: project.hashtags || [],               // Traditional hashtags (backward compatibility)
