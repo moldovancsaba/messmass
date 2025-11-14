@@ -56,23 +56,17 @@ export default function EventKYCDataPage() {
       });
       const projectData = await projectRes.json();
       
-      console.log('🔍 [KYC Event] API Response:', {
-        success: projectData.success,
-        projectsCount: projectData.projects?.length,
-        firstProject: projectData.projects?.[0] ? {
-          _id: projectData.projects[0]._id,
-          eventName: projectData.projects[0].eventName,
-          eventDate: projectData.projects[0].eventDate
-        } : null
-      });
+      console.log('🔍 [KYC Event] API Response:', projectData);
       
-      if (!projectData.success || !projectData.projects?.[0]) {
+      // WHAT: API now returns { project: {...} } for single project queries
+      // WHY: Updated in v11.20.10 to support projectId query parameter
+      if (!projectData.success || !projectData.project) {
         console.error('❌ [KYC Event] Event not found for ID:', id);
         setError('Event not found');
         return;
       }
       
-      const loadedProject = projectData.projects[0];
+      const loadedProject = projectData.project;
       console.log('✅ [KYC Event] Setting project state:', {
         _id: loadedProject._id,
         eventName: loadedProject.eventName

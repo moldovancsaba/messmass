@@ -66,23 +66,17 @@ export default function PartnerKYCDataPage() {
       });
       const partnerData = await partnerRes.json();
       
-      console.log('🔍 [KYC Partner] Partner API Response:', {
-        success: partnerData.success,
-        partnersCount: partnerData.partners?.length,
-        firstPartner: partnerData.partners?.[0] ? {
-          _id: partnerData.partners[0]._id,
-          name: partnerData.partners[0].name,
-          emoji: partnerData.partners[0].emoji
-        } : null
-      });
+      console.log('🔍 [KYC Partner] Partner API Response:', partnerData);
       
-      if (!partnerData.success || !partnerData.partners?.[0]) {
+      // WHAT: API now returns { firstPartner: {...}, partnersCount: 1 } for single partner queries
+      // WHY: Updated in v11.20.9 to support partnerId query parameter
+      if (!partnerData.success || !partnerData.firstPartner) {
         console.error('❌ [KYC Partner] Partner not found for ID:', id);
         setError('Partner not found');
         return;
       }
       
-      const loadedPartner = partnerData.partners[0];
+      const loadedPartner = partnerData.firstPartner;
       console.log('✅ [KYC Partner] Setting partner state:', {
         _id: loadedPartner._id,
         name: loadedPartner.name
