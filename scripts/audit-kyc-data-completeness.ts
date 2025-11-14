@@ -170,7 +170,7 @@ async function auditBitlyJunctions(db: any): Promise<SourceAuditResult> {
   const junctions = await db.collection('bitly_project_links').find({}).toArray();
   const junctionsByProject = new Map<string, any[]>();
   
-  junctions.forEach(j => {
+  junctions.forEach((j: any) => {
     const pid = j.projectId.toString();
     if (!junctionsByProject.has(pid)) junctionsByProject.set(pid, []);
     junctionsByProject.get(pid)!.push(j);
