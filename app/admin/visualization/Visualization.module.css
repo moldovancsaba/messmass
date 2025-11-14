@@ -197,3 +197,41 @@
     justify-content: space-between;
   }
 }
+
+/* WHAT: Status message floating notification
+   WHY: Replace alert() dialogs with smooth auto-dismissing messages */
+.statusMessage {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+  font-size: var(--mm-font-size-base);
+  font-weight: 500;
+}
+
+.statusSuccess {
+  background: var(--mm-green-50);
+  color: var(--mm-green-900);
+  border: 1px solid var(--mm-green-200);
+}
+
+.statusError {
+  background: var(--mm-red-50);
+  color: var(--mm-red-900);
+  border: 1px solid var(--mm-red-200);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

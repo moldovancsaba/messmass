@@ -59,6 +59,13 @@ export default function VisualizationPage() {
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
 
+  // WHAT: Status message for smooth UX feedback (no alerts)
+  // WHY: Non-blocking notifications, auto-dismiss after 5 seconds
+  const [statusMessage, setStatusMessage] = useState<{
+    type: 'success' | 'error' | 'info';
+    text: string;
+  } | null>(null);
+
   // Live chart preview state (calculated using the same pipeline as stats pages)
   const [chartConfigs, setChartConfigs] = useState<ChartConfiguration[]>([]);
   const [previewResults, setPreviewResults] = useState<Record<string, ChartCalculationResult>>({});
@@ -77,10 +84,18 @@ export default function VisualizationPage() {
     showTitle: true // NEW: Default to showing title
   });
 
+  // WHAT: Helper to show status messages
+  // WHY: Replace all alert() calls with smooth, auto-dismissing messages
+  const showMessage = useCallback((type: 'success' | 'error' | 'info', text: string) => {
+    setStatusMessage({ type, text });
+    setTimeout(() => setStatusMessage(null), 5000); // Auto-dismiss after 5 seconds
+  }, []);
+
   useEffect(() => {
     loadTemplates();
     loadAvailableCharts();
     loadChartConfigs();
+    loadUserPreferences(); // Load last selected template
   }, []);
   
   const loadTemplateConfig = useCallback(async (templateId: string) => {
@@ -136,6 +151,33 @@ export default function VisualizationPage() {
     }
   }, [selectedTemplateId, loadTemplateConfig]);
 
+  // WHAT: Load user preferences (last selected template)
+  // WHY: Remember user's last choice across browsers and sessions
+  const loadUserPreferences = async () => {
+    try {
+      const response = await fetch('/api/user-preferences');
+      const data = await response.json();
+      if (data.success && data.preferences?.lastSelectedTemplateId) {
+        setSelectedTemplateId(data.preferences.lastSelectedTemplateId);
+      }
+    } catch (error) {
+      console.error('Failed to load user preferences:', error);
+    }
+  };
+
+  // WHAT: Save template selection to preferences
+  // WHY: Persist user choice across sessions and browsers
+  const handleTemplateChange = async (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    
+    // Save to preferences (fire and forget)
+    fetch('/api/user-preferences', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lastSelectedTemplateId: templateId })
+    }).catch(err => console.error('Failed to save preference:', err));
+  };
+
   // WHAT: Load templates and select default on mount
   // WHY: Populate template selector
   const loadTemplates = async () => {
@@ -144,10 +186,13 @@ export default function VisualizationPage() {
       const data = await response.json();
       if (data.success && data.templates) {
         setTemplates(data.templates);
-        // Auto-select default template
-        const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
-        if (defaultTemplate) {
-          setSelectedTemplateId(defaultTemplate._id);
+        // Note: Auto-selection now handled by loadUserPreferences()
+        // Only select default if no preference exists
+        if (!selectedTemplateId) {
+          const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
+          if (defaultTemplate) {
+            setSelectedTemplateId(defaultTemplate._id);
+          }
         }
       }
     } catch (error) {
@@ -242,14 +287,56 @@ export default function VisualizationPage() {
   };
   
   // Data Block Management Functions
+  const handleUpdateBlock = async (block: DataVisualizationBlock) => {
+    try {
+      const data = await apiPut('/api/data-blocks', block);
+      
+      if (data.success) {
+        const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
+        setDataBlocks(updatedBlocks);
+        await saveTemplateConfig(updatedBlocks);
+        setEditingBlock(null);
+        showMessage('success', 'Block updated successfully!');
+      } else {
+        showMessage('error', 'Failed to update block: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Failed to update block:', error);
+      showMessage('error', 'Failed to update block');
+    }
+  };
+  
+  const handleDeleteBlock = async (blockId: string) => {
+    // TODO: Replace confirm() with modal dialog in future enhancement
+    if (!confirm('Are you sure you want to delete this data block?')) {
+      return;
+    }
+    
+    try {
+      const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
+      
+      if (data.success) {
+        const updatedBlocks = dataBlocks.filter(b => b._id !== blockId);
+        setDataBlocks(updatedBlocks);
+        await saveTemplateConfig(updatedBlocks);
+        showMessage('success', 'Block deleted successfully!');
+      } else {
+        showMessage('error', 'Failed to delete block: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Failed to delete block:', error);
+      showMessage('error', 'Failed to delete block');
+    }
+  };
+  
   const handleCreateBlock = async () => {
     if (!blockForm.name.trim()) {
-      alert('Block name is required');
+      showMessage('error', 'Block name is required');
       return;
     }
     
     if (!selectedTemplateId) {
-      alert('Please select a template first');
+      showMessage('error', 'Please select a template first');
       return;
     }
     
@@ -274,66 +361,17 @@ export default function VisualizationPage() {
           isActive: true,
           showTitle: true
         });
-        alert('Data block created and added to template!');
+        showMessage('success', 'Data block created and added to template!');
       } else {
-        alert('Failed to create block: ' + data.error);
+        showMessage('error', 'Failed to create block: ' + data.error);
       }
     } catch (error) {
       console.error('Failed to create block:', error);
-      alert('Failed to create block');
+      showMessage('error', 'Failed to create block');
     }
   };
   
-  const handleUpdateBlock = async (block: DataVisualizationBlock) => {
-    try {
-      // WHAT: Use apiPut() for automatic CSRF token handling
-      const data = await apiPut('/api/data-blocks', block);
-      
-      if (data.success) {
-        // Update local state
-        const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
-        setDataBlocks(updatedBlocks);
-        
-        // Save to template
-        await saveTemplateConfig(updatedBlocks);
-        
-        setEditingBlock(null);
-        alert('Block updated successfully!');
-      } else {
-        alert('Failed to update block: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Failed to update block:', error);
-      alert('Failed to update block');
-    }
-  };
   
-  const handleDeleteBlock = async (blockId: string) => {
-    if (!confirm('Are you sure you want to delete this data block?')) {
-      return;
-    }
-    
-    try {
-      // WHAT: Use apiDelete() for automatic CSRF token handling
-      const data = await apiDelete(`/api/data-blocks?id=${blockId}`);
-      
-      if (data.success) {
-        // Remove from local state
-        const updatedBlocks = dataBlocks.filter(b => b._id !== blockId);
-        setDataBlocks(updatedBlocks);
-        
-        // Save to template
-        await saveTemplateConfig(updatedBlocks);
-        
-        alert('Block deleted successfully!');
-      } else {
-        alert('Failed to delete block: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Failed to delete block:', error);
-      alert('Failed to delete block');
-    }
-  };
   
   // Calculate preview results for a given block's charts using the same pipeline as stats pages
   const calculatePreviewForBlock = useCallback((block: DataVisualizationBlock) => {
@@ -454,7 +492,7 @@ export default function VisualizationPage() {
   // WHY: Allow creating templates with empty config, then auto-select
   const handleCreateTemplate = async () => {
     if (!templateForm.name.trim()) {
-      alert('Template name is required');
+      showMessage('error', 'Template name is required');
       return;
     }
     
@@ -490,12 +528,13 @@ export default function VisualizationPage() {
           type: 'event',
           isDefault: false
         });
+        showMessage('success', 'Template created successfully!');
       } else {
-        alert(data.error || 'Failed to create template');
+        showMessage('error', data.error || 'Failed to create template');
       }
     } catch (error) {
       console.error('Failed to create template:', error);
-      alert('Failed to create template');
+      showMessage('error', 'Failed to create template');
     }
   };
 
@@ -519,6 +558,14 @@ export default function VisualizationPage() {
         showSearch={false}
       />
       
+      {/* WHAT: Status Message - Smooth UX feedback without page reloads
+          WHY: Replace alert() dialogs with auto-dismissing status messages */}
+      {statusMessage && (
+        <div className={`${vizStyles.statusMessage} ${statusMessage.type === 'success' ? vizStyles.statusSuccess : vizStyles.statusError}`}>
+          {statusMessage.type === 'success' ? '✅' : '❌'} {statusMessage.text}
+        </div>
+      )}
+      
       {/* WHAT: Template Selector Card
           WHY: Allow selecting which template to edit */}
       <ColoredCard accentColor="#3b82f6" hoverable={false}>
@@ -535,7 +582,7 @@ export default function VisualizationPage() {
               <select
                 className={vizStyles.templateDropdown}
                 value={selectedTemplateId || ''}
-                onChange={(e) => setSelectedTemplateId(e.target.value)}
+                onChange={(e) => handleTemplateChange(e.target.value)}
               >
                 <option value="" disabled>Select a template...</option>
                 {templates.map(template => (

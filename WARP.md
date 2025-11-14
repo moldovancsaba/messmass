@@ -867,6 +867,15 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 - **Timestamp standards**: ISO 8601 with milliseconds everywhere
 - **Board Card Width Rule**: All cards on any board/grid must have equal width within that board (set widths at the grid container, not per-card).
 
+### User Experience Standards
+- **Status messages over alerts**: ✅ ALWAYS use inline status messages (auto-dismissing); ❌ NEVER use `alert()` dialogs
+- **Modal confirmations over confirm()**: ✅ ALWAYS use modal dialogs for confirmations; ❌ NEVER use `confirm()` browser dialogs
+- **Local state updates over page reloads**: ✅ ALWAYS update state locally after CRUD operations; ❌ NEVER reload the entire page
+- **Database preferences over localStorage**: ✅ ALWAYS store user preferences in MongoDB (cross-browser/device); ❌ NEVER use localStorage for user preferences
+- **Visual feedback**: ✅ ALWAYS provide status messages, loading states, and transitions
+- **Context preservation**: ✅ ALWAYS preserve user context (selected items, scroll position, active filters)
+- **Smooth interactions**: ✅ ALWAYS use CSS transitions and animations for state changes
+
 ### Prohibited Patterns
 - **No breadcrumb navigation** - Use clear top-level navigation
 - **No test files** - MVP factory approach, tests are prohibited
@@ -874,6 +883,7 @@ BITLY_GROUP_GUID=your_group_guid      # From Bitly dashboard URL
 - **No component duplication** - Search and reuse before creating
 - **No backup file suffixes** - Never commit files like `*2.tsx`, `*2.ts`, `page 3.tsx`, etc.
 - **No inline styles** - `style` prop forbidden on DOM elements; use CSS modules or utility classes
+- **No alert() or confirm()** - Use status messages and modal dialogs instead
 
 ### File Naming and Version Control
 - **Use git branches** for experimental work, not file copies
