@@ -59,18 +59,22 @@ export default function KycVariablesPage() {
       const res = await fetch("/api/variables-config", { cache: "no-store" });
       const data = await res.json();
       if (data?.success) {
-        const vars: Variable[] = (data.variables || []).map((v: any) => ({
-          name: v.name,
-          label: v.label,
-          type: v.type || "count",
-          category: v.category,
-          description: v.derived && v.formula ? v.formula : v.description || undefined,
-          derived: !!v.derived,
-          formula: v.formula,
-          flags: v.flags || { visibleInClicker: false, editableInManual: false },
-          isCustom: !!v.isCustom,
-          isSystem: !!v.isSystem,
-        }));
+        // WHAT: Filter out variables with missing required fields and provide defaults
+        // WHY: Prevent crashes when database has incomplete variable records
+        const vars: Variable[] = (data.variables || [])
+          .filter((v: any) => v.name) // Must have name
+          .map((v: any) => ({
+            name: v.name,
+            label: v.label || v.alias || v.name, // Fallback: alias, then name
+            type: v.type || "count",
+            category: v.category || "Uncategorized",
+            description: v.derived && v.formula ? v.formula : v.description || undefined,
+            derived: !!v.derived,
+            formula: v.formula,
+            flags: v.flags || { visibleInClicker: false, editableInManual: false },
+            isCustom: !!v.isCustom,
+            isSystem: !!v.isSystem,
+          }));
         setVariables(vars);
       }
     } finally {
@@ -85,8 +89,12 @@ export default function KycVariablesPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return variables.filter((v) => {
-      // Text search
-      const matchesText = !q || v.name.toLowerCase().includes(q) || v.label.toLowerCase().includes(q) || (v.category || "").toLowerCase().includes(q) || (v.description || "").toLowerCase().includes(q);
+      // Text search with safe toLowerCase calls
+      const matchesText = !q || 
+        (v.name || '').toLowerCase().includes(q) || 
+        (v.label || '').toLowerCase().includes(q) || 
+        (v.category || '').toLowerCase().includes(q) || 
+        (v.description || '').toLowerCase().includes(q);
       if (!matchesText) return false;
       // Source filter
       const src = computeSource(v);
