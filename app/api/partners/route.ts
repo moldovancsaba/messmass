@@ -152,13 +152,38 @@ export async function GET(request: NextRequest) {
 
     // WHAT: Parse query parameters
     const { searchParams } = new URL(request.url);
+    const partnerId = searchParams.get('partnerId'); // WHAT: Single partner lookup for KYC pages
     const searchQuery = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const sortField = searchParams.get('sortField') || 'name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
-    // WHAT: Build query filter
+    // WHAT: If partnerId is provided, return single partner (used by KYC pages)
+    // WHY: KYC pages need specific partner data, not a list
+    if (partnerId && ObjectId.isValid(partnerId)) {
+      const client = await clientPromise;
+      const db = client.db(config.dbName);
+      
+      const partner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
+      
+      if (!partner) {
+        return NextResponse.json(
+          { success: false, error: 'Partner not found' },
+          { status: 404 }
+        );
+      }
+      
+      const populatedPartner = await populateBitlyLinks(db, partner);
+      
+      return NextResponse.json({
+        success: true,
+        firstPartner: populatedPartner, // WHAT: Match expected response format from KYC page
+        partnersCount: 1,
+      });
+    }
+
+    // WHAT: Build query filter for list mode
     const filter: any = {};
 
     // WHAT: Add search filter if provided

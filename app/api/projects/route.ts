@@ -95,6 +95,7 @@ async function connectToDatabase() {
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
+    const projectId = url.searchParams.get('projectId'); // WHAT: Single project lookup for KYC pages
     const limitParam = url.searchParams.get('limit');
     const cursorParam = url.searchParams.get('cursor');
     const q = url.searchParams.get('q');
@@ -105,6 +106,33 @@ export async function GET(request: NextRequest) {
     // WHY: Clicking a table header in the admin UI must reorder ALL projects, not just the visible page
     const sortFieldParam = url.searchParams.get('sortField'); // 'eventName' | 'eventDate' | 'images' | 'fans' | 'attendees'
     const sortOrderParam = url.searchParams.get('sortOrder'); // 'asc' | 'desc'
+
+    // WHAT: If projectId is provided, return single project (used by KYC pages)
+    // WHY: Event KYC pages need specific project data, not a list
+    if (projectId && ObjectId.isValid(projectId)) {
+      const client = await connectToDatabase();
+      const db = client.db(MONGODB_DB);
+      
+      const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });
+      
+      if (!project) {
+        return NextResponse.json(
+          { success: false, error: 'Project not found' },
+          { status: 404 }
+        );
+      }
+      
+      // WHAT: Format response to match expected structure from KYC page
+      return NextResponse.json({
+        success: true,
+        project: {
+          _id: project._id.toString(),
+          eventName: project.eventName,
+          eventDate: project.eventDate,
+          stats: project.stats,
+        },
+      });
+    }
 
     // Defaults and caps
     const DEFAULT_LIMIT = 20;
