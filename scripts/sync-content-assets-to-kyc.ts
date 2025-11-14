@@ -27,9 +27,12 @@ async function syncContentAssetsToKYC() {
     const assetsCollection = db.collection('content_assets');
     const variablesCollection = db.collection('variables_metadata');
     
-    // WHAT: Find all Variable Definition content assets
+    // WHAT: Find all Variable Definition content assets (including legacy)
     // WHY: Only Variable Definitions need KYC variables (Global Assets don't)
-    const assets = await assetsCollection.find({ isVariable: true }).toArray();
+    // HOW: Match either isVariable: true OR isLegacy: true
+    const assets = await assetsCollection.find({ 
+      $or: [{ isVariable: true }, { isLegacy: true }] 
+    }).toArray();
     
     console.log(`\n📊 Found ${assets.length} Variable Definition content assets\n`);
     
@@ -37,10 +40,10 @@ async function syncContentAssetsToKYC() {
     let skipped = 0;
     
     for (const asset of assets) {
-      // WHAT: Use Content Library slug directly as variable name (NO MAPPING)
-      // WHY: Single source of truth - Content Library defines the exact database field name
-      // HOW: Content Library slug must be in format: stats.variableName
-      const variableName = asset.slug;
+      // WHAT: Use linkedVariable for legacy assets, slug for new assets
+      // WHY: Legacy assets store the actual stats field name in linkedVariable
+      // HOW: linkedVariable = 'reportImage11', slug = 'report-image-11'
+      const variableName = asset.linkedVariable || asset.slug;
       
       // WHAT: Check if variable already exists
       // WHY: Prevent duplicates on re-runs
@@ -54,11 +57,20 @@ async function syncContentAssetsToKYC() {
       
       // WHAT: Create KYC variable document
       // WHY: Makes the variable usable in Clicker, Manual Edit, and Algorithms
+      // WHAT: Determine variable type based on content asset type
+      // WHY: Images need 'textmedia', texts need 'textarea'
+      let variableType = 'count';
+      if (asset.type === 'image') {
+        variableType = 'textmedia'; // Image URL storage
+      } else if (asset.type === 'text') {
+        variableType = 'textarea'; // Multi-line text
+      }
+      
       const variable = {
         name: variableName,
         label: asset.title, // Use content asset title as display label
         alias: asset.title, // UI display name (editable in KYC)
-        type: 'count', // CHANGED: Use 'count' for numeric clicker variables (was 'text')
+        type: variableType,
         category: asset.category || 'Content',
         flags: {
           visibleInClicker: true, // CHANGED: Enable in Clicker UI (was false)
