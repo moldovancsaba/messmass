@@ -31,9 +31,16 @@ interface EventSummary {
 }
 
 export default function PartnerKYCDataPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id;
   const router = useRouter();
   const { user, loading: authLoading } = useAdminAuth();
+  
+  // WHAT: Log URL parameters on mount
+  // WHY: Debug if all partners are opening with same ID
+  React.useEffect(() => {
+    console.log('🌍 [KYC Partner] Page mounted with params:', { id, allParams: params });
+  }, [id, params]);
   
   const [partner, setPartner] = useState<PartnerData | null>(null);
   const [events, setEvents] = useState<EventSummary[]>([]);
@@ -48,24 +55,56 @@ export default function PartnerKYCDataPage() {
     try {
       setLoading(true);
       
+      console.log('🔍 [KYC Partner] Starting load for partner ID:', id);
+      
       // Fetch partner data with cache-busting
-      const partnerRes = await fetch(`/api/partners?partnerId=${id}&_t=${Date.now()}`, {
+      const partnerUrl = `/api/partners?partnerId=${id}&_t=${Date.now()}`;
+      console.log('🔍 [KYC Partner] Fetching partner from:', partnerUrl);
+      
+      const partnerRes = await fetch(partnerUrl, {
         cache: 'no-store'
       });
       const partnerData = await partnerRes.json();
       
-      console.log('🔍 [KYC Partner] Loaded partner:', { id, name: partnerData.partners?.[0]?.name });
+      console.log('🔍 [KYC Partner] Partner API Response:', {
+        success: partnerData.success,
+        partnersCount: partnerData.partners?.length,
+        firstPartner: partnerData.partners?.[0] ? {
+          _id: partnerData.partners[0]._id,
+          name: partnerData.partners[0].name,
+          emoji: partnerData.partners[0].emoji
+        } : null
+      });
       
       if (!partnerData.success || !partnerData.partners?.[0]) {
+        console.error('❌ [KYC Partner] Partner not found for ID:', id);
         setError('Partner not found');
         return;
       }
       
-      setPartner(partnerData.partners[0]);
+      const loadedPartner = partnerData.partners[0];
+      console.log('✅ [KYC Partner] Setting partner state:', {
+        _id: loadedPartner._id,
+        name: loadedPartner.name
+      });
+      
+      setPartner(loadedPartner);
       
       // Fetch partner events
-      const eventsRes = await fetch(`/api/partners/${id}/events`);
+      const eventsUrl = `/api/partners/${id}/events`;
+      console.log('🔍 [KYC Partner] Fetching events from:', eventsUrl);
+      
+      const eventsRes = await fetch(eventsUrl);
       const eventsData = await eventsRes.json();
+      
+      console.log('🔍 [KYC Partner] Events API Response:', {
+        success: eventsData.success,
+        eventsCount: eventsData.events?.length,
+        partnerFromResponse: eventsData.partner ? {
+          _id: eventsData.partner._id,
+          name: eventsData.partner.name
+        } : null
+      });
       
       if (eventsData.success && eventsData.events) {
         setEvents(eventsData.events);
