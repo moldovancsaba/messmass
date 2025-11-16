@@ -1,5 +1,18 @@
 # WARP.DEV AI Conversation Log
 
+## [2025-11-16T11:29:19.000Z] v11.22.0 → v11.23.0 — Commit to main with API-Football scaffolding
+
+Plan & Execution
+- Version bump MINOR per protocol (package.json 11.22.0 → 11.23.0).
+- Update README.md, ROADMAP.md, TASKLIST.md, ARCHITECTURE.md headers and timestamps (ISO 8601 with ms, UTC).
+- Add RELEASE_NOTES.md entry for v11.23.0 summarizing API-Football scaffolding.
+- Stage new untracked files: `app/admin/api-football-enrich/`, `app/api/api-football/`, `lib/api-football.ts`, and 4 scripts.
+- Run type-check, lint, and build; commit and push to origin/main with versioned message.
+
+Dependencies/Considerations
+- Requires `API_FOOTBALL_KEY` in environment for enrichment scripts.
+- No tests (MVP factory). Manual dev verification will follow after push.
+
 **Purpose**: This file logs all AI agent task delivery plans, commitments, and feedback sessions per the mandatory task delivery logging protocol defined in WARP.md.
 
 ---

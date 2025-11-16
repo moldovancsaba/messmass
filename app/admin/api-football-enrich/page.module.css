@@ -1,0 +1,176 @@
+/* WHAT: Styles for API-Football partner enrichment admin page */
+/* WHY: Clean, modern UI with status indicators and disabled states */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--mm-space-6);
+}
+
+.header {
+  margin-bottom: var(--mm-space-6);
+  text-align: center;
+}
+
+.header h1 {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: 700;
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-2);
+}
+
+.subtitle {
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+.statusCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--mm-space-3) 0;
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.statusRow:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-600);
+  font-weight: 500;
+}
+
+.value {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-900);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--mm-space-6);
+}
+
+.enrichButton {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4) var(--mm-space-8);
+  font-size: var(--mm-font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.enrichButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -2px rgba(59, 130, 246, 0.4);
+}
+
+.enrichButton:disabled {
+  background: var(--mm-gray-300);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.message {
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-md);
+  margin-bottom: var(--mm-space-6);
+  font-size: var(--mm-font-size-base);
+  font-weight: 500;
+  text-align: center;
+}
+
+.message.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.message.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.message.info {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
+}
+
+.info {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+}
+
+.info h2,
+.info h3 {
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+}
+
+.info h2 {
+  font-size: var(--mm-font-size-xl);
+  font-weight: 700;
+}
+
+.info h3 {
+  font-size: var(--mm-font-size-lg);
+  font-weight: 600;
+  margin-top: var(--mm-space-6);
+}
+
+.info ul {
+  list-style: disc;
+  padding-left: var(--mm-space-6);
+  color: var(--mm-gray-700);
+  line-height: 1.8;
+}
+
+.info ul li {
+  margin-bottom: var(--mm-space-2);
+}
+
+.info strong {
+  color: var(--mm-gray-900);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: var(--mm-space-4);
+  }
+
+  .header h1 {
+    font-size: var(--mm-font-size-2xl);
+  }
+
+  .statusCard {
+    padding: var(--mm-space-4);
+  }
+
+  .enrichButton {
+    width: 100%;
+    padding: var(--mm-space-3) var(--mm-space-6);
+    font-size: var(--mm-font-size-base);
+  }
+}

@@ -1,5 +1,30 @@
 # MessMass Release Notes
 
+## [v11.23.0] — 2025-11-16T11:29:19.000Z
+
+### Summary
+- Minor release to introduce API-Football (API-Sports) integration scaffolding and configuration.
+- Synchronized version across package.json and all documentation files per protocol.
+
+### Added
+- New config key in `lib/config.ts`: `apiFootballKey` (server-only).
+- New module and scripts for API-Football workflows:
+  - `lib/api-football.ts` (client library wrapper)
+  - `scripts/enrich-partners-daily.ts`
+  - `scripts/search-partner-in-api-football.ts`
+  - `scripts/test-api-football.ts`
+  - `scripts/debug-api-football-response.ts`
+- Admin enrichment UI stub: `app/admin/api-football-enrich/`
+- API route stubs: `app/api/api-football/`
+
+### Changed
+- `lib/config.ts`: read `API_FOOTBALL_KEY` via `getEnv()` and expose as `apiFootballKey` in `AppConfig`.
+- Documentation headers updated with version and ISO 8601 (ms) timestamps.
+
+### Notes
+- Environment variable required for enrichment jobs: `API_FOOTBALL_KEY`.
+- Dev approval pending; manual verification to be performed locally after setting env.
+
 ## [v11.18.0] — 2025-11-13T14:30:00.000Z
 
 ### Summary

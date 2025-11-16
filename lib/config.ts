@@ -43,6 +43,10 @@ export type AppConfig = {
   // WHAT: API key for ImgBB image hosting service
   // WHY: Required for uploading partner report images from Clicker editor
   imgbbApiKey?: string;
+  // API-Football integration (server-only)
+  // WHAT: API key for API-Football (API-Sports) multi-sport data
+  // WHY: Required for enriching partners and events with official sports data
+  apiFootballKey?: string;
 };
 
 function getEnv(name: string): string | undefined {
@@ -108,6 +112,8 @@ function initializeConfig(): AppConfig {
     footballDataAutoCreatePartners: getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') ? getEnv('FOOTBALL_DATA_AUTO_CREATE_PARTNERS') === 'true' : true,
     // ImgBB API integration
     imgbbApiKey: getEnv('IMGBB_API_KEY'),
+    // API-Football integration (server-only)
+    apiFootballKey: getEnv('API_FOOTBALL_KEY'),
   };
 
   return cachedConfig;

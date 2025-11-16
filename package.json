@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "11.22.0",
+  "version": "11.23.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -89,7 +89,10 @@
     "migrate:partner-viewslug": "npx tsx -r dotenv/config scripts/addViewSlugToPartners.ts dotenv_config_path=.env.local",
     "generate:partner-passwords": "npx tsx -r dotenv/config scripts/generatePartnerReportPasswords.ts dotenv_config_path=.env.local",
     "migrate:report-templates": "npx tsx -r dotenv/config scripts/migrateToReportTemplates.ts dotenv_config_path=.env.local",
-    "migrate:viz-to-wukf": "npx tsx -r dotenv/config scripts/migrateGlobalVisualizationToWUKF.ts dotenv_config_path=.env.local"
+    "migrate:viz-to-wukf": "npx tsx -r dotenv/config scripts/migrateGlobalVisualizationToWUKF.ts dotenv_config_path=.env.local",
+    "api-football:enrich-daily": "npx tsx scripts/enrich-partners-daily.ts",
+    "api-football:search": "npx tsx scripts/search-partner-in-api-football.ts",
+    "api-football:test": "npx tsx scripts/test-api-football.ts"
   },
   "dependencies": {
     "chart.js": "^4.5.0",
