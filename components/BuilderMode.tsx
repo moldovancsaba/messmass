@@ -134,7 +134,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   if (loading) {
     console.log('🏗️ [BuilderMode] Rendering: LOADING');
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+      <div className="builder-loading">
         <p>🔄 Loading report template...</p>
       </div>
     );
@@ -144,9 +144,9 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   if (error) {
     console.log('🏗️ [BuilderMode] Rendering: ERROR -', error);
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: '#ef4444' }}>
+      <div className="builder-error">
         <p>❌ {error}</p>
-        <p style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
+        <p className="builder-error-message">
           Make sure a report template is assigned to this project in Visualization Manager.
         </p>
       </div>
@@ -164,10 +164,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
   if (!template || !template.dataBlocks || template.dataBlocks.length === 0) {
     console.log('🏗️ [BuilderMode] Rendering: NO TEMPLATE');
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: '#6b7280' }}>
+      <div className="builder-empty-state">
         <p>📋 No report template assigned to this project</p>
-        <p style={{ marginTop: '1rem', fontSize: '0.875rem' }}>
-          Go to <a href="/admin/visualization" style={{ color: '#3b82f6', textDecoration: 'underline' }}>Visualization Manager</a> to assign a template.
+        <p className="builder-empty-message">
+          Go to <a href="/admin/visualization" className="builder-empty-link">Visualization Manager</a> to assign a template.
         </p>
       </div>
     );
@@ -200,29 +200,23 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
 
   // WHAT: Render template with chart builders
   // WHY: Show the actual report layout with inline inputs
-  const gridColumns = template.gridSettings.desktopUnits || 3;
+  // WHAT: Use single-column grid for full-width chart builders
+  // WHY: Builder mode inputs need more space than report display mode
+  const gridColumns = 1;
   
   return (
     <div>
       {/* Info banner when using fallback template from partner/default */}
       {resolvedFrom && resolvedFrom !== 'project' && (
-        <div style={{
-          margin: '0 0 1rem 0',
-          padding: '0.75rem 1rem',
-          backgroundColor: 'rgba(59,130,246,0.08)',
-          border: '1px solid rgba(59,130,246,0.25)',
-          borderRadius: '0.5rem',
-          color: '#1e40af',
-          fontSize: '0.875rem'
-        }}>
-          Using fallback template from <strong style={{ color: '#1d4ed8' }}>{resolvedFrom}</strong>
+        <div className="builder-info-banner">
+          Using fallback template from <strong>{resolvedFrom}</strong>
           {resolvedSource ? `: ${resolvedSource}` : ''}
         </div>
       )}
 
       {/* WHAT: Render blocks as separate containers with titles */}
       {/* WHY: Show proper block structure like the final report */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem' }}>
+      <div className="builder-container">
       {template.dataBlocks
         .sort((a, b) => a.order - b.order)
         .filter(block => block.charts && block.charts.length > 0) // Skip empty blocks
@@ -232,34 +226,22 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
           return (
             <div 
               key={block._id}
-              style={{
-                backgroundColor: '#fff',
-                border: '2px solid #e5e7eb',
-                borderRadius: '0.75rem',
-                overflow: 'hidden'
-              }}
+              className="builder-block-container"
             >
               {/* Block Title */}
               {block.showTitle !== false && (
-                <div style={{
-                  padding: '1rem 1.5rem',
-                  backgroundColor: '#f9fafb',
-                  borderBottom: '1px solid #e5e7eb',
-                  fontWeight: 600,
-                  fontSize: '1.125rem',
-                  color: '#111827'
-                }}>
+                <div className="builder-block-title">
                   {block.name}
                 </div>
               )}
               
-              {/* Charts Grid */}
+              {/* Charts Grid - Single column for full-width inputs */}
               <div 
                 style={{
                   display: 'grid',
                   gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-                  gap: '1.5rem',
-                  padding: '1.5rem'
+                  gap: 'var(--mm-space-6)',
+                  padding: 'var(--mm-space-6)'
                 }}
               >
                 {block.charts
@@ -269,19 +251,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                     const chart = charts.find((c) => c.chartId === chartItem.chartId);
                     
                     if (!chart) {
-                      const widthNF = getChartWidth(chartItem, undefined);
                       return (
                         <div 
                           key={chartItem.chartId} 
-                          style={{ 
-                            gridColumn: `span ${widthNF}`,
-                            padding: '1.5rem',
-                            backgroundColor: '#fee2e2',
-                            borderRadius: '0.5rem',
-                            border: '1px solid #ef4444',
-                            color: '#b91c1c',
-                            fontSize: '0.875rem'
-                          }}
+                          className="builder-chart-not-found"
                         >
                           ⚠️ Chart not found: {chartItem.chartId}
                         </div>
@@ -327,8 +300,8 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                         // WHAT: VALUE type renders both KPI and BAR (2 separate grid items)
                         // WHY: Skip in Builder mode to avoid duplication
                         builderComponent = (
-                          <div style={{ padding: '1.5rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', border: '1px solid #fbbf24' }}>
-                            <p style={{ color: '#92400e', fontSize: '0.875rem' }}>
+                          <div className="builder-chart-warning">
+                            <p>
                               ⚠️ VALUE charts are read-only in Builder mode (composite type)
                             </p>
                           </div>
@@ -336,17 +309,18 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                         break;
                       default:
                         builderComponent = (
-                          <div style={{ padding: '1.5rem', backgroundColor: '#fee2e2', borderRadius: '0.5rem', border: '1px solid #ef4444' }}>
-                            <p style={{ color: '#b91c1c', fontSize: '0.875rem' }}>
+                          <div className="builder-chart-error">
+                            <p>
                               ⚠️ Unknown chart type: {chart.type}
                             </p>
                           </div>
                         );
                     }
                     
-                    const width = getChartWidth(chartItem, chart);
+                    // WHAT: No need for width calculation in single-column grid
+                    // WHY: All charts take full width for better usability
                     return (
-                      <div key={chartItem.chartId} style={{ gridColumn: `span ${width}` }}>
+                      <div key={chartItem.chartId}>
                         {builderComponent}
                       </div>
                     );

@@ -987,9 +987,108 @@ textarea::placeholder {
   margin-top: 2rem;
 }
 
-/* WHAT: Legacy modal classes removed (lines 972-1030)
- * WHY: All modals migrated to unified modal system (FormModal, BaseModal, etc.)
- * WHEN: v8.24.0+ modal system migration complete */
+/* WHAT: Legacy modal classes removed (lines 972-1030) */
+
+/* ========================================
+   BUILDER MODE STYLES
+======================================== */
+
+.builder-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-8);
+  padding: 0;
+}
+
+.builder-info-banner {
+  margin: 0 0 var(--mm-space-4) 0;
+  padding: var(--mm-space-3) var(--mm-space-4);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--mm-radius-lg);
+  color: var(--mm-color-primary-700);
+  font-size: var(--mm-font-size-sm);
+}
+
+.builder-info-banner strong {
+  color: var(--mm-color-primary-800);
+}
+
+.builder-block-container {
+  background: var(--mm-white);
+  border: 2px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-xl);
+  overflow: hidden;
+}
+
+.builder-block-title {
+  padding: var(--mm-space-4) var(--mm-space-6);
+  background: var(--mm-gray-50);
+  border-bottom: 1px solid var(--mm-border-color-default);
+  font-weight: var(--mm-font-weight-semibold);
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-900);
+}
+
+.builder-loading {
+  padding: var(--mm-space-12);
+  text-align: center;
+  color: var(--mm-gray-600);
+}
+
+.builder-error {
+  padding: var(--mm-space-12);
+  text-align: center;
+  color: var(--mm-color-error);
+}
+
+.builder-error-message {
+  margin-top: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+}
+
+.builder-empty-state {
+  padding: var(--mm-space-12);
+  text-align: center;
+  color: var(--mm-gray-600);
+}
+
+.builder-empty-message {
+  margin-top: var(--mm-space-4);
+  font-size: var(--mm-font-size-sm);
+}
+
+.builder-empty-link {
+  color: var(--mm-color-primary-600);
+  text-decoration: underline;
+}
+
+.builder-chart-not-found {
+  padding: var(--mm-space-6);
+  background: var(--mm-color-error-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-color-error);
+  color: var(--mm-color-error-dark);
+  font-size: var(--mm-font-size-sm);
+}
+
+.builder-chart-warning {
+  padding: var(--mm-space-6);
+  background: var(--mm-color-warning-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-color-warning);
+  color: var(--mm-color-warning-dark);
+  font-size: var(--mm-font-size-sm);
+}
+
+.builder-chart-error {
+  padding: var(--mm-space-6);
+  background: var(--mm-color-error-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-color-error);
+  color: var(--mm-color-error-dark);
+  font-size: var(--mm-font-size-sm);
+}
 
 /* Section headers */
 .section-header {

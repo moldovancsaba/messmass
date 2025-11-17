@@ -502,10 +502,6 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   <ColoredHashtagBubble 
                     key={index}
                     hashtag={hashtagDisplay}
-                    customStyle={{
-                      fontSize: '1.125rem',
-                      fontWeight: '600'
-                    }}
                     showCategoryPrefix={true}
                   />
                 ))}
