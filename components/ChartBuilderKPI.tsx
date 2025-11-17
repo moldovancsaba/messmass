@@ -41,29 +41,18 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
   };
   
   return (
-    <div style={{ 
-      padding: '1.5rem', 
-      backgroundColor: '#ffffff',
-      borderRadius: '0.5rem',
-      border: '2px solid #3b82f6',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
+    <div className="chart-builder-kpi">
       {/* Chart title with icon */}
-      <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {chart.icon && <span style={{ fontSize: '1.25rem' }}>{chart.icon}</span>}
-        <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+      <div className="chart-builder-header">
+        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+        <h3 className="chart-builder-title">
           {chart.title}
         </h3>
       </div>
       
       {/* Single input field */}
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ 
-          display: 'block', 
-          fontSize: '0.875rem', 
-          color: '#6b7280',
-          marginBottom: '0.5rem'
-        }}>
+      <div className="chart-builder-field">
+        <label className="chart-builder-label">
           {chart.elements[0]?.label || 'Value'}
         </label>
         <input
@@ -72,19 +61,12 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
           onChange={(e) => setTempValue(Math.max(0, parseInt(e.target.value) || 0))}
           onBlur={handleBlur}
           min="0"
-          className="form-input"
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            textAlign: 'center'
-          }}
+          className="form-input chart-builder-input"
         />
       </div>
       
       {/* Formula hint */}
-      <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+      <p className="chart-builder-hint">
         Variable: {statsKey}
       </p>
     </div>

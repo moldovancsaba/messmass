@@ -25,17 +25,11 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
   const currentText = stats[statsKey] || '';
   
   return (
-    <div style={{ 
-      padding: '1.5rem', 
-      backgroundColor: '#ffffff',
-      borderRadius: '0.5rem',
-      border: '2px solid #06b6d4',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
+    <div className="chart-builder-text">
       {/* Chart title with icon */}
-      <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {chart.icon && <span style={{ fontSize: '1.25rem' }}>{chart.icon}</span>}
-        <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+      <div className="chart-builder-header">
+        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+        <h3 className="chart-builder-title">
           {chart.title}
         </h3>
       </div>
@@ -49,7 +43,7 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
       />
       
       {/* Variable hint */}
-      <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.75rem' }}>
+      <p className="chart-builder-hint">
         Variable: {statsKey}
       </p>
     </div>

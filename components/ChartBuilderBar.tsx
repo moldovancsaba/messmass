@@ -51,37 +51,28 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
   };
   
   return (
-    <div style={{ 
-      padding: '1.5rem', 
-      backgroundColor: '#ffffff',
-      borderRadius: '0.5rem',
-      border: '2px solid #10b981',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
+    <div className="chart-builder-bar">
       {/* Chart title with icon */}
-      <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {chart.icon && <span style={{ fontSize: '1.25rem' }}>{chart.icon}</span>}
-        <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+      <div className="chart-builder-header">
+        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+        <h3 className="chart-builder-title">
           {chart.title}
         </h3>
       </div>
       
       {/* Input fields for each bar segment */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="chart-builder-inputs">
         {elements.map((el, idx) => {
           const statsKey = el.formula.replace(/^stats\./, '').trim();
           
           return (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div key={idx} className="chart-builder-bar-row">
               {/* Color indicator */}
               {el.color && (
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '4px',
-                  backgroundColor: el.color,
-                  flexShrink: 0
-                }} />
+                <div 
+                  className="chart-builder-color-dot"
+                  style={{ backgroundColor: el.color }}
+                />
               )}
               
               {/* Input field */}
@@ -94,21 +85,11 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
                 }))}
                 onBlur={() => handleBlur(statsKey)}
                 min="0"
-                className="form-input"
-                style={{
-                  width: '100px',
-                  padding: '0.5rem',
-                  textAlign: 'center',
-                  flexShrink: 0
-                }}
+                className="form-input chart-builder-bar-input"
               />
               
               {/* Label */}
-              <label style={{ 
-                fontSize: '0.875rem', 
-                color: '#4b5563',
-                flex: 1
-              }}>
+              <label className="chart-builder-bar-label">
                 {el.label || statsKey}
               </label>
             </div>
@@ -117,7 +98,7 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
       </div>
       
       {/* Chart type hint */}
-      <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.75rem' }}>
+      <p className="chart-builder-hint">
         Bar Chart • {elements.length} segments
       </p>
     </div>

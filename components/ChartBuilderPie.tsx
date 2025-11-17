@@ -58,38 +58,29 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
   }, {} as Record<string, number>);
   
   return (
-    <div style={{ 
-      padding: '1.5rem', 
-      backgroundColor: '#ffffff',
-      borderRadius: '0.5rem',
-      border: '2px solid #f59e0b',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-    }}>
+    <div className="chart-builder-pie">
       {/* Chart title with icon */}
-      <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {chart.icon && <span style={{ fontSize: '1.25rem' }}>{chart.icon}</span>}
-        <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+      <div className="chart-builder-header">
+        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+        <h3 className="chart-builder-title">
           {chart.title}
         </h3>
       </div>
       
       {/* Input fields for each pie segment */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="chart-builder-inputs">
         {elements.map((el, idx) => {
           const statsKey = el.formula.replace(/^stats\./, '').trim();
           const percentage = percentages[statsKey] || 0;
           
           return (
-            <div key={idx} style={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              gap: '0.5rem',
-              padding: '0.75rem',
-              backgroundColor: '#f9fafb',
-              borderRadius: '0.375rem'
+            <div key={idx} className="chart-builder-field" style={{ 
+              padding: 'var(--mm-space-3)',
+              backgroundColor: 'var(--mm-gray-50)',
+              borderRadius: 'var(--mm-radius-md)'
             }}>
               {/* Label with color indicator */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="chart-builder-bar-row">
                 {el.color && (
                   <div style={{
                     width: '12px',
@@ -99,15 +90,10 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
                     flexShrink: 0
                   }} />
                 )}
-                <label style={{ 
-                  fontSize: '0.875rem', 
-                  color: '#4b5563',
-                  fontWeight: '500',
-                  flex: 1
-                }}>
+                <label className="chart-builder-bar-label">
                   {el.label || statsKey}
                 </label>
-                <span style={{ fontSize: '0.875rem', color: '#9ca3af', fontWeight: '600' }}>
+                <span style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-400)', fontWeight: 'var(--mm-font-weight-semibold)' }}>
                   {percentage}%
                 </span>
               </div>
@@ -122,14 +108,7 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
                 }))}
                 onBlur={() => handleBlur(statsKey)}
                 min="0"
-                className="form-input"
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  textAlign: 'center',
-                  fontSize: '1rem',
-                  fontWeight: '600'
-                }}
+                className="form-input chart-builder-input"
               />
             </div>
           );
@@ -137,25 +116,21 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
       </div>
       
       {/* Total display */}
-      <div style={{ 
-        marginTop: '1rem',
-        padding: '0.75rem',
-        backgroundColor: '#fef3c7',
-        borderRadius: '0.375rem',
+      <div className="chart-builder-pie-total" style={{ 
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <span style={{ fontSize: '0.875rem', color: '#92400e', fontWeight: '600' }}>
+        <span>
           Total
         </span>
-        <span style={{ fontSize: '1rem', color: '#92400e', fontWeight: '700' }}>
+        <span style={{ fontSize: 'var(--mm-font-size-base)', fontWeight: 'var(--mm-font-weight-bold)' }}>
           {total}
         </span>
       </div>
       
       {/* Chart type hint */}
-      <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+      <p className="chart-builder-hint">
         Pie Chart • {elements.length} segments
       </p>
     </div>
