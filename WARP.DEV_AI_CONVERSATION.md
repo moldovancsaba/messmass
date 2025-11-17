@@ -1,5 +1,20 @@
 # WARP.DEV AI Conversation Log
 
+## [2025-11-17T14:59:10.000Z] v11.24.0 → v11.25.0 — Variable names missing on Edit Stats
+
+Plan & Execution
+- Add API-level label fallback to ensure non-empty label in variables-config GET.
+- Keep flags normalization from v11.24.0.
+
+Artifacts
+- Modified: `app/api/variables-config/route.ts` (label fallback).
+
+Verification
+- Dev build OK; label now resolves to alias or humanized name.
+
+Versioning & Docs
+- Bumped to 11.25.0; synced via version:update; RELEASE_NOTES entry added.
+
 ## [2025-11-17T14:50:30.000Z] v11.23.0 → v11.24.0 — Clicker buttons invisible on Edit Stats
 
 Plan & Execution

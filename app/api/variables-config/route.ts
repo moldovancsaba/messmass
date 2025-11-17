@@ -101,8 +101,27 @@ export async function GET() {
             visibleInClicker: v?.visibleInClicker === true,
             editableInManual: v?.editableInManual !== false,
           };
+
+      // WHAT: Provide a reliable non-empty label for UI
+      // WHY: Some records only set `alias` (display label) or have missing/empty `label`
+      // HOW: label = v.label || v.alias || Humanize(name)
+      const rawName: string = typeof v?.name === 'string' ? v.name : '';
+      const stripped = rawName.startsWith('stats.') ? rawName.slice(6) : rawName;
+      const humanized = stripped
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/^\w/, (c) => c.toUpperCase());
+      const effectiveLabel = (v?.label && String(v.label).trim().length > 0)
+        ? v.label
+        : (v?.alias && String(v.alias).trim().length > 0)
+          ? v.alias
+          : humanized;
+
       return {
         ...v,
+        label: effectiveLabel,
         flags: normalizedFlags,
         derived: typeof v?.derived === 'boolean' ? v.derived : false,
       };

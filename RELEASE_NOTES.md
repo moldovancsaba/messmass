@@ -1,5 +1,22 @@
 # MessMass Release Notes
 
+## [v11.25.0] — 2025-11-17T14:59:10.000Z
+
+### Summary
+- Ensure Clicker/Manual show readable names by adding label fallback in variables-config API.
+
+### Changed
+- app/api/variables-config/route.ts
+  - Set `label` = `label || alias || Humanize(name)` in GET response.
+  - Keeps `flags` normalization from v11.24.0.
+
+### Impact
+- ✅ Buttons and inputs now display clear names even when `label` is empty but `alias` exists.
+- ❌ No DB writes.
+
+### Version
+- `11.24.0` → `11.25.0` (MINOR)
+
 ## [v11.24.0] — 2025-11-17
 
 ### Summary

@@ -1,7 +1,7 @@
 # 📖 MessMass User Guide
 
-**Version:** 10.6.0  
-**Last Updated:** 2025-11-05T12:55:00.000Z (UTC)  
+**Version:** 11.25.0  
+**Last Updated:** 2025-11-17T14:59:10.000Z (UTC)  
 **Status:** Production
 
 Complete guide for using the MessMass enterprise event statistics dashboard and management platform.
