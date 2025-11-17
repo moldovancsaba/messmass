@@ -17,7 +17,8 @@ interface VariableGroup {
   groupOrder: number;
   chartId?: string;
   titleOverride?: string;
-  variables: string[];
+  variables?: string[];
+  specialType?: 'report-content';
   visibleInClicker?: boolean;
   visibleInManual?: boolean;
   createdAt?: string;
@@ -124,6 +125,22 @@ export default function ClickerManagerPage() {
         backLink="/admin"
         actionButtons={[
           { label: 'New Group', onClick: () => setCreateOpen(true), variant: 'primary', icon: '➕' },
+          { label: 'Add Report Content', onClick: async () => {
+              setSaving(true);
+              try {
+                const maxOrder = Math.max(0, ...groups.map(g => g.groupOrder));
+                await apiPost('/api/variables-groups', {
+                  group: {
+                    groupOrder: maxOrder + 1,
+                    titleOverride: '📦 Report Content',
+                    specialType: 'report-content',
+                    visibleInClicker: true,
+                    visibleInManual: true,
+                  }
+                });
+                await loadData();
+              } finally { setSaving(false); }
+            }, variant: 'secondary', icon: '📦' },
           { label: 'Refresh Variables', onClick: refreshVariables, variant: 'info', disabled: saving, icon: '🔄' },
           { label: 'Seed Defaults', onClick: seedDefaults, variant: 'secondary', disabled: saving },
           { label: 'Delete All', onClick: deleteAllGroups, variant: 'danger', disabled: saving },
@@ -153,7 +170,7 @@ export default function ClickerManagerPage() {
       {!loading && groups.length > 0 && (
         <div className="grid gap-3">
           {groups.map((group) => {
-            const groupVars = group.variables
+            const groupVars = (group.variables || [])
               .map((varName) => variables.find((v) => v.name === varName))
               .filter(Boolean) as Variable[];
 
@@ -166,7 +183,11 @@ export default function ClickerManagerPage() {
                         Group {group.groupOrder}
                         {group.titleOverride && ` - ${group.titleOverride}`}
                       </h3>
-                      <span className="badge badge-info">{group.variables.length} variables</span>
+                      {group.specialType === 'report-content' ? (
+                        <span className="badge badge-purple">📦 Report Content</span>
+                      ) : (
+                        <span className="badge badge-info">{(group.variables?.length || 0)} variables</span>
+                      )}
                       {group.chartId && (
                         <span className="badge badge-success">📊 {group.chartId}</span>
                       )}
@@ -221,18 +242,20 @@ export default function ClickerManagerPage() {
                       </label>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {groupVars.map((v) => (
-                        <div key={v.name} className="badge badge-secondary">
-                          {v.label}
-                        </div>
-                      ))}
-                      {group.variables.length > groupVars.length && (
-                        <div className="badge badge-warning">
-                          {group.variables.length - groupVars.length} missing
-                        </div>
-                      )}
-                    </div>
+                    {group.specialType !== 'report-content' && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {groupVars.map((v) => (
+                          <div key={v.name} className="badge badge-secondary">
+                            {v.label}
+                          </div>
+                        ))}
+                        {(group.variables?.length || 0) > groupVars.length && (
+                          <div className="badge badge-warning">
+                            {(group.variables?.length || 0) - groupVars.length} missing
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -324,6 +347,7 @@ function GroupForm({
     groupOrder: group.groupOrder,
     chartId: group.chartId || '',
     titleOverride: group.titleOverride || '',
+    specialType: group.specialType as 'report-content' | undefined,
     variables: group.variables || [],
     visibleInClicker: group.visibleInClicker !== false,
     visibleInManual: group.visibleInManual !== false,
@@ -370,7 +394,7 @@ function GroupForm({
   };
 
   const handleSave = async () => {
-    if (form.variables.length === 0) {
+    if (!form.specialType && form.variables.length === 0) {
       setForm((prev) => ({ ...prev, error: 'Group must have at least one variable' }));
       return;
     }
@@ -382,7 +406,8 @@ function GroupForm({
           groupOrder: form.groupOrder,
           chartId: form.chartId || undefined,
           titleOverride: form.titleOverride || undefined,
-          variables: form.variables,
+          specialType: form.specialType,
+          variables: form.specialType ? undefined : form.variables,
           visibleInClicker: form.visibleInClicker,
           visibleInManual: form.visibleInManual,
         },
@@ -414,15 +439,17 @@ function GroupForm({
             min="1"
           />
         </div>
-        <div>
-          <label className="form-label-block">Chart ID (optional)</label>
-          <input
-            className="form-input"
-            value={form.chartId}
-            onChange={(e) => setForm({ ...form, chartId: e.target.value })}
-            placeholder="e.g. all-images-taken"
-          />
-        </div>
+        {(!form.specialType) && (
+          <div>
+            <label className="form-label-block">Chart ID (optional)</label>
+            <input
+              className="form-input"
+              value={form.chartId}
+              onChange={(e) => setForm({ ...form, chartId: e.target.value })}
+              placeholder="e.g. all-images-taken"
+            />
+          </div>
+        )}
         <div>
           <label className="form-label-block">Title Override (optional)</label>
           <input
@@ -460,6 +487,7 @@ function GroupForm({
         </div>
       </div>
 
+      {!form.specialType && (
       <div className="mt-4">
         <label className={`form-label-block ${styles.sectionLabel}`}>Variables in Group ({form.variables.length})</label>
         <div className={`grid gap-2 mt-2 ${styles.variableListContainer}`}>
@@ -509,7 +537,9 @@ function GroupForm({
           })}
         </div>
       </div>
+      )}
 
+      {!form.specialType && (
       <div className="mt-4">
         <label className={`form-label-block ${styles.sectionLabel}`}>Add Variables</label>
         <input
@@ -540,6 +570,7 @@ function GroupForm({
           )}
         </div>
       </div>
+      )}
 
       {form.error && <div className="text-error mt-3">{form.error}</div>}
 

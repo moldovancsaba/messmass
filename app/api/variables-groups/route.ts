@@ -12,7 +12,8 @@ interface VariableGroupDoc {
   groupOrder: number
   chartId?: string
   titleOverride?: string
-  variables: string[] // variable names in order
+  variables?: string[] // variable names in order (optional for special groups)
+  specialType?: 'report-content' // Special group without variables (controls Report Content block)
   visibleInClicker?: boolean
   visibleInManual?: boolean
   createdAt?: string
@@ -64,8 +65,14 @@ export async function POST(req: NextRequest) {
 
     // Upsert a single group
     const group = body?.group as VariableGroupDoc
-    if (!group || typeof group.groupOrder !== 'number' || !Array.isArray(group.variables)) {
+    if (!group || typeof group.groupOrder !== 'number') {
       return NextResponse.json({ success: false, error: 'Invalid group payload' }, { status: 400 })
+    }
+
+    // Validation: either a special group OR a variables array
+    const isSpecial = group.specialType === 'report-content'
+    if (!isSpecial && !Array.isArray(group.variables)) {
+      return NextResponse.json({ success: false, error: 'Group must include variables[] unless specialType is set' }, { status: 400 })
     }
 
     const filter = { groupOrder: group.groupOrder } as any
@@ -73,7 +80,8 @@ export async function POST(req: NextRequest) {
       groupOrder: group.groupOrder,
       chartId: group.chartId || undefined,
       titleOverride: group.titleOverride || undefined,
-      variables: group.variables,
+      variables: Array.isArray(group.variables) ? group.variables : undefined,
+      specialType: group.specialType === 'report-content' ? 'report-content' : undefined,
       visibleInClicker: group.visibleInClicker !== undefined ? group.visibleInClicker : true,
       visibleInManual: group.visibleInManual !== undefined ? group.visibleInManual : true,
       updatedAt: now,

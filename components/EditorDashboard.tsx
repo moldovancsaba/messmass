@@ -280,7 +280,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
   // Calculate totals
   const totalImages = project.stats.remoteImages + project.stats.hostessImages + project.stats.selfies;
   // Groups
-  const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables: string[]; visibleInClicker?: boolean; visibleInManual?: boolean }[]>([])
+  const [groups, setGroups] = useState<{ groupOrder: number; chartId?: string; titleOverride?: string; variables?: string[]; specialType?: 'report-content'; visibleInClicker?: boolean; visibleInManual?: boolean }[]>([])
   const [charts, setCharts] = useState<any[]>([])
 
   useEffect(() => {
@@ -587,6 +587,23 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           })
           .sort((a,b)=>a.groupOrder-b.groupOrder)
           .map((g, idx) => {
+          // Special group: Report Content block
+          if (g.specialType === 'report-content') {
+            if (!((editMode === 'clicker' && g.visibleInClicker !== false) || (editMode === 'manual' && g.visibleInManual !== false))) return null
+            const title = g.titleOverride || '📦 Report Content'
+            return (
+              <ColoredCard key={`rc-${idx}`}>
+                <h2 className="section-title">{title}</h2>
+                <ReportContentManager
+                  stats={project.stats as any}
+                  onCommit={(newStats) => {
+                    setProject(prev => ({ ...prev, stats: newStats as any }));
+                    saveProject(newStats as any);
+                  }}
+                />
+              </ColoredCard>
+            )
+          }
           const chart = chartById(g.chartId)
           const kpi = computeKpiValue(chart)
           const title = g.chartId && chart ? chart.title : (g.titleOverride || undefined)
@@ -594,7 +611,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
           // WHAT: Flexible variable lookup - handle both 'female' and 'stats.female' formats
           // WHY: Groups may have old names (female) but varsConfig has new names (stats.female)
           // HOW: Try exact match first, then try with stats. prefix, then try without prefix
-          const items = g.variables
+          const items = (g.variables || [])
             .map(name => {
               // Try exact match
               let found = varsConfig.find(v => v.name === name);
@@ -779,24 +796,24 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         {/* Hashtags are now managed elsewhere in the system */}
         {/* Bitly Links Management Section - MOVED to Edit Project modal in admin/projects */}
 
-        {/* Report Content Manager (Images + Texts) - VISIBLE IN CLICKER & MANUAL MODES */}
-        {/* WHAT: Upload images and texts that auto-generate chart blocks for reports */}
-        {/* WHY: Content uploaded here becomes immediately available in Visualization editor */}
-        {(editMode === 'clicker' || editMode === 'manual') && (
-          <ColoredCard>
-            <h2 className="section-title">📦 Report Content</h2>
-            {/* WHAT: Centralized management for reportImageN / reportTextN slots
-                WHY: Bulk upload images to ImgBB and bulk add/edit texts with stable slot references
-                HOW: Uses existing /api/upload-image endpoint and EditorDashboard.saveProject */}
-            <ReportContentManager
-              stats={project.stats as any}
-              onCommit={(newStats) => {
-                setProject(prev => ({ ...prev, stats: newStats as any }));
-                saveProject(newStats as any);
-              }}
-            />
-          </ColoredCard>
-        )}
+        {/* Report Content fallback: if no special group configured, keep old behavior */}
+        {(() => {
+          const hasSpecial = groups.some(g => g.specialType === 'report-content')
+          if (hasSpecial) return null
+          if (!(editMode === 'clicker' || editMode === 'manual')) return null
+          return (
+            <ColoredCard>
+              <h2 className="section-title">📦 Report Content</h2>
+              <ReportContentManager
+                stats={project.stats as any}
+                onCommit={(newStats) => {
+                  setProject(prev => ({ ...prev, stats: newStats as any }));
+                  saveProject(newStats as any);
+                }}
+              />
+            </ColoredCard>
+          )
+        })()}
         </>
         )}
       </div>
