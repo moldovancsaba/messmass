@@ -1099,8 +1099,20 @@ textarea::placeholder {
 }
 
 .builder-chart-wrapper > * {
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   box-sizing: border-box;
+}
+
+/* WHAT: Force inner elements of chart builders to use full width */
+/* WHY: Chart builders have hardcoded inline widths that need override */
+.builder-chart-wrapper input[type="number"] {
+  min-width: 80px;
+  max-width: 100%;
+}
+
+.builder-chart-wrapper .form-input {
+  width: 100% !important;
 }
 
 /* Section headers */
