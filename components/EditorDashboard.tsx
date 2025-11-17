@@ -575,11 +575,11 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             // WHY: Admin controls which groups appear in clicker vs manual mode
             // HOW: Check visibleInClicker for clicker mode, visibleInManual for manual mode
             // Default to true if flags are undefined (backward compatibility)
-            if (editMode === 'clicker') {
-              return g.visibleInClicker !== false;
-            } else {
-              return g.visibleInManual !== false;
+            const visible = editMode === 'clicker' ? (g.visibleInClicker !== false) : (g.visibleInManual !== false);
+            if (editMode === 'manual') {
+              console.log(`Group ${g.groupOrder}: visibleInManual=${g.visibleInManual}, visible=${visible}`);
             }
+            return visible;
           })
           .sort((a,b)=>a.groupOrder-b.groupOrder)
           .map((g, idx) => {

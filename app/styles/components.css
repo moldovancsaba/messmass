@@ -1094,14 +1094,17 @@ textarea::placeholder {
 /* WHY: Prevent charts from being pushed to left side of their allocated space */
 .builder-chart-wrapper {
   width: 100%;
+  min-width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .builder-chart-wrapper > * {
   width: 100% !important;
+  min-width: 100% !important;
   max-width: 100% !important;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 /* WHAT: Force inner elements of chart builders to use full width */
