@@ -1,5 +1,26 @@
 # WARP.DEV AI Conversation Log
 
+## [2025-11-17T14:50:30.000Z] v11.23.0 → v11.24.0 — Clicker buttons invisible on Edit Stats
+
+Plan & Execution
+- Diagnose mismatch between Clicker Manager groups and KYC variables; confirm flags shape expected by EditorDashboard.
+- Implement non-breaking normalization in `/api/variables-config` (synthesize `flags` object when missing).
+- Provide ops scripts: diagnose, align groups→KYC (enable flags, set groups visible), optional prefix fixer (not executed).
+- Run alignment per user approval; verify buttons appear in Clicker.
+
+Decisions
+- No DB schema changes. Keep group names intact; Editor tolerates both prefixed/unprefixed. Use API-level normalization for flags.
+
+Artifacts
+- Modified: `app/api/variables-config/route.ts` (flags normalization).
+- Added: `scripts/diagnose-clicker.ts`, `scripts/alignClickerManagerToKyc.ts`, `scripts/fix-clicker-groups-prefix.ts`.
+
+Verification
+- Build succeeded; manual usage check on `/edit/[slug]` shows Clicker groups with buttons. Unresolved reportTextN items require KYC variables or removal.
+
+Versioning & Docs
+- Bumped to 11.24.0 (MINOR). Updated package.json and docs via version:update. Added RELEASE_NOTES.md entry.
+
 ## [2025-11-16T11:29:19.000Z] v11.22.0 → v11.23.0 — Commit to main with API-Football scaffolding
 
 Plan & Execution

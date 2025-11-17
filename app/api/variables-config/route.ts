@@ -82,18 +82,36 @@ export async function GET() {
 
     // WHAT: Fetch all variables from database
     // WHY: Single source of truth - no more code registry
-    const variables = await db
-      .collection<VariableMetadata>(COLLECTION)
+    const rawVariables = await db
+      .collection(COLLECTION)
       .find({})
       .sort({ category: 1, order: 1, label: 1 })
       .toArray();
 
-    console.log(`✅ Loaded ${variables.length} variables from database`);
+    console.log(`✅ Loaded ${rawVariables.length} variables from database`);
+
+    // WHAT: Normalize legacy schema → v7 schema
+    // WHY: Some databases store flags at root (visibleInClicker/editableInManual) instead of flags object
+    // HOW: Build flags object if missing; default derived=false when absent
+    const variables = (rawVariables as any[]).map((v) => {
+      const hasFlagsObject = v && typeof v === 'object' && v.flags && typeof v.flags === 'object';
+      const normalizedFlags = hasFlagsObject
+        ? v.flags
+        : {
+            visibleInClicker: v?.visibleInClicker === true,
+            editableInManual: v?.editableInManual !== false,
+          };
+      return {
+        ...v,
+        flags: normalizedFlags,
+        derived: typeof v?.derived === 'boolean' ? v.derived : false,
+      };
+    });
 
     // WHAT: Update cache
     // WHY: Avoid DB query on every request
     variablesCache = {
-      data: variables,
+      data: variables as any,
       timestamp: Date.now()
     };
 

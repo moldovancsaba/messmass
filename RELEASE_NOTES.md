@@ -1,5 +1,35 @@
 # MessMass Release Notes
 
+## [v11.24.0] — 2025-11-17
+
+### Summary
+- Fix Clicker buttons not appearing on Edit Stats pages by aligning Clicker Manager groups with KYC variables and normalizing variable flags in API response.
+
+### Changed
+- app/api/variables-config/route.ts
+  - Normalize legacy schema to v7 format in GET response: synthesize `flags` object if missing using root `visibleInClicker`/`editableInManual` fields; default `derived=false` when absent.
+  - Backward compatible; no DB writes.
+
+### Scripts (Ops only)
+- scripts/diagnose-clicker.ts — diagnostic tool to check groups vs. metadata and flag visibility.
+- scripts/alignClickerManagerToKyc.ts — aligns group variable names to metadata and enables Clicker visibility for referenced vars; sets groups.visibleInClicker=true.
+- scripts/fix-clicker-groups-prefix.ts — utility to strip `stats.` prefix from group variable names (not executed by default).
+
+### Why
+- Groups referenced variables as `stats.*` while some metadata stored names without prefix and/or flags at root; EditorDashboard filters by `v.flags.visibleInClicker`, resulting in empty clicker lists.
+
+### Impact
+- ✅ Clicker buttons now render for variables enabled in KYC and present in groups.
+- ⚠️ reportText1..reportText10 are unresolved (no KYC variables present); add them in KYC or remove from groups if not needed.
+- ❌ No schema changes; low risk.
+
+### Verification
+- Build: ✅ `npm run build` (pages generated; stray build-time SRV logs are unrelated to runtime).
+- Manual: Open `/edit/[slug]` → Clicker shows grouped buttons; Manual mode unaffected.
+
+### Version
+- `11.23.0` → `11.24.0` (MINOR — user-facing fix to editor visibility)
+
 ## [v11.23.0] — 2025-11-16T11:29:19.000Z
 
 ### Summary
