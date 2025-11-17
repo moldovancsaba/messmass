@@ -200,9 +200,7 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
 
   // WHAT: Render template with chart builders
   // WHY: Show the actual report layout with inline inputs
-  // WHAT: Use single-column grid for full-width chart builders
-  // WHY: Builder mode inputs need more space than report display mode
-  const gridColumns = 1;
+  const gridColumns = template.gridSettings.desktopUnits || 3;
   
   return (
     <div>
@@ -317,10 +315,11 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                         );
                     }
                     
-                    // WHAT: No need for width calculation in single-column grid
-                    // WHY: All charts take full width for better usability
+                    // WHAT: Restore width calculation to match report layout
+                    // WHY: Builder should show same grid structure as final report
+                    const width = getChartWidth(chartItem, chart);
                     return (
-                      <div key={chartItem.chartId}>
+                      <div key={chartItem.chartId} className="builder-chart-wrapper" style={{ gridColumn: `span ${width}` }}>
                         {builderComponent}
                       </div>
                     );

@@ -1090,6 +1090,19 @@ textarea::placeholder {
   font-size: var(--mm-font-size-sm);
 }
 
+/* WHAT: Ensure all chart builders fill their grid column width */
+/* WHY: Prevent charts from being pushed to left side of their allocated space */
+.builder-chart-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.builder-chart-wrapper > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 /* Section headers */
 .section-header {
   display: flex;
