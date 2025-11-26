@@ -93,26 +93,11 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* WHAT: Preload Material Icons fonts for instant availability
-            WHY: Prevents FOIT (Flash of Invisible Text) on report pages
-            HOW: Preload woff2 font files before stylesheet to prioritize loading
-            NOTE: eslint-disable next line needed because Material Icons are not available via next/font/google */}
-        {/* eslint-disable-next-line @next/next/google-font-preconnect */}
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/materialiconsoutlined/v110/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        {/* eslint-disable-next-line @next/next/google-font-preconnect */}
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/materialiconsround/v108/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* WHAT: Material Icons fonts loaded via stylesheet below
+            WHY: Prevents FOIT (Flash of Invisible Text) on pages using icons
+            HOW: Fonts load on-demand when stylesheet is parsed
+            NOTE: Removed preload to avoid "preloaded but not used" warnings
+                  The display=swap parameter ensures fallback text shows immediately */}
         
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
