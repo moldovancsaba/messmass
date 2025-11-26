@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import AdminLayout from '@/components/AdminLayout';
 import { getAdminUser } from '@/lib/auth';
 import { SidebarProvider } from '@/contexts/SidebarContext';
+import MaterialIconsPreload from '@/components/MaterialIconsPreload';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -62,26 +63,10 @@ export default async function AdminLayoutWrapper({ children }: { children: React
      Why: Consistent TailAdmin V2 layout across all admin pages with shared sidebar state */
   return (
     <>
-      <head>
-        {/* WHAT: Preload Material Icons fonts for instant availability in admin sidebar
-            WHY: Prevents FOIT (Flash of Invisible Text) on sidebar icons
-            HOW: Preload woff2 font files before they're needed
-            NOTE: Only preloaded in admin layout where icons are actually used */}
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/materialiconsoutlined/v110/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/materialiconsround/v108/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
+      {/* WHAT: Preload Material Icons fonts for admin sidebar icons
+          WHY: Prevents FOIT (Flash of Invisible Text) on sidebar navigation
+          HOW: Client component dynamically injects preload links only on admin pages */}
+      <MaterialIconsPreload />
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
       <SidebarProvider>
         <AdminLayout user={user ? {
