@@ -4,7 +4,7 @@
 // HOW: Store detailed logs with before/after values, metadata, and request context
 
 import { ObjectId } from 'mongodb';
-import { getDb } from './mongodb';
+import { getDb } from './db';
 import type { NextRequest } from 'next/server';
 
 /**
