@@ -19,6 +19,10 @@ export interface UserDoc {
   apiKeyEnabled?: boolean // Enable/disable API access for this user (default: false)
   apiUsageCount?: number // Track API calls made with this user's key
   lastAPICallAt?: string // ISO 8601 with milliseconds - last successful API request
+  // API Write Access fields (Fanmass integration)
+  apiWriteEnabled?: boolean // Enable/disable API write access for this user (default: false)
+  apiWriteCount?: number // Track API write operations made with this user's key
+  lastAPIWriteAt?: string // ISO 8601 with milliseconds - last successful API write operation
   createdAt: string // ISO 8601 with milliseconds
   updatedAt: string // ISO 8601 with milliseconds
 }
@@ -187,3 +191,50 @@ export async function toggleAPIAccess(id: string, enabled: boolean): Promise<Use
   return findUserById(id)
 }
 
+
+/**
+ * toggleAPIWriteAccess
+ * WHAT: Enable or disable API write access for a user
+ * WHY: Admin control over who can use write endpoints (data injection)
+ * 
+ * SECURITY: Write access is separate from read access for defense in depth.
+ * A user must have both apiKeyEnabled=true AND apiWriteEnabled=true to write data.
+ */
+export async function toggleAPIWriteAccess(id: string, enabled: boolean): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return null
+  
+  const now = new Date().toISOString()
+  
+  await col.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { apiWriteEnabled: enabled, updatedAt: now } }
+  )
+  
+  return findUserById(id)
+}
+
+/**
+ * updateAPIWriteUsage
+ * WHAT: Increments API write usage counter and updates lastAPIWriteAt timestamp
+ * WHY: Track API write activity separately from read activity for audit trail
+ * 
+ * This is called on every successful write operation (stats injection) to maintain
+ * accurate usage statistics for monitoring and billing purposes.
+ */
+export async function updateAPIWriteUsage(id: string): Promise<void> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return
+  
+  const now = new Date().toISOString()
+  
+  // WHAT: Atomic increment of write counter + timestamp update
+  // WHY: Prevents race conditions in concurrent API write calls
+  await col.updateOne(
+    { _id: new ObjectId(id) },
+    { 
+      $inc: { apiWriteCount: 1 },
+      $set: { lastAPIWriteAt: now, updatedAt: now }
+    }
+  )
+}
