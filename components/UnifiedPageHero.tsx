@@ -114,8 +114,8 @@ export default function UnifiedPageHero({
           <div className={styles.centerContent}>
             <h1 
               className="admin-title"
-              style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
-                color: pageStyle.colorScheme.primary.trim()
+              style={(typeof pageStyle?.typography?.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? {
+                color: pageStyle.typography.headingColor.trim()
               } : undefined}
             >
               {title}
