@@ -112,75 +112,122 @@ This implementation plan breaks down the Fanmass integration feature into discre
   - Return success response with updated fields list
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 8.1, 8.2, 8.3, 8.5_
 
+<<<<<<< HEAD
 - [x] 5.1 Write property test for stats update round-trip
+=======
+- [ ] 5.1 Write property test for stats update round-trip
+>>>>>>> origin/main
   - **Property 7: Stats update round-trip**
   - **Validates: Requirements 2.2**
   - Generate random valid stats
   - Write then read event
   - Verify values match
 
+<<<<<<< HEAD
 - [x] 5.2 Write property test for demographic variables
+=======
+- [ ] 5.2 Write property test for demographic variables
+>>>>>>> origin/main
   - **Property 34: Demographic variables acceptance**
   - **Validates: Requirements 8.1**
   - Generate random demographic stats
   - Verify all are accepted and persisted
 
+<<<<<<< HEAD
 - [x] 5.3 Write property test for merchandise variables
+=======
+- [ ] 5.3 Write property test for merchandise variables
+>>>>>>> origin/main
   - **Property 35: Merchandise variables acceptance**
   - **Validates: Requirements 8.2**
   - Generate random merchandise stats
   - Verify all are accepted and persisted
 
+<<<<<<< HEAD
 - [x] 5.4 Write property test for fan count variables
+=======
+- [ ] 5.4 Write property test for fan count variables
+>>>>>>> origin/main
   - **Property 36: Fan count variables acceptance**
   - **Validates: Requirements 8.3**
   - Generate random fan count stats
   - Verify all are accepted and persisted
 
+<<<<<<< HEAD
 - [x] 5.5 Write property test for derived metrics recalculation
+=======
+- [ ] 5.5 Write property test for derived metrics recalculation
+>>>>>>> origin/main
   - **Property 38: Derived metrics recalculation**
   - **Validates: Requirements 8.5**
   - Generate random base stats
   - Update event
   - Verify totalFans, totalImages calculated correctly
 
+<<<<<<< HEAD
 - [x] 5.6 Write property test for timestamp update
+=======
+- [ ] 5.6 Write property test for timestamp update
+>>>>>>> origin/main
   - **Property 10: Timestamp and recalculation on update**
   - **Validates: Requirements 2.5**
   - Record timestamp before update
   - Perform update
   - Verify timestamp is newer
 
+<<<<<<< HEAD
 - [x] 5.7 Write unit tests for stats endpoint error cases
+=======
+- [ ] 5.7 Write unit tests for stats endpoint error cases
+>>>>>>> origin/main
   - Test invalid event ID returns 400
   - Test non-existent event returns 404
   - Test invalid stats data returns 400 with details
   - Test missing write permission returns 403
   - _Requirements: 2.3, 2.4_
 
+<<<<<<< HEAD
 - [x] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 7. Extend notification system for API activity
+=======
+- [ ] 6. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [-] 7. Extend notification system for API activity
+>>>>>>> origin/main
   - Add `api_stats_update` notification type to `lib/notificationUtils.ts`
   - Modify `createNotification()` to accept API user info
   - Add `modifiedFields` array to notification document
   - Update notification display to show API activity separately
   - _Requirements: 3.1, 3.2, 3.4, 3.5_
 
+<<<<<<< HEAD
 - [x] 7.1 Write property test for notification creation
+=======
+- [ ] 7.1 Write property test for notification creation
+>>>>>>> origin/main
   - **Property 11: Notification creation on success**
   - **Validates: Requirements 3.1**
   - Generate random stats updates
   - Verify notification exists with correct fields
 
+<<<<<<< HEAD
 - [x] 7.2 Write property test for error notification
+=======
+- [ ] 7.2 Write property test for error notification
+>>>>>>> origin/main
   - **Property 12: Error notification creation**
   - **Validates: Requirements 3.2**
   - Generate invalid stats updates
   - Verify error notification exists
 
+<<<<<<< HEAD
 - [x] 7.3 Write property test for notification metadata
+=======
+- [ ] 7.3 Write property test for notification metadata
+>>>>>>> origin/main
   - **Property 15: Notification metadata completeness**
   - **Validates: Requirements 3.5**
   - Generate random stats updates
@@ -222,7 +269,11 @@ This implementation plan breaks down the Fanmass integration feature into discre
   - Generate unique secret for each webhook (32 bytes random)
   - _Requirements: 7.1, 7.2, 7.5_
 
+<<<<<<< HEAD
 - [x] 9.1 Write property test for webhook signature
+=======
+- [ ] 9.1 Write property test for webhook signature
+>>>>>>> origin/main
   - **Property 31: Webhook signature presence**
   - **Validates: Requirements 7.1**
   - Generate random webhook payloads
