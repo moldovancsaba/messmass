@@ -284,3 +284,91 @@ export async function getUserIdForRateLimit(request: NextRequest): Promise<strin
     || request.headers.get('x-real-ip')
     || 'unknown';
 }
+
+/**
+ * requireAPIWriteAuth
+ * WHAT: Middleware to protect write endpoints with Bearer token + write permission check
+ * WHY: Separate write permissions from read for defense in depth (Fanmass integration)
+ * 
+ * SECURITY: Requires BOTH apiKeyEnabled=true AND apiWriteEnabled=true
+ * 
+ * USAGE:
+ *   export async function POST(request: NextRequest) {
+ *     const authResult = await requireAPIWriteAuth(request);
+ *     if (!authResult.success) {
+ *       return authResult.response;
+ *     }
+ *     // authResult.user contains authenticated user with write permissions
+ *     await injectStatsData(eventId, stats);
+ *     return NextResponse.json({ success: true });
+ *   }
+ * 
+ * @param request - Next.js request object
+ * @returns { success, user, response } - If success=false, return the response
+ */
+export async function requireAPIWriteAuth(request: NextRequest): Promise<{
+  success: boolean;
+  user?: AdminUser;
+  response?: NextResponse;
+}> {
+  // WHAT: First perform standard API authentication
+  // WHY: Validate Bearer token and check apiKeyEnabled flag
+  const authResult = await requireAPIAuth(request);
+  
+  if (!authResult.success) {
+    // Authentication failed - return the error response from requireAPIAuth
+    return authResult;
+  }
+  
+  // WHAT: Check if user has write permissions enabled
+  // WHY: Write access is separate from read access for security
+  const { findUserById } = await import('./users');
+  const user = await findUserById(authResult.user!.id);
+  
+  if (!user?.apiWriteEnabled) {
+    warn('API write auth failed: write access disabled', {
+      userId: authResult.user!.id,
+      email: authResult.user!.email,
+      pathname: request.nextUrl.pathname
+    });
+    
+    return {
+      success: false,
+      response: NextResponse.json(
+        {
+          success: false,
+          error: 'Write access not enabled for this API user. Contact administrator to enable write permissions.',
+          errorCode: 'WRITE_ACCESS_DISABLED'
+        },
+        {
+          status: 403,
+          headers: {
+            'WWW-Authenticate': 'Bearer realm="MessMass API", error="insufficient_scope"'
+          }
+        }
+      )
+    };
+  }
+  
+  // WHAT: Update write usage tracking (async, don't block response)
+  // WHY: Track write operations separately from read operations
+  const { updateAPIWriteUsage } = await import('./users');
+  updateAPIWriteUsage(user._id!.toString()).catch(err => {
+    logError('Failed to update API write usage', {
+      userId: user._id?.toString(),
+      error: err
+    });
+  });
+  
+  debug('API write auth successful', {
+    userId: authResult.user!.id,
+    email: authResult.user!.email,
+    pathname: request.nextUrl.pathname
+  });
+  
+  // WHAT: Return successful authentication with user data
+  return {
+    success: true,
+    user: authResult.user
+  };
+}

@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import AdminLayout from '@/components/AdminLayout';
 import { getAdminUser } from '@/lib/auth';
 import { SidebarProvider } from '@/contexts/SidebarContext';
+import MaterialIconsPreload from '@/components/MaterialIconsPreload';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -62,6 +63,10 @@ export default async function AdminLayoutWrapper({ children }: { children: React
      Why: Consistent TailAdmin V2 layout across all admin pages with shared sidebar state */
   return (
     <>
+      {/* WHAT: Preload Material Icons fonts for admin sidebar icons
+          WHY: Prevents FOIT (Flash of Invisible Text) on sidebar navigation
+          HOW: Client component dynamically injects preload links only on admin pages */}
+      <MaterialIconsPreload />
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
       <SidebarProvider>
         <AdminLayout user={user ? {

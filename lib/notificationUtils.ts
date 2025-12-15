@@ -6,11 +6,21 @@
 import { Db } from 'mongodb';
 
 export interface CreateNotificationParams {
-  activityType: 'create' | 'edit' | 'edit-stats';
+  activityType: 'create' | 'edit' | 'edit-stats' | 'api_stats_update' | 'webhook_disabled' | 'webhook_failed';
   user: string;
   projectId: string;
   projectName: string;
   projectSlug?: string | null;
+  apiUser?: {
+    id: string;
+    email: string;
+  };
+  modifiedFields?: string[];
+  metadata?: {
+    webhookId?: string;
+    reason?: string;
+    [key: string]: any;
+  };
 }
 
 /**
@@ -73,7 +83,7 @@ export async function createNotification(db: Db, params: CreateNotificationParam
     
     // WHAT: Create new notification document with ISO 8601 timestamp and empty arrays
     // WHY: No recent similar notification exists - create a fresh one
-    const notification = {
+    const notification: any = {
       activityType: params.activityType,
       user: params.user,
       projectId: params.projectId,
@@ -84,6 +94,22 @@ export async function createNotification(db: Db, params: CreateNotificationParam
       archivedBy: [],       // Array of user IDs who have archived this notification
       createdAt: timestamp
     };
+    
+    // WHAT: Add API-specific fields for API activity notifications
+    // WHY: Track which API user made the change and what fields were modified
+    if (params.activityType === 'api_stats_update' && params.apiUser) {
+      notification.apiUser = params.apiUser;
+    }
+    
+    if (params.modifiedFields && params.modifiedFields.length > 0) {
+      notification.modifiedFields = params.modifiedFields;
+    }
+    
+    // WHAT: Add webhook-specific metadata
+    // WHY: Track webhook failures and auto-disable events
+    if ((params.activityType === 'webhook_disabled' || params.activityType === 'webhook_failed') && params.metadata) {
+      notification.metadata = params.metadata;
+    }
 
     await notifications.insertOne(notification);
     console.log(`✅ Notification created: ${params.user} ${params.activityType} "${params.projectName}"`);
