@@ -412,6 +412,90 @@ export default function PartnersAdminPageUnified() {
   
   // WHAT: Open edit modal with partner data
   // WHY: Populate form with existing partner values
+  // WHAT: Handle manual SportsDB data entry with logo upload
+  // WHY: Fallback when TheSportsDB API doesn't have team or returns wrong data
+  const handleManualEntry = async () => {
+    if (!editingPartner) return;
+    
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      setSportsDbLinking(true);
+      
+      // Create SportsDB data object from manual input
+      const sportsDbData = {
+        teamId: `manual_${Date.now()}`, // Generate unique ID for manual entries
+        teamName: editingPartner.name,
+        venueCapacity: manualEntryData.venueCapacity ? parseInt(manualEntryData.venueCapacity, 10) : undefined,
+        venueName: manualEntryData.venueName || undefined,
+        leagueName: manualEntryData.leagueName || undefined,
+        founded: manualEntryData.founded || undefined,
+        country: manualEntryData.country || undefined,
+        badge: manualEntryData.logoUrl || undefined,
+        lastSynced: new Date().toISOString(),
+      };
+      
+      // Upload logo to ImgBB if URL provided
+      let logoUrl: string | undefined;
+      if (manualEntryData.logoUrl) {
+        console.log('🖼️ Uploading manually provided logo to ImgBB...');
+        try {
+          const imgbbData = await apiPost('/api/partners/upload-logo', {
+            badgeUrl: manualEntryData.logoUrl,
+            partnerName: editingPartner.name,
+          });
+          if (imgbbData.success && imgbbData.logoUrl) {
+            logoUrl = imgbbData.logoUrl;
+            console.log('✅ Logo uploaded to ImgBB:', logoUrl);
+          }
+        } catch (logoErr) {
+          console.error('❌ Logo upload error:', logoErr);
+          // Continue without logo - non-blocking error
+        }
+      }
+      
+      // Save to database
+      const updateData = await apiPut('/api/partners', {
+        partnerId: editingPartner._id,
+        sportsDb: sportsDbData,
+        logoUrl: logoUrl,
+      });
+      
+      if (updateData.success) {
+        setSuccessMessage(`✓ Successfully added manual sports data`);
+        
+        // Update local state
+        setEditPartnerData(prev => ({
+          ...prev,
+          sportsDb: sportsDbData,
+          logoUrl: logoUrl || prev.logoUrl
+        }));
+        
+        // Clear manual entry form
+        setShowManualEntry(false);
+        setManualEntryData({
+          venueName: '',
+          venueCapacity: '',
+          leagueName: '',
+          country: '',
+          founded: '',
+          logoUrl: '',
+        });
+        
+        // Reload partners list
+        loadPartners();
+      } else {
+        setError(updateData.error || 'Failed to save manual sports data');
+      }
+    } catch (err) {
+      setError('Network error while saving manual sports data');
+      console.error('Manual entry error:', err);
+    } finally {
+      setSportsDbLinking(false);
+    }
+  };
+
   const openEditForm = useCallback((partner: PartnerResponse) => {
     loadBitlyLinks();
     setEditingPartner(partner);
@@ -428,6 +512,15 @@ export default function PartnersAdminPageUnified() {
     });
     setSportsDbSearch('');
     setSportsDbResults([]);
+    setShowManualEntry(false);
+    setManualEntryData({
+      venueName: '',
+      venueCapacity: '',
+      leagueName: '',
+      country: '',
+      founded: '',
+      logoUrl: '',
+    });
     setShowEditForm(true);
   }, [loadBitlyLinks]);
   
@@ -749,8 +842,23 @@ export default function PartnersAdminPageUnified() {
               setEditPartnerData(prev => ({ ...prev, sportsDb: undefined }));
             }}
           />
+          
+          {/* Manual Entry Button */}
+          <div style={{ marginTop: 'var(--mm-space-3)' }}>
+            <button
+              type="button"
+              onClick={() => setShowManualEntry(true)}
+              className="btn btn-sm btn-secondary"
+              style={{ marginBottom: 'var(--mm-space-2)' }}
+            >
+              🖊️ Can't find it? Enter manually
+            </button>
+          </div>
+          
           <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
             💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
+            <br />
+            <strong>Note:</strong> TheSportsDB FREE API has limitations. If you can't find your team, use manual entry.
           </p>
         </div>
         
@@ -811,6 +919,86 @@ export default function PartnersAdminPageUnified() {
           </select>
           <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
             💡 All events from this partner will use this template by default
+          </p>
+        </div>
+      </FormModal>
+      
+      {/* Manual Sports Data Entry Modal */}
+      <FormModal
+        isOpen={showManualEntry}
+        onClose={() => setShowManualEntry(false)}
+        onSubmit={handleManualEntry}
+        title="🖊️ Enter Sports Data Manually"
+        submitText="Save Manual Data"
+        isSubmitting={sportsDbLinking}
+        size="lg"
+      >
+        <div className="form-group mb-4">
+          <label className="form-label-block">Venue Name</label>
+          <input
+            type="text"
+            className="form-input"
+            value={manualEntryData.venueName}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, venueName: e.target.value }))}
+            placeholder="e.g., Camp Nou"
+          />
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Venue Capacity</label>
+          <input
+            type="number"
+            className="form-input"
+            value={manualEntryData.venueCapacity}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, venueCapacity: e.target.value }))}
+            placeholder="e.g., 99354"
+          />
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">League Name</label>
+          <input
+            type="text"
+            className="form-input"
+            value={manualEntryData.leagueName}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, leagueName: e.target.value }))}
+            placeholder="e.g., La Liga"
+          />
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Country</label>
+          <input
+            type="text"
+            className="form-input"
+            value={manualEntryData.country}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, country: e.target.value }))}
+            placeholder="e.g., Spain"
+          />
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Founded Year</label>
+          <input
+            type="text"
+            className="form-input"
+            value={manualEntryData.founded}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, founded: e.target.value }))}
+            placeholder="e.g., 1899"
+          />
+        </div>
+
+        <div className="form-group mb-4">
+          <label className="form-label-block">Logo URL</label>
+          <input
+            type="url"
+            className="form-input"
+            value={manualEntryData.logoUrl}
+            onChange={(e) => setManualEntryData(prev => ({ ...prev, logoUrl: e.target.value }))}
+            placeholder="https://example.com/logo.png"
+          />
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Logo will be uploaded to ImgBB for permanent hosting
           </p>
         </div>
       </FormModal>

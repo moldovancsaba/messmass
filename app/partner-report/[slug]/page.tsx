@@ -129,7 +129,8 @@ export default function PartnerReportPage() {
           setPageStyle(styleToUse);
           console.log('🎨 Style applied:', styleToUse.name);
         } else {
-          console.warn('⚠️  No style found, using default');
+          console.log('ℹ️  No custom style found, will use default styling');
+          // Don't set pageStyle - let it remain null for default styling
         }
         
         // Mark style loading as complete
@@ -155,9 +156,11 @@ export default function PartnerReportPage() {
       } else {
         console.warn('⚠️  Failed to load report template:', data.error);
         setDataBlocks([]);
+        setStyleLoading(false); // Mark style loading as complete even if template fails
       }
     } catch (err) {
       console.error('⚠️  Failed to fetch report template:', err);
+      setStyleLoading(false); // Mark style loading as complete even if there's an error
       // Continue without template - just show event list
     }
   }, []);
@@ -436,18 +439,42 @@ export default function PartnerReportPage() {
       isLoading={loading || styleLoading} // Wait for both data and style
       logoUrls={logoUrls}
       fontFamily={pageStyle?.typography?.fontFamily}
-      hasPageStyle={!!pageStyle} // Only true when style is actually loaded
+      hasPageStyle={!styleLoading} // True when style loading is complete (regardless of success)
       minLoadingTime={500}
     >
       {/* WHAT: Partner report content after all resources loaded */}
     <div 
-      className="page-bg-gray"
+      className="admin-container"
       style={(() => {
-        if (!pageStyle) return undefined;
-        const safeColor = (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : undefined;
-        const safeFont = (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily.trim() : undefined;
+        const baseStyle = { minHeight: '100vh' };
+        
+        if (!pageStyle) {
+          // No custom style - use default styling
+          console.log('🎨 Using default styling (no custom pageStyle)');
+          return {
+            ...baseStyle,
+            background: '#f9fafb', // Default light gray background
+            color: '#111827', // Default dark text
+            fontFamily: 'system-ui, -apple-system, sans-serif' // Default system font
+          };
+        }
+        
+        // Custom style - fully dynamic
+        const safeColor = (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : '#111827';
+        const safeFont = (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily.trim() : 'system-ui, -apple-system, sans-serif';
+        const backgroundCSS = generateGradientCSS(pageStyle.pageBackground) || '#ffffff';
+        
+        console.log('🎨 Applying custom partner style:', {
+          partnerName: partner?.name,
+          styleName: pageStyle.name,
+          backgroundCSS,
+          safeColor,
+          safeFont
+        });
+        
         return {
-          background: generateGradientCSS(pageStyle.pageBackground),
+          ...baseStyle,
+          background: backgroundCSS,
           color: safeColor,
           fontFamily: safeFont
         };
@@ -472,6 +499,7 @@ export default function PartnerReportPage() {
           layoutMode="single-partner-spotlight"
           createdDate={partner.createdAt}
           lastUpdatedDate={partner.updatedAt}
+          pageStyle={pageStyle || undefined}
           onExportCSV={handleExportCSV}
           onExportPDF={handleExportPDF}
         >
