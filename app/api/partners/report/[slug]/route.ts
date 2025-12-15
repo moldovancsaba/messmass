@@ -37,13 +37,15 @@ export async function GET(
     }
 
     // Fetch all events associated with this partner
-    // WHAT: Events can reference partner as partner1Id OR partner2Id (home/away)
-    // WHY: Sports Match Builder creates events with two partners
+    // WHAT: Events can reference partner as partner1/partner2 OR partner1Id/partner2Id (home/away)
+    // WHY: Sports Match Builder creates events with two partners, field names vary by creation method
     const partnerObjectId = new ObjectId(partner._id);
     const events = await db
       .collection('projects')
       .find({
         $or: [
+          { partner1: partnerObjectId },
+          { partner2: partnerObjectId },
           { partner1Id: partnerObjectId },
           { partner2Id: partnerObjectId }
         ]
@@ -58,12 +60,9 @@ export async function GET(
         categorizedHashtags: 1,
         createdAt: 1,
         updatedAt: 1,
-        'stats.remoteImages': 1,
-        'stats.hostessImages': 1,
-        'stats.selfies': 1,
-        'stats.remoteFans': 1,
-        'stats.stadium': 1,
-        'stats.eventAttendees': 1
+        stats: 1 // WHAT: Include ALL stats fields for proper aggregation
+        // WHY: Partner reports need all event data to create comprehensive aggregate stats
+        // HOW: Remove field-specific projection and include entire stats object
       })
       .toArray();
 

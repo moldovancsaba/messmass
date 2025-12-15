@@ -1,5 +1,9 @@
 {
     "kiroAgent.trustedCommands": [
-        "git *"
+        "git *",
+        "npm *",
+        "mv *",
+        "curl *",
+        "node *"
     ]
 }

@@ -26,6 +26,8 @@ interface Partner {
   logoUrl?: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  styleId?: string;
+  reportTemplateId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,6 +64,8 @@ export default function PartnerReportPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chartsLoading, setChartsLoading] = useState(false);
+  const [styleLoading, setStyleLoading] = useState(true);
   
   // WHAT: Template and visualization state (v11.0.0)
   // WHY: Support visualization blocks in partner reports
@@ -72,60 +76,85 @@ export default function PartnerReportPage() {
   
   
   // WHAT: Fetch report template configuration (v11.0.0)
-  // WHY: Get visualization blocks and grid settings for partner
-  const fetchReportTemplate = useCallback(async (partnerSlug: string) => {
+  // WHY: Partner reports should use their assigned template, not hardcoded default
+  const fetchReportTemplate = useCallback(async (partnerData: Partner) => {
     try {
-      console.log('🎨 Fetching partner report template:', partnerSlug);
-      const response = await fetch(`/api/report-config/${encodeURIComponent(partnerSlug)}?type=partner`, { cache: 'no-store' });
+      console.log('🎨 Loading partner report template...');
+      console.log('📋 Partner:', partnerData.name);
+      
+      // WHAT: Use partner's assigned template if available, otherwise fall back to default
+      // WHY: Partners should be able to have custom report templates
+      // HOW: Use partner slug to resolve template (API will check partner.reportTemplateId)
+      const response = await fetch(`/api/report-config/${partnerData._id}?type=partner`, { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success && data.template) {
-        console.log('✅ Loaded template:', data.template.name, '(', data.resolvedFrom, ')');
+        console.log('✅ Loaded template:', data.template.name, '(resolved from:', data.resolvedFrom, ')');
         
-        // WHAT: Fetch page style from template (will be overridden if partner has direct styleId)
-        // WHY: Template styleId is the BASE style that may be overridden later
-        if (data.template.styleId) {
+        // WHAT: Use partner's direct style if available, otherwise use template style
+        // WHY: Partner can override template style with their own branding
+        let styleToUse = null;
+        
+        // Check if partner has direct styleId (highest priority)
+        if (partnerData.styleId) {
           try {
-            console.log('🎨 Template has styleId - fetching:', data.template.styleId);
+            console.log('🎨 Partner has direct styleId - fetching:', partnerData.styleId);
+            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${partnerData.styleId}`, { cache: 'no-store' });
+            const styleData = await styleResponse.json();
+            if (styleData.success && styleData.style) {
+              styleToUse = styleData.style;
+              console.log('✅ Using partner direct style:', styleData.style.name);
+            }
+          } catch (styleErr) {
+            console.warn('⚠️  Could not fetch partner style, trying template style:', styleErr);
+          }
+        }
+        
+        // Fall back to template style if no partner style
+        if (!styleToUse && data.template.styleId) {
+          try {
+            console.log('🎨 Using template styleId:', data.template.styleId);
             const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.template.styleId}`, { cache: 'no-store' });
             const styleData = await styleResponse.json();
             if (styleData.success && styleData.style) {
-              setPageStyle(styleData.style);
-              console.log('✅ Loaded template style (may be overridden by partner direct style):', styleData.style.name);
+              styleToUse = styleData.style;
+              console.log('✅ Using template style:', styleData.style.name);
             }
           } catch (styleErr) {
-            console.warn('⚠️  Could not fetch template style, using default:', styleErr);
-          }
-        }
-        // WHAT: Fetch actual data blocks from template
-        // WHY: Load visualization configuration for partner report
-        console.log('📊 Template has', data.template.dataBlocks?.length || 0, 'data blocks');
-        // Fetch actual data blocks
-        if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
-          const blockResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
-          const blockData = await blockResponse.json();
-          
-          if (blockData.success) {
-            const orderedBlocks = data.template.dataBlocks
-              .map((ref: any) => {
-                const block = blockData.blocks.find((b: any) => b._id === ref.blockId || b._id.toString() === ref.blockId);
-                return block ? { ...block, order: ref.order } : null;
-              })
-              .filter(Boolean)
-              .sort((a: any, b: any) => a.order - b.order);
-            
-            console.log('✅ Loaded', orderedBlocks.length, 'data blocks:', orderedBlocks.map((b: any) => b.name).join(', '));
-            setDataBlocks(orderedBlocks);
-          } else {
-            console.warn('⚠️  Failed to fetch data blocks');
+            console.warn('⚠️  Could not fetch template style:', styleErr);
           }
         }
         
-        // Set grid settings
+        if (styleToUse) {
+          setPageStyle(styleToUse);
+          console.log('🎨 Style applied:', styleToUse.name);
+        } else {
+          console.warn('⚠️  No style found, using default');
+        }
+        
+        // Mark style loading as complete
+        setStyleLoading(false);
+        
+        // WHAT: Load data blocks from template (these define the visualization layout)
+        // WHY: Template specifies which charts/blocks to show and in what order
+        console.log('📊 Template has', data.template.dataBlocks?.length || 0, 'data blocks');
+        
+        if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
+          console.log('📊 Data blocks from template:', data.template.dataBlocks);
+          setDataBlocks(data.template.dataBlocks);
+        } else {
+          console.warn('⚠️  Template has no data blocks configured');
+          setDataBlocks([]);
+        }
+        
+        // Set grid settings from template
         if (data.template.gridSettings) {
-          console.log('📐 Setting grid units:', data.template.gridSettings);
+          console.log('📐 Setting grid units from template:', data.template.gridSettings);
           setGridUnits(data.template.gridSettings);
         }
+      } else {
+        console.warn('⚠️  Failed to load report template:', data.error);
+        setDataBlocks([]);
       }
     } catch (err) {
       console.error('⚠️  Failed to fetch report template:', err);
@@ -147,25 +176,11 @@ export default function PartnerReportPage() {
         setEvents(data.events || []);
         setError(null);
         
-        // WHAT: Fetch report template BEFORE checking partner style (v11.1.0)
-        // WHY: Template fetch needs to check pageStyle state, so template must be fetched first
-        await fetchReportTemplate(slug);
+        // WHAT: Fetch partner's assigned report template (or default if none assigned)
+        // WHY: Partners should use their selected template, not hardcoded default
+        await fetchReportTemplate(data.partner);
         
-        // WHAT: Check if partner has direct styleId (takes precedence over template style)
-        // WHY: Partners can override template styling with their own custom style
-        if (data.partner.styleId) {
-          try {
-            console.log('🎨 Partner has direct styleId:', data.partner.styleId);
-            const styleResponse = await fetch(`/api/page-styles-enhanced?styleId=${data.partner.styleId}`, { cache: 'no-store' });
-            const styleData = await styleResponse.json();
-            if (styleData.success && styleData.style) {
-              setPageStyle(styleData.style);
-              console.log('✅ Loaded partner direct style (OVERRIDE):', styleData.style.name);
-            }
-          } catch (styleErr) {
-            console.warn('⚠️  Could not fetch partner direct style:', styleErr);
-          }
-        }
+        console.log('🎯 Partner reports use assigned template with aggregated event data');
       } else {
         setError(data.error || 'Failed to load partner');
       }
@@ -272,15 +287,14 @@ export default function PartnerReportPage() {
     );
   };
   
-  // WHAT: Calculate aggregate stats from all partner events (v11.0.0)
-  // WHY: Charts need aggregated data to render partner-level visualizations
-  // HOW: Sum all stats across events, calculate averages and totals
-  const aggregateStats = useMemo(() => {
-    if (!events || events.length === 0) return {};
+  // WHAT: Calculate aggregate stats from all partner events (exactly like filter page)
+  // WHY: Charts need aggregated data to render partner-level visualizations  
+  // HOW: Create a project-like object with stats property, matching filter page structure
+  const aggregateProject = useMemo(() => {
+    if (!events || events.length === 0) return null;
     
-    // Initialize aggregator with all possible fields
-    const aggregate: any = {
-      // Totals for summation
+    // Initialize aggregator with all possible fields (same as filter page ProjectStats interface)
+    const stats: any = {
       remoteImages: 0,
       hostessImages: 0,
       selfies: 0,
@@ -302,7 +316,6 @@ export default function PartnerReportPage() {
       other: 0,
       eventAttendees: 0,
       eventTicketPurchases: 0,
-      // Visit tracking
       visitQrCode: 0,
       visitShortUrl: 0,
       visitWeb: 0,
@@ -312,52 +325,80 @@ export default function PartnerReportPage() {
       visitTiktok: 0,
       visitX: 0,
       visitTrustpilot: 0,
-      // Count of events
-      _eventCount: events.length
+      eventResultHome: 0,
+      eventResultVisitor: 0,
+      eventValuePropositionVisited: 0,
+      eventValuePropositionPurchases: 0,
+      approvedImages: 0,
+      rejectedImages: 0
     };
     
     // Sum all stats across events
     events.forEach(event => {
-      Object.keys(event.stats).forEach(key => {
+      Object.keys(event.stats || {}).forEach(key => {
         const value = (event.stats as any)[key];
         if (typeof value === 'number') {
-          aggregate[key] = (aggregate[key] || 0) + value;
+          stats[key] = (stats[key] || 0) + value;
         }
       });
     });
     
-    console.log('📊 Calculated aggregate stats for', events.length, 'events:', aggregate);
-    return aggregate;
+    // WHAT: Create project-like object matching filter page structure
+    // WHY: Filter page expects project.stats, so we create same structure
+    // HOW: Return object with stats property containing aggregated data
+    const projectLike = {
+      stats,
+      eventCount: events.length,
+      dateRange: {
+        oldest: events.length > 0 ? events[events.length - 1].eventDate : '',
+        newest: events.length > 0 ? events[0].eventDate : '',
+        formatted: `${events.length} events`
+      }
+    };
+    
+    console.log('📊 Calculated aggregate project for', events.length, 'events');
+    console.log('📊 Key totals: Images =', stats.remoteImages + stats.hostessImages + stats.selfies, ', Fans =', stats.female + stats.male);
+    return projectLike;
   }, [events]);
   
-  // WHAT: Calculate chart results from aggregate stats
+  // WHAT: Calculate chart results from aggregate stats (exactly like filter page)
   // WHY: UnifiedDataVisualization needs chart results to render
-  const chartResults = useMemo(() => {
-    if (!chartConfigurations || chartConfigurations.length === 0 || !aggregateStats || Object.keys(aggregateStats).length === 0) {
-      return [];
+  const [chartResults, setChartResults] = useState<ChartCalculationResult[]>([]);
+  
+  useEffect(() => {
+    if (aggregateProject && chartConfigurations.length > 0) {
+      setChartsLoading(true);
+      try {
+        // WHAT: Use identical chart calculation as filter page
+        // WHY: Filter page works with: calculateActiveCharts(chartConfigurations, project.stats)
+        // HOW: Pass aggregateProject.stats directly to calculateActiveCharts
+        console.log('🧮 Calculating chart results with partner aggregate stats (filter page method)...');
+        console.log('Stats for calculation:', aggregateProject.stats);
+        
+        const results = calculateActiveCharts(chartConfigurations, aggregateProject.stats);
+        console.log('✅ Calculated', results.length, 'chart results from aggregate stats');
+        setChartResults(results);
+      } catch (err) {
+        console.error('❌ Failed to calculate chart results:', err);
+        setChartResults([]);
+      } finally {
+        setChartsLoading(false);
+      }
     }
-    
-    try {
-      const results = calculateActiveCharts(chartConfigurations, aggregateStats);
-      console.log('✅ Calculated', results.length, 'chart results from aggregate stats');
-      return results;
-    } catch (err) {
-      console.error('❌ Failed to calculate chart results:', err);
-      return [];
-    }
-  }, [chartConfigurations, aggregateStats]);
+  }, [aggregateProject, chartConfigurations]);
   
   // Calculate simple totals for hero display
   const totals = useMemo(() => {
-    if (!events || events.length === 0) return null;
+    if (!events || events.length === 0 || !aggregateProject) return null;
     
+    const stats = aggregateProject.stats;
     return {
       totalEvents: events.length,
-      totalImages: aggregateStats.remoteImages + aggregateStats.hostessImages + aggregateStats.selfies,
-      totalFans: aggregateStats.remoteFans + aggregateStats.stadium,
-      totalAttendees: aggregateStats.eventAttendees
+      totalImages: (stats.remoteImages || 0) + (stats.hostessImages || 0) + (stats.selfies || 0),
+      totalFans: (stats.remoteFans || 0) + (stats.stadium || 0),
+      totalAttendees: stats.eventAttendees || 0
     };
-  }, [events, aggregateStats]);
+  }, [events, aggregateProject]);
   
   // Show password gate if not authorized
   if (checkingAuth) {
@@ -392,10 +433,10 @@ export default function PartnerReportPage() {
         emoji: partner.emoji,
         logoUrl: partner.logoUrl
       } : null}
-      isLoading={loading}
+      isLoading={loading || styleLoading} // Wait for both data and style
       logoUrls={logoUrls}
-      fontFamily={pageStyle?.typography.fontFamily}
-      hasPageStyle={true} // Always consider style loaded (uses default if no custom)
+      fontFamily={pageStyle?.typography?.fontFamily}
+      hasPageStyle={!!pageStyle} // Only true when style is actually loaded
       minLoadingTime={500}
     >
       {/* WHAT: Partner report content after all resources loaded */}
@@ -475,20 +516,18 @@ export default function PartnerReportPage() {
           </UnifiedPageHero>
           
           {/* WHAT: Visualization blocks section (v11.0.0)
-               WHY: Display partner-level aggregate stats with charts
-               HOW: Use UnifiedDataVisualization with aggregate chart results */}
-          {dataBlocks.length > 0 && chartResults.length > 0 && (
-            <div className={styles.visualizationSection}>
-              <UnifiedDataVisualization
-                blocks={dataBlocks}
-                chartResults={chartResults}
-                loading={false}
-                gridUnits={gridUnits}
-                useChartContainer={true}
-                pageStyle={pageStyle || undefined}
-              />
-            </div>
-          )}
+               WHY: Display partner-level aggregate stats with charts (same as hashtag page)
+               HOW: Always render UnifiedDataVisualization like hashtag page does */}
+          <div className={styles.visualizationSection}>
+            <UnifiedDataVisualization
+              blocks={dataBlocks}
+              chartResults={chartResults}
+              loading={chartsLoading}
+              gridUnits={gridUnits}
+              useChartContainer={false}
+              pageStyle={pageStyle || undefined}
+            />
+          </div>
           
           {/* WHAT: Events list section with admin-style cards
                WHY: Match admin events page display with full details, stats, partners */}

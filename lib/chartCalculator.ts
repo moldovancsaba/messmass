@@ -141,7 +141,13 @@ export function calculateChart(
   // Evaluate each element's formula
   const elements = configuration.elements.map(element => {
     try {
-      console.log(`Evaluating element: ${element.label} with formula: ${element.formula}`);
+      // WHAT: Validate element structure before processing
+      // WHY: Prevent crashes from malformed chart configurations
+      if (!element || typeof element !== 'object') {
+        throw new Error('Invalid element structure');
+      }
+      
+      console.log(`Evaluating element: ${element.label || 'undefined'} with formula: ${element.formula || 'undefined'}`);
 
       // WHAT: Extract parameter values from element.parameters to support [PARAM:key] tokens
       // WHY: Ensures parameterized formulas evaluate using configurable multipliers rather than hardcoded numbers
@@ -167,8 +173,8 @@ export function calculateChart(
       // WHY: Charts like "Top Countries" need labels from dynamic data (e.g., country names)
       // HOW: If label contains {{fieldName}}, replace with value from stats[fieldName]
       // EXAMPLE: label "{{stats.bitlyCountry1}}" becomes "United States" from stats.bitlyCountry1
-      let resolvedLabel = element.label;
-      if (resolvedLabel.includes('{{') && resolvedLabel.includes('}}')) {
+      let resolvedLabel = element.label || '';
+      if (resolvedLabel && resolvedLabel.includes('{{') && resolvedLabel.includes('}}')) {
         const fieldMatch = resolvedLabel.match(/\{\{([^}]+)\}\}/);
         if (fieldMatch && fieldMatch[1]) {
           let fieldName = fieldMatch[1].trim();
@@ -190,10 +196,10 @@ export function calculateChart(
       }
       
       return {
-        id: element.id,
-        label: resolvedLabel,
+        id: element.id || 'unknown',
+        label: resolvedLabel || element.label || 'Unnamed Element',
         value: value,
-        color: element.color,
+        color: element.color || '#cccccc',
         type: element.type, // WHAT: Legacy type for backward compatibility
         formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };
@@ -205,10 +211,10 @@ export function calculateChart(
       }
       
       return {
-        id: element.id,
-        label: element.label,
+        id: element.id || 'unknown',
+        label: element.label || 'Unnamed Element',
         value: 'NA' as const,
-        color: element.color,
+        color: element.color || '#cccccc',
         type: element.type, // WHAT: Legacy type for backward compatibility
         formatting: element.formatting // WHAT: New flexible formatting (preferred)
       };

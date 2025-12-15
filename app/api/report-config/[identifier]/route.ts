@@ -170,6 +170,30 @@ async function resolveReportTemplate(
   }
 
   // ==========================================
+  // SPECIAL CASE: Force Default Event Template for Partner Reports
+  // ==========================================
+  if (identifier === '__default_event__') {
+    try {
+      console.log('🎯 Special case: Forcing default event template for partner report');
+      const defaultEventTemplate = await templatesCollection.findOne({ 
+        type: 'event', 
+        isDefault: true 
+      });
+      if (defaultEventTemplate) {
+        console.log(`✅ Using forced default event template: ${defaultEventTemplate.name}`);
+        const populated = await populateDataBlocks(defaultEventTemplate);
+        return {
+          template: populated as ReportTemplate,
+          resolvedFrom: 'default',
+          source: 'partner-report-system'
+        };
+      }
+    } catch (error) {
+      console.error('⚠️  Error resolving forced default event template:', error);
+    }
+  }
+
+  // ==========================================
   // LEVEL 3: Default Template
   // ==========================================
   try {

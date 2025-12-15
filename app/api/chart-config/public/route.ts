@@ -60,6 +60,7 @@ export async function GET() {
       title: config.title,
       type: config.type,
       order: config.order,
+      isActive: config.isActive, // WHAT: Include isActive field for frontend filtering
       elements: config.elements,
       icon: config.icon, // v10.4.0: Material Icon name
       iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
