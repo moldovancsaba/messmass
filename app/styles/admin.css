@@ -10,7 +10,7 @@
      Why: Removed gradient text effect for flat design */
   font-size: var(--text-4xl);
   font-weight: var(--font-bold);
-  color: var(--mm-color-primary-700);
+  /* REMOVED: color: var(--mm-color-primary-700); - Allow dynamic color override */
   margin: 0;
   line-height: var(--leading-tight);
 }

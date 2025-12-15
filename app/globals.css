@@ -210,7 +210,7 @@ img {
 }
 
 .admin-title {
-  color: var(--color-gray-900);
+  /* REMOVED: color: var(--color-gray-900); - Allow dynamic color override */
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
