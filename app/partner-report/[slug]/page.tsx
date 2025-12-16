@@ -72,6 +72,7 @@ export default function PartnerReportPage() {
   
   // WHAT: Template and visualization state (v11.0.0)
   // WHY: Support visualization blocks in partner reports
+  const [template, setTemplate] = useState<any>(null);
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 6, tablet: 3, mobile: 2 });
@@ -95,6 +96,9 @@ export default function PartnerReportPage() {
         console.log('✅ Loaded template:', data.template.name, '(resolved from:', data.resolvedFrom, ')');
         console.log('✅ Template ID:', data.template._id);
         console.log('✅ Template data blocks:', data.template.dataBlocks?.length || 0);
+        
+        // Store template data including HERO settings
+        setTemplate(data.template);
         
         // WHAT: Use partner's direct style if available, otherwise use template style
         // WHY: Partner can override template style with their own branding
@@ -359,14 +363,27 @@ export default function PartnerReportPage() {
     // WHY: Partner editor creates partner-specific content that should appear in partner reports
     // HOW: Add partner.stats (text/image content) to the aggregated numeric stats
     if (partner && partner.stats) {
+      console.log('🖼️ Partner stats available:', Object.keys(partner.stats));
+      const imageKeys = Object.keys(partner.stats).filter(key => key.startsWith('reportImage'));
+      const textKeys = Object.keys(partner.stats).filter(key => key.startsWith('reportText'));
+      console.log('🖼️ Partner image keys:', imageKeys);
+      console.log('📝 Partner text keys:', textKeys);
+      
       Object.keys(partner.stats).forEach(key => {
         const value = (partner.stats as any)[key];
         // WHAT: Include text and image content from partner editor
         // WHY: Charts need access to reportText* and reportImage* fields
         if (typeof value === 'string' && value.length > 0) {
-          stats[key] = value; // Partner-level text/image content
+          stats[key] = value; // Partner-level text/image content (e.g., reportImage1)
+          stats[`stats.${key}`] = value; // Also add with stats. prefix for formula compatibility
+          if (key.startsWith('reportImage')) {
+            console.log(`🖼️ Added partner image ${key}:`, value);
+            console.log(`🖼️ Also added stats.${key}:`, value);
+          }
         }
       });
+    } else {
+      console.log('⚠️ No partner stats available for content');
     }
     
     // WHAT: Create project-like object matching filter page structure
@@ -400,6 +417,15 @@ export default function PartnerReportPage() {
         // HOW: Pass aggregateProject.stats directly to calculateActiveCharts
         console.log('🧮 Calculating chart results with partner aggregate stats (filter page method)...');
         console.log('Stats for calculation:', aggregateProject.stats);
+        
+        // Debug: Show all reportImage* and reportText* fields
+        const imageFields = Object.keys(aggregateProject.stats).filter(key => key.includes('reportImage'));
+        const textFields = Object.keys(aggregateProject.stats).filter(key => key.includes('reportText'));
+        console.log('🖼️ Available image fields:', imageFields);
+        console.log('📝 Available text fields:', textFields);
+        imageFields.forEach(field => {
+          console.log(`🖼️ ${field}:`, aggregateProject.stats[field]);
+        });
         
         const results = calculateActiveCharts(chartConfigurations, aggregateProject.stats);
         console.log('✅ Calculated', results.length, 'chart results from aggregate stats');
@@ -525,6 +551,7 @@ export default function PartnerReportPage() {
           pageStyle={pageStyle || undefined}
           onExportCSV={handleExportCSV}
           onExportPDF={handleExportPDF}
+          heroSettings={template?.heroSettings}
         >
             {/* WHAT: Totals Summary Grid - uses CSS module
                  WHY: Key metrics displayed in responsive grid without inline styles */}

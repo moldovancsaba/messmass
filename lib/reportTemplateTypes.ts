@@ -3,6 +3,7 @@
 // HOW: Template hierarchy - Project → Partner → Default
 
 import { ObjectId } from 'mongodb';
+import { HeroBlockSettings, BlockAlignmentSettings } from './chartConfigTypes';
 
 /**
  * WHAT: Reference to a data visualization block within a template
@@ -41,6 +42,10 @@ export interface ReportTemplate {
     tabletUnits: number;                    // Max columns on tablet (default: 3)
     mobileUnits: number;                    // Max columns on mobile (default: 2)
   };
+  
+  // HERO Block Settings (report header configuration)
+  heroSettings?: HeroBlockSettings;         // Controls which elements appear in report header
+  alignmentSettings?: BlockAlignmentSettings; // Controls element alignment within report blocks
   
   // Metadata
   createdBy?: string;                       // User who created template

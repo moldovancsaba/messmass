@@ -22,6 +22,8 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '', 
      WHY: Allow users to view images in full detail */
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   
+  // Debug logging (removed for production)
+  
   /* WHAT: Open lightbox on image click
      WHY: Provide better viewing experience for image content */
   const handleImageClick = () => {
@@ -41,26 +43,36 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '', 
   const safeAspectRatio = String(aspectRatio || '1:1');
   const cssAspectRatio = safeAspectRatio.replace(':', ' / ');
   
+
+  
   return (
     <>
-      <div className={`${styles.container} image-chart-container ${className}`}>
-        {imageUrl ? (
-          <div
-            className={styles.image}
-            onClick={handleImageClick}
-            title="Click to view full size"
-            role="img"
-            aria-label={title}
-            style={{
-              ['--image-url' as string]: `url("${imageUrl}")`,
-              ['--aspect-ratio' as string]: cssAspectRatio
-            } as React.CSSProperties}
-          />
-        ) : (
-          <div className={styles.placeholder}>
-            <p>No image available</p>
-          </div>
-        )}
+      <div 
+        className={`${styles.container} image-chart-container ${className}`}
+      >
+        <div 
+          className={styles.imageWrapper}
+          style={{
+            '--container-aspect-ratio': cssAspectRatio
+          } as React.CSSProperties}
+        >
+          {imageUrl ? (
+            <div
+              className={styles.image}
+              onClick={handleImageClick}
+              title="Click to view full size"
+              role="img"
+              aria-label={title}
+              style={{
+                '--image-url': `url("${imageUrl}")`
+              } as React.CSSProperties}
+            />
+          ) : (
+            <div className={styles.placeholder}>
+              <p>No image available</p>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* WHAT: Lightbox for full-page image preview using React Portal

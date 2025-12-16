@@ -102,6 +102,7 @@ export function calculateChartSafe(
       elements: [],
       total: 'NA',
       kpiValue: 'NA',
+      showTitle: configuration.showTitle !== false,
       hasErrors: true,
       dataQuality: validation
     };
@@ -252,22 +253,53 @@ export function calculateChart(
           }
         }
         
-        // WHAT: If content asset resolution failed, try legacy stats field access
-        // WHY: Backward compatibility with existing stats.reportImage1 pattern
+        // WHAT: Handle both old and new formula formats
+        // WHY: Support both stats.reportImage23 (old) and reportImage23 (new) formats
         if (kpiValue === 'NA') {
-          // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
-          const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
-          if (simpleFieldMatch) {
-            const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
-            // Convert to camelCase (e.g., reportImage1)
-            const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-            const fieldValue = (stats as any)[camelFieldName];
-            if (typeof fieldValue === 'string' && fieldValue.length > 0) {
-              kpiValue = fieldValue as any; // Allow string values for image URLs
-              console.log(`✅ Image URL for "${configuration.title}": ${fieldValue}`);
-            } else {
-              console.warn(`⚠️ Image chart "${configuration.title}" has no valid URL in stats.${camelFieldName}`);
+          const formula = configuration.elements[0].formula.trim();
+          console.log(`🔍 Looking for image field with formula: "${formula}"`);
+          console.log(`🔍 Available stats keys with reportImage:`, Object.keys(stats).filter(k => k.includes('reportImage')));
+          
+          let fieldValue: string | undefined;
+          let fieldName: string = '';
+          
+          // WHAT: Handle stats.reportImage23 format (old format from database)
+          if (formula.startsWith('stats.')) {
+            fieldName = formula.substring(6); // Remove "stats." prefix
+            console.log(`🔍 Old format detected, looking for field: ${fieldName}`);
+            
+            // Try direct field name (e.g., reportImage23)
+            fieldValue = (stats as any)[fieldName];
+            console.log(`🔍 Direct lookup (${fieldName}):`, fieldValue);
+            
+            // Try with stats. prefix (e.g., stats.reportImage23)
+            if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+              fieldValue = (stats as any)[`stats.${fieldName}`];
+              console.log(`🔍 Stats prefix lookup (stats.${fieldName}):`, fieldValue);
             }
+          }
+          // WHAT: Handle reportImage23 format (new simple format)
+          else if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(formula)) {
+            fieldName = formula;
+            console.log(`🔍 New format detected, looking for field: ${fieldName}`);
+            
+            // Try direct field name (e.g., reportImage23)
+            fieldValue = (stats as any)[fieldName];
+            console.log(`🔍 Direct lookup (${fieldName}):`, fieldValue);
+            
+            // Try with stats. prefix (e.g., stats.reportImage23)
+            if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+              fieldValue = (stats as any)[`stats.${fieldName}`];
+              console.log(`🔍 Stats prefix lookup (stats.${fieldName}):`, fieldValue);
+            }
+          }
+          
+          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+            kpiValue = fieldValue as any;
+            console.log(`✅ Image URL for "${configuration.title}" (${formula}): ${fieldValue}`);
+          } else {
+            console.warn(`⚠️ Image chart "${configuration.title}" has no valid URL for formula: ${formula}`);
+            console.warn(`⚠️ Tried field: ${fieldName || 'unknown'}`);
           }
         }
       }
@@ -301,22 +333,48 @@ export function calculateChart(
           }
         }
         
-        // WHAT: If content asset resolution failed, try legacy stats field access
-        // WHY: Backward compatibility with existing stats.reportText1 pattern
+        // WHAT: Handle both old and new formula formats
+        // WHY: Support both stats.reportText23 (old) and reportText23 (new) formats
         if (kpiValue === 'NA') {
-          // Match [FIELDNAME], [stats.fieldName], or stats.fieldName patterns
-          const simpleFieldMatch = configuration.elements[0].formula.match(/^(?:\[(?:stats\.)?([a-zA-Z0-9]+)\]|stats\.([a-zA-Z0-9]+))$/);
-          if (simpleFieldMatch) {
-            const fieldName = simpleFieldMatch[1] || simpleFieldMatch[2];
-            // Convert to camelCase (e.g., reportText1)
-            const camelFieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-            const fieldValue = (stats as any)[camelFieldName];
-            if (typeof fieldValue === 'string' && fieldValue.length > 0) {
-              kpiValue = fieldValue as any; // Allow string values for text content
-              console.log(`✅ Text content for "${configuration.title}": ${fieldValue.substring(0, 50)}...`);
-            } else {
-              console.warn(`⚠️ Text chart "${configuration.title}" has no valid content in stats.${camelFieldName}`);
+          const formula = configuration.elements[0].formula.trim();
+          console.log(`🔍 Looking for text field with formula: "${formula}"`);
+          
+          let fieldValue: string | undefined;
+          let fieldName: string = '';
+          
+          // WHAT: Handle stats.reportText23 format (old format from database)
+          if (formula.startsWith('stats.')) {
+            fieldName = formula.substring(6); // Remove "stats." prefix
+            console.log(`🔍 Old format detected, looking for field: ${fieldName}`);
+            
+            // Try direct field name (e.g., reportText23)
+            fieldValue = (stats as any)[fieldName];
+            
+            // Try with stats. prefix (e.g., stats.reportText23)
+            if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+              fieldValue = (stats as any)[`stats.${fieldName}`];
             }
+          }
+          // WHAT: Handle reportText23 format (new simple format)
+          else if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(formula)) {
+            fieldName = formula;
+            console.log(`🔍 New format detected, looking for field: ${fieldName}`);
+            
+            // Try direct field name (e.g., reportText23)
+            fieldValue = (stats as any)[fieldName];
+            
+            // Try with stats. prefix (e.g., stats.reportText23)
+            if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+              fieldValue = (stats as any)[`stats.${fieldName}`];
+            }
+          }
+          
+          if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+            kpiValue = fieldValue as any;
+            console.log(`✅ Text content for "${configuration.title}" (${formula}): ${fieldValue.substring(0, 50)}...`);
+          } else {
+            console.warn(`⚠️ Text chart "${configuration.title}" has no valid content for formula: ${formula}`);
+            console.warn(`⚠️ Tried field: ${fieldName || 'unknown'}`);
           }
         }
       }
@@ -448,13 +506,19 @@ export function calculateChart(
     total,
     kpiValue,
     hasErrors,
-    // WHAT: Pass through aspectRatio for image charts (v9.3.0)
+    // WHAT: Pass through showTitle for chart-level title visibility control
+    // WHY: DynamicChart needs this to control title display
+    // HOW: Pass through from configuration, default to true if not specified
+    showTitle: configuration.showTitle !== false,
+    // WHAT: Pass through aspectRatio for image and text charts (v9.3.0)
     // WHY: UnifiedDataVisualization needs this to calculate grid width
-    // HOW: Optional field, only set for image charts
-    ...(configuration.type === 'image' && 'aspectRatio' in configuration && configuration.aspectRatio 
+    // HOW: Optional field, set for image and text charts
+    ...((configuration.type === 'image' || configuration.type === 'text') && 'aspectRatio' in configuration && configuration.aspectRatio 
       ? { aspectRatio: configuration.aspectRatio } 
       : {})
   };
+  
+  // Debug logging removed - aspect ratio working correctly
   
   return result;
 }
@@ -505,6 +569,7 @@ export function calculateChartsBatchSafe(
       elements: [],
       total: 'NA',
       kpiValue: 'NA',
+      showTitle: config.showTitle !== false,
       hasErrors: true,
       dataQuality: validation
     }));

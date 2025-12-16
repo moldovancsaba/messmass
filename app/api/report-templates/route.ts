@@ -288,6 +288,8 @@ export async function PUT(request: NextRequest) {
     if (body.styleId !== undefined) updates.styleId = body.styleId;
     if (body.dataBlocks !== undefined) updates.dataBlocks = body.dataBlocks;
     if (body.gridSettings !== undefined) updates.gridSettings = body.gridSettings;
+    if (body.heroSettings !== undefined) updates.heroSettings = body.heroSettings;
+    if (body.alignmentSettings !== undefined) updates.alignmentSettings = body.alignmentSettings;
 
     // Update template
     await templatesCollection.updateOne(

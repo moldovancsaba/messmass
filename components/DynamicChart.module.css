@@ -25,6 +25,7 @@
   padding-bottom: var(--mm-space-3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   margin-bottom: var(--mm-space-4);
+  text-align: center; /* Center align title area */
 }
 
 .chartTitle {
@@ -33,6 +34,7 @@
   color: var(--mm-gray-900);
   margin: 0 0 var(--mm-space-1) 0;
   line-height: 1.3;
+  text-align: center; /* Center align title */
 }
 
 .chartSubtitle {
@@ -40,6 +42,7 @@
   color: var(--mm-gray-600);
   margin: 0;
   line-height: 1.4;
+  text-align: center; /* Center align subtitle */
 }
 
 /* WHAT: Graphic area that contains the chart visual
@@ -51,13 +54,16 @@
   flex-direction: column;
   min-height: 0;
   width: 100%;
+  align-items: center; /* Center align chart content horizontally */
+  justify-content: center; /* Center align chart content vertically */
 }
 
 /* Layout containers */
 .landscapeLayout {
   display: flex;
   gap: var(--mm-space-4);
-  align-items: flex-start;
+  align-items: center; /* Center align items vertically */
+  justify-content: center; /* Center align items horizontally */
   width: 100%;
   height: 100%;
 }
@@ -77,6 +83,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-3);
+  align-items: center; /* Center align items horizontally */
+  justify-content: center; /* Center align items vertically */
 }
 
 /* ========================================
@@ -124,7 +132,7 @@
  * WHY: Prevents legends from being cut off at bottom of cards
  * HOW: Flex-shrink with auto height and vertical scroll if needed */
 .chartLegend {
-  text-align: left;
+  text-align: center; /* Center align legend text */
   font-size: 0.85rem;
   width: 100%;
   flex-shrink: 0;
@@ -139,6 +147,7 @@
   flex-shrink: 0;
   max-height: 140px;
   overflow-y: auto;
+  text-align: center; /* Center align portrait legend text */
 }
 
 .chartTotal {
@@ -183,6 +192,7 @@
 .legendItem {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center align legend items */
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -220,7 +230,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* CRITICAL: Equal vertical distribution */
+  justify-content: space-around; /* CHANGED: Better spacing distribution for responsiveness */
+  gap: var(--mm-space-2); /* Add consistent gap between rows */
 }
 
 /* WHAT: Single bar row with bar and legend side-by-side
@@ -245,10 +256,11 @@
 
 /* WHAT: Bar container - left side of row (50% width)
  * WHY: Visual representation of value with rounded background
- * HOW: Fixed height with overflow hidden for rounded corners, width constrained by grid */
+ * HOW: Responsive height that scales with available space */
 .barContainer {
   width: 100%;
-  height: 24px;
+  min-height: 24px;
+  height: clamp(24px, 4vh, 40px); /* Responsive height that scales with viewport */
   background: rgba(0, 0, 0, 0.05);
   border-radius: var(--mm-radius-xl); /* 12px */
   overflow: hidden;
@@ -363,9 +375,9 @@
 .kpiBox {
   text-align: center;
   padding: var(--kpi-padding, var(--mm-space-6));
-  background: var(--kpi-bg, linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%));
+  background: var(--kpi-bg, transparent);
   border-radius: var(--mm-radius-lg);
-  border: var(--kpi-border, 2px solid rgba(16, 185, 129, 0.15));
+  /* Remove border to eliminate extra border inside element box */
   width: 100%;
   display: flex;
   flex-direction: column;

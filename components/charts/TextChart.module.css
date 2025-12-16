@@ -1,0 +1,127 @@
+/* WHAT: TextChart component styles with CSS-based auto-scaling
+ * WHY: Use modern CSS container queries and relative units for optimal text scaling
+ * HOW: Container queries + clamp() + viewport units for responsive text sizing */
+
+.container {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: auto !important;
+  /* WHAT: KILL ALL MIN-HEIGHT CONSTRAINTS - they interfere with aspect-ratio */
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: var(--mm-space-4);
+  background-color: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+  box-sizing: border-box;
+  /* WHAT: Enable container queries for responsive text sizing */
+  container-type: size;
+  /* WHAT: Ensure container has proper height from aspect-ratio */
+  position: relative;
+}
+
+.header {
+  margin-bottom: var(--mm-space-3);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* When no header, content takes full space */
+.container:not(:has(.header)) .content {
+  top: var(--mm-space-4) !important;
+}
+
+.title {
+  font-size: var(--mm-text-lg);
+  font-weight: 600;
+  color: var(--mm-gray-900);
+  margin: 0;
+  margin-bottom: var(--mm-space-1);
+}
+
+.subtitle {
+  font-size: var(--mm-text-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+.content {
+  /* WHAT: Use absolute positioning to fill container and center content */
+  /* WHY: External CSS sets flex: none which prevents flex centering */
+  position: absolute !important;
+  top: var(--mm-space-4) !important;
+  left: var(--mm-space-4) !important;
+  right: var(--mm-space-4) !important;
+  bottom: var(--mm-space-4) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  /* WHAT: KILL ALL MIN-HEIGHT CONSTRAINTS */
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.textWrapper {
+  /* WHAT: Flexbox child - centered by parent flex properties */
+  /* WHY: Parent uses flex with align-items: center and justify-content: center */
+  width: 100% !important;
+  max-width: 100% !important;
+  /* WHAT: Override any external positioning */
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.text {
+  color: var(--mm-gray-800);
+  margin: 0;
+  padding: 0;
+  /* WHAT: Proper word wrapping without breaking words */
+  /* WHY: Words must stay intact, only wrap at word boundaries */
+  word-wrap: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+  white-space: normal;
+  text-align: center;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.2;
+  
+  /* WHAT: Smooth font size transitions to prevent jarring changes */
+  /* WHY: Make any font size updates visually smooth */
+  transition: font-size 0.2s ease-out;
+  
+  /* WHAT: Maximum text scaling with proper word wrapping
+   * WHY: JavaScript calculates largest font size that fits with natural line breaks
+   * HOW: Dynamic font-size set via inline style with clamp() bounds */
+  
+  /* Default fallback - will be overridden by JavaScript calculation */
+  font-size: clamp(0.75rem, 4cqh, 12rem);
+  
+  /* WHAT: Ensure text is vertically centered within its container */
+  /* WHY: Text should be in the middle of the available space */
+  display: block;
+}
+
+/* WHAT: Smart scaling handles all container sizes and aspect ratios
+ * WHY: JavaScript calculation considers both container dimensions AND text content
+ * HOW: Dynamic font-size calculation based on area-to-text ratio */
+
+.placeholder {
+  font-size: var(--mm-text-sm);
+  color: var(--mm-gray-500);
+  font-style: italic;
+  margin: 0;
+}
+
+/* WHAT: Override external chart-item styles that interfere with TextChart */
+/* WHY: External CSS has min-height: 380px which breaks aspect-ratio */
+/* HOW: Use higher specificity to override external styles */

@@ -1,32 +1,164 @@
 // components/charts/TextChart.tsx
 // WHAT: Display text content from reportText* variables in formatted blocks
 // WHY: Partner reports need rich text display for event notes and summaries
-// HOW: Renders text with consistent styling using centralized design tokens
+// HOW: Smart auto-scaling that maximizes text size based on content length and container dimensions
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import styles from './TextChart.module.css';
 
 export interface TextChartProps {
   title: string;
   content: string;
   subtitle?: string;
   className?: string;
+  aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Text block aspect ratio for proper height calculation
+  showTitle?: boolean; // WHAT: Controls title visibility on report page
 }
 
-export default function TextChart({ title, content, subtitle, className = '' }: TextChartProps) {
-  return (
-    <div className={`text-chart-container ${className}`}>
-      <div className="text-chart-header">
-        <h3 className="text-chart-title">{title}</h3>
-        {subtitle && <p className="text-chart-subtitle">{subtitle}</p>}
-      </div>
+export default function TextChart({ title, content, subtitle, className = '', aspectRatio = '1:1', showTitle = true }: TextChartProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [optimalFontSize, setOptimalFontSize] = useState('4cqh'); // Start with relative unit
+
+  /* WHAT: Calculate CSS aspect-ratio value from aspectRatio prop
+     WHY: CSS aspect-ratio property requires "width / height" format
+     HOW: Convert 16:9 → "16 / 9", 9:16 → "9 / 16", 1:1 → "1 / 1"
+     CRITICAL: Coerce to string to prevent crashes on null/undefined/non-string */
+  const safeAspectRatio = String(aspectRatio || '1:1');
+  const cssAspectRatio = safeAspectRatio.replace(':', ' / ');
+
+  // WHAT: Stable text scaling without flickering
+  // WHY: Prevent visual flicker during font size calculations
+  // HOW: Use hidden clone for measurements, apply final result once
+  useEffect(() => {
+    if (!contentRef.current || !textRef.current || !content) return;
+
+    const calculateMaxFontSize = () => {
+      const container = contentRef.current;
+      const text = textRef.current;
+      if (!container || !text) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const availableWidth = containerRect.width - 16; // Account for padding
+      const availableHeight = containerRect.height - 16;
+
+      if (availableWidth <= 0 || availableHeight <= 0) return;
+
+      // WHAT: Create hidden clone for measurements to prevent flickering
+      // WHY: Avoid visual updates during binary search
+      const clone = text.cloneNode(true) as HTMLElement;
+      clone.style.position = 'absolute';
+      clone.style.visibility = 'hidden';
+      clone.style.top = '-9999px';
+      clone.style.left = '-9999px';
+      clone.style.width = `${availableWidth}px`;
+      clone.style.whiteSpace = 'normal';
+      clone.style.wordBreak = 'normal';
+      clone.style.overflowWrap = 'normal';
+      clone.style.hyphens = 'none';
+      clone.style.lineHeight = '1.2';
       
-      <div className="text-chart-content">
+      document.body.appendChild(clone);
+
+      // WHAT: Binary search for maximum font size using hidden clone
+      // WHY: Find largest text that fits without visual flickering
+      let minSize = 8;
+      let maxSize = 300;
+      let optimalSize = 16;
+
+      while (minSize <= maxSize) {
+        const testSize = Math.floor((minSize + maxSize) / 2);
+        clone.style.fontSize = `${testSize}px`;
+        
+        // Force reflow on hidden element
+        clone.offsetHeight;
+        
+        const textHeight = clone.scrollHeight;
+        const fitsHeight = textHeight <= availableHeight;
+        
+        if (fitsHeight) {
+          optimalSize = testSize;
+          minSize = testSize + 1; // Try larger
+        } else {
+          maxSize = testSize - 1; // Try smaller
+        }
+      }
+
+      // Clean up clone
+      document.body.removeChild(clone);
+
+      // WHAT: Apply final font size once (no flickering)
+      // WHY: Single update instead of multiple during search
+      const containerWidth = containerRect.width;
+      const relativeFontSize = (optimalSize / containerWidth) * 100;
+      
+      setOptimalFontSize(`${Math.min(relativeFontSize, 80)}cqw`);
+    };
+
+    // WHAT: Debounced calculation to prevent excessive updates
+    // WHY: Avoid flickering from rapid resize events
+    let timeoutId: NodeJS.Timeout;
+    
+    const debouncedCalculate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(calculateMaxFontSize, 150); // Longer delay for stability
+    };
+
+    // Initial calculation
+    debouncedCalculate();
+
+    // Recalculate on container resize with debouncing
+    const resizeObserver = new ResizeObserver(debouncedCalculate);
+
+    if (contentRef.current) {
+      resizeObserver.observe(contentRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      resizeObserver.disconnect();
+    };
+  }, [content]);
+
+  return (
+    <div 
+      className={`${styles.container} text-chart-container text-chart-override ${className}`}
+      style={{
+        aspectRatio: cssAspectRatio
+      } as React.CSSProperties}
+    >
+      {showTitle && (
+        <div className={styles.header}>
+          <h3 className={styles.title}>
+            {title}
+          </h3>
+          {subtitle && (
+            <p className={styles.subtitle}>
+              {subtitle}
+            </p>
+          )}
+        </div>
+      )}
+      
+      <div className={styles.content} ref={contentRef}>
         {content ? (
-          <p className="text-chart-text">{content}</p>
+          <div className={styles.textWrapper}>
+            <p 
+              className={styles.text}
+              ref={textRef}
+              style={{
+                fontSize: `clamp(0.75rem, ${optimalFontSize}, 8rem)`
+              }}
+            >
+              {content}
+            </p>
+          </div>
         ) : (
-          <p className="text-chart-placeholder">No content available</p>
+          <p className={styles.placeholder}>
+            No content available
+          </p>
         )}
       </div>
     </div>

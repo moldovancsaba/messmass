@@ -46,6 +46,35 @@ function validateFormatting(formatting: any): boolean {
 }
 
 /**
+ * WHAT: Helper function to validate HERO block settings structure
+ * WHY: Ensure HERO settings have correct boolean types
+ * HOW: Check all HERO visibility flags are boolean values
+ */
+function validateHeroSettings(heroSettings: any): boolean {
+  if (!heroSettings) return true; // Optional field
+  
+  return typeof heroSettings === 'object' &&
+         typeof heroSettings.showEmoji === 'boolean' &&
+         typeof heroSettings.showDateInfo === 'boolean' &&
+         typeof heroSettings.showExportOptions === 'boolean';
+}
+
+/**
+ * WHAT: Helper function to validate block alignment settings structure
+ * WHY: Ensure alignment settings have correct types
+ * HOW: Check alignment flags are boolean, minElementHeight is number or undefined
+ */
+function validateAlignmentSettings(alignmentSettings: any): boolean {
+  if (!alignmentSettings) return true; // Optional field
+  
+  return typeof alignmentSettings === 'object' &&
+         typeof alignmentSettings.alignTitles === 'boolean' &&
+         typeof alignmentSettings.alignDescriptions === 'boolean' &&
+         typeof alignmentSettings.alignCharts === 'boolean' &&
+         (alignmentSettings.minElementHeight === undefined || typeof alignmentSettings.minElementHeight === 'number');
+}
+
+/**
  * Validates chart configuration data before saving
  * Ensures required fields are present and constraints are met
  */
@@ -98,6 +127,18 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
         return { isValid: false, error: `Invalid formatting in element ${i + 1}: rounded must be boolean, prefix/suffix must be strings` };
       }
     }
+  }
+  
+  // WHAT: Validate HERO block settings if present
+  // WHY: Ensure HERO visibility flags are boolean values
+  if (config.heroSettings && !validateHeroSettings(config.heroSettings)) {
+    return { isValid: false, error: 'Invalid HERO settings: showEmoji, showDateInfo, and showExportOptions must be boolean values' };
+  }
+  
+  // WHAT: Validate block alignment settings if present
+  // WHY: Ensure alignment flags are boolean and minElementHeight is number
+  if (config.alignmentSettings && !validateAlignmentSettings(config.alignmentSettings)) {
+    return { isValid: false, error: 'Invalid alignment settings: align flags must be boolean, minElementHeight must be number' };
   }
   
   // Order validation
@@ -220,6 +261,9 @@ export async function GET(request: NextRequest) {
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
       aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
+      heroSettings: config.heroSettings, // HERO block visibility settings
+      alignmentSettings: config.alignmentSettings, // Block alignment settings
+      showTitle: config.showTitle, // WHAT: Chart-level title visibility control
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
       createdBy: config.createdBy,
@@ -275,7 +319,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio } = body;
+    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio, heroSettings, alignmentSettings, showTitle } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
@@ -307,8 +351,8 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
     
-    // WHAT: Include all configuration fields including icon (v10.4.0)
-    // WHY: element.formatting, aspectRatio, icon, and iconVariant must be persisted to database
+    // WHAT: Include all configuration fields including HERO settings and showTitle
+    // WHY: element.formatting, aspectRatio, icon, heroSettings, alignmentSettings, and showTitle must be persisted to database
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
@@ -323,6 +367,9 @@ export async function POST(request: NextRequest) {
       showTotal,
       totalLabel,
       aspectRatio, // v9.3.0: Image aspect ratio (9:16, 1:1, 16:9)
+      heroSettings, // HERO block visibility settings
+      alignmentSettings, // Block alignment settings
+      showTitle, // WHAT: Chart-level title visibility control
       createdAt: now,
       updatedAt: now,
       createdBy: user.id

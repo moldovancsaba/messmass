@@ -7,6 +7,8 @@
         "node *",
         "MONGODB_URI=\"mongodb+srv://moldovancsaba:j8HxxytTjrtJXskz@messmass-cluster.r96vlxs.mongodb.net/messmass?retryWrites=true&w=majority&appName=messmass-cluster\" *",
         "rm *",
-        "timeout *"
+        "timeout *",
+        "chmod *",
+        "echo *"
     ]
 }

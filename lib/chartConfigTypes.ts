@@ -57,6 +57,27 @@ export interface ChartElement {
 }
 
 /**
+ * HERO block visibility settings for report templates
+ * Controls which elements appear in the report header
+ */
+export interface HeroBlockSettings {
+  showEmoji: boolean;           // Controls emoji visibility (e.g., "🏒")
+  showDateInfo: boolean;        // Controls creation/update date visibility
+  showExportOptions: boolean;   // Controls export buttons visibility
+}
+
+/**
+ * Report block alignment settings for consistent visual layout
+ * Controls element alignment within individual report blocks
+ */
+export interface BlockAlignmentSettings {
+  alignTitles: boolean;         // Align titles within block
+  alignDescriptions: boolean;   // Align descriptions within block
+  alignCharts: boolean;         // Align chart visualizations within block
+  minElementHeight?: number;    // Minimum height for consistent alignment
+}
+
+/**
  * Complete chart configuration document structure for MongoDB
  * Supports PieChart (2 elements), HorizontalBar (5 elements), and KPI (1 element) types
  */
@@ -106,6 +127,21 @@ export interface ChartConfiguration {
   // WHY: Determines grid width automatically - Portrait (1 unit), Square (2 units), Landscape (3 units)
   // HOW: Used by calculateImageWidth() to compute chart width from aspect ratio
   aspectRatio?: '16:9' | '9:16' | '1:1'; // Optional: Only for image charts
+  
+  // WHAT: HERO block visibility settings for report templates
+  // WHY: Allow fine-grained control over which header elements appear in reports
+  // HOW: Template-specific settings that control emoji, date info, and export options visibility
+  heroSettings?: HeroBlockSettings;
+  
+  // WHAT: Block alignment settings for consistent visual layout
+  // WHY: Ensure professional appearance with aligned elements within report blocks
+  // HOW: CSS-based alignment system for titles, descriptions, and charts within blocks
+  alignmentSettings?: BlockAlignmentSettings;
+  
+  // WHAT: Chart-level title visibility control
+  // WHY: Allow individual charts to hide their titles on report pages
+  // HOW: Controls whether title/subtitle appear in the rendered chart
+  showTitle?: boolean;
 }
 
 /**
@@ -221,6 +257,7 @@ export interface ChartCalculationResult {
   total?: number | 'NA'; // Total value for bar charts
   kpiValue?: number | string | 'NA'; // WHAT: Support string for text/image charts
   aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio for grid width calculation (v9.3.0)
+  showTitle?: boolean; // WHAT: Chart-level title visibility control
 
   hasErrors: boolean; // Whether any element had calculation errors
 }

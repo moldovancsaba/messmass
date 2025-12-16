@@ -6,7 +6,7 @@ import ColoredCard from './ColoredCard';
 import FormModal from './modals/FormModal';
 import MaterialIcon from './MaterialIcon';
 import { getIconForEmoji } from '@/lib/iconMapping';
-import { ChartConfiguration, type AvailableVariable } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, type AvailableVariable, type HeroBlockSettings, type BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 import PredictiveFormattingInput from './PredictiveFormattingInput';
@@ -49,6 +49,9 @@ interface ChartConfigFormData {
   showTotal?: boolean;
   totalLabel?: string;
   aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio (v9.3.0) for automatic grid width calculation
+  heroSettings?: HeroBlockSettings; // WHAT: HERO block visibility settings
+  alignmentSettings?: BlockAlignmentSettings; // WHAT: Block alignment settings
+  showTitle?: boolean; // WHAT: Chart-level title visibility control
 }
 
 // Sample project stats for testing formulas
@@ -434,7 +437,10 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         subtitle: config.subtitle,
         showTotal: config.showTotal,
         totalLabel: config.totalLabel,
-        aspectRatio: config.aspectRatio // v9.3.0: Image aspect ratio
+        aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
+        heroSettings: config.heroSettings, // HERO block visibility settings
+        alignmentSettings: config.alignmentSettings, // Block alignment settings
+        showTitle: config.showTitle // WHAT: Chart-level title visibility control
       });
     } else {
       // Create new configuration with proper element count based on type
@@ -453,7 +459,18 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         emoji: '📊',
         showTotal: false,
         totalLabel: '',
-        aspectRatio: '16:9' // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
+        aspectRatio: '16:9', // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
+        heroSettings: {
+          showEmoji: true,
+          showDateInfo: true,
+          showExportOptions: true
+        }, // WHAT: Default HERO settings - show all elements
+        alignmentSettings: {
+          alignTitles: true,
+          alignDescriptions: true,
+          alignCharts: true
+        }, // WHAT: Default alignment settings - enable all alignment
+        showTitle: true // WHAT: Default to showing title on new charts
       });
     }
     setShowEditor(true);
@@ -906,30 +923,43 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
   const testConfigurationFormula = (formula: string) => {
     if (!formula || !String(formula).trim()) return null;
     
-    // WHAT: Validate formulas with full database paths like [stats.female]
-    // WHY: Support Single Reference System with dotted notation
-    // HOW: Match [a-zA-Z0-9_.] pattern (letters, numbers, underscores, dots)
-    const variablePattern = /\[([a-zA-Z0-9_.]+)\]/g;
+    // WHAT: Handle both bracketed and simple field name formats
+    // WHY: Image/text charts can use simple field names like "reportImage2" or bracketed like "[reportImage2]"
+    // HOW: Check for bracketed format first, then simple field name format
     const variables: string[] = [];
-    let match;
     
+    // Check for bracketed variables like [stats.female] or [reportImage2]
+    const variablePattern = /\[([a-zA-Z0-9_.]+)\]/g;
+    let match;
     while ((match = variablePattern.exec(formula)) !== null) {
       variables.push(match[1]);
     }
     
-    // WHAT: Check if all variables exist in KYC system
+    // If no bracketed variables found, check if it's a simple field name (for image/text charts)
+    if (variables.length === 0) {
+      // Simple field name pattern: just letters and numbers (e.g., reportImage2, reportText1)
+      const simpleFieldPattern = /^[a-zA-Z][a-zA-Z0-9]*$/;
+      if (simpleFieldPattern.test(formula.trim())) {
+        variables.push(formula.trim());
+      }
+    }
+    
+    // WHAT: Check if all variables exist in KYC system or are valid report content fields
     // WHY: Prevent invalid formulas from being saved
     // NOTE: PARAM: and MANUAL: tokens are always valid (handled separately)
     const invalidVariables = variables.filter(variable => {
       // Skip special tokens
       if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) return false;
       
-      // WHAT: Handle stats.fieldName format (Single Reference System)
-      // WHY: Formulas use [stats.reportImage1] but KYC stores as "reportImage1"
-      // HOW: Strip "stats." prefix when checking against KYC variables
-      const variableName = variable.startsWith('stats.') ? variable.substring(6) : variable;
+      // WHAT: Allow reportImage1-100 and reportText1-100 without KYC validation
+      // WHY: These are content fields, not KYC variables
+      if (/^reportImage\d+$/.test(variable) || /^reportText\d+$/.test(variable)) {
+        return false; // Valid - don't mark as invalid
+      }
       
-
+      // WHAT: Handle stats.fieldName format for numeric variables
+      // WHY: Numeric formulas use [stats.female] but KYC stores as "female"
+      const variableName = variable.startsWith('stats.') ? variable.substring(6) : variable;
       
       // Check if variable exists in KYC (dynamic from database)
       return !availableVariables.some(v => v.name === variableName);
@@ -953,19 +983,33 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         'stats.eventAttendees': 280, 'stats.allImages': 50, 'stats.totalFans': 280
       };
       
-      // WHAT: Add report image and text sample data
+      // WHAT: Add report image and text sample data (simple format)
       // WHY: Support validation of reportImage1-100 and reportText1-100 formulas
       for (let i = 1; i <= 100; i++) {
-        sampleData[`stats.reportImage${i}`] = `https://example.com/image${i}.jpg`;
-        sampleData[`stats.reportText${i}`] = `Sample text content ${i}`;
+        sampleData[`reportImage${i}`] = `https://example.com/image${i}.jpg`;
+        sampleData[`reportText${i}`] = `Sample text content ${i}`;
       }
       
-      // Replace variables with sample values
+      // WHAT: Handle simple field name formulas (e.g., reportImage2)
+      // WHY: Image/text charts use simple field names, not complex expressions
+      if (variables.length === 1 && testFormula.trim() === variables[0]) {
+        const variable = variables[0];
+        if (variable.startsWith('reportImage')) {
+          return { error: null, result: 'https://example.com/image.jpg' as any };
+        } else if (variable.startsWith('reportText')) {
+          return { error: null, result: 'Sample text content' as any };
+        }
+      }
+      
+      // Replace variables with sample values for complex formulas
       variables.forEach(variable => {
-        const value = sampleData[variable] || 1;
-        // Escape dots in variable name for regex
-        const escapedVariable = variable.replace(/\./g, '\\.');
-        testFormula = testFormula.replace(new RegExp(`\\[${escapedVariable}\\]`, 'g'), value.toString());
+        let value = sampleData[variable] || sampleData[`stats.${variable}`] || 1;
+        
+        // Handle bracketed format [variable]
+        if (testFormula.includes(`[${variable}]`)) {
+          const escapedVariable = variable.replace(/\./g, '\\.');
+          testFormula = testFormula.replace(new RegExp(`\\[${escapedVariable}\\]`, 'g'), value.toString());
+        }
       });
       
       // Evaluate the formula safely
@@ -1057,20 +1101,28 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               </select>
             </div>
 
-            {/* WHAT: Image Aspect Ratio Selector (v9.3.0) */}
+            {/* WHAT: Aspect Ratio Selector for Image and Text Charts (v9.3.0) */}
             {/* WHY: Determines grid width automatically from aspect ratio */}
             {/* HOW: Portrait (1 unit), Square (2 units), Landscape (3 units) */}
-            {formData.type === 'image' && (
+            {(formData.type === 'image' || formData.type === 'text') && (
               <div className="form-group">
-                <label className="form-label">Image Aspect Ratio *</label>
+                <label className="form-label">
+                  {formData.type === 'image' ? 'Image' : 'Text'} Aspect Ratio *
+                </label>
                 <select
                   className="form-input"
                   value={formData.aspectRatio || '16:9'}
                   onChange={(e) => setFormData({ ...formData, aspectRatio: e.target.value as '16:9' | '9:16' | '1:1' })}
                 >
-                  <option value="16:9">🖼️ Landscape (16:9) → 3 grid units</option>
-                  <option value="9:16">📱 Portrait (9:16) → 1 grid unit</option>
-                  <option value="1:1">⬜ Square (1:1) → 2 grid units</option>
+                  <option value="16:9">
+                    {formData.type === 'image' ? '🖼️' : '📝'} Landscape (16:9) → 3 grid units
+                  </option>
+                  <option value="9:16">
+                    {formData.type === 'image' ? '📱' : '📄'} Portrait (9:16) → 1 grid unit
+                  </option>
+                  <option value="1:1">
+                    {formData.type === 'image' ? '⬜' : '🔲'} Square (1:1) → 2 grid units
+                  </option>
                 </select>
                 <small className="form-help">
                   💡 Aspect ratio determines automatic grid width for consistent row heights
@@ -1106,25 +1158,24 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   <label className="formatting-checkbox">
                     <input
                       type="checkbox"
-                      checked={formData.title !== undefined && formData.title !== ''}
+                      checked={formData.showTitle !== false}
                       onChange={(e) => {
                         setFormData({ 
                           ...formData, 
-                          title: e.target.checked ? (formData.title || formData.chartId) : '' 
+                          showTitle: e.target.checked
                         });
                       }}
                     />
                     <span>Show Title</span>
                   </label>
-                  {formData.title !== undefined && formData.title !== '' && (
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="e.g., Gender Distribution"
-                    />
-                  )}
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="e.g., Gender Distribution"
+                    required
+                  />
                 </div>
                 
                 {/* ROW 2: Icon Field (v10.4.0 Material Icons - Always Visible) */}
@@ -1202,6 +1253,170 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               </div>
               <p className="text-xs text-gray-600 mt-2">
                 💡 Tip: Subtitle appears below the chart title and is useful for explaining KPI metrics.
+              </p>
+            </div>
+          </div>
+
+          {/* WHAT: HERO Block Settings Section */}
+          {/* WHY: Allow fine-grained control over report header elements */}
+          {/* HOW: Checkbox controls for emoji, date info, and export options visibility */}
+          <div className="formatting-section">
+            <h4 className="formatting-section-title">🏒 HERO Block Settings</h4>
+            <div className="formatting-note">Control which elements appear in the report header when using this template</div>
+            
+            <div className="formatting-group">
+              <h5 className="formatting-group-title">Header Element Visibility</h5>
+              <div className="formatting-controls">
+                {/* ROW 1: Show Emoji */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.heroSettings?.showEmoji ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          heroSettings: {
+                            ...formData.heroSettings,
+                            showEmoji: e.target.checked,
+                            showDateInfo: formData.heroSettings?.showDateInfo ?? true,
+                            showExportOptions: formData.heroSettings?.showExportOptions ?? true
+                          }
+                        });
+                      }}
+                    />
+                    <span>Show Emoji (🏒)</span>
+                  </label>
+                </div>
+                
+                {/* ROW 2: Show Date Info */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.heroSettings?.showDateInfo ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          heroSettings: {
+                            ...formData.heroSettings,
+                            showEmoji: formData.heroSettings?.showEmoji ?? true,
+                            showDateInfo: e.target.checked,
+                            showExportOptions: formData.heroSettings?.showExportOptions ?? true
+                          }
+                        });
+                      }}
+                    />
+                    <span>Show Date Info (Created/Updated)</span>
+                  </label>
+                </div>
+                
+                {/* ROW 3: Show Export Options */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.heroSettings?.showExportOptions ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          heroSettings: {
+                            ...formData.heroSettings,
+                            showEmoji: formData.heroSettings?.showEmoji ?? true,
+                            showDateInfo: formData.heroSettings?.showDateInfo ?? true,
+                            showExportOptions: e.target.checked
+                          }
+                        });
+                      }}
+                    />
+                    <span>Show Export Options (PDF/Excel buttons)</span>
+                  </label>
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 mt-2">
+                💡 Tip: These settings control what appears in the report header. Unchecked items will be hidden from reports using this template.
+              </p>
+            </div>
+          </div>
+
+          {/* WHAT: Block Alignment Settings Section */}
+          {/* WHY: Ensure consistent visual layout within report blocks */}
+          {/* HOW: Checkbox controls for element alignment within blocks */}
+          <div className="formatting-section">
+            <h4 className="formatting-section-title">📐 Block Alignment Settings</h4>
+            <div className="formatting-note">Control visual alignment of elements within individual report blocks</div>
+            
+            <div className="formatting-group">
+              <h5 className="formatting-group-title">Element Alignment</h5>
+              <div className="formatting-controls">
+                {/* ROW 1: Align Titles */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.alignmentSettings?.alignTitles ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          alignmentSettings: {
+                            ...formData.alignmentSettings,
+                            alignTitles: e.target.checked,
+                            alignDescriptions: formData.alignmentSettings?.alignDescriptions ?? true,
+                            alignCharts: formData.alignmentSettings?.alignCharts ?? true
+                          }
+                        });
+                      }}
+                    />
+                    <span>Align Titles</span>
+                  </label>
+                </div>
+                
+                {/* ROW 2: Align Descriptions */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.alignmentSettings?.alignDescriptions ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          alignmentSettings: {
+                            ...formData.alignmentSettings,
+                            alignTitles: formData.alignmentSettings?.alignTitles ?? true,
+                            alignDescriptions: e.target.checked,
+                            alignCharts: formData.alignmentSettings?.alignCharts ?? true
+                          }
+                        });
+                      }}
+                    />
+                    <span>Align Descriptions</span>
+                  </label>
+                </div>
+                
+                {/* ROW 3: Align Charts */}
+                <div className="formatting-row">
+                  <label className="formatting-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.alignmentSettings?.alignCharts ?? true}
+                      onChange={(e) => {
+                        setFormData({ 
+                          ...formData, 
+                          alignmentSettings: {
+                            ...formData.alignmentSettings,
+                            alignTitles: formData.alignmentSettings?.alignTitles ?? true,
+                            alignDescriptions: formData.alignmentSettings?.alignDescriptions ?? true,
+                            alignCharts: e.target.checked
+                          }
+                        });
+                      }}
+                    />
+                    <span>Align Charts</span>
+                  </label>
+                </div>
+              </div>
+              <p className="text-xs text-gray-600 mt-2">
+                💡 Tip: Alignment ensures consistent visual layout within each report block. Different blocks can have different heights while maintaining internal alignment.
               </p>
             </div>
           </div>
@@ -1408,8 +1623,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
             <div className="element-constraint-info">
               <div className="constraint-badge">
                 {formData.type === 'kpi' && '📈 KPI charts require exactly 1 element'}
-                {formData.type === 'text' && '📝 Text charts require exactly 1 element (use [stats.reportText1-10])'}
-                {formData.type === 'image' && '🖼️ Image charts require exactly 1 element (use [stats.reportImage1-10])'}
+                {formData.type === 'text' && '📝 Text charts require exactly 1 element (use [reportText1-10])'}
+                {formData.type === 'image' && '🖼️ Image charts require exactly 1 element (use [reportImage1-10])'}
                 {formData.type === 'pie' && '🥧 Pie charts require exactly 2 elements'}
                 {formData.type === 'bar' && '📊 Bar charts require exactly 5 elements'}
               </div>

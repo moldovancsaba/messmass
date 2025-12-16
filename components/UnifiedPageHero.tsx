@@ -3,6 +3,7 @@ import ColoredCard from './ColoredCard';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
 import { getAllHashtagsWithCategories, ProjectHashtagData } from '@/lib/hashtagCategoryDisplay';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
+import { HeroBlockSettings } from '@/lib/chartConfigTypes';
 import styles from './UnifiedPageHero.module.css';
 import Image from 'next/image';
 
@@ -32,6 +33,7 @@ interface UnifiedPageHeroProps {
   children?: React.ReactNode; // For additional content
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Layout variation control
   hidePartnerEmoji?: boolean; // WHAT: Optional flag to hide partner emoji in spotlight mode
+  heroSettings?: HeroBlockSettings; // WHAT: HERO block visibility settings from template
 }
 
 export default function UnifiedPageHero({
@@ -48,7 +50,8 @@ export default function UnifiedPageHero({
   pageStyle,
   children,
   layoutMode = 'dual-partners', // WHAT: Default to existing dual-partners layout
-  hidePartnerEmoji = false // WHAT: Default to showing emoji
+  hidePartnerEmoji = false, // WHAT: Default to showing emoji
+  heroSettings
 }: UnifiedPageHeroProps) {
   // WHAT: Validate color values before injecting into CSS
   // WHY: Prevent undefined/null from appearing in CSS which causes React .trim() errors
@@ -79,7 +82,7 @@ export default function UnifiedPageHero({
                WHY: single-partner-spotlight shows icon left, logo right; dual-partners shows full partner left */}
           {layoutMode === 'single-partner-spotlight' ? (
             /* WHAT: Single partner spotlight mode - icon on left (optional) */
-            !hidePartnerEmoji && partner1?.emoji ? (
+            !hidePartnerEmoji && partner1?.emoji && (heroSettings?.showEmoji !== false) ? (
               <div className={styles.partnerIconOnly}>
                 <div className={styles.partnerEmojiLarge} title={partner1.name}>
                   {partner1.emoji}
@@ -101,9 +104,11 @@ export default function UnifiedPageHero({
                     unoptimized
                   />
                 ) : (
-                  <div className={styles.partnerEmoji} title={partner1.name}>
-                    {partner1.emoji}
-                  </div>
+                  (heroSettings?.showEmoji !== false) && (
+                    <div className={styles.partnerEmoji} title={partner1.name}>
+                      {partner1.emoji}
+                    </div>
+                  )
                 )}
                 <div className={styles.partnerName}>{partner1.name}</div>
               </div>
@@ -247,7 +252,7 @@ export default function UnifiedPageHero({
         </div>
         
         {/* WHAT: Date metadata with unified styling */}
-        {(createdDate || lastUpdatedDate) && (
+        {(createdDate || lastUpdatedDate) && (heroSettings?.showDateInfo !== false) && (
           <div className={styles.dateMetadata}>
             {createdDate && (
               <span className={styles.dateItem}>
@@ -271,7 +276,7 @@ export default function UnifiedPageHero({
         )}
         
         {/* Export Buttons */}
-        {(onExportCSV || onExportPDF) && (
+        {(onExportCSV || onExportPDF) && (heroSettings?.showExportOptions !== false) && (
           <div className={styles.exportButtons}>
             {onExportCSV && (
               <button 

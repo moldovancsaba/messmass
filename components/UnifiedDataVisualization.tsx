@@ -1,6 +1,6 @@
 import React from 'react';
 import ColoredCard from './ColoredCard';
-import { DynamicChart, ChartContainer } from './DynamicChart';
+import { DynamicChart } from './DynamicChart';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
@@ -24,11 +24,7 @@ export default function UnifiedDataVisualization({
   pageStyle
 }: UnifiedDataVisualizationProps) {
   
-  console.log('📊 [UnifiedViz] Rendering with:', {
-    blocksCount: blocks.length,
-    chartResultsCount: chartResults.length,
-    loading
-  });
+
   
   // Determine visible blocks once and keep a stable order
   // Why: We need a consistent ordering to generate matching dynamic CSS and class names
@@ -36,12 +32,7 @@ export default function UnifiedDataVisualization({
     .filter(block => block.isActive)
     .sort((a, b) => a.order - b.order);
   
-  console.log('📊 [UnifiedViz] Visible blocks:', visibleBlocks.map(b => ({
-    name: b.name,
-    isActive: b.isActive,
-    chartsCount: b.charts?.length,
-    chartIds: b.charts?.map(c => c.chartId)
-  })));
+
   
   // WHAT: Helper functions must be defined BEFORE usage in CSS generation
   // WHY: Prevents ReferenceError when filtering charts for grid CSS
@@ -92,9 +83,9 @@ export default function UnifiedDataVisualization({
     return validElements.length > 0 && totalValue > 0;
   };
 
-  // WHAT: Build dynamic CSS using fr units based on chart width ratios
-  // WHY: Auto-calculate grid from chart widths (e.g., 2+2+3 = "2fr 2fr 3fr"), no manual grid columns needed
-  // HOW: Sum chart widths, generate explicit fr values, auto-wrap with min-width on tablet/mobile
+  // WHAT: Natural aspect ratio system using CSS Grid
+  // WHY: Let CSS Grid handle widths with fr units, aspect-ratio handles heights
+  // HOW: Equal fr units + same aspect ratio = automatically equal heights
   const dynamicGridCSS = visibleBlocks
     .map((block, idx) => {
       const idSuffix = block._id || `i${idx}`;
@@ -107,21 +98,51 @@ export default function UnifiedDataVisualization({
         })
         .sort((a, b) => a.order - b.order);
       
-      // WHAT: Build fr unit string from chart widths (e.g., [2, 2, 3] → "2fr 2fr 3fr")
-      // WHY: Creates proportional columns - 2/7, 2/7, 3/7 of row width
+      // WHAT: Use database chart widths for fr units
       const chartWidths = blockCharts.map(c => Math.max(1, c.width || 1));
       const frColumns = chartWidths.map(w => `${w}fr`).join(' ');
       
-      console.log(`📐 [Grid ${idSuffix}]`, { chartWidths, frColumns });
+
+      
+
+      
+
       
       return `
-        /* Desktop: Auto-calculated fr units from chart widths */
+        /* CSS Grid with natural aspect ratios */
         .udv-grid-${idSuffix} { 
           justify-items: stretch !important; 
           align-items: start; 
           grid-auto-flow: row !important; 
-          grid-template-columns: ${frColumns || '1fr'} !important; 
+          grid-template-columns: ${frColumns || '1fr'} !important;
+          grid-auto-rows: auto !important;
         }
+        
+        /* Force aspect ratio for text and image charts */
+        .udv-grid-${idSuffix} .chart-item.chart-item-text,
+        .udv-grid-${idSuffix} .chart-item.chart-item-image {
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          flex: none !important;
+        }
+        
+        /* Override any height constraints on text chart elements */
+        .udv-grid-${idSuffix} .chart-item.chart-item-text *,
+        .udv-grid-${idSuffix} .unified-chart-item.chart-item-text *,
+        .udv-grid-${idSuffix} .text-chart-container {
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          flex: none !important;
+        }
+        
+        /* Use block display for text charts */
+        .udv-grid-${idSuffix} .chart-item.chart-item-text {
+          display: block !important;
+          grid-template-rows: none !important;
+        }
+        
         /* Tablet: Auto-wrap with 300px minimum width per chart */
         @media (max-width: 1023px) {
           .udv-grid-${idSuffix} { 
@@ -214,26 +235,25 @@ export default function UnifiedDataVisualization({
                     // WHY: Chart width ratio already baked into CSS (e.g., "2fr 2fr 3fr")
                     // HOW: Just render chart in grid cell, CSS does the rest
                     
-                    // Debug logging for image charts
-                    if (result.type === 'image') {
-                      console.log('🖼️ [IMAGE CHART]', {
-                        chartId: chart.chartId,
-                        width: chart.width,
-                        aspectRatio: (result as any).aspectRatio,
-                        note: 'Width handled by fr units, aspect ratio controls height'
-                      });
-                    }
+
 
                     // No width classes needed - fr units handle proportions
+                    // WHAT: Add specific classes for image and text charts to remove padding/borders
+                    // WHY: Image and text charts should fill the entire container edge-to-edge
+                    const chartTypeClass = result.type === 'image' ? 'chart-item-image' : 
+                                          result.type === 'text' ? 'chart-item-text' : 
+                                          'chart-item-standard';
+                    
                     return (
                       <div
                         key={`${idSuffix}-${chart.chartId}`}
-                        className={`chart-item unified-chart-item`}
+                        className={`chart-item unified-chart-item ${chartTypeClass}`}
+                        data-chart-id={chart.chartId}
                       >
                         <DynamicChart 
                           result={result} 
                           chartWidth={chart.width}
-                          showTitleInCard={true}
+                          showTitleInCard={(result as any).showTitle !== false}
                           pageStyle={pageStyle}
                         />
                       </div>
@@ -257,13 +277,87 @@ export default function UnifiedDataVisualization({
         })}
 
       <style jsx>{`
-        /* Responsive Grid System per block (base desktop, overrides below) */
+        /* WHAT: Enhanced CSS alignment system for report blocks */
+        /* WHY: Ensure consistent element heights within individual report blocks */
+        /* HOW: CSS Grid with defined rows for title, description, and chart areas */
         .udv-grid {
           /* Base: leave to per-block CSS; do not set columns here to avoid collisions */
           justify-items: stretch !important;
-          align-items: stretch !important; /* WHAT: Stretch items to fill row height; WHY: Removes bottom space */
+          align-items: start !important; /* WHAT: Allow items to size naturally; WHY: Let aspect ratio control height */
           grid-auto-flow: row !important;
-          grid-auto-rows: 1fr; /* WHAT: Make all rows equal height; WHY: Consistent chart heights */
+          grid-auto-rows: auto; /* WHAT: Let rows size naturally; WHY: Allow aspect ratio to control height */
+        }
+        
+        /* WHAT: Chart item alignment system */
+        /* WHY: Ensure titles, descriptions, and charts align at consistent heights */
+        .udv-grid .chart-item {
+          display: grid !important;
+          grid-template-rows: auto auto 1fr !important; /* title, description, chart */
+          gap: 0.75rem !important;
+          height: 100% !important;
+          align-content: start !important;
+        }
+        
+        /* WHAT: Text and image charts use aspect ratio within forced block height
+         * WHY: Charts use aspect ratio BUT all have exactly same height in block
+         * HOW: Block height calculated from aspect ratios, all charts forced to that height */
+        .udv-grid .chart-item.chart-item-image,
+        .udv-grid .chart-item.chart-item-text {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          grid-template-rows: none !important;
+          gap: 0 !important;
+          /* Height controlled by per-block CSS rules above */
+        }
+        
+        /* WHAT: Chart title area alignment */
+        /* WHY: All title areas within a row should align at the same height */
+        .udv-grid :global(.chartTitleArea) {
+          min-height: 4rem !important; /* Consistent title area height */
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: flex-start !important;
+          align-items: center !important;
+          text-align: center !important;
+        }
+        
+        /* WHAT: Chart title text alignment */
+        .udv-grid :global(.chartTitle) {
+          margin: 0 0 0.25rem 0 !important;
+          line-height: 1.25 !important;
+          text-align: center !important;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 2 !important;
+          -webkit-box-orient: vertical !important;
+          overflow: hidden !important;
+          word-break: break-word !important;
+          flex-shrink: 0 !important;
+        }
+        
+        /* WHAT: Chart subtitle alignment */
+        /* WHY: All subtitles within a row should align at the same height */
+        .udv-grid :global(.chartSubtitle) {
+          margin: 0 !important;
+          line-height: 1.4 !important;
+          text-align: center !important;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 2 !important;
+          -webkit-box-orient: vertical !important;
+          overflow: hidden !important;
+          word-break: break-word !important;
+          flex-shrink: 0 !important;
+        }
+        
+        /* WHAT: Chart graphic area alignment - only for standard charts */
+        /* WHY: Text and image charts don't use chartGraphicArea */
+        .udv-grid .chart-item-standard :global(.chartGraphicArea) {
+          flex: 1 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          align-items: center !important;
+          min-height: 200px !important; /* Only for standard charts */
         }
 
         /* Inject per-block column definitions (fr units auto-calculate from widths) */
@@ -286,16 +380,13 @@ export default function UnifiedDataVisualization({
           max-width: 100% !important;
           overflow: hidden;
         }
-        /* Crop long titles and subtitles to keep fixed height */
-        .udv-grid :global(.chart-title-for-export h3) {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+        /* WHAT: Text overflow handling for consistent layout */
+        /* WHY: Prevent long titles/subtitles from breaking alignment */
+        .udv-grid :global(.chartTitle) {
+          /* Already handled above with -webkit-line-clamp */
         }
-        .udv-grid :global(.chart-title-for-export p) {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+        .udv-grid :global(.chartSubtitle) {
+          /* Already handled above with -webkit-line-clamp */
         }
         /* Prevent legend text from overflowing */
         .udv-grid :global(.legend-text-row),
@@ -331,29 +422,49 @@ export default function UnifiedDataVisualization({
         }
         /* WHAT: Remove padding and border for image/text charts
          * WHY: Images and text should fill the entire card edge-to-edge vertically and horizontally
-         * HOW: Zero padding and transparent border when containing image/text chart containers */
-        .unified-chart-item:has(.image-chart-container),
-        .unified-chart-item:has(.text-chart-container) {
-          padding: 0;
-          border: none;
+         * HOW: Zero padding and transparent border using specific chart type classes */
+        .unified-chart-item.chart-item-image,
+        .unified-chart-item.chart-item-text {
+          padding: 0 !important;
+          border: none !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+        }
+        
+        /* WHAT: Make image and text chart content fill the entire container
+         * WHY: Remove any extra spacing or constraints */
+        .unified-chart-item.chart-item-image > * {
+          width: 100% !important;
+          height: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* WHAT: Text chart content fills the exact same height as other charts
+         * WHY: User requirement - EXACTLY the same height for all charts in block
+         * HOW: Force text charts to fill 100% of available height */
+        .unified-chart-item.chart-item-text > * {
+          width: 100% !important;
+          height: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         /* Prevent flex children from expanding beyond container height */
         .unified-chart-item > * { min-height: 0; }
         
-        .unified-chart-item:hover {
+        .unified-chart-item:hover:not(.chart-item-image):not(.chart-item-text) {
           box-shadow: var(--mm-shadow-md);
           border-color: var(--mm-color-primary-300);
         }
         
-        /* WHAT: Chart item container that fills available grid cell height
-         * WHY: Charts should fill their grid cell without extra bottom space
-         * HOW: Use height: 100% to fill parent, let grid control sizing */
+        /* WHAT: Chart item container - text and image charts use aspect ratio
+         * WHY: STRICT RULE - text and image charts ALWAYS keep their aspect ratio
+         * HOW: No min-height for text/image, standard charts get default height */
         .chart-item {
           display: flex;
           flex-direction: column;
           width: 100%;
-          height: 100%;
-          min-height: 380px;
           max-width: none;
           justify-self: stretch;
           min-width: 0;
@@ -361,11 +472,32 @@ export default function UnifiedDataVisualization({
           overflow: hidden;
         }
         
+        /* WHAT: Standard charts (KPI, pie, bar) get default height */
+        .chart-item.chart-item-standard {
+          height: 100%;
+          min-height: 380px;
+        }
+        
+        /* WHAT: Base chart item - height controlled by per-block CSS
+         * WHY: Each block calculates exact height from aspect ratios
+         * HOW: Per-block CSS forces all charts to calculated height */
+        
+        /* WHAT: Base chart item styling - specific block rules will override for aspect ratio control
+         * WHY: Per-block CSS handles strict aspect ratio rules based on chart types */
+        
         /* Ensure all chart content fills the available space */
-        .chart-item > * {
+        .chart-item:not(.chart-item-image):not(.chart-item-text) > * {
           width: 100%;
           height: 100%;
           flex: 1;
+        }
+        
+        /* WHAT: Base content sizing - specific block rules will override
+         * WHY: Per-block CSS handles strict aspect ratio rules */
+        .chart-item.chart-item-image > *,
+        .chart-item.chart-item-text > * {
+          width: 100% !important;
+          /* height and flex controlled by specific block rules */
         }
         
         /* Bar chart specific styles to fill width */

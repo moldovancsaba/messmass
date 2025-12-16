@@ -285,6 +285,14 @@
   .chart-item {
     min-height: 300px;
   }
+  
+  /* WHAT: Override min-height for TextChart components */
+  /* WHY: TextChart needs aspect-ratio to work, min-height breaks it */
+  .chart-item:has(.text-chart-container),
+  .chart-item.chart-item-text {
+    min-height: 0 !important;
+    height: auto !important;
+  }
 }
 
 @media (max-width: 480px) {

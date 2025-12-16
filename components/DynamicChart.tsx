@@ -41,12 +41,21 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     const textContent = typeof result.kpiValue === 'string' 
       ? result.kpiValue 
       : (result.elements[0]?.value as string || '');
+    
+    // WHAT: Extract aspectRatio from result (comes from chart configuration)
+    // WHY: Text needs to know its aspect ratio to display correctly (portrait/square/landscape)
+    const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
+    
+    // Debug logging removed - aspect ratio working correctly
+    
     return (
       <TextChart
         title={result.title}
         content={textContent}
         subtitle={result.subtitle}
         className={className}
+        aspectRatio={aspectRatio || '1:1'}
+        showTitle={showTitleInCard}
       />
     );
   }
@@ -55,6 +64,15 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
     const imageUrl = typeof result.kpiValue === 'string'
       ? result.kpiValue
       : (result.elements[0]?.value as string || '');
+    
+    // Debug logging to see what's being passed
+    console.log(`🖼️ [DynamicChart] Rendering image chart "${result.title}":`, {
+      kpiValue: result.kpiValue,
+      elementValue: result.elements[0]?.value,
+      finalImageUrl: imageUrl,
+      hasImageUrl: !!imageUrl
+    });
+    
     // WHAT: Extract aspectRatio from result (comes from chart configuration)
     // WHY: Image needs to know its aspect ratio to display correctly (portrait/square/landscape)
     const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
@@ -557,7 +575,6 @@ const KPIChart: React.FC<{
         style={{
           ['--kpi-padding' as string]: padding,
           ['--kpi-bg' as string]: safeKpiBackground,
-          ['--kpi-border' as string]: `2px solid rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
           backgroundColor: safeKpiBackground
         } as React.CSSProperties}
       >

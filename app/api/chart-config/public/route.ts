@@ -69,6 +69,7 @@ export async function GET() {
       showTotal: config.showTotal,
       totalLabel: config.totalLabel,
       aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio for grid width calculation
+      showTitle: config.showTitle, // WHAT: Chart-level title visibility control
       // Exclude sensitive fields like createdBy, lastModifiedBy, etc.
     }));
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import UnifiedPageHero from './UnifiedPageHero';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
+import { HeroBlockSettings } from '@/lib/chartConfigTypes';
 import styles from './UnifiedStatsHero.module.css';
 
 interface Partner {
@@ -24,6 +25,7 @@ interface UnifiedStatsHeroProps {
   extraContent?: React.ReactNode;
   layoutMode?: 'dual-partners' | 'single-partner-spotlight'; // WHAT: Pass layout mode to UnifiedPageHero
   hidePartnerEmoji?: boolean; // WHAT: Optional flag to hide partner emoji
+  heroSettings?: HeroBlockSettings; // WHAT: HERO block visibility settings from template
 }
 
 export default function UnifiedStatsHero({
@@ -39,7 +41,8 @@ export default function UnifiedStatsHero({
   onExportPDF,
   extraContent,
   layoutMode = 'single-partner-spotlight', // WHAT: Default to spotlight for reporting pages
-  hidePartnerEmoji = false // WHAT: Default to showing emoji
+  hidePartnerEmoji = false, // WHAT: Default to showing emoji
+  heroSettings
 }: UnifiedStatsHeroProps) {
   const formatDate = (dateString: string) => {
     try {
@@ -62,6 +65,7 @@ export default function UnifiedStatsHero({
       pageStyle={pageStyle}
       layoutMode={layoutMode}
       hidePartnerEmoji={hidePartnerEmoji}
+      heroSettings={heroSettings}
     >
       {/* Creation and Update Dates + Extra Controls */}
       <div className={styles.datesContainer}>

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
-import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
@@ -30,6 +30,8 @@ interface ReportTemplate {
   isDefault: boolean;
   dataBlocks: Array<{ blockId: string; order: number }>;
   gridSettings: { desktopUnits: number; tabletUnits: number; mobileUnits: number };
+  heroSettings?: HeroBlockSettings;
+  alignmentSettings?: BlockAlignmentSettings;
 }
 
 export default function VisualizationPage() {
@@ -74,6 +76,21 @@ export default function VisualizationPage() {
   // Grid settings for per-block preview alignment
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
   const [gridForm, setGridForm] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+
+  // HERO settings state for template configuration
+  const [heroSettings, setHeroSettings] = useState<HeroBlockSettings>({
+    showEmoji: true,
+    showDateInfo: true,
+    showExportOptions: true
+  });
+  const [alignmentSettings, setAlignmentSettings] = useState<BlockAlignmentSettings>({
+    alignTitles: true,
+    alignDescriptions: true,
+    alignCharts: true,
+    minElementHeight: undefined
+  });
+
+
 
   // Form states for new data block
   const [blockForm, setBlockForm] = useState({
@@ -148,6 +165,19 @@ export default function VisualizationPage() {
         desktop: template.gridSettings.desktopUnits,
         tablet: template.gridSettings.tabletUnits,
         mobile: template.gridSettings.mobileUnits
+      });
+
+      // Set HERO settings from template (with defaults if not present)
+      setHeroSettings({
+        showEmoji: template.heroSettings?.showEmoji ?? true,
+        showDateInfo: template.heroSettings?.showDateInfo ?? true,
+        showExportOptions: template.heroSettings?.showExportOptions ?? true
+      });
+      setAlignmentSettings({
+        alignTitles: template.alignmentSettings?.alignTitles ?? true,
+        alignDescriptions: template.alignmentSettings?.alignDescriptions ?? true,
+        alignCharts: template.alignmentSettings?.alignCharts ?? true,
+        minElementHeight: template.alignmentSettings?.minElementHeight
       });
       
     } catch (error) {
@@ -302,7 +332,9 @@ export default function VisualizationPage() {
             desktopUnits: gridUnits.desktop,
             tabletUnits: gridUnits.tablet,
             mobileUnits: gridUnits.mobile
-          }
+          },
+          heroSettings,
+          alignmentSettings
         })
       });
       
@@ -318,7 +350,9 @@ export default function VisualizationPage() {
                   desktopUnits: gridUnits.desktop,
                   tabletUnits: gridUnits.tablet,
                   mobileUnits: gridUnits.mobile
-                }
+                },
+                heroSettings,
+                alignmentSettings
               }
             : t
         ));
@@ -327,6 +361,32 @@ export default function VisualizationPage() {
       console.error('Failed to save template config:', error);
     }
   };
+
+  // WHAT: Save HERO settings to template immediately (like blocks do)
+  // WHY: Follow the same pattern as block updates - save immediately on change
+  const saveHeroSettings = useCallback(async (newHeroSettings: HeroBlockSettings, newAlignmentSettings: BlockAlignmentSettings) => {
+    if (!selectedTemplateId) return;
+    
+    try {
+      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          heroSettings: newHeroSettings,
+          alignmentSettings: newAlignmentSettings
+        })
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        console.error('Failed to save HERO settings:', data.error);
+      }
+      // Don't update local templates state to avoid triggering loadTemplateConfig
+      // The settings are already updated in the component state by the onChange handlers
+    } catch (error) {
+      console.error('Failed to save HERO settings:', error);
+    }
+  }, [selectedTemplateId]);
   
   // Data Block Management Functions
   const handleUpdateBlock = async (block: DataVisualizationBlock) => {
@@ -437,6 +497,12 @@ export default function VisualizationPage() {
         eventValuePropositionVisited: 600, eventValuePropositionPurchases: 75,
         jerseyPrice: 70, scarfPrice: 15, flagsPrice: 20, capPrice: 25, otherPrice: 10
       };
+
+      // Add sample image and text data for report content charts
+      for (let i = 1; i <= 100; i++) {
+        baselineStats[`reportImage${i}`] = `https://picsum.photos/400/300?random=${i}`;
+        baselineStats[`reportText${i}`] = `Sample text content ${i}`;
+      }
 
       // Calculate using the shared calculator
       const results = calculateActiveCharts(chartConfigs, baselineStats);
@@ -618,43 +684,9 @@ export default function VisualizationPage() {
               Choose a template to configure its visualization blocks and charts
             </p>
             
-            {/* WHAT: Important notice about template hierarchy */}
-            {/* WHY: Users need to understand how template resolution works */}
-            <div style={{
-              marginTop: '1rem',
-              padding: '0.75rem',
-              background: '#f0f9ff',
-              border: '1px solid #0ea5e9',
-              borderRadius: '0.5rem',
-              fontSize: '0.875rem'
-            }}>
-              <strong>ℹ️ Template Resolution:</strong> Partner reports use their assigned template if available, otherwise fall back to <strong>"Default Event Report"</strong>. 
-              Edit the specific partner template to customize individual partner reports.
-            </div>
           </div>
           
           <div className={vizStyles.templateSelectorControls}>
-            {/* Debug info */}
-            <div style={{ 
-              fontSize: '0.75rem', 
-              color: '#666', 
-              marginBottom: '0.5rem',
-              padding: '0.5rem',
-              background: '#f8f9fa',
-              borderRadius: '4px',
-              fontFamily: 'monospace'
-            }}>
-              🔍 DEBUG: selectedTemplateId = "{selectedTemplateId || 'null'}" | templates.length = {templates.length}
-              {selectedTemplateId && templates.length > 0 && (
-                <div>
-                  Selected template: {templates.find(t => t._id === selectedTemplateId)?.name || 'NOT FOUND'}
-                  <br />
-                  Data blocks: {dataBlocks.length}
-                  <br />
-                  Template dataBlocks config: {JSON.stringify(templates.find(t => t._id === selectedTemplateId)?.dataBlocks || [])}
-                </div>
-              )}
-            </div>
             
             <div className={vizStyles.templateSelectorRow}>
               <select
@@ -822,6 +854,129 @@ export default function VisualizationPage() {
           <div className="info-box">
             <h4 className="info-box-title">⚠️ No Template Selected</h4>
             <p>Please select a report template above to configure its visualization blocks.</p>
+          </div>
+        </ColoredCard>
+      )}
+
+      {/* WHAT: HERO Block Settings Section
+          WHY: Allow configuring report header elements at template level */}
+      {selectedTemplateId && (
+        <ColoredCard accentColor="#f59e0b" hoverable={false}>
+          <h2 className="section-title mb-6">🏒 HERO Block Settings</h2>
+          <p className="section-subtitle mb-6">
+            Control which elements appear in the report header for all reports using this template
+          </p>
+          
+          <div className="form-section">
+            <div className="form-group mb-6">
+              <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>Header Element Visibility</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={heroSettings.showEmoji}
+                    onChange={(e) => {
+                      const newHeroSettings = { ...heroSettings, showEmoji: e.target.checked };
+                      setHeroSettings(newHeroSettings);
+                      saveHeroSettings(newHeroSettings, alignmentSettings);
+                    }}
+                  />
+                  <span>Show Emoji (🏒)</span>
+                </label>
+                
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={heroSettings.showDateInfo}
+                    onChange={(e) => {
+                      const newHeroSettings = { ...heroSettings, showDateInfo: e.target.checked };
+                      setHeroSettings(newHeroSettings);
+                      saveHeroSettings(newHeroSettings, alignmentSettings);
+                    }}
+                  />
+                  <span>Show Date Info (Created/Updated)</span>
+                </label>
+                
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={heroSettings.showExportOptions}
+                    onChange={(e) => {
+                      const newHeroSettings = { ...heroSettings, showExportOptions: e.target.checked };
+                      setHeroSettings(newHeroSettings);
+                      saveHeroSettings(newHeroSettings, alignmentSettings);
+                    }}
+                  />
+                  <span>Show Export Options (PDF/Excel buttons)</span>
+                </label>
+              </div>
+            </div>
+            
+            <div className="form-group mb-6">
+              <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>Block Element Alignment</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={alignmentSettings.alignTitles}
+                    onChange={(e) => {
+                      const newAlignmentSettings = { ...alignmentSettings, alignTitles: e.target.checked };
+                      setAlignmentSettings(newAlignmentSettings);
+                      saveHeroSettings(heroSettings, newAlignmentSettings);
+                    }}
+                  />
+                  <span>Align Titles</span>
+                </label>
+                
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={alignmentSettings.alignDescriptions}
+                    onChange={(e) => {
+                      const newAlignmentSettings = { ...alignmentSettings, alignDescriptions: e.target.checked };
+                      setAlignmentSettings(newAlignmentSettings);
+                      saveHeroSettings(heroSettings, newAlignmentSettings);
+                    }}
+                  />
+                  <span>Align Descriptions</span>
+                </label>
+                
+                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={alignmentSettings.alignCharts}
+                    onChange={(e) => {
+                      const newAlignmentSettings = { ...alignmentSettings, alignCharts: e.target.checked };
+                      setAlignmentSettings(newAlignmentSettings);
+                      saveHeroSettings(heroSettings, newAlignmentSettings);
+                    }}
+                  />
+                  <span>Align Charts</span>
+                </label>
+              </div>
+              
+              <div className="form-row mt-4">
+                <label className="form-label">Minimum Element Height (px)</label>
+                <input
+                  type="number"
+                  value={alignmentSettings.minElementHeight || ''}
+                  onChange={(e) => {
+                    const value = e.target.value ? parseInt(e.target.value) : undefined;
+                    const newAlignmentSettings = { ...alignmentSettings, minElementHeight: value };
+                    setAlignmentSettings(newAlignmentSettings);
+                    saveHeroSettings(heroSettings, newAlignmentSettings);
+                  }}
+                  placeholder="Optional (e.g., 100)"
+                  className="form-input"
+                  style={{ width: '200px' }}
+                />
+              </div>
+            </div>
+            
+            <div className="info-note mt-4">
+              💡 <strong>Tip:</strong> These settings control what appears in report headers and how elements are aligned within blocks. 
+              Changes are saved automatically and apply to all reports using this template.
+            </div>
           </div>
         </ColoredCard>
       )}
