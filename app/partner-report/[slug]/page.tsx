@@ -30,6 +30,9 @@ interface Partner {
   reportTemplateId?: string;
   createdAt: string;
   updatedAt: string;
+  // WHAT: Partner-level stats for content (reportText*, reportImage*)
+  // WHY: Partner editor creates content that should appear in partner reports
+  stats?: { [key: string]: string | number | undefined };
 }
 
 interface Event {
@@ -347,9 +350,23 @@ export default function PartnerReportPage() {
       });
     });
     
+    // WHAT: Merge partner-level content (reportText*, reportImage*) with aggregated event data
+    // WHY: Partner editor creates partner-specific content that should appear in partner reports
+    // HOW: Add partner.stats (text/image content) to the aggregated numeric stats
+    if (partner.stats) {
+      Object.keys(partner.stats).forEach(key => {
+        const value = (partner.stats as any)[key];
+        // WHAT: Include text and image content from partner editor
+        // WHY: Charts need access to reportText* and reportImage* fields
+        if (typeof value === 'string' && value.length > 0) {
+          stats[key] = value; // Partner-level text/image content
+        }
+      });
+    }
+    
     // WHAT: Create project-like object matching filter page structure
     // WHY: Filter page expects project.stats, so we create same structure
-    // HOW: Return object with stats property containing aggregated data
+    // HOW: Return object with stats property containing aggregated data + partner content
     const projectLike = {
       stats,
       eventCount: events.length,

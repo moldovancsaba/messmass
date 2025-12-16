@@ -78,7 +78,11 @@ export async function GET(
         styleId: partner.styleId ? partner.styleId.toString() : undefined,
         reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined,
         createdAt: partner.createdAt,
-        updatedAt: partner.updatedAt
+        updatedAt: partner.updatedAt,
+        // WHAT: Include partner-level stats (reportText*, reportImage*) for chart display
+        // WHY: Partner editor creates content that should appear in partner reports
+        // HOW: Pass partner.stats to frontend for merging with aggregated event data
+        stats: partner.stats || {}
       },
       events: events.map(event => ({
         _id: event._id.toString(),
