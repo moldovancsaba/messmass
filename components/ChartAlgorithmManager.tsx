@@ -923,8 +923,16 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     const invalidVariables = variables.filter(variable => {
       // Skip special tokens
       if (variable.startsWith('PARAM:') || variable.startsWith('MANUAL:')) return false;
+      
+      // WHAT: Handle stats.fieldName format (Single Reference System)
+      // WHY: Formulas use [stats.reportImage1] but KYC stores as "reportImage1"
+      // HOW: Strip "stats." prefix when checking against KYC variables
+      const variableName = variable.startsWith('stats.') ? variable.substring(6) : variable;
+      
+
+      
       // Check if variable exists in KYC (dynamic from database)
-      return !availableVariables.some(v => v.name === variable);
+      return !availableVariables.some(v => v.name === variableName);
     });
     
     if (invalidVariables.length > 0) {
@@ -936,7 +944,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       let testFormula = formula;
       // WHAT: Sample data using full database paths (stats.fieldName)
       // WHY: Match Single Reference System format
-      const sampleData: Record<string, number> = {
+      const sampleData: Record<string, any> = {
         'stats.female': 120, 'stats.male': 160, 'stats.remoteFans': 80, 'stats.stadium': 200,
         'stats.genAlpha': 20, 'stats.genYZ': 100, 'stats.genX': 80, 'stats.boomer': 80,
         'stats.jersey': 15, 'stats.scarf': 8, 'stats.flags': 12, 'stats.baseballCap': 5, 'stats.other': 3,
@@ -944,6 +952,13 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         'stats.approvedImages': 45, 'stats.rejectedImages': 5, 'stats.merched': 43,
         'stats.eventAttendees': 280, 'stats.allImages': 50, 'stats.totalFans': 280
       };
+      
+      // WHAT: Add report image and text sample data
+      // WHY: Support validation of reportImage1-100 and reportText1-100 formulas
+      for (let i = 1; i <= 100; i++) {
+        sampleData[`stats.reportImage${i}`] = `https://example.com/image${i}.jpg`;
+        sampleData[`stats.reportText${i}`] = `Sample text content ${i}`;
+      }
       
       // Replace variables with sample values
       variables.forEach(variable => {

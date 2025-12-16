@@ -99,6 +99,9 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
   // ACTION: Bulk upload images → assign to next free slots
   const handleBulkUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    
+    console.log('🔍 Starting bulk upload with', files.length, 'files');
+    
     setBusy(true);
     setError(null);
     try {
@@ -107,12 +110,25 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         const next = findNextFreeIndex(newStats, 'reportImage', maxSlots);
         if (!next) break; // no space
         const file = files[f];
-        if (!file.type.startsWith('image/')) continue;
-        if (file.size > 32 * 1024 * 1024) continue; // ImgBB 32MB limit
+        console.log(`🔍 Processing file ${f + 1}: ${file.name} (${file.type}, ${file.size} bytes)`);
+        
+        if (!file.type.startsWith('image/')) {
+          console.log('⚠️ Skipping non-image file:', file.type);
+          continue;
+        }
+        if (file.size > 32 * 1024 * 1024) {
+          console.log('⚠️ Skipping large file:', file.size, 'bytes');
+          continue; // ImgBB 32MB limit
+        }
+        
+        console.log(`📤 Uploading to slot reportImage${next}`);
         const fd = new FormData();
         fd.append('image', file);
         const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
         const data = await res.json();
+        
+        console.log('📥 Upload response:', data);
+        
         if (!data?.success || !data?.url) throw new Error(data?.error || 'Upload failed');
         newStats[`reportImage${next}`] = String(data.url);
       }

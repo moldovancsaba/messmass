@@ -396,7 +396,7 @@ export function validateFormula(formula: string): FormulaValidationResult {
     }
     
     // Test evaluation with sample data (all fields set to 1)
-    const testStats: ProjectStats = {
+    const testStats: any = {
       remoteImages: 1, hostessImages: 1, selfies: 1,
       indoor: 1, outdoor: 1, stadium: 1,
       female: 1, male: 1,
@@ -406,6 +406,14 @@ export function validateFormula(formula: string): FormulaValidationResult {
       eventAttendees: 1, eventTicketPurchases: 1,
       eventResultHome: 1, eventResultVisitor: 1
     };
+    
+    // WHAT: Add report image and text fields for validation
+    // WHY: Chart configurations may reference reportImage1-500 and reportText1-500
+    // HOW: Generate test values for common report content slots
+    for (let i = 1; i <= 100; i++) {
+      testStats[`reportImage${i}`] = `https://example.com/image${i}.jpg`;
+      testStats[`reportText${i}`] = `Sample text ${i}`;
+    }
     
     const testResult = evaluateFormula(formula, testStats);
     
