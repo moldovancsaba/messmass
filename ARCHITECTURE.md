@@ -559,6 +559,84 @@ bitly_links (N) ----< (N) projects (via bitly_project_links junction)
 
 ---
 
+## Template System Architecture (v11.29.0)
+
+### Overview
+
+The Template System provides hierarchical report visualization management across the MessMass platform. It enables customization of how data is displayed in event reports, partner reports, and global dashboards through a database-driven template and data block architecture.
+
+### Key Features
+
+- **Hierarchical Template Resolution**: Entity-specific → Partner → Default → Hardcoded fallback
+- **Visual Block Management**: Drag-and-drop interface for organizing chart blocks
+- **Responsive Grid System**: Configurable layouts for desktop, tablet, and mobile
+- **Real-time Preview**: Live chart previews with sample data
+- **Template Inheritance**: Partners and projects can inherit or override templates
+
+### Architecture Components
+
+#### 1. Template Resolution Hierarchy
+
+```typescript
+// Resolution order (highest to lowest priority)
+1. Entity-Specific Template (project.reportTemplateId)
+2. Partner Template (partner.reportTemplateId) 
+3. Default Template (isDefault: true, matching type)
+4. Hardcoded Fallback (emergency system template)
+```
+
+#### 2. Data Model
+
+**Report Templates Collection** (`report_templates`)
+```typescript
+interface ReportTemplate {
+  _id: ObjectId;
+  name: string;
+  type: 'event' | 'partner' | 'global';
+  isDefault: boolean;
+  dataBlocks: Array<{
+    blockId: string;
+    order: number;
+  }>;
+  gridSettings: {
+    desktopUnits: number;
+    tabletUnits: number;
+    mobileUnits: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+#### 3. API Endpoints
+
+**Template Management**
+- `GET /api/report-templates` - List all templates with optional associations
+- `POST /api/report-templates` - Create new template
+- `PUT /api/report-templates?templateId=X` - Update template configuration
+
+**Template Resolution**
+- `GET /api/report-config/{identifier}?type=partner` - Resolve template for partner reports
+- `GET /api/report-config/{identifier}?type=project` - Resolve template for event reports
+
+#### 4. UI Components
+
+**Visualization Admin** (`app/admin/visualization/page.tsx`)
+- Template selector with clear usage indicators
+- Data block management interface
+- Chart configuration and preview
+- Real-time chart preview with sample data
+
+### Migration Notes (v11.29.0)
+
+**Fixes Applied**
+- Template dropdown race condition resolved
+- Authentication error handling improved
+- Partner template resolution corrected
+- Data block active/inactive filtering clarified
+
+---
+
 ## Styling Architecture (4.2.0)
 
 ### Overview

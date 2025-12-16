@@ -113,6 +113,9 @@ SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 || **ADMIN_LAYOUT_SYSTEM.md** | Admin navigation, sidebar, responsive layout patterns |
 | **CARD_SYSTEM.md** | ColoredCard component API and usage patterns |
 | **NOTIFICATION_INTEGRATION_GUIDE.md** | Multi-user notification system implementation |
+| **TEMPLATE_SYSTEM_DOCUMENTATION.md** | **Complete template system guide**: Report templates, visualization admin, debugging |
+| **TEMPLATE_DROPDOWN_FIX_SUMMARY.md** | Template dropdown issue resolution and fixes |
+| **PARTNER_TEMPLATE_CONNECTION_SOLUTION.md** | Partner report template connection fixes |
 
 ### Implementation Guides
 
