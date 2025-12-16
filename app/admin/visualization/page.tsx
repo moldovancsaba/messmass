@@ -92,20 +92,32 @@ export default function VisualizationPage() {
   }, []);
 
   useEffect(() => {
-    loadTemplates();
-    loadAvailableCharts();
-    loadChartConfigs();
-    loadUserPreferences(); // Load last selected template
+    const initializeData = async () => {
+      const templates = await loadTemplates();
+      await loadUserPreferences(templates); // Pass templates to avoid race condition
+      loadAvailableCharts();
+      loadChartConfigs();
+    };
+    
+    initializeData();
   }, []);
   
   const loadTemplateConfig = useCallback(async (templateId: string) => {
     try {
       setLoading(true);
       const template = templates.find(t => t._id === templateId);
-      if (!template) return;
+      if (!template) {
+        console.log('❌ Template not found:', templateId);
+        return;
+      }
+      
+      console.log('📋 Loading template config for:', template.name);
+      console.log('📋 Template dataBlocks:', template.dataBlocks);
       
       // Load data blocks for this template
       const blockIds = template.dataBlocks.map(b => b.blockId).filter((id): id is string => id != null);
+      console.log('📋 Block IDs to load:', blockIds);
+      
       if (blockIds.length > 0) {
         const response = await fetch('/api/data-blocks');
         const data = await response.json();
@@ -118,9 +130,11 @@ export default function VisualizationPage() {
               const bRef = template.dataBlocks.find(ref => ref.blockId === b._id);
               return (aRef?.order || 0) - (bRef?.order || 0);
             });
+          console.log('📋 Loaded template blocks:', templateBlocks.length);
           setDataBlocks(templateBlocks);
         }
       } else {
+        console.log('📋 No data blocks configured for this template');
         setDataBlocks([]);
       }
       
@@ -153,29 +167,59 @@ export default function VisualizationPage() {
 
   // WHAT: Load user preferences (last selected template)
   // WHY: Remember user's last choice across browsers and sessions
-  const loadUserPreferences = async () => {
+  const loadUserPreferences = async (availableTemplates: ReportTemplate[]) => {
     try {
       const response = await fetch('/api/user-preferences');
       const data = await response.json();
-      if (data.success && data.preferences?.lastSelectedTemplateId) {
-        setSelectedTemplateId(data.preferences.lastSelectedTemplateId);
+      
+      // Handle authentication errors gracefully
+      if (!data.success) {
+        // Fall through to default template selection
+      } else if (data.preferences?.lastSelectedTemplateId) {
+        const preferredTemplateId = data.preferences.lastSelectedTemplateId;
+        
+        // Verify the preferred template still exists
+        const templateExists = availableTemplates.some(t => t._id === preferredTemplateId);
+        
+        if (templateExists) {
+          setSelectedTemplateId(preferredTemplateId);
+          return;
+        }
+      }
+      
+      // Fall back to default template if no preference or preference is invalid
+      const defaultTemplate = availableTemplates.find((t: ReportTemplate) => t.isDefault);
+      if (defaultTemplate) {
+        setSelectedTemplateId(defaultTemplate._id);
+      } else if (availableTemplates.length > 0) {
+        setSelectedTemplateId(availableTemplates[0]._id);
       }
     } catch (error) {
       console.error('Failed to load user preferences:', error);
+      // Fall back to default template on error
+      const defaultTemplate = availableTemplates.find((t: ReportTemplate) => t.isDefault);
+      if (defaultTemplate) {
+        setSelectedTemplateId(defaultTemplate._id);
+      } else if (availableTemplates.length > 0) {
+        setSelectedTemplateId(availableTemplates[0]._id);
+      }
     }
   };
 
   // WHAT: Save template selection to preferences
   // WHY: Persist user choice across sessions and browsers
   const handleTemplateChange = async (templateId: string) => {
+    if (!templateId || templateId === selectedTemplateId) return;
+    
+    console.log('Setting template to:', templateId);
     setSelectedTemplateId(templateId);
     
-    // Save to preferences (fire and forget)
+    // Save to preferences (fire and forget, ignore auth errors)
     fetch('/api/user-preferences', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lastSelectedTemplateId: templateId })
-    }).catch(err => console.error('Failed to save preference:', err));
+    }).catch(() => {}); // Ignore errors silently
   };
 
   // WHAT: Load templates and select default on mount
@@ -184,19 +228,17 @@ export default function VisualizationPage() {
     try {
       const response = await fetch('/api/report-templates?includeAssociations=false');
       const data = await response.json();
+      
       if (data.success && data.templates) {
         setTemplates(data.templates);
-        // Note: Auto-selection now handled by loadUserPreferences()
-        // Only select default if no preference exists
-        if (!selectedTemplateId) {
-          const defaultTemplate = data.templates.find((t: ReportTemplate) => t.isDefault);
-          if (defaultTemplate) {
-            setSelectedTemplateId(defaultTemplate._id);
-          }
-        }
+        return data.templates; // Return templates for use in initialization
+      } else {
+        console.error('Templates API returned error:', data.error);
+        return [];
       }
     } catch (error) {
       console.error('Failed to load templates:', error);
+      return [];
     }
   };
   
@@ -575,26 +617,102 @@ export default function VisualizationPage() {
             <p className={vizStyles.templateSelectorSubtitle}>
               Choose a template to configure its visualization blocks and charts
             </p>
+            
+            {/* WHAT: Important notice about template hierarchy */}
+            {/* WHY: Users need to understand how template resolution works */}
+            <div style={{
+              marginTop: '1rem',
+              padding: '0.75rem',
+              background: '#f0f9ff',
+              border: '1px solid #0ea5e9',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem'
+            }}>
+              <strong>ℹ️ Template Resolution:</strong> Partner reports use their assigned template if available, otherwise fall back to <strong>"Default Event Report"</strong>. 
+              Edit the specific partner template to customize individual partner reports.
+            </div>
           </div>
           
           <div className={vizStyles.templateSelectorControls}>
+            {/* Debug info */}
+            <div style={{ 
+              fontSize: '0.75rem', 
+              color: '#666', 
+              marginBottom: '0.5rem',
+              padding: '0.5rem',
+              background: '#f8f9fa',
+              borderRadius: '4px',
+              fontFamily: 'monospace'
+            }}>
+              🔍 DEBUG: selectedTemplateId = "{selectedTemplateId || 'null'}" | templates.length = {templates.length}
+              {selectedTemplateId && templates.length > 0 && (
+                <div>
+                  Selected template: {templates.find(t => t._id === selectedTemplateId)?.name || 'NOT FOUND'}
+                  <br />
+                  Data blocks: {dataBlocks.length}
+                  <br />
+                  Template dataBlocks config: {JSON.stringify(templates.find(t => t._id === selectedTemplateId)?.dataBlocks || [])}
+                </div>
+              )}
+            </div>
+            
             <div className={vizStyles.templateSelectorRow}>
               <select
                 className={vizStyles.templateDropdown}
                 value={selectedTemplateId || ''}
-                onChange={(e) => handleTemplateChange(e.target.value)}
+                onChange={(e) => {
+                  console.log('Template dropdown changed to:', e.target.value);
+                  const selectedTemplate = templates.find(t => t._id === e.target.value);
+                  console.log('Selected template:', selectedTemplate?.name);
+                  handleTemplateChange(e.target.value);
+                }}
               >
                 <option value="" disabled>Select a template...</option>
-                {templates.map(template => (
-                  <option key={template._id} value={template._id}>
-                    {template.isDefault && '⭐ '}
-                    {template.name} ({template.type})
-                  </option>
-                ))}
+                {templates.map(template => {
+                  const isLivePartnerReportTemplate = template.name === 'Default Event Report' && template.type === 'event';
+                  const isPartnerTemplate = template.type === 'partner';
+                  return (
+                    <option key={template._id} value={template._id}>
+                      {template.isDefault && '⭐ '}
+                      {isLivePartnerReportTemplate && '🎯 '}
+                      {template.name} ({template.type})
+                      {isLivePartnerReportTemplate && ' - Fallback Template for Partner Reports'}
+                      {isPartnerTemplate && ' - Partner-Specific Template'}
+                    </option>
+                  );
+                })}
               </select>
               
               <button
-                onClick={() => setShowCreateTemplate(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Find and select the Default Event Report template
+                  const defaultEventTemplate = templates.find(t => t.name === 'Default Event Report' && t.type === 'event');
+                  if (defaultEventTemplate) {
+                    const confirmed = confirm(
+                      'This will switch to "Default Event Report" template, which is the fallback template for partner reports.\n\n' +
+                      'Click OK to edit the fallback template, or Cancel to continue editing your current selection (which may be used by specific partners).'
+                    );
+                    if (confirmed) {
+                      handleTemplateChange(defaultEventTemplate._id);
+                    }
+                  }
+                }}
+                type="button"
+                className="btn btn-small btn-secondary"
+                style={{ marginRight: '0.5rem' }}
+              >
+                🎯 Edit Live Partner Reports
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowCreateTemplate(true);
+                }}
+                type="button"
                 className="btn btn-small btn-primary"
               >
                 ➕ New Template

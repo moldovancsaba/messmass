@@ -85,15 +85,16 @@ export default function PartnerReportPage() {
       console.log('🎨 Loading partner report template...');
       console.log('📋 Partner:', partnerData.name);
       
-      // WHAT: Force default event template for partner reports (CRITICAL FIX)
-      // WHY: Partner-specific templates use custom chart IDs that don't exist in chart_configurations
-      //      This causes empty reports because charts can't be calculated
-      // HOW: Use special identifier to force default event template with standard chart IDs
-      const response = await fetch(`/api/report-config/__default_event__?type=partner`, { cache: 'no-store' });
+      // WHAT: Use proper partner template resolution
+      // WHY: Partners may have their own specific templates assigned
+      // HOW: Use partner slug to resolve template hierarchy: partner-specific → default
+      const response = await fetch(`/api/report-config/${slug}?type=partner`, { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success && data.template) {
         console.log('✅ Loaded template:', data.template.name, '(resolved from:', data.resolvedFrom, ')');
+        console.log('✅ Template ID:', data.template._id);
+        console.log('✅ Template data blocks:', data.template.dataBlocks?.length || 0);
         
         // WHAT: Use partner's direct style if available, otherwise use template style
         // WHY: Partner can override template style with their own branding
@@ -146,6 +147,10 @@ export default function PartnerReportPage() {
         
         if (data.template.dataBlocks && data.template.dataBlocks.length > 0) {
           console.log('📊 Data blocks from template:', data.template.dataBlocks);
+          console.log('📊 Block details:');
+          data.template.dataBlocks.forEach((block: any, index: number) => {
+            console.log(`  Block ${index + 1}: ${block.name} (${block.charts?.length || 0} charts) - Active: ${block.isActive !== false}`);
+          });
           setDataBlocks(data.template.dataBlocks);
         } else {
           console.warn('⚠️  Template has no data blocks configured');
@@ -353,7 +358,7 @@ export default function PartnerReportPage() {
     // WHAT: Merge partner-level content (reportText*, reportImage*) with aggregated event data
     // WHY: Partner editor creates partner-specific content that should appear in partner reports
     // HOW: Add partner.stats (text/image content) to the aggregated numeric stats
-    if (partner.stats) {
+    if (partner && partner.stats) {
       Object.keys(partner.stats).forEach(key => {
         const value = (partner.stats as any)[key];
         // WHAT: Include text and image content from partner editor
