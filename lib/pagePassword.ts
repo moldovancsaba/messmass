@@ -8,7 +8,7 @@ import config from '@/lib/config';
  * Page password types and interfaces for MessMass authentication system
  */
 
-export type PageType = 'event-report' | 'partner-report' | 'edit' | 'filter';
+export type PageType = 'event-report' | 'partner-report' | 'edit' | 'partner-edit' | 'filter';
 
 export interface PagePassword {
   _id?: string;
@@ -217,6 +217,11 @@ export async function generateShareableLink(
       break;
     case 'edit':
       url += `/edit/${pageId}`;
+      break;
+    case 'partner-edit':
+      // WHAT: Partner content editing pages at /partner-edit/[slug]
+      // WHY: Allow editing partner-level text and image content
+      url += `/partner-edit/${pageId}`;
       break;
     case 'filter':
       url += `/filter/${pageId}`;

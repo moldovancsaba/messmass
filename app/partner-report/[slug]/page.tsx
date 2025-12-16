@@ -76,16 +76,17 @@ export default function PartnerReportPage() {
   
   
   // WHAT: Fetch report template configuration (v11.0.0)
-  // WHY: Partner reports should use their assigned template, not hardcoded default
+  // WHY: Partner reports should use default event template for universal compatibility
   const fetchReportTemplate = useCallback(async (partnerData: Partner) => {
     try {
       console.log('🎨 Loading partner report template...');
       console.log('📋 Partner:', partnerData.name);
       
-      // WHAT: Use partner's assigned template if available, otherwise fall back to default
-      // WHY: Partners should be able to have custom report templates
-      // HOW: Use partner slug to resolve template (API will check partner.reportTemplateId)
-      const response = await fetch(`/api/report-config/${partnerData._id}?type=partner`, { cache: 'no-store' });
+      // WHAT: Force default event template for partner reports (CRITICAL FIX)
+      // WHY: Partner-specific templates use custom chart IDs that don't exist in chart_configurations
+      //      This causes empty reports because charts can't be calculated
+      // HOW: Use special identifier to force default event template with standard chart IDs
+      const response = await fetch(`/api/report-config/__default_event__?type=partner`, { cache: 'no-store' });
       const data = await response.json();
       
       if (data.success && data.template) {

@@ -142,7 +142,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         ),
       },
     ],
-    // WHAT: Row action buttons (Edit, Report, Delete)
+    // WHAT: Row action buttons (Edit, Report, Edit Stats, Delete)
     rowActions: [
       {
         label: 'Edit',
@@ -168,6 +168,21 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
           }
         },
         title: 'View partner report',
+      },
+      {
+        label: 'Edit Stats',
+        icon: 'bar_chart',
+        variant: 'primary',
+        handler: (partner) => {
+          // WHAT: Open partner content editor for text and image editing
+          // WHY: Allow editing partner-level content (reportText*, reportImage*) separate from event data
+          if (partner.viewSlug) {
+            window.open(`/partner-edit/${partner.viewSlug}`, '_blank');
+          } else {
+            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+          }
+        },
+        title: 'Edit partner content (texts & images)',
       },
       {
         label: 'KYC Data',
@@ -257,6 +272,20 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
           // WHY: Allow viewing shareable partner profile with events
           if (partner.viewSlug) {
             window.open(`/partner-report/${partner.viewSlug}`, '_blank');
+          } else {
+            alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
+          }
+        },
+      },
+      {
+        label: 'Edit Stats',
+        icon: 'bar_chart',
+        variant: 'primary',
+        handler: (partner) => {
+          // WHAT: Open partner content editor for text and image editing
+          // WHY: Allow editing partner-level content (reportText*, reportImage*) separate from event data
+          if (partner.viewSlug) {
+            window.open(`/partner-edit/${partner.viewSlug}`, '_blank');
           } else {
             alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
           }

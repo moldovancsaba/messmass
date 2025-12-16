@@ -1,371 +1,124 @@
-// app/api/partners/route.ts
-// WHAT: API endpoints for partner management (CRUD operations)
-// WHY: Manage organizations that own/operate events (clubs, federations, venues, brands)
-// ENDPOINTS:
-//   POST - Create new partner
-//   GET - List partners with pagination, search, and sorting
-//   PUT - Update existing partner
-//   DELETE - Remove partner
+// WHAT: API endpoint for partners - GET (list partners) and PUT (update partner data)
+// WHY: Handle both listing partners for admin and saving partner-level content changes
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
-import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
-import config from '@/lib/config';
-import type { CreatePartnerInput, UpdatePartnerInput, PartnerResponse } from '@/lib/partner.types';
-import { generateUniqueViewSlug } from '@/lib/slugUtils';
+import { ObjectId } from 'mongodb';
 
-/**
- * POST /api/partners
- * WHAT: Create a new partner
- * WHY: Add organizations to the system
- * 
- * AUTH: Admin only
- * BODY: CreatePartnerInput
- */
-export async function POST(request: NextRequest) {
-  try {
-    // WHAT: Verify admin authentication
-    // WHY: Only admins can create partners
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+export const dynamic = 'force-dynamic';
 
-    // WHAT: Parse and validate request body
-    const body = await request.json() as CreatePartnerInput;
-    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, styleId, reportTemplateId } = body;
-
-    if (!name || !emoji) {
-      return NextResponse.json(
-        { success: false, error: 'Name and emoji are required' },
-        { status: 400 }
-      );
-    }
-
-    // WHAT: Convert bitlyLinkIds to ObjectIds
-    // WHY: MongoDB stores ObjectId references
-    const bitlyObjectIds = bitlyLinkIds?.map(id => {
-      if (!ObjectId.isValid(id)) {
-        throw new Error(`Invalid bitlyLinkId: ${id}`);
-      }
-      return new ObjectId(id);
-    });
-
-    // WHAT: Generate unique viewSlug for shareable partner report page
-    // WHY: Partners need unique URL slug for public report pages
-    const viewSlug = await generateUniqueViewSlug();
-    
-    // WHAT: Create partner document
-    const now = new Date().toISOString();
-    const client = await clientPromise;
-    const db = client.db(config.dbName);
-    
-    const partnerDoc: any = {
-      name: name.trim(),
-      emoji: emoji.trim(),
-      hashtags: hashtags || [],
-      categorizedHashtags: categorizedHashtags || {},
-      bitlyLinkIds: bitlyObjectIds || [],
-      logoUrl: logoUrl || undefined, // Include ImgBB logo URL if provided
-      sportsDb: sportsDb || undefined, // Include TheSportsDB enrichment data if provided
-      viewSlug, // Unique slug for /partner-report/[slug] page
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    console.log('💾 [POST /api/partners] sportsDb data:', sportsDb ? 'Present' : 'Not provided', sportsDb ? `Team: ${(sportsDb as any).strTeam}` : '');
-    
-    // WHAT: Add styleId if provided
-    // WHY: Allow partners to have custom page styling for report pages
-    if (styleId && styleId !== '' && ObjectId.isValid(styleId)) {
-      partnerDoc.styleId = new ObjectId(styleId);
-    }
-    
-    // WHAT: Add reportTemplateId if provided
-    // WHY: Allow partners to have custom report templates
-    if (reportTemplateId && reportTemplateId !== '' && ObjectId.isValid(reportTemplateId)) {
-      partnerDoc.reportTemplateId = new ObjectId(reportTemplateId);
-    }
-
-    const result = await db.collection('partners').insertOne(partnerDoc);
-
-    // WHAT: Fetch inserted document with populated Bitly links
-    // WHY: Return full partner data to client
-    const insertedPartner = await db.collection('partners').findOne({ _id: result.insertedId });
-    
-    if (!insertedPartner) {
-      return NextResponse.json(
-        { success: false, error: 'Failed to retrieve created partner' },
-        { status: 500 }
-      );
-    }
-
-    // WHAT: Populate Bitly links
-    const populatedPartner = await populateBitlyLinks(db, insertedPartner);
-
-    return NextResponse.json({
-      success: true,
-      partner: populatedPartner,
-      message: 'Partner created successfully',
-    });
-
-  } catch (error) {
-    console.error('[POST /api/partners] Error:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
-      },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * GET /api/partners
- * WHAT: List partners with optional filtering and sorting
- * WHY: Display partners in admin UI with search and pagination
- * 
- * AUTH: Admin only
- * QUERY PARAMS:
- *   - search: Search term (filters by name, hashtags)
- *   - limit: Pagination limit (default: 50)
- *   - offset: Pagination offset (default: 0)
- *   - sortField: Field to sort by (name | createdAt | updatedAt)
- *   - sortOrder: Sort direction (asc | desc)
- */
 export async function GET(request: NextRequest) {
   try {
-    // WHAT: Verify admin authentication
-    // WHY: Partner data is sensitive
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // WHAT: Parse query parameters
     const { searchParams } = new URL(request.url);
-    const partnerId = searchParams.get('partnerId'); // WHAT: Single partner lookup for KYC pages
-    const searchQuery = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50', 10);
-    const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const offset = parseInt(searchParams.get('offset') || '0');
     const sortField = searchParams.get('sortField') || 'name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
+    const search = searchParams.get('search') || '';
 
-    // WHAT: If partnerId is provided, return single partner (used by KYC pages)
-    // WHY: KYC pages need specific partner data, not a list
-    if (partnerId && ObjectId.isValid(partnerId)) {
-      const client = await clientPromise;
-      const db = client.db(config.dbName);
-      
-      const partner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
-      
-      if (!partner) {
-        return NextResponse.json(
-          { success: false, error: 'Partner not found' },
-          { status: 404 }
-        );
-      }
-      
-      const populatedPartner = await populateBitlyLinks(db, partner);
-      
-      return NextResponse.json({
-        success: true,
-        firstPartner: populatedPartner, // WHAT: Match expected response format from KYC page
-        partnersCount: 1,
-      });
-    }
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DB);
 
-    // WHAT: Build query filter for list mode
-    const filter: any = {};
-
-    // WHAT: Add search filter if provided
-    // WHY: Allow searching through partner names and hashtags
-    if (searchQuery && searchQuery.trim()) {
-      const searchRegex = { $regex: searchQuery.trim(), $options: 'i' };
-      filter.$or = [
-        { name: searchRegex },
-        { hashtags: searchRegex },
+    // Build query
+    const query: any = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { hashtags: { $in: [new RegExp(search, 'i')] } }
       ];
     }
 
-    // WHAT: Build sort options
-    let sortOptions: any = {};
-    const order = sortOrder === 'asc' ? 1 : -1;
-    
-    switch (sortField) {
-      case 'name':
-        sortOptions = { name: order };
-        break;
-      case 'createdAt':
-        sortOptions = { createdAt: order };
-        break;
-      case 'updatedAt':
-        sortOptions = { updatedAt: order };
-        break;
-      default:
-        sortOptions = { name: 1 }; // Default to name ascending
-        break;
+    // Build sort
+    const sort: any = {};
+    if (sortField && sortOrder) {
+      sort[sortField] = sortOrder === 'asc' ? 1 : -1;
     }
 
-    // WHAT: Query database with pagination and sorting
-    const client = await clientPromise;
-    const db = client.db(config.dbName);
-    
-    const partners = await db
-      .collection('partners')
-      .find(filter)
-      .sort(sortOptions)
+    // Get total count
+    const total = await db.collection('partners').countDocuments(query);
+
+    // Get partners with pagination
+    const partners = await db.collection('partners')
+      .find(query)
+      .sort(sort)
       .skip(offset)
       .limit(limit)
       .toArray();
 
-    // WHAT: Count total matching documents
-    const total = await db.collection('partners').countDocuments(filter);
-
-    // WHAT: Populate Bitly links for each partner
-    // WHY: Client needs full link details for display
-    const populatedPartners = await Promise.all(
-      partners.map(partner => populateBitlyLinks(db, partner))
-    );
+    // Transform partners for response
+    const transformedPartners = partners.map(partner => ({
+      _id: partner._id.toString(),
+      name: partner.name,
+      emoji: partner.emoji,
+      logoUrl: partner.logoUrl,
+      hashtags: partner.hashtags || [],
+      categorizedHashtags: partner.categorizedHashtags || {},
+      bitlyLinks: partner.bitlyLinks || [],
+      sportsDb: partner.sportsDb,
+      styleId: partner.styleId?.toString(),
+      reportTemplateId: partner.reportTemplateId?.toString(),
+      viewSlug: partner.viewSlug,
+      createdAt: partner.createdAt,
+      updatedAt: partner.updatedAt
+    }));
 
     return NextResponse.json({
       success: true,
-      partners: populatedPartners,
+      partners: transformedPartners,
       pagination: {
         total,
-        limit,
         offset,
-        hasMore: offset + limit < total,
-      },
+        limit,
+        hasMore: offset + limit < total
+      }
     });
-
   } catch (error) {
-    console.error('[GET /api/partners] Error:', error);
+    console.error('Failed to fetch partners:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
+        error: error instanceof Error ? error.message : 'Failed to fetch partners' 
       },
       { status: 500 }
     );
   }
 }
 
-/**
- * PUT /api/partners
- * WHAT: Update an existing partner
- * WHY: Allow editing partner details
- * 
- * AUTH: Admin only
- * BODY: UpdatePartnerInput
- */
 export async function PUT(request: NextRequest) {
   try {
-    // WHAT: Verify admin authentication
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const body = await request.json();
+    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId } = body;
 
-    // WHAT: Parse and validate request body
-    const body = await request.json() as UpdatePartnerInput;
-    const { partnerId, name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, sportsDb, logoUrl, styleId, reportTemplateId } = body;
-
-    if (!partnerId || !ObjectId.isValid(partnerId)) {
+    if (!partnerId) {
       return NextResponse.json(
-        { success: false, error: 'Invalid partnerId' },
+        { success: false, error: 'Partner ID is required' },
         { status: 400 }
       );
     }
 
-    // WHAT: Check if partner has viewSlug, generate if missing
-    // WHY: Old partners may not have viewSlug - add it on first update
     const client = await clientPromise;
-    const db = client.db(config.dbName);
-    const existingPartner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
-    
-    if (!existingPartner) {
-      return NextResponse.json(
-        { success: false, error: 'Partner not found' },
-        { status: 404 }
-      );
-    }
-    
-    // WHAT: Build update document
-    const updateDoc: any = {
-      updatedAt: new Date().toISOString(),
+    const db = client.db(process.env.MONGODB_DB);
+
+    // WHAT: Build update object with only provided fields
+    // WHY: Allow partial updates without overwriting other partner data
+    const updateData: any = {
+      updatedAt: new Date().toISOString()
     };
-    
-    // WHAT: Generate viewSlug if partner doesn't have one
-    // WHY: Ensure all partners can use Report button functionality
-    if (!existingPartner.viewSlug) {
-      updateDoc.viewSlug = await generateUniqueViewSlug();
-      console.log(`📋 Generated viewSlug for partner ${partnerId}:`, updateDoc.viewSlug);
-    }
 
-    if (name !== undefined) updateDoc.name = name.trim();
-    if (emoji !== undefined) updateDoc.emoji = emoji.trim();
-    if (hashtags !== undefined) updateDoc.hashtags = hashtags;
-    if (categorizedHashtags !== undefined) updateDoc.categorizedHashtags = categorizedHashtags;
-    
-    // WHAT: Update TheSportsDB enrichment data if provided
-    // WHY: Allow linking/unlinking partners to sports teams
-    if (sportsDb !== undefined) {
-      updateDoc.sportsDb = sportsDb;
-      console.log('💾 [PUT /api/partners] sportsDb update:', sportsDb ? `Team: ${(sportsDb as any).strTeam || 'Unknown'}` : 'Removing sportsDb');
-    }
-    
-    // WHAT: Update logo URL if provided (from ImgBB upload)
-    // WHY: Display partner logo in UI
-    if (logoUrl !== undefined) updateDoc.logoUrl = logoUrl;
-    
-    // WHAT: Convert bitlyLinkIds to ObjectIds if provided
-    if (bitlyLinkIds !== undefined) {
-      updateDoc.bitlyLinkIds = bitlyLinkIds.map(id => {
-        if (!ObjectId.isValid(id)) {
-          throw new Error(`Invalid bitlyLinkId: ${id}`);
-        }
-        return new ObjectId(id);
-      });
-    }
-    
-    // WHAT: Update styleId if provided
-    // WHY: Allow changing partner's page style for report pages
-    if (styleId !== undefined) {
-      if (styleId === '' || styleId === null) {
-        // Remove styleId (use default/global)
-        updateDoc.styleId = null;
-      } else if (ObjectId.isValid(styleId)) {
-        updateDoc.styleId = new ObjectId(styleId);
-      }
-    }
-    
-    // WHAT: Update reportTemplateId if provided
-    // WHY: Allow changing partner's default report template
-    if (reportTemplateId !== undefined) {
-      if (reportTemplateId === '' || reportTemplateId === null) {
-        // Remove reportTemplateId (use default)
-        updateDoc.reportTemplateId = null;
-      } else if (ObjectId.isValid(reportTemplateId)) {
-        updateDoc.reportTemplateId = new ObjectId(reportTemplateId);
-      }
-    }
+    if (name !== undefined) updateData.name = name;
+    if (emoji !== undefined) updateData.emoji = emoji;
+    if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    if (hashtags !== undefined) updateData.hashtags = hashtags;
+    if (categorizedHashtags !== undefined) updateData.categorizedHashtags = categorizedHashtags;
+    if (stats !== undefined) updateData.stats = stats;
+    if (styleId !== undefined) updateData.styleId = styleId ? new ObjectId(styleId) : null;
+    if (reportTemplateId !== undefined) updateData.reportTemplateId = reportTemplateId ? new ObjectId(reportTemplateId) : null;
 
-    // WHAT: Update partner in database
+    // WHAT: Update partner document
+    // WHY: Persist partner-level content changes
     const result = await db.collection('partners').updateOne(
       { _id: new ObjectId(partnerId) },
-      { $set: updateDoc }
+      { $set: updateData }
     );
 
     if (result.matchedCount === 0) {
@@ -375,71 +128,103 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // WHAT: Fetch updated partner with populated links
-    const updatedPartner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
-    
-    if (!updatedPartner) {
-      return NextResponse.json(
-        { success: false, error: 'Failed to retrieve updated partner' },
-        { status: 500 }
-      );
-    }
-
-    const populatedPartner = await populateBitlyLinks(db, updatedPartner);
+    console.log(`✅ Partner updated: ${partnerId}`);
 
     return NextResponse.json({
       success: true,
-      partner: populatedPartner,
-      message: 'Partner updated successfully',
+      message: 'Partner updated successfully'
     });
-
   } catch (error) {
-    console.error('[PUT /api/partners] Error:', error);
+    console.error('Failed to update partner:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
+        error: error instanceof Error ? error.message : 'Failed to update partner' 
       },
       { status: 500 }
     );
   }
 }
 
-/**
- * DELETE /api/partners
- * WHAT: Delete a partner
- * WHY: Remove organizations from the system
- * 
- * AUTH: Admin only
- * QUERY: partnerId=<id>
- */
-export async function DELETE(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    // WHAT: Verify admin authentication
-    const user = await getAdminUser();
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const body = await request.json();
+    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, styleId, reportTemplateId, sportsDb, logoUrl } = body;
 
-    // WHAT: Parse partnerId from query
-    const { searchParams } = new URL(request.url);
-    const partnerId = searchParams.get('partnerId');
-
-    if (!partnerId || !ObjectId.isValid(partnerId)) {
+    if (!name || !emoji) {
       return NextResponse.json(
-        { success: false, error: 'Invalid partnerId' },
+        { success: false, error: 'Name and emoji are required' },
         { status: 400 }
       );
     }
 
-    // WHAT: Delete partner from database
     const client = await clientPromise;
-    const db = client.db(config.dbName);
-    
-    const result = await db.collection('partners').deleteOne({ _id: new ObjectId(partnerId) });
+    const db = client.db(process.env.MONGODB_DB);
+
+    // Generate viewSlug from name
+    const viewSlug = name.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    const partnerData: any = {
+      name,
+      emoji,
+      hashtags: hashtags || [],
+      categorizedHashtags: categorizedHashtags || {},
+      bitlyLinks: [],
+      sportsDb: sportsDb || undefined,
+      logoUrl: logoUrl || undefined,
+      viewSlug,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (styleId) partnerData.styleId = new ObjectId(styleId);
+    if (reportTemplateId) partnerData.reportTemplateId = new ObjectId(reportTemplateId);
+
+    const result = await db.collection('partners').insertOne(partnerData);
+
+    console.log(`✅ Partner created: ${result.insertedId}`);
+
+    return NextResponse.json({
+      success: true,
+      partner: {
+        _id: result.insertedId.toString(),
+        ...partnerData
+      }
+    });
+  } catch (error) {
+    console.error('Failed to create partner:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to create partner' 
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const partnerId = searchParams.get('partnerId');
+
+    if (!partnerId) {
+      return NextResponse.json(
+        { success: false, error: 'Partner ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DB);
+
+    const result = await db.collection('partners').deleteOne({
+      _id: new ObjectId(partnerId)
+    });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
@@ -448,59 +233,20 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    console.log(`✅ Partner deleted: ${partnerId}`);
+
     return NextResponse.json({
       success: true,
-      message: 'Partner deleted successfully',
+      message: 'Partner deleted successfully'
     });
-
   } catch (error) {
-    console.error('[DELETE /api/partners] Error:', error);
+    console.error('Failed to delete partner:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
+        error: error instanceof Error ? error.message : 'Failed to delete partner' 
       },
       { status: 500 }
     );
   }
-}
-
-/**
- * WHAT: Helper function to populate Bitly links in partner document
- * WHY: Transform database document to API response format with full link details
- */
-async function populateBitlyLinks(db: any, partner: any): Promise<PartnerResponse> {
-  // WHAT: Fetch Bitly links if partner has any
-  let bitlyLinks = [];
-  if (partner.bitlyLinkIds && partner.bitlyLinkIds.length > 0) {
-    const links = await db
-      .collection('bitly_links')
-      .find({ _id: { $in: partner.bitlyLinkIds } })
-      .project({ _id: 1, bitlink: 1, title: 1, long_url: 1 })
-      .toArray();
-    
-    bitlyLinks = links.map((link: any) => ({
-      _id: link._id.toString(),
-      bitlink: link.bitlink,
-      title: link.title,
-      long_url: link.long_url,
-    }));
-  }
-
-  // WHAT: Transform to client response format
-  return {
-    _id: partner._id.toString(),
-    name: partner.name,
-    emoji: partner.emoji,
-    viewSlug: partner.viewSlug, // WHAT: Include viewSlug for partner report pages
-    hashtags: partner.hashtags || [],
-    categorizedHashtags: partner.categorizedHashtags || {},
-    bitlyLinks,
-    logoUrl: partner.logoUrl, // WHAT: Include ImgBB-hosted logo URL
-    sportsDb: partner.sportsDb, // WHAT: Include TheSportsDB enrichment data
-    styleId: partner.styleId ? partner.styleId.toString() : undefined, // WHAT: Page style for partner reports
-    reportTemplateId: partner.reportTemplateId ? partner.reportTemplateId.toString() : undefined, // WHAT: Report template for partner reports
-    createdAt: partner.createdAt,
-    updatedAt: partner.updatedAt,
-  };
 }
