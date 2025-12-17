@@ -164,8 +164,8 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 **MessMass** is a real-time collaborative event statistics dashboard with:
 
 ### Frontend Architecture
-- **Next.js 15.4.6** with App Router (`/app` directory)
-- **TypeScript** with strict mode for type safety
+- **Next.js 15.5.9** with App Router (`/app` directory)
+- **TypeScript 5.6.3** with strict mode for type safety
 - **React 18** with real-time WebSocket integration
 - **CSS Modules** with project-wide CSS variables (see `app/styles/theme.css`) for styling
 - **Component-based architecture** with unified hashtag system
@@ -1205,4 +1205,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 11.25.0 | Last Updated: 2025-11-13T09:58:00.000Z (UTC) | Status: Production-Ready*
+*Version: 11.29.0 | Last Updated: 2025-12-17T11:01:04.000Z (UTC) | Status: Production-Ready*

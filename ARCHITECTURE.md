@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-11-16T11:29:19.000Z (UTC)
-Version: 11.23.0
+Last Updated: 2025-12-17T11:01:04.000Z (UTC)
+Version: 11.29.0
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -577,13 +577,30 @@ The Template System provides hierarchical report visualization management across
 
 #### 1. Template Resolution Hierarchy
 
+**Resolution order varies by entity type:**
+
+**For Event Reports (projects):**
 ```typescript
-// Resolution order (highest to lowest priority)
-1. Entity-Specific Template (project.reportTemplateId)
-2. Partner Template (partner.reportTemplateId) 
-3. Default Template (isDefault: true, matching type)
-4. Hardcoded Fallback (emergency system template)
+1. Project-Specific Template (project.reportTemplateId)
+2. Partner Template via project.partner1 (partner.reportTemplateId)
+3. Special Case: __default_event__ identifier forces default event template
+4. Default Template (isDefault: true, ANY type - no type filter)
+5. Hardcoded Fallback (emergency system template from lib/reportTemplateTypes.ts)
 ```
+
+**For Partner Reports (partners):**
+```typescript
+1. Partner-Specific Template (partner.reportTemplateId)
+2. Default Template (isDefault: true, ANY type - no type filter)
+3. Hardcoded Fallback (emergency system template)
+```
+
+**Key Implementation Details:**
+- Default template lookup does NOT filter by type (code: `findOne({ isDefault: true })`)
+- Partner template resolution follows project.partner1 reference automatically
+- Special `__default_event__` identifier used by partner report system for card layouts
+- Hardcoded fallback defined in `HARDCODED_DEFAULT_TEMPLATE` constant
+- All resolution handled by `/api/report-config/[identifier]?type=project|partner`
 
 #### 2. Data Model
 
@@ -627,13 +644,179 @@ interface ReportTemplate {
 - Chart configuration and preview
 - Real-time chart preview with sample data
 
-### Migration Notes (v11.29.0)
+### Recent Fixes & Troubleshooting (v11.29.0)
 
-**Fixes Applied**
-- Template dropdown race condition resolved
-- Authentication error handling improved
-- Partner template resolution corrected
-- Data block active/inactive filtering clarified
+#### Template Dropdown Race Condition Fix
+
+**Problem** (discovered 2025-12-16):
+- Template dropdown in Visualization Admin loaded before authentication check completed
+- Race condition caused "Forbidden" errors when accessing `/api/report-templates`
+- dropdown showed "No templates found" despite templates existing in database
+
+**Root Cause**:
+```typescript
+// Bad pattern - templates fetched immediately on mount
+useEffect(() => {
+  loadTemplates(); // Race: may run before auth complete
+}, []);
+```
+
+**Solution**:
+```typescript
+// Good pattern - wait for authenticated user
+useEffect(() => {
+  if (user) {
+    loadTemplates(); // Only fetch when auth confirmed
+  }
+}, [user]);
+```
+
+**Files Modified**:
+- `app/admin/visualization/page.tsx` - Added user dependency to template loading
+- Authentication state now gates all API calls
+
+#### Partner Template Connection Fix
+
+**Problem** (discovered 2025-12-15):
+- Partner-level content (reportImage/reportText variables) not visible on partner reports
+- Content uploaded via partner edit page disappeared when viewing `/partner-report/[slug]`
+- Event cards within partner report used wrong template
+
+**Root Cause**:
+1. **Content Visibility**: Partner report page only checked project-specific content, ignored partner-level content
+2. **Template Selection**: Event cards forced project template instead of respecting partner fallback
+3. **API Query**: Missing partner ID filter when fetching content from projects
+
+**Solution**:
+```typescript
+// 1. Fetch partner-owned content separately
+const partnerContent = await db.collection('projects').findOne({
+  partnerId: partner._id,  // Filter by partner owner
+  'stats.reportImage1': { $exists: true }
+});
+
+// 2. Use special __default_event__ identifier for event cards
+const cardTemplateResponse = await fetch(
+  `/api/report-config/__default_event__?type=project`
+);
+
+// 3. Merge partner content with event content
+const allContent = [...partnerContent, ...eventContent];
+```
+
+**Files Modified**:
+- `app/partner-report/[slug]/page.tsx` - Added partner content fetching logic
+- `app/api/report-config/[identifier]/route.ts` - Added `__default_event__` special case
+- Partner reports now show both partner-level AND event-level content
+
+#### TextChart Vertical Centering Fix
+
+**Problem** (commit cb867f5):
+- TEXT chart content not vertically centered in grid cells
+- Different aspect ratios caused misalignment
+- Chart looked "floated" to top of container
+
+**Solution**:
+```css
+/* Added to TextChart component */
+.textChartContainer {
+  display: flex;
+  align-items: center;     /* Vertical center */
+  justify-content: center; /* Horizontal center */
+  min-height: 100%;
+  aspect-ratio: var(--chart-aspect-ratio); /* Respect template settings */
+}
+```
+
+**Files Modified**:
+- `components/charts/TextChart.tsx` - Added flex centering
+- `components/charts/TextChart.module.css` - Updated layout styles
+
+#### Report Image Variables Fix
+
+**Problem** (commit 880e439):
+- Chart configurations referenced wrong variable names for report images
+- `reportImage` vs `reportImage1` naming inconsistency
+- Broken image display in reports
+
+**Solution**:
+- Standardized ALL report variables to numbered format: `reportImage1`, `reportImage2`, ... `reportImage10`
+- Updated chart configurations to match: `stats.reportImage3` (not `stats.reportImage`)
+- Migrated existing data to new naming convention
+
+**Files Modified**:
+- `scripts/fix-report-image-variables.ts` - Database migration script
+- Updated 30+ chart configurations in database
+- `lib/variablesConfig.ts` - Variable naming registry
+
+### Template System Best Practices
+
+#### When to Create New Template vs Reuse
+
+**Create New Template If**:
+- Different grid layout needed (3-column vs 4-column)
+- Different block order required
+- Partner/client has unique branding requirements
+- Specific chart combinations not available in existing templates
+
+**Reuse Existing Template If**:
+- Grid layout matches needs
+- Block order is acceptable (can customize per-project)
+- No special branding required
+- Standard report structure works
+
+#### Template Assignment Workflow
+
+1. **Global Default**: Set one template as `isDefault: true` for new projects
+2. **Partner Level**: Assign template to partner → all partner events inherit
+3. **Project Override**: Assign template to specific project → overrides partner template
+4. **Testing**: Use Builder Mode (`/edit/[slug]`) to preview template before publishing
+
+#### Debugging Template Issues
+
+**Template Not Loading:**
+```bash
+# Check API response
+curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
+
+# Expected response:
+{
+  "success": true,
+  "template": { ... },
+  "resolvedFrom": "project" | "partner" | "default" | "hardcoded",
+  "source": "template_name_or_entity"
+}
+```
+
+**Chart Not Displaying:**
+1. Verify chart exists: Check `/api/chart-config` for chartId
+2. Check formula: Ensure variables exist in `stats` object
+3. Validate data: Run formula evaluation with real project data
+4. Check visibility: Ensure `isActive: true` on data block
+
+**Partner Template Not Applying:**
+1. Verify `partner.reportTemplateId` field exists in database
+2. Check `project.partner1` references correct partner ObjectId
+3. Test resolution: Query `/api/report-config/[projectSlug]?type=project`
+4. Check logs: Server console shows resolution path
+
+### Performance Considerations
+
+**Template Loading**:
+- Templates cached in memory after first load (<100ms subsequent loads)
+- Data blocks populated via single database query
+- Chart configurations loaded separately (lazy loaded)
+
+**Report Rendering**:
+- Builder Mode: <500ms for 10-20 blocks
+- Public Stats Page: <800ms full render with all charts
+- Partner Report: <1200ms (includes multiple event cards)
+
+**Optimization Tips**:
+1. Limit template to 20 blocks maximum (UX + performance)
+2. Use derived variables instead of complex formulas
+3. Enable chart result caching for expensive calculations
+4. Lazy load images (use loading="lazy" attribute)
 
 ---
 

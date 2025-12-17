@@ -1,7 +1,7 @@
 # MessMass Project Summary for Kiro
 
-**Version:** 11.25.0  
-**Last Updated:** 2025-11-26  
+**Version:** 11.29.0  
+**Last Updated:** 2025-12-17T11:01:04.000Z  
 **Project Type:** Enterprise Event Analytics Platform
 
 ---
@@ -11,7 +11,7 @@
 MessMass is an enterprise-grade event statistics platform built with Next.js 15, TypeScript, and MongoDB Atlas. It provides real-time analytics, partner management, and intelligent link tracking for sports organizations, venues, brands, and event managers.
 
 **Tech Stack:**
-- **Frontend:** Next.js 15.4.6 (App Router), React 18, TypeScript (strict mode)
+- **Frontend:** Next.js 15.5.9 (App Router), React 18, TypeScript 5.6.3 (strict mode)
 - **Backend:** Next.js API routes, MongoDB Atlas, WebSocket server (Node.js on port 7654)
 - **Styling:** CSS Modules with centralized design tokens (`app/styles/theme.css`)
 - **Real-Time:** WebSocket-based collaboration with automatic reconnection
@@ -150,6 +150,7 @@ export const myAdapter: AdminPageAdapter<MyType> = {
   _id: ObjectId,
   eventName: string,
   eventDate: string, // ISO 8601
+  reportTemplateId?: ObjectId, // v11.29.0 project-specific template override
   hashtags: string[],
   categorizedHashtags: { [category]: string[] },
   stats: {
@@ -158,6 +159,8 @@ export const myAdapter: AdminPageAdapter<MyType> = {
     remoteFans: number,
     female: number,
     male: number,
+    reportImage1?: string,  // Report content (v11.26+)
+    reportText1?: string,   // Report content (v11.26+)
     // ... etc
   },
   partner1Id?: ObjectId,
@@ -177,6 +180,8 @@ export const myAdapter: AdminPageAdapter<MyType> = {
   name: string,
   emoji: string,
   viewSlug: string, // v10.7.0 for report pages
+  reportTemplateId?: ObjectId, // v11.29.0 for partner-level templates
+  styleId?: ObjectId, // Partner-specific page styling
   hashtags: string[],
   categorizedHashtags: { [category]: string[] },
   bitlyLinkIds: ObjectId[],

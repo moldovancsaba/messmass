@@ -1,5 +1,163 @@
 # MessMass Release Notes
 
+## [v11.29.0] — 2025-12-17T11:01:04.000Z
+
+### Summary
+- Major API enhancement with comprehensive testing infrastructure
+- Template system fixes (dropdown race condition, partner template connection)
+- Chart rendering improvements (TextChart centering, report image variables)
+- Material Icons preload warnings resolved
+
+### Added
+- Comprehensive API testing infrastructure (see `scripts/test-*` files)
+- API documentation page (`/admin/api-docs`)
+- Template system troubleshooting documentation in ARCHITECTURE.md
+
+### Fixed
+- **Template Dropdown Race Condition**: Authentication check now gates API calls
+- **Partner Template Connection**: Partner-level content now visible on partner reports
+- **TextChart Vertical Centering**: Charts now properly centered with flex layout
+- **Report Image Variables**: Standardized naming to `reportImage1`-`reportImage10`
+- **Material Icons Preload**: Added proper `<link rel="preload">` tags to eliminate warnings
+
+### Changed
+- app/admin/visualization/page.tsx - Fixed template loading dependency
+- app/partner-report/[slug]/page.tsx - Added partner content fetching
+- app/api/report-config/[identifier]/route.ts - Added `__default_event__` special case
+- components/charts/TextChart.tsx - Updated layout with flex centering
+
+### Version
+`11.25.0` → `11.29.0` (MINOR - multiple feature additions and bug fixes)
+
+---
+
+## [v11.28.2] — 2025-12-16T10:30:00.000Z
+
+### Summary
+- Enable `editableInManual` flag for all variables to restore Manual mode functionality
+
+### Fixed
+- Manual mode now shows all editable variables correctly
+- Variables with missing flags now default to editable
+
+### Changed
+- scripts/enableManualModeForAllVariables.ts - Migration script
+
+### Version
+`11.28.1` → `11.28.2` (PATCH - bug fix)
+
+---
+
+## [v11.28.1] — 2025-12-16T09:45:00.000Z
+
+### Summary
+- Debug Manual mode visibility issues with diagnostic logging
+
+### Changed
+- Added console logging to diagnose variable visibility
+- Verified flag structure in variables_metadata collection
+
+### Version
+`11.28.0` → `11.28.1` (PATCH - debugging)
+
+---
+
+## [v11.28.0] — 2025-12-16T08:00:00.000Z
+
+### Summary
+- Remove all hardcoded inline styles from ChartBuilder components
+- Enforce design token usage throughout Builder Mode
+
+### Changed
+- components/ChartBuilderKPI.tsx - Converted inline styles to CSS modules
+- components/ChartBuilderBar.tsx - Converted inline styles to CSS modules
+- components/ChartBuilderPie.tsx - Converted inline styles to CSS modules
+- components/ChartBuilderImage.tsx - Converted inline styles to CSS modules
+- components/ChartBuilderText.tsx - Converted inline styles to CSS modules
+
+### Impact
+- ✅ All ChartBuilder components now use design tokens exclusively
+- ✅ Consistent styling across Builder Mode
+- ✅ Easier to maintain and update styles globally
+
+### Version
+`11.27.2` → `11.28.0` (MINOR - architectural improvement)
+
+---
+
+## [v11.27.2] — 2025-12-15T16:20:00.000Z
+
+### Summary
+- Force chart builders to fill grid column width for consistent layout
+
+### Fixed
+- Chart builders now properly fill their grid columns
+- Eliminated gaps and misalignments in Builder Mode grid
+
+### Changed
+- components/BuilderMode.tsx - Added `width: 100%` to chart containers
+
+### Version
+`11.27.1` → `11.27.2` (PATCH - layout fix)
+
+---
+
+## [v11.27.1] — 2025-12-15T15:00:00.000Z
+
+### Summary
+- Restore original grid layout in BuilderMode with full-width charts
+
+### Fixed
+- Grid layout now matches public stats page exactly
+- Charts properly sized within grid cells
+
+### Changed
+- components/BuilderMode.tsx - Restored CSS Grid layout
+
+### Version
+`11.27.0` → `11.27.1` (PATCH - layout restoration)
+
+---
+
+## [v11.27.0] — 2025-12-15T14:00:00.000Z
+
+### Summary
+- Remove hardcoded styles in EditorDashboard and BuilderMode
+- Continue style system hardening initiative
+
+### Changed
+- components/EditorDashboard.tsx - Converted inline styles to CSS modules
+- components/BuilderMode.tsx - Converted inline styles to CSS modules
+
+### Impact
+- ✅ Editor components now fully compliant with design token policy
+- ✅ Reduced inline style violations project-wide
+
+### Version
+`11.26.0` → `11.27.0` (MINOR - refactoring)
+
+---
+
+## [v11.26.0] — 2025-12-15T12:00:00.000Z
+
+### Summary
+- Add special report-content group to Clicker Manager
+- Improve organization of report image/text variables
+
+### Added
+- New "Report Content" group in Clicker interface
+- Groups `reportImage1`-`reportImage10` and `reportText1`-`reportText10`
+- Better UX for managing report assets
+
+### Changed
+- scripts/addReportContentGroup.ts - Group creation script
+- Clicker Manager now shows report content separately from other variables
+
+### Version
+`11.25.0` → `11.26.0` (MINOR - feature addition)
+
+---
+
 ## [v11.25.0] — 2025-11-17T14:59:10.000Z
 
 ### Summary
