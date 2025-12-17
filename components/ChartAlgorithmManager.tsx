@@ -1011,10 +1011,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       
       // WHAT: Handle stats.fieldName format for numeric variables
       // WHY: Numeric formulas use [stats.female] but KYC stores as "female"
-      const variableName = variable.startsWith('stats.') ? variable.substring(6) : variable;
+      const variableNameShort = variable.startsWith('stats.') ? variable.substring(6) : variable;
       
       // Check if variable exists in KYC (dynamic from database)
-      return !availableVariables.some(v => v.name === variableName);
+      // Accept both bare and prefixed names in availableVariables (DB may store either)
+      const matches = availableVariables.some(v => {
+        const vName = String(v.name || '');
+        return vName === variableNameShort || vName === `stats.${variableNameShort}`;
+      });
+      return !matches;
     });
     
     if (invalidVariables.length > 0) {
