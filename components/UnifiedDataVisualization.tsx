@@ -493,12 +493,15 @@ export default function UnifiedDataVisualization({
         }
 
         /* Text and Image charts: override aspect-ratio to fill shared height */
-        .udv-grid :global(.text-chart-container),
+        /* Text chart: apply height only to the body/content, not title/subtitle */
+        .udv-grid :global(.text-chart-content) {
+          height: var(--block-chart-height) !important;
+        }
+        /* Image chart fills shared height (no header present) */
         .udv-grid :global(.image-chart-container) {
           height: var(--block-chart-height) !important;
           aspect-ratio: auto !important;
         }
-        .udv-grid :global(.text-chart-container) > *,
         .udv-grid :global(.image-chart-container) > * {
           height: 100% !important;
         }

@@ -142,7 +142,7 @@ export default function TextChart({ title, content, subtitle, className = '', as
         </div>
       )}
       
-      <div className={styles.content} ref={contentRef}>
+      <div className={`${styles.content} text-chart-content`} ref={contentRef}>
         {content ? (
           <div className={styles.textWrapper}>
             <p 
