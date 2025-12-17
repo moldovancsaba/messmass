@@ -6,8 +6,7 @@ import {
   mergeHashtagSystems 
 } from '@/lib/hashtagCategoryUtils';
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
-
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest) {
     console.log('🔍 Fetching aggregated stats for hashtags:', hashtags);
     
     const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+const db = client.db(config.dbName);
     const projectsCollection = db.collection('projects');
     
     // Enhanced filtering to support both traditional and categorized hashtags

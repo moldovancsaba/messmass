@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
-
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
+import config from '@/lib/config';
 
 export async function GET(
   request: NextRequest,
@@ -14,7 +13,7 @@ export async function GET(
     console.log('📊 Fetching aggregated stats for hashtag/slug:', hashtagOrSlug);
     
     const client = await clientPromise;
-    const db = client.db(MONGODB_DB);
+const db = client.db(config.dbName);
     const projectsCollection = db.collection('projects');
     const hashtagSlugsCollection = db.collection('hashtag_slugs');
     
