@@ -213,6 +213,12 @@ export default function UnifiedDataVisualization({
 
     const computeAndSetHeight = (grid: HTMLDivElement) => {
       if (!grid) return;
+      // Skip responsive height when block is text-image only
+      const isBaseline = grid.getAttribute('data-pie-baseline') === 'true';
+      if (!isBaseline) {
+        grid.style.removeProperty('--block-chart-height');
+        return;
+      }
       // Find child chart items with width units
       const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item[data-width-units]'));
       const unitCandidates: number[] = [];
@@ -291,12 +297,22 @@ export default function UnifiedDataVisualization({
               )}
 
               {/* Responsive Charts Grid (per-block columns) */}
-              <div 
-                className={`udv-grid udv-grid-${idSuffix} ${styles.gridBase}`}
-                ref={(el) => { gridRefs.current[idSuffix] = el; }}
-                data-block-id={idSuffix}
-                style={{ ['--block-chart-height' as string]: '0px' } as React.CSSProperties}
-              >
+              {(() => {
+                // Determine if this block has any baseline charts (pie/bar/kpi)
+                const blockChartResults = block.charts
+                  .map(c => getChartResult(c.chartId))
+                  .filter((r): r is ChartCalculationResult => !!r && hasValidData(r));
+                const hasBaseline = blockChartResults.some(r => r.type === 'pie' || r.type === 'bar' || r.type === 'kpi');
+                return (
+                  <div 
+                    className={`udv-grid udv-grid-${idSuffix} ${styles.gridBase}`}
+                    ref={(el) => { gridRefs.current[idSuffix] = el; }}
+                    data-block-id={idSuffix}
+                    data-pie-baseline={hasBaseline ? 'true' : 'false'}
+                    style={{ ['--block-chart-height' as string]: '0px' } as React.CSSProperties}
+                  >
+                );
+              })()}
                 {block.charts
                   .sort((a, b) => a.order - b.order)
                   .map((chart: BlockChart) => {
@@ -432,13 +448,13 @@ export default function UnifiedDataVisualization({
         
         /* WHAT: Chart graphic area alignment - only for standard charts */
         /* WHY: Text and image charts don't use chartGraphicArea */
-        .udv-grid .chart-item-standard :global(.chartGraphicArea) {
+        .udv-grid[data-pie-baseline="true"] .chart-item-standard :global(.chartGraphicArea) {
           flex: 0 1 auto !important; /* avoid stretching the grid row */
           display: flex !important;
           flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
-          height: var(--block-chart-height) !important; /* responsive shared height */
+          height: clamp(200px, var(--block-chart-height), 80vh) !important; /* responsive with viewport cap */
           min-height: 0 !important;
           max-height: none !important;
           overflow: hidden !important;
@@ -448,45 +464,45 @@ export default function UnifiedDataVisualization({
         .udv-grid [data-block-id] { /* no-op, placeholder for clarity */ }
 
         /* Pie chart containers use shared height */
-        .udv-grid :global(.pieChartSide),
-        .udv-grid :global(.pieChartContainerPortrait) {
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartSide),
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartContainerPortrait) {
           max-height: none !important;
-          height: var(--block-chart-height) !important;
+          height: clamp(200px, var(--block-chart-height), 80vh) !important;
         }
-        .udv-grid :global(.pieChartWrapper),
-        .udv-grid :global(.pieChartInnerPortrait) {
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartWrapper),
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartInnerPortrait) {
           max-width: none !important;
           width: auto !important;
           height: 100% !important;
           aspect-ratio: 1 / 1 !important; /* keep circle */
         }
-        .udv-grid :global(.pieChartSvg),
-        .udv-grid :global(.pieChartSvgPortrait) {
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartSvg),
+        .udv-grid[data-pie-baseline="true"] :global(.pieChartSvgPortrait) {
           width: 100% !important;
           height: 100% !important;
         }
 
         /* Bar chart containers use shared height */
-        .udv-grid :global(.barChartSide) {
+        .udv-grid[data-pie-baseline="true"] :global(.barChartSide) {
           max-height: none !important;
-          height: var(--block-chart-height) !important;
+          height: clamp(200px, var(--block-chart-height), 80vh) !important;
         }
-        .udv-grid :global(.barChartRows) {
+        .udv-grid[data-pie-baseline="true"] :global(.barChartRows) {
           height: 100% !important;
         }
 
         /* KPI containers use shared height and responsive typography */
-        .udv-grid :global(.kpiContainer) {
+        .udv-grid[data-pie-baseline="true"] :global(.kpiContainer) {
           max-height: none !important;
-          height: var(--block-chart-height) !important;
+          height: clamp(200px, var(--block-chart-height), 80vh) !important;
         }
-        .udv-grid :global(.kpiValue) {
+        .udv-grid[data-pie-baseline="true"] :global(.kpiValue) {
           font-size: clamp(1.75rem, calc(var(--block-chart-height) * 0.18), 6rem) !important;
         }
-        .udv-grid :global(.kpiEmoji) {
+        .udv-grid[data-pie-baseline="true"] :global(.kpiEmoji) {
           font-size: clamp(1.5rem, calc(var(--block-chart-height) * 0.14), 4.5rem) !important;
         }
-        .udv-grid :global(.kpiLabel) {
+        .udv-grid[data-pie-baseline="true"] :global(.kpiLabel) {
           font-size: clamp(0.8rem, calc(var(--block-chart-height) * 0.05), 1.25rem) !important;
           min-height: auto !important;
           height: auto !important; /* allow auto but within container */
@@ -494,22 +510,22 @@ export default function UnifiedDataVisualization({
 
         /* Text and Image charts: override aspect-ratio to fill shared height */
         /* Text chart: apply height only to the body/content, not title/subtitle */
-        .udv-grid :global(.text-chart-content) {
+        .udv-grid[data-pie-baseline="true"] :global(.text-chart-content) {
           height: var(--block-chart-height) !important;
         }
         /* Image chart fills shared height (no header present) */
-        .udv-grid :global(.image-chart-container) {
+        .udv-grid[data-pie-baseline="true"] :global(.image-chart-container) {
           height: var(--block-chart-height) !important;
           aspect-ratio: auto !important;
         }
-        .udv-grid :global(.image-chart-container) > * {
+        .udv-grid[data-pie-baseline="true"] :global(.image-chart-container) > * {
           height: 100% !important;
         }
-        .udv-grid :global(.image-chart-container .imageWrapper) {
+        .udv-grid[data-pie-baseline="true"] :global(.image-chart-container .imageWrapper) {
           height: 100% !important;
           aspect-ratio: auto !important;
         }
-        .udv-grid :global(.image-chart-container .image) {
+        .udv-grid[data-pie-baseline="true"] :global(.image-chart-container .image) {
           height: 100% !important;
           background-size: cover !important;
           background-position: center !important;
