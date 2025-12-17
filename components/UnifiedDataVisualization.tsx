@@ -298,11 +298,13 @@ export default function UnifiedDataVisualization({
 
               {/* Responsive Charts Grid (per-block columns) */}
               {(() => {
-                // Determine if this block has any baseline charts (pie/bar/kpi)
+                // WHAT: Compute baseline flag inline to determine responsive height application
+                // WHY: Some blocks (pie/bar/kpi) need shared responsive height; others (images/text) need native aspect ratio
                 const blockChartResults = block.charts
                   .map(c => getChartResult(c.chartId))
                   .filter((r): r is ChartCalculationResult => !!r && hasValidData(r));
                 const hasBaseline = blockChartResults.some(r => r.type === 'pie' || r.type === 'bar' || r.type === 'kpi');
+                
                 return (
                   <div 
                     className={`udv-grid udv-grid-${idSuffix} ${styles.gridBase}`}
@@ -311,49 +313,49 @@ export default function UnifiedDataVisualization({
                     data-pie-baseline={hasBaseline ? 'true' : 'false'}
                     style={{ ['--block-chart-height' as string]: '0px' } as React.CSSProperties}
                   >
+                    {block.charts
+                      .sort((a, b) => a.order - b.order)
+                      .map((chart: BlockChart) => {
+                        const result = getChartResult(chart.chartId);
+                        
+                        if (!result || !hasValidData(result)) {
+                          return null;
+                        }
+
+                        // WHAT: No width calculations needed - fr units in grid-template-columns handle proportions
+                        // WHY: Chart width ratio already baked into CSS (e.g., "2fr 2fr 3fr")
+                        // HOW: Just render chart in grid cell, CSS does the rest
+                        
+
+
+                        // No width classes needed - fr units handle proportions
+                        // WHAT: Add specific classes for image and text charts to remove padding/borders
+                        // WHY: Image and text charts should fill the entire container edge-to-edge
+                        const chartTypeClass = result.type === 'image' ? 'chart-item-image' : 
+                                              result.type === 'text' ? 'chart-item-text' : 
+                                              'chart-item-standard';
+                        
+                        return (
+                          <div
+                            key={`${idSuffix}-${chart.chartId}`}
+                            className={`chart-item unified-chart-item ${chartTypeClass}`}
+                            data-chart-id={chart.chartId}
+                            data-width-units={Math.max(1, chart.width || 1)}
+                          >
+                            <DynamicChart 
+                              result={result} 
+                              chartWidth={chart.width}
+                              showTitleInCard={(result as any).showTitle !== false}
+                              pageStyle={pageStyle}
+                            />
+                          </div>
+                        );
+                      })
+                      .filter(Boolean)
+                    }
+                  </div>
                 );
               })()}
-                {block.charts
-                  .sort((a, b) => a.order - b.order)
-                  .map((chart: BlockChart) => {
-                    const result = getChartResult(chart.chartId);
-                    
-                    if (!result || !hasValidData(result)) {
-                      return null;
-                    }
-
-                    // WHAT: No width calculations needed - fr units in grid-template-columns handle proportions
-                    // WHY: Chart width ratio already baked into CSS (e.g., "2fr 2fr 3fr")
-                    // HOW: Just render chart in grid cell, CSS does the rest
-                    
-
-
-                    // No width classes needed - fr units handle proportions
-                    // WHAT: Add specific classes for image and text charts to remove padding/borders
-                    // WHY: Image and text charts should fill the entire container edge-to-edge
-                    const chartTypeClass = result.type === 'image' ? 'chart-item-image' : 
-                                          result.type === 'text' ? 'chart-item-text' : 
-                                          'chart-item-standard';
-                    
-                    return (
-                      <div
-                        key={`${idSuffix}-${chart.chartId}`}
-                        className={`chart-item unified-chart-item ${chartTypeClass}`}
-                        data-chart-id={chart.chartId}
-                        data-width-units={Math.max(1, chart.width || 1)}
-                      >
-                        <DynamicChart 
-                          result={result} 
-                          chartWidth={chart.width}
-                          showTitleInCard={(result as any).showTitle !== false}
-                          pageStyle={pageStyle}
-                        />
-                      </div>
-                    );
-                  })
-                  .filter(Boolean)
-                }
-              </div>
 
               {/* Show message if no charts are visible */}
               {block.charts.filter(chart => {
@@ -508,22 +510,24 @@ export default function UnifiedDataVisualization({
           height: auto !important; /* allow auto but within container */
         }
 
-        /* Text and Image charts: override aspect-ratio to fill shared height */
-        /* Text chart: apply height only to the body/content, not title/subtitle */
+        /* WHAT: Image and text charts KEEP native aspect ratio when in baseline blocks
+         * WHY: User requirement - only pie/bar/kpi share responsive height
+         * HOW: Remove forced height overrides, let aspect-ratio work naturally */
+        
+        /* Text charts: NO forced height - use natural text flow */
         .udv-grid[data-pie-baseline="true"] :global(.text-chart-content) {
-          height: var(--block-chart-height) !important;
+          height: auto !important;
+          min-height: 0 !important;
         }
-        /* Image chart fills shared height (no header present) */
+        
+        /* Image charts: NO forced height - use native aspect ratio */
         .udv-grid[data-pie-baseline="true"] :global(.image-chart-container) {
-          height: var(--block-chart-height) !important;
-          aspect-ratio: auto !important;
-        }
-        .udv-grid[data-pie-baseline="true"] :global(.image-chart-container) > * {
-          height: 100% !important;
+          height: auto !important;
+          aspect-ratio: var(--chart-aspect-ratio, auto) !important; /* Keep original aspect ratio */
         }
         .udv-grid[data-pie-baseline="true"] :global(.image-chart-container .imageWrapper) {
-          height: 100% !important;
-          aspect-ratio: auto !important;
+          height: auto !important;
+          aspect-ratio: var(--chart-aspect-ratio, auto) !important; /* Keep original aspect ratio */
         }
         .udv-grid[data-pie-baseline="true"] :global(.image-chart-container .image) {
           height: 100% !important;
