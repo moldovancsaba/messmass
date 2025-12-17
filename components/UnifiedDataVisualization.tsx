@@ -5,6 +5,7 @@ import { ChartCalculationResult, BlockAlignmentSettings } from '@/lib/chartConfi
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedDataVisualization.module.css';
+import { useEffect, useMemo, useRef } from 'react';
 
 interface UnifiedDataVisualizationProps {
   blocks: DataVisualizationBlock[];
@@ -197,6 +198,66 @@ export default function UnifiedDataVisualization({
     );
   }
 
+  // Responsive per-block height calculation based on unit width (pie baseline 4:6)
+  // WHAT: For each block grid, compute a shared chart height H = unitWidth * 1.5 (4:6 width:height)
+  // WHY: Make all chart figure areas (pie/bar/KPI/text) the same responsive height without fixed caps
+  const blockIds = useMemo(() => blocks
+    .filter(b => b.isActive)
+    .sort((a,b)=>a.order-b.order)
+    .map((b, idx) => b._id || `i${idx}`), [blocks]);
+
+  const gridRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const observers: ResizeObserver[] = [];
+
+    const computeAndSetHeight = (grid: HTMLDivElement) => {
+      if (!grid) return;
+      // Find child chart items with width units
+      const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item[data-width-units]'));
+      const unitCandidates: number[] = [];
+      items.forEach((el) => {
+        const unitsAttr = el.getAttribute('data-width-units');
+        const units = Math.max(1, Number(unitsAttr) || 1);
+        const w = el.clientWidth;
+        if (w > 0 && units > 0) unitCandidates.push(w / units);
+      });
+      // Fallback: use grid width if no candidates
+      const fallback = grid.clientWidth > 0 ? grid.clientWidth : 0;
+      const unitWidth = unitCandidates.length > 0 ? Math.min(...unitCandidates) : fallback;
+      if (unitWidth > 0) {
+        const targetHeight = Math.round(unitWidth * 1.5); // 4:6 width:height → H = 1.5 * W
+        grid.style.setProperty('--block-chart-height', `${targetHeight}px`);
+      }
+    };
+
+    blockIds.forEach((id) => {
+      const grid = gridRefs.current[id];
+      if (!grid) return;
+
+      // Initial compute after layout
+      // Use rAF to ensure layout is up-to-date
+      requestAnimationFrame(() => computeAndSetHeight(grid));
+
+      const ro = new ResizeObserver(() => computeAndSetHeight(grid));
+      ro.observe(grid);
+      observers.push(ro);
+    });
+
+    const onWindowResize = () => {
+      blockIds.forEach((id) => {
+        const grid = gridRefs.current[id];
+        if (grid) computeAndSetHeight(grid);
+      });
+    };
+    window.addEventListener('resize', onWindowResize);
+
+    return () => {
+      observers.forEach(o => o.disconnect());
+      window.removeEventListener('resize', onWindowResize);
+    };
+  }, [blockIds]);
+
   return (
     <div className={styles.container}>
       {visibleBlocks
@@ -232,6 +293,9 @@ export default function UnifiedDataVisualization({
               {/* Responsive Charts Grid (per-block columns) */}
               <div 
                 className={`udv-grid udv-grid-${idSuffix} ${styles.gridBase}`}
+                ref={(el) => { gridRefs.current[idSuffix] = el; }}
+                data-block-id={idSuffix}
+                style={{ ['--block-chart-height' as string]: '0px' } as React.CSSProperties}
               >
                 {block.charts
                   .sort((a, b) => a.order - b.order)
@@ -260,6 +324,7 @@ export default function UnifiedDataVisualization({
                         key={`${idSuffix}-${chart.chartId}`}
                         className={`chart-item unified-chart-item ${chartTypeClass}`}
                         data-chart-id={chart.chartId}
+                        data-width-units={Math.max(1, chart.width || 1)}
                       >
                         <DynamicChart 
                           result={result} 
@@ -373,9 +438,78 @@ export default function UnifiedDataVisualization({
           flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
-          ${alignment.alignCharts ? `min-height: ${(alignment.minElementHeight || 4) * 3}rem !important;` : 'min-height: 200px !important;'}
-          max-height: clamp(200px, 32vh, 360px) !important; /* cap height to viewport */
-          overflow: hidden !important; /* prevent runaway growth */
+          height: var(--block-chart-height) !important; /* responsive shared height */
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: hidden !important;
+        }
+
+        /* Responsive figure height for all chart types in this block */
+        .udv-grid [data-block-id] { /* no-op, placeholder for clarity */ }
+
+        /* Pie chart containers use shared height */
+        .udv-grid :global(.pieChartSide),
+        .udv-grid :global(.pieChartContainerPortrait) {
+          max-height: none !important;
+          height: var(--block-chart-height) !important;
+        }
+        .udv-grid :global(.pieChartWrapper),
+        .udv-grid :global(.pieChartInnerPortrait) {
+          max-width: none !important;
+          width: auto !important;
+          height: 100% !important;
+          aspect-ratio: 1 / 1 !important; /* keep circle */
+        }
+        .udv-grid :global(.pieChartSvg),
+        .udv-grid :global(.pieChartSvgPortrait) {
+          width: 100% !important;
+          height: 100% !important;
+        }
+
+        /* Bar chart containers use shared height */
+        .udv-grid :global(.barChartSide) {
+          max-height: none !important;
+          height: var(--block-chart-height) !important;
+        }
+        .udv-grid :global(.barChartRows) {
+          height: 100% !important;
+        }
+
+        /* KPI containers use shared height and responsive typography */
+        .udv-grid :global(.kpiContainer) {
+          max-height: none !important;
+          height: var(--block-chart-height) !important;
+        }
+        .udv-grid :global(.kpiValue) {
+          font-size: clamp(1.75rem, calc(var(--block-chart-height) * 0.18), 6rem) !important;
+        }
+        .udv-grid :global(.kpiEmoji) {
+          font-size: clamp(1.5rem, calc(var(--block-chart-height) * 0.14), 4.5rem) !important;
+        }
+        .udv-grid :global(.kpiLabel) {
+          font-size: clamp(0.8rem, calc(var(--block-chart-height) * 0.05), 1.25rem) !important;
+          min-height: auto !important;
+          height: auto !important; /* allow auto but within container */
+        }
+
+        /* Text and Image charts: override aspect-ratio to fill shared height */
+        .udv-grid :global(.text-chart-container),
+        .udv-grid :global(.image-chart-container) {
+          height: var(--block-chart-height) !important;
+          aspect-ratio: auto !important;
+        }
+        .udv-grid :global(.text-chart-container) > *,
+        .udv-grid :global(.image-chart-container) > * {
+          height: 100% !important;
+        }
+        .udv-grid :global(.image-chart-container .imageWrapper) {
+          height: 100% !important;
+          aspect-ratio: auto !important;
+        }
+        .udv-grid :global(.image-chart-container .image) {
+          height: 100% !important;
+          background-size: cover !important;
+          background-position: center !important;
         }
 
         /* Inject per-block column definitions (fr units auto-calculate from widths) */
