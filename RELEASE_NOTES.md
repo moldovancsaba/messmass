@@ -1,5 +1,38 @@
 # MessMass Release Notes
 
+## [v11.35.1] — 2025-12-17T18:30:21.000Z
+
+### Summary
+- Final cleanup: Fixed database references in debug and notification routes
+- **100% COMPLETE**: All API endpoints now use centralized database config
+
+### Fixed
+- **Debug and Notification Routes**: Final 3 routes now use centralized `config.dbName`
+  - `/api/debug/categorized-hashtags` (GET - hashtag diagnostics)
+  - `/api/debug/notifications` (GET - notification system diagnostics)
+  - `/api/notifications/mark-read` (PUT - mark notifications read/archived)
+  - Removed all remaining `process.env.MONGODB_DB` fallbacks
+  - Eliminated all `client.db()` calls without explicit database name
+
+### Impact
+- ✅ **VERIFIED CLEAN**: Zero database inconsistencies remain in API layer
+- ✅ Debug tools work correctly in production environment
+- ✅ Notification system uses correct database
+- ✅ All 25+ API routes now follow centralized config pattern
+
+### Verification
+- ✅ Searched entire `/app/api` directory: No `client.db()` without dbName
+- ✅ Searched entire `/app/api` directory: No `process.env.MONGODB_DB` usage
+- ✅ Build successful: 84 routes generated without errors
+- ✅ MongoDB connections verified across all endpoints
+
+### Version
+`11.35.0` → `11.35.1` (PATCH - final cleanup)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.35.0] — 2025-12-17T18:30:21.000Z
 
 ### Summary

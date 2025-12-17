@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { getAdminUser } from '@/lib/auth';
 
 /* WHAT: Diagnostic endpoint to test notification system
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     // Check 2: Database connection
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+    const db = client.db(config.dbName);
     
     // Check 3: Notifications collection
     const notifications = db.collection('notifications');

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { getAdminUser } from '@/lib/auth';
 
 /* WHAT: Mark notifications as read or archived endpoint (multi-user support)
@@ -22,7 +23,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+    const db = client.db(config.dbName);
     const notifications = db.collection('notifications');
 
     // WHAT: Parse request body for action type and notification IDs

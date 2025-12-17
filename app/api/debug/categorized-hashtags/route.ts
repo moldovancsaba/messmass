@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import config from '@/lib/config';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
-const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
 
 let cachedClient: MongoClient | null = null;
 
@@ -18,7 +18,7 @@ async function connectToDatabase() {
   try {
     const client = new MongoClient(MONGODB_URI);
     await client.connect();
-    await client.db(MONGODB_DB).admin().ping();
+    await client.db(config.dbName).admin().ping();
     cachedClient = client;
     return client;
   } catch (error) {
@@ -30,7 +30,7 @@ async function connectToDatabase() {
 export async function GET(request: NextRequest) {
   try {
     const client = await connectToDatabase();
-    const db = client.db(MONGODB_DB);
+    const db = client.db(config.dbName);
     
     // Get projects that have categorizedHashtags field
     const projectsWithCategories = await db.collection('projects').find({
