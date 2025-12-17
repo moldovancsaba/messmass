@@ -19,6 +19,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { logRequestStart, logRequestEnd, logRequestError } from '@/lib/logger';
 
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
     
     // Connect to database
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const aggregatesCollection = db.collection('analytics_aggregates');
     
     // Fetch all aggregates

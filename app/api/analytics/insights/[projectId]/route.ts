@@ -38,6 +38,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { generateEventInsights } from '@/lib/insightsEngine';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
@@ -98,7 +99,7 @@ export async function GET(
     const severityFilter = searchParams.get('severity') as 'critical' | 'warning' | 'info' | null;
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
 
     // WHY: Fetch current event's pre-computed analytics from aggregates collection
     const currentAggregate = await db

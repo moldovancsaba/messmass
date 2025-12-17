@@ -34,6 +34,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
 import type { AnalyticsAggregate } from '@/lib/analytics.types';
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
     const period = periodParam === '90d' ? 90 : 30;
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
 
     // WHAT: Calculate date ranges for current and previous periods
     // WHY: Enable period-over-period comparison for growth metrics

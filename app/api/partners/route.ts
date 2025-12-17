@@ -221,7 +221,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+    const db = client.db(config.dbName);
 
     const result = await db.collection('partners').deleteOne({
       _id: new ObjectId(partnerId)

@@ -30,6 +30,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { rateLimitMiddleware, RATE_LIMITS } from '@/lib/rateLimit';
 import { info as logInfo, error as logError } from '@/lib/logger';
 import { generateEventInsights } from '@/lib/insightsEngine';
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
     const period = periodParam === '7d' ? 7 : periodParam === '90d' ? 90 : 30;
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
 
     // WHAT: Calculate date range for recent events
     const cutoffDate = new Date();

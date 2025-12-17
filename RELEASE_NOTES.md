@@ -1,5 +1,59 @@
 # MessMass Release Notes
 
+## [v11.34.0] — 2025-12-17T18:12:33.789Z
+
+### Summary
+- Standardized MongoDB database selection across all analytics API endpoints
+- Fixed database inconsistency that could cause analytics to query wrong database
+
+### Fixed
+- **Analytics APIs Database Consistency**: All analytics endpoints now use centralized `config.dbName`
+  - Replaced `client.db()` with `client.db(config.dbName)` in analytics routes:
+    - `/api/analytics/event/[projectId]`
+    - `/api/analytics/partner/[partnerId]`
+    - `/api/analytics/trends`
+    - `/api/analytics/compare`
+    - `/api/analytics/benchmarks`
+    - `/api/analytics/insights/[projectId]`
+    - `/api/analytics/executive/metrics`
+    - `/api/analytics/executive/insights`
+    - `/api/analytics/executive/top-events`
+  - Issue: Empty `client.db()` calls defaulted to "test" database on some environments
+  - Solution: Centralized config ensures all APIs use same MongoDB database
+
+### Why This Matters
+- Production Atlas URI doesn't include default database name
+- Missing explicit database reference caused random failures on production
+- Analytics dashboards could show empty data despite having correct data in messmass database
+- Centralized config guarantees one source of truth for database name
+
+### Impact
+- ✅ Analytics APIs reliably query the correct database in all environments
+- ✅ Executive dashboard shows accurate metrics
+- ✅ Event and partner analytics load correctly
+- ✅ Insights generation works consistently
+- ✅ Benchmark and trend analysis use proper database
+
+### Version
+`11.33.0` → `11.34.0` (MINOR - database consistency fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
+## [v11.33.0] — 2025-12-17T17:45:52.000Z
+
+### Fixed
+- Partners API DELETE now uses centralized `config.dbName` (previously read `process.env.MONGODB_DB`) which could hit the wrong DB.
+- Deleting a partner from Admin now works reliably in production.
+
+### Version
+`11.32.0` → `11.33.0` (MINOR - production fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.32.0] — 2025-12-17T17:36:36.000Z
 
 ### Summary
