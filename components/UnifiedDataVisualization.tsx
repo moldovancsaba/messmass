@@ -304,7 +304,7 @@ export default function UnifiedDataVisualization({
         .udv-grid .chart-item {
           display: ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts ? 'grid' : 'flex'} !important;
           ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts 
-            ? `grid-template-rows: ${alignment.alignTitles ? `${alignment.minElementHeight || 4}rem` : 'auto'} ${alignment.alignDescriptions ? `${(alignment.minElementHeight || 4) * 0.5}rem` : 'auto'} 1fr !important;` 
+            ? `grid-template-rows: ${alignment.alignTitles ? `${alignment.minElementHeight || 4}rem` : 'auto'} ${alignment.alignDescriptions ? `${(alignment.minElementHeight || 4) * 0.5}rem` : 'auto'} auto !important;` 
             : 'flex-direction: column !important;'
           }
           gap: 0.75rem !important;
@@ -368,12 +368,14 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart graphic area alignment - only for standard charts */
         /* WHY: Text and image charts don't use chartGraphicArea */
         .udv-grid .chart-item-standard :global(.chartGraphicArea) {
-          flex: 1 !important;
+          flex: 0 1 auto !important; /* avoid stretching the grid row */
           display: flex !important;
           flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
           ${alignment.alignCharts ? `min-height: ${(alignment.minElementHeight || 4) * 3}rem !important;` : 'min-height: 200px !important;'}
+          max-height: clamp(200px, 32vh, 360px) !important; /* cap height to viewport */
+          overflow: hidden !important; /* prevent runaway growth */
         }
 
         /* Inject per-block column definitions (fr units auto-calculate from widths) */
