@@ -35,43 +35,75 @@ async function connectToDatabase() {
 
 /**
  * WHAT: Helper function to validate formatting object structure
- * WHY: Ensure formatting configs have correct types
+ * WHY: Ensure formatting configs have correct types when present
  * HOW: Check rounded is boolean, prefix/suffix are strings or undefined
+ * FIXED: Formatting is now optional - validation passes if undefined or partial
  */
 function validateFormatting(formatting: any): boolean {
-  return formatting && 
-         typeof formatting.rounded === 'boolean' &&
-         (formatting.prefix === undefined || typeof formatting.prefix === 'string') &&
-         (formatting.suffix === undefined || typeof formatting.suffix === 'string');
+  // WHAT: Allow undefined or null formatting (optional field)
+  // WHY: Not all charts need formatting, and simple updates (showTitle toggle) shouldn't require it
+  if (!formatting || formatting === undefined || formatting === null) return true;
+  
+  // WHAT: Allow empty formatting object
+  // WHY: User may toggle formatting on/off, resulting in empty object
+  if (typeof formatting === 'object' && Object.keys(formatting).length === 0) return true;
+  
+  // WHAT: If formatting exists and has properties, validate its structure
+  // WHY: Prevent invalid formatting objects from breaking chart rendering
+  // NOTE: All fields are optional - validate only what's present
+  if (typeof formatting !== 'object') return false;
+  
+  // WHAT: Validate each property IF it exists
+  if ('rounded' in formatting && typeof formatting.rounded !== 'boolean') return false;
+  if ('prefix' in formatting && formatting.prefix !== '' && typeof formatting.prefix !== 'string') return false;
+  if ('suffix' in formatting && formatting.suffix !== '' && typeof formatting.suffix !== 'string') return false;
+  
+  return true;
 }
 
 /**
  * WHAT: Helper function to validate HERO block settings structure
  * WHY: Ensure HERO settings have correct boolean types
  * HOW: Check all HERO visibility flags are boolean values
+ * FIXED: More lenient validation - allows partial settings
  */
 function validateHeroSettings(heroSettings: any): boolean {
-  if (!heroSettings) return true; // Optional field
+  if (!heroSettings || heroSettings === null || heroSettings === undefined) return true; // Optional field
   
-  return typeof heroSettings === 'object' &&
-         typeof heroSettings.showEmoji === 'boolean' &&
-         typeof heroSettings.showDateInfo === 'boolean' &&
-         typeof heroSettings.showExportOptions === 'boolean';
+  // WHAT: Allow empty heroSettings object
+  if (typeof heroSettings === 'object' && Object.keys(heroSettings).length === 0) return true;
+  
+  if (typeof heroSettings !== 'object') return false;
+  
+  // WHAT: Validate each property IF it exists
+  if ('showEmoji' in heroSettings && typeof heroSettings.showEmoji !== 'boolean') return false;
+  if ('showDateInfo' in heroSettings && typeof heroSettings.showDateInfo !== 'boolean') return false;
+  if ('showExportOptions' in heroSettings && typeof heroSettings.showExportOptions !== 'boolean') return false;
+  
+  return true;
 }
 
 /**
  * WHAT: Helper function to validate block alignment settings structure
  * WHY: Ensure alignment settings have correct types
  * HOW: Check alignment flags are boolean, minElementHeight is number or undefined
+ * FIXED: More lenient validation - allows partial settings
  */
 function validateAlignmentSettings(alignmentSettings: any): boolean {
-  if (!alignmentSettings) return true; // Optional field
+  if (!alignmentSettings || alignmentSettings === null || alignmentSettings === undefined) return true; // Optional field
   
-  return typeof alignmentSettings === 'object' &&
-         typeof alignmentSettings.alignTitles === 'boolean' &&
-         typeof alignmentSettings.alignDescriptions === 'boolean' &&
-         typeof alignmentSettings.alignCharts === 'boolean' &&
-         (alignmentSettings.minElementHeight === undefined || typeof alignmentSettings.minElementHeight === 'number');
+  // WHAT: Allow empty alignmentSettings object
+  if (typeof alignmentSettings === 'object' && Object.keys(alignmentSettings).length === 0) return true;
+  
+  if (typeof alignmentSettings !== 'object') return false;
+  
+  // WHAT: Validate each property IF it exists
+  if ('alignTitles' in alignmentSettings && typeof alignmentSettings.alignTitles !== 'boolean') return false;
+  if ('alignDescriptions' in alignmentSettings && typeof alignmentSettings.alignDescriptions !== 'boolean') return false;
+  if ('alignCharts' in alignmentSettings && typeof alignmentSettings.alignCharts !== 'boolean') return false;
+  if ('minElementHeight' in alignmentSettings && typeof alignmentSettings.minElementHeight !== 'number') return false;
+  
+  return true;
 }
 
 /**
@@ -79,6 +111,13 @@ function validateAlignmentSettings(alignmentSettings: any): boolean {
  * Ensures required fields are present and constraints are met
  */
 function validateChartConfiguration(config: Partial<ChartConfiguration>): { isValid: boolean; error?: string } {
+  // Normalize order to a number for validation (accept numeric strings)
+  const orderNum = typeof config.order === 'number'
+    ? config.order
+    : typeof (config as any).order === 'string'
+      ? parseInt((config as any).order as unknown as string, 10)
+      : NaN;
+  
   // Required fields validation
   if (!config.chartId || !config.title || !config.type) {
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
@@ -120,11 +159,15 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   
   // WHAT: Validate element-level formatting if present
   // WHY: Ensure formatting objects have correct structure
+  // FIXED: Check if element.formatting exists before validating, allow undefined
   if (config.elements) {
     for (let i = 0; i < config.elements.length; i++) {
       const element = config.elements[i];
-      if (element.formatting && !validateFormatting(element.formatting)) {
-        return { isValid: false, error: `Invalid formatting in element ${i + 1}: rounded must be boolean, prefix/suffix must be strings` };
+      // WHAT: Only validate formatting if it exists (not undefined)
+      // WHY: formatting is optional - charts without formatting should pass validation
+      if (element.formatting !== undefined && !validateFormatting(element.formatting)) {
+        console.error('❌ Formatting validation failed for element', i + 1, ':', JSON.stringify(element.formatting));
+        return { isValid: false, error: `Invalid formatting in element ${i + 1}: formatting must be an object with optional rounded (boolean), prefix (string), suffix (string)` };
       }
     }
   }
@@ -132,17 +175,19 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   // WHAT: Validate HERO block settings if present
   // WHY: Ensure HERO visibility flags are boolean values
   if (config.heroSettings && !validateHeroSettings(config.heroSettings)) {
-    return { isValid: false, error: 'Invalid HERO settings: showEmoji, showDateInfo, and showExportOptions must be boolean values' };
+    console.error('❌ HERO settings validation failed:', JSON.stringify(config.heroSettings));
+    return { isValid: false, error: 'Invalid HERO settings: showEmoji, showDateInfo, and showExportOptions must be boolean values if present' };
   }
   
   // WHAT: Validate block alignment settings if present
   // WHY: Ensure alignment flags are boolean and minElementHeight is number
   if (config.alignmentSettings && !validateAlignmentSettings(config.alignmentSettings)) {
-    return { isValid: false, error: 'Invalid alignment settings: align flags must be boolean, minElementHeight must be number' };
+    console.error('❌ Alignment settings validation failed:', JSON.stringify(config.alignmentSettings));
+    return { isValid: false, error: 'Invalid alignment settings: alignTitles, alignDescriptions, alignCharts must be boolean if present, minElementHeight must be number if present' };
   }
   
-  // Order validation
-  if (typeof config.order !== 'number' || config.order < 1) {
+  // Order validation (after normalization)
+  if (!Number.isFinite(orderNum) || orderNum < 1) {
     return { isValid: false, error: 'Order must be a positive number' };
   }
   
@@ -323,10 +368,11 @@ export async function POST(request: NextRequest) {
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
+    console.log('📥 POST RECEIVED - order:', order, 'typeof:', typeof order);
     console.log('📥 POST RECEIVED - elements[0].formatting:', elements[0]?.formatting);
 
     // Validate required fields
-    const validation = validateChartConfiguration(body);
+    const validation = validateChartConfiguration({ ...body, order: typeof order === 'string' ? parseInt(order, 10) : order });
     if (!validation.isValid) {
       return NextResponse.json(
         { success: false, error: validation.error },
@@ -353,11 +399,15 @@ export async function POST(request: NextRequest) {
     
     // WHAT: Include all configuration fields including HERO settings and showTitle
     // WHY: element.formatting, aspectRatio, icon, heroSettings, alignmentSettings, and showTitle must be persisted to database
+    // Normalize order with safe fallback
+    let normalizedOrder = typeof order === 'string' ? parseInt(order, 10) : order;
+    if (!Number.isFinite(normalizedOrder) || (normalizedOrder as number) < 1) normalizedOrder = 1;
+
     const configuration: Omit<ChartConfiguration, '_id'> = {
       chartId,
       title,
       type,
-      order,
+      order: normalizedOrder as number,
       isActive: isActive ?? true,
       elements,
       icon, // v10.4.0: Material Icon name
@@ -419,6 +469,20 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { configurationId, _id, createdAt, createdBy, ...updateData } = body;
 
+    // Coerce order to number if present (accept numeric strings); drop invalid
+    if (updateData && 'order' in updateData) {
+      const ord = (updateData as any).order;
+      console.log('📥 PUT RECEIVED - raw order:', ord, 'typeof:', typeof ord);
+      let coerced = ord;
+      if (typeof ord === 'string') coerced = parseInt(ord, 10);
+      if (!Number.isFinite(coerced) || coerced < 1) {
+        console.log('⚠️ PUT: invalid order provided, ignoring this field (will keep existing order)');
+        delete (updateData as any).order;
+      } else {
+        (updateData as any).order = coerced;
+      }
+    }
+
     // WHAT: Log received update data
     console.log('📥 PUT RECEIVED - configurationId:', configurationId);
     console.log('📥 PUT RECEIVED - elements[0].formatting:', updateData.elements?.[0]?.formatting);
@@ -448,7 +512,10 @@ export async function PUT(request: NextRequest) {
         );
       }
       
-      const mergedConfig = { ...currentConfig, ...updateData };
+      // Ensure order in current config is valid during validation
+      const currentOrder = typeof currentConfig.order === 'number' ? currentConfig.order : parseInt(String(currentConfig.order ?? ''), 10);
+      const safeCurrentOrder = Number.isFinite(currentOrder) && currentOrder >= 1 ? currentOrder : 1;
+      const mergedConfig = { ...currentConfig, order: safeCurrentOrder, ...updateData }; // order already coerced or dropped above
       const validation = validateChartConfiguration(mergedConfig);
       if (!validation.isValid) {
         return NextResponse.json(

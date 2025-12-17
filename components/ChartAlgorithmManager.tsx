@@ -244,6 +244,24 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     }
   };
 
+  // WHAT: Helper function to remove undefined fields recursively
+  // WHY: Undefined fields in elements cause API validation errors
+  // HOW: Deep clone object and recursively remove all undefined values
+  const cleanUndefinedFields = (obj: any): any => {
+    if (obj === null || obj === undefined) return obj;
+    if (typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(cleanUndefinedFields);
+    
+    const cleaned: any = {};
+    Object.keys(obj).forEach(key => {
+      const value = obj[key];
+      if (value !== undefined) {
+        cleaned[key] = cleanUndefinedFields(value);
+      }
+    });
+    return cleaned;
+  };
+  
   // WHAT: Update configuration without closing modal (for Update button)
   // WHY: Allow rapid iterative editing with immediate feedback
   const updateConfiguration = async (configData: ChartConfigFormData): Promise<ChartConfigFormData> => {
@@ -251,17 +269,31 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     const url = '/api/chart-config';
     const method = isUpdate ? 'PUT' : 'POST';
     
+    // Normalize order before sending
+    const safeOrder = Number.isFinite(configData.order as any) && (configData.order as any) >= 1
+      ? configData.order
+      : 1;
+    
     const body = isUpdate 
-      ? { configurationId: configData._id, ...configData }
-      : configData;
+      ? { configurationId: configData._id, ...configData, order: safeOrder }
+      : { ...configData, order: safeOrder };
 
     console.log(`🔄 Updating chart configuration (modal stays open):`, configData.chartId);
     console.log('📦 aspectRatio BEFORE save:', configData.aspectRatio);
     
+    // WHAT: Clean undefined fields by parsing/re-stringifying
+    // WHY: JSON.stringify in fetch will still send undefined as null if not cleaned first
+    const cleanedBody = cleanUndefinedFields(body);
+    
+    // DEBUG: Log what we're sending
+    console.log('🔍 BEFORE clean - elements[0].formatting:', body.elements?.[0]?.formatting);
+    console.log('🔍 AFTER clean - elements[0].formatting:', cleanedBody.elements?.[0]?.formatting);
+    console.log('🔍 AFTER clean - elements[0] keys:', Object.keys(cleanedBody.elements?.[0] || {}));
+    
     const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(cleanedBody)
     });
 
     const result = await response.json();
@@ -290,17 +322,32 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     const url = '/api/chart-config';
     const method = isUpdate ? 'PUT' : 'POST';
     
+    // Normalize order before sending
+    const safeOrder = Number.isFinite(configData.order as any) && (configData.order as any) >= 1
+      ? configData.order
+      : 1;
+    
     const body = isUpdate 
-      ? { configurationId: configData._id, ...configData }
-      : configData;
+      ? { configurationId: configData._id, ...configData, order: safeOrder }
+      : { ...configData, order: safeOrder };
 
     console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration (then close):`, configData.chartId);
     console.log('📦 aspectRatio:', configData.aspectRatio);
     
+    // DEBUG: Check if cleanUndefinedFields function exists and what it does
+    console.log('🔍 BEFORE clean - elements[0]:', JSON.stringify(body.elements?.[0], null, 2));
+    
+    // WHAT: Clean undefined fields by parsing/re-stringifying
+    // WHY: JSON.stringify in fetch will still send undefined as null if not cleaned first
+    const cleanedBody = cleanUndefinedFields(body);
+    
+    console.log('🔍 AFTER clean - elements[0]:', JSON.stringify(cleanedBody.elements?.[0], null, 2));
+    console.log('🔍 AFTER clean - has formatting key?:', 'formatting' in (cleanedBody.elements?.[0] || {}));
+    
     const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(cleanedBody)
     });
 
     const result = await response.json();
@@ -822,6 +869,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       // NOTE: Modal stays open for continued editing
     } catch (error) {
       console.error('❌ Update failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Save failed: ${errorMessage}`);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
@@ -838,6 +887,9 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (error) {
+      console.error('❌ Save failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Save failed: ${errorMessage}`);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import UnifiedStatsHero from '@/components/UnifiedStatsHero';
 import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
-import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, ChartCalculationResult, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
@@ -93,6 +93,7 @@ export default function FilterPage() {
   const [chartsLoading, setChartsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+  const [alignmentSettings, setAlignmentSettings] = useState<BlockAlignmentSettings | undefined>(undefined);
   const [hashtags, setHashtags] = useState<string[]>([]);
 
   // Function to fetch page configuration
@@ -113,6 +114,11 @@ export default function FilterPage() {
         if (data.config.gridSettings) {
           const gs = data.config.gridSettings;
           setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
+        // WHAT: Extract alignment settings if available
+        // WHY: Support block-level alignment in filter pages
+        if (data.config.alignmentSettings) {
+          setAlignmentSettings(data.config.alignmentSettings);
         }
       }
     } catch (err) {
@@ -404,6 +410,7 @@ export default function FilterPage() {
             chartResults={chartResults}
             loading={chartsLoading}
             gridUnits={gridUnits}
+            alignmentSettings={alignmentSettings}
           />
         </div>
 

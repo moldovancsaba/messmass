@@ -1,5 +1,58 @@
 # MessMass Release Notes
 
+## [v11.30.0] — 2025-12-17T14:10:14.000Z
+
+### Summary
+- Block-level element alignment system for report templates
+- Professional visual consistency across report blocks
+- Configurable alignment for titles, descriptions, and charts
+
+### Added
+- **Block Alignment Settings** in Visualization Manager
+  - Checkbox controls for aligning titles, descriptions, and charts
+  - Optional minimum element height configuration (px)
+  - Template-level settings saved to MongoDB
+- **AlignmentSettings Interface** in chartConfigTypes.ts
+  - `alignTitles`, `alignDescriptions`, `alignCharts` boolean flags
+  - `minElementHeight` optional number for consistent sizing
+- **Conditional CSS Alignment** in UnifiedDataVisualization component
+  - Grid-based layout when alignment enabled
+  - Flex-based layout when alignment disabled
+  - Minimum height enforcement for aligned elements
+
+### Changed
+- components/UnifiedDataVisualization.tsx
+  - Added `alignmentSettings` prop
+  - Implemented conditional CSS based on alignment flags
+  - Default alignment values for backward compatibility
+- app/report/[slug]/page.tsx
+  - Extract `alignmentSettings` from template API
+  - Pass settings to UnifiedDataVisualization
+- app/partner-report/[slug]/page.tsx
+  - Extract and pass alignment settings
+- app/filter/[slug]/page.tsx
+  - Support alignment settings in filter pages
+- app/admin/visualization/page.tsx
+  - Convert MongoDB `null` to TypeScript `undefined` for compatibility
+  - Clean `minElementHeight` value before saving
+
+### Impact
+- ✅ Report blocks now maintain visual consistency with aligned elements
+- ✅ Professional appearance with horizontally aligned titles, descriptions, and charts
+- ✅ Backward compatible - existing templates default to alignment enabled
+- ✅ Build successful (6.6s compilation time)
+
+### Technical Details
+- **Type Safety**: Proper handling of `null` vs `undefined` for MongoDB compatibility
+- **CSS Strategy**: Grid rows (`auto auto 1fr`) for aligned layout vs flex column for natural sizing
+- **Min Height Calculation**: Title area = 4rem (default), Description = 2rem, Chart = 12rem
+- **Responsive**: Alignment rules apply across all breakpoints (desktop, tablet, mobile)
+
+### Version
+`11.29.0` → `11.30.0` (MINOR - feature addition with backward compatibility)
+
+---
+
 ## [v11.29.0] — 2025-12-17T11:01:04.000Z
 
 ### Summary

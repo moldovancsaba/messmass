@@ -1,7 +1,7 @@
 import React from 'react';
 import ColoredCard from './ColoredCard';
 import { DynamicChart } from './DynamicChart';
-import { ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { ChartCalculationResult, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedDataVisualization.module.css';
@@ -13,6 +13,7 @@ interface UnifiedDataVisualizationProps {
   gridUnits?: { desktop: number; tablet: number; mobile: number };
   useChartContainer?: boolean; // when false, render charts directly without the extra container/header
   pageStyle?: PageStyleEnhanced; // WHAT: Optional pageStyle to apply colors to charts
+  alignmentSettings?: BlockAlignmentSettings; // WHAT: Optional alignment settings from template
 }
 
 export default function UnifiedDataVisualization({
@@ -21,8 +22,18 @@ export default function UnifiedDataVisualization({
   loading = false,
   gridUnits = { desktop: 4, tablet: 2, mobile: 1 },
   useChartContainer = true,
-  pageStyle
+  pageStyle,
+  alignmentSettings
 }: UnifiedDataVisualizationProps) {
+  
+  // WHAT: Default alignment settings if not provided
+  // WHY: Maintain backward compatibility with existing reports
+  const alignment = alignmentSettings || {
+    alignTitles: true,
+    alignDescriptions: true,
+    alignCharts: true,
+    minElementHeight: undefined
+  };
   
 
   
@@ -291,8 +302,11 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart item alignment system */
         /* WHY: Ensure titles, descriptions, and charts align at consistent heights */
         .udv-grid .chart-item {
-          display: grid !important;
-          grid-template-rows: auto auto 1fr !important; /* title, description, chart */
+          display: ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts ? 'grid' : 'flex'} !important;
+          ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts 
+            ? 'grid-template-rows: auto auto 1fr !important;' 
+            : 'flex-direction: column !important;'
+          }
           gap: 0.75rem !important;
           height: 100% !important;
           align-content: start !important;
@@ -314,7 +328,7 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart title area alignment */
         /* WHY: All title areas within a row should align at the same height */
         .udv-grid :global(.chartTitleArea) {
-          min-height: 4rem !important; /* Consistent title area height */
+          ${alignment.alignTitles ? `min-height: ${alignment.minElementHeight || 4}rem !important;` : ''}
           display: flex !important;
           flex-direction: column !important;
           justify-content: flex-start !important;
@@ -338,6 +352,7 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart subtitle alignment */
         /* WHY: All subtitles within a row should align at the same height */
         .udv-grid :global(.chartSubtitle) {
+          ${alignment.alignDescriptions ? `min-height: ${(alignment.minElementHeight || 4) * 0.5}rem !important;` : ''}
           margin: 0 !important;
           line-height: 1.4 !important;
           text-align: center !important;
@@ -357,7 +372,7 @@ export default function UnifiedDataVisualization({
           flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
-          min-height: 200px !important; /* Only for standard charts */
+          ${alignment.alignCharts ? `min-height: ${(alignment.minElementHeight || 4) * 3}rem !important;` : 'min-height: 200px !important;'}
         }
 
         /* Inject per-block column definitions (fr units auto-calculate from widths) */

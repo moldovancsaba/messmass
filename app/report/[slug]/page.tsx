@@ -7,7 +7,7 @@ import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import StandardState from '@/components/StandardState';
 import DataQualityInsights from '@/components/DataQualityInsights';
-import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, ChartCalculationResult, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
@@ -94,6 +94,7 @@ export default function StatsPage() {
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 4, tablet: 2, mobile: 1 });
+  const [alignmentSettings, setAlignmentSettings] = useState<BlockAlignmentSettings | undefined>(undefined);
   const [resolving, setResolving] = useState(true);
   const [showInsights, setShowInsights] = useState(false); // Toggle for data quality insights (default hidden)
   
@@ -209,6 +210,13 @@ export default function StatsPage() {
         if (template.gridSettings) {
           const gs = template.gridSettings;
           setGridUnits({ desktop: gs.desktopUnits, tablet: gs.tabletUnits, mobile: gs.mobileUnits });
+        }
+        
+        // WHAT: Extract alignment settings from template
+        // WHY: Enable block-level alignment of titles, descriptions, and charts
+        if (template.alignmentSettings) {
+          setAlignmentSettings(template.alignmentSettings);
+          console.log('✅ [Stats] Loaded alignment settings:', template.alignmentSettings);
         }
       }
     } catch (err) {
@@ -549,6 +557,7 @@ export default function StatsPage() {
             gridUnits={gridUnits}
             useChartContainer={false}
             pageStyle={pageStyle || undefined}
+            alignmentSettings={alignmentSettings}
           />
         </div>
       </div>

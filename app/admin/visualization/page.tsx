@@ -173,11 +173,13 @@ export default function VisualizationPage() {
         showDateInfo: template.heroSettings?.showDateInfo ?? true,
         showExportOptions: template.heroSettings?.showExportOptions ?? true
       });
+      // WHAT: Convert null to undefined for TypeScript compatibility
+      // WHY: MongoDB stores undefined as null, but TypeScript expects undefined
       setAlignmentSettings({
         alignTitles: template.alignmentSettings?.alignTitles ?? true,
         alignDescriptions: template.alignmentSettings?.alignDescriptions ?? true,
         alignCharts: template.alignmentSettings?.alignCharts ?? true,
-        minElementHeight: template.alignmentSettings?.minElementHeight
+        minElementHeight: template.alignmentSettings?.minElementHeight || undefined
       });
       
     } catch (error) {
@@ -368,12 +370,19 @@ export default function VisualizationPage() {
     if (!selectedTemplateId) return;
     
     try {
+      // WHAT: Convert minElementHeight to undefined if it's null or 0
+      // WHY: MongoDB stores undefined as null, causing TypeScript type errors
+      const cleanedAlignmentSettings = {
+        ...newAlignmentSettings,
+        minElementHeight: newAlignmentSettings.minElementHeight || undefined
+      };
+      
       const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           heroSettings: newHeroSettings,
-          alignmentSettings: newAlignmentSettings
+          alignmentSettings: cleanedAlignmentSettings
         })
       });
       

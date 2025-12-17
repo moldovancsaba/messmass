@@ -6186,8 +6186,8 @@ return {
 
 ---
 
-*Last Updated: 2025-01-21T11:14:00.000Z (UTC)*  
-*Version: 6.0.0*  
+*Last Updated: 2025-12-17T14:10:14.000Z (UTC)*  
+*Version: 11.30.0*
 *Previous: Version: 5.5.0 (Hashtag Pages Migration - Complete)*  
 *Previous: Version: 2.6.0 (Hashtag Pages Migration - Complete)*  
 *Previous: Version: 2.3.1 (Admin Interface Improvements - Complete)*  

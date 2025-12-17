@@ -13,7 +13,7 @@ import UnifiedDataVisualization from '@/components/UnifiedDataVisualization';
 import ColoredCard from '@/components/ColoredCard';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
 import { exportPageToPDF } from '@/lib/export/pdf';
-import { ChartConfiguration, ChartCalculationResult } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, ChartCalculationResult, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
@@ -76,6 +76,7 @@ export default function PartnerReportPage() {
   const [dataBlocks, setDataBlocks] = useState<DataVisualizationBlock[]>([]);
   const [chartConfigurations, setChartConfigurations] = useState<ChartConfiguration[]>([]);
   const [gridUnits, setGridUnits] = useState<{ desktop: number; tablet: number; mobile: number }>({ desktop: 6, tablet: 3, mobile: 2 });
+  const [alignmentSettings, setAlignmentSettings] = useState<BlockAlignmentSettings | undefined>(undefined);
   const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
   
   
@@ -165,6 +166,13 @@ export default function PartnerReportPage() {
         if (data.template.gridSettings) {
           console.log('📐 Setting grid units from template:', data.template.gridSettings);
           setGridUnits(data.template.gridSettings);
+        }
+        
+        // WHAT: Extract alignment settings from template
+        // WHY: Enable block-level alignment of titles, descriptions, and charts
+        if (data.template.alignmentSettings) {
+          setAlignmentSettings(data.template.alignmentSettings);
+          console.log('✅ [Partner] Loaded alignment settings:', data.template.alignmentSettings);
         }
       } else {
         console.warn('⚠️  Failed to load report template:', data.error);
@@ -604,6 +612,7 @@ export default function PartnerReportPage() {
               gridUnits={gridUnits}
               useChartContainer={false}
               pageStyle={pageStyle || undefined}
+              alignmentSettings={alignmentSettings}
             />
           </div>
           
