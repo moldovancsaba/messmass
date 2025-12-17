@@ -1,5 +1,56 @@
 # MessMass Release Notes
 
+## [v11.31.0] — 2025-12-17T17:04:05.000Z
+
+### Summary
+- Critical security fix: MongoDB credentials removed from version control
+- Chart height and responsive layout improvements
+- Variable name handling fixes for KYC system
+- Block alignment refinements
+
+### Security
+- **🚨 CRITICAL**: Removed exposed MongoDB credentials from `.vscode/settings.json`
+  - Issue: Connection string with username/password was committed to Git
+  - Solution: Credentials removed, file added to .gitignore
+  - Action Required: Rotate MongoDB credentials if repository was public
+
+### Fixed
+- **Chart Height Management**: Multiple fixes for chart rendering consistency
+  - Added maximum height cap to prevent extremely tall charts
+  - Simplified height calculation using total units
+  - Corrected chart height behavior in report blocks
+  - Applied shared height only for baseline (pie/bar/KPI) blocks
+  - Added viewport clamp for responsive sizing
+- **Variable Name Handling**: KYC variable names now work with or without `stats.` prefix
+  - Issue: Chart validation failed for variables without prefix
+  - Solution: Treat both formats as equivalent during validation
+- **Block Alignment**: Fixed Y-axis positioning consistency
+  - Ensured consistent element alignment across all blocks
+
+### Changed
+- Chart height calculation now uses responsive unit-based system
+- Text and image blocks skip shared height constraints for natural sizing
+- Global hook added for TextChart content rendering
+- Security: Added `.env*` patterns to .gitignore to prevent credential leaks
+
+### Technical Details
+- **Responsive Height**: Derive per-block chart height from unit width (pie baseline 4:6)
+- **Chart Body Isolation**: Shared height applies to chart graphic only, not titles/descriptions
+- **Grid Stretching**: Cap chart graphic height to prevent unwanted stretching
+
+### Impact
+- ✅ Security vulnerability patched - no credentials in version control
+- ✅ Charts render with consistent, predictable heights
+- ✅ Better responsive behavior across device sizes
+- ✅ KYC variable validation more flexible and robust
+
+### Version
+`11.30.1` → `11.31.0` (MINOR - multiple improvements and critical security fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.30.1] — 2025-12-17T14:34:26.000Z
 
 ### Summary
