@@ -304,7 +304,7 @@ export default function UnifiedDataVisualization({
         .udv-grid .chart-item {
           display: ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts ? 'grid' : 'flex'} !important;
           ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts 
-            ? 'grid-template-rows: auto auto 1fr !important;' 
+            ? `grid-template-rows: ${alignment.alignTitles ? `${alignment.minElementHeight || 4}rem` : 'auto'} ${alignment.alignDescriptions ? `${(alignment.minElementHeight || 4) * 0.5}rem` : 'auto'} 1fr !important;` 
             : 'flex-direction: column !important;'
           }
           gap: 0.75rem !important;
@@ -328,12 +328,13 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart title area alignment */
         /* WHY: All title areas within a row should align at the same height */
         .udv-grid :global(.chartTitleArea) {
-          ${alignment.alignTitles ? `min-height: ${alignment.minElementHeight || 4}rem !important;` : ''}
+          ${alignment.alignTitles ? `height: ${alignment.minElementHeight || 4}rem !important;` : ''}
           display: flex !important;
           flex-direction: column !important;
           justify-content: flex-start !important;
           align-items: center !important;
           text-align: center !important;
+          overflow: hidden !important;
         }
         
         /* WHAT: Chart title text alignment */
@@ -352,7 +353,7 @@ export default function UnifiedDataVisualization({
         /* WHAT: Chart subtitle alignment */
         /* WHY: All subtitles within a row should align at the same height */
         .udv-grid :global(.chartSubtitle) {
-          ${alignment.alignDescriptions ? `min-height: ${(alignment.minElementHeight || 4) * 0.5}rem !important;` : ''}
+          ${alignment.alignDescriptions ? `height: ${(alignment.minElementHeight || 4) * 0.5}rem !important;` : ''}
           margin: 0 !important;
           line-height: 1.4 !important;
           text-align: center !important;
