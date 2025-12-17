@@ -1,5 +1,41 @@
 # MessMass Release Notes
 
+## [v11.32.0] — 2025-12-17T17:36:36.000Z
+
+### Summary
+- Standardize MongoDB database selection across all APIs to use centralized config
+- Fix production inconsistency where some routes pointed to default "test" DB
+- Partners list on Admin now reliably shows existing data in production
+
+### Fixed
+- Replaced `client.db(process.env.MONGODB_DB || 'messmass')` with `client.db(config.dbName)` in API routes:
+  - partners (list/create/update)
+  - partners/edit/[slug]
+  - partners/report/[slug]
+  - notifications (GET/POST)
+  - hashtags ([hashtag], filter)
+  - admin/ui-settings (GET/PUT)
+  - cities (GET)
+  - analytics/aggregates (partners, general)
+  - cron/analytics-aggregation (POST/GET)
+  - chart-formatting-defaults (GET/PUT)
+
+### Why this matters
+- Production Atlas URI doesn’t include a default DB; missing MONGODB_DB caused some endpoints to default to "test" (empty)
+- Centralized config guarantees one source of truth (`config.dbName`), preventing drift
+
+### Impact
+- ✅ Admin → Partners shows real partners (no empty list)
+- ✅ All APIs consistently use the same Atlas database
+- ✅ Safer future changes (single place to configure DB name)
+
+### Version
+`11.31.0` → `11.32.0` (MINOR - consistency and reliability fixes)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.31.0] — 2025-12-17T17:04:05.000Z
 
 ### Summary

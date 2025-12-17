@@ -60,6 +60,9 @@ build/
 .tmp/
 *.tmp
 
+# Migration exports (may contain sensitive data)
+partners-export.json
+
 # Duplicate/backup files (prevent accidental commits)
 *2.tsx
 *2.ts

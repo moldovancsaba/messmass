@@ -22,6 +22,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('chart_formatting_defaults');
 
     const defaults = await collection.findOne({});
@@ -78,7 +79,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const collection = db.collection('chart_formatting_defaults');
 
     await collection.updateOne(

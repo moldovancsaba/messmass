@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     const countryIdParam = searchParams.get('countryId');
     
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     
     // Build query filter
     const filter: Record<string, unknown> = { active: true };

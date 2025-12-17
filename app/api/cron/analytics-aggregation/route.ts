@@ -20,6 +20,7 @@ import { runFullAggregation } from '@/lib/analytics-aggregator';
 import clientPromise from '@/lib/mongodb';
 import { Db, Collection } from 'mongodb';
 import { AggregationJobMetadata } from '@/lib/analytics-aggregates.types';
+import config from '@/lib/config';
 
 /**
  * POST /api/cron/analytics-aggregation
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     
     // Create job metadata record
     const client = await clientPromise;
-    const db: Db = client.db(process.env.MONGODB_DB || 'messmass');
+const db: Db = client.db(config.dbName);
     const jobsCollection: Collection<AggregationJobMetadata> = db.collection('aggregation_jobs');
     
     const job: Omit<AggregationJobMetadata, '_id'> = {
@@ -193,7 +194,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
     
     const client = await clientPromise;
-    const db: Db = client.db(process.env.MONGODB_DB || 'messmass');
+const db: Db = client.db(config.dbName);
     const jobsCollection: Collection<AggregationJobMetadata> = db.collection('aggregation_jobs');
     
     const jobs = await jobsCollection

@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import config from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+const db = client.db(config.dbName);
 
     // Build query
     const query: any = {};
@@ -97,7 +98,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+const db = client.db(config.dbName);
 
     // WHAT: Build update object with only provided fields
     // WHY: Allow partial updates without overwriting other partner data
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+const db = client.db(config.dbName);
 
     // Generate viewSlug from name
     const viewSlug = name.toLowerCase()

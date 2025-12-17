@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import { Db, Collection } from 'mongodb';
+import config from '@/lib/config';
 import {
   PartnerAnalytics,
   PartnerAnalyticsResponse
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     
     // Connect to database
     const client = await clientPromise;
-    const db: Db = client.db(process.env.MONGODB_DB || 'messmass');
+const db: Db = client.db(config.dbName);
     const analyticsCollection: Collection<PartnerAnalytics> = db.collection('partner_analytics');
     
     // Build query

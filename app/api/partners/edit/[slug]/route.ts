@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import config from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+const db = client.db(config.dbName);
 
     // WHAT: Find partner by viewSlug, _id, or editSlug (if it exists)
     // WHY: Support multiple ways to access partner editing (like event editing)

@@ -3,6 +3,7 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { getAdminUser } from '@/lib/auth';
+import config from '@/lib/config';
 
 /* WHAT: Multi-user notifications API endpoint for shared activity notifications
  * WHY: Track project creation, edits, and stat updates visible to all users
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const notifications = db.collection('notifications');
 
     // WHAT: Parse query parameters for pagination and filtering
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     const notifications = db.collection('notifications');
 
     // WHAT: Parse notification data from request body

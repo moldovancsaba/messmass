@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { isAuthenticated } from '@/lib/auth';
+import config from '@/lib/config';
 
 /* What: Admin UI Settings API for font selection and other UI preferences
    Why: Persist admin-selected design choices (font family, etc.) to database
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     
     /* What: Fetch typography settings from database
        Why: Return current font selection for admin UI */
@@ -81,7 +82,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'messmass');
+const db = client.db(config.dbName);
     
     /* What: ISO 8601 timestamp with milliseconds (mandatory format per rules)
        Why: Consistent timestamp format across all database records */
