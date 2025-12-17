@@ -19,6 +19,9 @@ pnpm-debug.log*
 # Mac
 .DS_Store
 
+# IDE
+.vscode/
+
 # Dependencies
 node_modules/
 
