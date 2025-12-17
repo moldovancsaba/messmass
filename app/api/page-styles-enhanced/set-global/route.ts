@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
 
 /* WHAT: POST - Set a style as global default
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
     
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     
     // Check if style exists
     const style = await db

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
@@ -15,7 +16,7 @@ import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 export async function GET(request: NextRequest) {
   try {
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const { searchParams } = new URL(request.url);
     const styleId = searchParams.get('styleId');
     
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     
     // Validation: name is required and must be unique
     if (!body.name || body.name.trim() === '') {
@@ -159,7 +160,7 @@ export async function PUT(request: NextRequest) {
     
     const body = await request.json();
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     
     // Check if style exists
     const existing = await db
@@ -245,7 +246,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     
     // Check if style exists
     const existing = await db

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import config from '@/lib/config';
 import { ObjectId } from 'mongodb';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get('projectId');
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
 
     let style: PageStyleEnhanced | null = null;
 

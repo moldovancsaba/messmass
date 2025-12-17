@@ -1,5 +1,47 @@
 # MessMass Release Notes
 
+## [v11.35.0] — 2025-12-17T18:30:21.000Z
+
+### Summary
+- Standardized MongoDB database selection across all page styles API endpoints
+- Completed comprehensive database consistency fix across entire API layer
+
+### Fixed
+- **Page Styles APIs Database Consistency**: All page styles endpoints now use centralized `config.dbName`
+  - Replaced `client.db()` with `client.db(config.dbName)` in page styles routes:
+    - `/api/page-style` (GET - public page style fetching)
+    - `/api/page-styles-enhanced` (GET, POST, PUT, DELETE - full CRUD)
+    - `/api/page-styles-enhanced/assign-project` (POST, DELETE - style assignment)
+    - `/api/page-styles-enhanced/set-global` (POST - global default)
+  - Issue: Empty `client.db()` calls defaulted to "test" database in production
+  - Solution: Centralized config ensures all APIs use same MongoDB database
+
+### Why This Matters
+- Page styles management now works reliably in production environment
+- Completes the database consistency initiative across the entire API layer
+- No more random "empty data" issues due to database name misconfiguration
+- All custom themes and style assignments persist correctly
+
+### Impact
+- ✅ Page styles list shows all created styles in Admin
+- ✅ Style assignment to projects works correctly
+- ✅ Global default style configuration persists
+- ✅ Public pages load correct theme styling
+- ✅ **COMPLETE**: All API endpoints now use centralized database config
+
+### Technical Details
+- **Total API endpoints fixed across v11.32.0-11.35.0**: 22+ routes
+- **Categories covered**: Partners, Analytics, Page Styles, Notifications, Hashtags, UI Settings
+- **Root cause**: MongoDB Atlas URI doesn't include default database name
+- **Prevention**: All future APIs must import and use `config.dbName`
+
+### Version
+`11.34.0` → `11.35.0` (MINOR - page styles database consistency fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.34.0] — 2025-12-17T18:12:33.789Z
 
 ### Summary
