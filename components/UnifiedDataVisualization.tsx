@@ -219,21 +219,32 @@ export default function UnifiedDataVisualization({
         grid.style.removeProperty('--block-chart-height');
         return;
       }
-      // Find child chart items with width units
+      
+      // WHAT: Calculate unit width from total units instead of measuring rendered widths
+      // WHY: More reliable - doesn't depend on browser layout timing
+      // HOW: blockWidth / totalUnits, then multiply by 1.5 for 4:6 aspect ratio
+      
+      const blockWidth = grid.clientWidth;
+      if (blockWidth <= 0) return;
+      
+      // Get all chart items and sum their units
       const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item[data-width-units]'));
-      const unitCandidates: number[] = [];
+      let totalUnits = 0;
       items.forEach((el) => {
         const unitsAttr = el.getAttribute('data-width-units');
         const units = Math.max(1, Number(unitsAttr) || 1);
-        const w = el.clientWidth;
-        if (w > 0 && units > 0) unitCandidates.push(w / units);
+        totalUnits += units;
       });
-      // Fallback: use grid width if no candidates
-      const fallback = grid.clientWidth > 0 ? grid.clientWidth : 0;
-      const unitWidth = unitCandidates.length > 0 ? Math.min(...unitCandidates) : fallback;
-      if (unitWidth > 0) {
+      
+      if (totalUnits > 0) {
+        // WHAT: unitWidth = blockWidth / totalUnits
+        // WHY: This is what CSS Grid does with fr units
+        const unitWidth = blockWidth / totalUnits;
         const targetHeight = Math.round(unitWidth * 1.5); // 4:6 width:height → H = 1.5 * W
         grid.style.setProperty('--block-chart-height', `${targetHeight}px`);
+        
+        // Debug logging (remove in production)
+        console.log(`📊 Block height calc: blockWidth=${blockWidth}px, totalUnits=${totalUnits}, unitWidth=${unitWidth.toFixed(2)}px, height=${targetHeight}px`);
       }
     };
 
