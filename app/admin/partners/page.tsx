@@ -749,8 +749,10 @@ export default function PartnersAdminPageUnified() {
             onChange={(bitlyLinkIds) => 
               setNewPartnerData(prev => ({ ...prev, bitlyLinkIds }))
             }
-            availableLinks={allBitlyLinks}
           />
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
+          </p>
         </div>
         
         <div className="form-group mb-4">
@@ -884,8 +886,10 @@ export default function PartnersAdminPageUnified() {
             onChange={(bitlyLinkIds) => 
               setEditPartnerData(prev => ({ ...prev, bitlyLinkIds }))
             }
-            availableLinks={allBitlyLinks}
           />
+          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
+          </p>
         </div>
         
         <div className="form-group mb-4">

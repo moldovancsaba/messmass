@@ -1,5 +1,55 @@
 # MessMass Release Notes
 
+## [v11.30.1] — 2025-12-17T14:34:26.000Z
+
+### Summary
+- Critical Bitly integration fixes for Partner and Event modals
+- Server-side search implementation for 3000+ Bitly links
+- Fixed premature form submission in Event Edit modal
+
+### Fixed
+- **Partner Modal Bitly Search**: Replaced client-side filtering with server-side API search
+  - Issue: Empty search results and slow initial load when loading all 3000+ links
+  - Solution: Real-time API search via `/api/bitly/links?search=...`
+  - Benefit: Instant search results with type-ahead (2+ characters)
+- **Event Modal Premature Submit**: Fixed "+ Add Link" button triggering parent form submit
+  - Issue: Clicking "+ Add Link" showed "Project updated successfully!" and closed modal
+  - Solution: Added `type="button"` to toggle button in BitlyLinksEditor
+  - Benefit: Modal stays open until explicit "Update Event" click
+- **Search Performance**: Debounced search with 300ms delay for optimal UX
+
+### Changed
+- components/BitlyLinksSelector.tsx
+  - Complete rewrite for server-side search
+  - Removed `availableLinks` prop dependency
+  - Added debounced search with useDebouncedValue hook
+  - Implemented loading states: "Type to search", "Searching...", "No results"
+  - Only fetches selected links on mount for chip display
+- components/BitlyLinksEditor.tsx
+  - Fixed "+ Add Link" button type to prevent form submission
+- app/admin/partners/page.tsx
+  - Removed deprecated `availableLinks` prop from BitlyLinksSelector
+  - Added help text: "💡 Type to search Bitly links (e.g., fanselfie.me/swisshockey)"
+
+### Impact
+- ✅ Bitly search works immediately in Partner modals (no waiting)
+- ✅ Event Edit modal no longer closes prematurely when adding links
+- ✅ Handles 3000+ Bitly links efficiently with server-side pagination
+- ✅ Search works with partial matches ("fanselfie" finds "fanselfie.me/swisshockey")
+- ✅ Unified search behavior across Partner and Event modals
+
+### Technical Details
+- **Search API**: `/api/bitly/links?search={query}&includeUnassigned=true&limit=20`
+- **Debounce**: 300ms delay before triggering search
+- **Min Characters**: 2 characters required for search (prevents accidental queries)
+- **Results Limit**: Top 20 matches returned per search
+- **Chip Management**: Selected links fetched separately for display
+
+### Version
+`11.30.0` → `11.30.1` (PATCH - bug fixes)
+
+---
+
 ## [v11.30.0] — 2025-12-17T14:10:14.000Z
 
 ### Summary

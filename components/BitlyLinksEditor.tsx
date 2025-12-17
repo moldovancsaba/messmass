@@ -141,6 +141,7 @@ export default function BitlyLinksEditor({ projectId, projectName }: BitlyLinksE
           {links.length > 0 && <span className={styles.count}>({links.length})</span>}
         </h3>
         <button
+          type="button"
           onClick={() => setShowAddForm(!showAddForm)}
           className={styles.addButton}
         >
