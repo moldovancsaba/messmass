@@ -240,10 +240,20 @@ export default function UnifiedDataVisualization({
         // WHAT: unitWidth = blockWidth / totalUnits
         // WHY: This is what CSS Grid does with fr units
         const unitWidth = blockWidth / totalUnits;
-        const targetHeight = Math.round(unitWidth * 1.5); // 4:6 width:height → H = 1.5 * W
+        let targetHeight = Math.round(unitWidth * 1.5); // 4:6 width:height → H = 1.5 * W
+        
+        // WHAT: Cap maximum height to prevent extremely tall charts
+        // WHY: Prevent edge cases where calculation results in unreasonably large heights
+        // HOW: Max 800px or 80vh (whichever is smaller)
+        const maxHeight = Math.min(800, window.innerHeight * 0.8);
+        if (targetHeight > maxHeight) {
+          console.warn(`⚠️ Height ${targetHeight}px exceeds max ${maxHeight}px - capping to max`);
+          targetHeight = maxHeight;
+        }
+        
         grid.style.setProperty('--block-chart-height', `${targetHeight}px`);
         
-        // Debug logging (remove in production)
+        // Debug logging
         console.log(`📊 Block height calc: blockWidth=${blockWidth}px, totalUnits=${totalUnits}, unitWidth=${unitWidth.toFixed(2)}px, height=${targetHeight}px`);
       }
     };
