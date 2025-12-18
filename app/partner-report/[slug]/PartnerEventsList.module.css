@@ -1,0 +1,144 @@
+/* WHAT: PartnerEventsList Component Styles (v12.0.0)
+ * WHY: Clean styling for events list at bottom of partner reports
+ * HOW: Design tokens with responsive grid
+ */
+
+/* Events Section */
+.eventsSection {
+  margin-top: var(--mm-space-12);
+  padding-top: var(--mm-space-8);
+  border-top: 2px solid var(--mm-gray-200);
+}
+
+.title {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-6) 0;
+}
+
+/* Events Grid */
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--mm-space-4);
+}
+
+/* Event Card */
+.eventCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--mm-white);
+  border: 2px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-5);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.eventCard:hover {
+  border-color: var(--mm-blue-500);
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* Event Header */
+.eventHeader {
+  margin-bottom: var(--mm-space-4);
+}
+
+.eventName {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-1) 0;
+  line-height: 1.3;
+}
+
+.eventDate {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin: 0;
+}
+
+/* Event Stats */
+.eventStats {
+  display: flex;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+  padding: var(--mm-space-3) 0;
+  border-top: 1px solid var(--mm-gray-100);
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-1);
+  flex: 1;
+}
+
+.statIcon {
+  font-size: var(--mm-font-size-2xl);
+  line-height: 1;
+}
+
+.statValue {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Event Action */
+.eventAction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--mm-blue-600);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.actionText {
+  font-size: var(--mm-font-size-sm);
+}
+
+.actionArrow {
+  font-size: var(--mm-font-size-xl);
+  transition: transform var(--transition-fast);
+}
+
+.eventCard:hover .actionArrow {
+  transform: translateX(4px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .eventsSection {
+    margin-top: var(--mm-space-8);
+    padding-top: var(--mm-space-6);
+  }
+  
+  .title {
+    font-size: var(--mm-font-size-xl);
+    margin-bottom: var(--mm-space-4);
+  }
+  
+  .eventsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .eventCard {
+    padding: var(--mm-space-4);
+  }
+}

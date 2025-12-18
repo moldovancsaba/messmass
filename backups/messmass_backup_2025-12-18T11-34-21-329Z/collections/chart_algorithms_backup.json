@@ -1,0 +1,168 @@
+{
+  "name": "chart_algorithms_backup",
+  "documentCount": 7,
+  "documents": [
+    {
+      "_id": "6914f1dc761b1f201ac0581f",
+      "chartId": "report-text-1",
+      "title": "Report Text 1",
+      "type": "text",
+      "order": 9001,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "text-element-1",
+          "label": "Report Text 1",
+          "formula": "stats.reportText1",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "icon": "article",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-12T20:45:15.755Z",
+      "updatedAt": "2025-11-12T20:45:15.755Z"
+    },
+    {
+      "_id": "6914f2d954a5b6cdd8f139f8",
+      "chartId": "report-text-6",
+      "title": "Report Text 6",
+      "type": "text",
+      "order": 9006,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "text-element-6",
+          "label": "Report Text 6",
+          "formula": "stats.reportText6",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "icon": "article",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-12T20:49:29.295Z",
+      "updatedAt": "2025-11-12T20:49:29.295Z"
+    },
+    {
+      "_id": "6915a34cf55ed73f4afa8c5a",
+      "chartId": "report-image-1",
+      "title": "Report Image 1",
+      "type": "image",
+      "order": 9001,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-1",
+          "label": "Report Image 1",
+          "formula": "stats.reportImage1",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-13T09:22:20.258Z",
+      "updatedAt": "2025-11-13T09:22:20.258Z"
+    },
+    {
+      "_id": "6915a36267d545debfdaa4ae",
+      "chartId": "report-image-4",
+      "title": "Report Image 4",
+      "type": "image",
+      "order": 9004,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-4",
+          "label": "Report Image 4",
+          "formula": "stats.reportImage4",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-13T09:22:41.546Z",
+      "updatedAt": "2025-11-13T09:22:41.546Z"
+    },
+    {
+      "_id": "6915a3b167d545debfdaa4b0",
+      "chartId": "report-image-5",
+      "title": "Report Image 5",
+      "type": "image",
+      "order": 9005,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-5",
+          "label": "Report Image 5",
+          "formula": "stats.reportImage5",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-13T09:24:01.020Z",
+      "updatedAt": "2025-11-13T09:24:01.020Z"
+    },
+    {
+      "_id": "6915a3c4f55ed73f4afa8c5e",
+      "chartId": "report-image-6",
+      "title": "Report Image 6",
+      "type": "image",
+      "order": 9006,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-6",
+          "label": "Report Image 6",
+          "formula": "stats.reportImage6",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-13T09:24:20.573Z",
+      "updatedAt": "2025-11-13T09:24:20.573Z"
+    },
+    {
+      "_id": "6915a3d5e874404fe1ed0db2",
+      "chartId": "report-image-7",
+      "title": "Report Image 7",
+      "type": "image",
+      "order": 9007,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-7",
+          "label": "Report Image 7",
+          "formula": "stats.reportImage7",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-13T09:24:37.643Z",
+      "updatedAt": "2025-11-13T09:24:37.643Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:23.203Z"
+}

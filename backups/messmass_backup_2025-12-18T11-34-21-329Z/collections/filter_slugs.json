@@ -1,0 +1,342 @@
+{
+  "name": "filter_slugs",
+  "documentCount": 32,
+  "documents": [
+    {
+      "_id": "68aef9423f219f771b01a84d",
+      "slug": "a29e4630-db43-4e10-8a8e-7d92bfa82a24",
+      "hashtags": [
+        "spring"
+      ],
+      "createdAt": "2025-08-27T12:25:38.968Z",
+      "lastAccessed": "2025-09-07T12:39:39.988Z",
+      "styleId": "68bb26e4cf07685efe74ae18"
+    },
+    {
+      "_id": "68b23b275a2d24d97081daba",
+      "slug": "2c316d59-5df1-4eb3-800d-9bd0e2676bac",
+      "hashtags": [
+        "basketball"
+      ],
+      "createdAt": "2025-08-29T23:43:35.976Z",
+      "lastAccessed": "2025-09-06T10:52:54.306Z",
+      "styleId": "68bb26e4cf07685efe74ae18"
+    },
+    {
+      "_id": "68b23b415a2d24d97081dabb",
+      "slug": "af0b148e-8e62-4f08-8b92-4fbca1bbe8bb",
+      "hashtags": [
+        "basketball",
+        "winter"
+      ],
+      "createdAt": "2025-08-29T23:44:01.947Z",
+      "lastAccessed": "2025-08-29T23:44:02.561Z"
+    },
+    {
+      "_id": "68b23b585a2d24d97081dabc",
+      "slug": "7ea7376f-4d73-48cb-b785-e4359768637d",
+      "hashtags": [
+        "basketball",
+        "hungary"
+      ],
+      "createdAt": "2025-08-29T23:44:24.196Z",
+      "lastAccessed": "2025-08-29T23:44:24.768Z"
+    },
+    {
+      "_id": "68b242bf0363fec9b69e1be3",
+      "slug": "e267e9bf-09e2-4037-a7da-3632891b6d2e",
+      "hashtags": [
+        "city:miskolc",
+        "sport:basketball"
+      ],
+      "createdAt": "2025-08-30T00:15:59.968Z",
+      "lastAccessed": "2025-08-30T00:16:16.393Z"
+    },
+    {
+      "_id": "68b242da0363fec9b69e1be4",
+      "slug": "154254a9-f392-4b68-9c19-96794ed7eb7e",
+      "hashtags": [
+        "city:miskolc"
+      ],
+      "createdAt": "2025-08-30T00:16:26.081Z",
+      "lastAccessed": "2025-08-30T00:20:43.047Z"
+    },
+    {
+      "_id": "68b243f248bf6b5737d0cdc3",
+      "slug": "5aab6296-954a-4a63-b84a-0b9530afedb4",
+      "hashtags": [
+        "sport:basketball"
+      ],
+      "createdAt": "2025-08-30T00:21:06.861Z",
+      "lastAccessed": "2025-08-30T00:21:07.496Z"
+    },
+    {
+      "_id": "68b43ade058a95ec9e9df8cd",
+      "slug": "46172926-caf3-4eab-8a21-a2d0e35650bc",
+      "hashtags": [
+        "summer"
+      ],
+      "createdAt": "2025-08-31T12:06:54.832Z",
+      "lastAccessed": "2025-09-16T18:51:38.255Z",
+      "styleId": "68af17a25b4b3dff9e98cbd9"
+    },
+    {
+      "_id": "68b57f377e6f7238d40f6dee",
+      "slug": "839ac567-3628-4293-8668-4de617b9f242",
+      "hashtags": [
+        "tournament"
+      ],
+      "createdAt": "2025-09-01T11:10:47.852Z",
+      "lastAccessed": "2025-09-02T15:12:04.586Z"
+    },
+    {
+      "_id": "68b58c7d2ea37f33e0348164",
+      "slug": "e023c00c-5d0f-4712-9023-96fd936981df",
+      "hashtags": [
+        "2025"
+      ],
+      "createdAt": "2025-09-01T12:07:25.164Z",
+      "lastAccessed": "2025-10-12T18:16:00.762Z",
+      "styleId": null
+    },
+    {
+      "_id": "68c2cd69b9f6e5b879f82207",
+      "slug": "7c4c48c1-b0ff-4875-b64c-d4b80130ee02",
+      "hashtags": [
+        "city_szeged"
+      ],
+      "styleId": "68bb26e4cf07685efe74ae18",
+      "createdAt": "2025-09-11T13:23:53.071Z",
+      "lastAccessed": "2025-09-11T13:24:11.295Z"
+    },
+    {
+      "_id": "68ca94ea01b5971c3899fe21",
+      "slug": "e232d002-b0ca-43eb-9646-e9421e16022c",
+      "hashtags": [
+        "sport:icehockey"
+      ],
+      "styleId": "68c9b7e33843948981b3f986",
+      "createdAt": "2025-09-17T11:00:58.691Z",
+      "lastAccessed": "2025-09-17T11:01:02.426Z"
+    },
+    {
+      "_id": "68ca94fd01b5971c3899fe22",
+      "slug": "720e302d-6c92-4e7b-95d4-376d726e40b6",
+      "hashtags": [
+        "partner:chl"
+      ],
+      "styleId": "68c9b7e33843948981b3f986",
+      "createdAt": "2025-09-17T11:01:17.308Z",
+      "lastAccessed": "2025-09-17T11:18:38.364Z"
+    },
+    {
+      "_id": "68caa55795cb3af646c25b11",
+      "slug": "cdb2cc84-620d-45f6-b270-f8f9e1e9e0d5",
+      "hashtags": [
+        "time:2025_08"
+      ],
+      "styleId": null,
+      "createdAt": "2025-09-17T12:11:03.643Z",
+      "lastAccessed": "2025-09-17T12:15:05.694Z"
+    },
+    {
+      "_id": "68cbefd37349c4da436dcbe7",
+      "slug": "a5d509f4-3b88-4937-8043-4c6a4f115728",
+      "hashtags": [
+        "location:budapest"
+      ],
+      "styleId": null,
+      "createdAt": "2025-09-18T11:41:07.491Z",
+      "lastAccessed": "2025-09-18T11:41:13.655Z"
+    },
+    {
+      "_id": "68d84791c5ac58f3adbf4c34",
+      "slug": "95f4901e-3204-439a-8b90-7765783afc67",
+      "hashtags": [
+        "sport:soccer"
+      ],
+      "styleId": null,
+      "createdAt": "2025-09-27T20:22:41.541Z",
+      "lastAccessed": "2025-09-27T20:22:46.641Z"
+    },
+    {
+      "_id": "68d8eabbd73e067476afbf9e",
+      "slug": "4a9e03b5-c741-4df4-b2af-e9c7f03a5713",
+      "hashtags": [
+        "football"
+      ],
+      "styleId": null,
+      "createdAt": "2025-09-28T07:58:51.815Z",
+      "lastAccessed": "2025-09-28T07:58:57.051Z"
+    },
+    {
+      "_id": "68dbc3418953395a9450e0c9",
+      "slug": "d74a9fec-160a-4a13-83ae-161e3618904d",
+      "hashtags": [
+        "location:roma"
+      ],
+      "styleId": null,
+      "createdAt": "2025-09-30T11:47:13.586Z",
+      "lastAccessed": "2025-09-30T11:47:18.230Z"
+    },
+    {
+      "_id": "68e5670fdb1afea3ba889e9a",
+      "slug": "38a5ed25-2be5-4c15-ae25-61f4d2eea9d4",
+      "hashtags": [
+        "location:zurich"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-07T19:16:31.561Z",
+      "lastAccessed": "2025-10-07T19:16:37.107Z"
+    },
+    {
+      "_id": "68e6813f7160faa10ea716ee",
+      "slug": "3ad52cd6-d84e-487f-b5b7-05311af5cc03",
+      "hashtags": [
+        "2025",
+        "hungary"
+      ],
+      "styleId": "68c9b7e33843948981b3f986",
+      "createdAt": "2025-10-08T15:20:31.373Z",
+      "lastAccessed": "2025-10-09T06:28:08.531Z"
+    },
+    {
+      "_id": "68e7570c6b4bf9665fef0f2e",
+      "slug": "da76b785-9482-462b-8a0e-1b0d780bccd0",
+      "hashtags": [
+        "european_aquatics"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-09T06:32:44.689Z",
+      "lastAccessed": "2025-10-09T06:32:57.039Z"
+    },
+    {
+      "_id": "68e7572b299e31cb2dab498d",
+      "slug": "c3bb4be3-b7ad-4045-8ced-ff96ab7f4ee9",
+      "hashtags": [
+        "partner:european_aquatics"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-09T06:33:15.837Z",
+      "lastAccessed": "2025-10-09T06:33:22.361Z"
+    },
+    {
+      "_id": "68eb582b46b1111fb271ec8a",
+      "slug": "dab28184-d5e2-4d92-99a8-a603483ff172",
+      "hashtags": [
+        "partner:mol"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-12T07:26:35.921Z",
+      "lastAccessed": "2025-10-12T07:26:35.921Z"
+    },
+    {
+      "_id": "68ee1be8ce02914de37b714c",
+      "slug": "6fb1c312-b104-4664-a46f-09e23b1daed9",
+      "hashtags": [
+        "vetting:daniella"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-14T09:46:16.682Z",
+      "lastAccessed": "2025-10-16T13:52:39.321Z"
+    },
+    {
+      "_id": "68f0f8a7b50a14e69a8d4970",
+      "slug": "3d20b8fc-4b76-4e57-813d-cc53aaf55678",
+      "hashtags": [
+        "success:szabo_diana_rozalia"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-16T13:52:39.731Z",
+      "lastAccessed": "2025-10-16T13:52:39.731Z"
+    },
+    {
+      "_id": "68f5e125d327974c30c75b8d",
+      "slug": "a60bba42-1bed-42ea-9316-e52a9d08cafa",
+      "hashtags": [
+        "partner:mtk"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-20T07:13:41.471Z",
+      "lastAccessed": "2025-10-20T07:13:46.226Z"
+    },
+    {
+      "_id": "68f8ba8f6a3ac49f87d02d25",
+      "slug": "489030ae-3595-418d-99ab-69c1c0caa8fe",
+      "hashtags": [
+        "location:europe"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-22T11:05:51.061Z",
+      "lastAccessed": "2025-10-22T11:06:09.307Z"
+    },
+    {
+      "_id": "68f8c558da479e53690789d9",
+      "slug": "b32a04d0-515f-4505-8530-92ee280398f8",
+      "hashtags": [
+        "orlen_wisla_plock"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-22T11:51:52.384Z",
+      "lastAccessed": "2025-10-22T11:51:59.517Z"
+    },
+    {
+      "_id": "68ff3609d314d33fc0896e7e",
+      "slug": "eeb23007-04b3-46f0-8ff1-b0bdfed932fc",
+      "hashtags": [
+        "partner:dvtk"
+      ],
+      "styleId": null,
+      "createdAt": "2025-10-27T09:06:17.272Z",
+      "lastAccessed": "2025-11-02T15:52:03.046Z"
+    },
+    {
+      "_id": "69060d04afe82dfe5901451b",
+      "slug": "dc8ac538-1eda-41c5-aedd-6d08d6572191",
+      "hashtags": [
+        "men"
+      ],
+      "styleId": null,
+      "createdAt": "2025-11-01T13:37:08.517Z",
+      "lastAccessed": "2025-12-15T14:43:22.899Z"
+    },
+    {
+      "_id": "690cf4c24f3995b136113569",
+      "slug": "b800f88b-9c86-404e-b7b8-ae10561c20c6",
+      "hashtags": [
+        "handball"
+      ],
+      "styleId": null,
+      "createdAt": "2025-11-06T19:19:30.230Z",
+      "lastAccessed": "2025-11-06T19:19:34.870Z"
+    },
+    {
+      "_id": "6920406276f16b8fdc482534",
+      "slug": "651fe7d2-7195-4c01-8ab7-86bbf0049674",
+      "hashtags": [
+        "chl"
+      ],
+      "styleId": null,
+      "createdAt": "2025-11-21T10:35:14.017Z",
+      "lastAccessed": "2025-11-21T10:35:17.519Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "slug": 1
+      },
+      "name": "slug_unique",
+      "unique": true
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:26.184Z"
+}

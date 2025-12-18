@@ -30,17 +30,65 @@ export async function POST(request: Request) {
     // Revalidate all routes (works on serverless)
     if (type === 'routes' || type === 'all' || type === 'build') {
       try {
-        // Revalidate the root layout (affects all pages)
+        // WHAT: Comprehensive route revalidation
+        // WHY: Clear all cached content across the app
+        // HOW: Use revalidatePath for all major routes and layouts
+        
+        const revalidatedPaths: string[] = [];
+        
+        // Root layout (affects all pages)
         revalidatePath('/', 'layout');
+        revalidatedPaths.push('/ (layout)');
         
-        // Revalidate key paths
-        revalidatePath('/admin');
-        revalidatePath('/api/projects');
-        revalidatePath('/api/hashtags');
+        // Admin routes
+        const adminRoutes = [
+          '/admin',
+          '/admin/events',
+          '/admin/partners',
+          '/admin/categories',
+          '/admin/users',
+          '/admin/kyc',
+          '/admin/visualization',
+          '/admin/design',
+          '/admin/chart-algorithms',
+          '/admin/analytics',
+          '/admin/bitly'
+        ];
         
-        result.details.cache = 'All routes revalidated - fresh content will be served on next request';
+        adminRoutes.forEach(route => {
+          revalidatePath(route);
+          revalidatedPaths.push(route);
+        });
+        
+        // API routes (data endpoints)
+        const apiRoutes = [
+          '/api/projects',
+          '/api/hashtags',
+          '/api/partners',
+          '/api/charts',
+          '/api/reports',
+          '/api/variables-config',
+          '/api/page-styles-enhanced'
+        ];
+        
+        apiRoutes.forEach(route => {
+          revalidatePath(route);
+          revalidatedPaths.push(route);
+        });
+        
+        // Public report routes (revalidate layout to clear all slugs)
+        revalidatePath('/report', 'layout');
+        revalidatedPaths.push('/report/* (all slugs)');
+        
+        revalidatePath('/partner-report', 'layout');
+        revalidatedPaths.push('/partner-report/* (all slugs)');
+        
+        result.details.revalidatedRoutes = revalidatedPaths;
+        result.details.totalRoutes = revalidatedPaths.length;
+        result.details.timestamp = new Date().toISOString();
+        result.details.message = 'All routes revalidated - fresh content will be served on next request';
       } catch (error: any) {
-        result.details.cache = `Error: ${error.message}`;
+        result.details.error = `Error: ${error.message}`;
       }
     }
 

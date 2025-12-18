@@ -1,0 +1,434 @@
+{
+  "name": "report_templates",
+  "documentCount": 6,
+  "documents": [
+    {
+      "_id": "691319a0d50e0e374b45fdee",
+      "name": "WUKF Template",
+      "description": "Original WUKF report configuration (preserved during v11.0.0 migration)",
+      "type": "partner",
+      "isDefault": false,
+      "dataBlocks": [
+        {
+          "blockId": "69034a7a95fa6ce8520f37dc",
+          "order": 0
+        },
+        {
+          "blockId": "69023cedfa020c8d5318a29d",
+          "order": 1
+        },
+        {
+          "blockId": "6904790f4aad3c506416a0b7",
+          "order": 2
+        },
+        {
+          "blockId": "69047b814aad3c506416a0b8",
+          "order": 3
+        },
+        {
+          "blockId": "68bc680773eff5a9fd73df05",
+          "order": 4
+        },
+        {
+          "blockId": "6903d7d69ab67b6c5ba48d04",
+          "order": 5
+        },
+        {
+          "blockId": "6903d7059ab67b6c5ba48d03",
+          "order": 6
+        },
+        {
+          "blockId": "69037a4853813a93b1809be0",
+          "order": 7
+        },
+        {
+          "blockId": "69036c6af7daf64629cb6b84",
+          "order": 8
+        },
+        {
+          "blockId": "6903c78d340f78b5a6742bd0",
+          "order": 9
+        },
+        {
+          "blockId": "69036f35603a88659c08014b",
+          "order": 10
+        }
+      ],
+      "gridSettings": {
+        "desktopUnits": 12,
+        "tabletUnits": 8,
+        "mobileUnits": 4
+      },
+      "createdBy": "migration_script",
+      "createdAt": "2025-11-11T11:10:24.210Z",
+      "updatedAt": "2025-11-12T20:48:11.954Z"
+    },
+    {
+      "_id": "691319a0d50e0e374b45fdef",
+      "name": "Default Event Report",
+      "description": "Default template for event reports (all active blocks)",
+      "type": "event",
+      "isDefault": true,
+      "dataBlocks": [
+        {
+          "blockId": "69034a7a95fa6ce8520f37dc",
+          "order": 0
+        },
+        {
+          "blockId": "69023cedfa020c8d5318a29d",
+          "order": 1
+        },
+        {
+          "blockId": "6904790f4aad3c506416a0b7",
+          "order": 2
+        },
+        {
+          "blockId": "69047b814aad3c506416a0b8",
+          "order": 3
+        },
+        {
+          "blockId": "68bc680773eff5a9fd73df05",
+          "order": 4
+        },
+        {
+          "blockId": "6903d7d69ab67b6c5ba48d04",
+          "order": 5
+        },
+        {
+          "blockId": "6903d7059ab67b6c5ba48d03",
+          "order": 6
+        },
+        {
+          "blockId": "69037a4853813a93b1809be0",
+          "order": 7
+        },
+        {
+          "blockId": "69036c6af7daf64629cb6b84",
+          "order": 8
+        },
+        {
+          "blockId": "6903c78d340f78b5a6742bd0",
+          "order": 9
+        },
+        {
+          "blockId": "69036f35603a88659c08014b",
+          "order": 10
+        }
+      ],
+      "gridSettings": {
+        "desktopUnits": 6,
+        "tabletUnits": 3,
+        "mobileUnits": 2
+      },
+      "createdBy": "migration_script",
+      "createdAt": "2025-11-11T11:10:24.276Z",
+      "updatedAt": "2025-11-12T20:50:28.065Z"
+    },
+    {
+      "_id": "691319a0d50e0e374b45fdf0",
+      "name": "Default Partner Report",
+      "description": "Default template for partner reports (aggregate visualizations)",
+      "type": "partner",
+      "isDefault": true,
+      "dataBlocks": [
+        {
+          "blockId": "69034a7a95fa6ce8520f37dc",
+          "order": 0
+        },
+        {
+          "blockId": "69023cedfa020c8d5318a29d",
+          "order": 1
+        },
+        {
+          "blockId": "6904790f4aad3c506416a0b7",
+          "order": 2
+        },
+        {
+          "blockId": "69047b814aad3c506416a0b8",
+          "order": 3
+        },
+        {
+          "blockId": "68bc680773eff5a9fd73df05",
+          "order": 4
+        },
+        {
+          "blockId": "6903d7d69ab67b6c5ba48d04",
+          "order": 5
+        },
+        {
+          "blockId": "6903d7059ab67b6c5ba48d03",
+          "order": 6
+        },
+        {
+          "blockId": "69037a4853813a93b1809be0",
+          "order": 7
+        },
+        {
+          "blockId": "69036c6af7daf64629cb6b84",
+          "order": 8
+        },
+        {
+          "blockId": "6903c78d340f78b5a6742bd0",
+          "order": 9
+        },
+        {
+          "blockId": "69036f35603a88659c08014b",
+          "order": 10
+        }
+      ],
+      "gridSettings": {
+        "desktopUnits": 6,
+        "tabletUnits": 3,
+        "mobileUnits": 2
+      },
+      "createdBy": "migration_script",
+      "createdAt": "2025-11-11T11:10:24.307Z",
+      "updatedAt": "2025-11-11T11:10:24.307Z"
+    },
+    {
+      "_id": "691323a22c601d6a41780983",
+      "name": "AS Roma",
+      "description": "",
+      "type": "partner",
+      "isDefault": false,
+      "styleId": null,
+      "dataBlocks": [
+        {
+          "blockId": "6913771df3493402dd117c58",
+          "order": 0
+        },
+        {
+          "blockId": "6913383e4e1fa8408754a997",
+          "order": 1
+        },
+        {
+          "blockId": "69147f3d1dbffded06c02ece",
+          "order": 2
+        },
+        {
+          "blockId": "69146e1cf24ce5f9ce9d947e",
+          "order": 3
+        },
+        {
+          "blockId": "69146eb5f24ce5f9ce9d947f",
+          "order": 4
+        },
+        {
+          "blockId": "69146f97d7f3702d4123387b",
+          "order": 5
+        },
+        {
+          "blockId": "69147898c1ae5696c17a0b57",
+          "order": 6
+        },
+        {
+          "blockId": "6914796bcb2e9cbfda3f756c",
+          "order": 7
+        },
+        {
+          "blockId": "6916ea1960add5ada2dda579",
+          "order": 8
+        },
+        {
+          "blockId": "69147b3ee7bdf4e55514b7a8",
+          "order": 9
+        },
+        {
+          "blockId": "6915d1aea31db5a9bbe952fa",
+          "order": 10
+        },
+        {
+          "blockId": "6915ed6d111742af1218db20",
+          "order": 11
+        },
+        {
+          "blockId": "69147b91e7bdf4e55514b7a9",
+          "order": 12
+        },
+        {
+          "blockId": "691498b26115d1023ad66269",
+          "order": 13
+        },
+        {
+          "blockId": "691600f322cedff4b344702f",
+          "order": 14
+        },
+        {
+          "blockId": "6916f4b75d70829b900eb956",
+          "order": 15
+        },
+        {
+          "blockId": "6916f859cc8c13889793181b",
+          "order": 16
+        },
+        {
+          "blockId": "691701fdb8d5974343659a99",
+          "order": 17
+        },
+        {
+          "blockId": "69170437b06aa66ed0ba6c4c",
+          "order": 18
+        },
+        {
+          "blockId": "69170972ab41b3a938ba926f",
+          "order": 19
+        }
+      ],
+      "gridSettings": {
+        "desktopUnits": 12,
+        "tabletUnits": 8,
+        "mobileUnits": 4
+      },
+      "createdBy": "moldovancsaba@gmail.com",
+      "createdAt": "2025-11-11T11:53:06.797Z",
+      "updatedAt": "2025-12-16T19:06:19.101Z",
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "heroSettings": {
+        "showEmoji": false,
+        "showDateInfo": false,
+        "showExportOptions": false
+      }
+    },
+    {
+      "_id": "6915c8690fd69df1faf56159",
+      "name": "AS Roma Match Day",
+      "description": "",
+      "type": "event",
+      "isDefault": false,
+      "styleId": null,
+      "dataBlocks": [],
+      "gridSettings": {
+        "desktopUnits": 4,
+        "tabletUnits": 2,
+        "mobileUnits": 1
+      },
+      "createdBy": "moldovancsaba@gmail.com",
+      "createdAt": "2025-11-13T12:00:41.390Z",
+      "updatedAt": "2025-11-13T12:00:41.390Z"
+    },
+    {
+      "_id": "693fff05daa7a23d8085643b",
+      "name": "SIHF Swiss Ice Hockey Federation PARTNER",
+      "description": "sihf partner report template",
+      "type": "partner",
+      "isDefault": false,
+      "styleId": null,
+      "dataBlocks": [
+        {
+          "blockId": "69419202387cbc20c6aa9025",
+          "order": 0
+        },
+        {
+          "blockId": "694265b6ca5a39ac7923d2b4",
+          "order": 1
+        },
+        {
+          "blockId": "69023cedfa020c8d5318a29d",
+          "order": 2
+        },
+        {
+          "blockId": "6942700c95d5a4e56b90693a",
+          "order": 3
+        },
+        {
+          "blockId": "6942782bb37a57adca762853",
+          "order": 4
+        },
+        {
+          "blockId": "6942dd5ea96b104d42916e6e",
+          "order": 5
+        },
+        {
+          "blockId": "68bc680773eff5a9fd73df05",
+          "order": 6
+        },
+        {
+          "blockId": "6903d7d69ab67b6c5ba48d04",
+          "order": 7
+        },
+        {
+          "blockId": "6903d7059ab67b6c5ba48d03",
+          "order": 8
+        },
+        {
+          "blockId": "69037a4853813a93b1809be0",
+          "order": 9
+        },
+        {
+          "blockId": "6942e1b1e814219e8e80ed3c",
+          "order": 10
+        },
+        {
+          "blockId": "6942e23d31be84a90e5e5cc5",
+          "order": 11
+        },
+        {
+          "blockId": "69036c6af7daf64629cb6b84",
+          "order": 12
+        },
+        {
+          "blockId": "6903c78d340f78b5a6742bd0",
+          "order": 13
+        },
+        {
+          "blockId": "69036f35603a88659c08014b",
+          "order": 14
+        }
+      ],
+      "gridSettings": {
+        "desktopUnits": 6,
+        "tabletUnits": 3,
+        "mobileUnits": 2
+      },
+      "createdBy": "david.bozsik@seyuselfies.com",
+      "createdAt": "2025-12-15T12:28:53.458Z",
+      "updatedAt": "2025-12-17T17:03:57.343Z",
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true,
+        "minElementHeight": 100
+      },
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": false,
+        "showExportOptions": true
+      }
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "isDefault": 1
+      },
+      "name": "isDefault_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "type": 1
+      },
+      "name": "type_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "name": 1
+      },
+      "name": "name_1"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:26.005Z"
+}

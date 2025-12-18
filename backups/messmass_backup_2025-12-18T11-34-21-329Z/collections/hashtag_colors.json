@@ -1,0 +1,456 @@
+{
+  "name": "hashtag_colors",
+  "documentCount": 55,
+  "documents": [
+    {
+      "_id": "68a3a7a9a142c58f867006d1",
+      "uuid": "24e2c218-ed0d-43a7-ade8-bc96a89091a7",
+      "name": "u20",
+      "color": "#ed719e",
+      "createdAt": "2025-08-18T22:22:33.731Z",
+      "updatedAt": "2025-08-19T11:50:57.849Z"
+    },
+    {
+      "_id": "68a3aedeaa4a8791dd7e25f8",
+      "uuid": "bd507a37-1617-4f8a-985f-acee4ad0bece",
+      "name": "eto_fc_gyor",
+      "color": "#f5576c",
+      "createdAt": "2025-08-18T22:53:18.031Z",
+      "updatedAt": "2025-08-18T22:53:18.031Z"
+    },
+    {
+      "_id": "68a3aeeeaa4a8791dd7e25fa",
+      "uuid": "2486c519-8ff7-41de-8e99-4ccbadc8d8bb",
+      "name": "visitor_dvtk",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:53:34.585Z",
+      "updatedAt": "2025-08-22T09:21:30.662Z"
+    },
+    {
+      "_id": "68a3aef8aa4a8791dd7e25fb",
+      "uuid": "6932548f-b9f1-4202-9503-2d2e7a3f8c69",
+      "name": "turkey",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:53:44.130Z",
+      "updatedAt": "2025-08-18T22:53:44.130Z"
+    },
+    {
+      "_id": "68a3af01aa4a8791dd7e25fc",
+      "uuid": "d857b932-db43-49db-881f-b7c22b1a216a",
+      "name": "basketball_romania",
+      "color": "#0042aa",
+      "createdAt": "2025-08-18T22:53:53.678Z",
+      "updatedAt": "2025-08-18T22:53:53.678Z"
+    },
+    {
+      "_id": "68a3af1aaa4a8791dd7e25fd",
+      "uuid": "d78f1fd8-7716-435a-9892-878a4bd9e73c",
+      "name": "visitor_ftc",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:54:18.893Z",
+      "updatedAt": "2025-08-22T09:25:16.077Z"
+    },
+    {
+      "_id": "68a3af39aa4a8791dd7e25ff",
+      "uuid": "ec358cf3-d113-458b-9149-5ccc4547de5a",
+      "name": "visitor_kisvarda",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:54:49.797Z",
+      "updatedAt": "2025-08-22T09:25:43.938Z"
+    },
+    {
+      "_id": "68a3af41aa4a8791dd7e2600",
+      "uuid": "dd01e980-9b60-433e-9b00-4afe0400924a",
+      "name": "visitor_denmark",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:54:57.089Z",
+      "updatedAt": "2025-08-22T09:20:31.836Z"
+    },
+    {
+      "_id": "68a3af5caa4a8791dd7e2601",
+      "uuid": "1ed8cf25-1048-4f0c-9736-52356e9add41",
+      "name": "denmark",
+      "color": "#f5576c",
+      "createdAt": "2025-08-18T22:55:24.779Z",
+      "updatedAt": "2025-08-18T22:55:24.779Z"
+    },
+    {
+      "_id": "68a3af69aa4a8791dd7e2602",
+      "uuid": "db564129-f12a-4971-8afc-f6a13529c8d8",
+      "name": "concert",
+      "color": "#f093fb",
+      "createdAt": "2025-08-18T22:55:37.476Z",
+      "updatedAt": "2025-08-18T22:55:37.476Z"
+    },
+    {
+      "_id": "68a3af7aaa4a8791dd7e2604",
+      "uuid": "f80ab195-a5be-4321-aec6-8b451d455fe8",
+      "name": "koncert",
+      "color": "#764ba2",
+      "createdAt": "2025-08-18T22:55:54.551Z",
+      "updatedAt": "2025-08-18T22:55:54.551Z"
+    },
+    {
+      "_id": "68a3af85aa4a8791dd7e2605",
+      "uuid": "ecf86ec9-7f31-4ac4-8714-1cc42049b69f",
+      "name": "visitor_kazincbarcika",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:56:05.218Z",
+      "updatedAt": "2025-08-22T09:17:16.053Z"
+    },
+    {
+      "_id": "68a3af8baa4a8791dd7e2606",
+      "uuid": "f8075606-a49f-4974-821f-f47622c6c793",
+      "name": "visitor_zte",
+      "color": "#ff2600",
+      "createdAt": "2025-08-18T22:56:11.766Z",
+      "updatedAt": "2025-08-28T15:38:29.007Z"
+    },
+    {
+      "_id": "68a70b0a8dc3569a54ed89fc",
+      "uuid": "5f068734-8bd5-498d-8285-c6f80f5397a3",
+      "name": "vetting_szabo_daniella",
+      "color": "#ff9300",
+      "createdAt": "2025-08-21T12:03:22.799Z",
+      "updatedAt": "2025-08-22T09:23:46.876Z"
+    },
+    {
+      "_id": "68a70b1b59dd8d661415ee98",
+      "uuid": "685b9861-d80a-4394-abe8-46e23f293b7e",
+      "name": "success_szabo_diana_rozalia",
+      "color": "#38571a",
+      "createdAt": "2025-08-21T12:03:39.224Z",
+      "updatedAt": "2025-08-28T15:37:23.581Z"
+    },
+    {
+      "_id": "68a70b2859dd8d661415ee99",
+      "uuid": "fd92dfce-bddf-454d-9bb4-f8aaa1baabd7",
+      "name": "success_toth_lili_anna",
+      "color": "#38571a",
+      "createdAt": "2025-08-21T12:03:52.955Z",
+      "updatedAt": "2025-08-28T15:37:50.374Z"
+    },
+    {
+      "_id": "68a835324fe54cd470fdab12",
+      "uuid": "7fd5db17-e45d-4fbf-82fe-d0a0c53522fc",
+      "name": "visitor_etofc",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:15:30.115Z",
+      "updatedAt": "2025-08-22T09:24:42.221Z"
+    },
+    {
+      "_id": "68a8357ae8b374720cad4b8c",
+      "uuid": "29a28c66-fb57-4f75-a790-af12bf36668f",
+      "name": "city_budapest",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:16:42.753Z",
+      "updatedAt": "2025-08-31T16:04:00.043Z"
+    },
+    {
+      "_id": "68a8359205c985e8b7a41527",
+      "uuid": "32e8e0f7-2674-4082-99f1-bc9d083a219a",
+      "name": "city_nyiregyhaza",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:17:06.643Z",
+      "updatedAt": "2025-08-22T09:17:06.643Z"
+    },
+    {
+      "_id": "68a835a583037e6e7e9cb4c4",
+      "uuid": "022b1150-2d6a-4182-81f4-41e0acecb3d9",
+      "name": "visitor_turkey",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:17:25.049Z",
+      "updatedAt": "2025-08-22T09:17:25.049Z"
+    },
+    {
+      "_id": "68a835ae29d0f3131cd0f0f7",
+      "uuid": "4e066800-bb88-4d88-a22b-0818f0a37899",
+      "name": "city_szolnok",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:17:34.191Z",
+      "updatedAt": "2025-08-22T09:17:34.191Z"
+    },
+    {
+      "_id": "68a835b779701fd093878ace",
+      "uuid": "b49a25ec-fb88-4330-a64c-a2e07ad667b2",
+      "name": "visitor_northmacedonia",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:17:43.242Z",
+      "updatedAt": "2025-08-22T09:17:43.242Z"
+    },
+    {
+      "_id": "68a835c0c219cba4e9b123dd",
+      "uuid": "569458c4-eb5c-46d1-91e8-43a108baa046",
+      "name": "city_veszprem",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:17:52.196Z",
+      "updatedAt": "2025-08-22T09:17:52.196Z"
+    },
+    {
+      "_id": "68a835cc4965e461b95a9cb1",
+      "uuid": "a8beb54c-d8e1-4349-a3f1-090927426206",
+      "name": "visitor_farjestad",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:18:04.222Z",
+      "updatedAt": "2025-08-22T09:21:50.003Z"
+    },
+    {
+      "_id": "68a835eec5a91410ec75181d",
+      "uuid": "17c761b4-716b-4b20-8754-65dadf6d9e47",
+      "name": "visitor_romania",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:18:38.140Z",
+      "updatedAt": "2025-08-22T09:25:56.632Z"
+    },
+    {
+      "_id": "68a835fa855de6798fb473dd",
+      "uuid": "f8c791ab-5f5d-448f-b5e3-372a829d6a22",
+      "name": "vetting_szabo_diana_rozalia",
+      "color": "#ff9300",
+      "createdAt": "2025-08-22T09:18:50.140Z",
+      "updatedAt": "2025-08-22T09:18:50.140Z"
+    },
+    {
+      "_id": "68a83604855de6798fb473de",
+      "uuid": "2120bd99-0fce-49e3-8b7b-8b545430edfc",
+      "name": "city_diosgyor",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:19:00.715Z",
+      "updatedAt": "2025-08-22T09:19:00.715Z"
+    },
+    {
+      "_id": "68a8360f10b5c8ffb9d7839c",
+      "uuid": "56e76386-e921-4f05-85e9-d568b4146623",
+      "name": "vetting_serester_akos",
+      "color": "#ff9300",
+      "createdAt": "2025-08-22T09:19:11.005Z",
+      "updatedAt": "2025-08-22T09:19:11.005Z"
+    },
+    {
+      "_id": "68a8363310b5c8ffb9d7839d",
+      "uuid": "3a344ba8-1302-43c1-91f6-ab88309ca286",
+      "name": "vetting_kerekes_andras",
+      "color": "#ff9300",
+      "createdAt": "2025-08-22T09:19:47.604Z",
+      "updatedAt": "2025-08-22T09:19:47.604Z"
+    },
+    {
+      "_id": "68a8363e10b5c8ffb9d7839e",
+      "uuid": "cc425797-3df8-4f21-8eea-f857f64c9462",
+      "name": "city_bucharest",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:19:58.171Z",
+      "updatedAt": "2025-08-22T09:19:58.171Z"
+    },
+    {
+      "_id": "68a8364c10b5c8ffb9d7839f",
+      "uuid": "8cf411b9-b42b-46ad-a522-a3290620928f",
+      "name": "city_zagreb",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:20:12.383Z",
+      "updatedAt": "2025-08-22T09:20:12.383Z"
+    },
+    {
+      "_id": "68a8366d123ea470debeda2a",
+      "uuid": "64f36235-ae6f-447a-8227-c065d3d7f779",
+      "name": "visitor_fuchse_berlin",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:20:45.128Z",
+      "updatedAt": "2025-08-22T09:21:39.414Z"
+    },
+    {
+      "_id": "68a8367ad843c8307e25d931",
+      "uuid": "ce952ac2-e991-4438-b11e-a2c824baeba7",
+      "name": "visitor_nyiregyhaza",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:20:58.256Z",
+      "updatedAt": "2025-08-22T09:22:06.237Z"
+    },
+    {
+      "_id": "68a8368e05c985e8b7a41528",
+      "uuid": "fbe4e92d-9f3d-47b4-9687-fcbcd720e291",
+      "name": "city_zurich",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:21:18.941Z",
+      "updatedAt": "2025-08-22T09:21:18.941Z"
+    },
+    {
+      "_id": "68a836c80d0462dae36238f9",
+      "uuid": "78449db0-5f89-434a-83e0-0ae066bd9b60",
+      "name": "city_szeged",
+      "color": "#000000",
+      "createdAt": "2025-08-22T09:22:16.384Z",
+      "updatedAt": "2025-08-22T09:22:16.384Z"
+    },
+    {
+      "_id": "68a836d2e8b374720cad4b8d",
+      "uuid": "1f861be7-ff9a-41dc-8d72-3a3b73f522ff",
+      "name": "visitor_magdeburg",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:22:26.050Z",
+      "updatedAt": "2025-08-22T09:22:26.050Z"
+    },
+    {
+      "_id": "68a8370410b5c8ffb9d783a0",
+      "uuid": "6edf63a8-2bcf-4355-88e2-4e4dc5f63f16",
+      "name": "visitor_paksifc",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:23:16.054Z",
+      "updatedAt": "2025-08-22T09:23:16.054Z"
+    },
+    {
+      "_id": "68a83710c219cba4e9b123de",
+      "uuid": "80adf431-79f2-485b-89e7-0d5659b3d313",
+      "name": "visitor_veszprem",
+      "color": "#ff2600",
+      "createdAt": "2025-08-22T09:23:28.902Z",
+      "updatedAt": "2025-08-22T09:23:28.902Z"
+    },
+    {
+      "_id": "68b0726fa4ac55c98a45804e",
+      "uuid": "199e4e45-7ffd-49a2-ad69-d8dc6488137e",
+      "name": "city_roma",
+      "color": "#000000",
+      "createdAt": "2025-08-28T15:14:55.649Z",
+      "updatedAt": "2025-08-28T15:14:55.649Z"
+    },
+    {
+      "_id": "68b0727ea4ac55c98a45804f",
+      "uuid": "81a7cdea-7cf1-4965-bd34-900d28811357",
+      "name": "visitor_fiorentina",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:15:10.084Z",
+      "updatedAt": "2025-08-28T15:15:10.084Z"
+    },
+    {
+      "_id": "68b07288a4ac55c98a458050",
+      "uuid": "720825b0-3e77-4358-a064-0ac1904815b2",
+      "name": "visitor_sweden",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:15:20.394Z",
+      "updatedAt": "2025-08-28T15:15:20.394Z"
+    },
+    {
+      "_id": "68b07297a4ac55c98a458051",
+      "uuid": "c8f423f8-e02a-4272-87f9-d155b0677c9b",
+      "name": "city_samorin",
+      "color": "#000000",
+      "createdAt": "2025-08-28T15:15:35.038Z",
+      "updatedAt": "2025-08-28T15:15:35.038Z"
+    },
+    {
+      "_id": "68b07804e2c7e5048ad9e78a",
+      "uuid": "7c58c908-93b3-4c37-80e5-d899e813a666",
+      "name": "visitor_ujpestfc",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:38:44.882Z",
+      "updatedAt": "2025-08-28T15:38:44.882Z"
+    },
+    {
+      "_id": "68b07839e2c7e5048ad9e78b",
+      "uuid": "e3c85516-5d6c-4c94-976f-17980344fbe2",
+      "name": "visitor_sc_magdeburg",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:39:37.010Z",
+      "updatedAt": "2025-08-28T15:39:37.010Z"
+    },
+    {
+      "_id": "68b07843e2c7e5048ad9e78c",
+      "uuid": "47758da0-83b6-4d6b-8406-09559fe71e03",
+      "name": "visitor_puskasakademia",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:39:47.217Z",
+      "updatedAt": "2025-08-28T15:39:47.217Z"
+    },
+    {
+      "_id": "68b07851e2c7e5048ad9e78d",
+      "uuid": "a39de228-bb10-4453-8ced-a482c4a89e70",
+      "name": "home_mtk",
+      "color": "#ff2600",
+      "createdAt": "2025-08-28T15:40:01.153Z",
+      "updatedAt": "2025-08-28T15:40:01.153Z"
+    },
+    {
+      "_id": "68b07864e2c7e5048ad9e78e",
+      "uuid": "a9b8618a-a6b3-4e49-8c8e-92c87ccd3d0b",
+      "name": "partner_european_aquatics",
+      "color": "#d357fe",
+      "createdAt": "2025-08-28T15:40:20.627Z",
+      "updatedAt": "2025-08-28T15:40:20.627Z"
+    },
+    {
+      "_id": "68b07872e2c7e5048ad9e78f",
+      "uuid": "9b4b5d0d-22ad-4968-9208-eccc8fa8815c",
+      "name": "partner_chl",
+      "color": "#d357fe",
+      "createdAt": "2025-08-28T15:40:34.481Z",
+      "updatedAt": "2025-08-28T15:40:34.481Z"
+    },
+    {
+      "_id": "68b07883e2c7e5048ad9e790",
+      "uuid": "0756e670-7cd9-46ca-b6ec-a45a482eb5f5",
+      "name": "partner_mlsz",
+      "color": "#d357fe",
+      "createdAt": "2025-08-28T15:40:51.074Z",
+      "updatedAt": "2025-08-28T15:40:51.074Z"
+    },
+    {
+      "_id": "68b0788ee2c7e5048ad9e791",
+      "uuid": "5dc2d209-9c97-4fcd-a4dd-259c75ddaf55",
+      "name": "partner_mol",
+      "color": "#d357fe",
+      "createdAt": "2025-08-28T15:41:02.708Z",
+      "updatedAt": "2025-08-28T15:41:02.708Z"
+    },
+    {
+      "_id": "68b0789be2c7e5048ad9e792",
+      "uuid": "b0761f41-2ad9-4d58-9212-2afdf3c31e89",
+      "name": "partner_lounge",
+      "color": "#d357fe",
+      "createdAt": "2025-08-28T15:41:15.476Z",
+      "updatedAt": "2025-08-28T15:41:15.476Z"
+    },
+    {
+      "_id": "68d57e4bee104dccd4c0f597",
+      "uuid": "22f7de1b-213e-430c-925b-b762b6ca972b",
+      "name": "march1",
+      "color": "#667eea",
+      "createdAt": "2025-09-25T17:39:23.438Z",
+      "updatedAt": "2025-09-25T17:39:23.438Z"
+    },
+    {
+      "_id": "68d57e76ee104dccd4c0f599",
+      "uuid": "59fd0ae5-5d5e-471b-acb5-22cfd74402ad",
+      "name": "march-1",
+      "color": "#764ba2",
+      "createdAt": "2025-09-25T17:40:06.806Z",
+      "updatedAt": "2025-09-25T17:40:06.806Z"
+    },
+    {
+      "_id": "69060ceeafe82dfe5901451a",
+      "uuid": "c429d0fe-5965-4cfd-b9e4-fdb836667d0e",
+      "name": "bozsik_david",
+      "color": "#96c93d",
+      "createdAt": "2025-11-01T13:36:46.322Z",
+      "updatedAt": "2025-11-01T13:36:46.322Z"
+    },
+    {
+      "_id": "691469bcdaf8d83489371432",
+      "uuid": "447c597d-b1bd-42bb-a6ee-872474c0370b",
+      "name": "men",
+      "color": "#8b001b",
+      "createdAt": "2025-11-12T11:04:28.659Z",
+      "updatedAt": "2025-11-12T11:04:28.659Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:23.932Z"
+}

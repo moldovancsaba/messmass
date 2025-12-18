@@ -1,0 +1,40 @@
+{
+  "name": "event_comparisons",
+  "documentCount": 0,
+  "documents": [],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "primaryProjectId": 1
+      },
+      "name": "idx_primaryProjectId",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "comparisonType": 1
+      },
+      "name": "idx_comparisonType",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "primaryProjectId": 1,
+        "comparisonType": 1
+      },
+      "name": "idx_primaryProjectId_comparisonType",
+      "background": true
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:25.549Z"
+}

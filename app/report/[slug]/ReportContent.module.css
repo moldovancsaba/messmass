@@ -1,0 +1,104 @@
+/* WHAT: ReportContent Component Styles (v12.0.0)
+ * WHY: Responsive grid layout for report blocks and charts
+ * HOW: CSS Grid with custom properties for dynamic column counts
+ */
+
+/* Main Content Container */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-8);
+  padding: var(--mm-space-6) 0;
+  width: 100% !important; /* CRITICAL: Force full width */
+  box-sizing: border-box !important;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--mm-space-8);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: var(--mm-space-4);
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-700);
+  margin-bottom: var(--mm-space-2);
+}
+
+.emptyText {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-500);
+  max-width: 400px;
+}
+
+/* Report Block */
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+  width: 100% !important; /* CRITICAL: Ensure block fills container width */
+  box-sizing: border-box !important;
+}
+
+.blockTitle {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  padding-bottom: var(--mm-space-2);
+  border-bottom: 2px solid var(--mm-gray-200);
+}
+
+/* WHAT: Row-Based Layout System (v12.1.0)
+ * WHY: Each row must fill 100% width with dynamic column distribution
+ * HOW: Each row is independent grid with columns calculated from chart widths
+ */
+
+/* Row Container - Dynamic Columns */
+.row {
+  display: grid !important;
+  /* grid-template-columns set via inline style (e.g., "1fr 2fr 1fr") */
+  gap: var(--mm-space-4);
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: var(--mm-space-4);
+  align-items: start;
+  justify-items: stretch;
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+/* Row Item - Fills Allocated Column Width */
+.rowItem {
+  width: 100% !important; /* CRITICAL: Fill column width */
+  min-width: 0; /* CRITICAL: Prevent grid blowout from canvas/SVG */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .row {
+    /* On mobile, stack all items vertically */
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "11.35.1",
+  "version": "11.36.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -103,7 +103,9 @@
     "groups:add-report-content": "tsx -r dotenv/config scripts/addReportContentGroup.ts dotenv_config_path=.env.local",
     "fix:enable-manual-mode": "tsx -r dotenv/config scripts/enableManualModeForAllVariables.ts dotenv_config_path=.env.local",
     "export:partners": "tsx -r dotenv/config scripts/exportPartners.ts dotenv_config_path=.env.local",
-    "import:partners": "tsx -r dotenv/config scripts/importPartners.ts dotenv_config_path=.env.local"
+    "import:partners": "tsx -r dotenv/config scripts/importPartners.ts dotenv_config_path=.env.local",
+    "migrate:reports-v12": "tsx -r dotenv/config scripts/migrate-to-reports-v12.ts dotenv_config_path=.env.local",
+    "fix:chart-formulas": "tsx -r dotenv/config scripts/fix-chart-formulas.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",
@@ -112,6 +114,7 @@
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jspdf": "^3.0.1",
+    "lucide-react": "^0.562.0",
     "marked": "^16.4.1",
     "mongodb": "^6.8.0",
     "next": "15.5.9",
@@ -146,7 +149,7 @@
     "tsx": "^4.20.6"
   },
   "engines": {
-    "node": "18.x || 20.x || 22.x",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
   "browserslist": {

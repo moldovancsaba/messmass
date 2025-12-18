@@ -1,0 +1,25 @@
+{
+  "name": "local_users",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "6909c7d4a533e6cc7b2eed14",
+      "email": "moldovancsaba@gmail.com",
+      "name": "Csaba Moldovan",
+      "role": "super-admin",
+      "password": "62dc6ff43d6829a2d297240e515eb380",
+      "createdAt": "2025-11-04T09:31:00.783Z",
+      "updatedAt": "2025-11-04T09:48:05.640Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:25.710Z"
+}

@@ -1,0 +1,149 @@
+{
+  "name": "users",
+  "documentCount": 13,
+  "documents": [
+    {
+      "_id": "68c16725cc6c9c0cccfcf74d",
+      "email": "admin@messmass.com",
+      "name": "Admin",
+      "role": "super-admin",
+      "password": "5b6738246013004cd7a04a363275cb4b",
+      "createdAt": "2025-09-10T11:55:17.359Z",
+      "updatedAt": "2025-10-07T11:51:26.688Z"
+    },
+    {
+      "_id": "68c16747cc6c9c0cccfcf74e",
+      "email": "david.bozsik@seyuselfies.com",
+      "name": "Bozsik Dávid",
+      "role": "admin",
+      "password": "811d0f9506924003ecec5a9f7c693080",
+      "createdAt": "2025-09-10T11:55:51.642Z",
+      "updatedAt": "2025-09-10T11:55:51.642Z",
+      "lastLogin": "2025-12-17T08:04:03.159Z"
+    },
+    {
+      "_id": "68c167a1cc6c9c0cccfcf74f",
+      "email": "diana.szabo@seyuselfies.com",
+      "name": "Szabó Diana",
+      "role": "admin",
+      "password": "940b0bd7d3f4dfa78467dda8db751061",
+      "createdAt": "2025-09-10T11:57:21.403Z",
+      "updatedAt": "2025-10-29T14:03:28.760Z",
+      "lastLogin": "2025-12-07T19:13:44.190Z"
+    },
+    {
+      "_id": "68c167ebcc6c9c0cccfcf750",
+      "email": "lili.toth@seyuselfies.com",
+      "name": "Tóth Lili",
+      "role": "admin",
+      "password": "998a786ecf665751eeac4474625a5632",
+      "createdAt": "2025-09-10T11:58:35.541Z",
+      "updatedAt": "2025-09-10T11:58:55.948Z",
+      "lastLogin": "2025-11-28T13:46:49.451Z"
+    },
+    {
+      "_id": "68c3eb49d47da46e4f9ea4a5",
+      "email": "jonatan.busa@seyuselfies.com",
+      "name": "Busa Jonatán",
+      "role": "admin",
+      "password": "b31949d0ea38813c4b5af6ba09e5c564",
+      "createdAt": "2025-09-12T09:43:37.069Z",
+      "updatedAt": "2025-09-12T09:43:37.069Z"
+    },
+    {
+      "_id": "68e2a132fb08ff8793f9b719",
+      "email": "moldovancsaba@gmail.com",
+      "name": "Csaba Moldovan",
+      "role": "super-admin",
+      "password": "c1c99614cfb831fff3cd9e075f789577",
+      "createdAt": "2025-10-05T16:47:46.545Z",
+      "updatedAt": "2025-10-05T16:47:46.545Z",
+      "lastLogin": "2025-12-18T11:25:40.112Z"
+    },
+    {
+      "_id": "68e36e95139ab477f285ad3c",
+      "email": "csaba.moldovan@seyuselfies.com",
+      "name": "SEYU CSABA",
+      "role": "admin",
+      "password": "2bf0d8f652002c5b9e98d56849f86e12",
+      "createdAt": "2025-10-06T07:24:05.840Z",
+      "updatedAt": "2025-10-07T11:54:48.113Z"
+    },
+    {
+      "_id": "68ff483f5473ed0e88defa54",
+      "email": "mate.pecsi@seyuselfies.com",
+      "name": "Pécsi Máté",
+      "role": "admin",
+      "password": "9b05e9b186729b764a809ea55e1cdb4c",
+      "createdAt": "2025-10-27T10:23:58.962Z",
+      "updatedAt": "2025-10-27T10:23:58.962Z",
+      "lastLogin": "2025-12-05T08:42:25.283Z"
+    },
+    {
+      "_id": "68ff48de7c892fa2cf1597da",
+      "email": "graphics@seyuselfies.com",
+      "name": "Szidónia Bereczki",
+      "role": "admin",
+      "password": "81762a3cb7e465512eff32630f708400",
+      "createdAt": "2025-10-27T10:26:38.479Z",
+      "updatedAt": "2025-10-27T10:26:38.479Z"
+    },
+    {
+      "_id": "6909c71465c71413f8c27cf8",
+      "email": "mate.hnagy@seyuselfies.com",
+      "name": "H. Nagy Máté",
+      "role": "admin",
+      "password": "7ef71df3b0eb5dc0672d9954432fe10f",
+      "createdAt": "2025-11-04T09:27:48.715Z",
+      "updatedAt": "2025-11-04T10:14:43.594Z"
+    },
+    {
+      "_id": "690b461f3b333710b126aa5a",
+      "email": "camera@messmass.com",
+      "name": "Camera Obscura",
+      "role": "api",
+      "password": "a9116781d95b7a88f7f509ac3513757e",
+      "apiKeyEnabled": true,
+      "createdAt": "2025-11-05T12:42:07.497Z",
+      "updatedAt": "2025-11-05T12:42:07.497Z"
+    },
+    {
+      "_id": "6914a5c466914038e5eedbdb",
+      "email": "z0r4moldovan@gmail.com",
+      "name": "Moldován Zora",
+      "role": "admin",
+      "password": "035b34b529318c9ec697b4cfccc74640",
+      "apiKeyEnabled": false,
+      "createdAt": "2025-11-12T15:20:36.615Z",
+      "updatedAt": "2025-11-12T15:20:42.042Z"
+    },
+    {
+      "_id": "69274c921c5a7d829dbb4615",
+      "email": "fanmass@doneisbetter.com",
+      "name": "Count on Fans",
+      "role": "api",
+      "password": "116a317dbfea52709b4a3d7f1d535451",
+      "apiKeyEnabled": true,
+      "createdAt": "2025-11-26T18:53:06.728Z",
+      "updatedAt": "2025-11-26T18:53:06.728Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "email": 1
+      },
+      "name": "email_1",
+      "unique": true
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:25.215Z"
+}

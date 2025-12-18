@@ -1,0 +1,137 @@
+/* WHAT: ReportHero Component Styles (v12.0.0)
+ * WHY: Clean, responsive hero section for event reports
+ * HOW: Flexbox layout with design tokens
+ */
+
+/* Hero Container */
+.hero {
+  background: linear-gradient(135deg, var(--mm-blue-600), var(--mm-purple-600));
+  color: var(--mm-white);
+  padding: var(--mm-space-8) var(--mm-space-6);
+  border-radius: var(--mm-radius-xl);
+  margin-bottom: var(--mm-space-6);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+/* Hero Content */
+.heroContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Hero Info Section */
+.heroInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  flex: 1;
+}
+
+.heroEmoji {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
+.heroTitle {
+  font-size: var(--mm-font-size-4xl);
+  font-weight: var(--mm-font-weight-bold);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.heroDate {
+  font-size: var(--mm-font-size-lg);
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Hero Actions */
+.heroActions {
+  display: flex;
+  gap: var(--mm-space-3);
+}
+
+.exportButton {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-5);
+  background: var(--mm-white);
+  color: var(--mm-blue-600);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.exportButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-lg);
+  background: var(--mm-gray-50);
+}
+
+.exportButton:active {
+  transform: translateY(0);
+}
+
+.exportIcon {
+  font-size: var(--mm-font-size-xl);
+  line-height: 1;
+}
+
+.exportText {
+  line-height: 1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--mm-space-6) var(--mm-space-4);
+  }
+  
+  .heroContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mm-space-4);
+  }
+  
+  .heroInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mm-space-3);
+  }
+  
+  .heroEmoji {
+    font-size: 48px;
+  }
+  
+  .heroTitle {
+    font-size: var(--mm-font-size-2xl);
+  }
+  
+  .heroDate {
+    font-size: var(--mm-font-size-base);
+  }
+  
+  .heroActions {
+    width: 100%;
+  }
+  
+  .exportButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

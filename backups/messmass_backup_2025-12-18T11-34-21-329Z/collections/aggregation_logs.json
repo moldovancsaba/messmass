@@ -1,0 +1,156 @@
+{
+  "name": "aggregation_logs",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "68f4cba37b7bd65a4ae4a37f",
+      "jobType": "event",
+      "startTime": "2025-10-19T11:29:37.410Z",
+      "endTime": "2025-10-19T11:29:39.215Z",
+      "duration": 1805,
+      "status": "partial_failure",
+      "projectsProcessed": 45,
+      "projectsFailed": 58,
+      "errors": [
+        {
+          "projectId": "68ac1c1cb0e2fcaca4608e0b",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ac143db0e2fcaca4608e04",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68a89844bdf3637ee725840f",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ac269bbbd1d7e78b71f9d3",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68e37342c16ccdc93d00dfdf",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68d553ed7e947f036f12a32f",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68d7da9478908a3e3d1ca0f5",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68e523d89d59d5293581c753",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68e38a7b68f7cf79a92d7ccc",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68aed1954f4de1e379aca02b",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ad8346dbecd3458f4e5bd3",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ad82e1dbecd3458f4e5bd2",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68d3b0791c9f22aa459773f9",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ad819347a41d5567cbaf9e",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ad828947a41d5567cbaf9f",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ab425a9c1565129c719d49",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68d6b595a175c58b6363dfc5",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ac2149153559b70134cc49",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ac4a7930830b738023f3ea",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        },
+        {
+          "projectId": "68ac4ab730830b738023f3ed",
+          "errorMessage": "Incomplete project data (missing eventAttendees or stats)"
+        }
+      ],
+      "performanceMetrics": {
+        "avgProcessingTime": 0.022222222222222223,
+        "maxProcessingTime": 1,
+        "totalQueries": 103
+      },
+      "createdAt": "2025-10-19T11:29:39.216Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "startTime": -1
+      },
+      "name": "idx_startTime",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "status": 1
+      },
+      "name": "idx_status",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "jobType": 1,
+        "startTime": -1
+      },
+      "name": "idx_jobType_startTime",
+      "background": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "createdAt": 1
+      },
+      "name": "idx_createdAt_ttl",
+      "background": true,
+      "expireAfterSeconds": 2592000
+    },
+    {
+      "v": 2,
+      "key": {
+        "jobType": 1,
+        "status": 1
+      },
+      "name": "jobType_status"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:24.998Z"
+}

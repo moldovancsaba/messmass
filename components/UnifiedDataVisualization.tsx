@@ -6,6 +6,7 @@ import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedDataVisualization.module.css';
 import { useEffect, useMemo, useRef } from 'react';
+import { getHeightMultiplier } from '@/lib/chartHeightCalculator';
 
 interface UnifiedDataVisualizationProps {
   blocks: DataVisualizationBlock[];
@@ -198,9 +199,9 @@ export default function UnifiedDataVisualization({
     );
   }
 
-  // Responsive per-block height calculation based on unit width (pie baseline 4:6)
-  // WHAT: For each block grid, compute a shared chart height H = unitWidth * 1.5 (4:6 width:height)
-  // WHY: Make all chart figure areas (pie/bar/KPI/text) the same responsive height without fixed caps
+  // WHAT: Responsive per-block height calculation based on grid unit rules
+  // WHY: Different block widths need different height multipliers for optimal aspect ratios
+  // HOW: Use chartHeightCalculator utility with unit-based multiplier system
   const blockIds = useMemo(() => blocks
     .filter(b => b.isActive)
     .sort((a,b)=>a.order-b.order)
@@ -216,19 +217,13 @@ export default function UnifiedDataVisualization({
       // Skip responsive height when block is text-image only
       const isBaseline = grid.getAttribute('data-pie-baseline') === 'true';
       if (!isBaseline) {
-        grid.style.removeProperty('--block-chart-height');
+        grid.style.removeProperty('--height-m');
         return;
       }
       
-      // WHAT: Calculate unit width from total units instead of measuring rendered widths
-      // WHY: More reliable - doesn't depend on browser layout timing
-      // HOW: blockWidth / totalUnits, then multiply by 1.5 for 4:6 aspect ratio
-      
-      const blockWidth = grid.clientWidth;
-      if (blockWidth <= 0) return;
-      
       // Get all chart items and sum their units
-      const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item[data-width-units]'));
+      // Only count KPI/BAR/PIE (standard) tiles for unit math
+      const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item.chart-item-standard[data-width-units]'));
       let totalUnits = 0;
       items.forEach((el) => {
         const unitsAttr = el.getAttribute('data-width-units');
@@ -237,24 +232,9 @@ export default function UnifiedDataVisualization({
       });
       
       if (totalUnits > 0) {
-        // WHAT: unitWidth = blockWidth / totalUnits
-        // WHY: This is what CSS Grid does with fr units
-        const unitWidth = blockWidth / totalUnits;
-        let targetHeight = Math.round(unitWidth * 1.5); // 4:6 width:height → H = 1.5 * W
-        
-        // WHAT: Cap maximum height to prevent extremely tall charts
-        // WHY: Prevent edge cases where calculation results in unreasonably large heights
-        // HOW: Max 800px or 80vh (whichever is smaller)
-        const maxHeight = Math.min(800, window.innerHeight * 0.8);
-        if (targetHeight > maxHeight) {
-          console.warn(`⚠️ Height ${targetHeight}px exceeds max ${maxHeight}px - capping to max`);
-          targetHeight = maxHeight;
-        }
-        
-        grid.style.setProperty('--block-chart-height', `${targetHeight}px`);
-        
-        // Debug logging
-        console.log(`📊 Block height calc: blockWidth=${blockWidth}px, totalUnits=${totalUnits}, unitWidth=${unitWidth.toFixed(2)}px, height=${targetHeight}px`);
+        const m = getHeightMultiplier(totalUnits); // 0.5 | 1 | 1.5
+        grid.style.setProperty('--height-m', String(m));
+        console.log('📊 Block height ratio set:', { totalUnits, heightMultiplier: m });
       }
     };
 
@@ -332,7 +312,6 @@ export default function UnifiedDataVisualization({
                     ref={(el) => { gridRefs.current[idSuffix] = el; }}
                     data-block-id={idSuffix}
                     data-pie-baseline={hasBaseline ? 'true' : 'false'}
-                    style={{ ['--block-chart-height' as string]: '0px' } as React.CSSProperties}
                   >
                     {block.charts
                       .sort((a, b) => a.order - b.order)
@@ -362,6 +341,7 @@ export default function UnifiedDataVisualization({
                             className={`chart-item unified-chart-item ${chartTypeClass}`}
                             data-chart-id={chart.chartId}
                             data-width-units={Math.max(1, chart.width || 1)}
+                            style={{ ['--tile-units' as string]: String(Math.max(1, chart.width || 1)) } as React.CSSProperties}
                           >
                             <DynamicChart 
                               result={result} 
@@ -403,8 +383,9 @@ export default function UnifiedDataVisualization({
           grid-auto-rows: auto; /* WHAT: Let rows size naturally; WHY: Allow aspect ratio to control height */
         }
         
-        /* WHAT: Chart item alignment system */
-        /* WHY: Ensure titles, descriptions, and charts align at consistent heights */
+        /* WHAT: Chart item structure with three distinct areas
+         * WHY: Title, subtitle, and chart graphic are independent layers
+         * HOW: Grid with fixed title/subtitle heights, chart area uses calculated height */
         .udv-grid .chart-item {
           display: ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts ? 'grid' : 'flex'} !important;
           ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts 
@@ -412,9 +393,14 @@ export default function UnifiedDataVisualization({
             : 'flex-direction: column !important;'
           }
           gap: 0.75rem !important;
-          height: 100% !important;
+          height: auto !important; /* CHANGED: Auto height to accommodate title + subtitle + chart */
           align-content: start !important;
         }
+        /* For non-baseline blocks (no pie/bar/kpi), do NOT force the chart row height. */
+        ${alignment.alignTitles || alignment.alignDescriptions || alignment.alignCharts ? `
+        .udv-grid[data-pie-baseline="false"] .chart-item {
+          grid-template-rows: ${alignment.alignTitles ? `${alignment.minElementHeight || 4}rem` : 'auto'} ${alignment.alignDescriptions ? `${(alignment.minElementHeight || 4) * 0.5}rem` : 'auto'} auto !important;
+        }` : ''}
         
         /* WHAT: Text and image charts use aspect ratio within forced block height
          * WHY: Charts use aspect ratio BUT all have exactly same height in block
@@ -469,66 +455,67 @@ export default function UnifiedDataVisualization({
           flex-shrink: 0 !important;
         }
         
-        /* WHAT: Chart graphic area alignment - only for standard charts */
-        /* WHY: Text and image charts don't use chartGraphicArea */
-        .udv-grid[data-pie-baseline="true"] .chart-item-standard :global(.chartGraphicArea) {
-          flex: 0 1 auto !important; /* avoid stretching the grid row */
+        /* WHAT: Chart graphic area - ratio-driven (no px)
+         * WHY: Title/subtitle are separate layers; graphic height derives from width
+         * HOW: aspect-ratio = tileUnits / m ⇒ height = unitWidth × m (equal across block) */
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.chartGraphicArea) {
+          flex: 0 1 auto !important;
           display: flex !important;
           flex-direction: column !important;
           justify-content: center !important;
           align-items: center !important;
-          height: clamp(200px, var(--block-chart-height), 80vh) !important; /* responsive with viewport cap */
-          min-height: 0 !important;
-          max-height: none !important;
+          width: 100% !important;
+          aspect-ratio: calc(var(--tile-units, 1) / var(--height-m, 1)) !important;
+          container-type: size;
           overflow: hidden !important;
         }
 
-        /* Responsive figure height for all chart types in this block */
-        .udv-grid [data-block-id] { /* no-op, placeholder for clarity */ }
-
-        /* Pie chart containers use shared height */
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartSide),
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartContainerPortrait) {
-          max-height: none !important;
-          height: clamp(200px, var(--block-chart-height), 80vh) !important;
+        /* WHAT: Pie chart containers (standard) */
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartSide),
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartContainerPortrait) {
+          width: 100% !important;
+          aspect-ratio: calc(var(--tile-units, 1) / var(--height-m, 1)) !important;
+          container-type: size;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartWrapper),
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartInnerPortrait) {
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartWrapper),
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartInnerPortrait) {
           max-width: none !important;
-          width: auto !important;
+          width: 100% !important;
           height: 100% !important;
-          aspect-ratio: 1 / 1 !important; /* keep circle */
+          aspect-ratio: 1 / 1 !important;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartSvg),
-        .udv-grid[data-pie-baseline="true"] :global(.pieChartSvgPortrait) {
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartSvg),
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.pieChartSvgPortrait) {
           width: 100% !important;
           height: 100% !important;
         }
 
-        /* Bar chart containers use shared height */
-        .udv-grid[data-pie-baseline="true"] :global(.barChartSide) {
-          max-height: none !important;
-          height: clamp(200px, var(--block-chart-height), 80vh) !important;
+        /* WHAT: Bar chart containers (standard) */
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.barChartSide) {
+          width: 100% !important;
+          aspect-ratio: calc(var(--tile-units, 1) / var(--height-m, 1)) !important;
+          container-type: size;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.barChartRows) {
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.barChartRows) {
           height: 100% !important;
         }
 
-        /* KPI containers use shared height and responsive typography */
-        .udv-grid[data-pie-baseline="true"] :global(.kpiContainer) {
-          max-height: none !important;
-          height: clamp(200px, var(--block-chart-height), 80vh) !important;
+        /* WHAT: KPI containers (standard) */
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiContainer) {
+          width: 100% !important;
+          aspect-ratio: calc(var(--tile-units, 1) / var(--height-m, 1)) !important;
+          container-type: size;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.kpiValue) {
-          font-size: clamp(1.75rem, calc(var(--block-chart-height) * 0.18), 6rem) !important;
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiValue) {
+          font-size: clamp(1.25rem, 18cqh, 6rem) !important;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.kpiEmoji) {
-          font-size: clamp(1.5rem, calc(var(--block-chart-height) * 0.14), 4.5rem) !important;
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiEmoji) {
+          font-size: clamp(1.25rem, 14cqh, 4.5rem) !important;
         }
-        .udv-grid[data-pie-baseline="true"] :global(.kpiLabel) {
-          font-size: clamp(0.8rem, calc(var(--block-chart-height) * 0.05), 1.25rem) !important;
+        .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiLabel) {
+          font-size: clamp(0.8rem, 5cqh, 1.25rem) !important;
           min-height: auto !important;
-          height: auto !important; /* allow auto but within container */
+          height: auto !important;
         }
 
         /* WHAT: Image and text charts KEEP native aspect ratio when in baseline blocks
@@ -564,7 +551,6 @@ export default function UnifiedDataVisualization({
           min-width: 0 !important;
           max-width: none !important;
           width: 100% !important;
-          height: 100% !important;
           display: flex;
           flex-direction: column;
           overflow: hidden !important; /* prevent content from overflowing tile */
@@ -668,10 +654,12 @@ export default function UnifiedDataVisualization({
           overflow: hidden;
         }
         
-        /* WHAT: Standard charts (KPI, pie, bar) get default height */
+        /* WHAT: Standard charts (KPI, pie, bar) - height is sum of parts
+         * WHY: Total height = title height + subtitle height + chart height
+         * HOW: Auto height allows all three sections to stack naturally */
         .chart-item.chart-item-standard {
-          height: 100%;
-          min-height: 380px;
+          height: auto !important; /* Sum of title + subtitle + chart graphic */
+          min-height: 0 !important; /* Individual sections have their own mins */
         }
         
         /* WHAT: Base chart item - height controlled by per-block CSS
@@ -684,8 +672,6 @@ export default function UnifiedDataVisualization({
         /* Ensure all chart content fills the available space */
         .chart-item:not(.chart-item-image):not(.chart-item-text) > * {
           width: 100%;
-          height: 100%;
-          flex: 1;
         }
         
         /* WHAT: Base content sizing - specific block rules will override

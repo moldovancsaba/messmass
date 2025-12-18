@@ -1,6 +1,12 @@
 // lib/formulaEngine.ts - Formula parsing and safe evaluation engine
 // DYNAMIC VARIABLE SYSTEM: Fetches variables from KYC/variables_metadata collection (92 variables)
 // Returns 'NA' for division by zero, missing variables, or invalid expressions
+//
+// V12 ARCHITECTURE NOTE (v12.0.0+):
+// WHAT: This is the SINGLE formula evaluation engine used across the entire system
+// WHY: All chart calculations must use the same formula syntax and evaluation logic
+// HOW: ReportCalculator (lib/report-calculator.ts) uses this engine internally
+// USAGE: Import evaluateFormula() or evaluateFormulaSafe() for safe calculation
 
 import { type AvailableVariable, FormulaValidationResult } from './chartConfigTypes';
 import { 

@@ -1,0 +1,1323 @@
+{
+  "name": "data_blocks",
+  "documentCount": 66,
+  "documents": [
+    {
+      "_id": "68bc680773eff5a9fd73df05",
+      "name": "Fan Demographics and General Insights",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "gender-distribution",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "age-groups",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "fans-engaged",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 20,
+      "isActive": true,
+      "createdAt": "2025-09-06T16:57:43.050Z",
+      "updatedAt": "2025-12-17T10:59:33.389Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69023cedfa020c8d5318a29d",
+      "name": "Overview 2",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "marketing-opt-in",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "database-value-for-sponsors",
+          "width": 2,
+          "order": 1
+        }
+      ],
+      "order": 10,
+      "isActive": true,
+      "createdAt": "2025-10-29T16:12:29.947Z",
+      "updatedAt": "2025-12-17T08:22:47.692Z",
+      "showTitle": false
+    },
+    {
+      "_id": "69036c6af7daf64629cb6b84",
+      "name": "Future Opportunities",
+      "gridColumns": 2,
+      "charts": [
+        {
+          "chartId": "stats.reportText2",
+          "width": 1,
+          "order": 0
+        }
+      ],
+      "order": 40,
+      "isActive": true,
+      "createdAt": "2025-10-30T13:47:22.434Z",
+      "updatedAt": "2025-11-02T18:53:04.971Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69036f35603a88659c08014b",
+      "name": "Thank you!",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "stats.reportText3",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfieSquare3",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 50,
+      "isActive": true,
+      "createdAt": "2025-10-30T13:59:17.909Z",
+      "updatedAt": "2025-11-03T19:05:55.914Z",
+      "showTitle": true
+    },
+    {
+      "_id": "69037a4853813a93b1809be0",
+      "name": "Happy Fans",
+      "gridColumns": 4,
+      "charts": [
+        {
+          "chartId": "fanSelfiePortrait4",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfiePortrait5",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "fanSelfiePortrait6",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 35,
+      "isActive": true,
+      "createdAt": "2025-10-30T14:46:32.349Z",
+      "updatedAt": "2025-11-03T18:49:26.964Z",
+      "showTitle": true
+    },
+    {
+      "_id": "6903c78d340f78b5a6742bd0",
+      "name": "Future Opportunities II",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "fanSelfieLandscape1",
+          "width": 10,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-4",
+          "width": 3.16,
+          "order": 1
+        }
+      ],
+      "order": 45,
+      "isActive": true,
+      "createdAt": "2025-10-30T20:16:13.267Z",
+      "updatedAt": "2025-11-13T12:46:25.322Z",
+      "showTitle": false
+    },
+    {
+      "_id": "6903d7059ab67b6c5ba48d03",
+      "name": "Merch Analytics",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "merchandise-distribution",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "merch-penetration",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "merchandise-sales",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 30,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-10-30T21:22:13.594Z",
+      "updatedAt": "2025-12-17T14:24:31.095Z"
+    },
+    {
+      "_id": "6903d7d69ab67b6c5ba48d04",
+      "name": "Fan data and general 2",
+      "gridColumns": 3,
+      "charts": [
+        {
+          "chartId": "fans-location",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fans-per-image",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "report-text-2",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 25,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-10-30T21:25:42.988Z",
+      "updatedAt": "2025-12-17T14:23:15.950Z"
+    },
+    {
+      "_id": "6913383e4e1fa8408754a997",
+      "name": "REPORT OVERVIEW",
+      "charts": [
+        {
+          "chartId": "database-value-for-sponsors",
+          "width": 3.16,
+          "order": 0
+        },
+        {
+          "chartId": "stats.reportText10",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "unique-users",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 2,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-11T13:21:02.639Z",
+      "updatedAt": "2025-12-16T11:13:11.233Z"
+    },
+    {
+      "_id": "6913771df3493402dd117c58",
+      "name": "SEYU DATA DASHBOARD",
+      "charts": [
+        {
+          "chartId": "report-image-1",
+          "width": 3.16,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfiePortrait1",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 1,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-11T17:49:17.292Z",
+      "updatedAt": "2025-11-13T16:57:32.694Z"
+    },
+    {
+      "_id": "69146e1cf24ce5f9ce9d947e",
+      "name": "PRE-MATCH PROMOTION",
+      "charts": [
+        {
+          "chartId": "fanSelfieSquare2",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfieSquare3",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "report-text-2",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 9,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T11:23:08.387Z",
+      "updatedAt": "2025-11-13T16:07:27.630Z"
+    },
+    {
+      "_id": "69146eb5f24ce5f9ce9d947f",
+      "name": "HAPPY GIALLOROSSI FANS FROM HOME/ ON THE ROAD",
+      "charts": [
+        {
+          "chartId": "fanSelfieLandscape2",
+          "width": 3,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfieLandscape3",
+          "width": 2,
+          "order": 1
+        },
+        {
+          "chartId": "report-image-4",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 20,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T11:25:41.394Z",
+      "updatedAt": "2025-11-13T16:05:43.841Z"
+    },
+    {
+      "_id": "69146f97d7f3702d4123387b",
+      "name": "HAPPY GIALLOROSSI FANS AT THE OLIMPICO",
+      "charts": [],
+      "order": 30,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T11:29:27.078Z",
+      "updatedAt": "2025-11-12T12:09:54.683Z"
+    },
+    {
+      "_id": "69147898c1ae5696c17a0b57",
+      "name": "FAN DEMOGRAPHICS INTELLIGENCE",
+      "charts": [
+        {
+          "chartId": "age-groups",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "gender-distribution",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 40,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T12:07:52.880Z",
+      "updatedAt": "2025-11-13T14:45:32.274Z"
+    },
+    {
+      "_id": "6914796bcb2e9cbfda3f756c",
+      "name": "Fan Demopgraphics part2",
+      "charts": [
+        {
+          "chartId": "bitly-countries-reached",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-text-1",
+          "width": 2,
+          "order": 1
+        },
+        {
+          "chartId": "fans-location",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 50,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-12T12:11:23.351Z",
+      "updatedAt": "2025-11-14T08:27:32.522Z"
+    },
+    {
+      "_id": "69147b3ee7bdf4e55514b7a8",
+      "name": "MARKET INTELLIGENCE",
+      "charts": [
+        {
+          "chartId": "marketing-opt-in",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "unique-users",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "unique-user-second",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 60,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T12:19:10.140Z",
+      "updatedAt": "2025-11-13T14:43:40.678Z"
+    },
+    {
+      "_id": "69147b91e7bdf4e55514b7a9",
+      "name": "MERCH INTELLIGENCE ",
+      "charts": [
+        {
+          "chartId": "merchandise-distribution",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "merch-penetration",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "merchandise-sales",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 70,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-12T12:20:33.373Z",
+      "updatedAt": "2025-11-13T14:44:40.000Z"
+    },
+    {
+      "_id": "69147f3d1dbffded06c02ece",
+      "name": "Report Overview part 2",
+      "charts": [
+        {
+          "chartId": "marketing-opt-in",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "pop-up-banner-ctr",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "fans-engaged",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 3,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-12T12:36:13.072Z",
+      "updatedAt": "2025-12-16T08:38:08.020Z"
+    },
+    {
+      "_id": "691498b26115d1023ad66269",
+      "name": "Merch part2",
+      "charts": [
+        {
+          "chartId": "terrace-icons-asroma",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "terrace-icons-vs-without",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 70,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-12T14:24:50.930Z",
+      "updatedAt": "2025-11-13T15:58:38.382Z"
+    },
+    {
+      "_id": "6914f1dc761b1f201ac05820",
+      "name": "Report Text 1 Block",
+      "charts": [
+        {
+          "chartId": "report-text-1",
+          "width": 2,
+          "conditions": []
+        }
+      ],
+      "order": 9001,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-12T20:45:15.755Z",
+      "updatedAt": "2025-11-12T20:45:15.755Z"
+    },
+    {
+      "_id": "6914f2d954a5b6cdd8f139f9",
+      "name": "Report Text 6 Block",
+      "charts": [
+        {
+          "chartId": "report-text-6",
+          "width": 2,
+          "conditions": []
+        }
+      ],
+      "order": 9006,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-12T20:49:29.295Z",
+      "updatedAt": "2025-11-12T20:49:29.295Z"
+    },
+    {
+      "_id": "6915a34cf55ed73f4afa8c5b",
+      "name": "Report Image 1 Block",
+      "charts": [
+        {
+          "chartId": "report-image-1",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9001,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T09:22:20.258Z",
+      "updatedAt": "2025-11-13T09:22:20.258Z"
+    },
+    {
+      "_id": "6915a36267d545debfdaa4af",
+      "name": "Report Image 4 Block",
+      "charts": [
+        {
+          "chartId": "report-image-4",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9004,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T09:22:41.546Z",
+      "updatedAt": "2025-11-13T09:22:41.546Z"
+    },
+    {
+      "_id": "6915a3b167d545debfdaa4b1",
+      "name": "Report Image 5 Block",
+      "charts": [
+        {
+          "chartId": "report-image-5",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9005,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T09:24:01.020Z",
+      "updatedAt": "2025-11-13T09:24:01.020Z"
+    },
+    {
+      "_id": "6915a3c4f55ed73f4afa8c5f",
+      "name": "Report Image 6 Block",
+      "charts": [
+        {
+          "chartId": "report-image-6",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9006,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T09:24:20.573Z",
+      "updatedAt": "2025-11-13T09:24:20.573Z"
+    },
+    {
+      "_id": "6915a3d5e874404fe1ed0db3",
+      "name": "Report Image 7 Block",
+      "charts": [
+        {
+          "chartId": "report-image-7",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9007,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T09:24:37.643Z",
+      "updatedAt": "2025-11-13T09:24:37.643Z"
+    },
+    {
+      "_id": "6915d1aea31db5a9bbe952fa",
+      "name": "market intelligence part 1/2",
+      "charts": [
+        {
+          "chartId": "percentage-of-new-users",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "new-users-to-all-unique-users",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 65,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T12:40:14.442Z",
+      "updatedAt": "2025-11-13T14:44:18.956Z"
+    },
+    {
+      "_id": "6915ed6d111742af1218db20",
+      "name": "Market and merch intelligence 1/3",
+      "charts": [
+        {
+          "chartId": "pop-up-banner-clicks",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "pop-up-banner-ctr",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "report-image-8",
+          "width": 2,
+          "order": 2
+        }
+      ],
+      "order": 67,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-13T14:38:37.077Z",
+      "updatedAt": "2025-11-13T15:01:28.938Z"
+    },
+    {
+      "_id": "691600f322cedff4b344702f",
+      "name": "HAPPY FANS SHINING IN THEIR NEW ADIDAS TERRACE ICONS",
+      "charts": [
+        {
+          "chartId": "report-image-9",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-10",
+          "width": 2,
+          "order": 1
+        },
+        {
+          "chartId": "report-image-11",
+          "width": 3,
+          "order": 2
+        }
+      ],
+      "order": 80,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-13T16:01:55.784Z",
+      "updatedAt": "2025-11-14T09:21:18.882Z"
+    },
+    {
+      "_id": "6916ea1960add5ada2dda579",
+      "name": "HAPPY GIALLOROSSI FANS AT THE OLIMPICO",
+      "charts": [
+        {
+          "chartId": "report-image-13",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-14",
+          "width": 2,
+          "order": 1
+        },
+        {
+          "chartId": "report-image-15",
+          "width": 3,
+          "order": 2
+        }
+      ],
+      "order": 55,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T08:36:41.308Z",
+      "updatedAt": "2025-11-14T09:11:45.015Z"
+    },
+    {
+      "_id": "6916f4b75d70829b900eb956",
+      "name": "OPPORTUNITIES FOR SPONSORS",
+      "charts": [
+        {
+          "chartId": "stats.reportText3",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "database-value-for-sponsors",
+          "width": 3,
+          "order": 1
+        }
+      ],
+      "order": 100,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T09:21:59.781Z",
+      "updatedAt": "2025-11-14T10:09:19.863Z"
+    },
+    {
+      "_id": "6916f859cc8c13889793181b",
+      "name": "Sponsor values 2",
+      "charts": [
+        {
+          "chartId": "report-text-4",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-16",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 110,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T09:37:29.929Z",
+      "updatedAt": "2025-11-14T10:08:31.943Z"
+    },
+    {
+      "_id": "6916fb8cd95c477e91dab29d",
+      "name": "Report Image 16 Block",
+      "charts": [
+        {
+          "chartId": "report-image-16",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9016,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T09:51:07.841Z",
+      "updatedAt": "2025-11-14T09:51:07.841Z"
+    },
+    {
+      "_id": "6916feec0d9419f3d16fa40f",
+      "name": "Report Image 17 Block",
+      "charts": [
+        {
+          "chartId": "report-image-17",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9017,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:05:32.668Z",
+      "updatedAt": "2025-11-14T10:05:32.668Z"
+    },
+    {
+      "_id": "6916fefb146b21d8d92adc63",
+      "name": "Report Image 18 Block",
+      "charts": [
+        {
+          "chartId": "report-image-18",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9018,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:05:46.970Z",
+      "updatedAt": "2025-11-14T10:05:46.970Z"
+    },
+    {
+      "_id": "6916ff497988511310d1c806",
+      "name": "Report Image 19 Block",
+      "charts": [
+        {
+          "chartId": "report-image-19",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9019,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:07:04.727Z",
+      "updatedAt": "2025-11-14T10:07:04.727Z"
+    },
+    {
+      "_id": "6916ff5327e1a73d8db25bc8",
+      "name": "Report Image 20 Block",
+      "charts": [
+        {
+          "chartId": "report-image-20",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9020,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:07:15.271Z",
+      "updatedAt": "2025-11-14T10:07:15.271Z"
+    },
+    {
+      "_id": "6916ff62032bd58a920489f3",
+      "name": "Report Image 21 Block",
+      "charts": [
+        {
+          "chartId": "report-image-21",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9021,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:07:29.761Z",
+      "updatedAt": "2025-11-14T10:07:29.761Z"
+    },
+    {
+      "_id": "691700f3b8d5974343659a94",
+      "name": "Report Image 22 Block",
+      "charts": [
+        {
+          "chartId": "report-image-22",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9022,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:14:10.869Z",
+      "updatedAt": "2025-11-14T10:14:10.869Z"
+    },
+    {
+      "_id": "691700f3b8d5974343659a96",
+      "name": "Report Image 23 Block",
+      "charts": [
+        {
+          "chartId": "report-image-23",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9023,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:14:11.465Z",
+      "updatedAt": "2025-11-14T10:14:11.465Z"
+    },
+    {
+      "_id": "691701c4b8d5974343659a98",
+      "name": "Report Image 24 Block",
+      "charts": [
+        {
+          "chartId": "report-image-24",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9024,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:17:40.122Z",
+      "updatedAt": "2025-11-14T10:17:40.122Z"
+    },
+    {
+      "_id": "691701fdb8d5974343659a99",
+      "name": "Sponsor Value 3",
+      "charts": [
+        {
+          "chartId": "report-text-5",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfieSquare1",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 120,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:18:37.914Z",
+      "updatedAt": "2025-11-14T10:27:25.416Z"
+    },
+    {
+      "_id": "69170238be480ab80b41cdd9",
+      "name": "Report Image 25 Block",
+      "charts": [
+        {
+          "chartId": "report-image-25",
+          "width": 3,
+          "conditions": []
+        }
+      ],
+      "order": 9025,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:19:35.815Z",
+      "updatedAt": "2025-11-14T10:19:35.815Z"
+    },
+    {
+      "_id": "69170437b06aa66ed0ba6c4c",
+      "name": "GRAZIE!",
+      "charts": [
+        {
+          "chartId": "report-text-6",
+          "width": 2,
+          "order": 0
+        },
+        {
+          "chartId": "fanSelfiePortrait4",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:28:07.694Z",
+      "updatedAt": "2025-11-14T10:37:36.138Z"
+    },
+    {
+      "_id": "6917097039d8f52f41f05540",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.128Z",
+      "updatedAt": "2025-11-14T10:50:24.128Z"
+    },
+    {
+      "_id": "6917097039d8f52f41f05541",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.241Z",
+      "updatedAt": "2025-11-14T10:50:24.241Z"
+    },
+    {
+      "_id": "691709704f7a4cd6d332a626",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.132Z",
+      "updatedAt": "2025-11-14T10:50:24.132Z"
+    },
+    {
+      "_id": "691709702d9c19a848c0e4ae",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.132Z",
+      "updatedAt": "2025-11-14T10:50:24.132Z"
+    },
+    {
+      "_id": "69170970d4bfd783f7ef58af",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.170Z",
+      "updatedAt": "2025-11-14T10:50:24.170Z"
+    },
+    {
+      "_id": "691709704111367b82f1397b",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:24.205Z",
+      "updatedAt": "2025-11-14T10:50:24.205Z"
+    },
+    {
+      "_id": "69170972ab41b3a938ba926f",
+      "name": "Goodbye selfies block",
+      "charts": [
+        {
+          "chartId": "report-image-18",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-19",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 130,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-11-14T10:50:26.090Z",
+      "updatedAt": "2025-11-14T10:51:10.422Z"
+    },
+    {
+      "_id": "69170972427345afe7228d94",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:26.093Z",
+      "updatedAt": "2025-11-14T10:50:26.093Z"
+    },
+    {
+      "_id": "6917097275a4208a15e3d9df",
+      "name": "Goodbye selfies block",
+      "charts": [],
+      "order": 130,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-11-14T10:50:26.134Z",
+      "updatedAt": "2025-11-14T10:50:26.134Z"
+    },
+    {
+      "_id": "694003d31850407b688937a7",
+      "name": "OVERVIEW ",
+      "charts": [
+        {
+          "chartId": "engagement-rate",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fans-engaged",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "total-images",
+          "width": 1,
+          "order": 2
+        },
+        {
+          "chartId": "unique-users",
+          "width": 1,
+          "order": 3
+        }
+      ],
+      "order": 10,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-15T12:49:23.478Z",
+      "updatedAt": "2025-12-16T12:54:06.249Z"
+    },
+    {
+      "_id": "6940047dd11bbed16a31807c",
+      "name": "OVERVIEW IMAGES",
+      "charts": [
+        {
+          "chartId": "report-image-1",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-2",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 5,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-15T12:52:13.920Z",
+      "updatedAt": "2025-12-15T12:52:48.265Z"
+    },
+    {
+      "_id": "69403335e24dbe2de7dd45bc",
+      "name": "PRE-GAME PROMOTION IMAGES",
+      "charts": [
+        {
+          "chartId": "report-image-3",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-4",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 20,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-15T16:11:33.460Z",
+      "updatedAt": "2025-12-15T16:12:22.215Z"
+    },
+    {
+      "_id": "69403377e24dbe2de7dd45bd",
+      "name": "PRE-GAME PROMOTION",
+      "charts": [
+        {
+          "chartId": "visitor-sources",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-text-1",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "pre-match-url",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 30,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-15T16:12:39.387Z",
+      "updatedAt": "2025-12-16T13:44:00.013Z"
+    },
+    {
+      "_id": "694033ebc736cdc8f37aee1e",
+      "name": "FAN DEMOGRAPHICS IMAGES",
+      "charts": [
+        {
+          "chartId": "report-image-5",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-6",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 40,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-15T16:14:35.393Z",
+      "updatedAt": "2025-12-15T16:15:42.168Z"
+    },
+    {
+      "_id": "69413a9d50652efd7f5d351f",
+      "name": "OVERVIEW 2",
+      "charts": [
+        {
+          "chartId": "marketing-opt-in",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "database-value-for-sponsors",
+          "width": 3.16,
+          "order": 1
+        }
+      ],
+      "order": 15,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-16T10:55:25.446Z",
+      "updatedAt": "2025-12-16T12:53:54.848Z"
+    },
+    {
+      "_id": "69419202387cbc20c6aa9025",
+      "name": "SEYU DATA DASHBOARD",
+      "charts": [
+        {
+          "chartId": "report-image-1",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-image-2",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "report-image-3",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 0,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-16T17:08:18.597Z",
+      "updatedAt": "2025-12-17T08:58:31.145Z"
+    },
+    {
+      "_id": "694265b6ca5a39ac7923d2b4",
+      "name": "OVERVIEW",
+      "charts": [
+        {
+          "chartId": "unique-users",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "total-images",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "fans-engaged",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 5,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-17T08:11:34.337Z",
+      "updatedAt": "2025-12-17T08:17:13.715Z"
+    },
+    {
+      "_id": "6942700c95d5a4e56b90693a",
+      "name": "Pre-Game Communication",
+      "charts": [
+        {
+          "chartId": "report-image-5",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "report-text-1",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 15,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-17T08:55:40.695Z",
+      "updatedAt": "2025-12-17T09:23:20.603Z"
+    },
+    {
+      "_id": "6942782bb37a57adca762853",
+      "name": "Pre-Game promotion data",
+      "charts": [
+        {
+          "chartId": "pre-match-url",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "fans-location",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 18,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-17T09:30:19.297Z",
+      "updatedAt": "2025-12-17T09:34:38.618Z"
+    },
+    {
+      "_id": "6942dd5ea96b104d42916e6e",
+      "name": "In-Stadia Communication: QR Code",
+      "charts": [
+        {
+          "chartId": "report-image-1",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "qrscan-device",
+          "width": 1,
+          "order": 1
+        },
+        {
+          "chartId": "conversion-qrscan",
+          "width": 1,
+          "order": 2
+        }
+      ],
+      "order": 19,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-17T16:42:06.944Z",
+      "updatedAt": "2025-12-17T16:50:01.310Z"
+    },
+    {
+      "_id": "6942e1b1e814219e8e80ed3c",
+      "name": "Marketing and Commercial Insights",
+      "charts": [
+        {
+          "chartId": "marketing-opt-in",
+          "width": 1,
+          "order": 0
+        },
+        {
+          "chartId": "marketing-value-kpi",
+          "width": 1,
+          "order": 1
+        }
+      ],
+      "order": 37,
+      "isActive": true,
+      "showTitle": true,
+      "createdAt": "2025-12-17T17:00:33.502Z",
+      "updatedAt": "2025-12-17T17:01:43.169Z"
+    },
+    {
+      "_id": "6942e23d31be84a90e5e5cc5",
+      "name": "Marketing and Commercial 2",
+      "charts": [
+        {
+          "chartId": "database-value-for-sponsors",
+          "width": 1,
+          "order": 0
+        }
+      ],
+      "order": 38,
+      "isActive": true,
+      "showTitle": false,
+      "createdAt": "2025-12-17T17:02:53.726Z",
+      "updatedAt": "2025-12-17T17:03:56.621Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "type": 1
+      },
+      "name": "type_filter"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:26.280Z"
+}

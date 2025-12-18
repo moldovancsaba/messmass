@@ -1,0 +1,179 @@
+{
+  "name": "page_styles_enhanced",
+  "documentCount": 3,
+  "documents": [
+    {
+      "_id": "68fa2c861d5fdc1dc6e7e8b3",
+      "name": "stat view",
+      "description": "Clean, professional default theme",
+      "isGlobalDefault": true,
+      "pageBackground": {
+        "type": "solid",
+        "solidColor": "#141837"
+      },
+      "heroBackground": {
+        "type": "solid",
+        "gradientAngle": 135,
+        "gradientStops": [
+          {
+            "color": "#ebebeb",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ],
+        "solidColor": "#ebebeb"
+      },
+      "contentBoxBackground": {
+        "type": "solid",
+        "solidColor": "#ffffff",
+        "opacity": 0.8
+      },
+      "typography": {
+        "fontFamily": "montserrat",
+        "primaryTextColor": "#8d2878",
+        "secondaryTextColor": "#8c2877",
+        "headingColor": "#8d2878"
+      },
+      "colorScheme": {
+        "primary": "#9b0a2d",
+        "secondary": "#4e0504",
+        "success": "#f8b807",
+        "warning": "#f26601",
+        "error": "#ff2600"
+      },
+      "createdAt": "2025-10-23T13:24:22.178Z",
+      "updatedAt": "2025-10-30T15:58:55.775Z",
+      "createdBy": "admin",
+      "projectIds": []
+    },
+    {
+      "_id": "69130a5bb3ce249fe41ced31",
+      "name": "AS Roma",
+      "description": "AS ROMA",
+      "isGlobalDefault": false,
+      "pageBackground": {
+        "type": "solid",
+        "solidColor": "#8b011b",
+        "gradientAngle": 105,
+        "gradientStops": [
+          {
+            "color": "#8b011b",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ]
+      },
+      "heroBackground": {
+        "type": "solid",
+        "gradientAngle": 135,
+        "gradientStops": [
+          {
+            "color": "#8b011b",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ],
+        "solidColor": "#f3990a"
+      },
+      "contentBoxBackground": {
+        "type": "solid",
+        "solidColor": "#ffa800",
+        "opacity": 0.9
+      },
+      "typography": {
+        "fontFamily": "AS Roma",
+        "primaryTextColor": "#8b001b",
+        "secondaryTextColor": "#000000",
+        "headingColor": "#8b001b"
+      },
+      "colorScheme": {
+        "primary": "#8b001b",
+        "secondary": "#000000",
+        "success": "#8b001b",
+        "warning": "#eb9706",
+        "error": "#8b011b"
+      },
+      "createdAt": "2025-11-11T10:05:15.638Z",
+      "updatedAt": "2025-11-12T11:12:23.693Z",
+      "createdBy": "admin",
+      "projectIds": []
+    },
+    {
+      "_id": "693fe86456d7006458901c25",
+      "name": "SIHF Swiss Ice Hockey Federation",
+      "description": "SIHF whitelabel",
+      "isGlobalDefault": false,
+      "pageBackground": {
+        "type": "solid",
+        "solidColor": "#d8d8d8",
+        "gradientAngle": 135,
+        "gradientStops": [
+          {
+            "color": "#d8d8d8",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ]
+      },
+      "heroBackground": {
+        "type": "solid",
+        "gradientAngle": 135,
+        "gradientStops": [
+          {
+            "color": "#ff6251",
+            "position": 0
+          },
+          {
+            "color": "#000000",
+            "position": 100
+          }
+        ],
+        "solidColor": "#ffc7c7"
+      },
+      "contentBoxBackground": {
+        "type": "solid",
+        "solidColor": "#ffffff",
+        "opacity": 1
+      },
+      "typography": {
+        "fontFamily": "montserrat",
+        "primaryTextColor": "#fe0100",
+        "secondaryTextColor": "#ffc7c7",
+        "headingColor": "#000000"
+      },
+      "colorScheme": {
+        "primary": "#fe0100",
+        "secondary": "#ffffff",
+        "success": "#0cac1f",
+        "warning": "#f0e800",
+        "error": "#fe0100"
+      },
+      "createdAt": "2025-12-15T10:52:20.993Z",
+      "updatedAt": "2025-12-16T13:47:24.447Z",
+      "createdBy": "admin",
+      "projectIds": []
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:24.494Z"
+}

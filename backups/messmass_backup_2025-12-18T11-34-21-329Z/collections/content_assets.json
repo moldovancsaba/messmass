@@ -1,0 +1,916 @@
+{
+  "name": "content_assets",
+  "documentCount": 40,
+  "documents": [
+    {
+      "_id": "6908848915746fd845b7a53b",
+      "slug": "report-image-1",
+      "title": "Report Image 1",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 1",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage1",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.510Z",
+      "updatedAt": "2025-11-03T10:31:37.510Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a53c",
+      "slug": "report-image-2",
+      "title": "Report Image 2",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 2",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage2",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.587Z",
+      "updatedAt": "2025-11-03T10:31:37.587Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a53d",
+      "slug": "report-image-3",
+      "title": "Report Image 3",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 3",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage3",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.643Z",
+      "updatedAt": "2025-11-03T10:31:37.643Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a53e",
+      "slug": "report-image-4",
+      "title": "Report Image 4",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 4",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage4",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.697Z",
+      "updatedAt": "2025-11-03T10:31:37.697Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a53f",
+      "slug": "report-image-5",
+      "title": "Report Image 5",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 5",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage5",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.751Z",
+      "updatedAt": "2025-11-03T10:31:37.751Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a540",
+      "slug": "report-image-6",
+      "title": "Report Image 6",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 6",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage6",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.803Z",
+      "updatedAt": "2025-11-03T10:31:37.803Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a541",
+      "slug": "report-image-7",
+      "title": "Report Image 7",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 7",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage7",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.859Z",
+      "updatedAt": "2025-11-03T10:31:37.859Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a542",
+      "slug": "report-image-8",
+      "title": "Report Image 8",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 8",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage8",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.928Z",
+      "updatedAt": "2025-11-03T10:31:37.928Z"
+    },
+    {
+      "_id": "6908848915746fd845b7a543",
+      "slug": "report-image-9",
+      "title": "Report Image 9",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 9",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage9",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:37.984Z",
+      "updatedAt": "2025-11-03T10:31:37.984Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a544",
+      "slug": "report-image-10",
+      "title": "Report Image 10",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 10",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage10",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.038Z",
+      "updatedAt": "2025-11-03T10:37:08.083Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a545",
+      "slug": "report-text-1",
+      "title": "Report Text 1",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 1",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText1",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.096Z",
+      "updatedAt": "2025-11-03T10:31:38.096Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a546",
+      "slug": "report-text-2",
+      "title": "Report Text 2",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 2",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText2",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.150Z",
+      "updatedAt": "2025-11-03T10:31:38.150Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a547",
+      "slug": "report-text-3",
+      "title": "Report Text 3",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 3",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText3",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.210Z",
+      "updatedAt": "2025-11-03T10:31:38.210Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a548",
+      "slug": "report-text-4",
+      "title": "Report Text 4",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 4",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText4",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.266Z",
+      "updatedAt": "2025-11-03T10:31:38.266Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a549",
+      "slug": "report-text-5",
+      "title": "Report Text 5",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 5",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText5",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.316Z",
+      "updatedAt": "2025-11-03T10:31:38.316Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a54a",
+      "slug": "report-text-6",
+      "title": "Report Text 6",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 6",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText6",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.368Z",
+      "updatedAt": "2025-11-03T10:31:38.368Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a54b",
+      "slug": "report-text-7",
+      "title": "Report Text 7",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 7",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText7",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.424Z",
+      "updatedAt": "2025-11-03T10:31:38.424Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a54c",
+      "slug": "report-text-8",
+      "title": "Report Text 8",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 8",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText8",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.477Z",
+      "updatedAt": "2025-11-03T10:31:38.477Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a54d",
+      "slug": "report-text-9",
+      "title": "Report Text 9",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 9",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText9",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.535Z",
+      "updatedAt": "2025-11-03T10:31:38.535Z"
+    },
+    {
+      "_id": "6908848a15746fd845b7a54e",
+      "slug": "report-text-10",
+      "title": "Report Text 10",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 10",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText10",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-03T10:31:38.589Z",
+      "updatedAt": "2025-11-03T10:31:38.589Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5a",
+      "slug": "report-image-11",
+      "title": "Report Image 11",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 11",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage11",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.508Z",
+      "updatedAt": "2025-11-14T10:03:40.508Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5b",
+      "slug": "report-image-12",
+      "title": "Report Image 12",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 12",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage12",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.593Z",
+      "updatedAt": "2025-11-14T10:03:40.593Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5c",
+      "slug": "report-image-13",
+      "title": "Report Image 13",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 13",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage13",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.650Z",
+      "updatedAt": "2025-11-14T10:03:40.650Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5d",
+      "slug": "report-image-14",
+      "title": "Report Image 14",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 14",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage14",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.728Z",
+      "updatedAt": "2025-11-14T10:03:40.728Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5e",
+      "slug": "report-image-15",
+      "title": "Report Image 15",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 15",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage15",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.785Z",
+      "updatedAt": "2025-11-14T10:03:40.785Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e5f",
+      "slug": "report-image-16",
+      "title": "Report Image 16",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 16",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage16",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.837Z",
+      "updatedAt": "2025-11-14T10:03:40.837Z"
+    },
+    {
+      "_id": "6916fe7ca67d14f2c2d61e60",
+      "slug": "report-image-17",
+      "title": "Report Image 17",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 17",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage17",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:40.900Z",
+      "updatedAt": "2025-11-14T10:03:40.900Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e61",
+      "slug": "report-image-18",
+      "title": "Report Image 18",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 18",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage18",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.133Z",
+      "updatedAt": "2025-11-14T10:03:41.133Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e62",
+      "slug": "report-image-19",
+      "title": "Report Image 19",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 19",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage19",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.210Z",
+      "updatedAt": "2025-11-14T10:03:41.210Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e63",
+      "slug": "report-image-20",
+      "title": "Report Image 20",
+      "type": "image",
+      "category": "Report Media",
+      "description": "Event-specific report image 20",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportImage20",
+      "content": {
+        "url": "",
+        "width": null,
+        "height": null,
+        "aspectRatio": "16:9"
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.277Z",
+      "updatedAt": "2025-11-14T10:03:41.277Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e64",
+      "slug": "report-text-11",
+      "title": "Report Text 11",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 11",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText11",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.334Z",
+      "updatedAt": "2025-11-14T10:03:41.334Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e65",
+      "slug": "report-text-12",
+      "title": "Report Text 12",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 12",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText12",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.389Z",
+      "updatedAt": "2025-11-14T10:03:41.389Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e66",
+      "slug": "report-text-13",
+      "title": "Report Text 13",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 13",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText13",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.453Z",
+      "updatedAt": "2025-11-14T10:03:41.453Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e67",
+      "slug": "report-text-14",
+      "title": "Report Text 14",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 14",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText14",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.539Z",
+      "updatedAt": "2025-11-14T10:03:41.539Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e68",
+      "slug": "report-text-15",
+      "title": "Report Text 15",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 15",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText15",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.674Z",
+      "updatedAt": "2025-11-14T10:03:41.674Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e69",
+      "slug": "report-text-16",
+      "title": "Report Text 16",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 16",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText16",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.781Z",
+      "updatedAt": "2025-11-14T10:03:41.781Z"
+    },
+    {
+      "_id": "6916fe7da67d14f2c2d61e6a",
+      "slug": "report-text-17",
+      "title": "Report Text 17",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 17",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText17",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:41.907Z",
+      "updatedAt": "2025-11-14T10:03:41.907Z"
+    },
+    {
+      "_id": "6916fe7ea67d14f2c2d61e6b",
+      "slug": "report-text-18",
+      "title": "Report Text 18",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 18",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText18",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:42.013Z",
+      "updatedAt": "2025-11-14T10:03:42.013Z"
+    },
+    {
+      "_id": "6916fe7ea67d14f2c2d61e6c",
+      "slug": "report-text-19",
+      "title": "Report Text 19",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 19",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText19",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:42.113Z",
+      "updatedAt": "2025-11-14T10:03:42.113Z"
+    },
+    {
+      "_id": "6916fe7ea67d14f2c2d61e6d",
+      "slug": "report-text-20",
+      "title": "Report Text 20",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 20",
+      "tags": [
+        "legacy",
+        "report",
+        "event-specific"
+      ],
+      "linkedVariable": "reportText20",
+      "content": {
+        "text": ""
+      },
+      "usageCount": 0,
+      "isLegacy": true,
+      "createdAt": "2025-11-14T10:03:42.214Z",
+      "updatedAt": "2025-11-14T10:03:42.214Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:21.921Z"
+}

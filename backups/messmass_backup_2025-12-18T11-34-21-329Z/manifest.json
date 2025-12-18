@@ -1,0 +1,266 @@
+{
+  "timestamp": "2025-12-18T11:34:21.330Z",
+  "version": "11.35.1",
+  "totalCollections": 36,
+  "totalDocuments": 10243,
+  "totalSize": 16882813,
+  "collections": [
+    {
+      "name": "variablesGroups",
+      "documentCount": 14,
+      "indexes": 1,
+      "sizeBytes": 4505
+    },
+    {
+      "name": "user_preferences",
+      "documentCount": 2,
+      "indexes": 1,
+      "sizeBytes": 307
+    },
+    {
+      "name": "cities",
+      "documentCount": 16,
+      "indexes": 4,
+      "sizeBytes": 3242
+    },
+    {
+      "name": "system_settings",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 138
+    },
+    {
+      "name": "content_assets",
+      "documentCount": 40,
+      "indexes": 1,
+      "sizeBytes": 14649
+    },
+    {
+      "name": "bitly_project_links",
+      "documentCount": 339,
+      "indexes": 4,
+      "sizeBytes": 351867
+    },
+    {
+      "name": "chart_configurations",
+      "documentCount": 87,
+      "indexes": 4,
+      "sizeBytes": 66023
+    },
+    {
+      "name": "partners",
+      "documentCount": 140,
+      "indexes": 5,
+      "sizeBytes": 197210
+    },
+    {
+      "name": "hashtags",
+      "documentCount": 105,
+      "indexes": 1,
+      "sizeBytes": 10140
+    },
+    {
+      "name": "hashtag_categories",
+      "documentCount": 7,
+      "indexes": 2,
+      "sizeBytes": 1045
+    },
+    {
+      "name": "variables_metadata",
+      "documentCount": 141,
+      "indexes": 9,
+      "sizeBytes": 42466
+    },
+    {
+      "name": "page_passwords",
+      "documentCount": 396,
+      "indexes": 1,
+      "sizeBytes": 81178
+    },
+    {
+      "name": "dataBlocks",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 166
+    },
+    {
+      "name": "chart_algorithms_backup",
+      "documentCount": 7,
+      "indexes": 1,
+      "sizeBytes": 2741
+    },
+    {
+      "name": "notifications",
+      "documentCount": 4530,
+      "indexes": 6,
+      "sizeBytes": 1636096
+    },
+    {
+      "name": "hashtag_colors",
+      "documentCount": 55,
+      "indexes": 1,
+      "sizeBytes": 8324
+    },
+    {
+      "name": "chart_formatting_defaults",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 437
+    },
+    {
+      "name": "settings",
+      "documentCount": 2,
+      "indexes": 1,
+      "sizeBytes": 331
+    },
+    {
+      "name": "hashtag_slugs",
+      "documentCount": 392,
+      "indexes": 3,
+      "sizeBytes": 52737
+    },
+    {
+      "name": "variables_groups",
+      "documentCount": 15,
+      "indexes": 2,
+      "sizeBytes": 4524
+    },
+    {
+      "name": "page_styles_enhanced",
+      "documentCount": 3,
+      "indexes": 1,
+      "sizeBytes": 2519
+    },
+    {
+      "name": "football_data_fixtures",
+      "documentCount": 253,
+      "indexes": 7,
+      "sizeBytes": 194751
+    },
+    {
+      "name": "analytics_aggregates",
+      "documentCount": 45,
+      "indexes": 9,
+      "sizeBytes": 64507
+    },
+    {
+      "name": "aggregation_logs",
+      "documentCount": 1,
+      "indexes": 6,
+      "sizeBytes": 2500
+    },
+    {
+      "name": "bitly_sync_logs",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 359
+    },
+    {
+      "name": "users",
+      "documentCount": 13,
+      "indexes": 2,
+      "sizeBytes": 3183
+    },
+    {
+      "name": "countries",
+      "documentCount": 197,
+      "indexes": 5,
+      "sizeBytes": 44441
+    },
+    {
+      "name": "event_comparisons",
+      "documentCount": 0,
+      "indexes": 4,
+      "sizeBytes": 0
+    },
+    {
+      "name": "local_users",
+      "documentCount": 1,
+      "indexes": 1,
+      "sizeBytes": 231
+    },
+    {
+      "name": "partner_analytics",
+      "documentCount": 0,
+      "indexes": 5,
+      "sizeBytes": 0
+    },
+    {
+      "name": "report_templates",
+      "documentCount": 6,
+      "indexes": 4,
+      "sizeBytes": 6075
+    },
+    {
+      "name": "filter_slugs",
+      "documentCount": 32,
+      "indexes": 2,
+      "sizeBytes": 6484
+    },
+    {
+      "name": "data_blocks",
+      "documentCount": 66,
+      "indexes": 2,
+      "sizeBytes": 19127
+    },
+    {
+      "name": "projects",
+      "documentCount": 208,
+      "indexes": 13,
+      "sizeBytes": 295914
+    },
+    {
+      "name": "charts",
+      "documentCount": 0,
+      "indexes": 1,
+      "sizeBytes": 0
+    },
+    {
+      "name": "bitly_links",
+      "documentCount": 3126,
+      "indexes": 5,
+      "sizeBytes": 13764596
+    }
+  ],
+  "integrity": {
+    "verified": true,
+    "checksums": {
+      "variablesGroups": "55949d766c9cd6ba115b93aa79a2fa20",
+      "user_preferences": "322a59f4fb5f23881e3fe2fe1e79dc1e",
+      "cities": "5073935f98f0ec4631b7cbc972f299d5",
+      "system_settings": "2b0a929b3c9196eec29fa7ea8a8a306d",
+      "content_assets": "7a0ace6b8f1df02f08f376b85b4380bd",
+      "bitly_project_links": "22bf719c3cf9bd02e4720496174e7ca8",
+      "chart_configurations": "2f377563981faa2f313e93c32099c889",
+      "partners": "321b681deb8cae73655149084493c70a",
+      "hashtags": "cc5a47d4a6cbd7def096b4a0836b27f9",
+      "hashtag_categories": "c8f6280e6c2535eb3bdfd41d6cd6388b",
+      "variables_metadata": "20551c31708700cc2e8eb93223ab215b",
+      "page_passwords": "e4fc8cb127ad8426cf44f38afe29bfc5",
+      "dataBlocks": "25bd86730c97b7eb97771c9ff3725d6a",
+      "chart_algorithms_backup": "e59f9fe909b24a34117a462c4812bb31",
+      "notifications": "f92fe5ab5bd25a893fa417c1ceafc60e",
+      "hashtag_colors": "43cb0339e83b073c221e147fa8ee9bb5",
+      "chart_formatting_defaults": "c6fa28d733dcc205b698c9185ad81049",
+      "settings": "e6a99be5b0455af12603bcab5a6bdcc3",
+      "hashtag_slugs": "1e2a87fadba6a6eb65262e805282243d",
+      "variables_groups": "60d71de02197faf44237cb7f0aebc301",
+      "page_styles_enhanced": "56fe51134f1cfdd6bde2d6ea991119aa",
+      "football_data_fixtures": "bbb42d4daf6408dd596dae36dbb767d9",
+      "analytics_aggregates": "b622a3e303776c0101f5fb4739344a2c",
+      "aggregation_logs": "c214f17f1889bb09e5ac352b43615e1f",
+      "bitly_sync_logs": "eab7778d3511df07c8f4b9792e56e3b6",
+      "users": "cd07856dbc0ad538bbc14f144c15aade",
+      "countries": "5f6929cf8c377235a42f99b2a09211b4",
+      "event_comparisons": "d751713988987e9331980363e24189ce",
+      "local_users": "798d8fb12eb6e60807da2ed1485ebb80",
+      "partner_analytics": "d751713988987e9331980363e24189ce",
+      "report_templates": "3c3a279ca81eaaff6c63d6a60a5894f3",
+      "filter_slugs": "8c156ff32fe41aa22089a9d2d78bf281",
+      "data_blocks": "0c79c293091939b21f5804d16f5121cd",
+      "projects": "b0b3a39f10287fcede0e1799b28a7fda",
+      "charts": "d751713988987e9331980363e24189ce",
+      "bitly_links": "c313da7782bbc20025c3f6805d878679"
+    }
+  }
+}

@@ -67,6 +67,27 @@ const db = client.db(config.dbName);
       })
       .toArray();
 
+    // WHAT: Server-side stats aggregation (Phase 2 - v12.4.0)
+    // WHY: Move computation to server for better performance and consistency
+    // HOW: Sum all numeric stats across events, merge with partner-level stats
+    const aggregatedStats: Record<string, number | string> = { ...(partner.stats || {}) };
+    
+    events.forEach(event => {
+      const eventStats = event.stats || {};
+      Object.entries(eventStats).forEach(([key, value]) => {
+        if (typeof value === 'number') {
+          const currentValue = aggregatedStats[key];
+          // Only aggregate if current value is also a number (or undefined)
+          if (typeof currentValue === 'number') {
+            aggregatedStats[key] = currentValue + value;
+          } else if (currentValue === undefined) {
+            aggregatedStats[key] = value;
+          }
+          // Skip if currentValue is a string (e.g., reportText* fields from partner.stats)
+        }
+      });
+    });
+
     return NextResponse.json({
       success: true,
       partner: {
@@ -85,6 +106,10 @@ const db = client.db(config.dbName);
         // HOW: Pass partner.stats to frontend for merging with aggregated event data
         stats: partner.stats || {}
       },
+      // WHAT: Pre-aggregated stats computed on server (Phase 2 - v12.4.0)
+      // WHY: Eliminates client-side computation, improves performance
+      // HOW: Sum all numeric event stats + merge partner-level stats (reportText*, reportImage*)
+      aggregatedStats,
       events: events.map(event => ({
         _id: event._id.toString(),
         eventName: event.eventName,

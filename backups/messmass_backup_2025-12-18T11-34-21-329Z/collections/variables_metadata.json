@@ -1,0 +1,2431 @@
+{
+  "name": "variables_metadata",
+  "documentCount": 141,
+  "documents": [
+    {
+      "_id": "690092fb21e809256d7621c4",
+      "name": "hashtags",
+      "category": "Hashtags",
+      "createdAt": "2025-10-28T09:55:07.289Z",
+      "createdBy": "system",
+      "derived": false,
+      "description": "All general hashtags (plain list)",
+      "flags": {
+        "visibleInClicker": false,
+        "editableInManual": true
+      },
+      "formula": null,
+      "isSystem": true,
+      "label": "General Hashtags",
+      "order": 91,
+      "type": "text",
+      "updatedAt": "2025-11-18T07:40:05.623Z"
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dcf",
+      "name": "allImages",
+      "alias": "All Images",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd0",
+      "name": "approvedImages",
+      "alias": "Approved Images",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd1",
+      "name": "baseballCap",
+      "alias": "Baseball Caps",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd2",
+      "name": "bitlyClicksByCountry",
+      "alias": "Bitly Clicks By Country",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd3",
+      "name": "bitlyClicksByCountryAT",
+      "alias": "Bitly Clicks By Country A T",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd4",
+      "name": "bitlyClicksByCountryCA",
+      "alias": "Bitly Clicks By Country C A",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd5",
+      "name": "bitlyClicksByCountryCH",
+      "alias": "Bitly Clicks By Country C H",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd6",
+      "name": "bitlyClicksByCountryDE",
+      "alias": "Bitly Clicks By Country D E",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd7",
+      "name": "bitlyClicksByCountryDK",
+      "alias": "Bitly Clicks By Country D K",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd8",
+      "name": "bitlyClicksByCountryEG",
+      "alias": "Bitly Clicks By Country E G",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dd9",
+      "name": "bitlyClicksByCountryES",
+      "alias": "Bitly Clicks By Country E S",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dda",
+      "name": "bitlyClicksByCountryFR",
+      "alias": "Bitly Clicks By Country F R",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534ddb",
+      "name": "bitlyClicksByCountryGB",
+      "alias": "Bitly Clicks By Country G B",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534ddc",
+      "name": "bitlyClicksByCountryGR",
+      "alias": "Bitly Clicks By Country G R",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534ddd",
+      "name": "bitlyClicksByCountryHR",
+      "alias": "Bitly Clicks By Country H R",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dde",
+      "name": "bitlyClicksByCountryHU",
+      "alias": "Bitly Clicks By Country H U",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534ddf",
+      "name": "bitlyClicksByCountryIE",
+      "alias": "Bitly Clicks By Country I E",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de0",
+      "name": "bitlyClicksByCountryIT",
+      "alias": "Bitly Clicks By Country I T",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de1",
+      "name": "bitlyClicksByCountryMK",
+      "alias": "Bitly Clicks By Country M K",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de2",
+      "name": "bitlyClicksByCountryNL",
+      "alias": "Bitly Clicks By Country N L",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de3",
+      "name": "bitlyClicksByCountryNO",
+      "alias": "Bitly Clicks By Country N O",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de4",
+      "name": "bitlyClicksByCountryPL",
+      "alias": "Bitly Clicks By Country P L",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de5",
+      "name": "bitlyClicksByCountryPT",
+      "alias": "Bitly Clicks By Country P T",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de6",
+      "name": "bitlyClicksByCountryRO",
+      "alias": "Bitly Clicks By Country R O",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de7",
+      "name": "bitlyClicksByCountryRS",
+      "alias": "Bitly Clicks By Country R S",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de8",
+      "name": "bitlyClicksByCountryRU",
+      "alias": "Bitly Clicks By Country R U",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534de9",
+      "name": "bitlyClicksByCountrySE",
+      "alias": "Bitly Clicks By Country S E",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dea",
+      "name": "bitlyClicksByCountrySI",
+      "alias": "Bitly Clicks By Country S I",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534deb",
+      "name": "bitlyClicksByCountrySK",
+      "alias": "Bitly Clicks By Country S K",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dec",
+      "name": "bitlyClicksByCountryUS",
+      "alias": "Bitly Clicks By Country U S",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534ded",
+      "name": "bitlyClicksByCountrynull",
+      "alias": "Bitly Clicks By Countrynull",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dee",
+      "name": "bitlyCountry1",
+      "alias": "Bitly Country1",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534def",
+      "name": "bitlyCountry1Clicks",
+      "alias": "Bitly Country1 Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df0",
+      "name": "bitlyCountry2",
+      "alias": "Bitly Country2",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df1",
+      "name": "bitlyCountry2Clicks",
+      "alias": "Bitly Country2 Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df2",
+      "name": "bitlyCountry3",
+      "alias": "Bitly Country3",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df3",
+      "name": "bitlyCountry3Clicks",
+      "alias": "Bitly Country3 Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df4",
+      "name": "bitlyCountry4",
+      "alias": "Bitly Country4",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df5",
+      "name": "bitlyCountry4Clicks",
+      "alias": "Bitly Country4 Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df6",
+      "name": "bitlyCountry5",
+      "alias": "Bitly Country5",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df7",
+      "name": "bitlyCountry5Clicks",
+      "alias": "Bitly Country5 Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df8",
+      "name": "bitlyCountryCount",
+      "alias": "Bitly Country Count",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534df9",
+      "name": "bitlyTopCountry",
+      "alias": "Bitly Top Country",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dfa",
+      "name": "bitlyTotalClicks",
+      "alias": "Bitly Total Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dfb",
+      "name": "bitlyUniqueClicks",
+      "alias": "Bitly Unique Clicks",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dfc",
+      "name": "boomer",
+      "alias": "Baby Boomers",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dfd",
+      "name": "eventAttendees",
+      "alias": "Event Attendees",
+      "type": "number",
+      "category": "event",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dfe",
+      "name": "eventResultHome",
+      "alias": "Home Team Score",
+      "type": "number",
+      "category": "event",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534dff",
+      "name": "eventResultVisitor",
+      "alias": "Visitor Team Score",
+      "type": "number",
+      "category": "event",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e00",
+      "name": "eventTicketPurchases",
+      "alias": "Ticket Purchases",
+      "type": "number",
+      "category": "event",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e0e",
+      "name": "female",
+      "alias": "Female",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e0f",
+      "name": "flags",
+      "alias": "Flags",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e10",
+      "name": "genAlpha",
+      "alias": "Generation Alpha",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e11",
+      "name": "genX",
+      "alias": "Generation X",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e12",
+      "name": "genYZ",
+      "alias": "Generation Y/Z",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e13",
+      "name": "hostessImages",
+      "alias": "Hostess Images",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e14",
+      "name": "indoor",
+      "alias": "Indoor Fans",
+      "type": "number",
+      "category": "location",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e15",
+      "name": "jersey",
+      "alias": "Jerseys",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e16",
+      "name": "male",
+      "alias": "Male",
+      "type": "number",
+      "category": "demographics",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e17",
+      "name": "marketingOptin",
+      "alias": "Marketing Optin",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e18",
+      "name": "merched",
+      "alias": "Merchandised Fans",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e19",
+      "name": "newUsersAdded",
+      "alias": "New Users Added",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e1a",
+      "name": "other",
+      "alias": "Other Merchandise",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e1b",
+      "name": "outdoor",
+      "alias": "Outdoor Fans",
+      "type": "number",
+      "category": "location",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e1c",
+      "name": "rejectedImages",
+      "alias": "Rejected Images",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e1d",
+      "name": "remoteFans",
+      "alias": "Remote Fans",
+      "type": "number",
+      "category": "fans",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e1e",
+      "name": "remoteImages",
+      "alias": "Remote Images",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e35",
+      "name": "scarf",
+      "alias": "Scarves",
+      "type": "number",
+      "category": "merchandise",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e36",
+      "name": "selfies",
+      "alias": "Selfies",
+      "type": "number",
+      "category": "images",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e37",
+      "name": "specialMerch",
+      "alias": "Special Merch",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e38",
+      "name": "stadium",
+      "alias": "Stadium Fans",
+      "type": "number",
+      "category": "fans",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e39",
+      "name": "totalFans",
+      "alias": "Total Fans",
+      "type": "number",
+      "category": "fans",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3a",
+      "name": "uniqueUsers",
+      "alias": "Unique Users",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3b",
+      "name": "ventAndroid",
+      "alias": "Vent Android",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3c",
+      "name": "ventCtaEmail",
+      "alias": "Vent Cta Email",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3d",
+      "name": "ventCtaPopup",
+      "alias": "Vent Cta Popup",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3e",
+      "name": "ventFacebook",
+      "alias": "Vent Facebook",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e3f",
+      "name": "ventGoogle",
+      "alias": "Vent Google",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e40",
+      "name": "ventInstagram",
+      "alias": "Vent Instagram",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e41",
+      "name": "ventIos",
+      "alias": "Vent Ios",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": false,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e42",
+      "name": "ventQr",
+      "alias": "Vent Qr",
+      "type": "number",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e43",
+      "name": "ventUrl",
+      "alias": "Vent Url",
+      "type": "texthyper",
+      "category": "other",
+      "visibleInClicker": true,
+      "editableInManual": true,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e44",
+      "name": "visitFacebook",
+      "alias": "Visit from Facebook",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e45",
+      "name": "visitInstagram",
+      "alias": "Visit from Instagram",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e46",
+      "name": "visitTiktok",
+      "alias": "Visit from Tiktok",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e47",
+      "name": "visitTrustpilot",
+      "alias": "Visit from Trustpilot",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e48",
+      "name": "visitX",
+      "alias": "Visit from X",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69160efcfcbc8fda9b534e49",
+      "name": "visitYoutube",
+      "alias": "Visit from Youtube",
+      "type": "number",
+      "category": "visits",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": false,
+      "createdAt": "2025-11-13T17:01:48.360Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d25",
+      "name": "bitlyClicksFromFacebook",
+      "alias": "Bitly Clicks from Facebook",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d26",
+      "name": "bitlyClicksFromInstagram",
+      "alias": "Bitly Clicks from Instagram",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d27",
+      "name": "bitlyClicksFromTwitter",
+      "alias": "Bitly Clicks from Twitter",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d28",
+      "name": "bitlyClicksFromLinkedIn",
+      "alias": "Bitly Clicks from LinkedIn",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d29",
+      "name": "bitlyClicksFromDirect",
+      "alias": "Bitly Clicks (Direct)",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797060e0f4e5c4b1f2d2a",
+      "name": "bitlyClicksFromQRCode",
+      "alias": "Bitly Clicks from QR Code",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797070e0f4e5c4b1f2d2b",
+      "name": "bitlyClicksFromGoogle",
+      "alias": "Bitly Clicks from Google",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797070e0f4e5c4b1f2d2c",
+      "name": "bitlyClicksFromInstagramApp",
+      "alias": "Bitly Clicks from Instagram App (l.instagram.com)",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "691797070e0f4e5c4b1f2d2d",
+      "name": "bitlyClicksFromFacebookMobile",
+      "alias": "Bitly Clicks from Facebook Mobile (m.facebook.com)",
+      "type": "number",
+      "category": "bitly",
+      "visibleInClicker": false,
+      "editableInManual": false,
+      "isSystemVariable": true,
+      "createdAt": "2025-11-14T20:54:30.493Z",
+      "updatedAt": "2025-11-18T07:40:05.623Z",
+      "flags": {
+        "editableInManual": true
+      }
+    },
+    {
+      "_id": "69416028b225f46fca4e79ba",
+      "name": "stats.directUrl",
+      "category": "other",
+      "createdAt": "2025-12-16T13:35:35.862Z",
+      "derived": false,
+      "description": "Bitly or VentURL direct URL type-ins",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "Direct URL type-ins",
+      "order": 999,
+      "type": "count",
+      "updatedAt": "2025-12-16T13:39:38.720Z"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd6",
+      "name": "stats.reportText10",
+      "label": "Report Text 10",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 10",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2010,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bcb",
+      "name": "stats.reportImage19",
+      "label": "Report Image 19",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 19 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1019,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bcc",
+      "name": "stats.reportImage20",
+      "label": "Report Image 20",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 20 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1020,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bcf",
+      "name": "stats.reportText3",
+      "label": "Report Text 3",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 3",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2003,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd1",
+      "name": "stats.reportText5",
+      "label": "Report Text 5",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 5",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2005,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd4",
+      "name": "stats.reportText8",
+      "label": "Report Text 8",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 8",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2008,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd9",
+      "name": "stats.reportText13",
+      "label": "Report Text 13",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 13",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2013,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bde",
+      "name": "stats.reportText18",
+      "label": "Report Text 18",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 18",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2018,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bba",
+      "name": "stats.reportImage2",
+      "label": "Report Image 2",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 2 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1002,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc7",
+      "name": "stats.reportImage15",
+      "label": "Report Image 15",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 15 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1015,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd2",
+      "name": "stats.reportText6",
+      "label": "Report Text 6",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 6",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2006,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bbb",
+      "name": "stats.reportImage3",
+      "label": "Report Image 3",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 3 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1003,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd3",
+      "name": "stats.reportText7",
+      "label": "Report Text 7",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 7",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2007,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc5",
+      "name": "stats.reportImage13",
+      "label": "Report Image 13",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 13 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1013,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bcd",
+      "name": "stats.reportText1",
+      "label": "Report Text 1",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 1",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2001,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bda",
+      "name": "stats.reportText14",
+      "label": "Report Text 14",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 14",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2014,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bbe",
+      "name": "stats.reportImage6",
+      "label": "Report Image 6",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 6 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1006,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bbf",
+      "name": "stats.reportImage7",
+      "label": "Report Image 7",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 7 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1007,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bbd",
+      "name": "stats.reportImage5",
+      "label": "Report Image 5",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 5 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1005,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bb9",
+      "name": "stats.reportImage1",
+      "label": "Report Image 1",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 1 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1001,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bca",
+      "name": "stats.reportImage18",
+      "label": "Report Image 18",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 18 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1018,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bdc",
+      "name": "stats.reportText16",
+      "label": "Report Text 16",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 16",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2016,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc3",
+      "name": "stats.reportImage11",
+      "label": "Report Image 11",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 11 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1011,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc4",
+      "name": "stats.reportImage12",
+      "label": "Report Image 12",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 12 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1012,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bce",
+      "name": "stats.reportText2",
+      "label": "Report Text 2",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 2",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2002,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd0",
+      "name": "stats.reportText4",
+      "label": "Report Text 4",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 4",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2004,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc6",
+      "name": "stats.reportImage14",
+      "label": "Report Image 14",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 14 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1014,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bdb",
+      "name": "stats.reportText15",
+      "label": "Report Text 15",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 15",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2015,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bdd",
+      "name": "stats.reportText17",
+      "label": "Report Text 17",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 17",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2017,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc0",
+      "name": "stats.reportImage8",
+      "label": "Report Image 8",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 8 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1008,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172be0",
+      "name": "stats.reportText20",
+      "label": "Report Text 20",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 20",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2020,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd5",
+      "name": "stats.reportText9",
+      "label": "Report Text 9",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 9",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2009,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd8",
+      "name": "stats.reportText12",
+      "label": "Report Text 12",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 12",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2012,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc1",
+      "name": "stats.reportImage9",
+      "label": "Report Image 9",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 9 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1009,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc8",
+      "name": "stats.reportImage16",
+      "label": "Report Image 16",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 16 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1016,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc9",
+      "name": "stats.reportImage17",
+      "label": "Report Image 17",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 17 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1017,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bdf",
+      "name": "stats.reportText19",
+      "label": "Report Text 19",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 19",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2019,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bbc",
+      "name": "stats.reportImage4",
+      "label": "Report Image 4",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 4 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1004,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bc2",
+      "name": "stats.reportImage10",
+      "label": "Report Image 10",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report image 10 URL",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 1010,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "69419f73e404b3d7d4172bd7",
+      "name": "stats.reportText11",
+      "label": "Report Text 11",
+      "type": "text",
+      "category": "Report Content",
+      "description": "Event-specific report text 11",
+      "unit": null,
+      "derived": false,
+      "formula": null,
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "order": 2011,
+      "createdAt": "2025-12-16T18:05:39.589Z",
+      "updatedAt": "2025-12-16T18:05:39.589Z",
+      "createdBy": "system-script"
+    },
+    {
+      "_id": "6942c502b225f46fca4ee6ec",
+      "name": "stats.qrscanIphone",
+      "category": "qr",
+      "createdAt": "2025-12-17T14:58:10.536Z",
+      "derived": false,
+      "description": "Scans from Iphone - data from VentURL",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "QR Scan iPhone",
+      "order": 999,
+      "type": "count",
+      "updatedAt": "2025-12-17T14:58:10.536Z"
+    },
+    {
+      "_id": "6942c55ab225f46fca4ee73b",
+      "name": "stats.qrscanAndroid",
+      "category": "qr",
+      "createdAt": "2025-12-17T14:59:38.450Z",
+      "derived": false,
+      "description": "QR Scans with Android - data from VentURL",
+      "flags": {
+        "visibleInClicker": true,
+        "editableInManual": true
+      },
+      "isSystem": false,
+      "label": "QR Scans Android",
+      "order": 999,
+      "type": "count",
+      "updatedAt": "2025-12-17T14:59:38.450Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "name": 1
+      },
+      "name": "name_1",
+      "unique": true
+    },
+    {
+      "v": 2,
+      "key": {
+        "category": 1
+      },
+      "name": "category_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "flags.visibleInClicker": 1
+      },
+      "name": "flags.visibleInClicker_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "isSystem": 1
+      },
+      "name": "isSystem_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "category": 1,
+        "order": 1
+      },
+      "name": "category_1_order_1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "createdAt": -1
+      },
+      "name": "createdAt_-1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "updatedAt": -1
+      },
+      "name": "updatedAt_-1"
+    },
+    {
+      "v": 2,
+      "key": {
+        "isSystemVariable": 1
+      },
+      "name": "isSystemVariable_filter"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:22.851Z"
+}

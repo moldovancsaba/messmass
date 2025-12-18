@@ -1,0 +1,245 @@
+{
+  "name": "variablesGroups",
+  "documentCount": 14,
+  "documents": [
+    {
+      "_id": "6907d77e4059b5d184b21c11",
+      "groupOrder": 1,
+      "chartId": "all-images-taken",
+      "titleOverride": null,
+      "variables": [
+        "stats.remoteImages",
+        "stats.hostessImages",
+        "stats.selfies"
+      ],
+      "visibleInClicker": true,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:58:40.725Z"
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c12",
+      "groupOrder": 2,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.remoteFans",
+        "stats.stadium"
+      ],
+      "visibleInClicker": true,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:42:21.597Z"
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c13",
+      "groupOrder": 3,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.female",
+        "stats.male"
+      ],
+      "visibleInClicker": true,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:42:21.597Z"
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c14",
+      "groupOrder": 4,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.genAlpha",
+        "stats.genYZ",
+        "stats.genX",
+        "stats.boomer"
+      ],
+      "visibleInClicker": true,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:42:21.597Z"
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c15",
+      "groupOrder": 5,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.merched",
+        "stats.jersey",
+        "stats.scarf",
+        "stats.flags",
+        "stats.baseballCap",
+        "stats.other"
+      ],
+      "visibleInClicker": true,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:42:21.597Z"
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c16",
+      "groupOrder": 6,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.approvedImages",
+        "stats.rejectedImages"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T15:17:54.498Z",
+      "specialType": null
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c17",
+      "groupOrder": 7,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.ventQr",
+        "stats.ventUrl",
+        "stats.ventFacebook",
+        "stats.ventInstagram",
+        "ventUrl",
+        "stats.directUrl",
+        "stats.qrscanIphone",
+        "stats.qrscanAndroid"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-12-17T14:59:53.755Z",
+      "specialType": null
+    },
+    {
+      "_id": "6907d77e4059b5d184b21c18",
+      "groupOrder": 8,
+      "chartId": null,
+      "titleOverride": null,
+      "variables": [
+        "stats.eventAttendees",
+        "stats.eventResultHome",
+        "stats.eventResultVisitor",
+        "stats.uniqueUsers",
+        "stats.newUsersAdded",
+        "stats.marketingOptin",
+        "stats.specialMerch"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true,
+      "createdAt": "2025-11-02T22:13:18.891Z",
+      "updatedAt": "2025-11-17T14:56:08.660Z"
+    },
+    {
+      "_id": "6907dd7121e809256d7793e0",
+      "groupOrder": 9,
+      "chartId": "text-input-1",
+      "createdAt": "2025-11-02T22:38:41.304Z",
+      "titleOverride": "REPORT TEXT 1",
+      "updatedAt": "2025-11-17T14:56:04.414Z",
+      "variables": [
+        "stats.reportText1",
+        "stats.reportText2",
+        "stats.reportText3",
+        "stats.reportText4",
+        "stats.reportText5"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "6907dd9921e809256d7793e5",
+      "groupOrder": 10,
+      "chartId": "text-variables-2",
+      "createdAt": "2025-11-02T22:39:21.749Z",
+      "titleOverride": "REPORT TEXT 2",
+      "updatedAt": "2025-11-17T14:55:49.848Z",
+      "variables": [
+        "stats.reportText6",
+        "stats.reportText7",
+        "stats.reportText8",
+        "stats.reportText9",
+        "stats.reportText10"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "6907e28421e809256d77945d",
+      "groupOrder": 11,
+      "chartId": "vent-cta",
+      "createdAt": "2025-11-02T23:00:20.056Z",
+      "titleOverride": "VENT URL",
+      "updatedAt": "2025-11-17T14:55:46.518Z",
+      "variables": [
+        "stats.ventCtaEmail",
+        "stats.ventCtaPopup"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "6907e2b521e809256d779460",
+      "groupOrder": 12,
+      "chartId": "images-1",
+      "createdAt": "2025-11-02T23:01:09.648Z",
+      "titleOverride": "PORTRAIT IMAGES",
+      "updatedAt": "2025-11-17T14:55:43.401Z",
+      "variables": [
+        "stats.fanSelfiePortrait1",
+        "stats.fanSelfiePortrait2",
+        "stats.fanSelfiePortrait3",
+        "stats.fanSelfiePortrait4",
+        "stats.fanSelfiePortrait5",
+        "stats.fanSelfiePortrait6",
+        "stats.fanSelfiePortrait7"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "6907e2d121e809256d779463",
+      "groupOrder": 13,
+      "chartId": "image-2",
+      "createdAt": "2025-11-02T23:01:37.712Z",
+      "titleOverride": "LANDSCAPE IMAGES",
+      "updatedAt": "2025-11-17T14:55:40.563Z",
+      "variables": [
+        "stats.fanSelfieLandscape1",
+        "stats.fanSelfieLandscape2",
+        "stats.fanSelfieLandscape3",
+        "stats.fanSelfieSquare1",
+        "stats.fanSelfieSquare2",
+        "stats.fanSelfieSquare3"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "691b3ae6f56aed521cce9a37",
+      "groupOrder": 14,
+      "titleOverride": "📦 Report Content",
+      "specialType": "report-content",
+      "visibleInClicker": false,
+      "visibleInManual": true,
+      "createdAt": "2025-11-17T15:10:30.681Z",
+      "updatedAt": "2025-11-17T15:17:27.059Z",
+      "chartId": null,
+      "variables": null
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:21.479Z"
+}

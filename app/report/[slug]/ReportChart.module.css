@@ -1,0 +1,384 @@
+/* WHAT: ReportChart Component Styles (v12.0.0)
+ * WHY: Clean, token-based styling for all chart types
+ * HOW: CSS modules with design tokens from theme.css
+ */
+
+/* Base Chart Container */
+.chart {
+  /* WHAT: Flexbox container for consistent internal layout */
+  display: flex;
+  flex-direction: column;
+  width: 100% !important; /* WHAT: Fill parent gridItem horizontally (CRITICAL FIX) */
+  max-width: none !important; /* CRITICAL: Remove any max-width constraints */
+  flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
+  height: 100%; /* WHAT: Fill grid cell completely */
+  min-height: 450px; /* WHAT: Consistent minimum height for all chart types (increased for better proportion) */
+  
+  /* WHAT: Visual styling */
+  background: var(--mm-white) !important;
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+  padding: 0; /* WHAT: Remove padding, add to header/body instead */
+  overflow: hidden; /* WHAT: Prevent content overflow */
+  transition: all var(--transition-fast);
+  box-sizing: border-box !important;
+}
+
+/* Chart Header - Titles and metadata */
+.chartHeader {
+  padding: var(--mm-space-4) var(--mm-space-5);
+  border-bottom: 1px solid var(--mm-gray-100);
+  flex-shrink: 0; /* WHAT: Prevent header from shrinking */
+}
+
+/* Chart Body - Main content area */
+.chartBody {
+  flex: 1; /* WHAT: Expand to fill available space */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: var(--mm-space-5);
+  min-height: 0; /* WHAT: Allow flex shrinking if needed */
+}
+
+/* Chart Title - Standardized across all types */
+.chartTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* No Data State */
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background: var(--mm-gray-50);
+  border: 2px dashed var(--mm-gray-300);
+}
+
+.noDataContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
+  color: var(--mm-gray-500);
+}
+
+.noDataIcon {
+  font-size: var(--mm-font-size-3xl);
+  opacity: 0.5;
+}
+
+.noDataText {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.noDataLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-400);
+}
+
+/* KPI Chart - 3:5:2 vertical ratio (icon:number:description) */
+.kpi .chartBody {
+  /* WHAT: Fill full height and enable grid layout */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  padding: var(--mm-space-4); /* Consistent padding */
+}
+
+.kpiContent {
+  /* WHAT: CSS Grid with 3:5:2 ratio for icon:number:description */
+  /* WHY: Maximize content size and fill entire card height */
+  display: grid !important;
+  grid-template-rows: 3fr 5fr 2fr; /* CRITICAL: 3 parts icon, 5 parts number, 2 parts description */
+  height: 100% !important;
+  width: 100%;
+  max-width: none !important;
+  gap: 0; /* No gap - each section fills its allocated space */
+}
+
+.kpiIconRow {
+  /* WHAT: SVG Icon container row - occupies 3fr (30% height) */
+  /* WHY: Always present in KPI charts - contains dynamically scaling SVG */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.kpiIcon {
+  /* WHAT: SVG Icon - scales dynamically to fill container */
+  /* WHY: SVG elements scale perfectly with percentage-based dimensions */
+  width: 70% !important; /* WHAT: 70% of row width for balanced appearance */
+  height: 70% !important; /* WHAT: 70% of row height - icon fills most of 3fr space */
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  display: block !important;
+  stroke-width: 1.5 !important; /* WHAT: Lucide default stroke width */
+}
+
+.kpiValue {
+  /* WHAT: Number row - 5/10 of total height (DOMINANT) - occupies 5fr of grid */
+  /* WHY: Most important content gets maximum space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%; /* CRITICAL: Fill the 5fr row completely */
+  font-size: 10vw !important; /* WHAT: Dynamic sizing - 10% of viewport width */
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  line-height: 1;
+  text-align: center;
+}
+
+.kpiTitle {
+  /* WHAT: Description row - 2/10 of total height (occupies 2fr of grid) */
+  /* WHY: Secondary information, allows wrapping if needed */
+  display: -webkit-box; /* CRITICAL: Enable multi-line text with clamping */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* WHAT: Max 3 lines of text */
+  align-self: center; /* WHAT: Center within the 2fr grid row */
+  justify-self: center;
+  width: 100%;
+  max-height: 100%; /* CRITICAL: Don't exceed 2fr row height */
+  padding: 0 var(--mm-space-2);
+  font-size: 1.5vw !important; /* WHAT: Dynamic sizing - 1.5% of viewport width */
+  color: var(--mm-gray-600);
+  font-weight: var(--mm-font-weight-medium);
+  text-align: center;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+/* Pie Chart - Uses base .chart structure */
+.pie .chartBody {
+  padding: var(--mm-space-3);
+}
+
+.pieTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+  text-align: center;
+}
+
+.pieSegments {
+  display: flex;
+  gap: var(--mm-space-6);
+  justify-content: center;
+}
+
+.pieSegment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.pieColor {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--mm-radius-full);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.pieLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+.pieValue {
+  font-size: var(--mm-font-size-xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+}
+
+.piePercent {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+}
+
+/* Pie Chart Container for Chart.js */
+.pieChartContainer {
+  flex: 1; /* WHAT: Fill available vertical space */
+  width: 100%;
+  position: relative;
+  min-height: 250px; /* WHAT: Ensure minimum readable size */
+  /* REMOVED max-height: Charts should fill equal space in grid rows */
+}
+
+/* Bar Chart - Uses base .chart structure */
+.bar .chartBody {
+  padding: var(--mm-space-3);
+  display: flex; /* CRITICAL: Enable flex layout */
+  flex-direction: column; /* CRITICAL: Stack content vertically */
+  flex: 1; /* CRITICAL: Fill available vertical space */
+  min-height: 0; /* CRITICAL: Allow flex shrinking */
+}
+
+.barTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-4);
+  flex-shrink: 0; /* WHAT: Prevent title from shrinking */
+}
+
+.barElements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+  flex: 1; /* CRITICAL: Fill ALL remaining vertical space */
+  justify-content: space-evenly; /* WHAT: Distribute bars evenly across full height */
+  width: 100%; /* CRITICAL: Fill full chart width */
+  max-width: none !important; /* CRITICAL: Remove max-width */
+  min-height: 0; /* CRITICAL: Allow flex shrinking */
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px;
+  gap: var(--mm-space-3);
+  align-items: center;
+  flex: 1; /* WHAT: Each bar row takes equal vertical space */
+  min-height: 40px; /* WHAT: Minimum height for readability */
+}
+
+.barLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  font-weight: var(--mm-font-weight-medium);
+  text-align: right;
+}
+
+.barTrack {
+  background: var(--mm-gray-200);
+  height: 32px; /* INCREASED: Taller bars for better visibility */
+  border-radius: var(--mm-radius-md);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: var(--mm-radius-md);
+  transition: width var(--transition-normal);
+}
+
+.barValue {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  text-align: right;
+}
+
+/* Text Chart - Uses base .chart structure */
+.text .chartBody {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.textTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin-bottom: var(--mm-space-3);
+}
+
+.textContent {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-700);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Image Chart */
+.image {
+  padding: 0;
+  overflow: hidden;
+  width: 100% !important; /* CRITICAL: Fill full width */
+  max-width: none !important; /* CRITICAL: Remove max-width */
+}
+
+.imageContent {
+  width: 100% !important;
+  max-width: none !important; /* CRITICAL: Remove max-width */
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Aspect Ratio Classes */
+.aspect169 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect916 {
+  aspect-ratio: 9 / 16;
+}
+
+.aspect11 {
+  aspect-ratio: 1 / 1;
+}
+
+/* VALUE Composite Chart */
+.valueComposite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+/* Unknown Chart Type */
+.unknown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  background: var(--mm-red-50);
+  color: var(--mm-red-700);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .chart {
+    padding: var(--mm-space-3);
+  }
+  
+  .kpi {
+    padding: var(--mm-space-4);
+  }
+  
+  /* REMOVED: .kpiValue font-size override - let clamp() handle all screen sizes */
+  
+  .pieSegments {
+    flex-direction: column;
+    gap: var(--mm-space-4);
+  }
+  
+  .barRow {
+    grid-template-columns: 80px 1fr 60px;
+    gap: var(--mm-space-2);
+  }
+  
+  .barLabel {
+    font-size: var(--mm-font-size-xs);
+  }
+}

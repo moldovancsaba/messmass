@@ -1,0 +1,96 @@
+/* WHAT: Shared Report Page Styles (v12.4.0 - Phase 3)
+ * WHY: Single source of truth for event and partner report page styling
+ * HOW: Design tokens with responsive layout - consolidated from duplicate files
+ */
+
+/* Page Container */
+.page {
+  min-height: 100vh;
+  background: var(--mm-gray-50);
+  padding: var(--mm-space-6) var(--mm-space-4);
+}
+
+/* Content Container */
+.container {
+  max-width: 1600px; /* WHAT: Unified width for better chart layout (was 1200px in partner reports) */
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 var(--mm-space-4);
+  box-sizing: border-box !important;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: var(--mm-space-4);
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--mm-gray-200);
+  border-top-color: var(--mm-blue-600); /* WHAT: Unified spinner color (was purple in partner reports) */
+  border-radius: var(--mm-radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-600);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--mm-space-8);
+  text-align: center;
+}
+
+.errorIcon {
+  font-size: 64px;
+  margin-bottom: var(--mm-space-4);
+}
+
+.errorTitle {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  margin: 0 0 var(--mm-space-2) 0;
+}
+
+.errorText {
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-600);
+  max-width: 500px;
+  margin: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .page {
+    padding: var(--mm-space-4) var(--mm-space-2);
+  }
+  
+  .errorTitle {
+    font-size: var(--mm-font-size-2xl);
+  }
+  
+  .errorText {
+    font-size: var(--mm-font-size-base);
+  }
+}

@@ -200,7 +200,6 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
 
   // WHAT: Render template with chart builders
   // WHY: Show the actual report layout with inline inputs
-  const gridColumns = template.gridSettings.desktopUnits || 3;
   
   return (
     <div>
@@ -219,6 +218,10 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         .sort((a, b) => a.order - b.order)
         .filter(block => block.charts && block.charts.length > 0) // Skip empty blocks
         .map((block) => {
+          // WHAT: Block columns = number of charts (each chart gets equal width)
+          // WHY: 1 chart = full width, 2 charts = 50% each, 3 charts = 33% each
+          const blockGridColumns = block.charts.length;
+          
           // WHAT: Render block container with title and grid of charts
           // WHY: Visual grouping matches report structure
           return (
@@ -233,11 +236,11 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                 </div>
               )}
               
-              {/* Charts Grid - Single column for full-width inputs */}
+              {/* Charts Grid - Adapts to chart widths */}
               <div 
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+                  gridTemplateColumns: `repeat(${blockGridColumns}, 1fr)`,
                   gap: 'var(--mm-space-6)',
                   padding: 'var(--mm-space-6)'
                 }}
@@ -315,9 +318,9 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                         );
                     }
                     
-                    // WHAT: Restore width calculation to match report layout
-                    // WHY: Builder should show same grid structure as final report
-                    const width = getChartWidth(chartItem, chart);
+                    // WHAT: All charts span 1 column for equal widths
+                    // WHY: Block grid has columns = chart count
+                    const width = 1;
                     return (
                       <div key={chartItem.chartId} className="builder-chart-wrapper" style={{ gridColumn: `span ${width}` }}>
                         {builderComponent}

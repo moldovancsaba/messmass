@@ -198,8 +198,43 @@ Then select "Cached images and files" and click Clear.`);
               <h3 className="text-xl font-bold text-gray-900 mb-2">Success!</h3>
               <p className="text-gray-600 mb-4">{result.message}</p>
               {result.details && (
-                <div className="bg-gray-100 p-4 rounded">
-                  <pre className="text-sm">{JSON.stringify(result.details, null, 2)}</pre>
+                <div className="space-y-3">
+                  {result.details.timestamp && (
+                    <div className="text-sm text-gray-600">
+                      <strong>Cleared at:</strong> {new Date(result.details.timestamp).toLocaleString()}
+                    </div>
+                  )}
+                  
+                  {result.details.totalRoutes && (
+                    <div className="text-sm text-gray-600">
+                      <strong>Routes revalidated:</strong> {result.details.totalRoutes}
+                    </div>
+                  )}
+                  
+                  {result.details.message && (
+                    <div className="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800">
+                      ℹ️ {result.details.message}
+                    </div>
+                  )}
+                  
+                  {result.details.revalidatedRoutes && (
+                    <details className="bg-gray-100 p-4 rounded">
+                      <summary className="cursor-pointer font-semibold text-sm text-gray-700 mb-2">
+                        View All Revalidated Routes ({result.details.revalidatedRoutes.length})
+                      </summary>
+                      <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 mt-2">
+                        {result.details.revalidatedRoutes.map((route: string, idx: number) => (
+                          <li key={idx}><code className="bg-white px-1 py-0.5 rounded">{route}</code></li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                  
+                  {!result.details.revalidatedRoutes && (
+                    <div className="bg-gray-100 p-4 rounded">
+                      <pre className="text-sm text-gray-700">{JSON.stringify(result.details, null, 2)}</pre>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -1,0 +1,3657 @@
+{
+  "name": "chart_configurations",
+  "documentCount": 87,
+  "documents": [
+    {
+      "_id": "68f7aa417241ff4b5c8f6d85",
+      "chartId": "gender-distribution",
+      "title": "Gender Distribution",
+      "type": "pie",
+      "order": 1,
+      "isActive": true,
+      "emoji": "👥",
+      "subtitle": "Fan demographics",
+      "elements": [
+        {
+          "id": "female",
+          "label": "Female",
+          "formula": "stats.female",
+          "color": "#8d287a",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "male",
+          "label": "Male",
+          "formula": "stats.male",
+          "color": "#417db9",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:01.696Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d86",
+      "chartId": "fans-location",
+      "title": "Fans Location",
+      "type": "pie",
+      "order": 2,
+      "isActive": true,
+      "emoji": "📍",
+      "subtitle": "Where fans engage",
+      "elements": [
+        {
+          "id": "remote",
+          "label": "Remote",
+          "formula": "stats.remoteFans",
+          "color": "#417db9",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "event",
+          "label": "Event",
+          "formula": "stats.stadium",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:01.949Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d87",
+      "chartId": "age-groups",
+      "title": "Age Groups",
+      "type": "bar",
+      "order": 3,
+      "isActive": true,
+      "emoji": "👥",
+      "subtitle": "Age demographics",
+      "elements": [
+        {
+          "id": "element1",
+          "label": "GEN Alpha",
+          "formula": "stats.genAlpha",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element2",
+          "label": "GEN Y + GEN Z",
+          "formula": "stats.genYZ",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element3",
+          "label": "GEN X",
+          "formula": "stats.genX",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element4",
+          "label": "Boomer",
+          "formula": "stats.boomer",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element5",
+          "label": "Other",
+          "formula": "0",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.145Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d88",
+      "chartId": "visitor-sources",
+      "title": "Visitor Sources",
+      "type": "pie",
+      "order": 4,
+      "isActive": true,
+      "emoji": "🌐",
+      "subtitle": "Attribution",
+      "elements": [
+        {
+          "id": "qr-short",
+          "label": "QR + Short URL",
+          "formula": "stats.visitQrCode] + [stats.visitShortUrl",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "other",
+          "label": "Direct",
+          "formula": "stats.visitWeb",
+          "color": "#b45fa2",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.330Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "location_on",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d89",
+      "chartId": "engagement-rate",
+      "title": "Engagement Rate",
+      "type": "kpi",
+      "order": 5,
+      "isActive": true,
+      "emoji": "fa",
+      "subtitle": "Total fans engaged vs attendees (%)",
+      "elements": [
+        {
+          "id": "engagement-rate-kpi",
+          "label": "Fans on images vs total attendance %",
+          "formula": "([female] + [male])/ [eventAttendees]* 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": false,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.553Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "icon": "stadium",
+      "iconVariant": "outlined",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa427241ff4b5c8f6d8a",
+      "chartId": "merch-penetration",
+      "title": "Merch Penetration Ratio",
+      "type": "kpi",
+      "order": 6,
+      "isActive": true,
+      "emoji": "🛍️",
+      "subtitle": "Total Merch Items on Images / Total Fans (%)",
+      "elements": [
+        {
+          "id": "merch-pen-kpi",
+          "label": "Merch Penetration Ratio %",
+          "formula": "[stats.merched] / [stats.totalFans] * 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.769Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "icon": "local_mall",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8b",
+      "chartId": "fans-per-image",
+      "title": "Fans per Image",
+      "type": "kpi",
+      "order": 7,
+      "isActive": true,
+      "emoji": "👀",
+      "subtitle": "Average faces per approved image",
+      "elements": [
+        {
+          "id": "faces-kpi",
+          "label": "Faces/Image",
+          "formula": "([stats.female] + [stats.male]) / [stats.approvedImages]",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": false,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:02.975Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "groups",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8c",
+      "chartId": "merchandise-distribution",
+      "title": "Merchandise Frequency",
+      "type": "bar",
+      "order": 8,
+      "isActive": true,
+      "emoji": "🛍️",
+      "subtitle": "Types of merchandise",
+      "showTotal": false,
+      "elements": [
+        {
+          "id": "jersey-penetration",
+          "label": "Jersey",
+          "formula": "[stats.jersey] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8d2878",
+          "description": "Jersey penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "scarf-penetration",
+          "label": "Other",
+          "formula": "[stats.other] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Scarf penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "flags-penetration",
+          "label": "Flag",
+          "formula": "[stats.flags] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Flags penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "cap-penetration",
+          "label": "Baseball Cap",
+          "formula": "[stats.baseballCap] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Baseball cap penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "other-penetration",
+          "label": "Scarf",
+          "formula": "[stats.scarf] * ([stats.eventAttendees] + 1) / ([stats.totalFans] + 1)",
+          "color": "#8c2877",
+          "description": "Other merchandise penetration adjusted for attendance",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:03.176Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "flag",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68f7aa437241ff4b5c8f6d8e",
+      "chartId": "image-density",
+      "title": "Image Density",
+      "type": "kpi",
+      "order": 10,
+      "isActive": true,
+      "emoji": "🧮",
+      "subtitle": "Images per 100 fans",
+      "elements": [
+        {
+          "id": "image-density-kpi",
+          "label": "Images / 100 Fans",
+          "formula": "([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) / ([stats.female] + [stats.male]) * 100",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-21T15:44:03.629Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "density_small",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68ff7b5c9b793f7e3fb2b7b4",
+      "chartId": "bitly-top-countries",
+      "title": "Most Visitors",
+      "emoji": "🌍",
+      "type": "bar",
+      "order": 8,
+      "showTotal": false,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-country-1",
+          "label": "{{stats.bitlyCountry1}}",
+          "formula": "stats.bitlyCountry1Clicks",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-2",
+          "label": "{{stats.bitlyCountry2}}",
+          "formula": "stats.bitlyCountry2Clicks",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-3",
+          "label": "{{stats.bitlyCountry3}}",
+          "formula": "stats.bitlyCountry3Clicks",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-4",
+          "label": "{{stats.bitlyCountry4}}",
+          "formula": "stats.bitlyCountry4Clicks",
+          "color": "#8c2877",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "bitly-country-5",
+          "label": "{{stats.bitlyCountry5}}",
+          "formula": "stats.bitlyCountry5Clicks",
+          "color": "#8c2877",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "subtitle": "Based on fan engagement ",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68ff7b5d400cc0d49e50711e",
+      "chartId": "bitly-top-country",
+      "title": "Top Country",
+      "emoji": "🏆",
+      "subtitle": "Most Engaging Geography",
+      "type": "kpi",
+      "order": 9,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-top-country-kpi-element",
+          "label": "{{stats.bitlyTopCountry}}",
+          "formula": "stats.bitlyClicksByCountry",
+          "color": "#8d2878",
+          "description": "Top country by Bitly clicks with click count",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "68ff7b5ee9723ccb4bccce3d",
+      "chartId": "bitly-countries-reached",
+      "title": "Countries Reached",
+      "emoji": "🌐",
+      "subtitle": "Unique Countries",
+      "type": "kpi",
+      "order": 10,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "bitly-countries-reached-kpi-element",
+          "label": "Countries Reached",
+          "formula": "stats.bitlyCountryCount",
+          "color": "#8d2878",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "icon": "south_america",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69024449ad64cd37c62afdad",
+      "chartId": "marketing-opt-in",
+      "title": "Marketing Opt-in %",
+      "type": "kpi",
+      "order": 51,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Marketing Opt-in %",
+          "formula": "[stats.marketingOptin] / [stats.uniqueUsers] * 100",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": false,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": "Marketing Opt-in Users / Unique Users * 100",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-29T16:43:53.477Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "icon": "campaign",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6902479c898e37c5388e5199",
+      "chartId": "fans-engaged",
+      "title": "Total Fans Engaged",
+      "type": "kpi",
+      "order": 52,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Total Fans Engaged",
+          "formula": "[female] + [male]",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "emoji": "📊",
+      "subtitle": "Number of fans on images",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-10-29T16:58:04.317Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "icon": "groups_2",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6904abf6411747d6603678f9",
+      "chartId": "merchandise-sales",
+      "title": "Potential Merch Database Value",
+      "type": "kpi",
+      "order": 5,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "possible merch sales",
+      "emoji": "🛍️",
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Calculating with €45 CPL",
+          "formula": "[marketingOptin]*45",
+          "color": "#3b82f6",
+          "description": "Jersey sales in EUR",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-31T12:30:46.597Z",
+      "updatedAt": "2025-12-17T14:34:35.847Z",
+      "createdBy": "system-seed",
+      "icon": "shopping_cart",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": false,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "subtitle": "Marketing opt-in users * CPL For Sports Merch"
+    },
+    {
+      "_id": "6904abf6411747d6603678fa",
+      "chartId": "engagement",
+      "title": "Engagement",
+      "type": "bar",
+      "order": 7,
+      "isActive": true,
+      "showTotal": true,
+      "totalLabel": "Core Fan Team",
+      "elements": [
+        {
+          "id": "engaged",
+          "label": "Engaged",
+          "formula": "([stats.remoteFans] + [stats.stadium]) / [stats.eventAttendees] * 100",
+          "color": "#8b5cf6",
+          "description": "Fan Engagement %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "interactive",
+          "label": "Interactive",
+          "formula": "([stats.socialVisit] + [stats.eventValuePropositionVisited] + [stats.eventValuePropositionPurchases]) / ([stats.remoteImages] + [stats.hostessImages] + [stats.selfies]) * 100",
+          "color": "#f59e0b",
+          "description": "Fan Interaction %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "front-runners",
+          "label": "Front-runners",
+          "formula": "[stats.merched] / ([stats.remoteFans] + [stats.stadium]) * 100",
+          "color": "#10b981",
+          "description": "Merched fans %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "fanaticals",
+          "label": "Fanaticals",
+          "formula": "([stats.flags] + [stats.scarf]) / [stats.merched] * 100",
+          "color": "#ef4444",
+          "description": "Flags & scarfs of merched %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "casuals",
+          "label": "Casuals",
+          "formula": "(([stats.remoteFans] + [stats.stadium]) - [stats.merched]) / ([stats.remoteFans] + [stats.stadium]) * 100",
+          "color": "#06b6d4",
+          "description": "Non-merched fans %",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": ""
+          }
+        }
+      ],
+      "createdAt": "2025-10-31T12:30:46.597Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "system-seed",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "favorite",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69068b0a666da24b06382aaf",
+      "chartId": "marketing-value-kpi",
+      "title": "Estimated Marketing Value",
+      "type": "kpi",
+      "order": 73,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Estimated value",
+          "formula": "[stats.male] * 10 + [stats.female] * 5",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        }
+      ],
+      "emoji": "🪙",
+      "subtitle": "Based on Industry standards in the EU",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-11-01T22:34:50.254Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "savings",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69069b24666fcbf1b0f1b510",
+      "chartId": "marketing-value-chart",
+      "title": "Marketing Value Distribution",
+      "type": "bar",
+      "order": 74,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Brand Awareness",
+          "formula": "3.1",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element2",
+          "label": "Display Ads",
+          "formula": "2.8",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element3",
+          "label": "Fan Engagement ",
+          "formula": "1.6",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element4",
+          "label": "Value Proposition",
+          "formula": "1.4",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        },
+        {
+          "id": "element5",
+          "label": "Social Impact",
+          "formula": "1.1",
+          "color": "#8d2878",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "emoji": "🤖",
+      "subtitle": "Standards updated on 27 October 2025",
+      "showTotal": false,
+      "totalLabel": "",
+      "createdAt": "2025-11-01T23:43:32.083Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "icon": "payments",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69078bcba46543e1ff209695",
+      "chartId": "geographic-reach",
+      "title": "Geographic Reach",
+      "type": "value",
+      "emoji": "🌍",
+      "description": "Fan distribution across geographic regions",
+      "kpiFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " fans"
+      },
+      "barFormatting": {
+        "rounded": true,
+        "prefix": "",
+        "suffix": " fans"
+      },
+      "elements": [
+        {
+          "id": "local-fans",
+          "label": "Local",
+          "formula": "[SEYUSTADIUMFANS] * 0.6",
+          "color": "#3b82f6",
+          "description": "Local city fans (60% of stadium attendance)"
+        },
+        {
+          "id": "regional-fans",
+          "label": "Regional",
+          "formula": "[SEYUSTADIUMFANS] * 0.25",
+          "color": "#10b981",
+          "description": "Regional fans (25% of stadium attendance)"
+        },
+        {
+          "id": "national-fans",
+          "label": "National",
+          "formula": "[SEYUSTADIUMFANS] * 0.1",
+          "color": "#f59e0b",
+          "description": "National fans (10% of stadium attendance)"
+        },
+        {
+          "id": "international-fans",
+          "label": "International",
+          "formula": "[SEYUSTADIUMFANS] * 0.05",
+          "color": "#8b5cf6",
+          "description": "International fans (5% of stadium attendance)"
+        },
+        {
+          "id": "remote-global",
+          "label": "Remote Global",
+          "formula": "SEYUREMOTEFANS",
+          "color": "#ec4899",
+          "description": "Remote fans engaging globally"
+        }
+      ],
+      "order": 103,
+      "active": true,
+      "category": "demographics",
+      "createdAt": "2025-10-31T10:38:03.126Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "migratedFrom": "chart_configurations",
+      "migratedAt": "2025-11-02T16:50:19.189Z",
+      "isActive": true,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908c2ca31a3346e55327cc1",
+      "chartId": "fanSelfiePortrait1",
+      "title": "fanSelfiePortrait1",
+      "type": "image",
+      "order": 104,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait1",
+          "formula": "stats.fanSelfiePortrait1",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T14:57:14.453Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908c32eeb6379644e9fe014",
+      "chartId": "fanSelfiePortrait2",
+      "title": "fanSelfiePortrait2",
+      "type": "image",
+      "order": 105,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait2",
+          "formula": "stats.fanSelfiePortrait2",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T14:58:54.957Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908c4cceb6379644e9fe015",
+      "chartId": "fanSelfiePortrait3",
+      "title": "fanSelfiePortrait3",
+      "type": "image",
+      "order": 106,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait3",
+          "formula": "stats.fanSelfiePortrait3",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T15:05:48.425Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908c61931a3346e55327cc2",
+      "chartId": "fanSelfiePortrait4",
+      "title": "fanSelfiePortrait4",
+      "type": "image",
+      "order": 107,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait4",
+          "formula": "stats.fanSelfiePortrait4",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T15:11:21.788Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908f7cf3eaa408e5aef0fc7",
+      "chartId": "fanSelfiePortrait5",
+      "title": "fanSelfiePortrait5",
+      "type": "image",
+      "order": 108,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait5",
+          "formula": "stats.fanSelfiePortrait5",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T18:43:27.468Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908f8343eaa408e5aef0fc8",
+      "chartId": "fanSelfiePortrait6",
+      "title": "fanSelfiePortrait6",
+      "type": "image",
+      "order": 109,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait6",
+          "formula": "stats.fanSelfiePortrait6",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T18:45:08.204Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908f86a3eaa408e5aef0fc9",
+      "chartId": "fanSelfiePortrait7",
+      "title": "fanSelfiePortrait7",
+      "type": "image",
+      "order": 110,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfiePortrait7",
+          "formula": "stats.fanSelfiePortrait7",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "9:16",
+      "createdAt": "2025-11-03T18:46:02.960Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fb253eaa408e5aef0fcb",
+      "chartId": "fanSelfieLandscape1",
+      "title": "fanSelfieLandscape1",
+      "type": "image",
+      "order": 111,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieLandscape1",
+          "formula": "stats.fanSelfieLandscape1",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-03T18:57:41.972Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fb413eaa408e5aef0fcc",
+      "chartId": "fanSelfieLandscape2",
+      "title": "fanSelfieLandscape2",
+      "type": "image",
+      "order": 112,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieLandscape2",
+          "formula": "stats.fanSelfieLandscape2",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-03T18:58:09.665Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fbc63eaa408e5aef0fcd",
+      "chartId": "fanSelfieLandscape3",
+      "title": "fanSelfieLandscape3",
+      "type": "image",
+      "order": 113,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieLandscape3",
+          "formula": "stats.fanSelfieLandscape3",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-03T19:00:22.387Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fbfa3eaa408e5aef0fce",
+      "chartId": "fanSelfieSquare1",
+      "title": "fanSelfieSquare1",
+      "type": "image",
+      "order": 114,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieSquare1",
+          "formula": "stats.fanSelfieSquare1",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "1:1",
+      "createdAt": "2025-11-03T19:01:14.272Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fc133eaa408e5aef0fcf",
+      "chartId": "fanSelfieSquare2",
+      "title": "fanSelfieSquare2",
+      "type": "image",
+      "order": 115,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieSquare2",
+          "formula": "stats.fanSelfieSquare2",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "1:1",
+      "createdAt": "2025-11-03T19:01:39.725Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6908fc2b3eaa408e5aef0fd0",
+      "chartId": "fanSelfieSquare3",
+      "title": "fanSelfieSquare3",
+      "type": "image",
+      "order": 116,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "stats.fanSelfieSquare3",
+          "formula": "stats.fanSelfieSquare3",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "1:1",
+      "createdAt": "2025-11-03T19:02:03.050Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6914511d0353b464720cc8e0",
+      "chartId": "bitly.click",
+      "title": "BITLY",
+      "type": "bar",
+      "order": 117,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Total Clicks",
+          "formula": "stats.bitlyTotalClicks",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Unique Users",
+          "formula": "stats.bitlyUniqueClicks",
+          "color": "#10b981",
+          "description": ""
+        },
+        {
+          "id": "element3",
+          "label": "Countries",
+          "formula": "stats.bitlyClicksByCountry",
+          "color": "#f59e0b",
+          "description": ""
+        },
+        {
+          "id": "element4",
+          "label": "Mobile Clicks",
+          "formula": "stats.bitlyMobileClicks",
+          "color": "#8b5cf6",
+          "description": ""
+        },
+        {
+          "id": "element5",
+          "label": "Social Media Click",
+          "formula": "stats.bitlySocialClicks",
+          "color": "#ef4444",
+          "description": ""
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-12T09:19:25.783Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69145239399b5e743621db93",
+      "chartId": "unique-user-second",
+      "title": "Unique User per Second",
+      "type": "kpi",
+      "order": 118,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Unique Users / Second",
+          "formula": "[stats.uniqueUsers] / 600",
+          "color": "#10b981",
+          "description": "",
+          "formatting": {
+            "rounded": false
+          }
+        }
+      ],
+      "icon": "timer",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Unique Users registered/1 sec on screen",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-12T09:24:09.187Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68e2a132fb08ff8793f9b719",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69147e7dc1ae5696c17a0b58",
+      "chartId": "total-images",
+      "title": "Total Number of Images",
+      "type": "kpi",
+      "order": 119,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Total Images",
+          "formula": "[remoteImages] + [hostessImages] + [selfies]",
+          "color": "#9f1532",
+          "description": ""
+        }
+      ],
+      "icon": "image",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Sum of approved and refused images ",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-12T12:33:01.378Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6914a4db3cf263b3ecd65d09",
+      "chartId": "percentage-of-new-users",
+      "title": "Percentage of New Users",
+      "type": "kpi",
+      "order": 120,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Percentage of New Users",
+          "formula": "[stats.newUsersAdded] / [stats.uniqueUsers] * 100",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": false,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "icon": "groups_3",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Ratio of New Unique Users compared to all Unique Users of the current event",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-12T15:16:43.117Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6914aea299c79645408989b1",
+      "chartId": "marketing-optin-percentage",
+      "title": "Marketing Opt-in Percentage",
+      "type": "kpi",
+      "order": 121,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Marketing Opt-in Percentage",
+          "formula": "[stats.marketingOptin] / [stats.uniqueUsers] * 100",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": false,
+            "prefix": "",
+            "suffix": "%"
+          }
+        }
+      ],
+      "icon": "",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-12T15:58:26.997Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915b54e04270f38f22fc1a4",
+      "chartId": "report-image-1",
+      "name": "Report Image 1",
+      "type": "image",
+      "formula": "stats.reportImage1",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 1 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T08:48:42.882Z",
+      "elements": [
+        {
+          "id": "image-element-1",
+          "label": "Report Image 1",
+          "formula": "stats.reportImage1",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 1",
+      "iconVariant": "outlined",
+      "order": 9001,
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915b54e04270f38f22fc1a5",
+      "chartId": "report-image-2",
+      "name": "Report Image 2",
+      "type": "image",
+      "formula": "stats.reportImage2",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 2 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T08:49:23.919Z",
+      "elements": [
+        {
+          "id": "image-element-2",
+          "label": "Report Image 2",
+          "formula": "stats.reportImage2",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 2",
+      "iconVariant": "outlined",
+      "order": 9002,
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915b54e04270f38f22fc1a7",
+      "chartId": "report-image-4",
+      "name": "Report Image 4",
+      "type": "image",
+      "formula": "stats.reportImage4",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 4 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T08:51:45.909Z",
+      "elements": [
+        {
+          "id": "image-element-4",
+          "label": "Report Image 4",
+          "formula": "stats.reportImage4",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 4",
+      "iconVariant": "outlined",
+      "order": 9004,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54e04270f38f22fc1a8",
+      "chartId": "report-image-5",
+      "name": "Report Image 5",
+      "type": "image",
+      "formula": "stats.reportImage5",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 5 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T09:17:17.798Z",
+      "elements": [
+        {
+          "id": "image-element-5",
+          "label": "Report Image 5",
+          "formula": "stats.reportImage5",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 5",
+      "iconVariant": "outlined",
+      "order": 9005,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54e04270f38f22fc1a9",
+      "chartId": "report-image-6",
+      "name": "Report Image 6",
+      "type": "image",
+      "formula": "stats.reportImage6",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 6 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T19:54:25.464Z",
+      "elements": [
+        {
+          "id": "image-element-6",
+          "label": "Report Image 6",
+          "formula": "reportImage6",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 6",
+      "iconVariant": "outlined",
+      "order": 9006,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1aa",
+      "chartId": "report-image-7",
+      "name": "Report Image 7",
+      "type": "image",
+      "formula": "stats.reportImage7",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 7 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.117Z",
+      "elements": [
+        {
+          "id": "image-element-7",
+          "label": "Report Image 7",
+          "formula": "reportImage7",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 7",
+      "iconVariant": "outlined",
+      "order": 9007,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1ab",
+      "chartId": "report-image-8",
+      "name": "Report Image 8",
+      "type": "image",
+      "formula": "stats.reportImage8",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 8 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.147Z",
+      "elements": [
+        {
+          "id": "image-element-8",
+          "label": "Report Image 8",
+          "formula": "reportImage8",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 8",
+      "iconVariant": "outlined",
+      "order": 9008,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1ac",
+      "chartId": "report-image-9",
+      "name": "Report Image 9",
+      "type": "image",
+      "formula": "stats.reportImage9",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 9 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.179Z",
+      "elements": [
+        {
+          "id": "image-element-9",
+          "label": "Report Image 9",
+          "formula": "reportImage9",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 9",
+      "iconVariant": "outlined",
+      "order": 9009,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1ad",
+      "chartId": "report-image-10",
+      "name": "Report Image 10",
+      "type": "image",
+      "formula": "stats.reportImage10",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 10 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T19:41:23.979Z",
+      "elements": [
+        {
+          "id": "image-element-10",
+          "label": "Report Image 10",
+          "formula": "reportImage10",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 10",
+      "iconVariant": "outlined",
+      "order": 9010,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1ae",
+      "chartId": "report-image-11",
+      "name": "Report Image 11",
+      "type": "image",
+      "formula": "stats.reportImage11",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 11 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T19:41:32.749Z",
+      "elements": [
+        {
+          "id": "image-element-11",
+          "label": "Report Image 11",
+          "formula": "reportImage11",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 11",
+      "iconVariant": "outlined",
+      "order": 9011,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1af",
+      "chartId": "report-image-12",
+      "name": "Report Image 12",
+      "type": "image",
+      "formula": "stats.reportImage12",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 12 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T19:42:06.249Z",
+      "elements": [
+        {
+          "id": "image-element-12",
+          "label": "Report Image 12",
+          "formula": "reportImage12",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 12",
+      "iconVariant": "outlined",
+      "order": 9012,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b0",
+      "chartId": "report-image-13",
+      "name": "Report Image 13",
+      "type": "image",
+      "formula": "stats.reportImage13",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 13 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.204Z",
+      "elements": [
+        {
+          "id": "image-element-13",
+          "label": "Report Image 13",
+          "formula": "reportImage13",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 13",
+      "iconVariant": "outlined",
+      "order": 9013,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b1",
+      "chartId": "report-image-14",
+      "name": "Report Image 14",
+      "type": "image",
+      "formula": "stats.reportImage14",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 14 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.230Z",
+      "elements": [
+        {
+          "id": "image-element-14",
+          "label": "Report Image 14",
+          "formula": "reportImage14",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 14",
+      "iconVariant": "outlined",
+      "order": 9014,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b2",
+      "chartId": "report-image-15",
+      "name": "Report Image 15",
+      "type": "image",
+      "formula": "stats.reportImage15",
+      "icon": "image",
+      "aspectRatio": "16:9",
+      "description": "Image slot 15 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:00:34.256Z",
+      "elements": [
+        {
+          "id": "image-element-15",
+          "label": "Report Image 15",
+          "formula": "reportImage15",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Image 15",
+      "iconVariant": "outlined",
+      "order": 9015,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b3",
+      "chartId": "report-text-1",
+      "name": "Report Text 1",
+      "type": "text",
+      "formula": "stats.reportText1",
+      "icon": "article",
+      "description": "Text slot 1 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T11:32:35.383Z",
+      "elements": [
+        {
+          "id": "text-element-1",
+          "label": "Report Text 1",
+          "formula": "stats.reportText1",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 1",
+      "iconVariant": "outlined",
+      "order": 9001,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "showTitle": false
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b4",
+      "chartId": "report-text-2",
+      "name": "Report Text 2",
+      "type": "text",
+      "formula": "stats.reportText2",
+      "icon": "article",
+      "description": "Text slot 2 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:42:07.406Z",
+      "elements": [
+        {
+          "formula": "reportText2",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 2",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b54f04270f38f22fc1b5",
+      "chartId": "report-text-3",
+      "name": "Report Text 3",
+      "type": "text",
+      "formula": "stats.reportText3",
+      "icon": "article",
+      "description": "Text slot 3 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-16T20:07:06.521Z",
+      "elements": [
+        {
+          "id": "text-element-3",
+          "label": "Report Text 3",
+          "formula": "reportText3",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 3",
+      "iconVariant": "outlined",
+      "order": 9003,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script",
+      "aspectRatio": "16:9"
+    },
+    {
+      "_id": "6915b55004270f38f22fc1b6",
+      "chartId": "report-text-4",
+      "name": "Report Text 4",
+      "type": "text",
+      "formula": "stats.reportText4",
+      "icon": "article",
+      "description": "Text slot 4 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:42:34.434Z",
+      "elements": [
+        {
+          "id": "text-element-4",
+          "label": "Report Text 4",
+          "formula": "reportText4",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 4",
+      "iconVariant": "outlined",
+      "order": 9004,
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1b7",
+      "chartId": "report-text-5",
+      "name": "Report Text 5",
+      "type": "text",
+      "formula": "stats.reportText5",
+      "icon": "article",
+      "description": "Text slot 5 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:42:55.708Z",
+      "elements": [
+        {
+          "formula": "reportText5",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 5",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1b8",
+      "chartId": "report-text-6",
+      "name": "Report Text 6",
+      "type": "text",
+      "formula": "stats.reportText6",
+      "icon": "article",
+      "description": "Text slot 6 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:43:09.546Z",
+      "elements": [
+        {
+          "formula": "reportText6",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 6",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1b9",
+      "chartId": "report-text-7",
+      "name": "Report Text 7",
+      "type": "text",
+      "formula": "stats.reportText7",
+      "icon": "article",
+      "description": "Text slot 7 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:43:23.631Z",
+      "elements": [
+        {
+          "formula": "reportText7",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 7",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1ba",
+      "chartId": "report-text-8",
+      "name": "Report Text 8",
+      "type": "text",
+      "formula": "stats.reportText8",
+      "icon": "article",
+      "description": "Text slot 8 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:43:52.134Z",
+      "elements": [
+        {
+          "formula": "reportText8",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 8",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1bb",
+      "chartId": "report-text-9",
+      "name": "Report Text 9",
+      "type": "text",
+      "formula": "stats.reportText9",
+      "icon": "article",
+      "description": "Text slot 9 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:43:47.030Z",
+      "elements": [
+        {
+          "formula": "reportText9",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 9",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1bc",
+      "chartId": "report-text-10",
+      "name": "Report Text 10",
+      "type": "text",
+      "formula": "stats.reportText10",
+      "icon": "article",
+      "description": "Text slot 10 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:16.212Z",
+      "elements": [
+        {
+          "formula": "reportText10",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 10",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1bd",
+      "chartId": "report-text-11",
+      "name": "Report Text 11",
+      "type": "text",
+      "formula": "stats.reportText11",
+      "icon": "article",
+      "description": "Text slot 11 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:07.682Z",
+      "elements": [
+        {
+          "formula": "reportText11",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 11",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55004270f38f22fc1be",
+      "chartId": "report-text-12",
+      "name": "Report Text 12",
+      "type": "text",
+      "formula": "stats.reportText12",
+      "icon": "article",
+      "description": "Text slot 12 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:22.269Z",
+      "elements": [
+        {
+          "formula": "reportText12",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 12",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55104270f38f22fc1bf",
+      "chartId": "report-text-13",
+      "name": "Report Text 13",
+      "type": "text",
+      "formula": "stats.reportText13",
+      "icon": "article",
+      "description": "Text slot 13 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:27.574Z",
+      "elements": [
+        {
+          "formula": "reportText13",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 13",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55104270f38f22fc1c0",
+      "chartId": "report-text-14",
+      "name": "Report Text 14",
+      "type": "text",
+      "formula": "stats.reportText14",
+      "icon": "article",
+      "description": "Text slot 14 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:36.278Z",
+      "elements": [
+        {
+          "formula": "reportText14",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 14",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915b55104270f38f22fc1c1",
+      "chartId": "report-text-15",
+      "name": "Report Text 15",
+      "type": "text",
+      "formula": "stats.reportText15",
+      "icon": "article",
+      "description": "Text slot 15 for report content",
+      "createdAt": "2025-11-13T10:39:10.630Z",
+      "updatedAt": "2025-12-17T13:41:44.763Z",
+      "elements": [
+        {
+          "formula": "reportText15",
+          "label": "Element 1",
+          "id": "element-0",
+          "color": "#cccccc"
+        }
+      ],
+      "isActive": true,
+      "title": "Report Text 15",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "aspectRatio": "16:9",
+      "order": 1,
+      "showTitle": false
+    },
+    {
+      "_id": "6915bb4d0c9c5d47d5a01a42",
+      "chartId": "database-value-for-sponsors",
+      "title": "Database Value for Sponsors (by Industry)",
+      "type": "bar",
+      "order": 122,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Automotive industry (CPL: €170)",
+          "formula": "170 * [marketingOptin]",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element2",
+          "label": "Telecommunications industry (CPL: €95)",
+          "formula": "95 * [marketingOptin]",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element3",
+          "label": "eCommerce industry (CPL: €87)",
+          "formula": "[marketingOptin]* 87",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element4",
+          "label": "Insurance industry (CPL: €205)",
+          "formula": "[marketingOptin] * 205",
+          "color": "#9f1532",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        },
+        {
+          "id": "element5",
+          "label": "FMCG Industry (CPL: €45)",
+          "formula": "[marketingOptin] * 45",
+          "color": "#9f1432",
+          "description": "",
+          "formatting": {
+            "rounded": true,
+            "prefix": "€",
+            "suffix": ""
+          }
+        }
+      ],
+      "icon": "database_upload",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Average CPL based on industry standards, multiplied by number of Unique Users of current event",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T11:04:45.975Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915d161a31db5a9bbe952f9",
+      "chartId": "new-users-to-all-unique-users",
+      "title": "New Unique Users vs All Unique Users",
+      "type": "pie",
+      "order": 32,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "New Unique Users",
+          "formula": "stats.newUsersAdded",
+          "color": "#9f1532",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Already Known Users",
+          "formula": "[stats.uniqueUsers] - [stats.newUsersAdded]",
+          "color": "#fda701",
+          "description": ""
+        }
+      ],
+      "icon": "person_add",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "New Unique Users compared to all Unique Users of the current event",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T12:38:57.113Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915eada5e064f793d56a41a",
+      "chartId": "pop-up-banner-clicks",
+      "title": "Pop-Up Banner Clicks",
+      "type": "kpi",
+      "order": 2,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Pop-Up Banner Clicks",
+          "formula": "[stats.ventCtaPopup]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "ads_click",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Unique clicks on Pop-Up Banner",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T14:27:38.487Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915ec6a69cfe5766d03ef6a",
+      "chartId": "pop-up-banner-ctr",
+      "title": "Pop-Up Banner Click Through Rate",
+      "type": "pie",
+      "order": 20,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Pop-Up Banner Clicks",
+          "formula": "273",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Users Not Clicking on Pop-Up",
+          "formula": "165",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "trending_up",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Ratio of clicks vs no clicks",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T14:34:18.125Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915fa7222cedff4b344702d",
+      "chartId": "terrace-icons-asroma",
+      "title": "Terrace Icons Products",
+      "type": "kpi",
+      "order": 123,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Terrace Icons Products",
+          "formula": "[stats.specialMerch]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "checkroom",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T15:34:10.728Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6915ff1c22cedff4b344702e",
+      "chartId": "terrace-icons-vs-without",
+      "title": "THE GAP TO MONETIZE: Fans With Terrace Icons vs Without",
+      "type": "pie",
+      "order": 123,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Fans With Terrace Icons",
+          "formula": "[stats.specialMerch]",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Fans Without Terrace Icons",
+          "formula": "[stats.totalFans]-[stats.specialMerch]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "euro",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-11-13T15:54:04.124Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6916fb8cd95c477e91dab29c",
+      "chartId": "report-image-16",
+      "title": "Report Image 16",
+      "type": "image",
+      "order": 9016,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-16",
+          "label": "Report Image 16",
+          "formula": "reportImage16",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T09:51:07.841Z",
+      "updatedAt": "2025-12-16T20:00:34.770Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6916feec0d9419f3d16fa40e",
+      "chartId": "report-image-17",
+      "title": "Report Image 17",
+      "type": "image",
+      "order": 9017,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-17",
+          "label": "Report Image 17",
+          "formula": "reportImage17",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:05:32.668Z",
+      "updatedAt": "2025-12-16T20:00:34.799Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6916fefb146b21d8d92adc62",
+      "chartId": "report-image-18",
+      "title": "Report Image 18",
+      "type": "image",
+      "order": 9018,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-18",
+          "label": "Report Image 18",
+          "formula": "reportImage18",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:05:46.970Z",
+      "updatedAt": "2025-12-16T20:00:34.824Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6916ff487988511310d1c805",
+      "chartId": "report-image-19",
+      "title": "Report Image 19",
+      "type": "image",
+      "order": 9019,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-19",
+          "label": "Report Image 19",
+          "formula": "reportImage19",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:07:04.727Z",
+      "updatedAt": "2025-12-16T20:00:34.851Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6916ff5327e1a73d8db25bc7",
+      "chartId": "report-image-20",
+      "title": "Report Image 20",
+      "type": "image",
+      "order": 9020,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-20",
+          "label": "Report Image 20",
+          "formula": "reportImage20",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:07:15.271Z",
+      "updatedAt": "2025-12-16T20:00:34.893Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "6916ff61032bd58a920489f2",
+      "chartId": "report-image-21",
+      "title": "Report Image 21",
+      "type": "image",
+      "order": 9021,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-21",
+          "label": "Report Image 21",
+          "formula": "reportImage21",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:07:29.761Z",
+      "updatedAt": "2025-12-16T20:00:34.922Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "691700f2b8d5974343659a93",
+      "chartId": "report-image-22",
+      "title": "Report Image 22",
+      "type": "image",
+      "order": 9022,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-22",
+          "label": "Report Image 22",
+          "formula": "reportImage22",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:14:10.869Z",
+      "updatedAt": "2025-12-16T20:00:34.954Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "691700f3b8d5974343659a95",
+      "chartId": "report-image-23",
+      "title": "Report Image 23",
+      "type": "image",
+      "order": 9023,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-23",
+          "label": "Report Image 23",
+          "formula": "reportImage23",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:14:11.465Z",
+      "updatedAt": "2025-12-16T20:00:34.984Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "691701c4b8d5974343659a97",
+      "chartId": "report-image-24",
+      "title": "Report Image 24",
+      "type": "image",
+      "order": 9024,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-24",
+          "label": "Report Image 24",
+          "formula": "reportImage24",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:17:40.122Z",
+      "updatedAt": "2025-12-16T20:00:35.011Z",
+      "lastModifiedBy": "migration-script",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69170237be480ab80b41cdd8",
+      "chartId": "report-image-25",
+      "title": "Report Image 25",
+      "type": "image",
+      "order": 9025,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-25",
+          "label": "Report Image 25",
+          "formula": "reportImage25",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-11-14T10:19:35.815Z",
+      "updatedAt": "2025-12-16T20:00:35.040Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "migration-script"
+    },
+    {
+      "_id": "69413cc821bd758f6d151736",
+      "chartId": "unique-users",
+      "title": "Unique Users",
+      "type": "kpi",
+      "order": 119,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Unique Users Collected",
+          "formula": "[uniqueUsers]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "emoji_people",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "Number of users sending at least 1 photo",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-12-16T11:04:40.896Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "69415e5c02c105b35c3aa07c",
+      "chartId": "pre-match-url",
+      "title": "Pre-Match Promotion and URL Performance",
+      "type": "pie",
+      "order": 123,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Facebook and Instagram",
+          "formula": "[ventFacebook]+[ventInstagram]",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Direct URL type-in",
+          "formula": "[stats.directUrl]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "ads_click",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "URL activity by source",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "createdAt": "2025-12-16T13:27:56.499Z",
+      "updatedAt": "2025-12-16T18:46:21.066Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e",
+      "lastModifiedBy": "68c16747cc6c9c0cccfcf74e",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      }
+    },
+    {
+      "_id": "6941990b387cbc20c6aa9026",
+      "chartId": "report-image-3",
+      "title": "Report Image 3",
+      "type": "image",
+      "order": 9003,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "image-element-3",
+          "label": "Report Image 3",
+          "formula": "stats.reportImage3",
+          "color": "#3b82f6",
+          "type": "number"
+        }
+      ],
+      "aspectRatio": "16:9",
+      "icon": "image",
+      "iconVariant": "outlined",
+      "createdAt": "2025-12-16T17:38:19.136Z",
+      "updatedAt": "2025-12-17T08:51:36.659Z",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "lastModifiedBy": "68e2a132fb08ff8793f9b719"
+    },
+    {
+      "_id": "6942dcf0a96b104d42916e6d",
+      "chartId": "qrscan-device",
+      "title": "QR Scans by Device",
+      "type": "pie",
+      "order": 123,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "QR Scans from iPhone",
+          "formula": "[stats.qrscanIphone]",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "QR Scans from Android",
+          "formula": "[stats.qrscanAndroid]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "qr_code_scanner",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": null,
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "showTitle": true,
+      "createdAt": "2025-12-17T16:40:16.734Z",
+      "updatedAt": "2025-12-17T16:40:16.734Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e"
+    },
+    {
+      "_id": "6942df1f738b04bfd6b5fd47",
+      "chartId": "conversion-qrscan",
+      "title": "Conversion from QR Scans",
+      "type": "pie",
+      "order": 123,
+      "isActive": true,
+      "elements": [
+        {
+          "id": "element1",
+          "label": "Number of QR Scans",
+          "formula": "[stats.qrscanIphone]+[stats.qrscanAndroid]",
+          "color": "#3b82f6",
+          "description": ""
+        },
+        {
+          "id": "element2",
+          "label": "Number of Images",
+          "formula": "[approvedImages]+[rejectedImages]",
+          "color": "#10b981",
+          "description": ""
+        }
+      ],
+      "icon": "verified_user",
+      "iconVariant": "outlined",
+      "emoji": "📊",
+      "subtitle": "QR Scans vs Total Number of Images",
+      "showTotal": false,
+      "totalLabel": "",
+      "aspectRatio": "16:9",
+      "heroSettings": {
+        "showEmoji": true,
+        "showDateInfo": true,
+        "showExportOptions": true
+      },
+      "alignmentSettings": {
+        "alignTitles": true,
+        "alignDescriptions": true,
+        "alignCharts": true
+      },
+      "showTitle": true,
+      "createdAt": "2025-12-17T16:49:35.723Z",
+      "updatedAt": "2025-12-17T16:49:35.723Z",
+      "createdBy": "68c16747cc6c9c0cccfcf74e"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "chartId": 1
+      },
+      "name": "chartId_lookup"
+    },
+    {
+      "v": 2,
+      "key": {
+        "order": 1
+      },
+      "name": "order_sort"
+    },
+    {
+      "v": 2,
+      "key": {
+        "isActive": 1
+      },
+      "name": "isActive_filter"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:22.285Z"
+}

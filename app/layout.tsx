@@ -101,11 +101,16 @@ export default async function RootLayout({
         
         {/* WHAT: Google Material Icons font families
             WHY: Replace emoji with Material Icons throughout the app
-            HOW: Load both Outlined and Rounded variants with display=swap for performance
+            HOW: Load all variants (base, outlined, round) with display=swap for performance
             NOTE: Material Icons must be loaded via stylesheet (not next/font/google)
                   because they are icon fonts requiring CSS class mapping.
                   App Router loads these globally (correct), but ESLint rule
                   @next/next/no-page-custom-font is designed for Pages Router only. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" 
+          rel="stylesheet"
+        />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" 

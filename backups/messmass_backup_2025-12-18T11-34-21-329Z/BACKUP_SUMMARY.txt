@@ -1,0 +1,72 @@
+================================================================================
+DATABASE BACKUP SUMMARY
+================================================================================
+
+Timestamp: 2025-12-18T11:34:21.330Z
+Version: 11.35.1
+Location: /Users/moldovancsaba/Projects/messmass/backups/messmass_backup_2025-12-18T11-34-21-329Z
+
+📊 STATISTICS:
+────────────────────────────────────────────────────────────────────────────────
+Total Collections: 36
+Total Documents: 10,243
+Total Size: 16.10 MB
+
+📦 COLLECTIONS:
+────────────────────────────────────────────────────────────────────────────────
+  notifications                           4530 docs  |     1597.75 KB  |  6 indexes
+  bitly_links                             3126 docs  |    13441.99 KB  |  5 indexes
+  page_passwords                           396 docs  |       79.28 KB  |  1 indexes
+  hashtag_slugs                            392 docs  |       51.50 KB  |  3 indexes
+  bitly_project_links                      339 docs  |      343.62 KB  |  4 indexes
+  football_data_fixtures                   253 docs  |      190.19 KB  |  7 indexes
+  projects                                 208 docs  |      288.98 KB  |  13 indexes
+  countries                                197 docs  |       43.40 KB  |  5 indexes
+  variables_metadata                       141 docs  |       41.47 KB  |  9 indexes
+  partners                                 140 docs  |      192.59 KB  |  5 indexes
+  hashtags                                 105 docs  |        9.90 KB  |  1 indexes
+  chart_configurations                      87 docs  |       64.48 KB  |  4 indexes
+  data_blocks                               66 docs  |       18.68 KB  |  2 indexes
+  hashtag_colors                            55 docs  |        8.13 KB  |  1 indexes
+  analytics_aggregates                      45 docs  |       63.00 KB  |  9 indexes
+  content_assets                            40 docs  |       14.31 KB  |  1 indexes
+  filter_slugs                              32 docs  |        6.33 KB  |  2 indexes
+  cities                                    16 docs  |        3.17 KB  |  4 indexes
+  variables_groups                          15 docs  |        4.42 KB  |  2 indexes
+  variablesGroups                           14 docs  |        4.40 KB  |  1 indexes
+  users                                     13 docs  |        3.11 KB  |  2 indexes
+  hashtag_categories                         7 docs  |        1.02 KB  |  2 indexes
+  chart_algorithms_backup                    7 docs  |        2.68 KB  |  1 indexes
+  report_templates                           6 docs  |        5.93 KB  |  4 indexes
+  page_styles_enhanced                       3 docs  |        2.46 KB  |  1 indexes
+  user_preferences                           2 docs  |        0.30 KB  |  1 indexes
+  settings                                   2 docs  |        0.32 KB  |  1 indexes
+  system_settings                            1 docs  |        0.13 KB  |  1 indexes
+  dataBlocks                                 1 docs  |        0.16 KB  |  1 indexes
+  chart_formatting_defaults                  1 docs  |        0.43 KB  |  1 indexes
+  aggregation_logs                           1 docs  |        2.44 KB  |  6 indexes
+  bitly_sync_logs                            1 docs  |        0.35 KB  |  1 indexes
+  local_users                                1 docs  |        0.23 KB  |  1 indexes
+  event_comparisons                          0 docs  |        0.00 KB  |  4 indexes
+  partner_analytics                          0 docs  |        0.00 KB  |  5 indexes
+  charts                                     0 docs  |        0.00 KB  |  1 indexes
+
+🔐 INTEGRITY:
+────────────────────────────────────────────────────────────────────────────────
+Verification: ✅ PASSED
+Checksums: 36 collections verified
+
+================================================================================
+RESTORE INSTRUCTIONS:
+================================================================================
+
+Full restore:
+  npm run db:restore -- --backup=messmass_backup_2025-12-18T11-34-21-329Z
+
+Single collection restore:
+  npm run db:restore -- --backup=messmass_backup_2025-12-18T11-34-21-329Z --collection=projects
+
+Dry-run (preview only):
+  npm run db:restore -- --backup=messmass_backup_2025-12-18T11-34-21-329Z --dry-run
+
+================================================================================

@@ -1,0 +1,28 @@
+{
+  "name": "user_preferences",
+  "documentCount": 2,
+  "documents": [
+    {
+      "_id": "6916fdf8fdb3d44431cb497b",
+      "userId": "moldovancsaba@gmail.com",
+      "lastSelectedTemplateId": "693fff05daa7a23d8085643b",
+      "updatedAt": "2025-12-16T19:06:42.138Z"
+    },
+    {
+      "_id": "6916ff73fdb3d44431cb49c7",
+      "userId": "david.bozsik@seyuselfies.com",
+      "lastSelectedTemplateId": "693fff05daa7a23d8085643b",
+      "updatedAt": "2025-12-16T14:03:37.892Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:21.568Z"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "bitly_sync_logs",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "68ff4662d5adba9b0652580b",
+      "runId": "af01ca45-921b-4460-aee0-d1ce8b2c83f5",
+      "scope": "manual",
+      "startedAt": "2025-10-27T09:55:05.617Z",
+      "endedAt": "2025-10-27T10:16:02.059Z",
+      "status": "success",
+      "metrics": {
+        "linksScanned": 3071,
+        "linksUpdated": 3071,
+        "apiCalls": 15355,
+        "rateLimitResets": 0
+      },
+      "errors": null,
+      "createdAt": "2025-10-27T10:16:02.059Z",
+      "updatedAt": "2025-10-27T10:16:02.059Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:25.112Z"
+}

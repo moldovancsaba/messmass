@@ -1,0 +1,253 @@
+{
+  "name": "variables_groups",
+  "documentCount": 15,
+  "documents": [
+    {
+      "_id": "68d96377df9735cb2a9f4b42",
+      "groupOrder": 1,
+      "chartId": "all-images-taken",
+      "createdAt": "2025-09-28T16:33:59.163Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T15:58:26.508Z",
+      "variables": [
+        "stats.hostessImages",
+        "stats.remoteImages",
+        "stats.selfies"
+      ]
+    },
+    {
+      "_id": "68d963dfdf9735cb2a9f4c6f",
+      "groupOrder": 2,
+      "chartId": "fans-location",
+      "createdAt": "2025-09-28T16:35:43.525Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T15:58:42.278Z",
+      "variables": [
+        "stats.remoteFans",
+        "stats.stadium"
+      ]
+    },
+    {
+      "_id": "68d96422df9735cb2a9f4c75",
+      "groupOrder": 3,
+      "chartId": "gender-distribution",
+      "createdAt": "2025-09-28T16:36:50.572Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T15:58:59.116Z",
+      "variables": [
+        "stats.female",
+        "stats.male"
+      ]
+    },
+    {
+      "_id": "68d9644edf9735cb2a9f4c77",
+      "groupOrder": 4,
+      "chartId": "age-groups",
+      "createdAt": "2025-09-28T16:37:34.550Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T15:59:34.004Z",
+      "variables": [
+        "stats.genAlpha",
+        "stats.genYZ",
+        "stats.genX",
+        "stats.boomer"
+      ]
+    },
+    {
+      "_id": "68d964dddf9735cb2a9f4c87",
+      "groupOrder": 5,
+      "chartId": "merchandise",
+      "createdAt": "2025-09-28T16:39:56.494Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T16:00:22.334Z",
+      "variables": [
+        "stats.merched",
+        "stats.scarf",
+        "stats.jersey",
+        "stats.flags",
+        "stats.baseballCap",
+        "stats.other"
+      ]
+    },
+    {
+      "_id": "68d96af2df9735cb2a9f4d12",
+      "groupOrder": 6,
+      "chartId": null,
+      "createdAt": "2025-09-28T17:05:54.257Z",
+      "titleOverride": "Success Manager",
+      "updatedAt": "2025-10-29T16:30:00.826Z",
+      "variables": [
+        "stats.approvedImages",
+        "stats.rejectedImages"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "68e675252ad889f80f9d66d2",
+      "groupOrder": 7,
+      "chartId": null,
+      "createdAt": "2025-10-08T14:28:53.171Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T16:29:54.646Z",
+      "variables": [
+        "stats.ventUrl",
+        "stats.ventCtaEmail",
+        "stats.ventCtaPopup"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "68e6754c2ad889f80f9d66da",
+      "groupOrder": 8,
+      "chartId": null,
+      "createdAt": "2025-10-08T14:29:32.625Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T16:29:41.537Z",
+      "variables": [
+        "stats.ventFacebook",
+        "stats.ventGoogle",
+        "stats.ventInstagram",
+        "stats.ventQr",
+        "stats.ventIos"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "68e675602ad889f80f9d66dd",
+      "groupOrder": 9,
+      "chartId": null,
+      "createdAt": "2025-10-08T14:29:52.721Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-29T16:29:46.169Z",
+      "variables": [
+        "stats.eventResultHome",
+        "stats.eventResultVisitor",
+        "stats.eventAttendees"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "6902379021e809256d7666ea",
+      "groupOrder": 10,
+      "chartId": "manual variables",
+      "createdAt": "2025-10-29T15:49:36.306Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-30T08:17:31.779Z",
+      "variables": [
+        "stats.ventIos",
+        "stats.ventQr",
+        "stats.ventInstagram",
+        "stats.ventGoogle",
+        "stats.ventFacebook",
+        "stats.ventUrl",
+        "stats.ventAndroid"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "69031f0f21e809256d769598",
+      "groupOrder": 11,
+      "chartId": null,
+      "createdAt": "2025-10-30T08:17:19.741Z",
+      "titleOverride": null,
+      "updatedAt": "2025-10-30T08:18:26.526Z",
+      "variables": [
+        "stats.uniqueUsers",
+        "stats.ventCtaEmail",
+        "stats.ventCtaPopup"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "69032f5421e809256d7699a4",
+      "groupOrder": 12,
+      "chartId": "unique-report-images-1",
+      "createdAt": "2025-10-30T09:26:44.213Z",
+      "titleOverride": "Uniqe Report Images 1",
+      "updatedAt": "2025-10-30T09:27:23.669Z",
+      "variables": [
+        "stats.reportImage1",
+        "stats.reportImage2",
+        "stats.reportImage3",
+        "stats.reportImage4",
+        "stats.reportImage5"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "69032f7821e809256d7699ab",
+      "groupOrder": 13,
+      "chartId": "uniqe-report-images-2",
+      "createdAt": "2025-10-30T09:27:20.598Z",
+      "titleOverride": "Uniqe Report Images 2",
+      "updatedAt": "2025-10-30T09:27:26.107Z",
+      "variables": [
+        "stats.reportImage6",
+        "stats.reportImage7",
+        "stats.reportImage8",
+        "stats.reportImage9",
+        "stats.reportImage10"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "69032fa521e809256d7699af",
+      "groupOrder": 14,
+      "chartId": "uniqe-report-text-1",
+      "createdAt": "2025-10-30T09:28:05.637Z",
+      "titleOverride": "Uniqe Report Text 1",
+      "updatedAt": "2025-10-30T09:28:09.280Z",
+      "variables": [
+        "stats.reportText1",
+        "stats.reportText2",
+        "stats.reportText3",
+        "stats.reportText4",
+        "stats.reportText5"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    },
+    {
+      "_id": "69032fcc21e809256d7699b7",
+      "groupOrder": 15,
+      "chartId": "uniqe-report-text-1",
+      "createdAt": "2025-10-30T09:28:44.193Z",
+      "titleOverride": "Uniqe Report Text 2",
+      "updatedAt": "2025-10-30T09:28:47.757Z",
+      "variables": [
+        "stats.reportText6",
+        "stats.reportText7",
+        "stats.reportText8",
+        "stats.reportText9",
+        "stats.reportText10"
+      ],
+      "visibleInClicker": false,
+      "visibleInManual": true
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    },
+    {
+      "v": 2,
+      "key": {
+        "groupOrder": 1
+      },
+      "name": "groupOrder_sort"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:24.408Z"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "dataBlocks",
+  "documentCount": 1,
+  "documents": [
+    {
+      "_id": "6907b6ee379b2755f3ca9f53",
+      "name": "Data Visualization",
+      "charts": [],
+      "order": 0,
+      "isActive": true,
+      "createdAt": "2025-11-02T19:54:22.822Z",
+      "updatedAt": "2025-11-02T19:54:22.822Z"
+    }
+  ],
+  "indexes": [
+    {
+      "v": 2,
+      "key": {
+        "_id": 1
+      },
+      "name": "_id_"
+    }
+  ],
+  "backedUpAt": "2025-12-18T11:34:23.085Z"
+}
