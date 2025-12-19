@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @deprecated This component is deprecated as of v11.37.0
+ * 
+ * WHY: All report types now use the unified v12 architecture (ReportChart)
+ * MIGRATION: Use ReportChart from app/report/[slug]/ReportChart.tsx instead
+ * TIMELINE: Will be removed in v12.0.0 (est. June 2025)
+ * 
+ * This component remains for backward compatibility only.
+ */
+
 import React, { useRef } from 'react';
 import { ChartCalculationResult } from '@/lib/chartConfigTypes';
 import { formatChartValue } from '@/lib/chartCalculator';
@@ -172,27 +182,26 @@ const PieChart: React.FC<{
 }> = ({ result, validElements, totalValue, className, chartWidth = 1, pageStyle }) => {
   const isLandscape = chartWidth >= 2;
   
-  // WHAT: Override pie segment colors with pageStyle if available
-  // WHY: Apply brand colors to pie chart for consistent styling
+  // WHAT: Read theme colors from CSS variables (same as ReportChart)
+  // WHY: Consistent styling across ALL report types (event, partner, hashtag, filter)
+  const getThemeColors = () => {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    return [
+      computedStyle.getPropertyValue('--chart-color-1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--chart-color-2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--chart-color-3').trim() || '#8b5cf6',
+      computedStyle.getPropertyValue('--chart-color-4').trim() || '#f59e0b',
+      computedStyle.getPropertyValue('--chart-color-5').trim() || '#ef4444'
+    ];
+  };
+  
+  const themeColors = getThemeColors();
+  
+  // WHAT: Use theme colors for pie segments, with primary color as border
+  // WHY: Style must overwrite each and every color (user requirement)
   const getSegmentColors = () => {
-    // WHAT: When no pageStyle, return element colors or default
-    // WHY: Prevent undefined/null from reaching SVG fill/style props
-    // HOW: Coerce to string, no .trim() needed (whitespace in hex colors is invalid anyway)
-    if (!pageStyle) return validElements.map(el => String(el.color || '#3b82f6'));
-    
-    // WHAT: Use primaryTextColor for first segment, secondaryTextColor for second
-    // WHY: Create branded two-tone pie charts
-    // HOW: String coercion with fallback chain
-    return validElements.map((el, idx) => {
-      if (idx === 0 && pageStyle.typography?.primaryTextColor) {
-        return String(pageStyle.typography.primaryTextColor);
-      }
-      if (idx === 1 && pageStyle.typography?.secondaryTextColor) {
-        return String(pageStyle.typography.secondaryTextColor);
-      }
-      // Fallback to element color or default
-      return String(el.color || '#3b82f6');
-    });
+    return validElements.map((el, idx) => themeColors[idx % themeColors.length]);
   };
   
   const segmentColors = getSegmentColors();
@@ -233,7 +242,7 @@ const PieChart: React.FC<{
           <path
             d={pathData}
             fill={safeSegmentColor}
-            stroke="white"
+            stroke={themeColors[0]}
             strokeWidth="2"
           >
             <title>{`${element.label}: ${formatChartValue(element.value, { formatting: element.formatting, type: element.type })} (${percentage.toFixed(1)}%)`}</title>
@@ -387,10 +396,25 @@ const BarChart: React.FC<{
     sampleValue: validElements[0]?.value
   });
   
-  // WHAT: Override bar color with pageStyle primaryTextColor if available
-  // WHY: Apply brand color to all bars for consistent styling
-  // HOW: String coercion with fallback chain
-  const barColor = String(pageStyle?.typography?.primaryTextColor || validElements[0]?.color || '#3b82f6');
+  // WHAT: Read theme colors from CSS variables (same as ReportChart)
+  // WHY: Consistent styling across ALL report types
+  const getThemeColors = () => {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    return [
+      computedStyle.getPropertyValue('--chart-color-1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--chart-color-2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--chart-color-3').trim() || '#8b5cf6',
+      computedStyle.getPropertyValue('--chart-color-4').trim() || '#f59e0b',
+      computedStyle.getPropertyValue('--chart-color-5').trim() || '#ef4444'
+    ];
+  };
+  
+  const themeColors = getThemeColors();
+  
+  // WHAT: Use only primary color for all bars
+  // WHY: Bar charts show single metric - uniform color is clearer
+  const barColor = themeColors[0];
   
   // WHAT: Create bar rows with legend and bar side-by-side per row
   // WHY: Vertical alignment of legend text with bar (centered)

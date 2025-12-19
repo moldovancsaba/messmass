@@ -11,9 +11,11 @@ import { ReportTemplate, ResolvedTemplate, HARDCODED_DEFAULT_TEMPLATE } from '@/
  * WHAT: Resolve report template for given entity
  * WHY: Templates follow inheritance: entity-specific → partner → default
  * HOW: Try each level in sequence, return first match with metadata
+ * 
+ * UPDATED (v11.37.0): Added support for hashtag and filter report types
  */
 async function resolveReportTemplate(
-  entityType: 'project' | 'partner',
+  entityType: 'project' | 'partner' | 'hashtag' | 'filter',
   identifier: string
 ): Promise<ResolvedTemplate> {
   const db = await getDb();
@@ -217,6 +219,17 @@ async function resolveReportTemplate(
   }
 
   // ==========================================
+  // LEVEL 2.5: Hashtag/Filter Template (NEW v11.37.0)
+  // ==========================================
+  // WHAT: For hashtag and filter reports, use global default template
+  // WHY: Hashtags/filters don't have individual templates, but should use same v12 system
+  // HOW: Skip to default template (no entity-specific lookups needed)
+  if (entityType === 'hashtag' || entityType === 'filter') {
+    console.log(`🏷️  Resolving template for ${entityType} report: ${identifier}`);
+    // Fall through to default template resolution below
+  }
+
+  // ==========================================
   // LEVEL 3: Default Template
   // ==========================================
   try {
@@ -227,7 +240,7 @@ async function resolveReportTemplate(
       return {
         template: populated as ReportTemplate,
         resolvedFrom: 'default',
-        source: 'system-default'
+        source: entityType === 'hashtag' ? `hashtag:${identifier}` : entityType === 'filter' ? `filter:${identifier}` : 'system-default'
       };
     }
   } catch (error) {
@@ -283,10 +296,10 @@ export async function GET(
       }, { status: 400 });
     }
 
-    if (!entityType || !['project', 'partner'].includes(entityType)) {
+    if (!entityType || !['project', 'partner', 'hashtag', 'filter'].includes(entityType)) {
       return NextResponse.json({
         success: false,
-        error: 'Query parameter "type" must be "project" or "partner"'
+        error: 'Query parameter "type" must be "project", "partner", "hashtag", or "filter"'
       }, { status: 400 });
     }
 

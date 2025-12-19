@@ -38,6 +38,8 @@ export async function GET(
 
     // Format project data for read-only access (no sensitive information)
     const readOnlyProject = {
+      _id: project._id, // WHAT: Include _id for report resolution
+      // WHY: useReportData needs _id to resolve report configuration via /api/reports/resolve
       eventName: project.eventName,
       eventDate: project.eventDate,
       hashtags: project.hashtags || [], // Keep original hashtags

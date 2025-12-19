@@ -1,3 +1,13 @@
+/**
+ * @deprecated This component is deprecated as of v11.37.0
+ * 
+ * WHY: All report types now use the unified v12 architecture (ReportContent + ReportChart)
+ * MIGRATION: Use ReportContent from app/report/[slug]/ReportContent.tsx instead
+ * TIMELINE: Will be removed in v12.0.0 (est. June 2025)
+ * 
+ * This component remains for backward compatibility only.
+ */
+
 import React from 'react';
 import ColoredCard from './ColoredCard';
 import { DynamicChart } from './DynamicChart';

@@ -8,7 +8,7 @@ import config from '@/lib/config';
  * Page password types and interfaces for MessMass authentication system
  */
 
-export type PageType = 'event-report' | 'partner-report' | 'edit' | 'partner-edit' | 'filter';
+export type PageType = 'event-report' | 'partner-report' | 'edit' | 'partner-edit' | 'filter' | 'hashtag';
 
 export interface PagePassword {
   _id?: string;
