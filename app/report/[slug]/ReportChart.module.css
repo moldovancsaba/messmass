@@ -11,8 +11,7 @@
   width: 100% !important; /* WHAT: Fill parent gridItem horizontally (CRITICAL FIX) */
   max-width: none !important; /* CRITICAL: Remove any max-width constraints */
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
-  height: 100%; /* WHAT: Fill grid cell completely */
-  min-height: 450px; /* WHAT: Consistent minimum height for all chart types (increased for better proportion) */
+  /* REMOVED: Fixed min-height - let aspect ratio control dimensions */
   
   /* WHAT: Visual styling */
   background: var(--mm-white) !important;
@@ -22,6 +21,8 @@
   overflow: hidden; /* WHAT: Prevent content overflow */
   transition: all var(--transition-fast);
   box-sizing: border-box !important;
+  /* Enable container queries for inner scaling (width + height) */
+  container-type: size;
 }
 
 /* Chart Header - Titles and metadata */
@@ -38,17 +39,18 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  padding: var(--mm-space-5);
+  padding: var(--mm-space-2);
   min-height: 0; /* WHAT: Allow flex shrinking if needed */
 }
 
 /* Chart Title - Standardized across all types */
 .chartTitle {
-  font-size: var(--mm-font-size-lg);
+  /* Scale title to container width: min 0.9rem, grows with box, caps at 1.25rem */
+  font-size: clamp(0.9rem, 2.8cqw, 1.25rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
 /* No Data State */
@@ -84,84 +86,101 @@
   color: var(--mm-gray-400);
 }
 
-/* KPI Chart - 3:5:2 vertical ratio (icon:number:description) */
+/* KPI Chart - Fully responsive with 3:5:2 grid ratio */
+.kpi {
+  /* WHAT: No aspect-ratio constraint - height determined by grid row */
+  /* WHY: Grid system handles height equality across row */
+  height: 100% !important; /* WHAT: Fill grid cell completely */
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
 .kpi .chartBody {
   /* WHAT: Fill full height and enable grid layout */
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  padding: var(--mm-space-4); /* Consistent padding */
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  height: 100% !important;
+  padding: var(--mm-space-2) !important; /* REDUCED: Minimal padding for more content space */
 }
 
 .kpiContent {
   /* WHAT: CSS Grid with 3:5:2 ratio for icon:number:description */
-  /* WHY: Maximize content size and fill entire card height */
+  /* WHY: Keep consistent visual rhythm while maximizing value area without overflow */
   display: grid !important;
-  grid-template-rows: 3fr 5fr 2fr; /* CRITICAL: 3 parts icon, 5 parts number, 2 parts description */
+  grid-template-rows: 3fr 5fr 2fr; /* 30% icon, 50% value, 20% description */
   height: 100% !important;
   width: 100%;
   max-width: none !important;
   gap: 0; /* No gap - each section fills its allocated space */
+  /* Base font size scales with container width, not viewport */
+  font-size: clamp(0.9rem, 4.2cqw, 2.25rem) !important;
 }
 
 .kpiIconRow {
   /* WHAT: SVG Icon container row - occupies 3fr (30% height) */
   /* WHY: Always present in KPI charts - contains dynamically scaling SVG */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .kpiIcon {
-  /* WHAT: SVG Icon - scales dynamically to fill container */
-  /* WHY: SVG elements scale perfectly with percentage-based dimensions */
-  width: 70% !important; /* WHAT: 70% of row width for balanced appearance */
-  height: 70% !important; /* WHAT: 70% of row height - icon fills most of 3fr space */
+  /* WHAT: SVG Icon - slightly smaller to give more room to number */
+  height: 75% !important;
+  width: auto !important; /* Maintain aspect ratio */
   min-width: 0 !important;
   min-height: 0 !important;
   max-width: none !important;
   max-height: none !important;
   display: block !important;
-  stroke-width: 1.5 !important; /* WHAT: Lucide default stroke width */
+  stroke-width: 1.5 !important;
+  color: var(--mm-primary) !important;
 }
 
-.kpiValue {
-  /* WHAT: Number row - 5/10 of total height (DOMINANT) - occupies 5fr of grid */
-  /* WHY: Most important content gets maximum space */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%; /* CRITICAL: Fill the 5fr row completely */
-  font-size: 10vw !important; /* WHAT: Dynamic sizing - 10% of viewport width */
-  font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
-  line-height: 1;
-  text-align: center;
-}
-
-.kpiTitle {
-  /* WHAT: Description row - 2/10 of total height (occupies 2fr of grid) */
-  /* WHY: Secondary information, allows wrapping if needed */
-  display: -webkit-box; /* CRITICAL: Enable multi-line text with clamping */
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3; /* WHAT: Max 3 lines of text */
-  align-self: center; /* WHAT: Center within the 2fr grid row */
-  justify-self: center;
-  width: 100%;
-  max-height: 100%; /* CRITICAL: Don't exceed 2fr row height */
-  padding: 0 var(--mm-space-2);
-  font-size: 1.5vw !important; /* WHAT: Dynamic sizing - 1.5% of viewport width */
-  color: var(--mm-gray-600);
-  font-weight: var(--mm-font-weight-medium);
-  text-align: center;
-  line-height: 1.3;
+.kpi .kpiValue {
+  /* WHAT: Number row - dominant area, FULLY RESPONSIVE */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  /* WHAT: Font scales with BOTH dimensions - no hardcoded breakpoints */
+  /* WHY: Container queries (cqw/cqh) adapt to ANY screen size automatically */
+  /* HOW: 25cqw = 25% of container width; for 7 chars, each char ~ 100%/7 = 14%, use generous 25% */
+  /*      20cqh = 20% of container height; 5fr row = 50% total, use 40% of that = 20% */
+  font-size: clamp(1.5rem, min(20cqh, 25cqw), 12rem) !important;
+  font-weight: var(--mm-font-weight-bold) !important;
+  color: var(--mm-gray-900) !important;
+  line-height: 0.85 !important;
+  text-align: center !important;
+  letter-spacing: -0.04em; /* WHAT: Tight for large numbers */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-wrap: break-word;
+}
+
+.kpi .kpiTitle {
+  /* WHAT: Keep subtitle readable but compact */
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  width: 100% !important;
+  max-height: 100% !important;
+  padding: 0 var(--mm-space-1) !important;
+  font-size: clamp(0.65rem, 1.8cqw, 0.95rem) !important;
+  color: var(--mm-gray-600) !important;
+  font-weight: var(--mm-font-weight-medium) !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-wrap: break-word !important;
 }
 
 /* Pie Chart - Uses base .chart structure */
@@ -170,16 +189,16 @@
 }
 
 .pieTitle {
-  font-size: var(--mm-font-size-lg);
+  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
-  margin-bottom: var(--mm-space-4);
+  margin-bottom: var(--mm-space-1);
   text-align: center;
 }
 
 .pieSegments {
   display: flex;
-  gap: var(--mm-space-6);
+  gap: var(--mm-space-1);
   justify-content: center;
 }
 
@@ -198,13 +217,13 @@
 }
 
 .pieLabel {
-  font-size: var(--mm-font-size-sm);
+  font-size: clamp(0.7rem, 2cqw, 0.9rem);
   color: var(--mm-gray-600);
   font-weight: var(--mm-font-weight-medium);
 }
 
 .pieValue {
-  font-size: var(--mm-font-size-xl);
+  font-size: clamp(1rem, 3cqw, 1.4rem);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
 }
@@ -225,7 +244,7 @@
 
 /* Bar Chart - Uses base .chart structure */
 .bar .chartBody {
-  padding: var(--mm-space-3);
+  padding: var(--mm-space-2);
   display: flex; /* CRITICAL: Enable flex layout */
   flex-direction: column; /* CRITICAL: Stack content vertically */
   flex: 1; /* CRITICAL: Fill available vertical space */
@@ -233,17 +252,17 @@
 }
 
 .barTitle {
-  font-size: var(--mm-font-size-lg);
+  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
-  margin-bottom: var(--mm-space-4);
+  margin-bottom: var(--mm-space-1);
   flex-shrink: 0; /* WHAT: Prevent title from shrinking */
 }
 
 .barElements {
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-3);
+  gap: 0;
   flex: 1; /* CRITICAL: Fill ALL remaining vertical space */
   justify-content: space-evenly; /* WHAT: Distribute bars evenly across full height */
   width: 100%; /* CRITICAL: Fill full chart width */
@@ -253,23 +272,26 @@
 
 .barRow {
   display: grid;
-  grid-template-columns: 120px 1fr 80px;
-  gap: var(--mm-space-3);
+  grid-template-columns: minmax(80px, 22cqw) 1fr minmax(60px, 16cqw);
+  gap: var(--mm-space-1);
   align-items: center;
   flex: 1; /* WHAT: Each bar row takes equal vertical space */
-  min-height: 40px; /* WHAT: Minimum height for readability */
+  min-height: clamp(24px, 4cqh, 44px); /* WHAT: Scales with container height */
 }
 
 .barLabel {
-  font-size: var(--mm-font-size-sm);
+  font-size: clamp(0.65rem, 1.8cqw, 0.9rem);
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .barTrack {
   background: var(--mm-gray-200);
-  height: 32px; /* INCREASED: Taller bars for better visibility */
+  height: clamp(14px, 2.6cqw, 32px);
   border-radius: var(--mm-radius-md);
   overflow: hidden;
 }
@@ -281,7 +303,7 @@
 }
 
 .barValue {
-  font-size: var(--mm-font-size-base);
+  font-size: clamp(0.75rem, 2cqw, 1rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   text-align: right;
@@ -294,16 +316,16 @@
 }
 
 .textTitle {
-  font-size: var(--mm-font-size-lg);
+  font-size: clamp(0.95rem, 2.6cqw, 1.25rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
-  margin-bottom: var(--mm-space-3);
+  margin-bottom: 0;
 }
 
 .textContent {
-  font-size: var(--mm-font-size-base);
+  font-size: clamp(0.85rem, 2.2cqw, 1rem);
   color: var(--mm-gray-700);
-  line-height: 1.6;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
 
@@ -313,27 +335,36 @@
   overflow: hidden;
   width: 100% !important; /* CRITICAL: Fill full width */
   max-width: none !important; /* CRITICAL: Remove max-width */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.image .chartBody {
+  /* WHAT: Remove padding for images to preserve aspect ratio */
+  padding: 0 !important;
+  flex: 1 !important;
+  display: flex !important;
+  overflow: hidden !important;
 }
 
 .imageContent {
   width: 100% !important;
   max-width: none !important; /* CRITICAL: Remove max-width */
-  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Aspect Ratio Classes */
-.aspect169 {
+/* Aspect Ratio Classes - Applied to .imageContent via JS */
+.aspect169 .imageContent {
   aspect-ratio: 16 / 9;
 }
 
-.aspect916 {
+.aspect916 .imageContent {
   aspect-ratio: 9 / 16;
 }
 
-.aspect11 {
+.aspect11 .imageContent {
   aspect-ratio: 1 / 1;
 }
 

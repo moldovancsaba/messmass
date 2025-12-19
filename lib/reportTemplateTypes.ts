@@ -42,6 +42,20 @@ export interface ReportTemplate {
     tabletUnits: number;                    // Max columns on tablet (default: 3)
     mobileUnits: number;                    // Max columns on mobile (default: 2)
   };
+
+  // WHAT: Layout mode for migration to deterministic sizing (Spec v2.0)
+  // WHY: Allow opt-in per template without breaking legacy templates
+  blockLayoutMode?: 'legacy' | 'deterministic';
+
+  // WHAT: Font synchronization settings at block level
+  // WHY: Ensure titles, subtitles, KPI values use same font size within a block
+  fontSyncSettings?: {
+    enableTitleSync: boolean;
+    enableSubtitleSync: boolean;
+    enableKPISync: boolean;
+    maxTitleLines: 1 | 2;
+    maxSubtitleLines: 1 | 2;
+  };
   
   // HERO Block Settings (report header configuration)
   heroSettings?: HeroBlockSettings;         // Controls which elements appear in report header

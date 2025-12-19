@@ -42,19 +42,15 @@ export const DynamicChart: React.FC<DynamicChartProps> = ({ result, className = 
       ? result.kpiValue 
       : (result.elements[0]?.value as string || '');
     
-    // WHAT: Extract aspectRatio from result (comes from chart configuration)
-    // WHY: Text needs to know its aspect ratio to display correctly (portrait/square/landscape)
-    const aspectRatio = (result as any).aspectRatio as '16:9' | '9:16' | '1:1' | undefined;
-    
-    // Debug logging removed - aspect ratio working correctly
-    
+    // WHAT: TEXT cells no longer use preset aspect ratios (Spec v2.0)
+    // WHY: Text must maximize font to fill available space without overflow
+    // HOW: Rely on container height; TextChart should scale text to fit
     return (
       <TextChart
         title={result.title}
         content={textContent}
         subtitle={result.subtitle}
         className={className}
-        aspectRatio={aspectRatio || '1:1'}
         showTitle={showTitleInCard}
       />
     );

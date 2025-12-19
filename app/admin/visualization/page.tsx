@@ -399,20 +399,29 @@ export default function VisualizationPage() {
   
   // Data Block Management Functions
   const handleUpdateBlock = async (block: DataVisualizationBlock) => {
+    console.log('🟢🟢🟢 UPDATING BLOCK IN DATABASE:', {
+      blockName: block.name,
+      blockId: block._id,
+      chartCount: block.charts.length,
+      chartIds: block.charts.map(c => c.chartId)
+    });
+    
     try {
       const data = await apiPut('/api/data-blocks', block);
       
       if (data.success) {
+        console.log('✅✅✅ BLOCK SAVED SUCCESSFULLY:', block.name);
         const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
         setDataBlocks(updatedBlocks);
         await saveTemplateConfig(updatedBlocks);
         setEditingBlock(null);
         showMessage('success', 'Block updated successfully!');
       } else {
+        console.error('❌❌❌ BLOCK SAVE FAILED:', data.error);
         showMessage('error', 'Failed to update block: ' + data.error);
       }
     } catch (error) {
-      console.error('Failed to update block:', error);
+      console.error('❌❌❌ BLOCK SAVE ERROR:', error);
       showMessage('error', 'Failed to update block');
     }
   };
@@ -549,6 +558,18 @@ export default function VisualizationPage() {
       charts: [...block.charts, newChart]
     };
     
+    console.log('🔵🔵🔵 ADDING CHART TO BLOCK:', {
+      blockName: block.name,
+      blockId: block._id,
+      addingChart: chartId,
+      newTotalCharts: updatedBlock.charts.length,
+      allChartIds: updatedBlock.charts.map(c => c.chartId)
+    });
+    
+    // WHAT: Show visible status message when adding chart
+    // WHY: Console logs are being lost due to 11k+ message overflow
+    showMessage('info', `Adding "${chart.title}" to ${block.name}...`);
+    
     handleUpdateBlock(updatedBlock);
     // Recalculate preview for this block so the new chart immediately appears
     calculatePreviewForBlock(updatedBlock);
@@ -569,8 +590,10 @@ export default function VisualizationPage() {
   
   const updateChartWidth = (block: DataVisualizationBlock, chartIndex: number, newWidth: number) => {
     const updatedCharts = [...block.charts];
-    // Allow width 1-10 units for flexible ratios
-    updatedCharts[chartIndex] = { ...updatedCharts[chartIndex], width: Math.min(Math.max(newWidth, 1), 10) };
+    // WHAT: Clamp width to 1 or 2 units (Spec v2.0)
+    // WHY: Deterministic layout requires simplified unit system
+    // HOW: Accept user input but clamp to [1, 2] range
+    updatedCharts[chartIndex] = { ...updatedCharts[chartIndex], width: Math.min(Math.max(newWidth, 1), 2) };
     
     const updatedBlock = {
       ...block,
@@ -1288,32 +1311,17 @@ export default function VisualizationPage() {
                           </div>
                           
                           <div className="chart-controls">
-                            {/* WHAT: Chart width selector supporting integer and decimal values
-                                WHY: Decimal width 3.16 enables precise height matching between mixed aspect ratios
-                                HOW: CSS Grid fr units natively support decimal values (e.g., 3.16fr)
-                                NOTE: Width 3.16 units pairs with width 10 to match heights of 9:16 portrait
-                                      and 16:9 landscape IMAGE BOXES in the same row.
-                                      Mathematical basis:
-                                      - Perfect calculation: W₁ = W₂ × (9/16) × (9/16) = 10 × 0.31640625 = 3.1640625
-                                      - Portrait box (9:16): height = 3.16 × (16/9) = 3.16 × 1.778 = 5.618 units
-                                      - Landscape box (16:9): height = 10 × (9/16) = 10 × 0.5625 = 5.625 units
-                                      - Height difference: 0.007 units (0.12% - imperceptible, user-tested perfect) */}
+                            {/* WHAT: Chart width selector (Spec v2.0 - simplified to 1 or 2 units)
+                                WHY: Deterministic layout requires 1-unit (compact) or 2-unit (detailed) cells
+                                HOW: Image aspect ratios drive row height, not unit counts
+                                MIGRATION: Values >2 auto-clamped to 2 on save */}
                             <select
-                              value={chart.width}
+                              value={Math.min(chart.width, 2)}
                               onChange={(e) => updateChartWidth(block, index, parseFloat(e.target.value))}
                               className="chart-select"
                             >
-                              <option value={1}>Width: 1 unit</option>
-                              <option value={2}>Width: 2 units</option>
-                              <option value={3}>Width: 3 units</option>
-                              <option value={3.16}>Width: 3.16 units</option>
-                              <option value={4}>Width: 4 units</option>
-                              <option value={5}>Width: 5 units</option>
-                              <option value={6}>Width: 6 units</option>
-                              <option value={7}>Width: 7 units</option>
-                              <option value={8}>Width: 8 units</option>
-                              <option value={9}>Width: 9 units</option>
-                              <option value={10}>Width: 10 units</option>
+                              <option value={1}>Width: 1 unit (compact)</option>
+                              <option value={2}>Width: 2 units (detailed)</option>
                             </select>
                             
                             <button

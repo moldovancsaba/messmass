@@ -36,6 +36,22 @@ function formatValue(
 }
 
 /**
+ * WHAT: Calculate aspect ratio from chart width (grid units)
+ * WHY: Maintain consistent aspect ratios based on chart width
+ * HOW: Follow chart height calculation rules
+ */
+function getKPIAspectRatio(width: number = 1): string {
+  if (width === 1) {
+    return '2 / 1'; // 1 unit → 2:1 aspect ratio (more portrait)
+  }
+  if (width === 2 || width === 3) {
+    return `${width} / 1`; // 2 units → 2:1, 3 units → 3:1
+  }
+  // 4+ units → use 3:1 as maximum
+  return '3 / 1';
+}
+
+/**
  * Props for ReportChart component
  */
 interface ReportChartProps {
@@ -108,7 +124,7 @@ export default function ReportChart({ result, width, className }: ReportChartPro
   // Render based on chart type
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} className={className} />;
+      return <KPIChart result={result} className={className} width={width} />;
     
     case 'pie':
       return <PieChart result={result} className={className} />;
@@ -126,7 +142,7 @@ export default function ReportChart({ result, width, className }: ReportChartPro
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} />
+          <KPIChart result={result} width={width} />
           <BarChart result={result} />
         </div>
       );
@@ -205,15 +221,22 @@ function getLucideIcon(iconName: string | undefined): React.ComponentType<any> {
  * 2. Value/Number (5fr - 50% height - DOMINANT)
  * 3. Label/Description (2fr - 20% height)
  */
-function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
+function KPIChart({ result, className, width }: { result: ChartResult; className?: string; width?: number }) {
   // Format the KPI value
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   
   // Get Lucide icon component
   const IconComponent = getLucideIcon(result.icon);
   
+  // Calculate aspect ratio based on chart width
+  const aspectRatio = getKPIAspectRatio(width || 1);
+  
   return (
-    <div className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} data-report-section="content">
+    <div 
+      className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} 
+      data-report-section="content"
+      style={{ ['--kpi-aspect-ratio' as string]: aspectRatio } as React.CSSProperties}
+    >
       <div className={styles.chartBody}>
         <div className={styles.kpiContent}>
           {/* Row 1: SVG Icon (3fr - 30% height) - scales dynamically */}

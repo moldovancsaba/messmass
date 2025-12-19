@@ -49,8 +49,6 @@ interface ChartConfigFormData {
   showTotal?: boolean;
   totalLabel?: string;
   aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio (v9.3.0) for automatic grid width calculation
-  heroSettings?: HeroBlockSettings; // WHAT: HERO block visibility settings
-  alignmentSettings?: BlockAlignmentSettings; // WHAT: Block alignment settings
   showTitle?: boolean; // WHAT: Chart-level title visibility control
 }
 
@@ -333,6 +331,7 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
 
     console.log(`${isUpdate ? '🔄 Updating' : '💾 Creating'} chart configuration (then close):`, configData.chartId);
     console.log('📦 aspectRatio:', configData.aspectRatio);
+    console.log('👁️ showTitle:', configData.showTitle, 'typeof:', typeof configData.showTitle);
     
     // DEBUG: Check if cleanUndefinedFields function exists and what it does
     console.log('🔍 BEFORE clean - elements[0]:', JSON.stringify(body.elements?.[0], null, 2));
@@ -485,8 +484,6 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         showTotal: config.showTotal,
         totalLabel: config.totalLabel,
         aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio
-        heroSettings: config.heroSettings, // HERO block visibility settings
-        alignmentSettings: config.alignmentSettings, // Block alignment settings
         showTitle: config.showTitle // WHAT: Chart-level title visibility control
       });
     } else {
@@ -507,16 +504,6 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         showTotal: false,
         totalLabel: '',
         aspectRatio: '16:9', // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
-        heroSettings: {
-          showEmoji: true,
-          showDateInfo: true,
-          showExportOptions: true
-        }, // WHAT: Default HERO settings - show all elements
-        alignmentSettings: {
-          alignTitles: true,
-          alignDescriptions: true,
-          alignCharts: true
-        }, // WHAT: Default alignment settings - enable all alignment
         showTitle: true // WHAT: Default to showing title on new charts
       });
     }
@@ -1310,170 +1297,6 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               </div>
               <p className="text-xs text-gray-600 mt-2">
                 💡 Tip: Subtitle appears below the chart title and is useful for explaining KPI metrics.
-              </p>
-            </div>
-          </div>
-
-          {/* WHAT: HERO Block Settings Section */}
-          {/* WHY: Allow fine-grained control over report header elements */}
-          {/* HOW: Checkbox controls for emoji, date info, and export options visibility */}
-          <div className="formatting-section">
-            <h4 className="formatting-section-title">🏒 HERO Block Settings</h4>
-            <div className="formatting-note">Control which elements appear in the report header when using this template</div>
-            
-            <div className="formatting-group">
-              <h5 className="formatting-group-title">Header Element Visibility</h5>
-              <div className="formatting-controls">
-                {/* ROW 1: Show Emoji */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.heroSettings?.showEmoji ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          heroSettings: {
-                            ...formData.heroSettings,
-                            showEmoji: e.target.checked,
-                            showDateInfo: formData.heroSettings?.showDateInfo ?? true,
-                            showExportOptions: formData.heroSettings?.showExportOptions ?? true
-                          }
-                        });
-                      }}
-                    />
-                    <span>Show Emoji (🏒)</span>
-                  </label>
-                </div>
-                
-                {/* ROW 2: Show Date Info */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.heroSettings?.showDateInfo ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          heroSettings: {
-                            ...formData.heroSettings,
-                            showEmoji: formData.heroSettings?.showEmoji ?? true,
-                            showDateInfo: e.target.checked,
-                            showExportOptions: formData.heroSettings?.showExportOptions ?? true
-                          }
-                        });
-                      }}
-                    />
-                    <span>Show Date Info (Created/Updated)</span>
-                  </label>
-                </div>
-                
-                {/* ROW 3: Show Export Options */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.heroSettings?.showExportOptions ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          heroSettings: {
-                            ...formData.heroSettings,
-                            showEmoji: formData.heroSettings?.showEmoji ?? true,
-                            showDateInfo: formData.heroSettings?.showDateInfo ?? true,
-                            showExportOptions: e.target.checked
-                          }
-                        });
-                      }}
-                    />
-                    <span>Show Export Options (PDF/Excel buttons)</span>
-                  </label>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 mt-2">
-                💡 Tip: These settings control what appears in the report header. Unchecked items will be hidden from reports using this template.
-              </p>
-            </div>
-          </div>
-
-          {/* WHAT: Block Alignment Settings Section */}
-          {/* WHY: Ensure consistent visual layout within report blocks */}
-          {/* HOW: Checkbox controls for element alignment within blocks */}
-          <div className="formatting-section">
-            <h4 className="formatting-section-title">📐 Block Alignment Settings</h4>
-            <div className="formatting-note">Control visual alignment of elements within individual report blocks</div>
-            
-            <div className="formatting-group">
-              <h5 className="formatting-group-title">Element Alignment</h5>
-              <div className="formatting-controls">
-                {/* ROW 1: Align Titles */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.alignmentSettings?.alignTitles ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          alignmentSettings: {
-                            ...formData.alignmentSettings,
-                            alignTitles: e.target.checked,
-                            alignDescriptions: formData.alignmentSettings?.alignDescriptions ?? true,
-                            alignCharts: formData.alignmentSettings?.alignCharts ?? true
-                          }
-                        });
-                      }}
-                    />
-                    <span>Align Titles</span>
-                  </label>
-                </div>
-                
-                {/* ROW 2: Align Descriptions */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.alignmentSettings?.alignDescriptions ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          alignmentSettings: {
-                            ...formData.alignmentSettings,
-                            alignTitles: formData.alignmentSettings?.alignTitles ?? true,
-                            alignDescriptions: e.target.checked,
-                            alignCharts: formData.alignmentSettings?.alignCharts ?? true
-                          }
-                        });
-                      }}
-                    />
-                    <span>Align Descriptions</span>
-                  </label>
-                </div>
-                
-                {/* ROW 3: Align Charts */}
-                <div className="formatting-row">
-                  <label className="formatting-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={formData.alignmentSettings?.alignCharts ?? true}
-                      onChange={(e) => {
-                        setFormData({ 
-                          ...formData, 
-                          alignmentSettings: {
-                            ...formData.alignmentSettings,
-                            alignTitles: formData.alignmentSettings?.alignTitles ?? true,
-                            alignDescriptions: formData.alignmentSettings?.alignDescriptions ?? true,
-                            alignCharts: e.target.checked
-                          }
-                        });
-                      }}
-                    />
-                    <span>Align Charts</span>
-                  </label>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 mt-2">
-                💡 Tip: Alignment ensures consistent visual layout within each report block. Different blocks can have different heights while maintaining internal alignment.
               </p>
             </div>
           </div>

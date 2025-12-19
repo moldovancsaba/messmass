@@ -7,9 +7,9 @@
   margin-bottom: 2rem;
 }
 
-/* WHAT: Block card padding */
+/* WHAT: Block card padding - ZERO top/bottom for tight layout */
 .blockCard {
-  padding: 2rem;
+  padding: 0 2rem; /* WHAT: Horizontal padding only */
   margin-bottom: 2rem;
 }
 
@@ -87,13 +87,17 @@
   gap: 0.5rem;
 }
 
-/* WHAT: Base grid styling (per-block columns set via dynamic CSS) */
+/* WHAT: Modern CSS Grid with automatic equal-height rows
+ * WHY: No hardcoded values, fully responsive, worry-free maintenance
+ * HOW: Let content determine min height, then stretch all rows to match tallest */
 .gridBase {
   display: grid;
-  gap: 1.5rem;
+  gap: var(--mm-space-2); /* WHAT: Consistent 8px spacing */
   width: 100%;
-  grid-auto-flow: row;
-  justify-items: stretch;
+  grid-auto-flow: row; /* WHAT: Fill rows in order */
+  align-items: stretch; /* WHAT: Charts stretch to fill row height */
+  /* CRITICAL: Each row sizes to its content, then JS equalizes heights within same row */
+  grid-auto-rows: auto; /* WHAT: Natural content sizing */
 }
 
 /* WHAT: Chart item without container wrapper */

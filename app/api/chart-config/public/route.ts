@@ -54,24 +54,32 @@ export async function GET() {
     console.log(`✅ Found ${configurations.length} active chart configurations`);
 
     // Format configurations for public consumption (remove sensitive fields)
-    const publicConfigurations = configurations.map(config => ({
-      _id: config._id.toString(),
-      chartId: config.chartId,
-      title: config.title,
-      type: config.type,
-      order: config.order,
-      isActive: config.isActive, // WHAT: Include isActive field for frontend filtering
-      elements: config.elements,
-      icon: config.icon, // v10.4.0: Material Icon name
-      iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
-      emoji: config.emoji, // DEPRECATED: Legacy field for backward compatibility
-      subtitle: config.subtitle,
-      showTotal: config.showTotal,
-      totalLabel: config.totalLabel,
-      aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio for grid width calculation
-      showTitle: config.showTitle, // WHAT: Chart-level title visibility control
-      // Exclude sensitive fields like createdBy, lastModifiedBy, etc.
-    }));
+    const publicConfigurations = configurations.map(config => {
+      // WHAT: Extract formula from first element for KPI/Text/Image charts
+      // WHY: ReportCalculator expects top-level formula field
+      const formula = config.elements && config.elements.length > 0 ? config.elements[0].formula : '';
+      
+      return {
+        _id: config._id.toString(),
+        chartId: config.chartId,
+        title: config.title,
+        type: config.type,
+        formula: formula, // WHAT: Top-level formula for ReportCalculator compatibility
+        order: config.order,
+        isActive: config.isActive, // WHAT: Include isActive field for frontend filtering
+        elements: config.elements,
+        icon: config.icon, // v10.4.0: Material Icon name
+        iconVariant: config.iconVariant, // v10.4.0: Icon variant (outlined/rounded)
+        emoji: config.emoji, // DEPRECATED: Legacy field for backward compatibility
+        subtitle: config.subtitle,
+        showTotal: config.showTotal,
+        totalLabel: config.totalLabel,
+        aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio for grid width calculation
+        showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+        formatting: config.elements && config.elements.length > 0 ? config.elements[0].formatting : undefined, // WHAT: Extract formatting from first element
+        // Exclude sensitive fields like createdBy, lastModifiedBy, etc.
+      };
+    });
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,6 @@
 # TASKLIST.md
-Current Version: 11.30.0
-Last Updated: 2025-12-17T14:10:14.000Z (UTC)
+Current Version: 11.36.1
+Last Updated: 2025-12-19T10:53:52.000Z (UTC)
 
 ## Active Tasks
 
@@ -24,9 +24,12 @@ Last Updated: 2025-12-17T14:10:14.000Z (UTC)
   - Owner: AI Agent
   - Impact: Better API reliability and developer experience
 
-### No Active Tasks Currently
+### Active — December 2025
 
-_All planned work for December 2025 has been completed. See ROADMAP.md for Q1 2026 priorities._
+- Implement Report Layout & Rendering Spec v2.0
+  - Owner: AI Agent
+  - Expected Delivery: 2025-12-29T00:00:00.000Z
+  - Scope: Types, calculators, grid integration, font sync, row height; follow-ups: CellWrapper + component updates
 
 ---
 

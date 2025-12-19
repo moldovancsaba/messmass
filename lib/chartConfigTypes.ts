@@ -2,6 +2,20 @@
 // This module defines all TypeScript interfaces and validation schemas for the Chart Algorithm Manager
 
 /**
+ * WHAT: Simplified cell width system (Report Layout Spec v2.0)
+ * WHY: Enforce 1-unit (compact/portrait) or 2-unit (detailed/landscape) cells only
+ * HOW: All charts must use 1 or 2, removing arbitrary unit counts
+ */
+export type CellWidth = 1 | 2;
+
+/**
+ * WHAT: Aspect ratio for image and text content
+ * WHY: Content aspect ratio is separate from layout units
+ * HOW: IMAGE charts declare their native aspect ratio, layout system calculates dimensions
+ */
+export type AspectRatio = '16:9' | '9:16' | '1:1';
+
+/**
  * Chart configuration element for PieChart (always 2 elements), HorizontalBar (always 5 elements), or KPI (1 element)
  * Each element represents a segment/bar with its label, formula, and color
  * For KPI charts, only one element is used with the main calculation formula
@@ -123,10 +137,21 @@ export interface ChartConfiguration {
   showTotal?: boolean; // Whether to show total value above bars
   totalLabel?: string; // Custom label for total (e.g., "possible merch sales", "Advertisement Value")
   
-  // WHAT: Image chart aspect ratio (v9.3.0)
-  // WHY: Determines grid width automatically - Portrait (1 unit), Square (2 units), Landscape (3 units)
-  // HOW: Used by calculateImageWidth() to compute chart width from aspect ratio
-  aspectRatio?: '16:9' | '9:16' | '1:1'; // Optional: Only for image charts
+  // WHAT: Image/text chart aspect ratio (v9.3.0, spec v2.0)
+  // WHY: Content aspect ratio is a property of the content, not the layout
+  // HOW: Used by blockHeightCalculator to solve for consistent block heights
+  aspectRatio?: AspectRatio; // For image/text charts
+
+  // WHAT: Simplified cell width (spec v2.0) - PREFERRED
+  // WHY: Enforces 1-unit or 2-unit system for deterministic layout
+  // HOW: 1 = compact/portrait, 2 = detailed/landscape
+  cellWidth?: CellWidth;
+
+  // WHAT: Legacy width field (pre-spec v2.0) - DEPRECATED
+  // WHY: Backward compatibility during migration period
+  // HOW: Will be removed in v13.0.0, use cellWidth instead
+  // @deprecated Use cellWidth (1 | 2) instead of width. Migration: width > 2 → cellWidth = 2
+  width?: number;
   
   // WHAT: HERO block visibility settings for report templates
   // WHY: Allow fine-grained control over which header elements appear in reports

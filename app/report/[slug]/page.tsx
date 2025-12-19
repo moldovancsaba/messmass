@@ -98,17 +98,25 @@ export default function ReportPage() {
           return;
         }
 
-        // Fetch chart configurations from API
-        const response = await fetch(
-          `/api/charts?chartIds=${chartIds.join(',')}`
-        );
+        // Fetch chart configurations from public admin source (chart_configurations)
+        // Then filter to those actually used by the template (maintain order)
+        const response = await fetch('/api/chart-config/public');
         const data = await response.json();
 
         if (!response.ok || !data.success) {
           throw new Error(data.error || 'Failed to fetch charts');
         }
 
-        setCharts(data.charts);
+        // Map and filter to requested IDs preserving block order
+        const byId: Record<string, any> = {};
+        for (const cfg of data.configurations as any[]) {
+          byId[cfg.chartId] = cfg;
+        }
+        const ordered = chartIds
+          .map(id => byId[id])
+          .filter(Boolean);
+
+        setCharts(ordered as any);
       } catch (err) {
         console.error('❌ Failed to fetch charts:', err);
         setChartsError(err instanceof Error ? err.message : 'Failed to load charts');

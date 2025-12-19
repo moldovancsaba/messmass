@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.30.0
-Last Updated: 2025-12-17T14:10:14.000Z (UTC)
+Current Version: 11.36.1
+Last Updated: 2025-12-19T10:53:52.000Z (UTC)
 
 ---
 
@@ -27,6 +27,13 @@ Last Updated: 2025-12-17T14:10:14.000Z (UTC)
 ---
 
 ## 🔧 Operational Initiatives
+
+### Report Layout & Rendering Specification v2.0 (Q4 2025)
+- Priority: High
+- Status: Active — Phase 1 (types + calculators + grid integration) delivered 2025-12-19T10:46:34.000Z
+- Dependencies: UnifiedDataVisualization, DynamicChart, chart types (PIE/BAR/KPI/TEXT/IMAGE)
+- Goals: 1/2-unit width system, block-level font sync, image-driven row height, no overflow
+- Next: Integrate CellWrapper (3-zone), push blockHeight into chart components, admin enforcement of width ≤ 2
 
 ### Report Content Slots Management (Q4 2025)
 - Priority: High

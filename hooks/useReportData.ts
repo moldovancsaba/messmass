@@ -237,8 +237,8 @@ export function usePartnerReportData(slug: string | null) {
         throw new Error(reportData.error || 'Failed to load report configuration');
       }
 
-      // Step 3: Load all charts
-      const chartsRes = await fetch('/api/charts', {
+      // Step 3: Load all charts from chart_configurations collection
+      const chartsRes = await fetch('/api/chart-config/public', {
         cache: 'no-store'
       });
       const chartsData = await chartsRes.json();
@@ -255,7 +255,7 @@ export function usePartnerReportData(slug: string | null) {
         events: partnerData.events || [],
         aggregatedStats: partnerData.aggregatedStats || {},
         report: reportData.report,
-        charts: chartsData.charts,
+        charts: chartsData.configurations || chartsData.charts || [], // WHAT: chart-config/public returns 'configurations', fallback to 'charts' for backward compatibility
         resolvedFrom: reportData.resolvedFrom,
         source: reportData.source
       });

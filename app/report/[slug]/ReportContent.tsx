@@ -82,38 +82,18 @@ interface ReportBlockProps {
 }
 
 /**
- * WHAT: Group charts into rows based on cumulative width
- * WHY: Each row must fill 100% width with proper distribution
- * HOW: Split when cumulative width exceeds max columns
+ * WHAT: Group charts into rows - unlimited width per row
+ * WHY: Allow any number of charts per row without breaking
+ * HOW: Put all charts in a single row (no width-based splitting)
  */
 function groupChartsIntoRows(
   charts: Array<{ chartId: string; width: number; order: number }>,
-  maxColumns: number
+  maxColumns: number // WHAT: Unused parameter kept for backward compatibility
 ): Array<Array<{ chartId: string; width: number; order: number }>> {
-  const rows: Array<Array<{ chartId: string; width: number; order: number }>> = [];
-  let currentRow: Array<{ chartId: string; width: number; order: number }> = [];
-  let currentRowWidth = 0;
-
-  for (const chart of charts) {
-    const chartWidth = chart.width || 1;
-    
-    // Start new row if adding this chart would exceed max columns
-    if (currentRow.length > 0 && currentRowWidth + chartWidth > maxColumns) {
-      rows.push(currentRow);
-      currentRow = [];
-      currentRowWidth = 0;
-    }
-    
-    currentRow.push(chart);
-    currentRowWidth += chartWidth;
-  }
-  
-  // Add final row if not empty
-  if (currentRow.length > 0) {
-    rows.push(currentRow);
-  }
-  
-  return rows;
+  // WHAT: Return all charts as a single row
+  // WHY: User wants unlimited items per row
+  // HOW: No splitting logic - just wrap all charts in array
+  return charts.length > 0 ? [charts] : [];
 }
 
 /**
@@ -137,6 +117,17 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
   const validCharts = sortedCharts.filter(chart => 
     chartResults.has(chart.chartId)
   );
+  
+  // DEBUG: Log filtering
+  if (sortedCharts.length !== validCharts.length) {
+    console.log(`⚠️ [ReportBlock] Block "${block.title || 'Untitled'}":`, {
+      totalCharts: sortedCharts.length,
+      validCharts: validCharts.length,
+      missingCharts: sortedCharts
+        .filter(c => !chartResults.has(c.chartId))
+        .map(c => c.chartId)
+    });
+  }
 
   if (validCharts.length === 0) {
     return null; // Skip empty blocks
@@ -144,6 +135,17 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
 
   // Group charts into rows based on desktop column count
   const rows = groupChartsIntoRows(validCharts, gridSettings.desktop);
+  
+  // DEBUG: Log rendering for specific blocks
+  if (block.title && (block.title.includes('OVERVIEW') || block.title.includes('Overview'))) {
+    console.log(`🔍 [ReportBlock] Rendering "${block.title}":`, {
+      validCharts: validCharts.length,
+      chartIds: validCharts.map(c => c.chartId),
+      rows: rows.length,
+      rowSizes: rows.map(r => r.length),
+      gridColumns: rows.map(r => calculateGridColumns(r))
+    });
+  }
 
   return (
     <div className={styles.block} data-pdf-block="true">

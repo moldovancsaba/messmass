@@ -7,6 +7,7 @@ import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import styles from './UnifiedDataVisualization.module.css';
 import { useEffect, useMemo, useRef } from 'react';
 import { getHeightMultiplier } from '@/lib/chartHeightCalculator';
+import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 
 interface UnifiedDataVisualizationProps {
   blocks: DataVisualizationBlock[];
@@ -111,8 +112,8 @@ export default function UnifiedDataVisualization({
         })
         .sort((a, b) => a.order - b.order);
       
-      // WHAT: Use database chart widths for fr units
-      const chartWidths = blockCharts.map(c => Math.max(1, c.width || 1));
+      // WHAT: Use database chart widths for fr units (clamped to 1 or 2 units)
+      const chartWidths = blockCharts.map(c => Math.min(2, Math.max(1, c.width || 1)));
       const frColumns = chartWidths.map(w => `${w}fr`).join(' ');
       
 
@@ -122,13 +123,13 @@ export default function UnifiedDataVisualization({
 
       
       return `
-        /* CSS Grid with natural aspect ratios */
+        /* CSS Grid - fully responsive with fr-based columns */
         .udv-grid-${idSuffix} { 
           justify-items: stretch !important; 
-          align-items: start; 
+          align-items: stretch !important; /* WHAT: Charts fill row height equally */
           grid-auto-flow: row !important; 
           grid-template-columns: ${frColumns || '1fr'} !important;
-          grid-auto-rows: auto !important;
+          /* REMOVED: grid-auto-rows handled by .gridBase class for consistency */
         }
         
         /* Force aspect ratio for text and image charts */
@@ -212,29 +213,57 @@ export default function UnifiedDataVisualization({
   useEffect(() => {
     const observers: ResizeObserver[] = [];
 
-    const computeAndSetHeight = (grid: HTMLDivElement) => {
+    const equalizeRowHeights = (grid: HTMLDivElement) => {
       if (!grid) return;
-      // Skip responsive height when block is text-image only
-      const isBaseline = grid.getAttribute('data-pie-baseline') === 'true';
-      if (!isBaseline) {
-        grid.style.removeProperty('--height-m');
-        return;
-      }
       
-      // Get all chart items and sum their units
-      // Only count KPI/BAR/PIE (standard) tiles for unit math
-      const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item.chart-item-standard[data-width-units]'));
-      let totalUnits = 0;
-      items.forEach((el) => {
-        const unitsAttr = el.getAttribute('data-width-units');
-        const units = Math.max(1, Number(unitsAttr) || 1);
-        totalUnits += units;
+      // WHAT: Determine number of columns in this grid (fr-based)
+      const computedStyle = window.getComputedStyle(grid);
+      const gridTemplateColumns = computedStyle.gridTemplateColumns;
+      const columnCount = Math.max(1, gridTemplateColumns.split(' ').length);
+
+      // WHAT: Collect all items in visual order
+      const items = Array.from(grid.querySelectorAll<HTMLElement>('.chart-item'));
+
+      // Reset heights
+      items.forEach(item => {
+        item.style.removeProperty('height');
+        item.style.removeProperty('min-height');
       });
-      
-      if (totalUnits > 0) {
-        const m = getHeightMultiplier(totalUnits); // 0.5 | 1 | 1.5
-        grid.style.setProperty('--height-m', String(m));
-        console.log('📊 Block height ratio set:', { totalUnits, heightMultiplier: m });
+
+      // Group items per row and compute deterministic row height
+      for (let i = 0; i < items.length; i += columnCount) {
+        const rowItems = items.slice(i, i + columnCount);
+
+        // Compute candidate height from image cells (preserve aspect ratio, no overflow)
+        const imageHeights: number[] = [];
+        rowItems.forEach(item => {
+          const type = item.getAttribute('data-body-type');
+          if (type === 'image') {
+            const ratioStr = item.getAttribute('data-aspect-ratio') || '1:1';
+            const [wStr, hStr] = ratioStr.split(':');
+            const a = (parseFloat(wStr) || 1) / (parseFloat(hStr) || 1);
+            const colWidth = item.getBoundingClientRect().width;
+            if (a > 0 && colWidth > 0) {
+              imageHeights.push(colWidth / a);
+            }
+          }
+        });
+
+        let targetH: number;
+        if (imageHeights.length > 0) {
+          // Use the smallest image-computed height to ensure all images fit without overflow
+          targetH = Math.floor(Math.min(...imageHeights));
+          targetH = Math.max(120, targetH); // guardrail
+        } else {
+          // Fallback: use tallest natural height among the row
+          const heights = rowItems.map(item => item.getBoundingClientRect().height);
+          targetH = Math.max(...heights);
+        }
+
+        // Apply height to all items in the row
+        rowItems.forEach(item => {
+          item.style.height = `${targetH}px`;
+        });
       }
     };
 
@@ -242,11 +271,14 @@ export default function UnifiedDataVisualization({
       const grid = gridRefs.current[id];
       if (!grid) return;
 
-      // Initial compute after layout
-      // Use rAF to ensure layout is up-to-date
-      requestAnimationFrame(() => computeAndSetHeight(grid));
+      // Initial equalization after layout
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => equalizeRowHeights(grid)); // Double rAF for stability
+      });
 
-      const ro = new ResizeObserver(() => computeAndSetHeight(grid));
+      const ro = new ResizeObserver(() => {
+        requestAnimationFrame(() => equalizeRowHeights(grid));
+      });
       ro.observe(grid);
       observers.push(ro);
     });
@@ -254,7 +286,9 @@ export default function UnifiedDataVisualization({
     const onWindowResize = () => {
       blockIds.forEach((id) => {
         const grid = gridRefs.current[id];
-        if (grid) computeAndSetHeight(grid);
+        if (grid) {
+          requestAnimationFrame(() => equalizeRowHeights(grid));
+        }
       });
     };
     window.addEventListener('resize', onWindowResize);
@@ -312,6 +346,17 @@ export default function UnifiedDataVisualization({
                     ref={(el) => { gridRefs.current[idSuffix] = el; }}
                     data-block-id={idSuffix}
                     data-pie-baseline={hasBaseline ? 'true' : 'false'}
+                    // WHAT: Inject font sync variables per block
+                    style={{ ['--mm-title-size' as string]: `${calculateSyncedFontSizes(block.charts.map(c => {
+                      const r = getChartResult(c.chartId)!;
+                      return { chartId: c.chartId, cellWidth: Math.min(2, Math.max(1, c.width || 1)) as 1 | 2, bodyType: r.type as any, aspectRatio: (r as any).aspectRatio, title: r.title, subtitle: r.subtitle };
+                    }), (gridRefs.current[idSuffix]?.clientWidth || 1200), { maxTitleLines: 2, maxSubtitleLines: 2, enableKPISync: true }).titlePx}px`, ['--mm-subtitle-size' as string]: `${calculateSyncedFontSizes(block.charts.map(c => {
+                      const r = getChartResult(c.chartId)!;
+                      return { chartId: c.chartId, cellWidth: Math.min(2, Math.max(1, c.width || 1)) as 1 | 2, bodyType: r.type as any, aspectRatio: (r as any).aspectRatio, title: r.title, subtitle: r.subtitle };
+                    }), (gridRefs.current[idSuffix]?.clientWidth || 1200), { maxTitleLines: 2, maxSubtitleLines: 2, enableKPISync: true }).subtitlePx}px`, ['--mm-kpi-size' as string]: `${calculateSyncedFontSizes(block.charts.map(c => {
+                      const r = getChartResult(c.chartId)!;
+                      return { chartId: c.chartId, cellWidth: Math.min(2, Math.max(1, c.width || 1)) as 1 | 2, bodyType: r.type as any, aspectRatio: (r as any).aspectRatio, title: r.title, subtitle: r.subtitle };
+                    }), (gridRefs.current[idSuffix]?.clientWidth || 1200), { maxTitleLines: 2, maxSubtitleLines: 2, enableKPISync: true }).kpiPx || 0}px` } as React.CSSProperties}
                   >
                     {block.charts
                       .sort((a, b) => a.order - b.order)
@@ -335,17 +380,21 @@ export default function UnifiedDataVisualization({
                                               result.type === 'text' ? 'chart-item-text' : 
                                               'chart-item-standard';
                         
+                        const clampedUnits = Math.min(2, Math.max(1, chart.width || 1));
+                        const aspectRatio = (result as any).aspectRatio as ('16:9' | '9:16' | '1:1' | undefined);
                         return (
                           <div
                             key={`${idSuffix}-${chart.chartId}`}
                             className={`chart-item unified-chart-item ${chartTypeClass}`}
                             data-chart-id={chart.chartId}
-                            data-width-units={Math.max(1, chart.width || 1)}
-                            style={{ ['--tile-units' as string]: String(Math.max(1, chart.width || 1)) } as React.CSSProperties}
+                            data-body-type={result.type}
+                            data-aspect-ratio={aspectRatio || ''}
+                            data-width-units={clampedUnits}
+                            style={{ ['--tile-units' as string]: String(clampedUnits) } as React.CSSProperties}
                           >
                             <DynamicChart 
                               result={result} 
-                              chartWidth={chart.width}
+                              chartWidth={clampedUnits}
                               showTitleInCard={(result as any).showTitle !== false}
                               pageStyle={pageStyle}
                             />
@@ -438,6 +487,7 @@ export default function UnifiedDataVisualization({
           overflow: hidden !important;
           word-break: break-word !important;
           flex-shrink: 0 !important;
+          font-size: var(--mm-title-size, inherit) !important;
         }
         
         /* WHAT: Chart subtitle alignment */
@@ -453,6 +503,7 @@ export default function UnifiedDataVisualization({
           overflow: hidden !important;
           word-break: break-word !important;
           flex-shrink: 0 !important;
+          font-size: var(--mm-subtitle-size, inherit) !important;
         }
         
         /* WHAT: Chart graphic area - ratio-driven (no px)
@@ -507,7 +558,7 @@ export default function UnifiedDataVisualization({
           container-type: size;
         }
         .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiValue) {
-          font-size: clamp(1.25rem, 18cqh, 6rem) !important;
+          font-size: var(--mm-kpi-size, clamp(1.25rem, 18cqh, 6rem)) !important;
         }
         .udv-grid[data-pie-baseline="true"] .chart-item.chart-item-standard :global(.kpiEmoji) {
           font-size: clamp(1.25rem, 14cqh, 4.5rem) !important;

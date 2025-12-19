@@ -109,24 +109,98 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
       setError(null);
 
       try {
-        // Build query params
-        const params = new URLSearchParams();
-        if (projectId) params.set('projectId', projectId);
-        if (partnerId) params.set('partnerId', partnerId);
+        // Prefer new template-based API that reflects Visualization blocks exactly
+        if (projectId) {
+          const resp = await fetch(`/api/report-config/${encodeURIComponent(projectId)}?type=project`);
+          const data = await resp.json();
 
-        // Fetch resolved report
-        const response = await fetch(`/api/reports/resolve?${params.toString()}`);
-        const data = await response.json();
+          if (!resp.ok || !data.success || !data.template) {
+            throw new Error(data.error || 'Failed to fetch report template');
+          }
 
-        if (!response.ok || !data.success) {
-          throw new Error(data.error || 'Failed to fetch report layout');
+          const template = data.template as any;
+          // Normalize template into Report shape expected by consumers
+          const normalizedReport: Report = {
+            _id: template._id,
+            name: template.name,
+            description: template.description,
+            type: template.type === 'partner' ? 'partner' : 'event',
+            isDefault: !!template.isDefault,
+            styleId: template.styleId,
+            layout: {
+              gridColumns: {
+                desktop: template.gridSettings?.desktopUnits ?? 3,
+                tablet: template.gridSettings?.tabletUnits ?? 2,
+                mobile: template.gridSettings?.mobileUnits ?? 1,
+              },
+              blocks: (template.dataBlocks || []).map((b: any) => ({
+                id: b._id || b.blockId || String(b.order),
+                title: b.overrides?.customTitle ?? b.name ?? 'Untitled Block',
+                showTitle: b.overrides?.showTitle ?? (b.showTitle ?? true),
+                order: Number(b.order ?? 0),
+                charts: (b.charts || []).map((c: any) => ({
+                  chartId: c.chartId,
+                  width: Number(c.width ?? 1),
+                  order: Number(c.order ?? 0),
+                })),
+              })),
+            },
+            heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },
+            alignmentSettings: template.alignmentSettings ?? { alignTitles: true, alignDescriptions: true, alignCharts: true, minElementHeight: undefined },
+            createdBy: template.createdBy || 'system',
+            createdAt: template.createdAt || new Date().toISOString(),
+            updatedAt: template.updatedAt || new Date().toISOString(),
+          } as Report;
+
+          setReport(normalizedReport);
+          setResolution({ resolvedFrom: data.resolvedFrom || 'project', source: data.source || template.name });
+          return;
         }
 
-        setReport(data.report);
-        setResolution({
-          resolvedFrom: data.resolvedFrom,
-          source: data.source
-        });
+        // Partner layout via template-based resolver (same as project)
+        if (partnerId) {
+          const resp = await fetch(`/api/report-config/${encodeURIComponent(partnerId)}?type=partner`);
+          const data = await resp.json();
+          if (!resp.ok || !data.success || !data.template) {
+            throw new Error(data.error || 'Failed to fetch partner report template');
+          }
+
+          const template = data.template as any;
+          const normalizedReport: Report = {
+            _id: template._id,
+            name: template.name,
+            description: template.description,
+            type: template.type === 'event' ? 'event' : 'partner',
+            isDefault: !!template.isDefault,
+            styleId: template.styleId,
+            layout: {
+              gridColumns: {
+                desktop: template.gridSettings?.desktopUnits ?? 3,
+                tablet: template.gridSettings?.tabletUnits ?? 2,
+                mobile: template.gridSettings?.mobileUnits ?? 1,
+              },
+              blocks: (template.dataBlocks || []).map((b: any) => ({
+                id: b._id || b.blockId || String(b.order),
+                title: b.overrides?.customTitle ?? b.name ?? 'Untitled Block',
+                showTitle: b.overrides?.showTitle ?? (b.showTitle ?? true),
+                order: Number(b.order ?? 0),
+                charts: (b.charts || []).map((c: any) => ({
+                  chartId: c.chartId,
+                  width: Number(c.width ?? 1),
+                  order: Number(c.order ?? 0),
+                })),
+              })),
+            },
+            heroSettings: template.heroSettings ?? { showEmoji: true, showDateInfo: true, showExportOptions: true },
+            alignmentSettings: template.alignmentSettings ?? { alignTitles: true, alignDescriptions: true, alignCharts: true, minElementHeight: undefined },
+            createdBy: template.createdBy || 'system',
+            createdAt: template.createdAt || new Date().toISOString(),
+            updatedAt: template.updatedAt || new Date().toISOString(),
+          } as Report;
+
+          setReport(normalizedReport);
+          setResolution({ resolvedFrom: data.resolvedFrom || 'partner', source: data.source || template.name });
+        }
 
       } catch (err) {
         console.error('❌ [useReportLayout] Error:', err);
@@ -148,13 +222,13 @@ export function useReportLayout(options: UseReportLayoutOptions): UseReportLayou
       .sort((a, b) => a.order - b.order);
   }, [report]);
 
-  // Extract grid settings with fallback defaults
-  // IMPORTANT: Memoize to prevent unnecessary re-renders
-  const gridSettings: GridSettings = useMemo(() => ({
-    desktop: report?.layout.gridColumns.desktop || 3,
-    tablet: report?.layout.gridColumns.tablet || 2,
-    mobile: report?.layout.gridColumns.mobile || 1
-  }), [report]);
+// Extract grid settings with fallback defaults
+// IMPORTANT: Memoize to prevent unnecessary re-renders
+const gridSettings: GridSettings = useMemo(() => ({
+  desktop: report?.layout?.gridColumns?.desktop || 3,
+  tablet: report?.layout?.gridColumns?.tablet || 2,
+  mobile: report?.layout?.gridColumns?.mobile || 1
+}), [report]);
 
   // Utility: Get specific block by ID
   const getBlock = (blockId: string): ReportBlock | undefined => {

@@ -93,6 +93,8 @@
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box !important;
+  /* Enable container queries so inner content can scale to box width */
+  container-type: inline-size;
 }
 
 /* Responsive Adjustments */

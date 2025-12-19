@@ -1,5 +1,25 @@
 # WARP.DEV AI Conversation Log
 
+## [2025-12-19T10:46:34.000Z] v11.30.0 — Report Layout & Rendering Spec v2.0 (Deterministic Rows)
+
+Plan & Execution
+- Implement deterministic block layout with 1/2-unit cells, block-level font synchronization, and image-driven row height.
+- Ph1 delivered in code: types added (CellWidth/AspectRatio), calculators (blockHeight, fontSync), UI integration in UnifiedDataVisualization (row height solver, font CSS vars), TEXT aspect ratio removed in DynamicChart.
+
+Artifacts
+- Modified: `components/UnifiedDataVisualization.tsx` (deterministic row height, font sync, width clamp 1/2)
+- Modified: `components/DynamicChart.tsx` (TEXT no preset aspect ratio)
+- Added: `lib/blockLayoutTypes.ts`, `lib/aspectRatioResolver.ts`, `lib/blockHeightCalculator.ts`, `lib/fontSyncCalculator.ts`
+
+Verification (manual pending)
+- Open a report/partner report page → verify rows with mixed IMAGE ratios share equal height; titles/subtitles/KPI font sizes are uniform per block; no overflow.
+
+Next
+- Phase 3.3/3.4: propagate blockHeight to inner chart components and add CellWrapper.
+
+Versioning & Docs
+- No version bump yet (no dev run, no commit). ROADMAP.md and TASKLIST.md updated per delivery logging protocol.
+
 ## [2025-11-17T14:59:10.000Z] v11.24.0 → v11.25.0 — Variable names missing on Edit Stats
 
 Plan & Execution
