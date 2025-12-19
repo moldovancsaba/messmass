@@ -22,48 +22,55 @@ import { getAspectRatioValue } from './aspectRatioResolver';
  * @returns Calculated block height in pixels
  */
 export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidthPx: number): number {
-  // WHAT: Calculate total units in the block
-  // WHY: Need to know width per unit
-  const totalUnits = cells.reduce((sum, c) => sum + c.cellWidth, 0);
-  
-  if (totalUnits === 0) {
-    console.warn('[BlockHeightCalculator] No cells in block, using default height');
+  if (cells.length === 0) {
+    console.warn('[BlockHeightCalculator] No cells in block');
     return 360;
   }
   
-  // WHAT: Calculate width per unit
-  // WHY: Each cell width unit represents this many pixels
-  const widthPerUnit = blockWidthPx / totalUnits;
+  // WHAT: Calculate total "effective units" for proportional distribution
+  // WHY: All cells participate in width distribution, but with different weights
+  // HOW: 
+  //   - Non-IMAGE cells: contribute their cellWidth (1 or 2 units)
+  //   - IMAGE cells: contribute their aspectRatio as "effective units"
+  //
+  // This is because:
+  //   - Non-IMAGE width = cellWidth × H
+  //   - IMAGE width = aspectRatio × H
+  //
+  // So IMAGE cells with aspectRatio act like "aspectRatio units" in the distribution
   
-  // WHAT: Sum aspect ratios of IMAGE cells
-  // WHY: Image width = aspectRatio × H, so total image width = H × sum(aspectRatios)
-  let sumAspectRatios = 0;
-  
-  // WHAT: Calculate total width of non-IMAGE cells
-  // WHY: These cells have fixed width based on their units
-  let nonImageWidth = 0;
+  let totalEffectiveUnits = 0;
+  const cellDetails: Array<{ chartId: string; type: string; effectiveUnits: number }> = [];
   
   for (const c of cells) {
     if (c.bodyType === 'image') {
-      // IMAGE cell: width = aspectRatio × H
+      // IMAGE cell: effective units = aspect ratio
       const aspectRatio = getAspectRatioValue(c.aspectRatio || '16:9');
-      sumAspectRatios += aspectRatio;
+      totalEffectiveUnits += aspectRatio;
+      cellDetails.push({ chartId: c.chartId, type: 'image', effectiveUnits: aspectRatio });
     } else {
-      // Non-IMAGE cell (KPI, PIE, BAR, TEXT): width = cellWidth × widthPerUnit
-      nonImageWidth += c.cellWidth * widthPerUnit;
+      // Non-IMAGE cell: effective units = cellWidth
+      totalEffectiveUnits += c.cellWidth;
+      cellDetails.push({ chartId: c.chartId, type: c.bodyType, effectiveUnits: c.cellWidth });
     }
   }
   
-  // WHAT: If no images, return default height
-  // WHY: Without aspect ratios, height must be set arbitrarily
-  if (sumAspectRatios <= 0) {
-    console.warn('[BlockHeightCalculator] No images in block, using default height');
+  if (totalEffectiveUnits <= 0) {
+    console.warn('[BlockHeightCalculator] Total effective units is 0');
     return 360;
   }
   
-  // WHAT: Apply deterministic formula
-  // WHY: Ensures all cells fit in blockWidth while images maintain aspect ratio
-  const H = (blockWidthPx - nonImageWidth) / sumAspectRatios;
+  // WHAT: Calculate block height using proportional distribution
+  // WHY: All cells share height H, and together they must fill blockWidth
+  // HOW: H = blockWidth / totalEffectiveUnits
+  //
+  // Proof:
+  //   blockWidth = sum(all cell widths)
+  //   blockWidth = sum(cellWidth_i × H) + sum(aspectRatio_i × H)  
+  //   blockWidth = H × (sum(cellWidths) + sum(aspectRatios))
+  //   blockWidth = H × totalEffectiveUnits
+  //   Therefore: H = blockWidth / totalEffectiveUnits
+  const H = blockWidthPx / totalEffectiveUnits;
   
   // WHAT: Apply reasonable bounds
   // WHY: Prevent extreme values from edge cases
@@ -71,14 +78,13 @@ export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidt
   const maxHeight = 800;
   const clampedHeight = Math.max(minHeight, Math.min(maxHeight, H));
   
-  console.log('[BlockHeightCalculator]', {
+  console.log('[BlockHeightCalculator] Calculated height:', {
     blockWidthPx,
-    totalUnits,
-    widthPerUnit: widthPerUnit.toFixed(2),
-    sumAspectRatios: sumAspectRatios.toFixed(4),
-    nonImageWidth: nonImageWidth.toFixed(2),
-    calculatedH: H.toFixed(2),
-    clampedH: clampedHeight.toFixed(2)
+    totalEffectiveUnits: totalEffectiveUnits.toFixed(4),
+    cellBreakdown: cellDetails,
+    rawH: H.toFixed(2),
+    clampedH: clampedHeight.toFixed(2),
+    wasClamp: H !== clampedHeight
   });
   
   return Math.round(clampedHeight);

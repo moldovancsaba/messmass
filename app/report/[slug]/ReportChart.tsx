@@ -463,6 +463,15 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const aspectRatio = result.aspectRatio || '16:9';
   
+  // DEBUG: Log image rendering
+  console.log('[ImageChart] Rendering:', {
+    title: result.title,
+    kpiValue: result.kpiValue,
+    formattedValue,
+    aspectRatio,
+    hasValue: !!formattedValue
+  });
+  
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
@@ -480,14 +489,15 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
           <div className={styles.chartTitle}>{result.title}</div>
         </div>
       )}
-      <div className={styles.chartBody}>
-        <div 
-          className={styles.imageContent}
-          style={{ backgroundImage: `url("${formattedValue}")` }}
-          role="img"
-          aria-label={result.title}
-        />
-      </div>
+      {/* WHAT: Use actual <img> tag for reliable aspect ratio */}
+      {/* WHY: Browser automatically maintains aspect ratio, no CSS tricks needed */}
+      <img 
+        className={styles.imageContent}
+        src={formattedValue}
+        alt={result.title}
+        onLoad={() => console.log('[ImageChart] Image loaded:', result.title)}
+        onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
+      />
     </div>
   );
 }

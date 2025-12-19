@@ -4,13 +4,13 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
-import ReportChart from './ReportChart';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
+import type { ReportBlock, GridSettings } from '@/types/report';
 import type { ChartResult } from '@/lib/report-calculator';
-import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
+import ReportChart from './ReportChart';
+import styles from './ReportContent.module.css';
 import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
 import type { CellConfiguration } from '@/lib/blockLayoutTypes';
-import styles from './ReportContent.module.css';
 
 /**
  * Props for ReportContent component
@@ -111,23 +111,44 @@ function calculateGridColumns(charts: Array<{ width: number }>): string {
   return weights.map(w => `${w}fr`).join(' ');
 }
 
-function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
-  // Sort charts by order
-  const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
+/**
+ * WHAT: Responsive row with width measurement and height calculation
+ * WHY: Each row must calculate its own height based on actual width
+ */
+interface ResponsiveRowProps {
+  rowCharts: Array<{ chartId: string; width: number; order: number }>;
+  chartResults: Map<string, ChartResult>;
+  rowIndex: number;
+}
+
+function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [rowWidth, setRowWidth] = useState(1200); // Default fallback
   
-  // Filter out charts that don't have results
-  const validCharts = sortedCharts.filter(chart => 
-    chartResults.has(chart.chartId)
-  );
-  
-  // WHAT: Calculate deterministic block height from image aspect ratios
-  // WHY: Spec requirement - all cells in block must share same height
-  // HOW: Use solveBlockHeightWithImages utility
-  const blockHeight = useMemo(() => {
-    const blockWidthPx = 1200; // Standard desktop width
+  // WHAT: Measure actual row width on mount and resize
+  // WHY: Height calculation needs actual width for all cell types
+  useEffect(() => {
+    const measureWidth = () => {
+      if (rowRef.current) {
+        const width = rowRef.current.offsetWidth;
+        setRowWidth(width || 1200);
+      }
+    };
     
+    measureWidth(); // Initial measurement
+    
+    const resizeObserver = new ResizeObserver(measureWidth);
+    if (rowRef.current) {
+      resizeObserver.observe(rowRef.current);
+    }
+    
+    return () => resizeObserver.disconnect();
+  }, []);
+  
+  // WHAT: Calculate row height from actual measured width
+  const rowHeight = useMemo(() => {
     // Convert chart results to cell configurations
-    const cells: CellConfiguration[] = validCharts
+    const cells: CellConfiguration[] = rowCharts
       .flatMap(chart => {
         const result = chartResults.get(chart.chartId);
         if (!result) return [];
@@ -142,8 +163,47 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
         }];
       });
     
-    return solveBlockHeightWithImages(cells, blockWidthPx);
-  }, [validCharts, chartResults]);
+    return solveBlockHeightWithImages(cells, rowWidth);
+  }, [rowCharts, chartResults, rowWidth]); // Recalculate on width change
+  
+  const gridColumns = calculateGridColumns(rowCharts);
+  
+  return (
+    <div 
+      ref={rowRef}
+      key={`row-${rowIndex}`}
+      className={`${styles.row} report-content`}
+      data-report-section="content"
+      style={{
+        gridTemplateColumns: gridColumns,
+        height: `${rowHeight}px` // WHAT: Apply calculated height based on measured width
+      } as React.CSSProperties}
+    >
+      {rowCharts.map(chart => {
+        const result = chartResults.get(chart.chartId);
+        if (!result) return null;
+        
+        return (
+          <div 
+            key={chart.chartId}
+            className={styles.rowItem}
+          >
+            <ReportChart result={result} width={chart.width} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
+  // Sort charts by order
+  const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
+  
+  // Filter out charts that don't have results
+  const validCharts = sortedCharts.filter(chart => 
+    chartResults.has(chart.chartId)
+  );
   
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
@@ -180,36 +240,15 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
-      {/* Render each row as independent grid */}
-      {rows.map((rowCharts, rowIndex) => {
-        const gridColumns = calculateGridColumns(rowCharts);
-        
-        return (
-          <div 
-            key={`row-${rowIndex}`}
-            className={`${styles.row} report-content`}
-            data-report-section="content"
-            style={{
-              gridTemplateColumns: gridColumns,
-              height: `${blockHeight}px` // WHAT: Apply calculated deterministic height
-            } as React.CSSProperties}
-          >
-            {rowCharts.map(chart => {
-              const result = chartResults.get(chart.chartId);
-              if (!result) return null;
-              
-              return (
-                <div 
-                  key={chart.chartId}
-                  className={styles.rowItem}
-                >
-                  <ReportChart result={result} width={chart.width} />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
+      {/* Render each row with responsive height calculation */}
+      {rows.map((rowCharts, rowIndex) => (
+        <ResponsiveRow
+          key={`row-${rowIndex}`}
+          rowCharts={rowCharts}
+          chartResults={chartResults}
+          rowIndex={rowIndex}
+        />
+      ))}
     </div>
   );
 }
