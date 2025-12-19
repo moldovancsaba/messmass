@@ -287,15 +287,19 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const themeColors = getThemeColors();
   
   // Prepare Chart.js data
+  // WHAT: Force theme colors to override any element.color
+  // WHY: Style must overwrite each and every color (user requirement)
   const chartData = {
     labels: result.elements.map(el => el.label),
     datasets: [{
       label: result.title,
       data: result.elements.map(el => typeof el.value === 'number' ? el.value : 0),
       backgroundColor: result.elements.map((el, idx) => 
-        el.color || themeColors[idx % themeColors.length]
+        themeColors[idx % themeColors.length]
       ),
-      borderColor: 'rgba(255, 255, 255, 1)',
+      // WHAT: Use primary color (red/maroon) as border for all slices
+      // WHY: Creates visual separation with consistent branding
+      borderColor: themeColors[0],
       borderWidth: 2,
       hoverOffset: 8
     }]
@@ -419,7 +423,9 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                   className={styles.barFill}
                   style={{ 
                     width: `${widthPercent}%`,
-                    backgroundColor: element.color || themeColors[idx % themeColors.length]
+                    // WHAT: Use only primary color (first theme color) for all bars
+                    // WHY: Bar charts show single metric across categories - uniform color is clearer
+                    backgroundColor: themeColors[0]
                   }}
                 />
               </div>
