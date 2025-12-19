@@ -2,6 +2,18 @@
 
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
+## 🔐 GitHub Access Token
+
+**Token:** `{{GITHUB_TOKEN}}` (stored in Warp rules)
+
+**Usage in git operations:**
+```bash
+GITHUB_TOKEN="{{GITHUB_TOKEN}}"
+git push https://${GITHUB_TOKEN}@github.com/moldovancsaba/messmass.git main
+```
+
+**Note:** The actual token is stored securely in Warp AI rules and injected at runtime.
+
 ## ⚡ Quick Start Commands
 
 ### Development Environment
@@ -1205,4 +1217,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 11.36.2 | Last Updated: 2025-12-19T11:28:38.000Z (UTC) | Status: Production-Ready*
+*Version: 11.37.0 | Last Updated: 2025-12-19T17:24:00.000Z (UTC) | Status: Production-Ready*

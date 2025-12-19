@@ -316,8 +316,10 @@
 }
 
 .text .chartBody {
-  align-items: flex-start;
-  justify-content: flex-start;
+  /* WHAT: Center text and fill space */
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-4); /* More padding for better visual breathing */
 }
 
 .textTitle {
@@ -328,13 +330,25 @@
 }
 
 .textContent {
-  flex: 1; /* CRITICAL: Fill available space */
-  width: 100%; /* CRITICAL: Fill container width */
-  font-size: clamp(0.85rem, 2.2cqw, 1rem);
-  color: var(--mm-gray-700);
-  line-height: 1.5;
+  /* WHAT: Maximize font size to fill cell while staying readable */
+  /* WHY: Text content should dominate the space like KPI values */
+  /* HOW: Use container queries to scale based on both width and height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  /* WHAT: Scale aggressively - min 1rem, grows with container, max 8rem */
+  /* WHY: Text should be LARGE and fill space, responsive to container size */
+  font-size: clamp(1rem, min(8cqh, 6cqw), 8rem);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  line-height: 1.3;
   white-space: pre-wrap;
-  padding: var(--mm-space-3); /* Add padding for readability */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: var(--mm-space-2);
 }
 
 /* Image Chart - SIMPLIFIED */
