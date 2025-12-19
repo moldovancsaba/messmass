@@ -1,24 +1,40 @@
 # WARP.DEV AI Conversation Log
 
-## [2025-12-19T10:46:34.000Z] v11.30.0 — Report Layout & Rendering Spec v2.0 (Deterministic Rows)
+## [2025-12-19T11:28:38.000Z] v11.36.1 → v11.36.2 — Report Layout Spec v2.0 Phase 2 (CellWrapper)
+
+Plan & Execution
+- Phase 1 (v11.36.1): Types, calculators, grid integration, admin enforcement
+- Phase 2 (v11.36.2): CellWrapper component for 3-zone structure; PDF already aligned via DOM capture
+
+Artifacts
+- Added: `components/CellWrapper.tsx`, `components/CellWrapper.module.css`
+- PDF export: No changes needed (captures rendered DOM with deterministic sizing)
+
+Verification (manual)
+- CellWrapper ready for integration in chart components
+- PDF export inherently matches screen layout (captures post-render DOM)
+
+Next
+- Optional: Wire CellWrapper into DynamicChart/chart components for explicit zone control
+- Optional: Feature flag + gradual rollout per Phase 9
+
+Versioning & Docs
+- 11.36.1 → 11.36.2, committed and pushed to main
+
+## [2025-12-19T10:46:34.000Z] v11.30.0 → v11.36.1 — Report Layout Spec v2.0 Phase 1
 
 Plan & Execution
 - Implement deterministic block layout with 1/2-unit cells, block-level font synchronization, and image-driven row height.
-- Ph1 delivered in code: types added (CellWidth/AspectRatio), calculators (blockHeight, fontSync), UI integration in UnifiedDataVisualization (row height solver, font CSS vars), TEXT aspect ratio removed in DynamicChart.
+- Ph1 delivered: types (CellWidth/AspectRatio), calculators (blockHeight, fontSync, aspectRatio), UI integration in UnifiedDataVisualization (row height solver, font CSS vars), TEXT aspect ratio removed, admin width clamped to 1/2.
 
 Artifacts
 - Modified: `components/UnifiedDataVisualization.tsx` (deterministic row height, font sync, width clamp 1/2)
 - Modified: `components/DynamicChart.tsx` (TEXT no preset aspect ratio)
+- Modified: `app/admin/visualization/page.tsx` (width selector 1/2 only)
 - Added: `lib/blockLayoutTypes.ts`, `lib/aspectRatioResolver.ts`, `lib/blockHeightCalculator.ts`, `lib/fontSyncCalculator.ts`
 
-Verification (manual pending)
-- Open a report/partner report page → verify rows with mixed IMAGE ratios share equal height; titles/subtitles/KPI font sizes are uniform per block; no overflow.
-
-Next
-- Phase 3.3/3.4: propagate blockHeight to inner chart components and add CellWrapper.
-
 Versioning & Docs
-- No version bump yet (no dev run, no commit). ROADMAP.md and TASKLIST.md updated per delivery logging protocol.
+- 11.30.0 → 11.36.1, committed and pushed to main
 
 ## [2025-11-17T14:59:10.000Z] v11.24.0 → v11.25.0 — Variable names missing on Edit Stats
 

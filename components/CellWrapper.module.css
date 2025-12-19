@@ -1,0 +1,69 @@
+/* components/CellWrapper.module.css */
+/* WHAT: 3-zone cell layout per Report Layout Spec v2.0 */
+/* WHY: Title/subtitle/body zones must be distinct and aligned */
+
+.cellWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Title Zone - fixed height, centered, max 2 lines */
+.titleZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+/* Subtitle Zone - fixed height, centered, max 2 lines */
+.subtitleZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.subtitle {
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  color: var(--mm-gray-600);
+}
+
+/* Body Zone - fills remaining space, centered content */
+.bodyZone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
