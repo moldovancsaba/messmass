@@ -203,9 +203,10 @@ export default function ReportPage() {
         {/* Hero Section */}
         <ReportHero 
           project={project}
-          emoji={heroSettings?.showEmoji ? '🎉' : undefined}
+          emoji={undefined} // WHAT: Never show emoji regardless of setting
           showDate={heroSettings?.showDateInfo ?? true}
           showExport={heroSettings?.showExportOptions ?? true}
+          partnerLogo={(project as any).partnerLogo} // WHAT: Show partner logo if available
         />
 
         {/* Report Content Grid */}

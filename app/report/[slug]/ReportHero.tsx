@@ -26,6 +26,9 @@ interface ReportHeroProps {
   /** Optional emoji to display */
   emoji?: string;
   
+  /** Partner logo URL */
+  partnerLogo?: string;
+  
   /** Show date information */
   showDate?: boolean;
   
@@ -51,6 +54,7 @@ interface ReportHeroProps {
 export default function ReportHero({ 
   project, 
   emoji,
+  partnerLogo,
   showDate = true,
   showExport = true,
   className 
@@ -69,6 +73,13 @@ export default function ReportHero({
     <div className={`${styles.hero} report-hero ${className || ''}`} data-report-section="hero">
       <div className={styles.heroContent}>
         <div className={styles.heroInfo}>
+          {partnerLogo && (
+            <img 
+              src={partnerLogo} 
+              alt="Partner Logo" 
+              className={styles.heroLogo}
+            />
+          )}
           {emoji && (
             <span className={styles.heroEmoji} role="img" aria-label="Event">
               {emoji}

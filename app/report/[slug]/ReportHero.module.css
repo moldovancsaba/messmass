@@ -31,6 +31,13 @@
   flex: 1;
 }
 
+.heroLogo {
+  height: 64px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+}
+
 .heroEmoji {
   font-size: 64px;
   line-height: 1;

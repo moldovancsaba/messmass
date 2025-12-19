@@ -11,6 +11,7 @@
   padding: var(--mm-space-6) 0;
   width: 100% !important; /* CRITICAL: Force full width */
   box-sizing: border-box !important;
+  background: transparent !important; /* WHAT: Force transparent - no white rectangle */
 }
 
 /* Empty State */
@@ -50,6 +51,7 @@
   gap: var(--mm-space-4);
   width: 100% !important; /* CRITICAL: Ensure block fills container width */
   box-sizing: border-box !important;
+  background: transparent !important; /* WHAT: Force transparent - only chart cards visible */
 }
 
 .blockTitle {
@@ -58,7 +60,9 @@
   color: var(--mm-gray-900);
   margin: 0;
   padding-bottom: var(--mm-space-2);
-  border-bottom: 2px solid var(--mm-gray-200);
+  border-bottom: none; /* WHAT: No border line after title */
+  background: transparent; /* WHAT: Transparent background for block title */
+  text-align: center; /* WHAT: Center align block titles */
 }
 
 /* WHAT: Row-Based Layout System (v12.1.0)
@@ -78,6 +82,7 @@
   margin-bottom: var(--mm-space-4);
   align-items: start;
   justify-items: stretch;
+  background: transparent !important; /* WHAT: Force transparent row background */
 }
 
 .row:last-child {
@@ -95,12 +100,46 @@
   box-sizing: border-box !important;
   /* Enable container queries so inner content can scale to box width */
   container-type: inline-size;
+  background: transparent !important; /* WHAT: Force transparent cell background */
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  /* WHAT: Flatten all blocks into single column on mobile */
+  /* WHY: Simplest, most reliable layout - ignore block structure */
+  
+  .content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--mm-space-4) !important;
+    padding: var(--mm-space-4) 0;
+  }
+  
+  .block {
+    display: contents !important; /* WHAT: Remove block wrapper from layout */
+    /* WHY: display:contents makes children appear as direct children of parent */
+  }
+  
+  .blockTitle {
+    /* WHAT: Keep block titles visible in natural order */
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: var(--mm-space-2) !important;
+    margin-top: var(--mm-space-6) !important; /* Space above block title */
+  }
+  
+  .blockTitle:first-child {
+    margin-top: 0 !important; /* No space above first block title */
+  }
+  
   .row {
-    /* On mobile, stack all items vertically */
-    grid-template-columns: 1fr !important;
+    display: contents !important; /* WHAT: Remove row wrapper from layout */
+  }
+  
+  .rowItem {
+    /* WHAT: All cells become direct children of .content */
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
   }
 }

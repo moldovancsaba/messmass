@@ -124,47 +124,56 @@ interface ResponsiveRowProps {
 function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [rowWidth, setRowWidth] = useState(1200); // Default fallback
+  const [rowHeight, setRowHeight] = useState(400); // Default fallback
   
-  // WHAT: Measure actual row width on mount and resize
+  // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
   useEffect(() => {
-    const measureWidth = () => {
+    const measureAndCalculate = () => {
       if (rowRef.current) {
         const width = rowRef.current.offsetWidth;
+        console.log(`[ResponsiveRow ${rowIndex}] Width changed:`, width, 'Charts:', rowCharts.length);
         setRowWidth(width || 1200);
+        
+        // WHAT: Immediately recalculate height based on new width
+        const cells: CellConfiguration[] = rowCharts
+          .flatMap(chart => {
+            const result = chartResults.get(chart.chartId);
+            if (!result) return [];
+            
+            return [{
+              chartId: chart.chartId,
+              cellWidth: (chart.width || 1) as 1 | 2,
+              bodyType: result.type as any,
+              aspectRatio: result.aspectRatio,
+              title: result.title,
+              subtitle: undefined
+            }];
+          });
+        
+        const height = solveBlockHeightWithImages(cells, width);
+        console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
+        setRowHeight(height);
       }
     };
     
-    measureWidth(); // Initial measurement
+    measureAndCalculate(); // Initial measurement
     
-    const resizeObserver = new ResizeObserver(measureWidth);
+    // WHAT: Use ResizeObserver for row dimension changes
+    const resizeObserver = new ResizeObserver(measureAndCalculate);
     if (rowRef.current) {
       resizeObserver.observe(rowRef.current);
     }
     
-    return () => resizeObserver.disconnect();
-  }, []);
-  
-  // WHAT: Calculate row height from actual measured width
-  const rowHeight = useMemo(() => {
-    // Convert chart results to cell configurations
-    const cells: CellConfiguration[] = rowCharts
-      .flatMap(chart => {
-        const result = chartResults.get(chart.chartId);
-        if (!result) return [];
-        
-        return [{
-          chartId: chart.chartId,
-          cellWidth: (chart.width || 1) as 1 | 2,
-          bodyType: result.type as any,
-          aspectRatio: result.aspectRatio,
-          title: result.title,
-          subtitle: undefined
-        }];
-      });
+    // WHAT: Also listen to window resize as fallback
+    // WHY: Single full-width cells may not trigger ResizeObserver
+    window.addEventListener('resize', measureAndCalculate);
     
-    return solveBlockHeightWithImages(cells, rowWidth);
-  }, [rowCharts, chartResults, rowWidth]); // Recalculate on width change
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', measureAndCalculate);
+    };
+  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
   const gridColumns = calculateGridColumns(rowCharts);
   
@@ -183,9 +192,13 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
         const result = chartResults.get(chart.chartId);
         if (!result) return null;
         
+        // WHAT: Force remount when dimensions change significantly
+        // WHY: Container queries cache container size, need remount for single full-width charts
+        const dimensionKey = `${chart.chartId}-${Math.round(rowWidth / 100)}-${Math.round(rowHeight / 100)}`;
+        
         return (
           <div 
-            key={chart.chartId}
+            key={dimensionKey}
             className={styles.rowItem}
           >
             <ReportChart result={result} width={chart.width} />

@@ -42,14 +42,30 @@ export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidt
   let totalEffectiveUnits = 0;
   const cellDetails: Array<{ chartId: string; type: string; effectiveUnits: number }> = [];
   
+  // WHAT: Check if this row should use aspect ratio (1-2 charts)
+  // WHY: Small rows need reasonable aspect ratio, large rows share height naturally
+  const useAspectRatio = cells.length <= 2;
+  
+  // WHAT: Calculate aspect ratio multiplier based on cell count
+  // WHY: We want the TOTAL row to be 3:1, not each cell individually
+  // HOW: 1 chart → 3x, 2 charts → 1.5x each (total still 3x)
+  const aspectMultiplier = useAspectRatio ? (3 / cells.length) : 1;
+  
   for (const c of cells) {
     if (c.bodyType === 'image') {
       // IMAGE cell: effective units = aspect ratio
       const aspectRatio = getAspectRatioValue(c.aspectRatio || '16:9');
       totalEffectiveUnits += aspectRatio;
       cellDetails.push({ chartId: c.chartId, type: 'image', effectiveUnits: aspectRatio });
+    } else if (useAspectRatio && (c.bodyType === 'bar' || c.bodyType === 'pie' || c.bodyType === 'kpi')) {
+      // WHAT: Rows with 1-2 charts get 3:1 aspect ratio for the WHOLE row
+      // WHY: Prevent extreme heights when few charts in row
+      // HOW: Split the 3x multiplier across all cells
+      const implicitAspectRatio = aspectMultiplier * c.cellWidth;
+      totalEffectiveUnits += implicitAspectRatio;
+      cellDetails.push({ chartId: c.chartId, type: `${c.bodyType}(≤2)`, effectiveUnits: implicitAspectRatio });
     } else {
-      // Non-IMAGE cell: effective units = cellWidth
+      // 3+ chart row OR text: effective units = cellWidth
       totalEffectiveUnits += c.cellWidth;
       cellDetails.push({ chartId: c.chartId, type: c.bodyType, effectiveUnits: c.cellWidth });
     }

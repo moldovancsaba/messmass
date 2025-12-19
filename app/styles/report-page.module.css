@@ -6,7 +6,7 @@
 /* Page Container */
 .page {
   min-height: 100vh;
-  background: var(--mm-gray-50);
+  background: var(--mm-gray-100); /* WHAT: Gray background for card contrast */
   padding: var(--mm-space-6) var(--mm-space-4);
 }
 
@@ -14,9 +14,10 @@
 .container {
   max-width: 1600px; /* WHAT: Unified width for better chart layout (was 1200px in partner reports) */
   margin: 0 auto;
-  width: 100%;
-  padding: 0 var(--mm-space-4);
+  width: 90%; /* WHAT: 5% margin on each side (desktop) */
+  padding: 0;
   box-sizing: border-box !important;
+  background: transparent !important; /* WHAT: Force transparent - no white rectangle */
 }
 
 /* Loading State */
@@ -84,6 +85,11 @@
 @media (max-width: 768px) {
   .page {
     padding: var(--mm-space-4) var(--mm-space-2);
+  }
+  
+  .container {
+    width: 100%; /* WHAT: Full width on mobile (no 5% margins) */
+    padding: 0 var(--mm-space-3); /* WHAT: Small padding on mobile */
   }
   
   .errorTitle {

@@ -20,10 +20,10 @@
   box-shadow: var(--mm-shadow-sm);
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
   overflow: hidden; /* WHAT: Prevent content overflow */
-  transition: all var(--transition-fast);
   box-sizing: border-box !important;
   /* Enable container queries for inner scaling (width + height) */
   container-type: size;
+  /* REMOVED: transition - interferes with container query recalculation */
 }
 
 /* Chart Header - Titles and metadata */
@@ -52,6 +52,7 @@
   color: var(--mm-gray-900);
   margin: 0;
   line-height: 1.2;
+  text-align: center; /* WHAT: Center align chart titles */
 }
 
 /* No Data State */
@@ -87,110 +88,106 @@
   color: var(--mm-gray-400);
 }
 
-/* KPI Chart - Fully responsive with 3:5:2 grid ratio */
+/* KPI Chart - 3-row grid: Icon (30%), Value (40%), Label (30%) */
 .kpi {
-  /* WHAT: No aspect-ratio constraint - height determined by grid row */
-  /* WHY: Grid system handles height equality across row */
-  height: 100% !important; /* WHAT: Fill grid cell completely */
-  min-height: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .kpi .chartBody {
-  /* WHAT: Fill full height and enable grid layout */
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-  height: 100% !important;
-  padding: 0 !important; /* REMOVED: No padding - maximize content space */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  padding: 0;
 }
 
 .kpiContent {
-  /* WHAT: CSS Grid with 3:4:3 ratio for icon:number:description */
-  /* WHY: Balance icon and label prominence with strong value emphasis */
-  display: grid !important;
-  grid-template-rows: 3fr 4fr 3fr; /* 30% icon, 40% value, 30% description */
-  height: 100% !important;
+  display: grid;
+  grid-template-rows: 3fr 4fr 3fr;
+  height: 100%;
   width: 100%;
-  max-width: none !important;
-  gap: 0; /* No gap - each section fills its allocated space */
-  /* Base font size scales with container width, not viewport */
-  font-size: clamp(0.9rem, 4.2cqw, 2.25rem) !important;
+  gap: 0;
 }
 
 .kpiIconRow {
-  /* WHAT: SVG Icon container row - occupies 3fr (30% height) */
-  /* WHY: Always present in KPI charts - contains dynamically scaling SVG */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* WHAT: Enable container queries so icon can size relative to THIS row */
+  /* WHY: Icon needs to query its immediate parent, not the whole chart */
+  container-type: size;
 }
 
 .kpiIcon {
-  /* WHAT: SVG Icon - 90% of row height, centered */
-  height: 90% !important;
-  width: auto !important; /* Maintain aspect ratio */
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
-  display: block !important;
-  stroke-width: 1.5 !important;
+  /* WHAT: Material Icons scale by font-size, not SVG dimensions */
+  /* WHY: Switched from Lucide (SVG) to Material Icons (font) */
+  /* HOW: Now queries .kpiIconRow container for 90% fill */
+  font-size: clamp(2rem, 90cqh, 20rem) !important; /* 90% of icon row height - !important overrides MaterialIcon inline styles */
+  height: auto !important;
+  width: auto !important;
   color: var(--mm-primary) !important;
-}
-
-.kpi .kpiValue {
-  /* WHAT: Number row - dominant area, FULLY RESPONSIVE */
+  line-height: 1 !important; /* WHAT: Prevent extra vertical spacing */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  /* WHAT: Font scales with BOTH dimensions - no hardcoded breakpoints */
-  /* WHY: Container queries (cqw/cqh) adapt to ANY screen size automatically */
-  /* HOW: 25cqw = 25% of container width; for 7 chars, each char ~ 100%/7 = 14%, use generous 25% */
-  /*      20cqh = 20% of container height; 5fr row = 50% total, use 40% of that = 20% */
-  font-size: clamp(1.5rem, min(20cqh, 25cqw), 12rem) !important;
-  font-weight: var(--mm-font-weight-bold) !important;
-  color: var(--mm-gray-900) !important;
-  line-height: 0.85 !important;
-  text-align: center !important;
-  letter-spacing: -0.04em; /* WHAT: Tight for large numbers */
+  /* WHAT: Circular border with padding */
+  border: 2px solid var(--mm-primary) !important;
+  border-radius: 50% !important;
+  padding: 0.15em !important; /* em units scale with font-size */
+  aspect-ratio: 1 / 1 !important; /* Keep circle perfectly round */
+}
+
+.kpi .kpiValue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(1.5rem, min(20cqh, 25cqw), 12rem);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  line-height: 0.85;
+  text-align: center;
+  letter-spacing: -0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .kpi .kpiTitle {
-  /* WHAT: Maximize label text like TextChart - word wrap enabled */
-  /* WHY: Fill available space with largest readable text */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  align-self: center !important;
-  justify-self: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 var(--mm-space-1) !important;
-  /* WHAT: Scale aggressively like text boxes */
-  font-size: clamp(0.75rem, min(6cqh, 4cqw), 3rem) !important;
-  color: var(--mm-gray-600) !important;
-  font-weight: var(--mm-font-weight-medium) !important;
-  text-align: center !important;
-  line-height: 1.2 !important;
-  /* WHAT: Allow text wrapping at word boundaries */
-  white-space: normal !important;
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  overflow: hidden !important;
+  /* WHAT: 30% text height of 30cqh row, 10% line spacing, max 2 lines */
+  /* WHY: More breathing room, no overflow, centered */
+  /* HOW: 9cqh font (30% of 30cqh), line-height 1.1 (10% spacing) */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(0.75rem, 9cqh, 6rem);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-600);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
+  padding: var(--mm-space-2);
 }
 
 /* Pie Chart - Uses base .chart structure */
 .pie .chartBody {
   padding: var(--mm-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
 }
 
 .pieTitle {
@@ -240,11 +237,50 @@
 
 /* Pie Chart Container for Chart.js */
 .pieChartContainer {
-  flex: 1; /* WHAT: Fill available vertical space */
+  flex: 0 0 70%; /* WHAT: Pie takes 70% of body height */
   width: 100%;
-  height: 100%; /* CRITICAL: Fill parent height */
+  height: 70%; /* CRITICAL: Explicit height for Chart.js */
   position: relative;
-  /* REMOVED: min-height - height is deterministic from block calculator */
+}
+
+/* Custom Pie Legend - 30% of body height */
+.pieLegend {
+  flex: 0 0 30%; /* WHAT: Legend takes 30% of body height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--mm-space-1);
+  width: 100%;
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  width: 100%;
+}
+
+.pieLegendDot {
+  /* WHAT: Circle size with border matching pie slices */
+  width: 4.5cqh;
+  height: 4.5cqh;
+  border-radius: 50%;
+  flex-shrink: 0;
+  /* WHAT: Border using primary theme color (same as pie chart) */
+  border: 2px solid var(--chart-color-1, #8b1538);
+  box-sizing: border-box;
+}
+
+.pieLegendText {
+  /* WHAT: Calculate based on legend row height (30cqh legend / 2 items = 15cqh per row) */
+  /* WHY: Same pattern as bar labels - 30% of allocated row space */
+  font-size: 4.5cqh;
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Bar Chart - Uses base .chart structure */
@@ -277,41 +313,69 @@
 
 .barRow {
   display: grid;
-  grid-template-columns: minmax(80px, 22cqw) 1fr minmax(60px, 16cqw);
-  gap: var(--mm-space-1);
+  /* WHAT: Fixed ratio - 40% label, 40% bar, 20% value */
+  /* WHY: Balanced space for label and bar, more room for value */
+  grid-template-columns: 40% 40% 20%;
+  gap: 0 var(--mm-space-1);
   align-items: center;
-  flex: 1; /* WHAT: Each bar row takes equal vertical space */
-  min-height: clamp(24px, 4cqh, 44px); /* WHAT: Scales with container height */
+  flex: 1;
+  padding: 0 var(--mm-space-1);
 }
 
 .barLabel {
-  font-size: clamp(0.65rem, 1.8cqw, 0.9rem);
+  /* WHAT: Bar label - 45% of bar height with 10% line spacing */
+  /* WHY: Proportional to bar, readable with 2-line wrapping */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--mm-space-2);
+  font-size: 4.95cqh;
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
+  line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 
 .barTrack {
   background: var(--mm-gray-200);
-  height: clamp(14px, 2.6cqw, 32px);
-  border-radius: var(--mm-radius-md);
+  /* WHAT: 11% of cell height, max 50% of cell width, semicircular ends
+   * WHY: Centralized system - no hardcoded pixels, responsive to cell size
+   * HOW: 11cqh height, 5.5cqh radius = 50% of height = semicircular ends */
+  height: 11cqh;
+  max-width: 50cqw;
+  border-radius: 5.5cqh; /* WHAT: 50% of bar height (11cqh ÷ 2) for semicircular ends */
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  border-radius: var(--mm-radius-md);
+  border-radius: 5.5cqh; /* WHAT: Match track radius (50% of bar height) for seamless pill shape */
   transition: width var(--transition-normal);
 }
 
 .barValue {
-  font-size: clamp(0.75rem, 2cqw, 1rem);
-  font-weight: var(--mm-font-weight-semibold);
+  /* WHAT: Bar value - always 50% of bar height (5.5cqh) */
+  /* WHY: Proportional to bar across all chart dimensions */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 11cqh;
+  padding-left: var(--mm-space-2);
+  font-size: 5.5cqh;
+  font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
-  text-align: right;
+  text-align: left;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Text Chart - Uses base .chart structure */
@@ -358,23 +422,23 @@
 /* Image Chart - SIMPLIFIED */
 .image {
   background: var(--mm-white) !important;
-  border-radius: var(--mm-radius-lg);
+  border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
-  overflow: hidden !important;
+  overflow: hidden !important; /* Clip image to rounded corners */
   /* Inherits height: 100% from base .chart - fills row */
 }
 
-/* WHAT: <img> element fills container while maintaining aspect ratio */
-/* WHY: object-fit: contain shows full image and respects natural aspect ratio */
+/* WHAT: <img> element fills container and crops to fit */
+/* WHY: object-fit: cover fills container completely while maintaining aspect ratio */
+/* HOW: Image covers entire container, cropped to fit with centered position */
 .imageContent {
   display: block;
   width: 100%;
   height: 100%; /* Fill the .image container */
-  object-fit: contain; /* Show full image, maintain natural aspect ratio */
-  object-position: center;
+  object-fit: cover; /* Fill container, crop as needed to maintain aspect ratio */
+  object-position: center; /* Center the cropped image */
+  border-radius: var(--mm-radius-lg); /* Match container rounded corners */
 }
-
-/* NO aspect-ratio CSS needed - object-fit: contain maintains image's natural ratio */
 
 /* VALUE Composite Chart */
 .valueComposite {
@@ -397,27 +461,47 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .chart {
-    padding: var(--mm-space-3);
-  }
-  
-  .kpi {
-    padding: var(--mm-space-4);
-  }
-  
-  /* REMOVED: .kpiValue font-size override - let clamp() handle all screen sizes */
-  
   .pieSegments {
     flex-direction: column;
     gap: var(--mm-space-4);
   }
   
   .barRow {
-    grid-template-columns: 80px 1fr 60px;
+    /* WHAT: Same rem-based columns as desktop - fully responsive
+     * WHY: No hardcoded pixels, consistent design token system */
+    grid-template-columns: minmax(5rem, 22cqw) 1fr minmax(3.75rem, 16cqw);
     gap: var(--mm-space-2);
   }
   
   .barLabel {
     font-size: var(--mm-font-size-xs);
+  }
+  
+  /* WHAT: Force explicit height on all non-image charts in mobile */
+  /* WHY: aspect-ratio can break document flow, use explicit min-height */
+  .chart:not(.image) {
+    min-height: 250px !important; /* Explicit minimum height */
+    height: auto !important;
+    width: 100% !important;
+    max-height: none !important;
+    flex: none !important;
+    position: relative !important; /* Ensure normal document flow */
+    overflow: hidden !important;
+  }
+  
+  /* WHAT: Image charts maintain their natural aspect ratio on mobile */
+  /* WHY: Images shouldn't be forced into 2:1, respect original dimensions */
+  .image {
+    height: auto !important;
+    min-height: 250px !important; /* Ensure images are visible */
+    position: relative !important;
+  }
+  
+  .imageContent {
+    /* WHAT: Show full image with natural aspect ratio */
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: contain !important; /* Show full image on mobile */
+    max-height: none !important;
   }
 }

@@ -14,6 +14,7 @@ export interface Chart {
   type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value';
   formula: string;
   icon: string;
+  iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
   isActive: boolean;
   order: number;
   elements?: Array<{
@@ -47,6 +48,7 @@ export interface ChartResult {
   type: Chart['type'];
   title: string;
   icon: string;
+  iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
   kpiValue?: number | string;
   elements?: Array<{
     label: string;
@@ -142,6 +144,7 @@ export class ReportCalculator {
         type: chart.type,
         title: chart.title,
         icon: chart.icon,
+        iconVariant: chart.iconVariant,
         error: error instanceof Error ? error.message : 'Calculation failed'
       };
     }
@@ -160,6 +163,7 @@ export class ReportCalculator {
       type: 'kpi',
       title: chart.title,
       icon: chart.icon,
+      iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'number' ? value : 'NA',
       formatting: chart.formatting,
       showTitle: chart.showTitle
@@ -188,6 +192,7 @@ export class ReportCalculator {
       type: chart.type,
       title: chart.title,
       icon: chart.icon,
+      iconVariant: chart.iconVariant,
       elements: validElements,
       formatting: chart.formatting,
       showTitle: chart.showTitle
@@ -222,6 +227,7 @@ export class ReportCalculator {
       type: 'text',
       title: chart.title,
       icon: chart.icon,
+      iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
       showTitle: chart.showTitle
     };
@@ -255,6 +261,7 @@ export class ReportCalculator {
       type: 'image',
       title: chart.title,
       icon: chart.icon,
+      iconVariant: chart.iconVariant,
       kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
       aspectRatio: chart.aspectRatio || '16:9',
       showTitle: chart.showTitle
@@ -282,6 +289,7 @@ export class ReportCalculator {
       type: 'value',
       title: chart.title,
       icon: chart.icon,
+      iconVariant: chart.iconVariant,
       kpiValue: typeof kpiValue === 'number' ? kpiValue : 0,
       elements: elements.filter(el => typeof el.value === 'number' && el.value >= 0),
       formatting: chart.formatting,

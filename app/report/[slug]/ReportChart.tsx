@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -13,8 +13,9 @@ import {
   Legend,
   ChartOptions
 } from 'chart.js';
-import * as LucideIcons from 'lucide-react';
 import type { ChartResult } from '@/lib/report-calculator';
+import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
+import MaterialIcon from '@/components/MaterialIcon';
 import styles from './ReportChart.module.css';
 
 // Register Chart.js components for pie charts
@@ -35,21 +36,6 @@ function formatValue(
   return `${prefix}${formattedNumber}${suffix}`;
 }
 
-/**
- * WHAT: Calculate aspect ratio from chart width (grid units)
- * WHY: Maintain consistent aspect ratios based on chart width
- * HOW: Follow chart height calculation rules
- */
-function getKPIAspectRatio(width: number = 1): string {
-  if (width === 1) {
-    return '2 / 1'; // 1 unit → 2:1 aspect ratio (more portrait)
-  }
-  if (width === 2 || width === 3) {
-    return `${width} / 1`; // 2 units → 2:1, 3 units → 3:1
-  }
-  // 4+ units → use 3:1 as maximum
-  return '3 / 1';
-}
 
 /**
  * Props for ReportChart component
@@ -124,7 +110,7 @@ export default function ReportChart({ result, width, className }: ReportChartPro
   // Render based on chart type
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} className={className} width={width} />;
+      return <KPIChart result={result} className={className} />;
     
     case 'pie':
       return <PieChart result={result} className={className} />;
@@ -142,7 +128,7 @@ export default function ReportChart({ result, width, className }: ReportChartPro
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} width={width} />
+          <KPIChart result={result} className={className} />
           <BarChart result={result} />
         </div>
       );
@@ -156,98 +142,35 @@ export default function ReportChart({ result, width, className }: ReportChartPro
   }
 }
 
-/**
- * WHAT: Map common icon names to Lucide SVG icons
- * WHY: Allow chart configs to use simple names that map to Lucide components
- * HOW: Maps Material Icon names and common names to Lucide equivalents
- */
-function getLucideIcon(iconName: string | undefined): React.ComponentType<any> {
-  const iconMap: Record<string, React.ComponentType<any>> = {
-    // Analytics & Stats
-    'analytics': LucideIcons.BarChart3,
-    'trending_up': LucideIcons.TrendingUp,
-    'trending_down': LucideIcons.TrendingDown,
-    'bar_chart': LucideIcons.BarChart,
-    'pie_chart': LucideIcons.PieChart,
-    'show_chart': LucideIcons.TrendingUp,
-    
-    // People & Users
-    'people': LucideIcons.Users,
-    'person': LucideIcons.User,
-    'groups': LucideIcons.Users,
-    'group': LucideIcons.Users,
-    'account_circle': LucideIcons.UserCircle,
-    
-    // Images & Media
-    'image': LucideIcons.Image,
-    'photo_camera': LucideIcons.Camera,
-    'camera': LucideIcons.Camera,
-    'collections': LucideIcons.Images,
-    'photo': LucideIcons.Image,
-    
-    // Location & Places
-    'location_on': LucideIcons.MapPin,
-    'place': LucideIcons.MapPin,
-    'stadium': LucideIcons.Building2,
-    
-    // Commerce & Shopping
-    'shopping_cart': LucideIcons.ShoppingCart,
-    'store': LucideIcons.Store,
-    'attach_money': LucideIcons.DollarSign,
-    'euro': LucideIcons.Euro,
-    
-    // Communication
-    'email': LucideIcons.Mail,
-    'phone': LucideIcons.Phone,
-    'chat': LucideIcons.MessageCircle,
-    
-    // Actions
-    'visibility': LucideIcons.Eye,
-    'download': LucideIcons.Download,
-    'share': LucideIcons.Share2,
-    'favorite': LucideIcons.Heart,
-    'star': LucideIcons.Star,
-    
-    // Default fallback
-  };
-  
-  return iconMap[iconName || ''] || LucideIcons.BarChart3;
-}
 
 /**
- * KPI Chart - Large metric display with SVG Icon
- * STRUCTURE: Always contains 3 rows (3fr:4fr:3fr)
- * 1. SVG Icon (3fr - 30% height) - dynamically scaled
- * 2. Value/Number (4fr - 40% height - DOMINANT)
- * 3. Label/Description (3fr - 30% height)
+ * KPI Chart - 3-row grid layout with CSS-only auto-sizing
+ * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  */
-function KPIChart({ result, className, width }: { result: ChartResult; className?: string; width?: number }) {
-  // Format the KPI value
+function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
+  const protectedTitle = preventPhraseBreaks(result.title);
   
-  // Get Lucide icon component
-  const IconComponent = getLucideIcon(result.icon);
-  
-  // Calculate aspect ratio based on chart width
-  const aspectRatio = getKPIAspectRatio(width || 1);
+  // WHAT: Use Material Icon with variant from chart config
+  // WHY: Match admin UI and support all 2000+ Material Icons
+  // HOW: Pass icon name and variant (default: outlined) to MaterialIcon component
+  const iconVariant = result.iconVariant || 'outlined';
   
   return (
-    <div className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} 
-      data-report-section="content"
-      style={{ ['--kpi-aspect-ratio' as string]: aspectRatio } as React.CSSProperties}
-    >
+    <div className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} data-report-section="content">
       <div className={styles.chartBody}>
         <div className={styles.kpiContent}>
-          {/* Row 1: SVG Icon (3fr - 30% height) - scales dynamically */}
           <div className={styles.kpiIconRow}>
-            <IconComponent className={styles.kpiIcon} aria-label={result.title} />
+            {result.icon && (
+              <MaterialIcon 
+                name={result.icon} 
+                variant={iconVariant}
+                className={styles.kpiIcon}
+              />
+            )}
           </div>
-          
-          {/* Row 2: Value/Number (5fr - 50% height - DOMINANT) */}
           <div className={styles.kpiValue}>{formattedValue}</div>
-          
-          {/* Row 3: Label/Description (2fr - 20% height) */}
-          <div className={styles.kpiTitle}>{result.title || ''}</div>
+          <div className={styles.kpiTitle}>{protectedTitle}</div>
         </div>
       </div>
     </div>
@@ -259,6 +182,7 @@ function KPIChart({ result, className, width }: { result: ChartResult; className
  */
 function PieChart({ result, className }: { result: ChartResult; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No pie data</div>;
@@ -301,7 +225,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
       // WHY: Creates visual separation with consistent branding
       borderColor: themeColors[0],
       borderWidth: 2,
-      hoverOffset: 8
+      hoverOffset: 6 // WHAT: Reduced from 8 to prevent overflow
     }]
   };
   
@@ -310,38 +234,12 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     responsive: true,
     maintainAspectRatio: false,
     cutout: '50%',
+    layout: {
+      padding: 10 // WHAT: Padding to prevent hover overflow
+    },
     plugins: {
       legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          color: 'rgb(75, 85, 99)',
-          font: { size: 13, family: 'inherit', weight: 500 },
-          padding: 12,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          generateLabels: (chart) => {
-            const datasets = chart.data.datasets;
-            const labels = chart.data.labels || [];
-            if (!datasets.length || !datasets[0].data.length) return [];
-            
-            return labels.map((label, index) => {
-              const value = datasets[0].data[index] as number;
-              const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              const backgroundColor = datasets[0].backgroundColor as string[];
-              
-              return {
-                text: `${label}: ${percentage}%`,
-                fillStyle: backgroundColor[index],
-                strokeStyle: backgroundColor[index],
-                lineWidth: 0,
-                hidden: false,
-                index,
-                pointStyle: 'circle' as const
-              };
-            });
-          }
-        }
+        display: false // WHAT: Hide Chart.js legend, use custom HTML legend
       },
       tooltip: {
         enabled: true,
@@ -359,15 +257,34 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   };
 
   return (
-    <div className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`} data-report-section="content">
+    <div ref={containerRef} className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`} data-report-section="content">
       {showTitle && (
         <div className={styles.chartHeader}>
           <div className={styles.chartTitle}>{result.title}</div>
         </div>
       )}
       <div className={styles.chartBody}>
+        {/* Pie chart takes 70% of body */}
         <div className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
+        </div>
+        {/* Custom legend takes 30% of body */}
+        <div className={styles.pieLegend}>
+          {result.elements.map((element, idx) => {
+            const numValue = typeof element.value === 'number' ? element.value : 0;
+            const percentage = total > 0 ? ((numValue / total) * 100).toFixed(1) : '0.0';
+            const color = themeColors[idx % themeColors.length];
+            const protectedLabel = preventPhraseBreaks(element.label);
+            
+            return (
+              <div key={idx} className={styles.pieLegendItem}>
+                <div className={styles.pieLegendDot} style={{ backgroundColor: color }} />
+                <div className={styles.pieLegendText}>
+                  {protectedLabel}: {percentage}%
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -414,10 +331,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
         {result.elements.map((element, idx) => {
           const numValue = typeof element.value === 'number' ? element.value : 0;
           const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
+          const protectedLabel = preventPhraseBreaks(element.label);
           
           return (
             <div key={idx} className={styles.barRow}>
-              <div className={styles.barLabel}>{element.label}</div>
+              <div className={styles.barLabel}>{protectedLabel}</div>
               <div className={styles.barTrack}>
                 <div 
                   className={styles.barFill}
