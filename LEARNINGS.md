@@ -1,5 +1,212 @@
 # MessMass Development Learnings
 
+## [v11.36.3] - 2025-12-19T16:35:00.000Z — TypeScript Imports Must Reference Actual Files, Not Assumptions
+
+### Context
+Implemented responsive image chart system with ResizeObserver for dynamic height calculation. Build succeeded locally but failed on Vercel with: `Cannot find module '@/types/report'`.
+
+### Problem
+**Root Cause**: Import statement referenced non-existent file path based on assumption about project structure
+
+**What went wrong**:
+```typescript
+// ReportContent.tsx (incorrect)
+import type { ReportBlock, GridSettings } from '@/types/report';
+// Build error: Cannot find module '@/types/report'
+
+// Reality: These types are defined in hooks/useReportLayout.ts, not types/report.ts
+// File types/report.ts doesn't exist!
+```
+
+**Why it happened**:
+- During rapid development, assumed types would be in `@/types/report`
+- Local TypeScript cache may have masked the error temporarily
+- Did not run full build (`npm run build`) before committing
+- Vercel's clean build environment caught the error immediately
+
+### Solution
+**Step 1**: Located actual type definitions using grep:
+```bash
+grep -r "interface ReportBlock" /path/to/messmass
+# Found in: hooks/useReportLayout.ts (line 13)
+```
+
+**Step 2**: Fixed import path:
+```typescript
+// Before (wrong)
+import type { ReportBlock, GridSettings } from '@/types/report';
+
+// After (correct)
+import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
+```
+
+### Secondary Issue: GitHub Secret Protection
+
+**Problem**: Push was blocked by GitHub secret scanning:
+```
+remote: error: GH013: Repository rule violations found
+remote: - Push cannot contain secrets
+remote:   GitHub Personal Access Token detected in WARP.md:7
+```
+
+**What went wrong**:
+- Added GitHub token to WARP.md for convenience
+- Added WARP.md to .gitignore
+- But committed WARP.md BEFORE .gitignore took effect
+- Token was in commit history, triggering push protection
+
+**Solution**:
+```bash
+# Undo commit with secret
+git reset --soft HEAD~1
+
+# Unstage WARP.md
+git reset HEAD WARP.md
+
+# Commit only non-sensitive files
+git commit -m "Fix import and add WARP.md to gitignore"
+
+# Push successfully
+git push origin main
+```
+
+### Key Learnings
+
+**1. Always Run Full Build Before Committing**
+```bash
+# Pre-commit checklist:
+npm run build        # Full production build
+npm run type-check   # TypeScript validation
+npm run lint         # ESLint validation
+
+# Why? Local dev server (npm run dev) uses incremental compilation
+# and may not catch all TypeScript errors that production build will.
+```
+**Lesson**: Development server ≠ production build. Always test production build locally.
+
+**2. Use Grep to Verify Import Paths**
+```bash
+# Before adding import, verify the type exists:
+grep -r "interface TypeName" src/
+grep -r "type TypeName" src/
+
+# Verify the import path resolves:
+ls -la src/types/report.ts  # Does this file exist?
+```
+**Lesson**: Don't assume file structure. Verify paths before importing.
+
+**3. .gitignore Must Be Committed BEFORE Protected Files**
+```bash
+# WRONG order:
+git add sensitiveFile.txt
+git add .gitignore  # Too late! sensitiveFile.txt already staged
+git commit -m "Add config"
+
+# CORRECT order:
+echo "sensitiveFile.txt" >> .gitignore
+git add .gitignore
+git commit -m "Update gitignore"
+# Now safe to create sensitiveFile.txt locally
+```
+**Lesson**: .gitignore entries only affect unstaged files. They don't retroactively unstage files.
+
+**4. Local Configuration Files Should Never Be Committed**
+```bash
+# Pattern: Files with local secrets/tokens
+# Examples: WARP.md, .env.local, credentials.json
+
+# Best practice:
+# 1. Add to .gitignore FIRST
+# 2. Create .example version without secrets
+# 3. Document in README how to set up local config
+
+# WARP.md.example (safe to commit):
+## GitHub Access Token
+**Token:** `<your-token-here>`
+**Usage:** git push https://${GITHUB_TOKEN}@github.com/user/repo.git
+```
+**Lesson**: Separate local config (ignored) from config templates (committed).
+
+**5. TypeScript Path Aliases Need tsconfig.json Mapping**
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@/types/*": ["./types/*"],
+      "@/hooks/*": ["./hooks/*"]
+    }
+  }
+}
+```
+**Lesson**: `@/` aliases are configured, not magic. Verify alias paths exist in tsconfig.json.
+
+### Impact
+
+**Before v11.36.3**:
+- ❌ Vercel build failing
+- ❌ Cannot deploy responsive image charts to production
+- ❌ TypeScript error blocks entire deployment
+- ❌ Push blocked by GitHub secret protection
+
+**After v11.36.3**:
+- ✅ Correct import path: `@/hooks/useReportLayout`
+- ✅ Vercel build succeeds
+- ✅ WARP.md properly ignored with token safe locally
+- ✅ Responsive image charts deployed to production
+- ✅ All cells resize correctly maintaining aspect ratios
+
+### Files Modified
+
+**Code**:
+- `app/report/[slug]/ReportContent.tsx` - Fixed import path (line 8)
+- `.gitignore` - Added WARP.md to prevent committing tokens (line 89)
+
+**Documentation**:
+- `WARP.md` - Added GitHub token section (local only, not committed)
+
+### Prevention Checklist
+
+**Before every commit**:
+```bash
+# 1. Build check
+npm run build
+
+# 2. Type check
+npm run type-check
+
+# 3. Verify no secrets staged
+git diff --staged | grep -i "token\|password\|secret\|key"
+
+# 4. Check .gitignore is up to date
+git status --ignored
+```
+
+**Before every deployment**:
+```bash
+# 1. Test production build locally
+npm run build && npm run start
+
+# 2. Verify environment variables
+vercel env pull .env.local
+
+# 3. Test critical user flows
+# - Image loading and aspect ratio
+# - Responsive behavior on mobile/tablet/desktop
+```
+
+### Version
+
+**Before**: v11.36.2 (build error on Vercel)  
+**After**: v11.36.3 (correct imports, successful deployment)
+
+### Category
+
+TypeScript / Imports / Build / Deployment / Security
+
+---
+
 ## [v11.18.0] - 2025-11-13T14:30:00.000Z — Regex Negative Lookahead/Lookbehind Prevents Double-Substitution
 
 ### Context
