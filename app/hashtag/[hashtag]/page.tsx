@@ -33,6 +33,8 @@ interface HashtagReportData {
     eventName: string;
     eventDate: string;
     viewSlug?: string;
+    createdAt: string;
+    updatedAt: string;
   }>;
 }
 
