@@ -495,7 +495,16 @@ export default function VisualizationPage() {
   
   // Calculate preview results for a given block's charts using the same pipeline as stats pages
   const calculatePreviewForBlock = useCallback((block: DataVisualizationBlock) => {
-    if (!chartConfigs || chartConfigs.length === 0) return;
+    console.log('🔍 calculatePreviewForBlock called:', {
+      blockName: block.name,
+      blockCharts: block.charts.map(c => c.chartId),
+      chartConfigsAvailable: chartConfigs.length
+    });
+    
+    if (!chartConfigs || chartConfigs.length === 0) {
+      console.warn('⚠️ No chart configs available for preview calculation');
+      return;
+    }
 
     try {
       setIsCalculating(true);
@@ -524,9 +533,15 @@ export default function VisualizationPage() {
 
       // Calculate using the shared calculator
       const results = calculateActiveCharts(chartConfigs, baselineStats);
+      console.log('✅ calculateActiveCharts returned:', {
+        resultsCount: results.length,
+        chartIds: results.map(r => r.chartId)
+      });
+      
       // Normalize into a map for quick lookup by chartId
       const map: Record<string, ChartCalculationResult> = {};
       results.forEach(r => { map[r.chartId] = r; });
+      console.log('📊 Preview results map:', Object.keys(map));
       setPreviewResults(prev => ({ ...prev, ...map }));
     } catch (err) {
       console.error('Failed to calculate preview charts:', err);

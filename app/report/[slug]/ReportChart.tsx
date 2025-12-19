@@ -232,8 +232,7 @@ function KPIChart({ result, className, width }: { result: ChartResult; className
   const aspectRatio = getKPIAspectRatio(width || 1);
   
   return (
-    <div 
-      className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} 
+    <div className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} 
       data-report-section="content"
       style={{ ['--kpi-aspect-ratio' as string]: aspectRatio } as React.CSSProperties}
     >

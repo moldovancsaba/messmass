@@ -200,10 +200,10 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateText(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "stats.reportText1")
+    // WHAT: Detect simple variable reference (e.g., "stats.reportText1" OR "reportText1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is stats.fieldName pattern without operators
-    const simpleVarMatch = chart.formula?.match(/^stats\.([a-zA-Z0-9_]+)$/);
+    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
@@ -233,10 +233,10 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateImage(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "stats.reportImage1")
+    // WHAT: Detect simple variable reference (e.g., "stats.reportImage1" OR "reportImage1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is stats.fieldName pattern without operators
-    const simpleVarMatch = chart.formula?.match(/^stats\.([a-zA-Z0-9_]+)$/);
+    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     

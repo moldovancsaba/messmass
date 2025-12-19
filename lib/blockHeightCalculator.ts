@@ -6,37 +6,82 @@ import type { BlockLayoutInput, BlockLayoutResult, CellConfiguration } from './b
 import { getAspectRatioValue } from './aspectRatioResolver';
 
 /**
- * Solve block height (H) so that sum(width_i) == blockWidthPx while preserving image aspect ratios.
- * - IMAGE: width_i = a_i * H (a_i = aspect ratio)
- * - TEXT: width_i = explicit fixed width (caller decides) or proportional units (handled upstream)
- * - KPI/PIE/BAR: width_i provided by upstream grid (1 or 2 units) → handled via CSS fr; here we only solve H when images present
- *
- * For practical purposes, we solve H only when at least one IMAGE cell is present.
+ * WHAT: Solve block height (H) using deterministic formula from spec
+ * WHY: All cells in block must share same height while respecting image aspect ratios
+ * HOW: H = (blockWidth - sum(non_image_widths)) / sum(image_aspect_ratios)
+ * 
+ * Formula derivation:
+ * blockWidth = sum(all cell widths)
+ * blockWidth = sum(image widths) + sum(non-image widths)
+ * blockWidth = sum(aspectRatio_i × H) + sum(cellWidth_i × widthPerUnit)
+ * blockWidth = H × sum(aspectRatios) + sum(non-image widths)
+ * H = (blockWidth - sum(non-image widths)) / sum(aspectRatios)
+ * 
+ * @param cells - Array of cell configurations with width units and types
+ * @param blockWidthPx - Total block width (e.g., 1200px)
+ * @returns Calculated block height in pixels
  */
-export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidthPx: number, textFixedWidthPx = 300): number {
-  // Sum of image width contributions is (sum a_i) * H
-  let sumAspect = 0;
-  let fixedWidth = 0;
-
-  for (const c of cells) {
-    if (c.bodyType === 'image') {
-      const a = getAspectRatioValue(c.aspectRatio || '16:9');
-      sumAspect += a;
-    } else if (c.bodyType === 'text') {
-      fixedWidth += textFixedWidthPx; // spec: TEXT width allocated explicitly
-    } else {
-      // Non-image/text cells treated as proportional via grid; they do not affect H directly here
-    }
-  }
-
-  if (sumAspect <= 0) {
-    // No images → fallback: use a default H based on block width (e.g., 1:1 tile height for 1-unit)
-    // Caller may override. Use conservative 360px.
+export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidthPx: number): number {
+  // WHAT: Calculate total units in the block
+  // WHY: Need to know width per unit
+  const totalUnits = cells.reduce((sum, c) => sum + c.cellWidth, 0);
+  
+  if (totalUnits === 0) {
+    console.warn('[BlockHeightCalculator] No cells in block, using default height');
     return 360;
   }
-
-  const H = (blockWidthPx - fixedWidth) / sumAspect;
-  return Math.max(120, Math.floor(H)); // guardrail: min height 120px
+  
+  // WHAT: Calculate width per unit
+  // WHY: Each cell width unit represents this many pixels
+  const widthPerUnit = blockWidthPx / totalUnits;
+  
+  // WHAT: Sum aspect ratios of IMAGE cells
+  // WHY: Image width = aspectRatio × H, so total image width = H × sum(aspectRatios)
+  let sumAspectRatios = 0;
+  
+  // WHAT: Calculate total width of non-IMAGE cells
+  // WHY: These cells have fixed width based on their units
+  let nonImageWidth = 0;
+  
+  for (const c of cells) {
+    if (c.bodyType === 'image') {
+      // IMAGE cell: width = aspectRatio × H
+      const aspectRatio = getAspectRatioValue(c.aspectRatio || '16:9');
+      sumAspectRatios += aspectRatio;
+    } else {
+      // Non-IMAGE cell (KPI, PIE, BAR, TEXT): width = cellWidth × widthPerUnit
+      nonImageWidth += c.cellWidth * widthPerUnit;
+    }
+  }
+  
+  // WHAT: If no images, return default height
+  // WHY: Without aspect ratios, height must be set arbitrarily
+  if (sumAspectRatios <= 0) {
+    console.warn('[BlockHeightCalculator] No images in block, using default height');
+    return 360;
+  }
+  
+  // WHAT: Apply deterministic formula
+  // WHY: Ensures all cells fit in blockWidth while images maintain aspect ratio
+  const H = (blockWidthPx - nonImageWidth) / sumAspectRatios;
+  
+  // WHAT: Apply reasonable bounds
+  // WHY: Prevent extreme values from edge cases
+  const minHeight = 150;
+  const maxHeight = 800;
+  const clampedHeight = Math.max(minHeight, Math.min(maxHeight, H));
+  
+  console.log('[BlockHeightCalculator]', {
+    blockWidthPx,
+    totalUnits,
+    widthPerUnit: widthPerUnit.toFixed(2),
+    sumAspectRatios: sumAspectRatios.toFixed(4),
+    nonImageWidth: nonImageWidth.toFixed(2),
+    calculatedH: H.toFixed(2),
+    clampedH: clampedHeight.toFixed(2)
+  });
+  
+  return Math.round(clampedHeight);
 }
 
 export function calculateBlockLayout(input: BlockLayoutInput): BlockLayoutResult {

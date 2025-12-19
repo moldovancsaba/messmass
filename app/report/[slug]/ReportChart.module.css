@@ -10,8 +10,9 @@
   flex-direction: column;
   width: 100% !important; /* WHAT: Fill parent gridItem horizontally (CRITICAL FIX) */
   max-width: none !important; /* CRITICAL: Remove any max-width constraints */
+  height: 100% !important; /* CRITICAL: Fill parent row height (deterministic) */
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
-  /* REMOVED: Fixed min-height - let aspect ratio control dimensions */
+  /* REMOVED: min-height - row height is deterministic from block calculator */
   
   /* WHAT: Visual styling */
   background: var(--mm-white) !important;
@@ -58,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
+  height: 100%; /* Fill parent height */
   background: var(--mm-gray-50);
   border: 2px dashed var(--mm-gray-300);
 }
@@ -237,9 +238,9 @@
 .pieChartContainer {
   flex: 1; /* WHAT: Fill available vertical space */
   width: 100%;
+  height: 100%; /* CRITICAL: Fill parent height */
   position: relative;
-  min-height: 250px; /* WHAT: Ensure minimum readable size */
-  /* REMOVED max-height: Charts should fill equal space in grid rows */
+  /* REMOVED: min-height - height is deterministic from block calculator */
 }
 
 /* Bar Chart - Uses base .chart structure */
@@ -310,6 +311,10 @@
 }
 
 /* Text Chart - Uses base .chart structure */
+.text {
+  /* REMOVED: min-height - height is deterministic from block calculator */
+}
+
 .text .chartBody {
   align-items: flex-start;
   justify-content: flex-start;
@@ -323,10 +328,13 @@
 }
 
 .textContent {
+  flex: 1; /* CRITICAL: Fill available space */
+  width: 100%; /* CRITICAL: Fill container width */
   font-size: clamp(0.85rem, 2.2cqw, 1rem);
   color: var(--mm-gray-700);
   line-height: 1.5;
   white-space: pre-wrap;
+  padding: var(--mm-space-3); /* Add padding for readability */
 }
 
 /* Image Chart */
@@ -335,6 +343,7 @@
   overflow: hidden;
   width: 100% !important; /* CRITICAL: Fill full width */
   max-width: none !important; /* CRITICAL: Remove max-width */
+  /* REMOVED: min-height - height is deterministic from block calculator */
   display: flex !important;
   flex-direction: column !important;
 }
@@ -350,6 +359,8 @@
 .imageContent {
   width: 100% !important;
   max-width: none !important; /* CRITICAL: Remove max-width */
+  flex: 1 !important; /* CRITICAL: Fill available space */
+  height: 100% !important; /* CRITICAL: Fill parent height */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -380,7 +391,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 150px;
+  height: 100%; /* Fill parent height */
   background: var(--mm-red-50);
   color: var(--mm-red-700);
   font-size: var(--mm-font-size-sm);

@@ -4,10 +4,12 @@
 
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReportChart from './ReportChart';
 import type { ChartResult } from '@/lib/report-calculator';
 import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
+import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
+import type { CellConfiguration } from '@/lib/blockLayoutTypes';
 import styles from './ReportContent.module.css';
 
 /**
@@ -118,6 +120,31 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
     chartResults.has(chart.chartId)
   );
   
+  // WHAT: Calculate deterministic block height from image aspect ratios
+  // WHY: Spec requirement - all cells in block must share same height
+  // HOW: Use solveBlockHeightWithImages utility
+  const blockHeight = useMemo(() => {
+    const blockWidthPx = 1200; // Standard desktop width
+    
+    // Convert chart results to cell configurations
+    const cells: CellConfiguration[] = validCharts
+      .flatMap(chart => {
+        const result = chartResults.get(chart.chartId);
+        if (!result) return [];
+        
+        return [{
+          chartId: chart.chartId,
+          cellWidth: (chart.width || 1) as 1 | 2,
+          bodyType: result.type as any,
+          aspectRatio: result.aspectRatio,
+          title: result.title,
+          subtitle: undefined
+        }];
+      });
+    
+    return solveBlockHeightWithImages(cells, blockWidthPx);
+  }, [validCharts, chartResults]);
+  
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
     console.log(`⚠️ [ReportBlock] Block "${block.title || 'Untitled'}":`, {
@@ -163,7 +190,8 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
             className={`${styles.row} report-content`}
             data-report-section="content"
             style={{
-              gridTemplateColumns: gridColumns
+              gridTemplateColumns: gridColumns,
+              height: `${blockHeight}px` // WHAT: Apply calculated deterministic height
             } as React.CSSProperties}
           >
             {rowCharts.map(chart => {
