@@ -5,7 +5,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import type { ReportBlock, GridSettings } from '@/types/report';
+import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
 import type { ChartResult } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
