@@ -123,8 +123,16 @@ async function resolveReportTemplate(
           if (template) {
             console.log(`✅ Using partner template: ${template.name} (via ${partner.name})`);
             const populated = await populateDataBlocks(template);
+            
+            // WHAT: Merge partner's styleId if template doesn't have one
+            // WHY: Partner branding should apply even when accessed via project
+            const finalTemplate = {
+              ...populated,
+              styleId: populated.styleId || partner.styleId || null
+            };
+            
             return {
-              template: populated as ReportTemplate,
+              template: finalTemplate as ReportTemplate,
               resolvedFrom: 'partner',
               source: partner.name || partner._id.toString()
             };
@@ -157,8 +165,23 @@ async function resolveReportTemplate(
         if (template) {
           console.log(`✅ Using partner-specific template: ${template.name}`);
           const populated = await populateDataBlocks(template);
+          
+          // WHAT: Merge partner's styleId if template doesn't have one
+          // WHY: Partner branding should apply to their reports even if template is shared
+          // HOW: Override template.styleId with partner.styleId when template has null
+          const finalTemplate = {
+            ...populated,
+            styleId: populated.styleId || partner.styleId || null
+          };
+          
+          console.log('🎨 StyleId resolution:', {
+            templateStyleId: populated.styleId,
+            partnerStyleId: partner.styleId,
+            finalStyleId: finalTemplate.styleId
+          });
+          
           return {
-            template: populated as ReportTemplate,
+            template: finalTemplate as ReportTemplate,
             resolvedFrom: 'partner',
             source: partner.name || partner._id.toString()
           };
