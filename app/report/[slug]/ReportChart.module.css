@@ -107,10 +107,10 @@
 }
 
 .kpiContent {
-  /* WHAT: CSS Grid with 3:5:2 ratio for icon:number:description */
-  /* WHY: Keep consistent visual rhythm while maximizing value area without overflow */
+  /* WHAT: CSS Grid with 3:4:3 ratio for icon:number:description */
+  /* WHY: Balance icon and label prominence with strong value emphasis */
   display: grid !important;
-  grid-template-rows: 3fr 5fr 2fr; /* 30% icon, 50% value, 20% description */
+  grid-template-rows: 3fr 4fr 3fr; /* 30% icon, 40% value, 30% description */
   height: 100% !important;
   width: 100%;
   max-width: none !important;

@@ -216,10 +216,10 @@ function getLucideIcon(iconName: string | undefined): React.ComponentType<any> {
 
 /**
  * KPI Chart - Large metric display with SVG Icon
- * STRUCTURE: Always contains 3 rows (3fr:5fr:2fr)
+ * STRUCTURE: Always contains 3 rows (3fr:4fr:3fr)
  * 1. SVG Icon (3fr - 30% height) - dynamically scaled
- * 2. Value/Number (5fr - 50% height - DOMINANT)
- * 3. Label/Description (2fr - 20% height)
+ * 2. Value/Number (4fr - 40% height - DOMINANT)
+ * 3. Label/Description (3fr - 30% height)
  */
 function KPIChart({ result, className, width }: { result: ChartResult; className?: string; width?: number }) {
   // Format the KPI value
