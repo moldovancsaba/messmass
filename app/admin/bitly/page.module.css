@@ -13,7 +13,7 @@
 
 /* WHAT: Stats text styling */
 .statsText {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 0.875rem;
 }
 
@@ -25,16 +25,16 @@
   gap: 0.5rem;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  background: var(--surface, #fff);
+  background: var(--surface, var(--mm-white));
   border-radius: 0.375rem;
-  border: 1px solid var(--border, #e5e7eb);
+  border: 1px solid var(--border, var(--mm-gray-200));
   font-size: 0.875rem;
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary, var(--mm-gray-500));
   transition: background 0.2s ease;
 }
 
 .favoriteFilter:hover {
-  background: var(--surface-hover, #f9fafb);
+  background: var(--surface-hover, var(--mm-gray-50));
 }
 
 .favoriteFilter input[type="checkbox"] {
@@ -135,17 +135,17 @@
   gap: 4px;
   padding: 2px 8px;
   font-size: 12px;
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
   border-radius: 12px;
-  border: 1px solid #90caf9;
+  border: 1px solid var(--mm-color-cyan-300);
 }
 
 /* WHAT: Remove association button inside chip */
 .removeButton {
   background: none;
   border: none;
-  color: #1976d2;
+  color: var(--mm-color-primary-700);
   cursor: pointer;
   padding: 0;
   font-size: 14px;

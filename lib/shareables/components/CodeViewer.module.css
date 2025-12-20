@@ -11,7 +11,7 @@
   /* WHAT: Theme colors set via CSS variables
      WHY: Support both dark and light themes dynamically */
   background: var(--viewer-bg, rgba(26, 32, 44, 0.95));
-  color: var(--viewer-text, #e2e8f0);
+  color: var(--viewer-text, var(--mm-gray-200));
   border: var(--viewer-border, 1px solid rgba(255, 255, 255, 0.1));
 }
 
@@ -36,16 +36,16 @@
 }
 
 .filename {
-  color: var(--viewer-filename-color, #a0aec0);
+  color: var(--viewer-filename-color, var(--mm-gray-400));
   font-family: Monaco, Consolas, "Ubuntu Mono", monospace;
 }
 
 .title {
-  color: var(--viewer-title-color, #cbd5e0);
+  color: var(--viewer-title-color, var(--mm-gray-300));
 }
 
 .language {
-  color: #718096;
+  color: var(--mm-gray-600);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -61,7 +61,7 @@
 .btn {
   background: none;
   border: none;
-  color: var(--viewer-btn-color, #a0aec0);
+  color: var(--viewer-btn-color, var(--mm-gray-400));
   cursor: pointer;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
@@ -78,7 +78,7 @@
 
 .copyBtn.copied {
   background: rgba(72, 187, 120, 0.2);
-  color: #48bb78;
+  color: var(--mm-color-secondary-500);
 }
 
 .copyBtn.copied:hover {
@@ -111,7 +111,7 @@
 
 /* Line numbers container */
 .lineNumbers {
-  color: var(--viewer-line-number-color, #4a5568);
+  color: var(--viewer-line-number-color, var(--mm-gray-700));
   margin-right: 1rem;
   text-align: right;
   user-select: none;
@@ -141,7 +141,7 @@
   border-top: var(--viewer-collapsed-border, 1px solid rgba(255, 255, 255, 0.1));
   text-align: center;
   font-size: 0.875rem;
-  color: var(--viewer-collapsed-color, #a0aec0);
+  color: var(--viewer-collapsed-color, var(--mm-gray-400));
   transition: background 0.2s ease;
 }
 
@@ -152,42 +152,42 @@
 /* Syntax highlighting classes (injected dynamically) */
 .codeComment { 
   font-style: italic; 
-  color: var(--syntax-comment, #68d391);
+  color: var(--syntax-comment, var(--mm-color-secondary-400));
 }
 
 .codeString { 
-  color: var(--syntax-string, #fbb6ce);
+  color: var(--syntax-string, var(--mm-chart-pink));
 }
 
 .codeKeyword { 
   font-weight: 600; 
-  color: var(--syntax-keyword, #90cdf4);
+  color: var(--syntax-keyword, var(--mm-color-cyan-300));
 }
 
 .codeLiteral { 
-  color: var(--syntax-literal, #f6ad55);
+  color: var(--syntax-literal, var(--mm-color-warning-400));
 }
 
 .codeNumber { 
-  color: var(--syntax-number, #f6ad55);
+  color: var(--syntax-number, var(--mm-color-warning-400));
 }
 
 .codeTag { 
-  color: var(--syntax-tag, #68d391);
+  color: var(--syntax-tag, var(--mm-color-secondary-400));
 }
 
 .codeSelector { 
-  color: var(--syntax-selector, #90cdf4);
+  color: var(--syntax-selector, var(--mm-color-cyan-300));
 }
 
 .codeProperty { 
-  color: var(--syntax-property, #fbb6ce);
+  color: var(--syntax-property, var(--mm-chart-pink));
 }
 
 .codeValue { 
-  color: var(--syntax-value, #f6ad55);
+  color: var(--syntax-value, var(--mm-color-warning-400));
 }
 
 .codeKey { 
-  color: var(--syntax-key, #90cdf4);
+  color: var(--syntax-key, var(--mm-color-cyan-300));
 }

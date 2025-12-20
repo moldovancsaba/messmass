@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-12-17T14:10:14.000Z (UTC)
-Version: 11.30.0
+Last Updated: 2025-12-20T17:40:23Z (UTC)
+Version: 11.37.0
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -1183,6 +1183,321 @@ The system supports sophisticated filtering with both traditional and categorize
 - v2.6.0: Hashtag pages were deprecated in favor of the unified filter system
 - v2.10.0: `/hashtag/[hashtag]` is available for single-hashtag aggregated stats (shares styling and components with filter/stats pages)
 - Redirect behavior may exist for legacy routes, but the hashtag page is supported and styled
+
+---
+
+## 📊 Reporting System v12 Architecture (v11.37.0+)
+
+**Last Updated:** 2025-12-20T17:40:23Z  
+**Status:** Production (v12.0.0 migration in progress)  
+**Technical Audit:** See `TECH_AUDIT_REPORTING_SYSTEM.md` for comprehensive analysis
+
+### Overview
+
+The Reporting System v12 represents a complete architectural migration to a unified, type-safe chart rendering system. The system provides dynamic report generation with formula-based calculations, responsive grid layouts, PDF export, and visual editing through Builder Mode.
+
+**Key Capabilities:**
+- **Dynamic Reports**: Formula-driven charts with real-time calculation
+- **6 Chart Types**: KPI, PIE, BAR, TEXT, IMAGE, VALUE (composite)
+- **Responsive Grid**: CSS Grid with aspect ratio preservation
+- **PDF Export**: Smart pagination with hero repetition
+- **Visual Editor**: Builder Mode for inline report editing
+- **Template System**: Project → Partner → Default hierarchy
+
+### Architecture Components
+
+#### 1. Chart Rendering Pipeline
+
+**Data Flow:**
+```
+Project Stats (MongoDB)
+  ↓
+ReportCalculator (lib/report-calculator.ts)
+  ↓ Evaluates formulas using formulaEngine
+  ↓ Returns ChartResult objects
+ReportContent (app/report/[slug]/ReportContent.tsx)
+  ↓ Layouts blocks with CSS Grid
+  ↓ Manages responsive breakpoints
+ReportChart (app/report/[slug]/ReportChart.tsx)
+  ↓ Renders individual chart types
+  ↓ Handles no-data states
+Chart Type Components (components/charts/*)
+  ↓ KPICard, PieChart, VerticalBarChart, etc.
+  ↓ Final render with styling
+```
+
+#### 2. Core Components
+
+**Primary Renderer:**
+- **`app/report/[slug]/ReportChart.tsx`** - Unified v12 chart renderer (400 lines)
+  - Supports all 6 chart types
+  - Atomic component design
+  - Type-safe props interface
+  - No-data state handling
+
+**Layout Management:**
+- **`app/report/[slug]/ReportContent.tsx`** - Grid layout & block rendering (350 lines)
+  - Responsive row system
+  - Width measurement with ResizeObserver
+  - Height calculation via blockHeightCalculator
+  - Aspect ratio awareness
+
+**Calculation Engine:**
+- **`lib/report-calculator.ts`** - Formula evaluation orchestrator
+  - Batch formula processing
+  - Result caching
+  - Error handling
+  - Type conversion
+
+**Formula Engine:**
+- **`lib/formulaEngine.ts`** - Formula parsing & evaluation (735 lines)
+  - Stats variable resolution
+  - SEYU token support
+  - PARAM token support (marketing multipliers)
+  - MANUAL token support (aggregated data)
+  - Arithmetic operations
+
+#### 3. Chart Types System
+
+| Type | Purpose | Elements | Grid Units | Component |
+|------|---------|----------|------------|----------|
+| **KPI** | Large metric display | 1 | 1 | components/charts/KPICard.tsx |
+| **PIE** | Circular percentage | 2 | 2 | components/charts/PieChart.tsx |
+| **BAR** | Horizontal bars | 5 | 3 | components/charts/VerticalBarChart.tsx |
+| **TEXT** | Formatted text | 1 | 2 | components/charts/TextChart.tsx |
+| **IMAGE** | Aspect ratio images | 1 | 1-3* | components/charts/ImageChart.tsx |
+| **VALUE** | Composite (KPI+BAR) | Variable | 2 | Fragment with 2 grid items |
+
+*IMAGE width determined by aspect ratio:
+- **9:16** (Portrait) → 1 unit
+- **1:1** (Square) → 2 units
+- **16:9** (Landscape) → 3 units
+
+**Aspect Ratio Utilities:**
+- **`lib/aspectRatioUtils.ts`** - Centralized aspect ratio calculations (243 lines)
+  - `calculateImageWidth()` - Grid unit conversion
+  - `calculatePixelHeight()` - PDF export dimensions
+  - `getAspectRatioConfig()` - Full configuration
+  - 10 utility functions total
+
+#### 4. Builder Mode (v11.10.0)
+
+**Component:** `components/BuilderMode.tsx` (226 lines)
+
+**Purpose:** Visual report template editor with inline inputs
+
+**Architecture:**
+```
+BuilderMode
+├── Template Fetching
+│   ├── /api/report-config/[projectId]?type=project
+│   └── Hierarchy: project → partner → default → hardcoded
+├── Chart Configuration
+│   ├── /api/chart-config/public
+│   └── All chart definitions loaded
+├── Chart Builders (Type-Specific)
+│   ├── ChartBuilderKPI.tsx (92 lines) - 1 numeric input
+│   ├── ChartBuilderBar.tsx (125 lines) - 5 inputs with colors
+│   ├── ChartBuilderPie.tsx (163 lines) - 2 inputs with percentages
+│   ├── ChartBuilderImage.tsx (57 lines) - Image uploader
+│   └── ChartBuilderText.tsx (57 lines) - Textarea editor
+└── Save Mechanism
+    └── Parent EditorDashboard.saveProject()
+```
+
+**Features:**
+- Auto-save on blur for all inputs
+- Manual save button in header
+- Loading states for template fetch
+- Error recovery with fallbacks
+- VALUE charts read-only (shows warning)
+
+**Template Resolution:**
+1. Project-level template (if assigned)
+2. Partner-level template (if project has partner)
+3. Default global template
+4. Hardcoded fallback (empty state)
+
+#### 5. Report Content Manager (v11.9.0)
+
+**Component:** `components/ReportContentManager.tsx` (350 lines)
+
+**Purpose:** Manage reportImageN and reportTextN slots (1-500)
+
+**Features:**
+- **Bulk Upload**: Multiple images → ImgBB → reportImageN slots
+- **Auto-Generation**: Chart blocks created automatically via `/api/auto-generate-chart-block`
+- **Slot Management**: Replace, clear, swap, compact operations
+- **Usage Tracking**: Shows occupied slots
+
+**Auto-Generation (v11.9.0 Innovation):**
+```typescript
+// WHAT: Automatically create chart algorithms when uploading content
+// WHY: Streamline workflow - upload in Clicker → immediately available in Visualization
+// HOW: API creates both chart_algorithms and data_blocks documents
+
+// On image upload to reportImage3:
+// 1. Stats updated: { reportImage3: "https://i.ibb.co/..." }
+// 2. Chart created: chart_algorithms { chartId: "report-image-3", type: "image", formula: "stats.reportImage3" }
+// 3. Block created: data_blocks { chartId: "report-image-3", width: 3, order: ... }
+// Result: Image immediately appears in Visualization editor for drag-and-drop
+```
+
+**Slot Structure:**
+- `reportImage1` through `reportImage500` - ImgBB URLs
+- `reportText1` through `reportText500` - Text content
+- All stored in `project.stats` (Single Reference System)
+
+#### 6. PDF Export System
+
+**Implementation:** `lib/export/pdf.ts` (456 lines)
+
+**Strategy:**
+- **html2canvas**: DOM to canvas conversion
+- **jsPDF**: PDF generation with multi-page support
+- **Smart Pagination**: Prevents chart splitting across pages
+- **Hero Repetition**: Hero appears on every page
+
+**Export Flow:**
+```
+1. Hide UI elements (badges, export buttons)
+2. Capture hero separately
+3. Find all blocks with data-pdf-block="true"
+4. Set desktop width (1200px) for consistent capture
+5. Capture each block as canvas
+6. Calculate page layout (hero + available space)
+7. Place blocks intelligently:
+   - If block fits on current page → place it
+   - If block doesn't fit → new page + hero + block
+8. Generate PDF with all pages
+9. Trigger browser download
+```
+
+**Image Handling (v9.3.0):**
+- IMAGE charts use `background-image` CSS natively
+- No runtime DOM manipulation needed
+- Aspect ratios preserved automatically
+- Legacy object-fit workaround kept for backward compatibility
+
+**Performance:**
+- 10 blocks: ~5-8 seconds
+- 3-column desktop layout preserved
+- Aspect ratio maintenance
+- File size: ~2-5MB for typical report
+
+#### 7. Chart Configuration System
+
+**Collections:**
+- **`chart_algorithms`** - Chart definitions (formulas, types, elements)
+- **`data_blocks`** - Layout configuration (width, order, visibility)
+- **`report_templates`** - Complete report structures
+
+**Chart Algorithm Schema:**
+```typescript
+interface ChartAlgorithm {
+  chartId: string;              // Unique identifier
+  title: string;                // Display title
+  subtitle?: string;            // Optional subtitle
+  type: ChartType;              // kpi | pie | bar | text | image | value
+  icon: string;                 // Material Icon name
+  iconVariant?: IconVariant;    // outlined | filled | rounded
+  order: number;                // Display order
+  showTitle?: boolean;          // Show title in chart (default: true)
+  aspectRatio?: AspectRatio;    // For IMAGE charts (16:9 | 9:16 | 1:1)
+  elements: ChartElement[];     // Chart-specific data
+  formatting?: FormattingOptions; // Prefix, suffix, decimals
+}
+```
+
+**Report Template Schema:**
+```typescript
+interface ReportTemplate {
+  _id: ObjectId;
+  name: string;
+  type: 'global' | 'partner' | 'project';
+  assignedTo?: ObjectId;        // Partner or Project ID
+  gridSettings: {
+    desktopUnits: number;       // 3-4 columns typical
+    tabletUnits: number;        // 2 columns typical
+    mobileUnits: number;        // 1 column
+  };
+  dataBlocks: DataBlock[];      // Ordered list of blocks
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### Migration Status
+
+#### v11.37.0 → v12.0.0 Transition
+
+**Deprecated Components:**
+- ❌ **`components/DynamicChart.tsx`** - Legacy renderer
+  - Status: DEPRECATED (v11.37.0)
+  - Removal: v12.0.0 (June 2025)
+  - Remaining Usage: 2 files
+  - Migration: See `DYNAMICCHART_MIGRATION_PLAN.md`
+
+- ⚠️ **`components/UnifiedDataVisualization.tsx`** - Old visualization system
+  - Status: DEPRECATED (line 2 marker)
+  - Replacement: ReportChart + ReportContent
+
+**Current Architecture (v12):**
+- ✅ **`app/report/[slug]/ReportChart.tsx`** - Primary renderer
+- ✅ **`app/report/[slug]/ReportContent.tsx`** - Layout manager
+- ✅ All v12 reports use new system
+- ✅ ESLint warns about DynamicChart imports
+
+**Migration Effort:**
+- 2 files to migrate (visualization page + UnifiedDataVisualization)
+- Props mapping documented
+- Testing checklist provided
+- Timeline: 2 weeks (Phase 1 of technical audit)
+
+### Performance Characteristics
+
+**Rendering:**
+- Report load time: <500ms (cached calculations)
+- Builder mode load: ~1-2 seconds (template + chart config fetch)
+- Chart rendering: <100ms per chart
+- Grid layout: Instant (CSS Grid native)
+
+**PDF Export:**
+- 10 blocks: 5-8 seconds
+- 20 blocks: 10-15 seconds
+- Bottleneck: html2canvas capture
+- Optimization: Desktop width cached, single capture per block
+
+**Formula Evaluation:**
+- Simple formula: <1ms
+- Complex formula (5+ operations): <5ms
+- Batch evaluation (20 charts): <100ms
+- Caching: Results cached per render cycle
+
+### Error Handling
+
+**Chart Level:**
+- Formula evaluation errors → "NA" display
+- Missing data → No-data placeholder
+- Invalid chart type → Error message in card
+
+**Template Level:**
+- Missing template → Fallback to default
+- API failures → Error state with retry
+- Invalid configuration → Validation warnings
+
+**Export Level:**
+- Canvas capture failure → Error alert with helpful message
+- Missing blocks → Warning in console
+- Large reports → Progress indicator
+
+### Related Documentation
+
+- **Technical Audit:** `TECH_AUDIT_REPORTING_SYSTEM.md` (982 lines)
+- **Migration Plan:** `DYNAMICCHART_MIGRATION_PLAN.md` (253 lines)
+- **User Guide:** `WARP.md` Chart System & Visualization section
+- **Aspect Ratios:** `lib/aspectRatioUtils.ts` JSDoc comments
+- **Coding Standards:** `CODING_STANDARDS.md` Component patterns
 
 ---
 

@@ -12,7 +12,7 @@
 .sectionTitle {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   margin: 0 0 2rem 0;
   text-align: center;
   display: flex;
@@ -55,21 +55,21 @@
   margin: 0 0 1rem 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   line-height: 1.4;
 }
 
 /* WHAT: Project link styling
    WHY: Underline appears on hover for better UX */
 .projectLink {
-  color: #6366f1;
+  color: var(--mm-color-primary-600);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s ease;
 }
 
 .projectLink:hover {
-  border-bottom-color: #6366f1;
+  border-bottom-color: var(--mm-color-primary-600);
 }
 
 /* WHAT: Hashtags wrapper with flexible layout */
@@ -84,7 +84,7 @@
 /* WHAT: "+X more" indicator for additional hashtags */
 .moreHashtags {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   padding: 0.25rem 0.5rem;
   background: rgba(107, 114, 128, 0.1);
   border-radius: 6px;
@@ -99,7 +99,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   margin-top: auto;
 }
 
@@ -113,7 +113,7 @@
 /* WHAT: "View Stats" badge */
 .viewStatsBadge {
   background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
+  color: var(--mm-color-primary-600);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.75rem;

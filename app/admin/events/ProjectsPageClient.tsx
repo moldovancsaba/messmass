@@ -203,15 +203,39 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   // WHAT: Auto-reload projects when page becomes visible (e.g., returning from another tab)
   // WHY: Ensures bidirectional updates (e.g., partner associations) are synced without manual refresh
+  // NOTE: Preserves search state - if user has active search, re-trigger that search instead of default list
   useEffect(() => {
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       if (!document.hidden) {
-        loadProjects();
+        // WHAT: Preserve search state on window focus
+        // WHY: User expects to see their search results when returning to the tab
+        const q = searchQuery.trim();
+        if (q) {
+          // Re-trigger search with current query
+          setIsSearching(true);
+          try {
+            const res = await fetch(`/api/projects?q=${encodeURIComponent(q)}&offset=0&limit=${PAGE_SIZE}`, { cache: 'no-store' });
+            const data = await res.json();
+            if (data.success) {
+              setProjects(data.projects);
+              setSearchOffset(data.pagination?.nextOffset ?? null);
+              setNextCursor(null);
+              setTotalMatched(data.pagination?.totalMatched ?? data.projects.length);
+            }
+          } catch (e) {
+            console.error('Search reload failed', e);
+          } finally {
+            setIsSearching(false);
+          }
+        } else {
+          // No active search, reload default list
+          loadProjects();
+        }
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [loadProjects]);
+  }, [loadProjects, searchQuery]);
 
 
   // Server-side search across all projects

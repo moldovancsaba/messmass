@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--mm-color-primary-500) 0%, var(--mm-color-purple-600) 100%);
 }
 
 .card {
@@ -31,7 +31,7 @@
 .logo {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--mm-color-primary-500) 0%, var(--mm-color-purple-600) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -41,7 +41,7 @@
 }
 
 .title {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--mm-color-primary-500) 0%, var(--mm-color-purple-600) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -53,7 +53,7 @@
 }
 
 .subtitle {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   text-align: center;
   font-size: 1rem;
   margin-bottom: 2rem;
@@ -71,7 +71,7 @@
 .label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--mm-gray-700);
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -79,7 +79,7 @@
 .input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--mm-gray-200);
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s ease;
@@ -89,7 +89,7 @@
 }
 
 .input:focus {
-  border-color: #667eea;
+  border-color: var(--mm-color-primary-500);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   outline: none;
 }
@@ -111,12 +111,12 @@
 }
 
 .errorIcon {
-  color: #ef4444;
+  color: var(--mm-error);
   flex-shrink: 0;
 }
 
 .errorText {
-  color: #ef4444;
+  color: var(--mm-error);
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -124,7 +124,7 @@
 .submitBtn {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--mm-color-primary-500) 0%, var(--mm-color-purple-600) 100%);
   color: white;
   border: none;
   border-radius: 15px;
@@ -140,7 +140,7 @@
 }
 
 .submitBtn:disabled {
-  background: #9ca3af;
+  background: var(--mm-gray-400);
   cursor: not-allowed;
 }
 
@@ -155,7 +155,7 @@
 }
 
 .backBtn {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: var(--gradient-pink-error);
   color: white;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
@@ -178,7 +178,7 @@
 }
 
 .footerText {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 0.75rem;
   line-height: 1.5;
 }

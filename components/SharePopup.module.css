@@ -55,12 +55,12 @@
 
 /* Error state */
 .errorContainer {
-  background: var(--mm-color-error-50, #fef2f2);
-  border: 1px solid var(--mm-color-error-200, #fecaca);
+  background: var(--mm-color-error-50, var(--mm-error-light));
+  border: 1px solid var(--mm-color-error-200, var(--mm-error-light));
   border-radius: var(--mm-radius-lg);
   padding: 1rem;
   text-align: center;
-  color: var(--mm-color-error-600, #dc2626);
+  color: var(--mm-color-error-600, var(--mm-error));
 }
 
 .errorEmoji {
@@ -75,7 +75,7 @@
 .retryBtn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--mm-color-error-600, #dc2626);
+  background: var(--mm-color-error-600, var(--mm-error));
   color: white;
   border: none;
   border-radius: var(--mm-radius-md);
@@ -85,7 +85,7 @@
 }
 
 .retryBtn:hover {
-  background: var(--mm-color-error-700, #b91c1c);
+  background: var(--mm-color-error-700, var(--mm-color-error-700));
 }
 
 .content {
@@ -144,7 +144,7 @@
 
 .copyBtn {
   padding: 0.75rem 1rem;
-  background: #4f46e5;
+  background: var(--mm-color-primary-700);
   color: white;
   border: none;
   border-radius: 8px;
@@ -156,24 +156,24 @@
 }
 
 .copyBtn:hover {
-  background: #4338ca;
+  background: var(--mm-color-primary-800);
 }
 
 .copyBtnCopied {
-  background: #10b981;
+  background: var(--mm-color-secondary-500);
 }
 
 .copyBtnPassword {
-  background: #f59e0b;
+  background: var(--mm-warning);
 }
 
 .copyBtnPassword:hover {
-  background: #d97706;
+  background: var(--mm-color-warning-600);
 }
 
 .visitBtn {
   padding: 0.75rem 1rem;
-  background: #059669;
+  background: var(--mm-color-secondary-600);
   color: white;
   border: none;
   border-radius: 8px;
@@ -184,23 +184,23 @@
 }
 
 .visitBtn:hover {
-  background: #047857;
+  background: var(--mm-color-secondary-700);
 }
 
 .helpText {
   margin: 0.5rem 0 0 0;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-style: italic;
 }
 
 .instructions {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--mm-color-primary-50);
+  border: 1px solid var(--mm-color-primary-200);
   border-radius: 8px;
   padding: 1rem;
   font-size: 0.875rem;
-  color: #1e40af;
+  color: var(--mm-color-primary-800);
 }
 
 .instructionsTitle {

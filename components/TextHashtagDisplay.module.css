@@ -3,7 +3,7 @@
 .container {
   font-family: monospace;
   font-size: 1rem;
-  color: #374151;
+  color: var(--mm-gray-700);
   background: rgba(249, 250, 251, 0.8);
   padding: 1rem;
   border-radius: 8px;

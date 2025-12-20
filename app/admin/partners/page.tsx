@@ -250,6 +250,8 @@ export default function PartnersAdminPageUnified() {
   }, [debouncedSearchQuery, sortField, sortOrder]);
   
   // Reload when page becomes visible
+  // WHAT: Preserve search/sort state when window regains focus
+  // WHY: User expects to see their current search results, not reset to default list
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && user) {
@@ -259,8 +261,7 @@ export default function PartnersAdminPageUnified() {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, loadPartners]);
   
   // WHAT: Lazy load Bitly links only when needed
   // WHY: Performance optimization - only load when opening modals

@@ -65,7 +65,7 @@
 }
 
 .enrichButton {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--gradient-primary);
   color: var(--mm-white);
   border: none;
   border-radius: var(--mm-radius-lg);
@@ -98,21 +98,21 @@
 }
 
 .message.success {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #10b981;
+  background: var(--mm-success-light);
+  color: var(--mm-color-secondary-700);
+  border: 1px solid var(--mm-color-secondary-500);
 }
 
 .message.error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #ef4444;
+  background: var(--mm-error-light);
+  color: var(--mm-color-error-700);
+  border: 1px solid var(--mm-error);
 }
 
 .message.info {
-  background: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #3b82f6;
+  background: var(--mm-info-light);
+  color: var(--mm-color-primary-800);
+  border: 1px solid var(--mm-color-primary-500);
 }
 
 .info {

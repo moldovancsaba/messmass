@@ -100,12 +100,12 @@
 }
 
 .confirmButtonDanger:hover {
-  background-color: #dc2626;
+  background-color: var(--mm-error);
   box-shadow: var(--mm-shadow-sm);
 }
 
 .confirmButtonDanger:active {
-  background-color: #b91c1c;
+  background-color: var(--mm-color-error-700);
   transform: translateY(1px);
 }
 

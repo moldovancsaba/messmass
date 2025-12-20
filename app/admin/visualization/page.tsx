@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
-import { DynamicChart, ChartContainer } from '@/components/DynamicChart';
+import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -779,8 +779,7 @@ export default function VisualizationPage() {
                   }
                 }}
                 type="button"
-                className="btn btn-small btn-secondary"
-                style={{ marginRight: '0.5rem' }}
+                className={`btn btn-small btn-secondary ${vizStyles.buttonSpacing}`}
               >
                 🎯 Edit Live Partner Reports
               </button>
@@ -916,9 +915,9 @@ export default function VisualizationPage() {
           
           <div className="form-section">
             <div className="form-group mb-6">
-              <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>Header Element Visibility</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h4 className={vizStyles.heroSectionHeader}>Header Element Visibility</h4>
+              <div className={vizStyles.heroCheckboxGrid}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={heroSettings.showEmoji}
@@ -931,7 +930,7 @@ export default function VisualizationPage() {
                   <span>Show Emoji (🏒)</span>
                 </label>
                 
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={heroSettings.showDateInfo}
@@ -944,7 +943,7 @@ export default function VisualizationPage() {
                   <span>Show Date Info (Created/Updated)</span>
                 </label>
                 
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={heroSettings.showExportOptions}
@@ -960,9 +959,9 @@ export default function VisualizationPage() {
             </div>
             
             <div className="form-group mb-6">
-              <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>Block Element Alignment</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h4 className={vizStyles.heroSectionHeader}>Block Element Alignment</h4>
+              <div className={vizStyles.alignmentCheckboxGrid}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={alignmentSettings.alignTitles}
@@ -975,7 +974,7 @@ export default function VisualizationPage() {
                   <span>Align Titles</span>
                 </label>
                 
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={alignmentSettings.alignDescriptions}
@@ -988,7 +987,7 @@ export default function VisualizationPage() {
                   <span>Align Descriptions</span>
                 </label>
                 
-                <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={alignmentSettings.alignCharts}
@@ -1014,8 +1013,7 @@ export default function VisualizationPage() {
                     saveHeroSettings(heroSettings, newAlignmentSettings);
                   }}
                   placeholder="Optional (e.g., 100)"
-                  className="form-input"
-                  style={{ width: '200px' }}
+                  className={`form-input ${vizStyles.numberInputNarrow}`}
                 />
               </div>
             </div>
@@ -1192,14 +1190,14 @@ export default function VisualizationPage() {
                         onClick={() => setEditingBlock(block)}
                         className="btn btn-small btn-primary action-button"
                       >
-                        <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        <MaterialIcon name="edit" variant="outlined" className={vizStyles.iconSpacing} />
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteBlock(block._id!)}
                         className="btn btn-small btn-danger action-button"
                       >
-                        <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        <MaterialIcon name="delete" variant="outlined" className={vizStyles.iconSpacing} />
                         Delete
                       </button>
                       <span className="drag-handle" title="Drag to reorder">⮕️</span>
@@ -1227,15 +1225,11 @@ export default function VisualizationPage() {
                             if (!result) return null;
                             return (
                               <div key={`${block._id}-${chart.chartId}`} className={vizStyles.chartItem}>
-                                <ChartContainer
-                                  title={result.title}
-                                  subtitle={result.subtitle}
-                                  emoji={result.emoji}
+                                <ReportChart 
+                                  result={result} 
+                                  width={chart.width}
                                   className={vizStyles.unifiedChartItem}
-                                  chartWidth={chart.width}
-                                >
-                                  <DynamicChart result={result} chartWidth={chart.width} />
-                                </ChartContainer>
+                                />
                               </div>
                             );
                           })
@@ -1382,10 +1376,10 @@ export default function VisualizationPage() {
                         {/* Regular Charts */}
                         {regularCharts.length > 0 && (
                           <div>
-                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                            <h4 className={vizStyles.chartGroupHeader}>
                               Standard Charts
                             </h4>
-                            <div className="flex-row flex-wrap" style={{ marginBottom: '1.5rem' }}>
+                            <div className={`flex-row flex-wrap ${vizStyles.sectionSpacing}`}>
                               {regularCharts.map(chart => (
                                 <button
                                   key={chart.chartId}
@@ -1402,15 +1396,10 @@ export default function VisualizationPage() {
                         {/* Report Images with Thumbnails */}
                         {reportImages.length > 0 && (
                           <div>
-                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                            <h4 className={vizStyles.chartGroupHeader}>
                               Report Images
                             </h4>
-                            <div style={{ 
-                              display: 'grid', 
-                              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
-                              gap: '0.75rem',
-                              marginBottom: '1.5rem'
-                            }}>
+                            <div className={vizStyles.reportImageGrid}>
                               {reportImages.map(chart => {
                                 // WHAT: Show placeholder thumbnail for report images
                                 // WHY: Actual image URLs would require fetching project data
@@ -1420,40 +1409,12 @@ export default function VisualizationPage() {
                                   <button
                                     key={chart.chartId}
                                     onClick={() => addChartToBlock(block, chart.chartId)}
-                                    style={{
-                                      border: '2px solid var(--mm-gray-300)',
-                                      borderRadius: 'var(--mm-radius-md)',
-                                      padding: '0.5rem',
-                                      background: 'var(--mm-white)',
-                                      cursor: 'pointer',
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      alignItems: 'center',
-                                      gap: '0.5rem',
-                                      transition: 'all 0.2s',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.borderColor = 'var(--mm-blue-500)';
-                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.2)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.borderColor = 'var(--mm-gray-300)';
-                                      e.currentTarget.style.boxShadow = 'none';
-                                    }}
+                                    className={vizStyles.reportImageCard}
                                   >
-                                    <div style={{
-                                      width: '100%',
-                                      height: '80px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                      borderRadius: 'var(--mm-radius-sm)',
-                                      fontSize: '2rem'
-                                    }}>
+                                    <div className={vizStyles.reportImagePlaceholder}>
                                       🖼️
                                     </div>
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--mm-gray-700)', textAlign: 'center' }}>
+                                    <span className={vizStyles.reportImageTitle}>
                                       {chart.title}
                                     </span>
                                   </button>
@@ -1466,15 +1427,10 @@ export default function VisualizationPage() {
                         {/* Report Texts with Previews */}
                         {reportTexts.length > 0 && (
                           <div>
-                            <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--mm-gray-700)' }}>
+                            <h4 className={vizStyles.chartGroupHeader}>
                               Report Texts
                             </h4>
-                            <div style={{ 
-                              display: 'grid', 
-                              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-                              gap: '0.75rem',
-                              marginBottom: '1.5rem'
-                            }}>
+                            <div className={vizStyles.reportTextGrid}>
                               {reportTexts.map(chart => {
                                 // WHAT: Show placeholder for report texts
                                 // WHY: Actual text content would require fetching project data
@@ -1484,41 +1440,12 @@ export default function VisualizationPage() {
                                   <button
                                     key={chart.chartId}
                                     onClick={() => addChartToBlock(block, chart.chartId)}
-                                    style={{
-                                      border: '2px solid var(--mm-gray-300)',
-                                      borderRadius: 'var(--mm-radius-md)',
-                                      padding: '0.75rem',
-                                      background: 'var(--mm-white)',
-                                      cursor: 'pointer',
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      alignItems: 'flex-start',
-                                      gap: '0.5rem',
-                                      transition: 'all 0.2s',
-                                      textAlign: 'left',
-                                      minHeight: '100px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.borderColor = 'var(--mm-blue-500)';
-                                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.2)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.borderColor = 'var(--mm-gray-300)';
-                                      e.currentTarget.style.boxShadow = 'none';
-                                    }}
+                                    className={vizStyles.reportTextCard}
                                   >
-                                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--mm-gray-900)' }}>
+                                    <span className={vizStyles.reportTextTitle}>
                                       {chart.title}
                                     </span>
-                                    <div style={{
-                                      fontSize: '0.75rem',
-                                      color: 'var(--mm-gray-600)',
-                                      lineHeight: '1.4',
-                                      background: 'var(--mm-gray-50)',
-                                      padding: '0.5rem',
-                                      borderRadius: 'var(--mm-radius-sm)',
-                                      fontStyle: 'italic'
-                                    }}>
+                                    <div className={vizStyles.reportTextContent}>
                                       📝 Text content block
                                     </div>
                                   </button>

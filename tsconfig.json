@@ -44,6 +44,7 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts"
+    "scripts",
+    "components/_deprecated_v11"
   ]
 }

@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f9fafb;
+  background: var(--mm-gray-50);
   padding: 1rem;
 }
 
@@ -15,7 +15,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f9fafb;
+  background: var(--mm-gray-50);
   padding: 1rem;
 }
 
@@ -31,45 +31,45 @@
 
 .stateMessage {
   margin-top: 1rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 0.875rem;
 }
 
 .errorCard {
-  background: white;
+  background: var(--mm-white);
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   text-align: center;
   max-width: 500px;
   width: 100%;
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--mm-error);
 }
 
 .errorHeading {
   margin: 0 0 1rem 0;
-  color: #dc2626;
+  color: var(--mm-error);
   font-size: 1.5rem;
   font-weight: 600;
 }
 
 .errorTextPrimary {
   margin: 0 0 0.75rem 0;
-  color: #374151;
+  color: var(--mm-gray-700);
   font-size: 1rem;
   font-weight: 500;
 }
 
 .errorTextSecondary {
   margin: 0 0 1.5rem 0;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
 .closeButton {
-  background: #ef4444;
-  color: white;
+  background: var(--mm-error);
+  color: var(--mm-white);
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
@@ -80,5 +80,5 @@
 }
 
 .closeButton:hover {
-  background: #dc2626;
+  background: var(--mm-color-error-600);
 }

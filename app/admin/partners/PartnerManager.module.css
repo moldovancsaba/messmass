@@ -279,7 +279,7 @@
   width: 100%;
   margin-top: var(--mm-space-3);
   padding: var(--mm-space-3);
-  background-color: #f59e0b; /* Orange warning color */
+  background-color: var(--mm-warning); /* Orange warning color */
   color: var(--mm-white);
   border: none;
   border-radius: var(--mm-radius-md);
@@ -289,11 +289,11 @@
 }
 
 .manualEntryButton:hover {
-  background-color: #d97706; /* Darker orange on hover */
+  background-color: var(--mm-color-warning-600); /* Darker orange on hover */
 }
 
 .manualEntryButton:active {
-  background-color: #b45309; /* Even darker orange on click */
+  background-color: var(--mm-color-warning-700); /* Even darker orange on click */
 }
 
 .manualEntryButton:disabled {

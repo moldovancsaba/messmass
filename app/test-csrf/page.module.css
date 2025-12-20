@@ -8,13 +8,13 @@
 .section {
   margin-top: 20px;
   padding: 20px;
-  background: #f0f0f0;
+  background: var(--mm-gray-100);
 }
 
 .sectionYellow {
   margin-top: 20px;
   padding: 20px;
-  background: #ffffcc;
+  background: var(--mm-white)fcc;
 }
 
 .codeBlock {

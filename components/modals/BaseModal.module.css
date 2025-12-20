@@ -97,7 +97,7 @@
   /* Typography */
   font-size: 1.5rem;
   line-height: 1;
-  color: var(--mm-gray-500, #6B7280);
+  color: var(--mm-gray-500, var(--mm-gray-500));
   
   /* Cursor and transitions */
   cursor: pointer;
@@ -116,8 +116,8 @@
 }
 
 .closeButton:hover {
-  color: var(--mm-gray-700, #374151);
-  background-color: var(--mm-gray-100, #F3F4F6);
+  color: var(--mm-gray-700, var(--mm-gray-700));
+  background-color: var(--mm-gray-100, var(--mm-gray-100));
   transform: scale(1.1);
 }
 
@@ -126,7 +126,7 @@
 }
 
 .closeButton:focus {
-  outline: 2px solid var(--mm-blue-500, #3B82F6);
+  outline: 2px solid var(--mm-blue-500, var(--mm-color-primary-500));
   outline-offset: 2px;
 }
 
@@ -157,17 +157,17 @@
 }
 
 .modal::-webkit-scrollbar-track {
-  background: var(--mm-gray-100, #F3F4F6);
+  background: var(--mm-gray-100, var(--mm-gray-100));
   border-radius: 0 16px 16px 0;
 }
 
 .modal::-webkit-scrollbar-thumb {
-  background: var(--mm-gray-300, #D1D5DB);
+  background: var(--mm-gray-300, var(--mm-gray-300));
   border-radius: 4px;
 }
 
 .modal::-webkit-scrollbar-thumb:hover {
-  background: var(--mm-gray-400, #9CA3AF);
+  background: var(--mm-gray-400, var(--mm-gray-400));
 }
 
 /* Mobile responsiveness */

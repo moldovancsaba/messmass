@@ -171,6 +171,54 @@ grep -r 'style={{' --include="*.tsx" components/ app/
 
 **See:** `CODING_STANDARDS.md` for complete rules and examples
 
+---
+
+## ⚠️ Technical Audit & Code Quality (v11.37.0)
+
+**CRITICAL:** A comprehensive technical audit was conducted on 2025-12-20.
+
+### Audit Report
+**File:** `TECH_AUDIT_REPORTING_SYSTEM.md` (982 lines)  
+**Health Score:** 62/100 ⚠️ NEEDS IMPROVEMENT
+
+### Critical Findings
+
+| Priority | Issue | Files Affected | Status |
+|----------|-------|----------------|--------|
+| 🔴 **CRITICAL** | Inline style violations | 87+ files | ESLint rules added |
+| 🔴 **CRITICAL** | Hardcoded colors/values | 200+ files | Refactor in progress |
+| 🟡 **HIGH** | Deprecated DynamicChart.tsx | In use | Migration required |
+
+### Automated Enforcement
+
+**ESLint Rules Active** (`.eslintrc.js`):
+- ✅ `react/forbid-dom-props` - Blocks inline `style` prop (ERROR)
+- ✅ `no-restricted-imports` - Warns about DynamicChart imports
+- ✅ React hooks exhaustive-deps
+- ✅ Next.js Image component enforcement
+
+**Run ESLint:**
+```bash
+npm run lint
+```
+
+### Chart System Migration (v12.0.0)
+
+**DEPRECATED:**
+- ❌ `components/DynamicChart.tsx` - Marked for removal in v12.0.0 (June 2025)
+
+**CURRENT:**
+- ✅ `app/report/[slug]/ReportChart.tsx` - Unified v12 chart renderer
+- ✅ All new reports MUST use ReportChart
+- ✅ Migration guide in `TECH_AUDIT_REPORTING_SYSTEM.md` Part 2.1
+
+**Why Migration Required:**
+- Dual systems cause maintenance burden (bug fixes needed twice)
+- Inconsistent chart behavior between systems
+- DynamicChart imports will trigger ESLint warnings
+
+---
+
 ## 🏭️ System Architecture
 
 **MessMass** is a real-time collaborative event statistics dashboard with:
@@ -720,15 +768,57 @@ const value = project.remoteImages;
 - **Edit access**: Session validation required
 - **Admin features**: Full authentication required
 
-## 🎨 Chart System & Visualization (v9.3.0)
+## 🎨 Chart System & Visualization (v12.0.0)
 
-### Chart Types
-- **PIE** - 2 elements, circular segments with percentages
-- **BAR** - 5 elements, horizontal bars with legends
-- **KPI** - 1 element, large metric display with emoji
-- **TEXT** - 1 element, formatted text display
-- **IMAGE** - 1 element, aspect ratio-aware image display (16:9, 9:16, 1:1)
-- **VALUE** - 2 components (KPI + BAR), returns React Fragment with TWO grid items
+**⚠️ IMPORTANT:** Chart system migrated to v12 architecture in v11.37.0.
+
+### Chart Types (All Types Stable)
+- **KPI** - 1 element, large metric display with Material Icon (1 grid unit)
+- **PIE** - 2 elements, circular chart with percentages (2 grid units)
+- **BAR** - 5 elements, horizontal bars with legends (3 grid units)
+- **TEXT** - 1 element, formatted text display (2 grid units)
+- **IMAGE** - 1 element, aspect ratio-aware images (1-3 grid units)
+- **VALUE** - Composite type (KPI + BAR), renders as Fragment with 2 items (2 grid units)
+
+### v12 Architecture (CURRENT)
+
+**Primary Component:** `app/report/[slug]/ReportChart.tsx`
+
+**Usage:**
+```typescript
+import ReportChart from '@/app/report/[slug]/ReportChart';
+
+<ReportChart 
+  result={chartResult}  // From ReportCalculator
+  width={2}             // Grid units
+  className="custom-class"
+/>
+```
+
+**Calculation Flow:**
+```
+ReportCalculator (lib/report-calculator.ts)
+  ↓ Evaluates formulas using formulaEngine
+  ↓ Returns ChartResult objects
+ReportContent (app/report/[slug]/ReportContent.tsx)
+  ↓ Layouts blocks with responsive grid
+  ↓ Passes results to charts
+ReportChart (app/report/[slug]/ReportChart.tsx)
+  ↓ Renders individual chart types
+  ↓ Supports KPI, PIE, BAR, TEXT, IMAGE, VALUE
+```
+
+### Legacy System (DEPRECATED)
+
+**⚠️ DO NOT USE:**
+- ❌ `components/DynamicChart.tsx` - Deprecated in v11.37.0
+- ❌ Scheduled for removal in v12.0.0 (June 2025)
+- ❌ ESLint will warn if imported
+
+**Migration Required:**
+- Replace all `DynamicChart` imports with `ReportChart`
+- Update props to match `ReportChart` interface
+- See `TECH_AUDIT_REPORTING_SYSTEM.md` for migration guide
 
 ### Image Layout System (v9.3.0)
 
@@ -760,12 +850,32 @@ interface ChartConfiguration {
 - Aspect ratio dropdown in Chart Algorithm Manager (when `type === 'image'`)
 - Default selection: 16:9 (landscape)
 
-### Chart Components
-- **`components/DynamicChart.tsx`** - Main chart renderer (all types)
-- **`components/charts/ImageChart.tsx`** - Background-image implementation
-- **`lib/imageLayoutUtils.ts`** - Width calculation and aspect ratio helpers
-- **Chart export** - html2canvas integration for PNG downloads
-- **Formatting system** - Flexible prefix/suffix with rounding control
+### Chart Components (v12 Architecture)
+
+**Primary:**
+- **`app/report/[slug]/ReportChart.tsx`** - Unified v12 chart renderer (CURRENT)
+- **`app/report/[slug]/ReportContent.tsx`** - Grid layout and block management
+- **`lib/report-calculator.ts`** - Formula evaluation and result calculation
+
+**Chart Type Implementations:**
+- **`components/charts/KPICard.tsx`** - KPI display (350 lines)
+- **`components/charts/PieChart.tsx`** - Circular charts (300 lines)
+- **`components/charts/VerticalBarChart.tsx`** - Bar charts (400 lines)
+- **`components/charts/ImageChart.tsx`** - Background-image rendering (200 lines)
+- **`components/charts/TextChart.tsx`** - Text formatting (150 lines)
+
+**Utilities:**
+- **`lib/imageLayoutUtils.ts`** - Aspect ratio calculations
+- **`lib/blockHeightCalculator.ts`** - Responsive height solver
+- **`lib/formulaEngine.ts`** - Formula parsing and evaluation
+- **`lib/chartCalculator.ts`** - Chart-specific calculations
+
+**Export:**
+- **`lib/export/pdf.ts`** - Smart pagination PDF export with html2canvas
+- Supports hero repetition, aspect ratio preservation, 3-column grid layout
+
+**Deprecated:**
+- ~~`components/DynamicChart.tsx`~~ - Use ReportChart instead (v12.0.0 removal)
 
 ## 📄 PDF Export System
 

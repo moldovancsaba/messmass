@@ -43,7 +43,7 @@
 .image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* WHAT: Card icon styling (alternative to image) */
@@ -167,12 +167,12 @@
 }
 
 .actionButton.variant-danger {
-  background: var(--mm-error, #ef4444);
+  background: var(--mm-error, var(--mm-error));
   color: white;
 }
 
 .actionButton.variant-danger:hover {
-  background: #dc2626;
+  background: var(--mm-error);
 }
 
 .actionIcon {

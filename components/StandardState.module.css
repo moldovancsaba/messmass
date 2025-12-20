@@ -17,11 +17,11 @@
 /* WHAT: State title */
 .stateTitle {
   margin: 0 0 0.5rem 0;
-  color: #1f2937;
+  color: var(--mm-gray-900);
 }
 
 /* WHAT: State message */
 .stateMessage {
   margin: 0;
-  color: #6b7280;
+  color: var(--mm-gray-500);
 }

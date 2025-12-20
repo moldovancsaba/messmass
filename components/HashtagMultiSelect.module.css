@@ -44,7 +44,7 @@
 .selectedTitle {
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
-  color: #4c51bf;
+  color: var(--mm-color-primary-700);
   margin-bottom: var(--mm-space-3);
 }
 

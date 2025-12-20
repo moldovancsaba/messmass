@@ -33,7 +33,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid rgba(99, 102, 241, 0.3);
-  border-top: 4px solid #6366f1;
+  border-top: 4px solid var(--mm-color-primary-600);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -45,7 +45,7 @@
 
 /* WHAT: Loading message text */
 .loadingText {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   margin: 0;
 }
 
@@ -60,7 +60,7 @@
 .emptyHeading {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
 
 /* WHAT: Empty state text */
 .emptyText {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   margin: 0;
 }
 
@@ -78,7 +78,7 @@
 .blockTitle {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   margin: 0 0 2rem 0;
   text-align: center;
   display: flex;
@@ -131,6 +131,6 @@
 /* WHAT: No charts message */
 .noChartsMessage {
   text-align: center;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   padding: 2rem;
 }

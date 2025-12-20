@@ -1,0 +1,31 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "color-no-hex": [
+      true,
+      {
+        "message": "Hardcoded hex colors are prohibited. Use design tokens from app/styles/theme.css (e.g., var(--mm-gray-500), var(--mm-color-primary-600)). See PHASE2_DESIGN_TOKEN_MIGRATION.md for approved tokens."
+      }
+    ],
+    "declaration-property-value-disallowed-list": {
+      "/^(color|background|background-color|border|border-color|border-top-color|border-right-color|border-bottom-color|border-left-color|box-shadow|text-shadow)$/": [
+        "/^#[0-9a-fA-F]{3,6}$/",
+        "/^rgb\\(/",
+        "/^rgba\\(/"
+      ]
+    },
+    "function-disallowed-list": [
+      "rgb",
+      "rgba",
+      {
+        "message": "RGB colors are prohibited. Use design tokens from app/styles/theme.css. Exception: rgba() with var() inside is allowed for opacity adjustments."
+      }
+    ]
+  },
+  "ignoreFiles": [
+    "node_modules/**",
+    ".next/**",
+    "build/**",
+    "dist/**"
+  ]
+}

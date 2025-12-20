@@ -16,14 +16,14 @@
 }
 
 .subtitle {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 1.1rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
 }
 
 .description {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 1rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
@@ -81,8 +81,8 @@
   white-space: nowrap;
   /* WHAT: Badge colors set via CSS variables
      WHY: Different variants have different colors */
-  background: var(--badge-bg, #6b7280);
-  color: var(--badge-text, #ffffff);
+  background: var(--badge-bg, var(--mm-gray-500));
+  color: var(--badge-text, var(--mm-white)fff);
 }
 
 .additionalContent {

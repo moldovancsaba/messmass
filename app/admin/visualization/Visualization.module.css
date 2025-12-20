@@ -71,18 +71,18 @@
   padding: var(--mm-space-3) var(--mm-space-4);
   margin-top: var(--mm-space-4);
   margin-bottom: var(--mm-space-4);
-  background: var(--mm-color-primary-500, #6366f1);
+  background: var(--mm-color-primary-500);
   color: white;
   border: none;
   border-radius: var(--mm-radius-md);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--mm-transition-base, 0.2s ease);
+  transition: all var(--mm-transition-base);
 }
 
 .toggleButton:hover {
-  background: var(--mm-color-primary-600, #4f46e5);
+  background: var(--mm-color-primary-600);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
@@ -237,4 +237,161 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* ========== Inline Style Replacements ========== */
+/* WHAT: Replace all inline styles with CSS module classes
+   WHY: Comply with coding standards and ESLint rules */
+
+/* Button spacing utility */
+.buttonSpacing {
+  margin-right: 0.5rem;
+}
+
+/* HERO settings section header styles */
+.heroSectionHeader {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--mm-gray-900);
+}
+
+/* Grid layout for header element checkboxes */
+.heroCheckboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Alignment settings grid */
+.alignmentCheckboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Checkbox label with flex layout */
+.flexCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Width constraint for number inputs */
+.numberInputNarrow {
+  width: 200px;
+}
+
+/* Section header for chart groups */
+.chartGroupHeader {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--mm-gray-700);
+}
+
+/* Spacing utility for sections */
+.sectionSpacing {
+  margin-bottom: 1.5rem;
+}
+
+/* Report image grid */
+.reportImageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Report text grid */
+.reportTextGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Report image card button */
+.reportImageCard {
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: 0.5rem;
+  background: var(--mm-white);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.reportImageCard:hover {
+  border-color: var(--mm-blue-500);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Image placeholder inside card */
+.reportImagePlaceholder {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  border-radius: var(--mm-radius-sm);
+  font-size: 2rem;
+}
+
+/* Image card title text */
+.reportImageTitle {
+  font-size: 0.75rem;
+  color: var(--mm-gray-700);
+  text-align: center;
+}
+
+/* Report text card button */
+.reportTextCard {
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: 0.75rem;
+  background: var(--mm-white);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+  text-align: left;
+  min-height: 100px;
+}
+
+.reportTextCard:hover {
+  border-color: var(--mm-blue-500);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Text card title */
+.reportTextTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mm-gray-900);
+}
+
+/* Text card content preview */
+.reportTextContent {
+  font-size: 0.75rem;
+  color: var(--mm-gray-600);
+  line-height: 1.4;
+  background: var(--mm-gray-50);
+  padding: 0.5rem;
+  border-radius: var(--mm-radius-sm);
+  font-style: italic;
+}
+
+/* MaterialIcon inline spacing */
+.iconSpacing {
+  font-size: 1rem !important;
+  margin-right: 0.25rem;
 }

@@ -6,7 +6,7 @@
 .compact {
   font-family: monospace;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--mm-gray-700);
   background: rgba(243, 244, 246, 0.5);
   padding: 0.5rem;
   border-radius: 6px;
@@ -27,7 +27,7 @@
   margin: 0 0 0.75rem 0;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--mm-gray-700);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -53,7 +53,7 @@
 /* WHAT: Hashtag label */
 .hashtagLabel {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   min-width: 100px;
 }
 
@@ -81,13 +81,13 @@
 /* WHAT: Formatted display text */
 .formatted {
   margin-left: auto;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-style: italic;
 }
 
 /* WHAT: Empty state message */
 .empty {
-  color: #9ca3af;
+  color: var(--mm-gray-400);
   font-style: italic;
   text-align: center;
   padding: 1rem;

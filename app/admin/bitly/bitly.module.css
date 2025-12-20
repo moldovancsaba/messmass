@@ -14,13 +14,13 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--mm-gray-200);
 }
 
 .header h1 {
   margin: 0;
   font-size: 2rem;
-  color: #333;
+  color: var(--mm-gray-900);
 }
 
 .headerActions {
@@ -40,23 +40,23 @@
 }
 
 .syncButton {
-  background: #4CAF50;
+  background: var(--mm-success);
   color: white;
 }
 
 .syncButton:hover {
-  background: #45a049;
+  background: var(--mm-color-secondary-600);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
 .addButton {
-  background: #2196F3;
+  background: var(--mm-color-primary-500);
   color: white;
 }
 
 .addButton:hover {
-  background: #0b7dda;
+  background: var(--mm-color-primary-600);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
@@ -65,29 +65,29 @@
   text-align: center;
   padding: 4rem;
   font-size: 1.2rem;
-  color: #666;
+  color: var(--mm-gray-600);
 }
 
 .error {
-  background: #ffebee;
-  color: #c62828;
+  background: var(--mm-error-light);
+  color: var(--mm-error);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border-left: 4px solid #c62828;
+  border-left: 4px solid var(--mm-error);
 }
 
 .success {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--mm-success-light);
+  color: var(--mm-color-secondary-700);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid var(--mm-success);
 }
 
 .addForm {
-  background: #f5f5f5;
+  background: var(--mm-gray-100);
   padding: 2rem;
   border-radius: 12px;
   margin-bottom: 2rem;
@@ -97,7 +97,7 @@
 .addForm h2 {
   margin-top: 0;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--mm-gray-900);
 }
 
 .formGroup {
@@ -108,7 +108,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #555;
+  color: var(--mm-gray-700);
 }
 
 .formGroup input,
@@ -116,7 +116,7 @@
   width: 100%;
   padding: 0.75rem;
   font-size: 1rem;
-  border: 2px solid #ddd;
+  border: 2px solid var(--mm-gray-300);
   border-radius: 6px;
   transition: border-color 0.2s ease;
 }
@@ -124,11 +124,11 @@
 .formGroup input:focus,
 .formGroup select:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: var(--mm-color-primary-500);
 }
 
 .submitButton {
-  background: #2196F3;
+  background: var(--mm-color-primary-500);
   color: white;
   padding: 0.75rem 2rem;
   font-size: 1rem;
@@ -140,7 +140,7 @@
 }
 
 .submitButton:hover {
-  background: #0b7dda;
+  background: var(--mm-color-primary-600);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
 }
@@ -156,13 +156,13 @@
 .linksTable h2 {
   margin-top: 0;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--mm-gray-900);
 }
 
 .emptyState {
   text-align: center;
   padding: 3rem;
-  color: #999;
+  color: var(--mm-gray-400);
   font-size: 1.1rem;
 }
 
@@ -172,28 +172,28 @@
 }
 
 .linksTable thead {
-  background: #f5f5f5;
+  background: var(--mm-gray-100);
 }
 
 .linksTable th {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #555;
-  border-bottom: 2px solid #ddd;
+  color: var(--mm-gray-700);
+  border-bottom: 2px solid var(--mm-gray-300);
 }
 
 .linksTable td {
   padding: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--mm-gray-200);
 }
 
 .linksTable tbody tr:hover {
-  background: #f9f9f9;
+  background: var(--mm-gray-50);
 }
 
 .linkUrl {
-  color: #2196F3;
+  color: var(--mm-color-primary-500);
   text-decoration: none;
   font-weight: 500;
 }
@@ -204,7 +204,7 @@
 
 .projectSelect {
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--mm-gray-300);
   border-radius: 4px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -213,17 +213,17 @@
 
 .projectSelect:focus {
   outline: none;
-  border-color: #2196F3;
+  border-color: var(--mm-color-primary-500);
 }
 
 .clickCount {
   font-weight: 600;
-  color: #4CAF50;
+  color: var(--mm-success);
 }
 
 .timestamp {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--mm-gray-600);
 }
 
 .archiveButton {
@@ -240,19 +240,19 @@
 }
 
 .info {
-  background: #e3f2fd;
+  background: var(--mm-color-primary-100);
   padding: 1.5rem;
   border-radius: 8px;
-  border-left: 4px solid #2196F3;
+  border-left: 4px solid var(--mm-color-primary-500);
 }
 
 .info p {
   margin: 0.5rem 0;
-  color: #555;
+  color: var(--mm-gray-700);
 }
 
 .info strong {
-  color: #1976d2;
+  color: var(--mm-color-primary-700);
 }
 
 /* Responsive design for mobile devices */

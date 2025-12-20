@@ -63,7 +63,7 @@
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--mm-radius-md);
-  color: var(--mm-red-700, #b91c1c);
+  color: var(--mm-red-700, var(--mm-color-error-700));
   font-size: var(--mm-font-size-sm);
 }
 
@@ -151,7 +151,7 @@
   font-size: var(--mm-font-size-sm);
   font-weight: 600;
   color: white;
-  background: var(--mm-green-600, #059669);
+  background: var(--mm-green-600, var(--mm-color-secondary-600));
   border: none;
   border-radius: var(--mm-radius-md);
   cursor: pointer;
@@ -161,7 +161,7 @@
 }
 
 .linkButton:hover {
-  background: var(--mm-green-700, #047857);
+  background: var(--mm-green-700, var(--mm-color-secondary-700));
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
 }
@@ -186,7 +186,7 @@
   padding: var(--mm-space-1) var(--mm-space-3);
   font-size: var(--mm-font-size-sm);
   font-weight: 600;
-  color: var(--mm-green-700, #047857);
+  color: var(--mm-green-700, var(--mm-color-secondary-700));
   background: rgba(16, 185, 129, 0.1);
   border-radius: var(--mm-radius-full);
 }
@@ -195,7 +195,7 @@
   padding: var(--mm-space-1) var(--mm-space-3);
   font-size: var(--mm-font-size-sm);
   font-weight: 500;
-  color: var(--mm-red-700, #b91c1c);
+  color: var(--mm-red-700, var(--mm-color-error-700));
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--mm-radius-md);

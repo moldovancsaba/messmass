@@ -176,7 +176,7 @@
 }
 
 .retryButton:hover {
-  background: #dc2626;
+  background: var(--mm-color-error-600);
   transform: translateY(-1px);
   box-shadow: var(--mm-shadow-md);
 }

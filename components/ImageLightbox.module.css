@@ -41,7 +41,7 @@
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #374151;
+  color: var(--mm-gray-700);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -50,7 +50,7 @@
 
 .closeBtn:hover {
   background: white;
-  color: #1f2937;
+  color: var(--mm-gray-900);
 }
 
 /* WHAT: Image styling with CSS-only centering

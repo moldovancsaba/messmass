@@ -13,7 +13,7 @@ export interface Chart {
   title: string;
   type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value';
   formula: string;
-  icon: string;
+  icon?: string; // Optional - not all charts have icons
   iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
   isActive: boolean;
   order: number;
@@ -47,7 +47,7 @@ export interface ChartResult {
   chartId: string;
   type: Chart['type'];
   title: string;
-  icon: string;
+  icon?: string; // Optional - not all charts have icons
   iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
   kpiValue?: number | string;
   elements?: Array<{

@@ -9,7 +9,7 @@
   align-items: center;
   max-width: 100%;
   font-size: 0.9rem;
-  color: #4a5568;
+  color: var(--mm-gray-700);
   font-weight: 500;
   flex-wrap: wrap;
   gap: 1rem;
@@ -25,7 +25,7 @@
 /* WHAT: Created date badge */
 .createdDateBadge {
   background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  color: var(--mm-color-secondary-600);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-weight: 600;
@@ -34,7 +34,7 @@
 /* WHAT: Last updated date badge */
 .updatedDateBadge {
   background: rgba(68, 68, 68, 0.1);
-  color: #444444;
+  color: var(--mm-gray-800);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-weight: 600;

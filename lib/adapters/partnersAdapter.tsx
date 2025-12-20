@@ -25,7 +25,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
   pageName: 'partners',
   
   // WHAT: Default view mode (list or card)
-  defaultView: 'list',
+  defaultView: 'card',
   
   // WHAT: List view configuration (table layout)
   listConfig: {

@@ -447,11 +447,11 @@
 .text-gray-600 { color: var(--mm-gray-600); }
 .text-gray-700 { color: var(--mm-gray-700); }
 .text-gray-900 { color: var(--mm-gray-900); }
-.text-gray-800 { color: #1f2937; }
-.text-gray-500 { color: #6b7280; }
-.text-gray-400 { color: #374151; }
-.text-error { color: #ef4444; }
-.text-success { color: #065f46; }
+.text-gray-800 { color: var(--mm-gray-800); }
+.text-gray-500 { color: var(--mm-gray-500); }
+.text-gray-400 { color: var(--mm-gray-700); }
+.text-error { color: var(--mm-error); }
+.text-success { color: var(--mm-color-secondary-700); }
 
 .bg-gray-900 { background: var(--mm-gray-900); }
 .bg-primary-100 { background: var(--mm-color-primary-100); }
@@ -501,13 +501,13 @@
 
 /* Message Box Utilities */
 .error-box {
-  background: #fee2e2;
-  border: 1px solid #ef4444;
+  background: var(--mm-error-light);
+  border: 1px solid var(--mm-error);
 }
 
 .success-box {
-  background: #d1fae5;
-  border: 1px solid #10b981;
+  background: var(--mm-success-light);
+  border: 1px solid var(--mm-success);
 }
 
 /* Hashtag Badge */
@@ -536,15 +536,15 @@
 }
 
 .metric-card-pink {
-  background: #ec4899;
+  background: var(--mm-chart-pink);
 }
 
 .metric-card-blue {
-  background: #3b82f6;
+  background: var(--mm-color-primary-500);
 }
 
 .metric-card-green {
-  background: #10b981;
+  background: var(--mm-color-secondary-500);
 }
 
 .metric-value {
@@ -593,7 +593,7 @@
 }
 
 .tab-button-active {
-  background: #6366f1;
+  background: var(--mm-color-primary-600);
   color: white;
   border-radius: 8px 8px 0 0;
 }
@@ -624,15 +624,15 @@
 }
 
 .success-metric-title-green {
-  color: #059669;
+  color: var(--mm-color-secondary-600);
 }
 
 .success-metric-title-blue {
-  color: #2563eb;
+  color: var(--mm-color-primary-700);
 }
 
 .success-metric-title-purple {
-  color: #7c3aed;
+  color: var(--mm-color-purple-600);
 }
 
 .metric-grid-small {
@@ -659,19 +659,19 @@
 
 .project-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   margin-bottom: 0.25rem;
 }
 
 .project-meta {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
 }
 
 .project-stats {
   text-align: right;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
 }
 
 /* Statistics White Box */
@@ -687,15 +687,15 @@
   height: 20px;
   border-radius: 10px;
   overflow: hidden;
-  background: #e5e7eb;
+  background: var(--mm-gray-200);
 }
 
 .progress-bar-male {
-  background: #3b82f6;
+  background: var(--mm-color-primary-500);
 }
 
 .progress-bar-female {
-  background: #ec4899;
+  background: var(--mm-chart-pink);
 }
 
 /* Mini Metric Cards (Filter Tab) */
@@ -730,26 +730,26 @@
 }
 
 .mini-metric-value-primary {
-  color: #6366f1;
+  color: var(--mm-color-primary-600);
 }
 
 .mini-metric-value-success {
-  color: #10b981;
+  color: var(--mm-color-secondary-500);
 }
 
 .mini-metric-value-pink {
-  color: #f5576c;
+  color: var(--mm-error);
 }
 
 .mini-metric-label {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
 }
 
 /* Hashtag Quick Add Button */
 .hashtag-quick-btn {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background: var(--mm-gray-100);
+  border: 1px solid var(--mm-gray-300);
   border-radius: 6px;
   padding: 0.5rem;
   font-size: 0.875rem;
@@ -757,7 +757,7 @@
 }
 
 .hashtag-quick-btn:disabled {
-  background: #e5e7eb;
+  background: var(--mm-gray-200);
   cursor: default;
   opacity: 0.5;
 }
@@ -765,13 +765,13 @@
 /* Project Detail */
 .project-detail-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
   margin-bottom: 0.5rem;
 }
 
 .project-detail-date {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
   margin-bottom: 0.5rem;
 }
 
@@ -988,7 +988,7 @@
 .project-count-badge {
   font-size: 1rem;
   background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  color: var(--mm-color-secondary-600);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-weight: bold;
@@ -1014,23 +1014,23 @@
   margin: 0 0 0.75rem 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--mm-gray-900);
 }
 
 .project-link {
-  color: #6366f1;
+  color: var(--mm-color-primary-600);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s ease;
 }
 
 .project-link:hover {
-  border-bottom-color: #6366f1;
+  border-bottom-color: var(--mm-color-primary-600);
 }
 
 .view-stats-badge {
   background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
+  color: var(--mm-color-primary-600);
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -1057,7 +1057,7 @@
 
 .typography-heading {
   margin-bottom: 1rem;
-  color: #1e40af;
+  color: var(--mm-color-primary-800);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1069,7 +1069,7 @@
 
 .typography-description {
   margin-bottom: 1.5rem;
-  color: #4b5563;
+  color: var(--mm-gray-600);
 }
 
 .font-selector {
@@ -1139,17 +1139,17 @@
 
 .section-heading {
   margin-bottom: 2rem;
-  color: #1f2937;
+  color: var(--mm-gray-900);
 }
 
 .subsection-heading {
   margin-bottom: 1rem;
-  color: #374151;
+  color: var(--mm-gray-700);
 }
 
 .subsection-description {
   margin-bottom: 0.75rem;
-  color: #6b7280;
+  color: var(--mm-gray-500);
 }
 
 .content-bg-grid {
@@ -1160,7 +1160,7 @@
 }
 
 .content-bg-label {
-  color: #374151;
+  color: var(--mm-gray-700);
   font-weight: 600;
 }
 
@@ -1181,20 +1181,20 @@
 }
 
 .assignment-date {
-  color: #6b7280;
+  color: var(--mm-gray-500);
   font-size: 0.85rem;
 }
 
 .style-item-title {
   margin: 0;
-  color: #1f2937;
+  color: var(--mm-gray-900);
 }
 
 .style-color-circle {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--mm-gray-200);
 }
 
 .edit-form {
@@ -1215,7 +1215,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid rgba(99, 102, 241, 0.3);
-  border-top: 4px solid #6366f1;
+  border-top: 4px solid var(--mm-color-primary-600);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
