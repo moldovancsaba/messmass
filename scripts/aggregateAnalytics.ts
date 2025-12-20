@@ -29,6 +29,7 @@ import {
   isProjectAggregatable,
 } from '../lib/analyticsCalculator.js';
 import type { AggregationLog } from '../lib/analytics.types.js';
+import { aggregatePartnerAnalytics } from '../lib/analytics-aggregator.js';
 
 // WHAT: Track last run time for incremental aggregation
 // WHY: Only process projects updated since last run to minimize load
@@ -246,6 +247,49 @@ async function runAggregation() {
     console.log(`  ✓ Modified: ${upsertResult.modified}`);
     if (upsertResult.errors > 0) {
       console.log(`  ⚠️  Errors: ${upsertResult.errors}`);
+    }
+    
+    // WHAT: Aggregate partner analytics for affected partners
+    // WHY: Keep partner_analytics collection updated with latest metrics
+    console.log(`\n👥 Aggregating partner analytics...`);
+    const uniquePartnerIds = new Set<string>();
+    for (const project of projects) {
+      if (project.partnerId) {
+        uniquePartnerIds.add(project.partnerId.toString());
+      }
+    }
+    
+    console.log(`  • Found ${uniquePartnerIds.size} unique partners to update`);
+    
+    let partnersProcessed = 0;
+    let partnersFailed = 0;
+    const partnerErrors: Array<{ partnerId: string; errorMessage: string }> = [];
+    
+    for (const partnerId of uniquePartnerIds) {
+      try {
+        const result = await aggregatePartnerAnalytics(partnerId);
+        if (result.success) {
+          partnersProcessed++;
+          console.log(`  ✓ Partner ${partnerId}: ${result.recordsProcessed} events processed`);
+        } else {
+          partnersFailed++;
+          partnerErrors.push({
+            partnerId,
+            errorMessage: result.errors.join(', '),
+          });
+          console.error(`  ❌ Partner ${partnerId} failed:`, result.errors);
+        }
+      } catch (error) {
+        partnersFailed++;
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        partnerErrors.push({ partnerId, errorMessage });
+        console.error(`  ❌ Partner ${partnerId} error:`, errorMessage);
+      }
+    }
+    
+    console.log(`\n  • Partners processed: ${partnersProcessed}/${uniquePartnerIds.size}`);
+    if (partnersFailed > 0) {
+      console.log(`  ⚠️  Partners failed: ${partnersFailed}`);
     }
     
     // Calculate performance metrics

@@ -196,6 +196,17 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View aggregated KYC data',
       },
       {
+        label: 'Analytics',
+        icon: 'insert_chart',
+        variant: 'primary',
+        handler: (partner) => {
+          // WHAT: Open partner analytics dashboard
+          // WHY: View comprehensive analytics including trends, demographics, and performance metrics
+          window.open(`/admin/partners/${partner._id}/analytics`, '_blank');
+        },
+        title: 'View partner analytics dashboard',
+      },
+      {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
@@ -289,6 +300,16 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
           } else {
             alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
           }
+        },
+      },
+      {
+        label: 'Analytics',
+        icon: 'insert_chart',
+        variant: 'primary',
+        handler: (partner) => {
+          // WHAT: Open partner analytics dashboard
+          // WHY: View comprehensive analytics including trends, demographics, and performance metrics
+          window.open(`/admin/partners/${partner._id}/analytics`, '_blank');
         },
       },
       {
