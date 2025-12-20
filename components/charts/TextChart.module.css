@@ -102,9 +102,10 @@
   /* WHAT: Maximum text scaling with proper word wrapping
    * WHY: JavaScript calculates largest font size that fits with natural line breaks
    * HOW: Dynamic font-size set via inline style with clamp() bounds */
+  /* CONSTRAINT: 1.5x max ratio (0.75rem → 1.125rem = 12px → 18px) for visual consistency */
   
   /* Default fallback - will be overridden by JavaScript calculation */
-  font-size: clamp(0.75rem, 4cqh, 12rem);
+  font-size: clamp(0.75rem, 4cqh, 1.125rem);
   
   /* WHAT: Ensure text is vertically centered within its container */
   /* WHY: Text should be in the middle of the available space */

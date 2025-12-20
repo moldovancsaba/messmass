@@ -183,6 +183,43 @@
   --mm-letter-spacing-tight: -0.025em;
   --mm-letter-spacing-normal: 0;
   --mm-letter-spacing-wide: 0.05em;
+  
+  /* ========================================
+     REPORT TYPOGRAPHY - CONSTRAINED SCALING
+  ======================================== */
+  
+  /* What: Multi-tier typography constraints for report visualizations
+     Why: Balanced scaling - tight for bar charts (1.2x), moderate for text (1.5x), free for KPI impact (3x)
+     How: Different constraints for different chart types based on visual purpose
+     
+     RULES:
+     - KPI charts: Unconstrained for maximum visual impact
+     - Bar charts: 1.2x tight constraint for uniform appearance
+     - Text charts: 1.5x moderate constraint for readability */
+  
+  /* KPI Values - Large numeric displays (MAXIMIZED for impact) */
+  --mm-report-kpi-value-min: 1.5rem;   /* 24px */
+  --mm-report-kpi-value-max: 6rem;     /* 96px - 4x ratio (maximum safe) */
+  
+  /* KPI Icons - Material Icons font-size (MAXIMIZED for visibility) */
+  --mm-report-kpi-icon-min: 2rem;      /* 32px */
+  --mm-report-kpi-icon-max: 6rem;      /* 96px - 3x ratio (maximum safe) */
+  
+  /* KPI Titles - Small labels below values (1.5x constraint) */
+  --mm-report-kpi-title-min: 0.75rem;  /* 12px */
+  --mm-report-kpi-title-max: 1.125rem; /* 18px - 1.5x ratio */
+  
+  /* Bar Chart Elements - Tight 1.2x constraint for uniformity */
+  --mm-report-bar-label-min: 0.75rem;  /* 12px */
+  --mm-report-bar-label-max: 0.9rem;   /* 14.4px - 1.2x ratio */
+  --mm-report-bar-value-min: 0.875rem; /* 14px */
+  --mm-report-bar-value-max: 1.05rem;  /* 16.8px - 1.2x ratio */
+  --mm-report-bar-height-min: 0.6rem;  /* 9.6px */
+  --mm-report-bar-height-max: 0.72rem; /* 11.5px - 1.2x ratio */
+  
+  /* Text Content - Moderate 1.5x constraint for readability */
+  --mm-report-text-min: 1rem;          /* 16px */
+  --mm-report-text-max: 1.5rem;        /* 24px - 1.5x ratio */
 
   /* ========================================
      SPACING - Modern 8px Grid System

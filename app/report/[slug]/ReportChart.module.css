@@ -126,7 +126,8 @@
   /* WHAT: Material Icons scale by font-size, not SVG dimensions */
   /* WHY: Switched from Lucide (SVG) to Material Icons (font) */
   /* HOW: Now queries .kpiIconRow container for 90% fill */
-  font-size: clamp(2rem, 90cqh, 20rem) !important; /* 90% of icon row height - !important overrides MaterialIcon inline styles */
+  /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (2rem → 6rem = 3x) */
+  font-size: clamp(2rem, 90cqh, 6rem) !important; /* 90% of icon row height - !important overrides MaterialIcon inline styles */
   height: auto !important;
   width: auto !important;
   color: var(--mm-primary) !important;
@@ -147,7 +148,8 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.5rem, min(20cqh, 25cqw), 12rem);
+  /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (1.5rem → 6rem = 4x) */
+  font-size: clamp(1.5rem, min(20cqh, 25cqw), 6rem);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   line-height: 0.85;
@@ -162,6 +164,7 @@
   /* WHAT: 30% text height of 30cqh row, 10% line spacing, max 2 lines */
   /* WHY: More breathing room, no overflow, centered */
   /* HOW: 9cqh font (30% of 30cqh), line-height 1.1 (10% spacing) */
+  /* CONSTRAINT: 1.5x max ratio (0.75rem → 1.125rem = 12px → 18px) for visual consistency */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -170,7 +173,7 @@
   text-align: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(0.75rem, 9cqh, 6rem);
+  font-size: clamp(0.75rem, 9cqh, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
   color: var(--mm-gray-600);
   line-height: 1.1;
@@ -325,13 +328,14 @@
 .barLabel {
   /* WHAT: Bar label - 45% of bar height with 10% line spacing */
   /* WHY: Proportional to bar, readable with 2-line wrapping */
+  /* CONSTRAINT: 1.2x max ratio (0.75rem → 0.9rem = 12px → 14.4px) for tight consistency */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   align-items: center;
   justify-content: flex-end;
   padding-right: var(--mm-space-2);
-  font-size: 4.95cqh;
+  font-size: clamp(0.75rem, 4.95cqh, 0.9rem);
   color: var(--mm-gray-700);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
@@ -347,28 +351,30 @@
   background: var(--mm-gray-200);
   /* WHAT: 11% of cell height, max 50% of cell width, semicircular ends
    * WHY: Centralized system - no hardcoded pixels, responsive to cell size
-   * HOW: 11cqh height, 5.5cqh radius = 50% of height = semicircular ends */
-  height: 11cqh;
+   * HOW: 11cqh height constrained to 1.2x ratio for tight consistency */
+  /* CONSTRAINT: 1.2x max ratio (0.6rem → 0.72rem = 9.6px → 11.5px) for tight consistency */
+  height: clamp(0.6rem, 11cqh, 0.72rem);
   max-width: 50cqw;
-  border-radius: 5.5cqh; /* WHAT: 50% of bar height (11cqh ÷ 2) for semicircular ends */
+  border-radius: calc(clamp(0.6rem, 11cqh, 0.72rem) / 2); /* WHAT: 50% of bar height for semicircular ends */
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  border-radius: 5.5cqh; /* WHAT: Match track radius (50% of bar height) for seamless pill shape */
+  border-radius: calc(clamp(0.6rem, 11cqh, 0.72rem) / 2); /* WHAT: Match track radius (50% of bar height) for seamless pill shape */
   transition: width var(--transition-normal);
 }
 
 .barValue {
   /* WHAT: Bar value - always 50% of bar height (5.5cqh) */
   /* WHY: Proportional to bar across all chart dimensions */
+  /* CONSTRAINT: 1.2x max ratio (0.875rem → 1.05rem = 14px → 16.8px) for tight consistency */
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 11cqh;
+  height: clamp(0.6rem, 11cqh, 0.72rem); /* Match bar track height */
   padding-left: var(--mm-space-2);
-  font-size: 5.5cqh;
+  font-size: clamp(0.875rem, 5.5cqh, 1.05rem);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-gray-900);
   text-align: left;
@@ -401,15 +407,14 @@
   /* WHAT: Maximize font size to fill cell while staying readable */
   /* WHY: Text content should dominate the space like KPI values */
   /* HOW: Use container queries to scale based on both width and height */
+  /* CONSTRAINT: 1.5x max ratio (1rem → 1.5rem = 16px → 24px) for visual consistency */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   width: 100%;
   height: 100%;
-  /* WHAT: Scale aggressively - min 1rem, grows with container, max 8rem */
-  /* WHY: Text should be LARGE and fill space, responsive to container size */
-  font-size: clamp(1rem, min(8cqh, 6cqw), 8rem);
+  font-size: clamp(1rem, min(8cqh, 6cqw), 1.5rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--mm-gray-900);
   line-height: 1.3;
