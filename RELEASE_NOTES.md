@@ -1,5 +1,88 @@
 # MessMass Release Notes
 
+## [v11.38.0] — 2025-12-20T19:43:00.000Z
+
+### Summary
+- Implemented multi-tier typography constraint system for report visualizations
+- KPI charts maximized for dramatic visual impact (up to 96px)
+- Bar charts tightened for uniform professional appearance (1.2x constraint)
+- Text charts maintain balanced readability (1.5x constraint)
+
+### Features
+- **KPI Charts - MAXIMIZED for Impact**:
+  - Icons: 32px → 96px (3x ratio, unconstrained)
+  - Values: 24px → 96px (4x ratio, unconstrained)
+  - Titles: 12px → 18px (1.5x ratio, unchanged)
+  - Rationale: KPIs should dominate large cells for immediate visual impact
+
+- **Bar Charts - TIGHTENED for Uniformity**:
+  - Labels: 12px → 14.4px (1.2x ratio, constrained)
+  - Values: 14px → 16.8px (1.2x ratio, constrained)
+  - Track height: 9.6px → 11.5px (1.2x ratio, constrained)
+  - Rationale: Bars should look uniform across different cell sizes
+
+- **Text Charts - MODERATE Constraint**:
+  - Content: 16px → 24px (1.5x ratio, unchanged)
+  - Rationale: Text remains readable without overwhelming cells
+
+### Technical
+- **Files Modified**:
+  - `app/report/[slug]/ReportChart.module.css` (7 constraints updated)
+  - `components/charts/TextChart.module.css` (1 constraint updated)
+  - `app/styles/theme.css` (design tokens added for multi-tier system)
+  - `lib/validateTypographyRatios.ts` (NEW - validation utility created)
+
+- **Design Tokens Added**:
+  ```css
+  /* KPI Values - MAXIMIZED */
+  --mm-report-kpi-value-min: 1.5rem;   /* 24px */
+  --mm-report-kpi-value-max: 6rem;     /* 96px - 4x */
+  
+  /* KPI Icons - MAXIMIZED */
+  --mm-report-kpi-icon-min: 2rem;      /* 32px */
+  --mm-report-kpi-icon-max: 6rem;      /* 96px - 3x */
+  
+  /* Bar Chart Elements - TIGHT 1.2x */
+  --mm-report-bar-label-min: 0.75rem;  /* 12px */
+  --mm-report-bar-label-max: 0.9rem;   /* 14.4px - 1.2x */
+  --mm-report-bar-value-min: 0.875rem; /* 14px */
+  --mm-report-bar-value-max: 1.05rem;  /* 16.8px - 1.2x */
+  --mm-report-bar-height-min: 0.6rem;  /* 9.6px */
+  --mm-report-bar-height-max: 0.72rem; /* 11.5px - 1.2x */
+  ```
+
+### Documentation
+- **TYPOGRAPHY_1.5X_CONSTRAINT.md** (NEW): Original implementation documentation
+- **TYPOGRAPHY_FINE_TUNING.md** (NEW): Fine-tuning documentation with rationale
+- **lib/validateTypographyRatios.ts** (NEW): Validation utility with helper functions
+  - `validateClampRatio()` - Validates single clamp() formula
+  - `scanCSSForViolations()` - Scans entire CSS files
+  - `constrainClampFormula()` - Auto-generates constrained formulas
+  - `logValidationResults()` - Console logging for development
+
+### Benefits
+- ✅ KPI charts now dominate large cells for immediate impact
+- ✅ Bar charts maintain professional uniformity across all sizes
+- ✅ Text charts remain readable without overwhelming
+- ✅ Responsive behavior preserved (container queries still functional)
+- ✅ Build verified (87/87 static pages generated)
+- ✅ Validation utility prevents future violations
+
+### Visual Impact
+**Large Cell (600x600px) Changes:**
+- KPI Icon: 48px → **96px** (+100% ⬆️)
+- KPI Value: 36px → **96px** (+166% ⬆️)
+- Bar Label: ~18px → **14.4px** (-20% ⬇️ tighter)
+- Bar Value: ~21px → **16.8px** (-20% ⬇️ tighter)
+- Bar Height: ~17px → **11.5px** (-32% ⬇️ tighter)
+
+### Version
+`11.37.0` → `11.38.0` (MINOR - typography fine-tuning feature)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.35.1] — 2025-12-17T18:30:21.000Z
 
 ### Summary

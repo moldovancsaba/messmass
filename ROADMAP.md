@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.36.2
-Last Updated: 2025-12-19T11:28:38.000Z (UTC)
+Current Version: 11.38.0
+Last Updated: 2025-12-20T19:43:00.000Z (UTC)
 
 ---
 
