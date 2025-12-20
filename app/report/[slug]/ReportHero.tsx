@@ -60,6 +60,10 @@ export default function ReportHero({
   className 
 }: ReportHeroProps) {
   
+  // Debug: Log partnerLogo prop
+  console.log('🖼️ [ReportHero] Received partnerLogo:', partnerLogo);
+  console.log('🖼️ [ReportHero] Will render logo?', !!partnerLogo);
+  
   // Format date for display
   const formattedDate = showDate ? formatDate(project.eventDate) : null;
   

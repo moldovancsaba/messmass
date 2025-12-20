@@ -163,6 +163,9 @@ export default function PartnerReportPage() {
   // Get hero settings from report
   const { heroSettings } = report;
 
+  // Debug: Log partner logo
+  console.log('🖼️ [PartnerReport] Partner logo URL:', (partner as any).logoUrl);
+
   // Format partner data as project-like object for ReportHero
   // WHAT: ReportHero expects project shape, adapt partner data to match
   // WHY: Component reuse without modification
@@ -178,7 +181,8 @@ export default function PartnerReportPage() {
         {/* Hero Section - REUSED from event reports */}
         <ReportHero 
           project={partnerAsProject}
-          emoji={partner.emoji || (heroSettings?.showEmoji ? '🏢' : undefined)}
+          emoji={heroSettings?.showEmoji !== false ? partner.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
+          partnerLogo={(partner as any).logoUrl} // WHAT: Show partner logo if available
           showDate={false} // Partners don't have single date
           showExport={heroSettings?.showExportOptions ?? true}
         />
