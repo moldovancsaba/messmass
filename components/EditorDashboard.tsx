@@ -637,7 +637,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
             <ColoredCard key={idx}>
               {title && (
                 <h2 className="section-title">
-                  {title} {kpi !== 'NA' ? <span className="value-pill" style={{ marginLeft: 8 }}>{kpi}</span> : null}
+                  {title} {kpi !== 'NA' ? <span className="value-pill value-pill-spaced">{kpi}</span> : null}
                 </h2>
               )}
               <div className="stats-cards-row">
@@ -744,12 +744,12 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
         {groups.length === 0 && (
           <ColoredCard>
             <h2 className="section-title">No groups configured</h2>
-            <p style={{ color: '#6b7280' }}>Go to Admin → KYC Variables to configure variable groups.</p>
+            <p className="text-muted">Go to Admin → KYC Variables to configure variable groups.</p>
             {varsConfig.length > 0 && (
-              <p style={{ color: '#10b981', marginTop: '1rem' }}>✅ {varsConfig.length} variables loaded from database</p>
+              <p className="text-success-spaced">✅ {varsConfig.length} variables loaded from database</p>
             )}
             {varsConfig.length === 0 && varsLoading && (
-              <p style={{ color: '#f59e0b', marginTop: '1rem' }}>⏳ Loading variables...</p>
+              <p className="text-warning-spaced">⏳ Loading variables...</p>
             )}
           </ColoredCard>
         )}

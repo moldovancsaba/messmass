@@ -2031,3 +2031,48 @@ textarea::placeholder {
 .hidden-file-input {
   display: none;
 }
+
+/* ========================================
+   BATCH 5/6: MISCELLANEOUS UTILITIES
+======================================== */
+
+/* WHAT: Value pill with left margin
+   WHY: Spacing after section title */
+.value-pill-spaced {
+  margin-left: var(--mm-space-2);
+}
+
+/* WHAT: Muted secondary text
+   WHY: Consistent secondary text color */
+.text-muted {
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Success text with top margin
+   WHY: Status messages in empty states */
+.text-success-spaced {
+  color: var(--mm-success);
+  margin-top: var(--mm-space-4);
+}
+
+/* WHAT: Warning text with top margin
+   WHY: Status messages in empty states */
+.text-warning-spaced {
+  color: var(--mm-warning);
+  margin-top: var(--mm-space-4);
+}
+
+/* WHAT: Flex layout with wrap and gap
+   WHY: Badge container pattern */
+.flex-wrap-gap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+}
+
+/* WHAT: Bold text with bottom margin
+   WHY: Emphasis in warning/info boxes */
+.text-bold-spaced {
+  font-weight: 600;
+  margin-bottom: var(--mm-space-3);
+}

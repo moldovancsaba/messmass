@@ -102,12 +102,12 @@ export default function DataQualityInsightsComponent({
             </span>
           </div>
           
-          <p className={styles.warningMessage} style={{ fontWeight: 600, marginBottom: 'var(--mm-space-3)' }}>
+          <p className={`${styles.warningMessage} text-bold-spaced`}>
             {insights.missingCritical.message}
           </p>
           
           {insights.missingCritical.fields.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--mm-space-2)' }}>
+            <div className="flex-wrap-gap">
               {insights.missingCritical.fields.map(field => (
                 <code 
                   key={field} 

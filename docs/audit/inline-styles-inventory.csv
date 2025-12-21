@@ -86,10 +86,6 @@ components/DataQualityInsights.tsx,131,"background: '#8b5cf6'",No,Low
 components/DataQualityInsights.tsx,163,"background: '#3b82f6'",No,Low
 components/DataQualityInsights.tsx,226,"background: '#f59e0b'",No,Low
 components/DataQualityInsights.tsx,259,"background: '#3b82f6'",No,Low
-components/EditorDashboard.tsx,640,"marginLeft: 8",No,Low
-components/EditorDashboard.tsx,747,"color: '#6b7280'",No,Low
-components/EditorDashboard.tsx,749,"color: '#10b981', marginTop: '1rem'",No,Low
-components/EditorDashboard.tsx,752,"color: '#f59e0b', marginTop: '1rem'",No,Low
 components/ImageLightbox.tsx,90,"background: overlayBg",No,Low
 components/ImageUploader.tsx,109,"minHeight: '200px'",No,Low
 components/ImageUploader.tsx,122,"maxWidth: '400px'",No,Low
