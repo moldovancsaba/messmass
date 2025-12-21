@@ -256,13 +256,13 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
           <div className={styles.sectionHeader}>
             <h4 className={styles.sectionTitle}>Image Slots (reportImage1…{maxSlots})</h4>
             <div className={styles.controlsRow}>
-              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => handleBulkUpload(e.target.files)} style={{ display: 'none' }} />
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => handleBulkUpload(e.target.files)} className="hidden-file-input" />
               <button className="btn btn-small btn-primary" onClick={() => fileInputRef.current?.click()} disabled={busy}>
                 📤 Bulk Upload to Next Free Slots
               </button>
               <div className={styles.inlineRow}>
-                <input className="form-input" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} style={{ width: '80px' }} />
-                <input className="form-input" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} style={{ width: '80px' }} />
+                <input className="form-input input-small" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} />
+                <input className="form-input input-small" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} />
                 <button className="btn btn-small btn-secondary" onClick={() => doSwap('reportImage')} disabled={busy}>↔️ Swap</button>
               </div>
               <button className="btn btn-small btn-danger" onClick={() => compact('reportImage')} disabled={busy}>
@@ -282,7 +282,7 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
                       <input
                         type="file"
                         accept="image/*"
-                        style={{ display: 'none' }}
+                        className="hidden-file-input"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) replaceImageAt(index, file);
@@ -311,8 +311,8 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
             <div className={styles.controlsRow}>
               <button className="btn btn-small btn-danger" onClick={() => compact('reportText')} disabled={busy}>🧹 Compact Indices</button>
               <div className={styles.inlineRow}>
-                <input className="form-input" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} style={{ width: '80px' }} />
-                <input className="form-input" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} style={{ width: '80px' }} />
+                <input className="form-input input-small" placeholder="Swap A" value={swapA} onChange={(e) => setSwapA(e.target.value)} />
+                <input className="form-input input-small" placeholder="Swap B" value={swapB} onChange={(e) => setSwapB(e.target.value)} />
                 <button className="btn btn-small btn-secondary" onClick={() => doSwap('reportText')} disabled={busy}>↔️ Swap</button>
               </div>
             </div>
@@ -320,7 +320,7 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
 
           <div className={styles.card}>
             <div className={styles.inlineRow}>
-              <textarea ref={textBulkRef} className="form-input" placeholder="Paste texts here — one non-empty line per slot (reportTextN)" style={{ minHeight: '96px' }}></textarea>
+              <textarea ref={textBulkRef} className="form-input textarea-min" placeholder="Paste texts here — one non-empty line per slot (reportTextN)"></textarea>
             </div>
             <div className={styles.inlineRow}>
               <button className="btn btn-small btn-primary" onClick={handleBulkAddTexts} disabled={busy}>➕ Add Lines to Next Free Slots</button>
@@ -340,10 +340,9 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
                   </div>
                 </div>
                 <textarea
-                  className="form-input"
+                  className="form-input textarea-min"
                   defaultValue={value}
                   onBlur={(e) => saveTextAt(index, e.currentTarget.value)}
-                  style={{ minHeight: '96px' }}
                 />
               </div>
             ))}

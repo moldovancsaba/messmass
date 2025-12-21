@@ -106,18 +106,7 @@ export default function ImageUploader({
     <div className="image-uploader">
       {label && <label className="form-label-block">{label}</label>}
       
-      <div className="image-uploader-container" style={{ 
-        border: '2px dashed var(--mm-gray-300)', 
-        borderRadius: 'var(--mm-radius-lg)',
-        padding: 'var(--mm-space-4)',
-        backgroundColor: 'var(--mm-gray-50)',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 'var(--mm-space-3)'
-      }}>
+      <div className="upload-container" style={{ minHeight: '200px' }}>
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -125,37 +114,23 @@ export default function ImageUploader({
           accept="image/*"
           onChange={handleFileSelect}
           disabled={disabled || uploading}
-          style={{ display: 'none' }}
+          className="hidden-file-input"
         />
 
         {/* Current Image Display */}
         {value && !uploading && (
-          <div style={{ 
-            width: '100%', 
-            maxWidth: '400px',
-            position: 'relative'
-          }}>
+          <div className="image-display-wrapper" style={{ maxWidth: '400px' }}>
             <Image 
               src={value} 
               alt="Uploaded" 
               width={400}
               height={300}
-              style={{ 
-                width: '100%', 
-                height: 'auto',
-                borderRadius: 'var(--mm-radius-md)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}
+              className="image-display"
+              style={{ height: 'auto' }}
               unoptimized 
             />
             {aspectRatio && (
-              <div className="badge badge-secondary" style={{ 
-                position: 'absolute', 
-                top: '8px', 
-                right: '8px',
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                color: 'white'
-              }}>
+              <div className="aspect-ratio-badge">
                 {aspectRatio}
               </div>
             )}
@@ -164,7 +139,7 @@ export default function ImageUploader({
 
         {/* Upload/Loading State */}
         {uploading && (
-          <div style={{ textAlign: 'center' }}>
+          <div className="text-center">
             <div className="text-4xl mb-2">📤</div>
             <div className="text-gray-600">Uploading...</div>
           </div>
@@ -172,7 +147,7 @@ export default function ImageUploader({
 
         {/* No Image State */}
         {!value && !uploading && (
-          <div style={{ textAlign: 'center' }}>
+          <div className="text-center">
             <div className="text-4xl mb-2">🖼️</div>
             <div className="text-gray-600 mb-2">No image uploaded</div>
             {aspectRatio && (
@@ -183,7 +158,7 @@ export default function ImageUploader({
 
         {/* Error Message */}
         {error && (
-          <div className="text-error text-sm" style={{ 
+          <div className="upload-error" style={{ 
             padding: 'var(--mm-space-2)',
             backgroundColor: 'var(--mm-red-50)',
             borderRadius: 'var(--mm-radius-md)',
@@ -194,17 +169,13 @@ export default function ImageUploader({
         )}
 
         {/* Action Buttons */}
-        <div style={{ 
-          display: 'flex', 
-          gap: 'var(--mm-space-2)',
-          marginTop: 'var(--mm-space-2)'
-        }}>
+        <div className="button-group" style={{ marginTop: 'var(--mm-space-2)' }}>
           <button
             className="btn btn-small btn-primary"
             onClick={handleUploadClick}
             disabled={disabled || uploading}
           >
-            <MaterialIcon name={value ? "sync" : "upload"} variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+              <MaterialIcon name={value ? "sync" : "upload"} variant="outlined" style={{ fontSize: '1rem' }} />
             {value ? 'Replace' : 'Upload'}
           </button>
           
@@ -214,14 +185,14 @@ export default function ImageUploader({
               onClick={handleDelete}
               disabled={uploading}
             >
-              <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+              <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem' }} />
               Delete
             </button>
           )}
         </div>
 
         {/* Helper Text */}
-        <div className="text-xs text-gray-500" style={{ textAlign: 'center' }}>
+        <div className="text-xs text-gray-500 text-center">
           Max size: {maxSizeMB}MB • Formats: JPG, PNG, GIF, WebP
         </div>
       </div>

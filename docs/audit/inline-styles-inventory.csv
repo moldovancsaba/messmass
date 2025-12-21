@@ -59,19 +59,9 @@ components/CategorizedHashtagInput.tsx,147,"backgroundColor: (typeof category.co
 components/CategorizedHashtagInput.tsx,159,"marginBottom: '1rem'",No,Low
 components/CategorizedHashtagInput.tsx,207,"marginBottom: '1rem'",No,Low
 components/ChartAlgorithmManager.tsx,668,"fontSize: '1.5rem'",No,Low
-components/ChartAlgorithmManager.tsx,1228,"display: 'flex', gap: '0.5rem', alignItems: 'center'",No,Low
-components/ChartAlgorithmManager.tsx,1232,"display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        minWidth: '48px',
-                        height: '48px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '0.5rem',
-                        background: '#f9fafb'",No,Low
-components/ChartAlgorithmManager.tsx,1245,"fontSize: '2rem', color: '#374151'",No,Low
-components/ChartAlgorithmManager.tsx,1255,"flex: 2",No,Low
-components/ChartAlgorithmManager.tsx,1261,"flex: 1",No,Low
-components/ChartAlgorithmManager.tsx,1268,"color: '#3b82f6', textDecoration: 'underline'",No,Low
+components/ChartAlgorithmManager.tsx,1232,"minWidth: '48px', height: '48px'",No,Low
+components/ChartAlgorithmManager.tsx,1246,"flex: 2",No,Low
+components/ChartAlgorithmManager.tsx,1252,"flex: 1",No,Low
 components/ChartBuilderBar.tsx,74,"backgroundColor: el.color",No,Low
 components/ChartBuilderPie.tsx,85,"width: '12px',
                     height: '12px',
@@ -119,20 +109,11 @@ components/EditorDashboard.tsx,747,"color: '#6b7280'",No,Low
 components/EditorDashboard.tsx,749,"color: '#10b981', marginTop: '1rem'",No,Low
 components/EditorDashboard.tsx,752,"color: '#f59e0b', marginTop: '1rem'",No,Low
 components/ImageLightbox.tsx,90,"background: overlayBg",No,Low
-components/ImageUploader.tsx,128,"display: 'none'",No,Low
-components/ImageUploader.tsx,133,"width: '100%', 
-            maxWidth: '400px',
-            position: 'relative'",No,Low
-components/ImageUploader.tsx,152,"position: 'absolute', 
-                top: '8px', 
-                right: '8px',
-                backgroundColor: 'rgba(0,0,0,0.7)',
-                color: 'white'",No,Low
-components/ImageUploader.tsx,167,"textAlign: 'center'",No,Low
-components/ImageUploader.tsx,175,"textAlign: 'center'",No,Low
-components/ImageUploader.tsx,207,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
-components/ImageUploader.tsx,217,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
-components/ImageUploader.tsx,224,"textAlign: 'center'",No,Low
+components/ImageUploader.tsx,109,"minHeight: '200px'",No,Low
+components/ImageUploader.tsx,122,"maxWidth: '400px'",No,Low
+components/ImageUploader.tsx,129,"height: 'auto'",No,Low
+components/ImageUploader.tsx,178,"fontSize: '1rem'",No,Low
+components/ImageUploader.tsx,188,"fontSize: '1rem'",No,Low
 components/ImageUploadField.tsx,151,"display: 'none'",No,Low
 components/PagePasswordLogin.tsx,217,"margin: '0 0 0.5rem 0', fontWeight: '600'",No,Low
 components/PagePasswordLogin.tsx,218,"margin: '0 0 0.25rem 0'",No,Low
@@ -140,14 +121,6 @@ components/PagePasswordLogin.tsx,219,"margin: '0'",No,Low
 components/PasswordGate.tsx,77,"marginBottom: 8",No,Low
 components/PasswordGate.tsx,78,"display: ""flex"", gap: 8, alignItems: ""center""",No,Low
 components/PasswordGate.tsx,91,"color: ""#b00020"", marginTop: 8",No,Low
-components/ReportContentManager.tsx,259,"display: 'none'",No,Low
-components/ReportContentManager.tsx,264,"width: '80px'",No,Low
-components/ReportContentManager.tsx,265,"width: '80px'",No,Low
-components/ReportContentManager.tsx,285,"display: 'none'",No,Low
-components/ReportContentManager.tsx,314,"width: '80px'",No,Low
-components/ReportContentManager.tsx,315,"width: '80px'",No,Low
-components/ReportContentManager.tsx,323,"minHeight: '96px'",No,Low
-components/ReportContentManager.tsx,346,"minHeight: '96px'",No,Low
 components/SaveStatusIndicator.tsx,81,"display: 'inline-flex',
         alignItems: 'center',
         gap: '0.5rem',

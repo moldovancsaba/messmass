@@ -720,7 +720,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
       {/* WHAT: Load More button for pagination
           WHY: Matches Projects, Hashtags, and Categories pages */}
       {!loading && !isSearching && nextOffset !== null && configurations.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--mm-space-6)', marginBottom: 'var(--mm-space-6)' }}>
+        <div className="load-more-container" style={{ marginBottom: 'var(--mm-space-6)' }}>
           <button
             className="btn btn-secondary"
             onClick={loadMore}
@@ -734,7 +734,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
       {/* WHAT: Pagination stats
           WHY: Show current results vs total matched */}
       {!loading && !isSearching && configurations.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--mm-gray-500)', fontSize: '0.875rem', marginBottom: 'var(--mm-space-4)' }}>
+        <div className="pagination-stats">
           Showing {configurations.length} of {totalMatched} chart configurations
         </div>
       )}
@@ -1225,24 +1225,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 {/* ROW 2: Icon Field (v10.4.0 Material Icons - Always Visible) */}
                 <div className="form-group">
                   <label className="form-label">Icon (Optional)</label>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: 'var(--mm-space-2)', alignItems: 'center' }}>
                     {/* WHAT: Live icon preview */}
                     {/* WHY: Users need to see the icon as they type */}
                     {formData.icon && formData.icon.trim() && (
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        minWidth: '48px',
-                        height: '48px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '0.5rem',
-                        background: '#f9fafb'
-                      }}>
+                      <div className="icon-preview-box" style={{ minWidth: '48px', height: '48px' }}>
                         <MaterialIcon
                           name={formData.icon}
                           variant={formData.iconVariant || 'outlined'}
-                          style={{ fontSize: '2rem', color: '#374151' }}
+                          className="icon-preview-icon"
                         />
                       </div>
                     )}
@@ -1265,7 +1256,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                     </select>
                   </div>
                   <small className="form-help">
-                    💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', textDecoration: 'underline' }}>fonts.google.com/icons</a>
+                    💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mm-color-primary-600)', textDecoration: 'underline' }}>fonts.google.com/icons</a>
                   </small>
                 </div>
                 

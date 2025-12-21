@@ -1873,3 +1873,161 @@ textarea::placeholder {
     gap: 0.75rem;
   }
 }
+
+/* ========================================
+   BATCH 3: COMPONENT UTILITIES
+======================================== */
+
+/* WHAT: Image upload container styling
+   WHY: Consistent upload UI across components
+   USAGE: ImageUploader, ReportContentManager */
+.upload-container {
+  border: 2px dashed var(--mm-gray-300);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-3);
+  cursor: pointer;
+  transition: var(--transition-base);
+  background: var(--mm-gray-50);
+}
+
+.upload-container:hover {
+  border-color: var(--mm-color-primary-600);
+  background: var(--mm-color-primary-50);
+}
+
+/* WHAT: Image display wrapper with aspect ratio badge
+   WHY: Consistent image preview layout */
+.image-display-wrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.image-display {
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-md);
+  object-fit: cover;
+}
+
+/* WHAT: Aspect ratio badge overlay
+   WHY: Show image orientation without inline styles */
+.aspect-ratio-badge {
+  position: absolute;
+  top: var(--mm-space-2);
+  right: var(--mm-space-2);
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--mm-white);
+  padding: var(--mm-space-1) var(--mm-space-2);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+}
+
+/* WHAT: Upload error message
+   WHY: Consistent error styling */
+.upload-error {
+  text-align: center;
+  color: var(--mm-color-error);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  margin-top: var(--mm-space-2);
+}
+
+/* WHAT: Button group with flex layout
+   WHY: Consistent button spacing */
+.button-group {
+  display: flex;
+  gap: var(--mm-space-3);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* WHAT: Button with icon
+   WHY: Consistent icon sizing and spacing */
+.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.btn-with-icon .material-icons {
+  font-size: 1.25rem;
+}
+
+/* WHAT: Small text input for swap order controls
+   WHY: Consistent sizing for numeric inputs */
+.input-small {
+  width: 80px;
+  text-align: center;
+}
+
+/* WHAT: Textarea with minimum height
+   WHY: Consistent text area sizing */
+.textarea-min {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* WHAT: Load more button container
+   WHY: Center pagination controls */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--mm-space-6);
+}
+
+/* WHAT: Pagination stats text
+   WHY: Center pagination info */
+.pagination-stats {
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin-top: var(--mm-space-4);
+}
+
+/* WHAT: Icon preview box for chart algorithm form
+   WHY: Consistent icon display */
+.icon-preview-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-4);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+  min-height: 80px;
+}
+
+.icon-preview-icon {
+  font-size: 2rem;
+  color: var(--mm-gray-700);
+}
+
+/* WHAT: Inline form input (small width)
+   WHY: For inline numeric inputs in forms */
+.form-input-inline {
+  width: auto;
+  min-width: 100px;
+  display: inline-block;
+}
+
+/* WHAT: Center-aligned text utility
+   WHY: Reusable centering class */
+.text-center {
+  text-align: center;
+}
+
+/* WHAT: Hidden file input (legitimate inline style replacement)
+   WHY: Browser file inputs need to be hidden */
+.hidden-file-input {
+  display: none;
+}
