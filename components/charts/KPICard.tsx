@@ -230,7 +230,14 @@ export default function KPICard({
           {/* What: Trend indicator
               Why: Show change over time */}
           {trend && (
-            <div className={styles.trend} style={{ ['--trend-color' as string]: getTrendColor() } as React.CSSProperties}>
+            <div 
+              className={styles.trend} 
+              // WHAT: CSS variable for dynamic trend color (green/red/gray)
+              // WHY: Trend direction (up/down/neutral) determines color
+              // HOW: CSS module uses var(--trend-color) for color property
+              // eslint-disable-next-line react/forbid-dom-props
+              style={{ ['--trend-color' as string]: getTrendColor() } as React.CSSProperties}
+            >
               <span className={styles.trendIcon}>{getTrendIcon()}</span>
               <span className={styles.trendValue}>
                 {Math.abs(trend.value).toFixed(1)}%

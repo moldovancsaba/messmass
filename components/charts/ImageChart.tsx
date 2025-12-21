@@ -52,6 +52,10 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '', 
       >
         <div 
           className={styles.imageWrapper}
+          // WHAT: CSS variable for dynamic aspect ratio
+          // WHY: Aspect ratio (16:9, 9:16, 1:1) controls image container height
+          // HOW: CSS module uses var(--container-aspect-ratio) for aspect-ratio property
+          // eslint-disable-next-line react/forbid-dom-props
           style={{
             '--container-aspect-ratio': cssAspectRatio
           } as React.CSSProperties}
@@ -63,6 +67,11 @@ export default function ImageChart({ title, imageUrl, subtitle, className = '', 
               title="Click to view full size"
               role="img"
               aria-label={title}
+              // WHAT: CSS variable for dynamic background-image URL
+              // WHY: Image URL comes from props (reportImage* variables)
+              // HOW: CSS module uses var(--image-url) for background-image property
+              // NOTE: background-image approach ensures PDF export compatibility (v9.3.0)
+              // eslint-disable-next-line react/forbid-dom-props
               style={{
                 '--image-url': `url("${imageUrl}")`
               } as React.CSSProperties}

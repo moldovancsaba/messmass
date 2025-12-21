@@ -125,6 +125,9 @@ export default function TextChart({ title, content, subtitle, className = '', as
   return (
     <div 
       className={`${styles.container} text-chart-container text-chart-override ${className}`}
+      // WHAT: Dynamic aspect ratio from aspectRatio prop (16:9, 9:16, 1:1)
+      // WHY: Text blocks need consistent aspect ratios for grid layout
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         aspectRatio: cssAspectRatio
       } as React.CSSProperties}
@@ -148,6 +151,10 @@ export default function TextChart({ title, content, subtitle, className = '', as
             <p 
               className={styles.text}
               ref={textRef}
+              // WHAT: Dynamic fontSize from auto-scaling calculation
+              // WHY: Text must scale to fill available space without overflow
+              // HOW: Binary search finds max font size, applied as clamp for safety
+              // eslint-disable-next-line react/forbid-dom-props
               style={{
                 fontSize: `clamp(0.75rem, ${optimalFontSize}, 8rem)`
               }}

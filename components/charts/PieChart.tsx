@@ -258,7 +258,13 @@ export default function PieChart({
       filename={filename}
       className={className}
     >
-      <div className={styles.pieChartContainer} style={{ height: `${height}px` }}>
+      <div 
+        className={styles.pieChartContainer} 
+        // WHAT: Dynamic height from height prop
+        // WHY: Chart height must be configurable per instance
+        // eslint-disable-next-line react/forbid-dom-props
+        style={{ height: `${height}px` }}
+      >
         <Doughnut ref={chartRef} data={chartData} options={options} />
       </div>
     </ChartBase>

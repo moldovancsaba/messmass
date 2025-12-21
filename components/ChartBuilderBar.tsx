@@ -71,6 +71,9 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
               {el.color && (
                 <div 
                   className="chart-builder-color-dot"
+                  // WHAT: Dynamic color indicator from chart element color
+                  // WHY: Bar chart segments have unique colors defined in chart config
+                  // eslint-disable-next-line react/forbid-dom-props
                   style={{ backgroundColor: el.color }}
                 />
               )}

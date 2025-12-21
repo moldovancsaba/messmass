@@ -271,7 +271,13 @@ export default function VerticalBarChart({
       filename={filename}
       className={className}
     >
-      <div className={styles.barChartContainer} style={{ height: `${height}px` }}>
+      <div 
+        className={styles.barChartContainer} 
+        // WHAT: Dynamic height from height prop
+        // WHY: Chart height must be configurable per instance
+        // eslint-disable-next-line react/forbid-dom-props
+        style={{ height: `${height}px` }}
+      >
         <Bar ref={chartRef} data={chartData} options={options} />
       </div>
     </ChartBase>

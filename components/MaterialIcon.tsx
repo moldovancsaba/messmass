@@ -58,6 +58,10 @@ export default function MaterialIcon({
   return (
     <span 
       className={`material-icons ${className}`}
+      // WHAT: Dynamic Material Icon styling with variant-based fontFamily + currentColor inheritance
+      // WHY: Icon variant (outlined/rounded) determines font family, color inherits from parent text
+      // NOTE: style prop spread allows parent components to override fontSize, margins, etc.
+      // eslint-disable-next-line react/forbid-dom-props
       style={{ 
         fontFamily: `${fontFamily}, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif`,
         color: 'currentColor', // WHAT: Inherit text color from parent
