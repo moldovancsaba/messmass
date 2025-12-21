@@ -2180,3 +2180,51 @@ textarea::placeholder {
 .icon-size-1 {
   font-size: 1rem;
 }
+
+/* ========================================
+   PHASE 3 BATCH 4: CHART ALGORITHM MANAGER UTILITIES
+======================================== */
+
+/* WHAT: Icon size 1.5rem for larger icons
+   WHY: Extracted from ChartAlgorithmManager line 668 */
+.icon-size-1-5 {
+  font-size: 1.5rem;
+}
+
+/* WHAT: Bottom margin utility
+   WHY: Extracted from ChartAlgorithmManager line 723 */
+.mb-6 {
+  margin-bottom: var(--mm-space-6);
+}
+
+/* WHAT: Flex row with gap and center alignment
+   WHY: Extracted from ChartAlgorithmManager line 1228 (3 properties) */
+.flex-row-gap-center {
+  display: flex;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+/* WHAT: Icon preview box with fixed dimensions
+   WHY: Extracted from ChartAlgorithmManager line 1232 */
+.icon-preview-min {
+  min-width: 48px;
+  height: 48px;
+}
+
+/* WHAT: Flex grow utilities
+   WHY: Extracted from ChartAlgorithmManager lines 1246, 1252 */
+.flex-2 {
+  flex: 2;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* WHAT: Primary link styling
+   WHY: Extracted from ChartAlgorithmManager line 1259 */
+.link-primary {
+  color: var(--mm-color-primary-600);
+  text-decoration: underline;
+}

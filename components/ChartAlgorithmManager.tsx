@@ -665,7 +665,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
                             <MaterialIcon
                               name={config.icon || (config.emoji ? getIconForEmoji(config.emoji) : 'analytics')}
                               variant={(config as any).iconVariant || 'outlined'}
-                              style={{ fontSize: '1.5rem' }}
+                              className="icon-size-1-5"
                             />
                           </span>
                         )}
@@ -720,7 +720,7 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
       {/* WHAT: Load More button for pagination
           WHY: Matches Projects, Hashtags, and Categories pages */}
       {!loading && !isSearching && nextOffset !== null && configurations.length > 0 && (
-        <div className="load-more-container" style={{ marginBottom: 'var(--mm-space-6)' }}>
+        <div className="load-more-container mb-6">
           <button
             className="btn btn-secondary"
             onClick={loadMore}
@@ -1225,11 +1225,11 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 {/* ROW 2: Icon Field (v10.4.0 Material Icons - Always Visible) */}
                 <div className="form-group">
                   <label className="form-label">Icon (Optional)</label>
-                  <div style={{ display: 'flex', gap: 'var(--mm-space-2)', alignItems: 'center' }}>
+                  <div className="flex-row-gap-center">
                     {/* WHAT: Live icon preview */}
                     {/* WHY: Users need to see the icon as they type */}
                     {formData.icon && formData.icon.trim() && (
-                      <div className="icon-preview-box" style={{ minWidth: '48px', height: '48px' }}>
+                      <div className="icon-preview-box icon-preview-min">
                         <MaterialIcon
                           name={formData.icon}
                           variant={formData.iconVariant || 'outlined'}
@@ -1243,20 +1243,20 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       value={formData.icon || ''}
                       onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                       placeholder="analytics, trending_up, star, lightbulb, etc."
-                      style={{ flex: 2 }}
+                      className="flex-2"
                     />
                     <select
                       className="form-input"
                       value={formData.iconVariant || 'outlined'}
                       onChange={(e) => setFormData({ ...formData, iconVariant: e.target.value as 'outlined' | 'rounded' })}
-                      style={{ flex: 1 }}
+                      className="flex-1"
                     >
                       <option value="outlined">Outlined</option>
                       <option value="rounded">Rounded</option>
                     </select>
                   </div>
                   <small className="form-help">
-                    💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mm-color-primary-600)', textDecoration: 'underline' }}>fonts.google.com/icons</a>
+                    💡 Browse icons: <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" className="link-primary">fonts.google.com/icons</a>
                   </small>
                 </div>
                 
