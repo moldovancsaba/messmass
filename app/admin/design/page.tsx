@@ -13,6 +13,7 @@ import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
 import { PageStyleEnhanced } from '@/lib/pageStyleTypesEnhanced';
 import MaterialIcon from '@/components/MaterialIcon';
+import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function AdminDesignPage() {
   /* WHAT: Typography font selection state
@@ -315,11 +316,11 @@ export default function AdminDesignPage() {
           </div>
           
           <div className={styles.fontPreview}>
-            <h3 style={{ fontSize: '24px', fontWeight: 600 }}>The Quick Brown Fox</h3>
-            <p style={{ fontSize: '16px', lineHeight: 1.5 }}>
+            <h3 className={adminStyles.fontPreviewHeading}>The Quick Brown Fox</h3>
+            <p className={adminStyles.fontPreviewBody}>
               This is body text demonstrating how paragraphs appear with normal spacing.
             </p>
-            <p style={{ fontSize: '14px', color: '#6b7280' }}>
+            <p className={adminStyles.fontPreviewCaption}>
               Small caption text used for labels and secondary information.
             </p>
           </div>
@@ -566,7 +567,7 @@ export default function AdminDesignPage() {
                       if (globalStyle) handleEditStyle(globalStyle);
                     }}
                   >
-                    <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                    <MaterialIcon name="edit" variant="outlined" className={adminStyles.iconWithMargin} />
                     Edit Global Default
                   </button>
                 </div>
@@ -678,7 +679,7 @@ export default function AdminDesignPage() {
                         className="btn btn-small btn-secondary flex-1"
                         onClick={() => handleEditStyle(style)}
                       >
-                        <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                        <MaterialIcon name="edit" variant="outlined" className={adminStyles.iconWithMargin} />
                         Edit
                       </button>
                       {!style.isGlobalDefault && style._id && (
@@ -687,7 +688,7 @@ export default function AdminDesignPage() {
                           onClick={() => handleDeleteStyle(style._id!, style.name)}
                           title="Delete style"
                         >
-                          <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem' }} />
+                          <MaterialIcon name="delete" variant="outlined" className={adminStyles.iconStandalone} />
                         </button>
                       )}
                     </div>

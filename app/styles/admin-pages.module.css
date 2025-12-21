@@ -1,0 +1,97 @@
+/* ========================================
+   BATCH 4: ADMIN PAGES UTILITIES
+======================================== */
+
+/* WHAT: Admin-specific utility classes for error states, warnings, and special layouts
+   WHY: Common patterns across admin pages that don't fit in global components.css
+   USAGE: Admin pages (users, categories, design, events) */
+
+/* WHAT: Centered error state container
+   WHY: Consistent error display across admin pages */
+.errorContainer {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* WHAT: Large error/empty icon
+   WHY: Visual emphasis for error or empty states */
+.errorIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* WHAT: Error text color
+   WHY: Consistent error styling */
+.errorText {
+  color: var(--mm-error);
+}
+
+/* WHAT: Action button spacing in error states
+   WHY: Consistent button positioning */
+.errorAction {
+  margin-top: 1rem;
+}
+
+/* WHAT: Warning/info box with yellow background
+   WHY: Highlight important information in forms */
+.warningBox {
+  padding: 12px;
+  background-color: var(--mm-warning-light, #fef3c7);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-warning, #fbbf24);
+}
+
+/* WHAT: Warning box text styling
+   WHY: Consistent typography in warnings */
+.warningText {
+  font-size: var(--mm-font-size-sm);
+  color: #92400e;
+  margin: 0;
+}
+
+/* WHAT: Warning box with strong emphasis
+   WHY: Draw attention to critical info */
+.warningStrong {
+  margin-bottom: 8px;
+}
+
+/* WHAT: List inside warning box
+   WHY: Structured information display */
+.warningList {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* WHAT: Typography preview heading (large demo text)
+   WHY: Show font at actual usage size */
+.fontPreviewHeading {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* WHAT: Typography preview body (paragraph demo)
+   WHY: Show body text at actual usage size */
+.fontPreviewBody {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* WHAT: Typography preview caption (small demo)
+   WHY: Show caption text at actual usage size */
+.fontPreviewCaption {
+  font-size: 14px;
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Material Icon with right margin
+   WHY: Spacing for icon+text button pattern */
+.iconWithMargin {
+  font-size: 1rem;
+  margin-right: 0.25rem;
+}
+
+/* WHAT: Material Icon without margin (standalone)
+   WHY: No spacing when icon is alone */
+.iconStandalone {
+  font-size: 1rem;
+}

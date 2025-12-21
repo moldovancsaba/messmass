@@ -3,20 +3,10 @@ app/admin/categories/page-original.tsx,289,"display: 'flex', alignItems: 'center
 app/admin/categories/page-original.tsx,290,"color: '#6b7280', fontSize: '0.875rem'",No,Low
 app/admin/categories/page-original.tsx,349,"textAlign: 'center', marginTop: '1rem'",No,Low
 app/admin/categories/page-original.tsx,355,"color: '#6b7280', fontSize: '0.875rem'",No,Low
-app/admin/categories/page.tsx,322,"textAlign: 'center', padding: '2rem'",No,Low
-app/admin/categories/page.tsx,323,"fontSize: '2rem', marginBottom: '1rem'",No,Low
-app/admin/categories/page.tsx,324,"color: '#ef4444'",No,Low
-app/admin/categories/page.tsx,325,"marginTop: '1rem'",No,Low
-app/admin/design/page.tsx,318,"fontSize: '24px', fontWeight: 600",No,Low
-app/admin/design/page.tsx,319,"fontSize: '16px', lineHeight: 1.5",No,Low
-app/admin/design/page.tsx,322,"fontSize: '14px', color: '#6b7280'",No,Low
-app/admin/design/page.tsx,343,"backgroundColor: (typeof token.value === 'string' && token.value.trim()) ? token.value.trim() : '#cccccc'",No,Low
-app/admin/design/page.tsx,569,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
-app/admin/design/page.tsx,643,"backgroundColor: (typeof style.colorScheme.primary === 'string' && style.colorScheme.primary.trim()) ? style.colorScheme.primary.trim() : '#3b82f6'",No,Low
-app/admin/design/page.tsx,648,"backgroundColor: (typeof style.colorScheme.secondary === 'string' && style.colorScheme.secondary.trim()) ? style.colorScheme.secondary.trim() : '#10b981'",No,Low
-app/admin/design/page.tsx,653,"backgroundColor: (typeof style.colorScheme.success === 'string' && style.colorScheme.success.trim()) ? style.colorScheme.success.trim() : '#10b981'",No,Low
-app/admin/design/page.tsx,681,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
-app/admin/design/page.tsx,690,"fontSize: '1rem'",No,Low
+app/admin/design/page.tsx,344,"backgroundColor: (typeof token.value === 'string' && token.value.trim()) ? token.value.trim() : '#cccccc'",No,Low
+app/admin/design/page.tsx,644,"backgroundColor: (typeof style.colorScheme.primary === 'string' && style.colorScheme.primary.trim()) ? style.colorScheme.primary.trim() : '#3b82f6'",No,Low
+app/admin/design/page.tsx,649,"backgroundColor: (typeof style.colorScheme.secondary === 'string' && style.colorScheme.secondary.trim()) ? style.colorScheme.secondary.trim() : '#10b981'",No,Low
+app/admin/design/page.tsx,654,"backgroundColor: (typeof style.colorScheme.success === 'string' && style.colorScheme.success.trim()) ? style.colorScheme.success.trim() : '#10b981'",No,Low
 app/admin/events/page.tsx,552,"minWidth: '200px'",No,Low
 app/admin/events/ProjectsPageClient.tsx,861,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
 app/admin/events/ProjectsPageClient.tsx,876,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
@@ -34,14 +24,6 @@ app/admin/users/page-original.tsx,314,"color: '#6b7280', fontSize: '0.875rem'",N
 app/admin/users/page-original.tsx,325,"textAlign: 'center', padding: '2rem', color: '#6b7280'",No,Low
 app/admin/users/page-original.tsx,362,"textAlign: 'center', marginTop: '1rem'",No,Low
 app/admin/users/page-original.tsx,368,"color: '#6b7280', fontSize: '0.875rem'",No,Low
-app/admin/users/page.tsx,278,"textAlign: 'center', padding: '2rem'",No,Low
-app/admin/users/page.tsx,279,"fontSize: '2rem', marginBottom: '1rem'",No,Low
-app/admin/users/page.tsx,280,"color: '#ef4444'",No,Low
-app/admin/users/page.tsx,281,"marginTop: '1rem'",No,Low
-app/admin/users/page.tsx,371,"marginBottom: '8px'",No,Low
-app/admin/users/page.tsx,372,"margin: 0, paddingLeft: '20px'",No,Low
-app/admin/users/page.tsx,381,"padding: '12px', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #fbbf24'",No,Low
-app/admin/users/page.tsx,382,"fontSize: '0.875rem', color: '#92400e', margin: 0",No,Low
 app/debug/hashtag-categories/page.tsx,108,"color: '#f59e0b'",No,Low
 app/error.tsx,36,"lineHeight: '1.6'",No,Low
 app/partner-report/[slug]/page.tsx,140,"marginTop: '1rem', fontSize: '0.875rem', color: '#666'",No,Low

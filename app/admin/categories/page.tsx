@@ -12,6 +12,7 @@ import { categoriesAdapter } from '@/lib/adapters';
 import { FormModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
+import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function CategoriesPageUnified() {
   const router = useRouter();
@@ -319,10 +320,10 @@ export default function CategoriesPageUnified() {
   if (error) {
     return (
       <div className="page-container">
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-          <div style={{ color: '#ef4444' }}>{error}</div>
-          <button className="btn btn-primary" onClick={refreshCategories} style={{ marginTop: '1rem' }}>
+        <div className={adminStyles.errorContainer}>
+          <div className={adminStyles.errorIcon}>⚠️</div>
+          <div className={adminStyles.errorText}>{error}</div>
+          <button className={`btn btn-primary ${adminStyles.errorAction}`} onClick={refreshCategories}>
             Try Again
           </button>
         </div>
@@ -364,7 +365,7 @@ export default function CategoriesPageUnified() {
       {/* WHAT: Load More button for pagination
           WHY: Matches Projects page pattern */}
       {!loading && !isSearching && nextOffset !== null && categories.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--mm-space-6)' }}>
+        <div className="load-more-container">
           <button
             className="btn btn-secondary"
             onClick={loadMore}

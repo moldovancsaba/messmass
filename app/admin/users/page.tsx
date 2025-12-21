@@ -15,6 +15,7 @@ import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import PasswordModal from '@/components/PasswordModal';
 import { ConfirmDialog } from '@/components/modals';
 import type { AdminUser } from '@/lib/auth';
+import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function AdminUsersPageUnified() {
   const router = useRouter();
@@ -275,10 +276,10 @@ export default function AdminUsersPageUnified() {
   if (error) {
     return (
       <div className="page-container">
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-          <div style={{ color: '#ef4444' }}>{error}</div>
-          <button className="btn btn-primary" onClick={refreshUsers} style={{ marginTop: '1rem' }}>
+        <div className={adminStyles.errorContainer}>
+          <div className={adminStyles.errorIcon}>⚠️</div>
+          <div className={adminStyles.errorText}>{error}</div>
+          <button className={`btn btn-primary ${adminStyles.errorAction}`} onClick={refreshUsers}>
             Try Again
           </button>
         </div>
@@ -368,8 +369,8 @@ export default function AdminUsersPageUnified() {
 
         {role === 'api' && (
           <div className="info-box mb-6">
-            <p style={{ marginBottom: '8px' }}><strong>API User Configuration:</strong></p>
-            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+            <p className={adminStyles.warningStrong}><strong>API User Configuration:</strong></p>
+            <ul className={adminStyles.warningList}>
               <li>✅ API access automatically enabled</li>
               <li>✅ 32-character API key generated</li>
               <li>✅ Bearer token authentication</li>
@@ -378,8 +379,8 @@ export default function AdminUsersPageUnified() {
           </div>
         )}
 
-        <div className="form-group" style={{ padding: '12px', backgroundColor: '#fef3c7', borderRadius: '8px', border: '1px solid #fbbf24' }}>
-          <p style={{ fontSize: '0.875rem', color: '#92400e', margin: 0 }}>
+        <div className={`form-group ${adminStyles.warningBox}`}>
+          <p className={adminStyles.warningText}>
             <strong>Note:</strong> A secure {role === 'api' ? 'API key' : 'password'} will be generated automatically and displayed after creation.
           </p>
         </div>
