@@ -612,6 +612,72 @@ textarea::placeholder {
   color: #6b7280;
 }
 
+/* ========================================
+   MODAL & BUTTON UTILITIES
+======================================== */
+
+/* WHAT: Modal button action row layout
+   WHY: Consistent spacing for confirm/cancel button groups */
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* WHAT: Modal cancel/secondary button
+   WHY: Gray background for cancel/dismiss actions */
+.btn-modal-cancel {
+  background: #6b7280;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* WHAT: Modal confirm/primary button (non-dangerous)
+   WHY: Blue background for safe confirmation actions */
+.btn-modal-confirm {
+  background: #3b82f6;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* WHAT: Modal dangerous action button
+   WHY: Red background for destructive confirmations */
+.btn-modal-danger {
+  background: #ef4444;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* WHAT: Flexbox row with small gap for compact layouts
+   WHY: Common pattern in password gates and inline forms */
+.flex-row-sm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* WHAT: Error message text color
+   WHY: Red error text (#b00020) for form validation */
+.text-error-red {
+  color: #b00020;
+}
+
 .section-subtitle {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);

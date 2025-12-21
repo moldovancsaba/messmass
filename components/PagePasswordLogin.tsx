@@ -214,9 +214,9 @@ export default function PagePasswordLogin({
         </form>
 
         <div className={styles.hint}>
-          <p style={{ margin: '0 0 0.5rem 0', fontWeight: '600' }}>💡 Password Types:</p>
-          <p style={{ margin: '0 0 0.25rem 0' }}>• <strong>Admin Password:</strong> Global access to all pages</p>
-          <p style={{ margin: '0' }}>• <strong>Page Password:</strong> Access to this specific page only</p>
+          <p className="m-0 mb-2 font-semibold">💡 Password Types:</p>
+          <p className="m-0 mb-1">• <strong>Admin Password:</strong> Global access to all pages</p>
+          <p className="m-0">• <strong>Page Password:</strong> Access to this specific page only</p>
         </div>
       </div>
     </div>

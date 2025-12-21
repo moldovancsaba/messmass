@@ -52,36 +52,16 @@ export default function ConfirmModal({
         </div>
 
         <div className={styles.content}>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+          <div className="modal-actions">
             <button
               onClick={onClose}
-              className={styles.retryBtn}
-              style={{ 
-                background: '#6b7280',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: '500'
-              }}
+              className="btn-modal-cancel"
             >
               {cancelText}
             </button>
             <button
               onClick={handleConfirm}
-              className={styles.retryBtn}
-              style={{ 
-                background: isDangerous ? '#ef4444' : '#3b82f6',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '0.5rem',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: '600'
-              }}
+              className={isDangerous ? 'btn-modal-danger' : 'btn-modal-confirm'}
             >
               {confirmText}
             </button>

@@ -74,8 +74,8 @@ export default function PasswordGate({
     <div className={className}>
       {/* Functional: Prompt UI for page-specific password */}
       {/* Strategic: Minimal UX, leveraging design system classes for consistency */}
-      <div style={{ marginBottom: 8 }}>{label}</div>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div className="mb-2">{label}</div>
+      <div className="flex-row-sm">
         <input
           className="form-input"
           type="password"
@@ -88,7 +88,7 @@ export default function PasswordGate({
           {loading ? "…" : buttonLabel}
         </button>
       </div>
-      {error && <div style={{ color: "#b00020", marginTop: 8 }}>{error}</div>}
+      {error && <div className="text-error-red mt-2">{error}</div>}
     </div>
   );
 }
