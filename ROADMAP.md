@@ -1,7 +1,7 @@
 # ROADMAP.md
 
 Current Version: 11.41.0
-Last Updated: 2025-12-21T17:30:00.000Z (UTC)
+Last Updated: 2025-12-21T22:18:00.000Z (UTC)
 
 ---
 
@@ -27,6 +27,111 @@ Last Updated: 2025-12-21T17:30:00.000Z (UTC)
 ---
 
 ## 🔧 Operational Initiatives
+
+### SSO Integration with DoneIsBetter (Q1 2026)
+**Priority**: High  
+**Status**: Planning  
+**Dependencies**: https://sso.doneisbetter.com API, existing PagePassword system
+
+**Vision**: Add modern authentication options WHILE preserving the existing single-page password system for quick sharing.
+
+**Dual Authentication Architecture**:
+- **Path 1 (KEEP)**: Single-page password protection for public shares
+  - Per-page hashed passwords (impossible to guess)
+  - Smart URL sharing (`/stats/[slug]`, `/filter/[slug]`, `/partner-report/[slug]`)
+  - Use case: Quick event sharing, client access, temporary access
+  - Status: ✅ Production-ready, do NOT modify
+
+- **Path 2 (NEW)**: DoneIsBetter SSO integration
+  - Email + Password authentication
+  - Magic Link (passwordless)
+  - Facebook Login
+  - PIN Verification (enhanced security)
+  - Use case: Registered users, admin access, persistent accounts
+  - Status: 🆕 To be implemented
+
+**Integration Points**:
+1. `/admin` routes → Migrate to SSO (optional, keep cookie auth as fallback)
+2. New `/dashboard` route → SSO-only access for registered users
+3. Extended report pages → SSO authentication required (see below)
+
+**Technical Requirements**:
+- Implement SSOClient integration: `const sso = new SSOClient('https://sso.doneisbetter.com');`
+- Session validation: `await sso.validateSession();`
+- Preserve existing `lib/auth.ts` for admin cookie sessions
+- Preserve existing `lib/pagePassword.ts` for page-level protection
+- Add new `lib/ssoAuth.ts` for DoneIsBetter integration
+
+**Acceptance Criteria**:
+- ✅ Both authentication systems work in parallel
+- ✅ Existing share URLs continue working without changes
+- ✅ SSO users can access extended analytics features
+- ✅ Zero breaking changes to current authentication flow
+- ✅ API documentation followed: https://sso.doneisbetter.com/docs
+
+---
+
+### Extended Report Page Access (Q1-Q2 2026)
+**Priority**: High  
+**Status**: Planning  
+**Dependencies**: SSO Integration, Partner Analytics (v11.39.0), Filter system
+
+**Vision**: Create extended access pages with partner-level reporting and cross-event analytics, accessible only via SSO authentication.
+
+**New Access Tiers**:
+- **Tier 1 (EXISTING)**: Single-page password access
+  - Individual event reports: `/stats/[slug]`
+  - Single hashtag filters: `/hashtag/[hashtag]`
+  - Single filter slugs: `/filter/[slug]`
+  - Single partner reports: `/partner-report/[slug]`
+  - Status: ✅ Keep as-is, no changes
+
+- **Tier 2 (NEW)**: Extended SSO-authenticated access
+  - Partner dashboards: `/dashboard/partner/[partnerId]`
+    - All events for partner
+    - Cross-event analytics
+    - Season-over-season comparisons
+    - Historical trends
+  - Hashtag analytics: `/dashboard/hashtag/[hashtag]`
+    - All events with hashtag
+    - Aggregated statistics
+    - Trend analysis
+  - Filter collections: `/dashboard/filter/[filterSlug]`
+    - Multiple event aggregation
+    - Comparative insights
+  - Status: 🆕 To be implemented
+
+**Key Features**:
+1. **Partner + Events**: Full partner analytics with event breakdown
+2. **Hashtag + Events**: Cross-event hashtag performance analysis
+3. **Filter + Events**: Multi-event aggregation with filters
+4. **Access Control**: SSO authentication required, role-based permissions
+5. **Data Aggregation**: Pre-computed analytics for fast loading
+
+**Technical Architecture**:
+- Route structure: `/dashboard/*` (SSO-protected)
+- Reuse existing components: `ReportContent`, `ReportChart`, `ColoredCard`
+- Leverage `partner_analytics` collection (v11.39.0)
+- Extend filter system with multi-project aggregation
+- New API endpoints: `/api/dashboard/partner/[partnerId]`, `/api/dashboard/hashtag/[hashtag]`
+
+**Implementation Phases**:
+1. **Phase 1**: SSO middleware for `/dashboard/*` routes
+2. **Phase 2**: Partner extended analytics (reuse v11.39.0 dashboard)
+3. **Phase 3**: Hashtag cross-event analytics
+4. **Phase 4**: Filter multi-event aggregation
+5. **Phase 5**: Role-based access control (admin vs. partner users)
+
+**Acceptance Criteria**:
+- ✅ SSO authentication required for all `/dashboard/*` routes
+- ✅ Existing single-page access URLs unchanged
+- ✅ Partner dashboards show all events with aggregated metrics
+- ✅ Hashtag analytics span multiple events
+- ✅ Filter system supports multi-event queries
+- ✅ Performance: < 500ms page load for pre-aggregated data
+- ✅ Mobile-responsive design
+
+---
 
 ### Report Layout & Rendering Specification v2.0 (Q4 2025)
 - Priority: High
