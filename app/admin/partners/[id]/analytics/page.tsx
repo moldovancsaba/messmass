@@ -149,8 +149,7 @@ export default function PartnerAnalyticsPage({
           <p>{error || 'Failed to load partner analytics'}</p>
           <button
             onClick={() => router.back()}
-            className="btn btn-primary"
-            style={{ marginTop: 'var(--mm-space-4)' }} /* Token-driven: legitimate */
+            className="btn btn-primary mt-4"
           >
             Go Back
           </button>
@@ -482,7 +481,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
   if (error || !analyticsData) {
     return (
-      <div className={styles.comparisonState} style={{ color: 'var(--mm-error)' }} /* Token-driven: legitimate */>
+      <div className={`${styles.comparisonState} text-error`}>
         <p>Error: {error || 'Failed to load data'}</p>
       </div>
     );
@@ -584,7 +583,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
           ) : null}
         </div>
       ) : (
-        <div className={`card p-lg ${styles.comparisonSection}`} style={{ background: 'var(--mm-gray-50)' }} /* Token-driven: legitimate */>
+        <div className={`card p-lg ${styles.comparisonSection} bg-gray-50`}>
           <p className={styles.seasonPrompt}>
             Not enough data for season comparison. Need at least 2 seasons worth of events.
           </p>
@@ -625,8 +624,8 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
           </div>
 
           {/* Performance Summary */}
-          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--mm-gray-50)', borderRadius: '8px' }}>
-            <p style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-700)' }}>
+          <div className={styles.insightBox}>
+            <p className="text-sm text-gray-700">
               <strong>Insight:</strong>{' '}
               {homeAwayStats.homeGames.avgFans > homeAwayStats.awayGames.avgFans
                 ? `Home games average ${Math.round(((homeAwayStats.homeGames.avgFans - homeAwayStats.awayGames.avgFans) / homeAwayStats.awayGames.avgFans) * 100)}% more fans than away games.`
@@ -637,7 +636,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
           </div>
         </div>
       ) : (
-        <div className="card p-lg" style={{ background: 'var(--mm-gray-50)' }} /* Token-driven: legitimate */>
+        <div className="card p-lg bg-gray-50">
           <p className={styles.seasonPrompt}>
             No home/away data available. Events need isHomeGame field populated.
           </p>
@@ -694,11 +693,14 @@ function ComparisonMetric({
       </div>
       <div className={styles.metricValues}>
         <span className={styles.metricValue}>{formatValue(value1)}</span>
-        <span style={{ color: 'var(--mm-gray-400)' }} /* Token-driven: legitimate */>
+        <span className="text-gray-400">
           vs
         </span>
         <span className={styles.metricValueSecondary}>{formatValue(value2)}</span>
       </div>
+      {/* WHAT: Dynamic delta display with conditional color based on comparison result
+          WHY: Color computed at runtime (neutral/positive/negative) based on metric delta */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
       <div style={{ fontSize: 'var(--mm-font-size-xs)', color: isNeutral ? 'var(--mm-gray-500)' : isPositive ? 'var(--mm-color-secondary-600)' : 'var(--mm-error)' }}>
         {isNeutral ? '≈ No change' : isPositive ? `↑ +${deltaPercent.toFixed(1)}%` : `↓ ${deltaPercent.toFixed(1)}%`}
       </div>

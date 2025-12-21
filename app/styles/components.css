@@ -2109,3 +2109,31 @@ textarea::placeholder {
 .mb-2 {
   margin-bottom: var(--mm-space-2);
 }
+
+.mt-4 {
+  margin-top: var(--mm-space-4);
+}
+
+/* WHAT: Text color utilities
+   WHY: Consistent semantic colors across app */
+.text-error {
+  color: var(--mm-error);
+}
+
+.text-gray-400 {
+  color: var(--mm-gray-400);
+}
+
+.text-gray-700 {
+  color: var(--mm-gray-700);
+}
+
+.text-sm {
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Background color utilities
+   WHY: Consistent background colors using design tokens */
+.bg-gray-50 {
+  background: var(--mm-gray-50);
+}

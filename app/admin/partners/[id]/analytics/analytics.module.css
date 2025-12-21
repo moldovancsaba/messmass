@@ -269,3 +269,16 @@
   padding: var(--mm-space-8);
   color: var(--mm-gray-600);
 }
+
+/* ========================================
+   PHASE 3 BATCH 2: INSIGHT BOX
+   ======================================== */
+
+/* WHAT: Insight box for home vs away performance summary */
+/* WHY: Extracted from line 628 inline style (marginTop, padding, background, borderRadius) */
+.insightBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--mm-gray-50);
+  border-radius: 8px;
+}
