@@ -1,0 +1,271 @@
+/* analytics.module.css */
+/* WHAT: Styles for Partner Analytics Dashboard */
+/* WHY: Eliminate inline styles and centralize analytics page styling */
+
+/* ========================================
+   HEADER AND LAYOUT
+   ======================================== */
+
+/* WHAT: Header row with title and back button */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mm-space-4);
+}
+
+/* WHAT: Reset margin for title in header */
+.headerTitle {
+  margin: 0;
+}
+
+/* WHAT: Subtitle text below title */
+.headerSubtitle {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+  margin: 0.5rem 0 0 0;
+}
+
+/* WHAT: Tab navigation container */
+.tabContainer {
+  margin-top: var(--mm-space-6);
+}
+
+/* ========================================
+   EMPTY STATES
+   ======================================== */
+
+/* WHAT: Centered empty state container */
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+}
+
+/* WHAT: Empty state text */
+.emptyText {
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-4);
+}
+
+/* ========================================
+   OVERVIEW TAB
+   ======================================== */
+
+/* WHAT: Section spacing */
+.section {
+  margin-bottom: var(--mm-space-8);
+}
+
+/* WHAT: Best event card styling */
+.bestEventCard {
+  margin-bottom: var(--mm-space-8);
+  background: var(--mm-gray-50);
+}
+
+/* WHAT: Best event heading */
+.bestEventHeading {
+  margin-bottom: var(--mm-space-4);
+  color: var(--mm-gray-900);
+}
+
+/* WHAT: Best event content row */
+.bestEventContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* WHAT: Best event title (bold) */
+.bestEventTitle {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* WHAT: Best event subtitle */
+.bestEventSubtitle {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Link without underline */
+.linkClean {
+  text-decoration: none;
+}
+
+/* WHAT: Quick stats grid (2 columns) */
+.quickStatsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-4);
+}
+
+/* WHAT: Quick stat label */
+.quickStatLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: 0.5rem;
+}
+
+/* WHAT: Quick stat value (large, bold) */
+.quickStatValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* WHAT: Primary color for stat value */
+.quickStatValuePrimary {
+  color: var(--mm-color-primary-600);
+}
+
+/* WHAT: Secondary color for stat value */
+.quickStatValueSecondary {
+  color: var(--mm-color-secondary-600);
+}
+
+/* ========================================
+   EVENTS TAB
+   ======================================== */
+
+/* WHAT: Empty message centered */
+.eventsEmpty {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Bold table cell (for fan counts) */
+.tableCellBold {
+  font-weight: bold;
+}
+
+/* ========================================
+   COMPARISONS TAB
+   ======================================== */
+
+/* WHAT: Loading/error state centered */
+.comparisonState {
+  text-align: center;
+  padding: var(--mm-space-8);
+}
+
+/* WHAT: Comparison section card */
+.comparisonSection {
+  margin-bottom: var(--mm-space-8);
+}
+
+/* WHAT: Section heading */
+.comparisonHeading {
+  margin-bottom: var(--mm-space-4);
+}
+
+/* WHAT: Season selector grid (2 columns) */
+.seasonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-4);
+  margin-bottom: 1.5rem;
+}
+
+/* WHAT: Metrics grid container */
+.metricsGrid {
+  margin-bottom: var(--mm-space-4);
+}
+
+/* WHAT: Empty state prompt for season selection */
+.seasonPrompt {
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Home vs Away grid (2 columns with gap) */
+.homeAwayGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-8);
+}
+
+/* WHAT: Home section heading */
+.homeHeading {
+  margin-bottom: var(--mm-space-4);
+  color: var(--mm-color-primary-600);
+}
+
+/* WHAT: Away section heading */
+.awayHeading {
+  margin-bottom: var(--mm-space-4);
+  color: var(--mm-color-secondary-600);
+}
+
+/* WHAT: Stats list (vertical flex) */
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ========================================
+   COMPARISON METRIC CARDS
+   ======================================== */
+
+/* WHAT: Metric label in comparison card */
+.metricLabel {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  margin-bottom: 0.5rem;
+}
+
+/* WHAT: Metric values row (flex space-between) */
+.metricValues {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* WHAT: Metric value (large, bold) */
+.metricValue {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+/* WHAT: Secondary metric value (grayed) */
+.metricValueSecondary {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: var(--mm-gray-600);
+}
+
+/* ========================================
+   STAT ROW (Home vs Away)
+   ======================================== */
+
+/* WHAT: Stat row container (flex space-between) */
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+/* WHAT: Stat row label */
+.statRowLabel {
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
+
+/* WHAT: Stat row value (bold) */
+.statRowValue {
+  font-weight: bold;
+}
+
+/* ========================================
+   PLACEHOLDER STATES
+   ======================================== */
+
+/* WHAT: Placeholder centered text for Demographics/Trends tabs */
+.placeholderText {
+  text-align: center;
+  padding: var(--mm-space-8);
+  color: var(--mm-gray-600);
+}

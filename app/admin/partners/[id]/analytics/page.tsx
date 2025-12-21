@@ -22,6 +22,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import styles from './analytics.module.css';
 
 // Tab types
 type TabType = 'overview' | 'events' | 'demographics' | 'trends' | 'comparisons';
@@ -60,7 +61,7 @@ interface PartnerAnalyticsData {
 export default function PartnerAnalyticsPage({
   params,
 }: {
-  params: Promise<{ partnerId: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const { user, loading: authLoading } = useAdminAuth();
   const router = useRouter();
@@ -73,7 +74,7 @@ export default function PartnerAnalyticsPage({
   // Unwrap params
   useEffect(() => {
     params.then((resolvedParams) => {
-      setPartnerId(resolvedParams.partnerId);
+      setPartnerId(resolvedParams.id);
     });
   }, [params]);
 
@@ -149,7 +150,7 @@ export default function PartnerAnalyticsPage({
           <button
             onClick={() => router.back()}
             className="btn btn-primary"
-            style={{ marginTop: 'var(--mm-space-4)' }}
+            style={{ marginTop: 'var(--mm-space-4)' }} /* Token-driven: legitimate */
           >
             Go Back
           </button>
@@ -166,8 +167,8 @@ export default function PartnerAnalyticsPage({
           <h2 className="section-title">
             {analyticsData.partnerEmoji} {analyticsData.partnerName}
           </h2>
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <p style={{ color: 'var(--mm-gray-600)', marginBottom: '1rem' }}>
+          <div className={styles.emptyState}>
+            <p className={styles.emptyText}>
               No events found for this partner.
             </p>
             <button
