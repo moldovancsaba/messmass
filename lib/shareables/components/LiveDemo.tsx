@@ -208,6 +208,9 @@ export default function LiveDemo({
     <div 
       ref={containerRef}
       className={`live-demo-container ${className}`}
+      // WHAT: Dynamic container styles based on fullscreen state + theme + props
+      // WHY: LiveDemo supports fullscreen mode, light/dark themes, and custom sizing
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         width: isFullscreen ? '100vw' : demoSize.width,
         height: isFullscreen ? '100vh' : 'auto',
@@ -227,6 +230,9 @@ export default function LiveDemo({
       {/* Header */}
       {(title || description || showControls || resetable || fullscreenable) && (
         <div 
+          // WHAT: Dynamic header background/border based on theme prop
+          // WHY: LiveDemo supports light/dark themes - header must match
+          // eslint-disable-next-line react/forbid-dom-props
           style={{
             padding: '1rem',
             background: theme === 'dark' 
@@ -246,6 +252,9 @@ export default function LiveDemo({
           <div>
             {title && (
               <h3 
+                // WHAT: Dynamic title color based on theme prop
+                // WHY: Text must be readable on both light/dark backgrounds
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{ 
                   margin: 0,
                   fontSize: '1.125rem',
@@ -259,6 +268,9 @@ export default function LiveDemo({
             )}
             {description && (
               <p 
+                // WHAT: Dynamic description color based on theme prop
+                // WHY: Muted text must maintain readability across themes
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{ 
                   margin: 0,
                   fontSize: '0.875rem',
@@ -272,10 +284,10 @@ export default function LiveDemo({
           </div>
 
           {/* Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="flex-controls">
             {/* Custom Controls */}
             {showControls && controls && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="flex-controls">
                 {controls}
               </div>
             )}
@@ -284,6 +296,9 @@ export default function LiveDemo({
             {resetable && (
               <button
                 onClick={handleReset}
+                // WHAT: Dynamic hover state using onMouseEnter/Leave
+                // WHY: Button needs visual feedback without CSS pseudo-classes
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   background: 'rgba(245, 158, 11, 0.1)',
                   border: '1px solid rgba(245, 158, 11, 0.3)',
@@ -310,6 +325,9 @@ export default function LiveDemo({
             {fullscreenable && (
               <button
                 onClick={handleFullscreen}
+                // WHAT: Dynamic hover state using onMouseEnter/Leave
+                // WHY: Button needs visual feedback without CSS pseudo-classes
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   background: 'rgba(59, 130, 246, 0.1)',
                   border: '1px solid rgba(59, 130, 246, 0.3)',
@@ -338,6 +356,9 @@ export default function LiveDemo({
       {/* Demo Area */}
       <div 
         ref={demoRef}
+        // WHAT: Dynamic height based on fullscreen state + padding prop
+        // WHY: Demo area resizes for fullscreen and uses custom padding
+        // eslint-disable-next-line react/forbid-dom-props
         style={{
           position: 'relative',
           height: isFullscreen ? 'calc(100vh - 60px)' : demoSize.height,
@@ -350,7 +371,7 @@ export default function LiveDemo({
         }}
       >
         {/* Demo Content */}
-        <div key={resetKey} style={{ width: '100%', height: '100%' }}>
+        <div key={resetKey} className="full-size-wrapper">
           {children}
         </div>
 
@@ -358,6 +379,9 @@ export default function LiveDemo({
         {resizable && !isFullscreen && (
           <div
             onMouseDown={handleResizeStart}
+            // WHAT: Dynamic theme-based colors + hover state
+            // WHY: Resize handle must be visible on both themes with hover feedback
+            // eslint-disable-next-line react/forbid-dom-props
             style={{
               position: 'absolute',
               bottom: 0,
@@ -394,20 +418,7 @@ export default function LiveDemo({
       </div>
 
       {/* Resize Overlay */}
-      {isResizing && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            cursor: 'nw-resize',
-            zIndex: 9999,
-            background: 'transparent'
-          }}
-        />
-      )}
+      {isResizing && <div className="resize-overlay" />}
     </div>
   )
 }
@@ -493,18 +504,16 @@ export function MobileDemo({
       padding="0"
       background="white"
       showBorder
+      // WHAT: Phone frame styling + spread props.style
+      // WHY: MobileDemo simulates iPhone frame with custom overrides
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         boxShadow: '0 0 0 8px #333, 0 0 0 9px #666, 0 4px 20px rgba(0,0,0,0.3)',
         borderRadius: '30px',
         ...props.style
       }}
     >
-      <div style={{ 
-        width: '100%', 
-        height: '100%', 
-        borderRadius: '26px', 
-        overflow: 'hidden' 
-      }}>
+      <div className="mobile-inner-frame">
         {children}
       </div>
     </LiveDemo>

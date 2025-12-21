@@ -279,6 +279,9 @@ export default function CopyButton({
       onClick={handleCopy}
       disabled={disabled || copyState === 'copying'}
       className={`copy-button ${className}`}
+      // WHAT: Dynamic styles based on variant, size, state, theme, and disabled
+      // WHY: CopyButton supports multiple variants/sizes + state feedback (copying/success/error)
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         // Base styles
         display: 'inline-flex',
@@ -333,6 +336,9 @@ export default function CopyButton({
       {children || (
         <>
           <span 
+            // WHAT: Dynamic icon animation when copyState === 'success'
+            // WHY: Visual feedback for successful copy operation
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ 
               fontSize: size === 'small' ? '0.875em' : '1em',
               transition: 'transform 0.15s ease',
@@ -395,10 +401,8 @@ export function CommandCopyButton({
       variant="secondary"
       size="small"
       theme="dark"
-      style={{
-        fontFamily: 'Monaco, Consolas, "Ubuntu Mono", monospace',
-        ...props.style
-      }}
+      className="font-mono"
+      style={props.style}
     >
       <span>💻</span>
       <span>Copy Command</span>
