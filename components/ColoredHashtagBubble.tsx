@@ -134,9 +134,12 @@ function ColoredHashtagBubbleComponent({
   const safeBackgroundColor = (backgroundColor && typeof backgroundColor === 'string' && backgroundColor.trim()) ? backgroundColor : '#3b82f6';
   
   return (
+    // WHAT: Dynamic hashtag bubble with category-based color (legitimate inline style)
+    // WHY: backgroundColor is computed from category/hashtag data at runtime
+    // HOW: Color resolution uses intelligent resolver based on project categorizedHashtags
     <span 
       className={bubbleClasses}
-      style={{ 
+      style={{ // eslint-disable-line react/forbid-dom-props
         backgroundColor: safeBackgroundColor,
         background: safeBackgroundColor, // Ensure both properties are set
         color: 'white', // Force text color to always be white

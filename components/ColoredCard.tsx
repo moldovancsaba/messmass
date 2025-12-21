@@ -44,9 +44,11 @@ export default function ColoredCard({
     .reduce((obj, key) => ({ ...obj, [key]: rest[key] }), {});
 
   return (
+    // WHAT: Dynamic accent color via CSS variable (legitimate inline style)
+    // WHY: accentColor prop is data-driven, must be set at runtime
     <div
       className={`${styles.coloredCard} ${hoverable ? styles.hoverable : ''} ${className}`}
-      style={cssVars}
+      style={cssVars} // eslint-disable-line react/forbid-dom-props
       onClick={onClick}
       {...dataAttrs}
     >

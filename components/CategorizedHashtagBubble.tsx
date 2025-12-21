@@ -30,6 +30,9 @@ export default function CategorizedHashtagBubble({
   const defaultColor = '#6b7280'; // Default gray for general/unknown
   
   return (
+    // WHAT: Dynamic category colors and layouts (legitimate inline styles)
+    // WHY: Colors computed from category data at runtime
+    // eslint-disable-next-line react/forbid-dom-props
     <div style={{
       display: 'inline-flex',
       flexDirection: 'column',
@@ -39,6 +42,7 @@ export default function CategorizedHashtagBubble({
     }}>
       {/* Category Label */}
       {showCategoryLabel && category && category !== 'general' && (
+        // eslint-disable-next-line react/forbid-dom-props
         <div style={{
           fontSize: small ? '0.625rem' : '0.75rem',
           fontWeight: '600',

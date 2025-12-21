@@ -41,6 +41,10 @@ export default function StylePreview({ style }: StylePreviewProps) {
       </div>
       
       <div className={styles.previewFrame}>
+        {/* WHAT: Live theme preview - All inline styles are legitimate dynamic values
+            WHY: This component renders user-configured theme settings in real-time
+            HOW: Colors, fonts, backgrounds, and borders are all computed from style prop */}
+        {/* eslint-disable react/forbid-dom-props */}
         {/* Mini Page Mockup */}
         <div 
           className={styles.mockPage}
@@ -157,8 +161,9 @@ export default function StylePreview({ style }: StylePreviewProps) {
             />
           </div>
         </div>
+        {/* eslint-enable react/forbid-dom-props */}
       </div>
-
+      
       {/* Preview Info */}
       <div className={styles.previewInfo}>
         <p className={styles.infoText}>
