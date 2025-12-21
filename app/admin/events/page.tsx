@@ -544,12 +544,11 @@ export default function ProjectsPageUnified() {
       {/* WHAT: Load More button for pagination
           WHY: Allow users to load additional events beyond first page */}
       {(nextCursor || searchOffset !== null || sortOffset !== null) && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--mm-space-6)', marginTop: 'var(--mm-space-4)' }}>
+        <div className="flex-center-padded">
           <button
+            className="btn btn-primary btn-min-width"
             onClick={handleLoadMore}
             disabled={isLoadingMore}
-            className="btn btn-secondary"
-            style={{ minWidth: '200px' }}
           >
             {isLoadingMore ? 'Loading...' : `Load ${PAGE_SIZE} More Events`}
           </button>
@@ -559,7 +558,7 @@ export default function ProjectsPageUnified() {
       {/* WHAT: End of list indicator
           WHY: Show when all events have been loaded */}
       {!nextCursor && searchOffset === null && sortOffset === null && projects.length > 0 && (
-        <div style={{ textAlign: 'center', padding: 'var(--mm-space-6)', color: 'var(--mm-gray-600)' }}>
+        <div className="pagination-info">
           — All {totalMatched} events loaded —
         </div>
       )}
@@ -622,7 +621,7 @@ export default function ProjectsPageUnified() {
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Page styling (fonts, colors, gradients)
           </p>
         </div>
@@ -639,7 +638,7 @@ export default function ProjectsPageUnified() {
               <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 If not set, this event will use its partner&apos;s template or the default template
           </p>
         </div>
@@ -704,7 +703,7 @@ export default function ProjectsPageUnified() {
                 <option key={s._id} value={s._id}>{s.name}</option>
               ))}
             </select>
-            <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            <p className="form-hint">
               💡 Page styling (fonts, colors, gradients)
             </p>
           </div>
@@ -721,7 +720,7 @@ export default function ProjectsPageUnified() {
                 <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
               ))}
             </select>
-            <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+            <p className="form-hint">
               💡 If not set, this event will use its partner&apos;s template or the default template
             </p>
           </div>

@@ -2228,3 +2228,30 @@ textarea::placeholder {
   color: var(--mm-color-primary-600);
   text-decoration: underline;
 }
+
+/* ========================================
+   PHASE 3 BATCH 5: EVENTS PAGE UTILITIES
+======================================== */
+
+/* WHAT: Flex center container with padding and top margin
+   WHY: Extracted from events page line 547 (4 properties) */
+.flex-center-padded {
+  display: flex;
+  justify-content: center;
+  padding: var(--mm-space-6);
+  margin-top: var(--mm-space-4);
+}
+
+/* WHAT: Button minimum width
+   WHY: Extracted from events page line 552 */
+.btn-min-width {
+  min-width: 200px;
+}
+
+/* WHAT: Pagination info centered with padding and color
+   WHY: Extracted from events page line 562 (3 properties) */
+.pagination-info {
+  text-align: center;
+  padding: var(--mm-space-6);
+  color: var(--mm-gray-600);
+}
