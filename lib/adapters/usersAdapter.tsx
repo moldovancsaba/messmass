@@ -38,7 +38,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: true,
         minWidth: '200px',
         render: (user) => (
-          <span style={{ fontWeight: 600 }}>{user.email}</span>
+          <span className="adapter-primary-field">{user.email}</span>
         ),
       },
       {
@@ -54,16 +54,16 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: true,
         width: '120px',
         render: (user) => (
-          <span
-            style={{
-              padding: '4px 12px',
-              borderRadius: '12px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              backgroundColor: user.role === 'api' ? '#dcfce7' : user.role === 'admin' ? '#dbeafe' : '#f3f4f6',
-              color: user.role === 'api' ? '#166534' : user.role === 'admin' ? '#1e40af' : '#374151',
-            }}
-          >
+          // WHAT: Role badge with conditional colors based on user role
+          // WHY: Colors are computed at runtime (api=green, admin=blue, other=gray)
+          <span style={{ // eslint-disable-line react/forbid-dom-props
+            padding: '4px 12px',
+            borderRadius: '12px',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            backgroundColor: user.role === 'api' ? '#dcfce7' : user.role === 'admin' ? '#dbeafe' : '#f3f4f6',
+            color: user.role === 'api' ? '#166534' : user.role === 'admin' ? '#1e40af' : '#374151',
+          }}>
             {user.role === 'api' ? '🔑 API' : user.role === 'admin' ? '👤 Admin' : user.role}
           </span>
         ),
@@ -74,7 +74,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: false,
         width: '120px',
         render: (user) => (
-          <span style={{ fontSize: '0.875rem' }}>
+          <span className="text-sm">
             {user.apiKeyEnabled ? '✅ Enabled' : '❌ Disabled'}
           </span>
         ),
@@ -85,7 +85,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: true,
         width: '110px',
         render: (user) => (
-          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-meta-text">
             {(user.apiUsageCount || 0).toLocaleString()}
           </span>
         ),
@@ -97,7 +97,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         width: '140px',
         render: (user) =>
           user.lastAPICallAt ? (
-            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            <span className="adapter-meta-text">
               {new Date(user.lastAPICallAt).toLocaleDateString()}
             </span>
           ) : (
@@ -111,7 +111,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         width: '140px',
         render: (user) =>
           user.lastLogin ? (
-            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            <span className="adapter-meta-text">
               {new Date(user.lastLogin).toLocaleDateString()}
             </span>
           ) : (
@@ -124,7 +124,7 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         sortable: true,
         width: '120px',
         render: (user) => (
-          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-meta-text">
             {new Date(user.createdAt).toLocaleDateString()}
           </span>
         ),

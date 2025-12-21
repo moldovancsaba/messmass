@@ -30,7 +30,7 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
         sortable: true,
         minWidth: '200px',
         render: (category) => (
-          <span style={{ fontWeight: 600 }}>{category.name}</span>
+          <span className="adapter-primary-field">{category.name}</span>
         ),
       },
       {
@@ -38,17 +38,11 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
         label: 'Color',
         width: '150px',
         render: (category) => (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div
-              style={{
-                width: '40px',
-                height: '24px',
-                backgroundColor: category.color,
-                borderRadius: '4px',
-                border: '1px solid #e5e7eb',
-              }}
-            />
-            <span style={{ fontSize: '0.875rem', color: '#6b7280', fontFamily: 'monospace' }}>
+          <div className="adapter-color-row">
+            {/* WHAT: Dynamic background color from category
+                WHY: Color is data-driven from database */}
+            <div className="adapter-color-preview" style={{ backgroundColor: category.color }} /> {/* eslint-disable-line react/forbid-dom-props */}
+            <span className="adapter-hex-label adapter-meta-text">
               {category.color}
             </span>
           </div>
@@ -67,7 +61,7 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
         sortable: true,
         width: '120px',
         render: (category) => (
-          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-meta-text">
             {new Date(category.createdAt).toLocaleDateString()}
           </span>
         ),
@@ -106,17 +100,11 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
         label: 'Color',
         icon: '🎨',
         render: (category) => (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: category.color,
-                borderRadius: '4px',
-                border: '1px solid #e5e7eb',
-              }}
-            />
-            <span style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+          <div className="adapter-color-row-sm">
+            {/* WHAT: Dynamic background color from category
+                WHY: Color is data-driven from database */}
+            <div className="adapter-color-preview-sm" style={{ backgroundColor: category.color }} /> {/* eslint-disable-line react/forbid-dom-props */}
+            <span className="adapter-hex-label">
               {category.color}
             </span>
           </div>

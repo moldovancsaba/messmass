@@ -554,6 +554,64 @@ textarea::placeholder {
   color: #f59e0b;
 }
 
+/* ========================================
+   ADAPTER COMPONENTS (LIST/CARD VIEWS)
+======================================== */
+
+/* WHAT: Bold primary field in adapters (email, name, category)
+   WHY: Emphasize main identifier in list/card views */
+.adapter-primary-field {
+  font-weight: 600;
+}
+
+/* WHAT: Color preview box for categories/themes
+   WHY: Consistent sizing for color swatches in adapters */
+.adapter-color-preview {
+  width: 40px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+/* WHAT: Small color preview for card views
+   WHY: Smaller size for compact layouts */
+.adapter-color-preview-sm {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+/* WHAT: Flexbox row with gap for color previews
+   WHY: Consistent layout for color + label combinations */
+.adapter-color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* WHAT: Flexbox row with smaller gap for compact views
+   WHY: Card views need tighter spacing */
+.adapter-color-row-sm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* WHAT: Monospace hex color label
+   WHY: Hex codes are technical data - monospace improves readability */
+.adapter-hex-label {
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+/* WHAT: Secondary metadata text in adapters
+   WHY: Muted dates, counts, and other non-primary fields */
+.adapter-meta-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
 .section-subtitle {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);
