@@ -106,7 +106,7 @@ export default function ImageUploader({
     <div className="image-uploader">
       {label && <label className="form-label-block">{label}</label>}
       
-      <div className="upload-container" style={{ minHeight: '200px' }}>
+      <div className="upload-container upload-container-min">
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -119,15 +119,14 @@ export default function ImageUploader({
 
         {/* Current Image Display */}
         {value && !uploading && (
-          <div className="image-display-wrapper" style={{ maxWidth: '400px' }}>
+          <div className="image-display-wrapper image-wrapper-max">
             <Image 
               src={value} 
               alt="Uploaded" 
               width={400}
               height={300}
-              className="image-display"
-              style={{ height: 'auto' }}
-              unoptimized 
+              className="image-display h-auto"
+              unoptimized
             />
             {aspectRatio && (
               <div className="aspect-ratio-badge">
@@ -158,24 +157,19 @@ export default function ImageUploader({
 
         {/* Error Message */}
         {error && (
-          <div className="upload-error" style={{ 
-            padding: 'var(--mm-space-2)',
-            backgroundColor: 'var(--mm-red-50)',
-            borderRadius: 'var(--mm-radius-md)',
-            width: '100%'
-          }}>
+          <div className="upload-error upload-error-box">
             ⚠️ {error}
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="button-group" style={{ marginTop: 'var(--mm-space-2)' }}>
+        <div className="button-group mt-2">
           <button
             className="btn btn-small btn-primary"
             onClick={handleUploadClick}
             disabled={disabled || uploading}
           >
-              <MaterialIcon name={value ? "sync" : "upload"} variant="outlined" style={{ fontSize: '1rem' }} />
+              <MaterialIcon name={value ? "sync" : "upload"} variant="outlined" className="icon-size-1" />
             {value ? 'Replace' : 'Upload'}
           </button>
           
@@ -185,7 +179,7 @@ export default function ImageUploader({
               onClick={handleDelete}
               disabled={uploading}
             >
-              <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem' }} />
+              <MaterialIcon name="delete" variant="outlined" className="icon-size-1" />
               Delete
             </button>
           )}

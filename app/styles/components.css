@@ -2137,3 +2137,46 @@ textarea::placeholder {
 .bg-gray-50 {
   background: var(--mm-gray-50);
 }
+
+/* ========================================
+   PHASE 3 BATCH 3: IMAGE UPLOADER UTILITIES
+======================================== */
+
+/* WHAT: Upload container minimum height
+   WHY: Extracted from ImageUploader line 109 */
+.upload-container-min {
+  min-height: 200px;
+}
+
+/* WHAT: Image display wrapper max width
+   WHY: Extracted from ImageUploader line 122 */
+.image-wrapper-max {
+  max-width: 400px;
+}
+
+/* WHAT: Auto height for responsive images
+   WHY: Extracted from ImageUploader line 129 */
+.h-auto {
+  height: auto;
+}
+
+/* WHAT: Upload error box styling
+   WHY: Extracted from ImageUploader lines 161-166 (4 properties) */
+.upload-error-box {
+  padding: var(--mm-space-2);
+  background-color: var(--mm-red-50);
+  border-radius: var(--mm-radius-md);
+  width: 100%;
+}
+
+/* WHAT: Top margin utility (already have .mt-3, .mt-4, adding .mt-2)
+   WHY: Consistent spacing for button groups */
+.mt-2 {
+  margin-top: var(--mm-space-2);
+}
+
+/* WHAT: Icon size utility for small icons in buttons
+   WHY: Extracted from ImageUploader lines 178, 188 */
+.icon-size-1 {
+  font-size: 1rem;
+}
