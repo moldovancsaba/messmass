@@ -187,12 +187,12 @@ export default function PartnerAnalyticsPage({
     <div className="admin-container">
       {/* Header */}
       <div className="card card-md p-lg mb-lg">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--mm-space-4)' }}>
+        <div className={styles.headerRow}>
           <div>
-            <h1 className="section-title" style={{ margin: 0 }}>
+            <h1 className={`section-title ${styles.headerTitle}`}>
               {analyticsData.partnerEmoji} {analyticsData.partnerName}
             </h1>
-            <p style={{ color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)', margin: '0.5rem 0 0 0' }}>
+            <p className={styles.headerSubtitle}>
               Partner Analytics Dashboard • {analyticsData.summary.totalEvents} Events
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function PartnerAnalyticsPage({
         </div>
 
         {/* Tab Navigation */}
-        <div className="tab-container" style={{ marginTop: 'var(--mm-space-6)' }}>
+        <div className={`tab-container ${styles.tabContainer}`}>
           <button
             className={`tab-button ${activeTab === 'overview' ? 'tab-button-active' : ''}`}
             onClick={() => setActiveTab('overview')}
@@ -271,7 +271,7 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
       <h2 className="section-subtitle">Overview</h2>
 
       {/* Summary Cards */}
-      <div className="stats-grid-admin" style={{ marginBottom: '2rem' }}>
+      <div className={`stats-grid-admin ${styles.section}`}>
         <div className="stat-card-admin success-manager">
           <div className="stat-label-admin">Total Events</div>
           <div className="stat-value-admin">{data.summary.totalEvents}</div>
@@ -308,8 +308,8 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
 
       {/* Best Event (if events available) */}
       {data.events.length > 0 && (
-        <div className="card p-lg" style={{ marginBottom: '2rem', background: 'var(--mm-gray-50)' }}>
-          <h3 style={{ marginBottom: '1rem', color: 'var(--mm-gray-900)' }}>
+        <div className={`card p-lg ${styles.bestEventCard}`}>
+          <h3 className={styles.bestEventHeading}>
             🏆 Best Performing Event
           </h3>
           {(() => {
@@ -317,20 +317,19 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
               event.fans > max.fans ? event : max
             );
             return (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className={styles.bestEventContent}>
                 <div>
-                  <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                  <p className={styles.bestEventTitle}>
                     {new Date(bestEvent.eventDate).toLocaleDateString()}
                     {bestEvent.opponentName && ` vs ${bestEvent.opponentName}`}
                   </p>
-                  <p style={{ color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
+                  <p className={styles.bestEventSubtitle}>
                     {bestEvent.fans.toLocaleString()} fans • €{Math.round(bestEvent.adValue).toLocaleString()} ad value
                   </p>
                 </div>
                 <a
                   href={`/admin/projects`}
-                  className="btn btn-primary btn-sm"
-                  style={{ textDecoration: 'none' }}
+                  className={`btn btn-primary btn-sm ${styles.linkClean}`}
                 >
                   View Details
                 </a>
@@ -341,21 +340,21 @@ function OverviewTab({ data }: { data: PartnerAnalyticsData }) {
       )}
 
       {/* Quick Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className={styles.quickStatsGrid}>
         <div className="card p-md">
-          <div style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)', marginBottom: '0.5rem' }}>
+          <div className={styles.quickStatLabel}>
             Total Images
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--mm-color-primary-600)' }}>
+          <div className={`${styles.quickStatValue} ${styles.quickStatValuePrimary}`}>
             {data.summary.totalImages.toLocaleString()}
           </div>
         </div>
 
         <div className="card p-md">
-          <div style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)', marginBottom: '0.5rem' }}>
+          <div className={styles.quickStatLabel}>
             Total Merched
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--mm-color-secondary-600)' }}>
+          <div className={`${styles.quickStatValue} ${styles.quickStatValueSecondary}`}>
             {data.summary.totalMerched.toLocaleString()}
           </div>
         </div>
@@ -374,7 +373,7 @@ function EventsTab({ data }: { data: PartnerAnalyticsData }) {
       <h2 className="section-subtitle">All Events ({data.events.length})</h2>
 
       {data.events.length === 0 ? (
-        <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--mm-gray-600)' }}>
+        <p className={styles.eventsEmpty}>
           No events found for this partner.
         </p>
       ) : (
@@ -399,7 +398,7 @@ function EventsTab({ data }: { data: PartnerAnalyticsData }) {
                     <td>{new Date(event.eventDate).toLocaleDateString()}</td>
                     <td>{event.opponentName || '—'}</td>
                     <td>{event.isHomeGame !== undefined ? (event.isHomeGame ? '🏠 Home' : '✈️ Away') : '—'}</td>
-                    <td style={{ fontWeight: 'bold' }}>{event.fans.toLocaleString()}</td>
+                    <td className={styles.tableCellBold}>{event.fans.toLocaleString()}</td>
                     <td>{event.merched.toLocaleString()}</td>
                     <td>€{Math.round(event.adValue).toLocaleString()}</td>
                     <td>{(event.engagementRate * 100).toFixed(1)}%</td>
@@ -421,7 +420,7 @@ function DemographicsTab({ partnerId }: { partnerId: string }) {
   return (
     <div>
       <h2 className="section-subtitle">Demographics</h2>
-      <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--mm-gray-600)' }}>
+      <p className={styles.placeholderText}>
         Demographics charts coming in next update.
       </p>
     </div>
@@ -436,7 +435,7 @@ function TrendsTab({ partnerId }: { partnerId: string }) {
   return (
     <div>
       <h2 className="section-subtitle">Trends</h2>
-      <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--mm-gray-600)' }}>
+      <p className={styles.placeholderText}>
         Trend charts coming in next update.
       </p>
     </div>
@@ -475,7 +474,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <div className={styles.comparisonState}>
         <p>Loading comparison data...</p>
       </div>
     );
@@ -483,7 +482,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
   if (error || !analyticsData) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--mm-error)' }}>
+      <div className={styles.comparisonState} style={{ color: 'var(--mm-error)' }} /* Token-driven: legitimate */>
         <p>Error: {error || 'Failed to load data'}</p>
       </div>
     );
@@ -511,10 +510,10 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
       {/* Season-over-Season Comparison */}
       {seasons.length >= 2 ? (
-        <div className="card p-lg" style={{ marginBottom: '2rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>Season-over-Season Comparison</h3>
+        <div className={`card p-lg ${styles.comparisonSection}`}>
+          <h3 className={styles.comparisonHeading}>Season-over-Season Comparison</h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div className={styles.seasonGrid}>
             <div>
               <label className="form-label-block">Season 1</label>
               <select
@@ -549,7 +548,7 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
           {seasonComparison && (
             <div>
-              <div className="stats-grid-admin" style={{ marginBottom: '1rem' }}>
+              <div className={`stats-grid-admin ${styles.metricsGrid}`}>
                 <ComparisonMetric
                   label="Total Events"
                   value1={seasonComparison.season1.totalEvents}
@@ -579,14 +578,14 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
           )}
 
           {!selectedSeason1 || !selectedSeason2 ? (
-            <p style={{ textAlign: 'center', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
+            <p className={styles.seasonPrompt}>
               Select two seasons to compare
             </p>
           ) : null}
         </div>
       ) : (
-        <div className="card p-lg" style={{ marginBottom: '2rem', background: 'var(--mm-gray-50)' }}>
-          <p style={{ textAlign: 'center', color: 'var(--mm-gray-600)' }}>
+        <div className={`card p-lg ${styles.comparisonSection}`} style={{ background: 'var(--mm-gray-50)' }} /* Token-driven: legitimate */>
+          <p className={styles.seasonPrompt}>
             Not enough data for season comparison. Need at least 2 seasons worth of events.
           </p>
         </div>
@@ -595,15 +594,15 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
       {/* Home vs Away Performance */}
       {homeAwayStats && (homeAwayStats.homeGames.count > 0 || homeAwayStats.awayGames.count > 0) ? (
         <div className="card p-lg">
-          <h3 style={{ marginBottom: '1rem' }}>Home vs. Away Performance</h3>
+          <h3 className={styles.comparisonHeading}>Home vs. Away Performance</h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className={styles.homeAwayGrid}>
             {/* Home Games */}
             <div>
-              <h4 style={{ marginBottom: '1rem', color: 'var(--mm-color-primary-600)' }}>
+              <h4 className={styles.homeHeading}>
                 🏠 Home Games ({homeAwayStats.homeGames.count})
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className={styles.statsList}>
                 <StatRow label="Avg Fans" value={Math.round(homeAwayStats.homeGames.avgFans).toLocaleString()} />
                 <StatRow label="Avg Merched" value={Math.round(homeAwayStats.homeGames.avgMerched).toLocaleString()} />
                 <StatRow label="Avg Ad Value" value={`€${Math.round(homeAwayStats.homeGames.avgAdValue).toLocaleString()}`} />
@@ -613,10 +612,10 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
 
             {/* Away Games */}
             <div>
-              <h4 style={{ marginBottom: '1rem', color: 'var(--mm-color-secondary-600)' }}>
+              <h4 className={styles.awayHeading}>
                 ✈️ Away Games ({homeAwayStats.awayGames.count})
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className={styles.statsList}>
                 <StatRow label="Avg Fans" value={Math.round(homeAwayStats.awayGames.avgFans).toLocaleString()} />
                 <StatRow label="Avg Merched" value={Math.round(homeAwayStats.awayGames.avgMerched).toLocaleString()} />
                 <StatRow label="Avg Ad Value" value={`€${Math.round(homeAwayStats.awayGames.avgAdValue).toLocaleString()}`} />
@@ -638,8 +637,8 @@ function ComparisonsTab({ partnerId }: { partnerId: string }) {
           </div>
         </div>
       ) : (
-        <div className="card p-lg" style={{ background: 'var(--mm-gray-50)' }}>
-          <p style={{ textAlign: 'center', color: 'var(--mm-gray-600)' }}>
+        <div className="card p-lg" style={{ background: 'var(--mm-gray-50)' }} /* Token-driven: legitimate */>
+          <p className={styles.seasonPrompt}>
             No home/away data available. Events need isHomeGame field populated.
           </p>
         </div>
@@ -690,13 +689,15 @@ function ComparisonMetric({
 
   return (
     <div className="card p-md">
-      <div style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)', marginBottom: '0.5rem' }}>
+      <div className={styles.metricLabel}>
         {label}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-        <span style={{ fontWeight: 'bold', fontSize: '1.25rem' }}>{formatValue(value1)}</span>
-        <span style={{ color: 'var(--mm-gray-400)' }}>vs</span>
-        <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--mm-gray-600)' }}>{formatValue(value2)}</span>
+      <div className={styles.metricValues}>
+        <span className={styles.metricValue}>{formatValue(value1)}</span>
+        <span style={{ color: 'var(--mm-gray-400)' }} /* Token-driven: legitimate */>
+          vs
+        </span>
+        <span className={styles.metricValueSecondary}>{formatValue(value2)}</span>
       </div>
       <div style={{ fontSize: 'var(--mm-font-size-xs)', color: isNeutral ? 'var(--mm-gray-500)' : isPositive ? 'var(--mm-color-secondary-600)' : 'var(--mm-error)' }}>
         {isNeutral ? '≈ No change' : isPositive ? `↑ +${deltaPercent.toFixed(1)}%` : `↓ ${deltaPercent.toFixed(1)}%`}
@@ -707,9 +708,9 @@ function ComparisonMetric({
 
 function StatRow({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--mm-gray-200)' }}>
-      <span style={{ color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>{label}</span>
-      <span style={{ fontWeight: 'bold' }}>{value}</span>
+    <div className={styles.statRow}>
+      <span className={styles.statRowLabel}>{label}</span>
+      <span className={styles.statRowValue}>{value}</span>
     </div>
   );
 }

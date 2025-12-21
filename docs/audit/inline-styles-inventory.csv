@@ -26,26 +26,6 @@ app/admin/filter/page.tsx,364,"display: 'flex', alignItems: 'center', justifyCon
 app/admin/filter/page.tsx,365,"color: '#6b7280', fontSize: '0.875rem'",No,Low
 app/admin/kyc/page.tsx,230,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
 app/admin/kyc/page.tsx,253,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,169,"textAlign: 'center', padding: '3rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,191,"margin: 0",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,273,"marginBottom: '2rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,319,"display: 'flex', justifyContent: 'space-between', alignItems: 'center'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,321,"fontWeight: 'bold', marginBottom: '0.5rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,332,"textDecoration: 'none'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,343,"display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,401,"fontWeight: 'bold'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,477,"textAlign: 'center', padding: '2rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,513,"marginBottom: '2rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,514,"marginBottom: '1rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,516,"display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,551,"marginBottom: '1rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,597,"marginBottom: '1rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,599,"display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,605,"display: 'flex', flexDirection: 'column', gap: '0.75rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,618,"display: 'flex', flexDirection: 'column', gap: '0.75rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,695,"display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,696,"fontWeight: 'bold', fontSize: '1.25rem'",No,Low
-app/admin/partners/[partnerId]/analytics/page.tsx,711,"fontWeight: 'bold'",No,Low
 app/admin/partners/page_old_backup.tsx,1228,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
 app/admin/partners/page_old_backup.tsx,1239,"fontSize: '1rem', marginRight: '0.25rem'",No,Low
 app/admin/partners/page.tsx,669,"padding: '1rem', textAlign: 'center'",No,Low
