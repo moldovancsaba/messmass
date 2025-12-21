@@ -298,12 +298,15 @@ export default function UnifiedHashtagInput({
     if (safeHashtags.length === 0) return null;
     
     return (
-      <div className="hashtag-group" style={{ marginBottom: '1rem' }}>
+      <div className="hashtag-group hashtag-group-spacing">
         <div className="group-header">
           <div className="group-info">
             {categoryColor && (
               <div 
                 className="category-indicator"
+                // WHAT: Dynamic category color for visual distinction
+                // WHY: Each category has a unique color stored in MongoDB
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{ backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : '#667eea' }}
               />
             )}
@@ -318,6 +321,9 @@ export default function UnifiedHashtagInput({
                   hashtag={hashtag}
                   categoryColor={categoryColor}
                   small={true}
+                  // WHAT: Custom fontSize/fontWeight for compact display
+                  // WHY: ColoredHashtagBubble supports customStyle prop for flexible sizing
+                  // eslint-disable-next-line react/forbid-dom-props
                   customStyle={{
                     fontSize: '0.875rem',
                     fontWeight: '500'
@@ -344,6 +350,9 @@ export default function UnifiedHashtagInput({
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={disabled}
             className="category-select"
+            // WHAT: Dynamic border/background based on selected category color
+            // WHY: Visual feedback showing which category is currently active
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ 
               borderColor: getCurrentCategoryColor(),
               background: `linear-gradient(135deg, ${getCurrentCategoryColor()}10, ${getCurrentCategoryColor()}05)`
@@ -372,6 +381,9 @@ export default function UnifiedHashtagInput({
               placeholder={placeholder}
               className="hashtag-input"
               autoComplete="off"
+              // WHAT: Dynamic border/shadow to match selected category color
+              // WHY: Consistent visual feedback - input color matches category
+              // eslint-disable-next-line react/forbid-dom-props
               style={{ 
                 borderColor: getCurrentCategoryColor(),
                 boxShadow: `0 0 0 1px ${getCurrentCategoryColor()}20`
@@ -388,6 +400,9 @@ export default function UnifiedHashtagInput({
                     index === selectedSuggestionIndex ? 'selected' : ''
                   } ${suggestion.isExisting ? 'existing' : 'new'}`}
                   onClick={() => handleSuggestionClick(suggestion.hashtag)}
+                  // WHAT: Dynamic left border color for suggestion item
+                  // WHY: Shows which category the hashtag will be added to
+                  // eslint-disable-next-line react/forbid-dom-props
                   style={{ 
                     borderLeftColor: getCurrentCategoryColor()
                   }}

@@ -678,6 +678,48 @@ textarea::placeholder {
   color: #b00020;
 }
 
+/* ========================================
+   INPUT COMPONENTS & ADMIN PAGE UTILITIES
+======================================== */
+
+/* WHAT: Hashtag group spacing utility
+   WHY: Consistent margin between hashtag sections in UnifiedHashtagInput */
+.hashtag-group-spacing {
+  margin-bottom: 1rem;
+}
+
+/* WHAT: Category indicator flex layout
+   WHY: Consistent spacing for category header with color dot */
+.category-header-flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* WHAT: Icon with small right margin
+   WHY: Consistent spacing for Material Icons in action buttons */
+.icon-sm-mr {
+  font-size: 1rem !important;
+  margin-right: 0.25rem !important;
+}
+
+/* WHAT: Pagination stats flex layout
+   WHY: Consistent layout for showing X of Y items in admin lists */
+.pagination-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* WHAT: Pagination stats text styling
+   WHY: Muted small text for item counts */
+.pagination-stats-text {
+  color: var(--mm-gray-500);
+  font-size: 0.875rem;
+}
+
 .section-subtitle {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);

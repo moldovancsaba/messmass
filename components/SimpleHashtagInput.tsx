@@ -109,6 +109,9 @@ export default function SimpleHashtagInput({
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={disabled}
+            // WHAT: Dynamic border/background based on selected category
+            // WHY: Visual feedback showing active category for new hashtag
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ 
               borderColor: getCurrentCategoryColor(),
               background: `${getCurrentCategoryColor()}10`
@@ -131,6 +134,9 @@ export default function SimpleHashtagInput({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
+            // WHAT: Dynamic border/shadow to match selected category color
+            // WHY: Consistent visual feedback - input color matches category
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ 
               borderColor: getCurrentCategoryColor(),
               boxShadow: `0 0 0 1px ${getCurrentCategoryColor()}20`
@@ -139,6 +145,9 @@ export default function SimpleHashtagInput({
           <button 
             onClick={addHashtag}
             disabled={disabled || !inputValue.trim()}
+            // WHAT: Dynamic button color + opacity based on category + disabled state
+            // WHY: Button matches category color; opacity shows disabled state
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ 
               backgroundColor: getCurrentCategoryColor(),
               opacity: (!inputValue.trim() || disabled) ? 0.5 : 1
@@ -180,8 +189,11 @@ export default function SimpleHashtagInput({
           return (
             <div key={categoryName} className="hashtag-group">
               <div className="group-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="category-header-flex">
                   <div 
+                    // WHAT: Dynamic category color indicator dot
+                    // WHY: Shows category color from MongoDB configuration
+                    // eslint-disable-next-line react/forbid-dom-props
                     style={{
                       width: '12px',
                       height: '12px',

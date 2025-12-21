@@ -1239,17 +1239,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                     )}
                     <input
                       type="text"
-                      className="form-input"
+                      className="form-input flex-2"
                       value={formData.icon || ''}
                       onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                       placeholder="analytics, trending_up, star, lightbulb, etc."
-                      className="flex-2"
                     />
                     <select
-                      className="form-input"
+                      className="form-input flex-1"
                       value={formData.iconVariant || 'outlined'}
                       onChange={(e) => setFormData({ ...formData, iconVariant: e.target.value as 'outlined' | 'rounded' })}
-                      className="flex-1"
                     >
                       <option value="outlined">Outlined</option>
                       <option value="rounded">Rounded</option>

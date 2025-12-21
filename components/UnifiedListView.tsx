@@ -96,6 +96,9 @@ export default function UnifiedListView<T extends { _id: string }>({
                       ${isSorted ? styles.sorted : ''}
                     `}
                     onClick={() => isSortable && handleColumnClick(column)}
+                    // WHAT: Dynamic column width from adapter configuration
+                    // WHY: Each column can specify custom width/minWidth in adapter
+                    // eslint-disable-next-line react/forbid-dom-props
                     style={{
                       width: column.width,
                       minWidth: column.minWidth,
@@ -173,7 +176,7 @@ export default function UnifiedListView<T extends { _id: string }>({
                           >
                             {action.icon && (
                               typeof action.icon === 'string' ? (
-                                <MaterialIcon name={action.icon} variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                                <MaterialIcon name={action.icon} variant="outlined" className="icon-sm-mr" />
                               ) : (
                                 action.icon
                               )

@@ -192,8 +192,8 @@ export default function UnifiedAdminPage<T extends { _id: string }>({
       
       {/* WHAT: Pagination stats for server-side search/pagination */}
       {showPaginationStats && !isLoading && items.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: 'var(--mm-gray-500)', fontSize: '0.875rem' }}>
+        <div className="pagination-stats-row">
+          <div className="pagination-stats-text">
             Showing {items.length} of {totalMatched || items.length} {adapter.pageName}
           </div>
         </div>

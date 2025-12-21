@@ -78,6 +78,9 @@ export default function SaveStatusIndicator({ status, className = '' }: SaveStat
   return (
     <div 
       className={`save-status-indicator ${className}`}
+      // WHAT: Dynamic status-based styling (saving/saved/error/idle)
+      // WHY: Each save state needs distinct color + background for UX clarity
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -91,6 +94,9 @@ export default function SaveStatusIndicator({ status, className = '' }: SaveStat
         transition: 'all 0.3s ease',
       }}
     >
+      {/* WHAT: Emoji icon fontSize override */}
+      {/* WHY: Slightly larger emoji for visual prominence */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
       <span style={{ fontSize: '1rem' }}>{config.icon}</span>
       <span>{config.text}</span>
     </div>
