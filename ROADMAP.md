@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.38.0
-Last Updated: 2025-12-20T19:43:00.000Z (UTC)
+Current Version: 11.39.0
+Last Updated: 2025-12-20T20:25:00.000Z (UTC)
 
 ---
 
@@ -107,21 +107,28 @@ Last Updated: 2025-12-20T19:43:00.000Z (UTC)
 
 ### Partner-Level Analytics Dashboard (Q2 2026)
 **Priority**: High  
+**Status**: ✅ **Core Complete (v11.39.0)** - Phases 1-3, 6 delivered  
+**Completed**: 2025-12-20T20:25:00.000Z (UTC)  
 **Dependencies**: Partners system (v6.0.0), aggregated data models
 
-**Actions**:
-- Create dedicated analytics views for each partner showing:
-  - All events by partner with performance metrics
-  - Season-over-season comparisons
-  - Home vs. away performance (for sports partners)
-  - Audience demographics and trends
-  - Bitly link performance aggregated by partner
-- Enable partner comparison views (head-to-head analytics)
+**Delivered (v11.39.0)**:
+- ✅ Background aggregation job populates partner_analytics collection every 5 minutes
+- ✅ Backfill script: `npm run analytics:backfill-partners` (processed 140 partners in 12.8s)
+- ✅ Dashboard route: `/admin/partners/[partnerId]/analytics` with 5-tab interface
+- ✅ Overview Tab: Summary cards, best event, quick stats
+- ✅ Events Tab: Full event table with performance metrics
+- ✅ Comparisons Tab: Season-over-season analysis + home vs. away performance
+- ✅ Analytics button integrated into Partners list (list and card views)
+- ✅ Season detection algorithm (Aug-May sports seasons)
+- ✅ Delta calculations with visual indicators (↑ ↓ ≈)
+- ✅ Automated insights for home/away performance
 
-**Acceptance**:
-- Partner detail page shows comprehensive analytics
-- Comparison tools allow selecting 2+ partners for side-by-side metrics
-- Export functionality for partner reports
+**Deferred to Future Releases**:
+- ⏸️ Demographics Tab: Gender, age, venue distribution charts
+- ⏸️ Trends Tab: Time-series charts for attendance, engagement, ad value
+- ⏸️ Partner Comparison (Head-to-Head): Compare 2-5 partners side-by-side
+- ⏸️ Export Functionality: PDF overview reports and CSV event exports
+- ⏸️ Bitly link performance aggregated by partner
 
 ---
 

@@ -1,0 +1,330 @@
+/* kyc-data.module.css */
+/* WHAT: Shared styles for KYC Data pages (events and partners) */
+/* WHY: Centralize common table, hero, and layout patterns to eliminate inline styles */
+
+/* ========================================
+   HEADER SECTION
+   ======================================== */
+
+/* WHAT: Container for page header */
+.headerSection {
+  margin-bottom: var(--mm-space-8);
+}
+
+/* WHAT: Back button styling */
+.backButton {
+  margin-bottom: var(--mm-space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+/* WHAT: Main page title */
+.pageTitle {
+  font-size: var(--mm-font-size-4xl);
+  font-weight: 700;
+  margin-bottom: var(--mm-space-2);
+}
+
+/* WHAT: Subtitle under main title */
+.pageSubtitle {
+  font-size: var(--mm-font-size-xl);
+  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-1);
+}
+
+/* WHAT: Metadata line (date, ID, event count) */
+.pageMeta {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+}
+
+/* WHAT: Partner hero with emoji and name */
+.partnerHero {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-2);
+}
+
+.partnerEmoji {
+  font-size: 2.5rem;
+}
+
+/* ========================================
+   SEARCH AND FILTER CONTROLS
+   ======================================== */
+
+/* WHAT: Container for search and filter controls */
+.controlsRow {
+  display: flex;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-8);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* WHAT: Search input wrapper (flexible width) */
+.searchWrapper {
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+/* WHAT: Category filter dropdown */
+.categorySelect {
+  min-width: 200px;
+}
+
+/* WHAT: Variable count display */
+.variableCount {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-500);
+}
+
+/* ========================================
+   TABLE LAYOUT
+   ======================================== */
+
+/* WHAT: Container for each category section */
+.categorySection {
+  margin-bottom: var(--mm-space-8);
+}
+
+/* WHAT: Category heading above table */
+.categoryHeading {
+  font-size: var(--mm-font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--mm-space-4);
+  color: var(--mm-gray-800);
+  text-transform: capitalize;
+}
+
+/* WHAT: Card wrapper for table (hides overflow) */
+.tableCard {
+  overflow: hidden;
+}
+
+/* WHAT: Main KYC data table */
+.kycTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* WHAT: Table header row styling */
+.kycTable thead tr {
+  background-color: var(--mm-gray-50);
+  border-bottom: 2px solid var(--mm-gray-200);
+}
+
+/* WHAT: Base styles for all table header cells */
+.kycTable th {
+  padding: var(--mm-space-4);
+  font-weight: 600;
+}
+
+/* WHAT: Left-aligned header cells (Variable, Field Name) */
+.headerLeft {
+  text-align: left;
+}
+
+/* WHAT: Right-aligned header cells (Value, Total, Avg) */
+.headerRight {
+  text-align: right;
+}
+
+/* WHAT: Center-aligned header cells (Type) */
+.headerCenter {
+  text-align: center;
+}
+
+/* WHAT: Specific column widths for event KYC table */
+.colVariable {
+  width: 35%;
+}
+
+.colFieldName {
+  width: 25%;
+}
+
+.colValue {
+  width: 20%;
+}
+
+.colType {
+  width: 20%;
+}
+
+/* WHAT: Specific column widths for partner KYC table */
+.colVariableWide {
+  width: 40%;
+}
+
+.colFieldNameWide {
+  width: 30%;
+}
+
+.colTotal {
+  width: 20%;
+}
+
+.colAvg {
+  width: 10%;
+}
+
+/* WHAT: Base styles for all table body rows */
+.kycTable tbody tr {
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+/* WHAT: Remove border from last row in each tbody section */
+.kycTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* WHAT: Highlight rows with zero or empty values */
+.rowZero {
+  background-color: var(--mm-gray-50);
+}
+
+/* WHAT: Base styles for all table body cells */
+.kycTable td {
+  padding: var(--mm-space-4);
+}
+
+/* ========================================
+   TABLE CELL CONTENT
+   ======================================== */
+
+/* WHAT: Variable name (alias) display */
+.variableName {
+  font-weight: 500;
+}
+
+/* WHAT: System variable badge */
+.systemBadge {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+  margin-top: var(--mm-space-1);
+}
+
+/* WHAT: Field name in monospace font */
+.fieldName {
+  font-family: monospace;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Numeric value display (large, bold) */
+.numericValue {
+  text-align: right;
+  font-weight: 500;
+  font-size: var(--mm-font-size-lg);
+}
+
+.numericValueLarge {
+  text-align: right;
+  font-weight: 600;
+  font-size: var(--mm-font-size-lg);
+}
+
+.numericValueZero {
+  color: var(--mm-gray-400);
+}
+
+.numericValueNormal {
+  color: var(--mm-gray-900);
+}
+
+/* WHAT: Empty value placeholder (—) */
+.emptyValue {
+  color: var(--mm-gray-400);
+}
+
+/* WHAT: Text value display (smaller, truncated) */
+.textValue {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-700);
+  max-width: 300px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* WHAT: Average value display */
+.avgValue {
+  text-align: right;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* ========================================
+   TYPE BADGES
+   ======================================== */
+
+/* WHAT: Cell wrapper for type badges */
+.typeCell {
+  text-align: center;
+  font-size: var(--mm-font-size-xs);
+}
+
+/* WHAT: Base type badge styles */
+.typeBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* WHAT: Number type badge (blue) */
+.typeBadgeNumber {
+  background-color: var(--mm-blue-100);
+  color: var(--mm-blue-700);
+}
+
+/* WHAT: Text type badge (green) */
+.typeBadgeText {
+  background-color: var(--mm-green-100);
+  color: var(--mm-green-700);
+}
+
+/* WHAT: Derived type badge (purple) */
+.typeBadgeDerived {
+  background-color: var(--mm-purple-100);
+  color: var(--mm-purple-700);
+}
+
+/* ========================================
+   INFO BANNER (No Events Warning)
+   ======================================== */
+
+/* WHAT: Warning banner container */
+.infoBanner {
+  padding: var(--mm-space-6);
+  background-color: var(--mm-yellow-50);
+  border: 1px solid var(--mm-yellow-200);
+  margin-bottom: var(--mm-space-8);
+}
+
+/* WHAT: Banner content row (icon + text) */
+.bannerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+/* WHAT: Banner title */
+.bannerTitle {
+  font-weight: 600;
+  color: var(--mm-yellow-900);
+}
+
+/* WHAT: Banner description */
+.bannerDescription {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-yellow-700);
+}

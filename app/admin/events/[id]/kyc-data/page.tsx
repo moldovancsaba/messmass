@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import MaterialIcon from '@/components/MaterialIcon';
+import styles from '@/app/styles/kyc-data.module.css';
 
 interface VariableMetadata {
   name: string;
@@ -143,51 +144,42 @@ export default function EventKYCDataPage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div className={styles.headerSection}>
         <button
           onClick={() => router.back()}
-          className="back-link"
-          style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          className={`back-link ${styles.backButton}`}
         >
           <MaterialIcon name="arrow_back" />
           <span>Back to Events</span>
         </button>
         
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+        <h1 className={styles.pageTitle}>
           KYC Data
         </h1>
-        <h2 style={{ fontSize: '1.25rem', color: 'var(--mm-gray-600)', marginBottom: '0.25rem' }}>
+        <h2 className={styles.pageSubtitle}>
           {project.eventName}
         </h2>
-        <div style={{ fontSize: '0.875rem', color: 'var(--mm-gray-500)' }}>
+        <div className={styles.pageMeta}>
           {new Date(project.eventDate).toLocaleDateString()} • ID: {project._id}
         </div>
       </div>
       
       {/* Search and Filter Controls */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem', 
-        flexWrap: 'wrap',
-        alignItems: 'center'
-      }}>
-        <div style={{ flex: '1', minWidth: '250px' }}>
+      <div className={styles.controlsRow}>
+        <div className={styles.searchWrapper}>
           <input
             type="text"
             placeholder="Search variables..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="form-input"
-            style={{ width: '100%' }}
+            className={`form-input ${styles.searchInput}`}
           />
         </div>
         
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="form-input"
-          style={{ minWidth: '200px' }}
+          className={`form-input ${styles.categorySelect}`}
         >
           {categories.map(cat => (
             <option key={cat} value={cat}>
@@ -196,7 +188,7 @@ export default function EventKYCDataPage() {
           ))}
         </select>
         
-        <div style={{ fontSize: '0.875rem', color: 'var(--mm-gray-500)' }}>
+        <div className={styles.variableCount}>
           {filteredVariables.length} variable{filteredVariables.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -209,54 +201,25 @@ export default function EventKYCDataPage() {
         </div>
       ) : (
         Object.entries(groupedVariables).map(([category, vars]) => (
-          <div key={category} style={{ marginBottom: '2rem' }}>
-            <h3 style={{ 
-              fontSize: '1.25rem', 
-              fontWeight: 600, 
-              marginBottom: '1rem',
-              color: 'var(--mm-gray-800)',
-              textTransform: 'capitalize'
-            }}>
+          <div key={category} className={styles.categorySection}>
+            <h3 className={styles.categoryHeading}>
               {category}
             </h3>
             
-            <div className="card" style={{ overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className={`card ${styles.tableCard}`}>
+              <table className={styles.kycTable}>
                 <thead>
-                  <tr style={{ 
-                    backgroundColor: 'var(--mm-gray-50)', 
-                    borderBottom: '2px solid var(--mm-gray-200)' 
-                  }}>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'left', 
-                      fontWeight: 600,
-                      width: '35%'
-                    }}>
+                  <tr>
+                    <th className={`${styles.headerLeft} ${styles.colVariable}`}>
                       Variable
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'left', 
-                      fontWeight: 600,
-                      width: '25%'
-                    }}>
+                    <th className={`${styles.headerLeft} ${styles.colFieldName}`}>
                       Field Name
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'right', 
-                      fontWeight: 600,
-                      width: '20%'
-                    }}>
+                    <th className={`${styles.headerRight} ${styles.colValue}`}>
                       Value
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'center', 
-                      fontWeight: 600,
-                      width: '20%'
-                    }}>
+                    <th className={`${styles.headerCenter} ${styles.colType}`}>
                       Type
                     </th>
                   </tr>
@@ -270,76 +233,38 @@ export default function EventKYCDataPage() {
                     return (
                       <tr 
                         key={v.name}
-                        style={{ 
-                          borderBottom: idx < vars.length - 1 ? '1px solid var(--mm-gray-100)' : 'none',
-                          backgroundColor: isZero || isEmpty ? 'var(--mm-gray-50)' : 'transparent'
-                        }}
+                        className={isZero || isEmpty ? styles.rowZero : ''}
                       >
-                        <td style={{ padding: '1rem' }}>
-                          <div style={{ fontWeight: 500 }}>{v.alias || v.name}</div>
+                        <td>
+                          <div className={styles.variableName}>{v.alias || v.name}</div>
                           {v.isSystemVariable && (
-                            <div style={{ 
-                              fontSize: '0.75rem', 
-                              color: 'var(--mm-gray-500)',
-                              marginTop: '0.25rem'
-                            }}>
+                            <div className={styles.systemBadge}>
                               System Variable
                             </div>
                           )}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          fontFamily: 'monospace', 
-                          fontSize: '0.875rem',
-                          color: 'var(--mm-gray-600)'
-                        }}>
+                        <td className={styles.fieldName}>
                           {v.name}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          textAlign: 'right',
-                          fontWeight: 500,
-                          fontSize: '1.125rem'
-                        }}>
+                        <td className={styles.numericValue}>
                           {isEmpty ? (
-                            <span style={{ color: 'var(--mm-gray-400)' }}>—</span>
+                            <span className={styles.emptyValue}>—</span>
                           ) : v.type === 'number' ? (
-                            <span style={{ color: isZero ? 'var(--mm-gray-400)' : 'var(--mm-gray-900)' }}>
+                            <span className={isZero ? styles.numericValueZero : styles.numericValueNormal}>
                               {typeof value === 'number' ? value.toLocaleString() : value}
                             </span>
                           ) : (
-                            <span style={{ 
-                              fontSize: '0.875rem', 
-                              color: 'var(--mm-gray-700)',
-                              maxWidth: '300px',
-                              display: 'block',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
-                            }}>
+                            <span className={styles.textValue}>
                               {String(value)}
                             </span>
                           )}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          textAlign: 'center',
-                          fontSize: '0.75rem'
-                        }}>
-                          <span style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '12px',
-                            backgroundColor: 
-                              v.type === 'number' ? 'var(--mm-blue-100)' :
-                              v.type === 'text' ? 'var(--mm-green-100)' :
-                              'var(--mm-purple-100)',
-                            color:
-                              v.type === 'number' ? 'var(--mm-blue-700)' :
-                              v.type === 'text' ? 'var(--mm-green-700)' :
-                              'var(--mm-purple-700)',
-                            fontWeight: 600,
-                            textTransform: 'uppercase'
-                          }}>
+                        <td className={styles.typeCell}>
+                          <span className={`${styles.typeBadge} ${
+                            v.type === 'number' ? styles.typeBadgeNumber :
+                            v.type === 'text' ? styles.typeBadgeText :
+                            styles.typeBadgeDerived
+                          }`}>
                             {v.type}
                           </span>
                         </td>

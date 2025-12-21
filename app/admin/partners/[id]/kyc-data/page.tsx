@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import MaterialIcon from '@/components/MaterialIcon';
+import styles from '@/app/styles/kyc-data.module.css';
 
 interface VariableMetadata {
   name: string;
@@ -189,55 +190,46 @@ export default function PartnerKYCDataPage() {
   return (
     <div className="page-container">
       {/* Header */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div className={styles.headerSection}>
         <button
           onClick={() => router.back()}
-          className="back-link"
-          style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          className={`back-link ${styles.backButton}`}
         >
           <MaterialIcon name="arrow_back" />
           <span>Back to Partners</span>
         </button>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-          {partner.emoji && <span style={{ fontSize: '2.5rem' }}>{partner.emoji}</span>}
-          <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>
+        <div className={styles.partnerHero}>
+          {partner.emoji && <span className={styles.partnerEmoji}>{partner.emoji}</span>}
+          <h1 className={styles.pageTitle}>
             {partner.name}
           </h1>
         </div>
         
-        <h2 style={{ fontSize: '1.25rem', color: 'var(--mm-gray-600)', marginBottom: '0.25rem' }}>
+        <h2 className={styles.pageSubtitle}>
           Aggregated KYC Data
         </h2>
-        <div style={{ fontSize: '0.875rem', color: 'var(--mm-gray-500)' }}>
+        <div className={styles.pageMeta}>
           {events.length} event{events.length !== 1 ? 's' : ''} • Showing totals across all events
         </div>
       </div>
       
       {/* Search and Filter Controls */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem', 
-        marginBottom: '2rem', 
-        flexWrap: 'wrap',
-        alignItems: 'center'
-      }}>
-        <div style={{ flex: '1', minWidth: '250px' }}>
+      <div className={styles.controlsRow}>
+        <div className={styles.searchWrapper}>
           <input
             type="text"
             placeholder="Search variables..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="form-input"
-            style={{ width: '100%' }}
+            className={`form-input ${styles.searchInput}`}
           />
         </div>
         
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="form-input"
-          style={{ minWidth: '200px' }}
+          className={`form-input ${styles.categorySelect}`}
         >
           {categories.map(cat => (
             <option key={cat} value={cat}>
@@ -246,24 +238,19 @@ export default function PartnerKYCDataPage() {
           ))}
         </select>
         
-        <div style={{ fontSize: '0.875rem', color: 'var(--mm-gray-500)' }}>
+        <div className={styles.variableCount}>
           {filteredVariables.length} variable{filteredVariables.length !== 1 ? 's' : ''}
         </div>
       </div>
       
       {/* Info Banner */}
       {events.length === 0 && (
-        <div className="card" style={{ 
-          padding: '1.5rem', 
-          backgroundColor: 'var(--mm-yellow-50)', 
-          border: '1px solid var(--mm-yellow-200)',
-          marginBottom: '2rem'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className={`card ${styles.infoBanner}`}>
+          <div className={styles.bannerContent}>
             <MaterialIcon name="info" className="text-yellow-600" />
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--mm-yellow-900)' }}>No Events Found</div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--mm-yellow-700)' }}>
+              <div className={styles.bannerTitle}>No Events Found</div>
+              <div className={styles.bannerDescription}>
                 This partner has no events yet. KYC data will appear once events are created.
               </div>
             </div>
@@ -279,54 +266,25 @@ export default function PartnerKYCDataPage() {
         </div>
       ) : (
         Object.entries(groupedVariables).map(([category, vars]) => (
-          <div key={category} style={{ marginBottom: '2rem' }}>
-            <h3 style={{ 
-              fontSize: '1.25rem', 
-              fontWeight: 600, 
-              marginBottom: '1rem',
-              color: 'var(--mm-gray-800)',
-              textTransform: 'capitalize'
-            }}>
+          <div key={category} className={styles.categorySection}>
+            <h3 className={styles.categoryHeading}>
               {category}
             </h3>
             
-            <div className="card" style={{ overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className={`card ${styles.tableCard}`}>
+              <table className={styles.kycTable}>
                 <thead>
-                  <tr style={{ 
-                    backgroundColor: 'var(--mm-gray-50)', 
-                    borderBottom: '2px solid var(--mm-gray-200)' 
-                  }}>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'left', 
-                      fontWeight: 600,
-                      width: '40%'
-                    }}>
+                  <tr>
+                    <th className={`${styles.headerLeft} ${styles.colVariableWide}`}>
                       Variable
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'left', 
-                      fontWeight: 600,
-                      width: '30%'
-                    }}>
+                    <th className={`${styles.headerLeft} ${styles.colFieldNameWide}`}>
                       Field Name
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'right', 
-                      fontWeight: 600,
-                      width: '20%'
-                    }}>
+                    <th className={`${styles.headerRight} ${styles.colTotal}`}>
                       Total
                     </th>
-                    <th style={{ 
-                      padding: '1rem', 
-                      textAlign: 'right', 
-                      fontWeight: 600,
-                      width: '10%'
-                    }}>
+                    <th className={`${styles.headerRight} ${styles.colAvg}`}>
                       Avg
                     </th>
                   </tr>
@@ -340,46 +298,23 @@ export default function PartnerKYCDataPage() {
                     return (
                       <tr 
                         key={v.name}
-                        style={{ 
-                          borderBottom: idx < vars.length - 1 ? '1px solid var(--mm-gray-100)' : 'none',
-                          backgroundColor: isZero ? 'var(--mm-gray-50)' : 'transparent'
-                        }}
+                        className={isZero ? styles.rowZero : ''}
                       >
-                        <td style={{ padding: '1rem' }}>
-                          <div style={{ fontWeight: 500 }}>{v.alias || v.name}</div>
+                        <td>
+                          <div className={styles.variableName}>{v.alias || v.name}</div>
                           {v.isSystemVariable && (
-                            <div style={{ 
-                              fontSize: '0.75rem', 
-                              color: 'var(--mm-gray-500)',
-                              marginTop: '0.25rem'
-                            }}>
+                            <div className={styles.systemBadge}>
                               System Variable
                             </div>
                           )}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          fontFamily: 'monospace', 
-                          fontSize: '0.875rem',
-                          color: 'var(--mm-gray-600)'
-                        }}>
+                        <td className={styles.fieldName}>
                           {v.name}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          textAlign: 'right',
-                          fontWeight: 600,
-                          fontSize: '1.125rem',
-                          color: isZero ? 'var(--mm-gray-400)' : 'var(--mm-gray-900)'
-                        }}>
+                        <td className={`${styles.numericValueLarge} ${isZero ? styles.numericValueZero : styles.numericValueNormal}`}>
                           {total.toLocaleString()}
                         </td>
-                        <td style={{ 
-                          padding: '1rem', 
-                          textAlign: 'right',
-                          fontSize: '0.875rem',
-                          color: 'var(--mm-gray-600)'
-                        }}>
+                        <td className={styles.avgValue}>
                           {average.toLocaleString(undefined, { maximumFractionDigits: 1 })}
                         </td>
                       </tr>
