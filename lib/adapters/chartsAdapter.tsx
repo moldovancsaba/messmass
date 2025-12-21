@@ -34,7 +34,7 @@ export const chartsAdapter: AdminPageAdapter<ChartDTO> = {
         sortable: true,
         minWidth: '200px',
         render: (chart) => (
-          <span style={{ fontWeight: 600 }}>{chart.name}</span>
+          <span className="adapter-primary-field">{chart.name}</span>
         ),
       },
       {
@@ -43,15 +43,7 @@ export const chartsAdapter: AdminPageAdapter<ChartDTO> = {
         sortable: true,
         width: '150px',
         render: (chart) => (
-          <span
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              backgroundColor: '#f3f4f6',
-              color: '#374151',
-            }}
-          >
+          <span className="adapter-badge">
             {chart.type}
           </span>
         ),
@@ -61,20 +53,25 @@ export const chartsAdapter: AdminPageAdapter<ChartDTO> = {
         label: 'Status',
         sortable: true,
         width: '100px',
-        render: (chart) => (
-          <span
-            style={{
-              padding: '4px 12px',
-              borderRadius: '12px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              backgroundColor: chart.enabled ? '#d1fae5' : '#fee2e2',
-              color: chart.enabled ? '#065f46' : '#991b1b',
-            }}
-          >
-            {chart.enabled ? 'Active' : 'Disabled'}
-          </span>
-        ),
+        render: (chart) => {
+          // WHAT: Dynamic status badge color based on enabled state
+          // WHY: Background/text color computed from chart.enabled boolean
+          // eslint-disable-next-line react/forbid-dom-props
+          return (
+            <span
+              style={{
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                backgroundColor: chart.enabled ? '#d1fae5' : '#fee2e2',
+                color: chart.enabled ? '#065f46' : '#991b1b',
+              }}
+            >
+              {chart.enabled ? 'Active' : 'Disabled'}
+            </span>
+          );
+        },
       },
       {
         key: 'order',

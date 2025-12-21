@@ -278,6 +278,9 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
             
             return (
               <div key={idx} className={styles.pieLegendItem}>
+                {/* WHAT: Dynamic pie legend dot color from theme
+                    WHY: Color comes from CSS variables/theme (legitimate dynamic)
+                    eslint-disable-next-line react/forbid-dom-props */}
                 <div className={styles.pieLegendDot} style={{ backgroundColor: color }} />
                 <div className={styles.pieLegendText}>
                   {protectedLabel}: {percentage}%
@@ -337,6 +340,9 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
             <div key={idx} className={styles.barRow}>
               <div className={styles.barLabel}>{protectedLabel}</div>
               <div className={styles.barTrack}>
+                {/* WHAT: Dynamic bar fill width and color from calculated data + theme
+                    WHY: Width is computed percentage, color from CSS variables
+                    eslint-disable-next-line react/forbid-dom-props */}
                 <div 
                   className={styles.barFill}
                   style={{ 

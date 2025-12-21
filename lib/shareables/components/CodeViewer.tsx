@@ -288,6 +288,9 @@ export default function CodeViewer({
               <div className={styles.lineNumbers}>
                 {codeLines.map((_, index) => {
                   const isHighlighted = highlightLines.includes(index + 1);
+                  // WHAT: CSS variables for line highlight colors based on theme
+                  // WHY: Highlight colors computed from dark/light theme prop
+                  // eslint-disable-next-line react/forbid-dom-props
                   return (
                     <div 
                       key={index}

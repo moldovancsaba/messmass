@@ -361,8 +361,8 @@ function HashtagFilterPageContent() {
       {/* WHAT: Pagination stats header showing X of Y items
        * WHY: Consistent format across all admin pages (Categories, Users, Projects) */}
       {!loading && availableHashtags.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1rem' }}>
-          <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+        <div className="pagination-stats-row">
+          <div className="pagination-stats-text">
             Showing {availableHashtags.length} of {totalHashtags} hashtags available for filtering
           </div>
         </div>

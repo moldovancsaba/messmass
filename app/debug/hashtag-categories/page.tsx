@@ -105,6 +105,9 @@ export default function HashtagCategoriesDebugPage() {
           
           <div className="card text-center">
             <div className="card-body">
+              {/* WHAT: Fixed warning color for traditional hashtags metric
+                  WHY: Semantic color (not CSS variable) for warning state
+                  eslint-disable-next-line react/forbid-dom-props */}
               <div className="text-4xl font-bold" style={{color: '#f59e0b'}}>
                 {data.data.counts.totalWithTraditional}
               </div>

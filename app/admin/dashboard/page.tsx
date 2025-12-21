@@ -375,12 +375,16 @@ export default function DashboardPage() {
                   <span>Female: {aggregatedStats.genderDistribution.female.toLocaleString()}</span>
                 </div>
                 <div className="progress-bar-container">
+                  {/* WHAT: Calculated progress bar widths for gender distribution
+                      WHY: Width is computed from aggregated stats ratio (legitimate dynamic)
+                      eslint-disable-next-line react/forbid-dom-props */}
                   <div 
                     className="progress-bar-male"
                     style={{
                       width: `${(aggregatedStats.genderDistribution.male / (aggregatedStats.genderDistribution.male + aggregatedStats.genderDistribution.female)) * 100}%`
                     }}
                   ></div>
+                  {/* eslint-disable-next-line react/forbid-dom-props */}
                   <div 
                     className="progress-bar-female"
                     style={{

@@ -339,6 +339,9 @@ export default function AdminDesignPage() {
                 <div className={styles.tokenGrid}>
                   {group.tokens.map((token) => (
                     <div key={token.name} className={styles.tokenItem}>
+                      {/* WHAT: Dynamic color swatch from design token value
+                          WHY: Design tokens define colors (e.g., '#3b82f6') - must render actual color
+                          eslint-disable-next-line react/forbid-dom-props */}
                       <div
                         className={styles.colorSwatch}
                         style={{ backgroundColor: (typeof token.value === 'string' && token.value.trim()) ? token.value.trim() : '#cccccc' }}
@@ -639,16 +642,21 @@ export default function AdminDesignPage() {
                   <div className="mb-4">
                     <p className="text-xs text-gray-500 mb-2">Color Scheme:</p>
                     <div className="flex gap-2">
+                      {/* WHAT: Mini color swatches showing theme color previews
+                          WHY: Theme colors stored in database (primary/secondary/success)
+                          eslint-disable-next-line react/forbid-dom-props */}
                       <div
                         className={styles.miniColorSwatch}
                         style={{ backgroundColor: (typeof style.colorScheme.primary === 'string' && style.colorScheme.primary.trim()) ? style.colorScheme.primary.trim() : '#3b82f6' }}
                         title="Primary"
                       />
+                      {/* eslint-disable-next-line react/forbid-dom-props */}
                       <div
                         className={styles.miniColorSwatch}
                         style={{ backgroundColor: (typeof style.colorScheme.secondary === 'string' && style.colorScheme.secondary.trim()) ? style.colorScheme.secondary.trim() : '#10b981' }}
                         title="Secondary"
                       />
+                      {/* eslint-disable-next-line react/forbid-dom-props */}
                       <div
                         className={styles.miniColorSwatch}
                         style={{ backgroundColor: (typeof style.colorScheme.success === 'string' && style.colorScheme.success.trim()) ? style.colorScheme.success.trim() : '#10b981' }}

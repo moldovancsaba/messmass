@@ -178,6 +178,10 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
   const gridColumns = calculateGridColumns(rowCharts);
   
   return (
+    // WHAT: Dynamic grid layout with calculated columns and row height
+    // WHY: Grid columns from chart widths, height from blockHeightCalculator
+    // HOW: Responsive calculation based on actual container width measurement
+    // eslint-disable-next-line react/forbid-dom-props
     <div 
       ref={rowRef}
       key={`row-${rowIndex}`}

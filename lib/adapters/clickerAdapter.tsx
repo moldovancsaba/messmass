@@ -35,7 +35,7 @@ export const clickerAdapter: AdminPageAdapter<ClickerVariableDTO> = {
         sortable: true,
         minWidth: '200px',
         render: (variable) => (
-          <span style={{ fontWeight: 600 }}>{variable.alias}</span>
+          <span className="adapter-primary-field">{variable.alias}</span>
         ),
       },
       {
@@ -44,7 +44,7 @@ export const clickerAdapter: AdminPageAdapter<ClickerVariableDTO> = {
         sortable: true,
         minWidth: '150px',
         render: (variable) => (
-          <span style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-meta-text font-mono">
             {variable.name}
           </span>
         ),
@@ -55,14 +55,7 @@ export const clickerAdapter: AdminPageAdapter<ClickerVariableDTO> = {
         sortable: true,
         width: '150px',
         render: (variable) => (
-          <span
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              backgroundColor: '#f3f4f6',
-            }}
-          >
+          <span className="adapter-badge">
             {variable.category}
           </span>
         ),

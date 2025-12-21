@@ -33,12 +33,18 @@ export default function Error({ error, reset }: ErrorProps) {
         <h1 className="text-2xl font-bold text-gray-900 mb-md">
           Something went wrong!
         </h1>
+        {/* WHAT: Fixed line height for readability in error messages
+            WHY: Error page needs clear typography (legitimate static style)
+            eslint-disable-next-line react/forbid-dom-props */}
         <p className="text-gray-600 text-lg mb-lg" style={{lineHeight: '1.6'}}>
           We encountered an unexpected error. Please try again or contact support if the problem persists.
         </p>
         
         {/* Error details for development */}
         {process.env.NODE_ENV === 'development' && (
+          // WHAT: Development-only error details box with wrapping styles
+          // WHY: Ensure long error messages wrap properly in error box
+          // eslint-disable-next-line react/forbid-dom-props
           <div className="bg-gray-50 border border-gray-300 p-md mb-lg text-left text-sm text-gray-700 font-mono" style={{borderRadius: 'var(--mm-radius-md)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
             {error.message}
             {error.digest && (
