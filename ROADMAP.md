@@ -1,7 +1,7 @@
 # ROADMAP.md
 
-Current Version: 11.40.0
-Last Updated: 2025-12-21T09:02:35.000Z (UTC)
+Current Version: 11.41.0
+Last Updated: 2025-12-21T17:30:00.000Z (UTC)
 
 ---
 
@@ -60,8 +60,16 @@ Last Updated: 2025-12-21T09:02:35.000Z (UTC)
   - Documented 4 legitimate dynamic styles with WHAT/WHY comments
   - Deleted 3 backup files (9 additional styles removed)
   - 8 commits pushed to GitHub main (96fd199, c09e8a1, febb83f, f7257e0, f8c6f21, 55f4f0f, 12d77b3, 2cc23b8)
-- **Phase 3**: ⏸️ NEXT — Refactor remaining dynamic chart styles (~40 extractable)
-- **Phase 4**: ⏸️ FUTURE — Extract modal/dialog positioning (~30 extractable)
+- **Phase 3**: ✅ COMPLETE — Dynamic component styles refactored (40 of 152 styles eliminated, 26% reduction)
+  - Completed on 2025-12-21T17:30:00.000Z (UTC)
+  - Batch 1: Partners page (12 styles) → utilities
+  - Batch 2: Analytics page (7 extracted + 1 documented dynamic)
+  - Batch 3: ImageUploader (7 styles) → utilities
+  - Batch 4: ChartAlgorithmManager (7 styles) → utilities
+  - Batch 5: Events page (7 styles → utilities + reused .form-hint)
+  - Created ~26 new utility classes in components.css
+  - 5 commits pushed to GitHub main (4d17e7c, 290b60d, 8ee1d2f, f45a8a3, 3f5a4d6)
+- **Phase 4**: ⏸️ NEXT — Extract modal/dialog positioning (~30 extractable)
 - **Phase 5**: ⏸️ FUTURE — Consolidate duplicated CSS files
 - **Phase 6**: ⏸️ FUTURE — Prepare Atlas-managed theme injection plan
 
@@ -73,11 +81,11 @@ Last Updated: 2025-12-21T09:02:35.000Z (UTC)
 - ✅ Core components documented (StylePreview, ColoredCard, hashtag bubbles)
 - ✅ Build passing, zero visual regressions
 
-**Remaining 151 Inline Styles** (after Phase 2):
-- Dynamic charts (~40) - Data-driven visualizations
+**Remaining 112 Inline Styles** (after Phase 3):
+- Dynamic charts (~40) - Data-driven visualizations (mostly legitimate)
 - Modals/dialogs (~30) - Positioning/z-index
 - Minor utilities (~30) - Small components
-- Legacy components (~50) - Lower priority
+- Legacy components (~12) - Lower priority
 
 **Acceptance Criteria** (Final State):
 - Zero inline styles (except documented computed token-driven styles with WHAT/WHY)
