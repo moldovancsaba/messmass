@@ -147,6 +147,10 @@ export default function InsightCard({ insight, compact = false, onClick }: Insig
           <div className={styles.confidenceBar}>
             <div
               className={styles.confidenceProgress}
+              // WHAT: CSS variable for dynamic confidence progress bar width
+              // WHY: Confidence percentage (0-100) determines visual progress indicator
+              // HOW: CSS module uses var(--confidence-width) for width property
+              // eslint-disable-next-line react/forbid-dom-props
               style={{ ['--confidence-width' as string]: `${insight.confidence}%` } as React.CSSProperties}
             />
           </div>

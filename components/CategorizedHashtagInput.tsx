@@ -144,6 +144,9 @@ export default function CategorizedHashtagInput({
           <div className="category-info">
             <div 
               className="category-indicator"
+              // WHAT: Dynamic category color indicator from MongoDB
+              // WHY: Each category has unique color stored in database
+              // eslint-disable-next-line react/forbid-dom-props
               style={{ backgroundColor: (typeof category.color === 'string' && category.color.trim()) ? category.color.trim() : '#667eea' }}
               title={`${category.name} category`}
             />
@@ -156,7 +159,7 @@ export default function CategorizedHashtagInput({
         
         {/* Existing hashtags in this category */}
         {categoryHashtags.length > 0 && (
-          <div className="existing-hashtags" style={{ marginBottom: '1rem' }}>
+          <div className="existing-hashtags hashtag-group-spacing">
             <div className="hashtag-bubbles">
               {categoryHashtags.map((hashtag, index) => (
                 <ColoredHashtagBubble 
@@ -204,7 +207,7 @@ export default function CategorizedHashtagInput({
         
         {/* Existing hashtags in general section */}
         {value.length > 0 && (
-          <div className="existing-hashtags" style={{ marginBottom: '1rem' }}>
+          <div className="existing-hashtags hashtag-group-spacing">
             <div className="hashtag-bubbles">
               {value.map((hashtag, index) => (
                 <ColoredHashtagBubble 

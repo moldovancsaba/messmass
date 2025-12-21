@@ -204,6 +204,9 @@ export default function Sidebar() {
                         <MaterialIcon
                           name={item.icon}
                           variant={item.iconVariant || 'outlined'}
+                          // WHAT: Fixed fontSize override for sidebar icons
+                          // WHY: Sidebar needs larger icons (1.25rem) than MaterialIcon default (1rem)
+                          // eslint-disable-next-line react/forbid-dom-props
                           style={{ fontSize: '1.25rem' }}
                         />
                       </span>

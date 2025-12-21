@@ -72,6 +72,10 @@ export default function AdminPageHero({
                   <ColoredHashtagBubble 
                     key={hashtag}
                     hashtag={hashtag}
+                    // WHAT: Custom sizing for hashtags in hero header
+                    // WHY: Hero needs larger, bolder hashtags (1rem vs default 0.875rem)
+                    // NOTE: customStyle prop is legitimate pattern in ColoredHashtagBubble
+                    // eslint-disable-next-line react/forbid-dom-props
                     customStyle={{
                       fontSize: '1rem',
                       fontWeight: '600',
@@ -116,6 +120,10 @@ export default function AdminPageHero({
                     <span 
                       key={index}
                       className={styles.badge}
+                      // WHAT: CSS variables for dynamic badge colors based on variant
+                      // WHY: Badge variant (primary/success/warning/danger) determines colors
+                      // HOW: CSS module uses var(--badge-bg) and var(--badge-text)
+                      // eslint-disable-next-line react/forbid-dom-props
                       style={{
                         '--badge-bg': colors.bg,
                         '--badge-text': colors.text

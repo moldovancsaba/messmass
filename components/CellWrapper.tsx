@@ -37,6 +37,9 @@ export default function CellWrapper({
       {title && (
         <div 
           className={styles.titleZone}
+          // WHAT: Dynamic fontSize and height from block-level props
+          // WHY: Report Layout Spec v2.0 requires synchronized title sizing across cells
+          // eslint-disable-next-line react/forbid-dom-props
           style={{
             fontSize: titleFontSize ? `${titleFontSize}px` : undefined,
             height: titleHeight ? `${titleHeight}px` : undefined
@@ -50,6 +53,9 @@ export default function CellWrapper({
       {subtitle && (
         <div 
           className={styles.subtitleZone}
+          // WHAT: Dynamic fontSize and height from block-level props
+          // WHY: Report Layout Spec v2.0 requires synchronized subtitle sizing across cells
+          // eslint-disable-next-line react/forbid-dom-props
           style={{
             fontSize: subtitleFontSize ? `${subtitleFontSize}px` : undefined,
             height: subtitleHeight ? `${subtitleHeight}px` : undefined

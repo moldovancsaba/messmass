@@ -183,7 +183,7 @@ export default function UnifiedCardView<T extends { _id: string }>({
                           <MaterialIcon 
                             name={action.icon} 
                             variant="outlined" 
-                            style={{ fontSize: '1rem', marginRight: '0.25rem' }} 
+                            className="icon-sm-mr"
                           />
                         )}
                         <span className={styles.actionLabel}>{action.label}</span>

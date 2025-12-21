@@ -173,7 +173,15 @@ export default function AdminDashboard({ user, permissions }: AdminDashboardProp
           Why: All styling controlled via ColoredCard component - maintainable in one place */}
       <div style={gridStyles}>
         {navCards.map((card) => (
-          <Link key={card.href} href={card.href} style={{ textDecoration: 'none' }}>
+          <Link 
+            key={card.href} 
+            href={card.href} 
+            // WHAT: Remove default underline from Next.js Link wrapper
+            // WHY: ColoredCard provides hover styling, text decoration conflicts
+            // NOTE: Next.js Link special case - cannot apply class to wrapper
+            // eslint-disable-next-line react/forbid-dom-props
+            style={{ textDecoration: 'none' }}
+          >
             <ColoredCard accentColor={card.accentColor} hoverable={true}>
               <div style={cardContentStyles}>
                 <div style={iconStyles}>{card.icon}</div>

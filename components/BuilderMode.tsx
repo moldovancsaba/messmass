@@ -238,6 +238,9 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
               
               {/* Charts Grid - Adapts to chart widths */}
               <div 
+                // WHAT: Dynamic grid layout based on chart count in block
+                // WHY: Equal-width columns (1 chart=full, 2 charts=50% each, etc.)
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   display: 'grid',
                   gridTemplateColumns: `repeat(${blockGridColumns}, 1fr)`,
@@ -322,7 +325,14 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                     // WHY: Block grid has columns = chart count
                     const width = 1;
                     return (
-                      <div key={chartItem.chartId} className="builder-chart-wrapper" style={{ gridColumn: `span ${width}` }}>
+                      <div 
+                        key={chartItem.chartId} 
+                        className="builder-chart-wrapper" 
+                        // WHAT: Dynamic gridColumn span (currently always 1)
+                        // WHY: Future-proof for variable-width charts in Builder mode
+                        // eslint-disable-next-line react/forbid-dom-props
+                        style={{ gridColumn: `span ${width}` }}
+                      >
                         {builderComponent}
                       </div>
                     );

@@ -268,6 +268,14 @@
 **Documented**: 11 dynamic styles (aspect ratios, calculated font sizes, prop-based heights, CSS variables, color resolution)  
 **Utility classes created**: 0 (no extractable patterns)  
 **Total addressed**: 11 styles (0 extracted + 11 documented)  
+**Commit**: `b1d0932`
+
+### Batch 8: Remaining Miscellaneous Styles (Completed 2025-12-21)
+**Files**: Sidebar.tsx, AdminPageHero.tsx, AdminDashboard.tsx, ImageLightbox.tsx, InsightCard.tsx, CategorizedHashtagInput.tsx, CategorizedHashtagBubble.tsx, CellWrapper.tsx, BuilderMode.tsx, HashtagCategoryDebug.tsx, ImageUploadField.tsx, UnifiedCardView.tsx  
+**Eliminated**: 3 styles (reused existing utilities: hashtag-group-spacing, icon-sm-mr)  
+**Documented**: 15 dynamic styles (sidebar icons, hero hashtags, badge CSS vars, Link underline, overlay backgrounds, progress bars, category indicators, synchronized sizing, grid layouts, hidden file inputs)  
+**Utility classes created**: 0 (reused existing utilities)  
+**Total addressed**: 18 styles (3 extracted + 15 documented)  
 **Commit**: Pending
 
 ---
@@ -275,16 +283,16 @@
 ## 📊 Phase 4+ Progress Tracker
 
 **Total Inline Styles**: 181 (initial)  
-**Eliminated**: 71 styles (39.2%)  
-**Documented Dynamic**: 46 styles (25.4%)  
-**Total Addressed**: 117 styles (64.6%)  
-**Remaining**: 64 styles (35.4%)  
+**Eliminated**: 74 styles (40.9%)  
+**Documented Dynamic**: 61 styles (33.7%)  
+**Total Addressed**: 135 styles (74.6%)  
+**Remaining**: 46 styles (25.4%)  
 
 **Utility Classes Created**: 44 classes  
-**Batches Completed**: 7 of ~8-10  
+**Batches Completed**: 8 of ~9-10  
 **Build Status**: ✅ Passing (npm run build: exit 0)  
 **ESLint Status**: ✅ All violations exempted with WHAT/WHY comments
 
 ---
 
-**Next Action**: Continue with remaining miscellaneous styles (~64 styles) or pause for v11.42.0 documentation?
+**Next Action**: Final batch targeting StylePreview/DataQualityInsights verification and deprecated file cleanup (~46 styles remaining).

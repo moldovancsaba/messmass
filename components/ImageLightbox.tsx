@@ -87,7 +87,15 @@ export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageL
      WHY: Escapes parent page's gray background and stacking context
      HOW: createPortal(JSX, document.body) renders outside React tree */
   return createPortal(
-    <div className={styles.overlay} style={{ background: overlayBg }} onClick={onClose}>
+    <div 
+      className={styles.overlay} 
+      // WHAT: Dynamic overlay background matching page style with 85% opacity
+      // WHY: Maintains page aesthetic while allowing click-to-close dimmed overlay
+      // HOW: Extracts page container background, converts to rgba/gradient with alpha 0.85
+      // eslint-disable-next-line react/forbid-dom-props
+      style={{ background: overlayBg }} 
+      onClick={onClose}
+    >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className={styles.closeBtn}>
           ×

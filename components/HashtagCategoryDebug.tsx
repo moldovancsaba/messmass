@@ -60,6 +60,10 @@ export default function HashtagCategoryDebug({
                 <span
                   key={catIndex}
                   className={styles.categoryBadge}
+                  // WHAT: CSS variables for dynamic badge colors based on category type
+                  // WHY: 'general' category uses gray, categorized hashtags use blue
+                  // HOW: CSS module uses var(--badge-bg), var(--badge-color), var(--badge-border)
+                  // eslint-disable-next-line react/forbid-dom-props
                   style={{
                     '--badge-bg': category === 'general' 
                       ? 'rgba(107, 114, 128, 0.1)' 

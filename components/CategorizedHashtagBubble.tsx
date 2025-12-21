@@ -30,20 +30,25 @@ export default function CategorizedHashtagBubble({
   const defaultColor = '#6b7280'; // Default gray for general/unknown
   
   return (
-    // WHAT: Dynamic category colors and layouts (legitimate inline styles)
-    // WHY: Colors computed from category data at runtime
-    // eslint-disable-next-line react/forbid-dom-props
-    <div style={{
-      display: 'inline-flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '0.25rem',
-      margin: '0.125rem'
-    }}>
+    <div 
+      // WHAT: Dynamic category colors and flex layout
+      // WHY: Colors computed from category data at runtime
+      // eslint-disable-next-line react/forbid-dom-props
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.25rem',
+        margin: '0.125rem'
+      }}
+    >
       {/* Category Label */}
       {showCategoryLabel && category && category !== 'general' && (
-        // eslint-disable-next-line react/forbid-dom-props
-        <div style={{
+        <div 
+          // WHAT: Dynamic category label styling (size-based fontSize, color-based background/border)
+          // WHY: Small prop affects fontSize, categoryColor determines badge appearance
+          // eslint-disable-next-line react/forbid-dom-props
+          style={{
           fontSize: small ? '0.625rem' : '0.75rem',
           fontWeight: '600',
           color: categoryColor || defaultColor,

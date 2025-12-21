@@ -148,6 +148,10 @@ export default function ImageUploadField({ label, value, onSave, disabled }: Ima
         type="file"
         accept="image/*"
         onChange={handleFileChange}
+        // WHAT: Hide native file input (triggered by custom Upload button)
+        // WHY: Standard pattern for custom-styled file upload UIs
+        // NOTE: Browser security requires file input to exist in DOM
+        // eslint-disable-next-line react/forbid-dom-props
         style={{ display: 'none' }}
       />
     </div>
