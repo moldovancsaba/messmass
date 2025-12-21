@@ -1,7 +1,7 @@
 # MessMass Coding Standards
 
-**Version:** 11.25.0  
-**Last Updated:** 2025-11-12T18:02:00.000Z (UTC)
+**Version:** 11.40.0  
+**Last Updated:** 2025-12-21T09:02:35.000Z (UTC)
 
 ---
 
