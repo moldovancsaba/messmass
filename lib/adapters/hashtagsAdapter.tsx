@@ -43,7 +43,7 @@ export const hashtagsAdapter: AdminPageAdapter<HashtagDTO> = {
         sortable: true,
         width: '150px',
         render: (hashtag) => (
-          <span style={{ fontWeight: 600 }}>
+          <span className="adapter-primary-field">
             {hashtag.count.toLocaleString()} project{hashtag.count !== 1 ? 's' : ''}
           </span>
         ),
@@ -54,16 +54,9 @@ export const hashtagsAdapter: AdminPageAdapter<HashtagDTO> = {
         width: '100px',
         render: (hashtag) =>
           hashtag.color ? (
-            <div
-              style={{
-                width: '40px',
-                height: '24px',
-                backgroundColor: hashtag.color,
-                borderRadius: '4px',
-                border: '1px solid #e5e7eb',
-              }}
-              title={hashtag.color}
-            />
+            // WHAT: Dynamic color preview from hashtag
+            // WHY: Background color is data-driven from database
+            <div className="adapter-color-preview" style={{ backgroundColor: hashtag.color }} title={hashtag.color} /> // eslint-disable-line react/forbid-dom-props
           ) : (
             <span className="text-gray-400 text-sm">Default</span>
           ),

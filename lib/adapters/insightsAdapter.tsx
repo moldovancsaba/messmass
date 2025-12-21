@@ -34,7 +34,7 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         sortable: true,
         minWidth: '180px',
         render: (insight) => (
-          <span style={{ fontWeight: 600 }}>{insight.projectName}</span>
+          <span className="adapter-primary-field">{insight.projectName}</span>
         ),
       },
       {
@@ -43,14 +43,7 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         sortable: true,
         width: '120px',
         render: (insight) => (
-          <span
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              backgroundColor: '#f3f4f6',
-            }}
-          >
+          <span className="px-2 py-1 rounded text-sm bg-gray-100">
             {insight.category}
           </span>
         ),
@@ -61,6 +54,8 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         sortable: true,
         width: '100px',
         render: (insight) => {
+          // WHAT: Priority badge with conditional colors based on priority level
+          // WHY: Colors are computed at runtime (critical=red, high=orange, medium=yellow, low=blue)
           const colors = {
             critical: { bg: '#fee2e2', color: '#991b1b' },
             high: { bg: '#fed7aa', color: '#9a3412' },
@@ -69,16 +64,14 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
           };
           const style = colors[insight.priority as keyof typeof colors] || colors.low;
           return (
-            <span
-              style={{
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                backgroundColor: style.bg,
-                color: style.color,
-              }}
-            >
+            <span style={{ // eslint-disable-line react/forbid-dom-props
+              padding: '4px 12px',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              backgroundColor: style.bg,
+              color: style.color,
+            }}>
               {insight.priority}
             </span>
           );
@@ -89,7 +82,7 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         label: 'Insight',
         minWidth: '300px',
         render: (insight) => (
-          <span style={{ fontSize: '0.875rem', lineHeight: '1.5' }}>
+          <span className="text-sm leading-relaxed">
             {insight.message.substring(0, 100)}
             {insight.message.length > 100 ? '...' : ''}
           </span>
@@ -101,7 +94,7 @@ export const insightsAdapter: AdminPageAdapter<InsightDTO> = {
         sortable: true,
         width: '100px',
         render: (insight) => (
-          <span style={{ fontWeight: 600 }}>{Math.round(insight.confidence * 100)}%</span>
+          <span className="adapter-primary-field">{Math.round(insight.confidence * 100)}%</span>
         ),
       },
     ],

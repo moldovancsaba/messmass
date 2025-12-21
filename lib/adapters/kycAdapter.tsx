@@ -37,7 +37,7 @@ export const kycAdapter: AdminPageAdapter<KYCVariableDTO> = {
         sortable: true,
         minWidth: '180px',
         render: (variable) => (
-          <span style={{ fontWeight: 600 }}>{variable.alias}</span>
+          <span className="adapter-primary-field">{variable.alias}</span>
         ),
       },
       {
@@ -46,7 +46,7 @@ export const kycAdapter: AdminPageAdapter<KYCVariableDTO> = {
         sortable: true,
         minWidth: '150px',
         render: (variable) => (
-          <span style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-hex-label adapter-meta-text">
             {variable.name}
           </span>
         ),
@@ -57,14 +57,7 @@ export const kycAdapter: AdminPageAdapter<KYCVariableDTO> = {
         sortable: true,
         width: '100px',
         render: (variable) => (
-          <span
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              backgroundColor: '#f3f4f6',
-            }}
-          >
+          <span className="px-2 py-1 rounded text-sm bg-gray-100">
             {variable.type}
           </span>
         ),
@@ -81,15 +74,15 @@ export const kycAdapter: AdminPageAdapter<KYCVariableDTO> = {
         sortable: true,
         width: '100px',
         render: (variable) => (
-          <span
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              backgroundColor: variable.isSystemVariable ? '#dbeafe' : '#fef3c7',
-              color: variable.isSystemVariable ? '#1e40af' : '#92400e',
-            }}
-          >
+          // WHAT: Source badge with conditional colors based on variable type
+          // WHY: Colors are computed at runtime (system=blue, custom=yellow)
+          <span style={{ // eslint-disable-line react/forbid-dom-props
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '0.875rem',
+            backgroundColor: variable.isSystemVariable ? '#dbeafe' : '#fef3c7',
+            color: variable.isSystemVariable ? '#1e40af' : '#92400e',
+          }}>
             {variable.isSystemVariable ? 'System' : 'Custom'}
           </span>
         ),

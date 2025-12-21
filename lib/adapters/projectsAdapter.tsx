@@ -32,36 +32,11 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         sortable: true,
         minWidth: '250px',
         render: (project) => {
-          const partnerRowStyle: React.CSSProperties = {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          };
-          const partnerEmojiStyle: React.CSSProperties = {
-            fontSize: '2rem',
-            flexShrink: 0
-          };
-          const partnerLogoStyle: React.CSSProperties = {
-            width: '40px',
-            height: '40px',
-            objectFit: 'contain',
-            borderRadius: '4px',
-            flexShrink: 0
-          };
-          const partnerLogoPlaceholderStyle: React.CSSProperties = {
-            width: '40px',
-            height: '40px',
-            flexShrink: 0
-          };
-          const eventNameStyle: React.CSSProperties = {
-            fontWeight: 600
-          };
-          
           return (
             <div>
-              <div style={partnerRowStyle}>
+              <div className="flex items-center gap-2">
                 {project.partner1 && (
-                  <span style={partnerEmojiStyle}>
+                  <span className="text-3xl shrink-0">
                     {project.partner1.emoji}
                   </span>
                 )}
@@ -72,15 +47,15 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                     alt={`${project.partner1.name} logo`}
                     width={40}
                     height={40}
-                    style={{ objectFit: 'contain', borderRadius: '4px', flexShrink: 0 }}
+                    className="w-10 h-10 object-contain rounded shrink-0"
                     title={project.partner1.name}
                     unoptimized
                   />
                 ) : project.partner1 ? (
-                  <div style={partnerLogoPlaceholderStyle} />
+                  <div className="w-10 h-10 shrink-0" />
                 ) : null}
                 
-                <span style={eventNameStyle}>{project.eventName}</span>
+                <span className="adapter-primary-field">{project.eventName}</span>
                 
                 {project.partner2?.logoUrl ? (
                   <Image
@@ -88,16 +63,16 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                     alt={`${project.partner2.name} logo`}
                     width={40}
                     height={40}
-                    style={{ objectFit: 'contain', borderRadius: '4px', flexShrink: 0 }}
+                    className="w-10 h-10 object-contain rounded shrink-0"
                     title={project.partner2.name}
                     unoptimized
                   />
                 ) : project.partner2 ? (
-                  <div style={partnerLogoPlaceholderStyle} />
+                  <div className="w-10 h-10 shrink-0" />
                 ) : null}
               </div>
               
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+              <div className="flex flex-wrap gap-2 mt-2">
                 {project.hashtags?.map((hashtag) => (
                   <ColoredHashtagBubble
                     key={`general-${hashtag}`}
@@ -131,7 +106,7 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
         sortable: true,
         width: '120px',
         render: (project) => (
-          <span style={{ fontSize: '0.875rem' }}>
+          <span className="text-sm">
             {new Date(project.eventDate).toLocaleDateString()}
           </span>
         ),

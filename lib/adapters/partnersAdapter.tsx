@@ -36,7 +36,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         width: '60px',
         className: 'text-center',
         render: (partner) => (
-          <span style={{ fontSize: '1.5rem' }}>{partner.emoji}</span>
+          <span className="text-2xl">{partner.emoji}</span>
         ),
       },
       {
@@ -66,7 +66,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         sortable: true,
         minWidth: '200px',
         render: (partner) => (
-          <span style={{ fontWeight: 600 }}>{partner.name}</span>
+          <span className="adapter-primary-field">{partner.name}</span>
         ),
       },
       {
@@ -74,7 +74,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         label: 'Hashtags',
         minWidth: '250px',
         render: (partner) => (
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap gap-2">
             {/* Traditional hashtags */}
             {partner.hashtags?.map((hashtag) => (
               <ColoredHashtagBubble
@@ -112,14 +112,14 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         width: '150px',
         render: (partner) =>
           partner.bitlyLinks && partner.bitlyLinks.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="flex flex-col gap-1">
               {partner.bitlyLinks.map((link) => (
                 <a
                   key={link._id}
                   href={`https://${link.bitlink}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: '0.875rem', color: '#3b82f6' }}
+                  className="text-sm link-primary"
                   title={link.title}
                 >
                   {link.bitlink}
@@ -136,7 +136,7 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         sortable: true,
         width: '120px',
         render: (partner) => (
-          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+          <span className="adapter-meta-text">
             {new Date(partner.updatedAt).toLocaleDateString()}
           </span>
         ),
