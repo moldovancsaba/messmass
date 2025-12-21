@@ -116,18 +116,10 @@ export default function LineChart({
         height={height}
         showExport={false}
       >
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          color: 'var(--mm-gray-500)',
-          gap: 'var(--mm-space-3)'
-        }}>
-          <div style={{ fontSize: '48px', opacity: 0.5 }}>📈</div>
-          <div style={{ fontSize: '16px', fontWeight: 500 }}>Insufficient Data</div>
-          <div style={{ fontSize: '14px', opacity: 0.7 }}>Chart requires at least one dataset with valid data points</div>
+        <div className="empty-state-centered">
+          <div className="empty-state-icon">📈</div>
+          <div className="empty-state-title">Insufficient Data</div>
+          <div className="empty-state-description">Chart requires at least one dataset with valid data points</div>
         </div>
       </ChartBase>
     );
@@ -243,7 +235,9 @@ export default function LineChart({
       chartRef={chartRef}
       filename={filename}
     >
-      <div style={{ height: `${height}px` }}>
+      {/* WHAT: Dynamic height from props
+          WHY: Chart height is configurable per instance */}
+      <div style={{ height: `${height}px` }}> {/* eslint-disable-line react/forbid-dom-props */}
         <Line ref={chartRef} data={chartData} options={options} />
       </div>
     </ChartBase>

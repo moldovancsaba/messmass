@@ -410,14 +410,7 @@ export function AuthGuard({
   // Check authentication
   if (!user) {
     return fallback || (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '200px',
-        color: '#ef4444',
-        fontSize: '1.1rem'
-      }}>
+      <div className="auth-error-message auth-error-critical">
         Authentication required
       </div>
     )
@@ -426,14 +419,7 @@ export function AuthGuard({
   // Check role requirements
   if (requireRole && user.role !== requireRole) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '200px',
-        color: '#f59e0b',
-        fontSize: '1.1rem'
-      }}>
+      <div className="auth-error-message auth-error-permission">
         Insufficient permissions (role: {requireRole})
       </div>
     )
@@ -447,14 +433,7 @@ export function AuthGuard({
     
     if (!hasAllPermissions) {
       return (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '200px',
-          color: '#f59e0b',
-          fontSize: '1.1rem'
-        }}>
+        <div className="auth-error-message auth-error-permission">
           Insufficient permissions
         </div>
       )

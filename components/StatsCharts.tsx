@@ -221,7 +221,7 @@ const MerchandiseHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, event
   ];
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-4)' }}>
+    <div className="chart-wrapper-vertical">
       <KPICard
         title="Possible Merch Sales"
         value={potentialSales}
@@ -316,7 +316,7 @@ const ValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventName }
   const totalValue = valuePropValue + directValue + directAdsValue + under40EngagedValue + brandAwarenessValue;
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-4)' }}>
+    <div className="chart-wrapper-vertical">
       <KPICard
         title="Advertisement Value"
         value={totalValue}
@@ -358,7 +358,7 @@ const ValuePropositionHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, 
   ];
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-4)' }}>
+    <div className="chart-wrapper-vertical">
       <KPICard
         title="Conversion Rate"
         value={visitedPercentage}
@@ -427,7 +427,7 @@ const EngagementHorizontalBarsComponent: React.FC<ChartProps> = ({ stats, eventN
   const coreFanTeam = totalFans > 0 && eventAttendees > 0 ? Math.round((merchedFans / totalFans) * eventAttendees) : 0;
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-4)' }}>
+    <div className="chart-wrapper-vertical">
       <KPICard
         title="Core Fan Team"
         value={coreFanTeam}
@@ -484,7 +484,7 @@ const AdvertisementValueHorizontalBarsComponent: React.FC<ChartProps> = ({ stats
   const totalAdValue = directValue + directAdsValue + brandAwarenessValue;
   
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mm-space-4)' }}>
+    <div className="chart-wrapper-vertical">
       <KPICard
         title="Total Advertisement Value"
         value={totalAdValue}

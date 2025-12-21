@@ -74,26 +74,18 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
           const percentage = percentages[statsKey] || 0;
           
           return (
-            <div key={idx} className="chart-builder-field" style={{ 
-              padding: 'var(--mm-space-3)',
-              backgroundColor: 'var(--mm-gray-50)',
-              borderRadius: 'var(--mm-radius-md)'
-            }}>
+            <div key={idx} className="chart-builder-field chart-builder-field-wrapper">
               {/* Label with color indicator */}
               <div className="chart-builder-bar-row">
                 {el.color && (
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: el.color,
-                    flexShrink: 0
-                  }} />
+                  // WHAT: Dynamic color indicator from chart configuration
+                  // WHY: Color is data-driven from chart.elements[].color
+                  <div className="chart-builder-color-dot" style={{ backgroundColor: el.color }} /> // eslint-disable-line react/forbid-dom-props
                 )}
                 <label className="chart-builder-bar-label">
                   {el.label || statsKey}
                 </label>
-                <span style={{ fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-400)', fontWeight: 'var(--mm-font-weight-semibold)' }}>
+                <span className="chart-builder-percentage">
                   {percentage}%
                 </span>
               </div>
@@ -116,15 +108,11 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
       </div>
       
       {/* Total display */}
-      <div className="chart-builder-pie-total" style={{ 
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+      <div className="chart-builder-pie-total chart-builder-total-row">
         <span>
           Total
         </span>
-        <span style={{ fontSize: 'var(--mm-font-size-base)', fontWeight: 'var(--mm-font-weight-bold)' }}>
+        <span className="chart-builder-total-value">
           {total}
         </span>
       </div>

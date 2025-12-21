@@ -443,6 +443,117 @@ textarea::placeholder {
   display: contents;
 }
 
+/* ========================================
+   CHART COMPONENTS - WRAPPERS & BUILDERS
+======================================== */
+
+/* WHAT: Vertical wrapper for KPI + Chart pairs
+   WHY: Consistent spacing between chart components in StatsCharts */
+.chart-wrapper-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+}
+
+/* WHAT: Chart builder field container (pie/bar inputs)
+   WHY: Consistent padding and backgrounds for chart builder inputs */
+.chart-builder-field-wrapper {
+  padding: var(--mm-space-3);
+  background-color: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+}
+
+/* WHAT: Color indicator dot for chart builders
+   WHY: Consistent sizing for color previews in pie/bar charts */
+.chart-builder-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* WHAT: Percentage display in chart builders
+   WHY: Consistent styling for percentage labels */
+.chart-builder-percentage {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-400);
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+/* WHAT: Total row layout for chart builders
+   WHY: Consistent spacing between label and value */
+.chart-builder-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* WHAT: Total value styling in chart builders
+   WHY: Emphasize total with larger bold text */
+.chart-builder-total-value {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-bold);
+}
+
+/* ========================================
+   EMPTY STATES & ERROR MESSAGES
+======================================== */
+
+/* WHAT: Centered empty state container
+   WHY: Consistent layout for "no data" states in charts and lists */
+.empty-state-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--mm-gray-500);
+  gap: var(--mm-space-3);
+}
+
+/* WHAT: Large emoji/icon for empty states
+   WHY: Visual indicator before text message */
+.empty-state-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+/* WHAT: Empty state title text
+   WHY: Larger bold text for main message */
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* WHAT: Empty state description text
+   WHY: Smaller muted text for details */
+.empty-state-description {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* WHAT: Auth/permission error message container
+   WHY: Consistent error display for authentication failures */
+.auth-error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  font-size: 1.1rem;
+}
+
+/* WHAT: Critical error (authentication required)
+   WHY: Red color for auth failures */
+.auth-error-critical {
+  color: #ef4444;
+}
+
+/* WHAT: Permission error (insufficient permissions)
+   WHY: Orange color for permission issues */
+.auth-error-permission {
+  color: #f59e0b;
+}
+
 .section-subtitle {
   font-size: var(--text-xl);
   font-weight: var(--font-semibold);
