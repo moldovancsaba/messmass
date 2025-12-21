@@ -306,7 +306,7 @@ export const myAdapter: AdminPageAdapter<MyType> = {
 
 ```bash
 # Start development
-npm run dev              # Next.js on :3000
+npm run dev              # Next.js on :5000
 cd server && npm start   # WebSocket on :7654
 
 # Build and validate

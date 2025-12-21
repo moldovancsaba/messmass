@@ -2,8 +2,8 @@
 
 **A comprehensive real-time collaborative event statistics dashboard with advanced partner management, intelligent link tracking, and custom theming engine.**
 
-**Version**: v11.40.0
-**Last Updated**: 2025-12-21T09:02:35.000Z
+**Version**: v11.41.0
+**Last Updated**: 2025-12-21T17:30:00.000Z
 - **Website**: https://messmass.doneisbetter.com
 - **Status**: Production-Ready — Full-featured event management platform with partner ecosystem, automated fixture suggestions, and dynamic theming
 
@@ -35,7 +35,7 @@ npm install
 # Seed variable metadata (first-time setup)
 npm run seed:variables
 
-# Start Next.js development server (port 3000)
+# Start Next.js development server (port 5000)
 npm run dev
 
 # Start WebSocket server (port 7654) - in separate terminal

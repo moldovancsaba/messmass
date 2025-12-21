@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Get base URL from request headers
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3000';
+    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:5000';
     const baseUrl = `${protocol}://${host}`;
 
     // Generate shareable link

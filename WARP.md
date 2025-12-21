@@ -19,7 +19,7 @@ git push https://${GITHUB_TOKEN}@github.com/moldovancsaba/messmass.git main
 ### Development Environment
 ```bash
 # Main application development
-npm run dev              # Start Next.js app on :3000
+npm run dev              # Start Next.js app on :5000
 
 # WebSocket server (separate terminal)
 cd server && npm start   # WebSocket server on :7654
@@ -941,7 +941,7 @@ imagesToRestore.forEach(({ parent, img, placeholder }) => {
 
 ### Development
 ```bash
-npm run dev               # Next.js on :3000
+npm run dev               # Next.js on :5000
 cd server && npm start    # WebSocket on :7654 
 ```
 
