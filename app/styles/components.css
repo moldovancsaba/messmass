@@ -2076,3 +2076,36 @@ textarea::placeholder {
   font-weight: 600;
   margin-bottom: var(--mm-space-3);
 }
+
+/* ========================================
+   PHASE 3 BATCH 1: FORM UTILITIES
+======================================== */
+
+/* WHAT: Form helper text (hint below form fields)
+   WHY: Extracted from 9 inline styles in app/admin/partners/page.tsx
+   PATTERN: Small gray text with top spacing, used for field descriptions */
+.form-hint {
+  margin-top: var(--mm-space-2);
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+}
+
+/* WHAT: Load more button wrapper
+   WHY: Extracted from app/admin/partners/page.tsx line 669
+   PATTERN: Centered pagination control with padding */
+.load-more-wrapper {
+  padding: 1rem;
+  text-align: center;
+}
+
+/* WHAT: Top margin utilities
+   WHY: Consistent spacing for form elements and buttons */
+.mt-3 {
+  margin-top: var(--mm-space-3);
+}
+
+/* WHAT: Bottom margin utilities
+   WHY: Consistent spacing for form elements and buttons */
+.mb-2 {
+  margin-bottom: var(--mm-space-2);
+}

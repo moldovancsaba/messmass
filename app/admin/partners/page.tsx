@@ -666,7 +666,7 @@ export default function PartnersAdminPageUnified() {
       
       {/* Load More Button */}
       {nextOffset !== null && partners.length > 0 && (
-        <div style={{ padding: '1rem', textAlign: 'center' }}>
+        <div className="load-more-wrapper">
           <button 
             className="btn btn-small btn-secondary" 
             disabled={isLoadingMore} 
@@ -723,7 +723,7 @@ export default function PartnersAdminPageUnified() {
               setNewPartnerData(prev => ({ ...prev, sportsDb: undefined }));
             }}
           />
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
           </p>
         </div>
@@ -751,7 +751,7 @@ export default function PartnersAdminPageUnified() {
               setNewPartnerData(prev => ({ ...prev, bitlyLinkIds }))
             }
           />
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
           </p>
         </div>
@@ -768,7 +768,7 @@ export default function PartnersAdminPageUnified() {
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Page styling (fonts, colors, gradients) for partner report page
           </p>
         </div>
@@ -785,7 +785,7 @@ export default function PartnersAdminPageUnified() {
               <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 All events from this partner will use this template by default
           </p>
         </div>
@@ -847,18 +847,17 @@ export default function PartnersAdminPageUnified() {
           />
           
           {/* Manual Entry Button */}
-          <div style={{ marginTop: 'var(--mm-space-3)' }}>
+          <div className="mt-3">
             <button
               type="button"
               onClick={() => setShowManualEntry(true)}
-              className="btn btn-sm btn-secondary"
-              style={{ marginBottom: 'var(--mm-space-2)' }}
+              className="btn btn-sm btn-secondary mb-2"
             >
               🖊️ Can't find it? Enter manually
             </button>
           </div>
           
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
             <br />
             <strong>Note:</strong> TheSportsDB FREE API has limitations. If you can't find your team, use manual entry.
@@ -888,7 +887,7 @@ export default function PartnersAdminPageUnified() {
               setEditPartnerData(prev => ({ ...prev, bitlyLinkIds }))
             }
           />
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
           </p>
         </div>
@@ -905,7 +904,7 @@ export default function PartnersAdminPageUnified() {
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Page styling (fonts, colors, gradients) for partner report page
           </p>
         </div>
@@ -922,7 +921,7 @@ export default function PartnersAdminPageUnified() {
               <option key={t._id} value={t._id}>{t.name} ({t.type})</option>
             ))}
           </select>
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 All events from this partner will use this template by default
           </p>
         </div>
@@ -1002,7 +1001,7 @@ export default function PartnersAdminPageUnified() {
             onChange={(e) => setManualEntryData(prev => ({ ...prev, logoUrl: e.target.value }))}
             placeholder="https://example.com/logo.png"
           />
-          <p style={{ marginTop: 'var(--mm-space-2)', fontSize: 'var(--mm-font-size-sm)', color: 'var(--mm-gray-600)' }}>
+          <p className="form-hint">
             💡 Logo will be uploaded to ImgBB for permanent hosting
           </p>
         </div>
