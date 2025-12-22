@@ -92,12 +92,13 @@ export function getUnauthorizedRedirect(userRole: UserRole | undefined): string 
 
 /**
  * WHAT: Check if route is public (no authentication required)
- * WHY: Allow access to login/register without authentication
+ * WHY: Allow access to login/register/clear-session without authentication
  */
 export function isPublicRoute(pathname: string): boolean {
   const publicRoutes = [
     '/admin/login',
     '/admin/register',
+    '/admin/clear-session',
   ];
   return publicRoutes.some(route => pathname.startsWith(route));
 }

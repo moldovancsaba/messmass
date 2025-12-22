@@ -19,8 +19,8 @@ export async function middleware(request: NextRequest) {
   
   // WHAT: 0. Check admin authentication and authorization (CRITICAL SECURITY)
   // WHY: Prevent unauthorized/insufficient access to ALL admin pages
-  // EXCEPTION: /admin/login and /admin/register are public
-  const publicAdminRoutes = ['/admin/login', '/admin/register'];
+  // EXCEPTION: /admin/login, /admin/register, and /admin/clear-session are public
+  const publicAdminRoutes = ['/admin/login', '/admin/register', '/admin/clear-session'];
   const isPublicRoute = publicAdminRoutes.some(route => pathname.startsWith(route));
   
   if (pathname.startsWith('/admin') && !isPublicRoute) {
