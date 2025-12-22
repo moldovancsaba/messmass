@@ -264,8 +264,8 @@
   height: 4.5cqh;
   border-radius: 50%;
   flex-shrink: 0;
-  /* WHAT: Border using primary theme color (same as pie chart) */
-  border: 2px solid var(--chart-color-1, var(--mm-color-error-800));
+  /* NO FALLBACK - browser decides */
+  border: 2px solid var(--chart-color-1);
   box-sizing: border-box;
 }
 

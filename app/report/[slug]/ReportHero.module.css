@@ -5,9 +5,9 @@
 
 /* Hero Container */
 .hero {
-  /* UNIFIED NAMING: Use --heroBackground and --headingColor (match database properties) */
-  background: var(--heroBackground, linear-gradient(135deg, var(--mm-blue-600), var(--mm-purple-600))) !important;
-  color: var(--headingColor, var(--mm-white));
+  /* NO FALLBACKS - browser decides if variable missing */
+  background: var(--heroBackground) !important;
+  color: var(--headingColor);
   padding: var(--mm-space-8) var(--mm-space-6);
   border-radius: var(--mm-radius-xl);
   margin-bottom: var(--mm-space-6);
