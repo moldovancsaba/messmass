@@ -168,11 +168,20 @@ export async function exportPageWithSmartPagination(
     const originalLiveBadgeDisplay = liveBadge ? (liveBadge as HTMLElement).style.display : '';
     const originalActiveBadgeDisplay = activeBadge ? (activeBadge as HTMLElement).style.display : '';
     
+    /* What: Hide export buttons during PDF capture
+       Why: Export buttons should not appear in the PDF document
+       How: Find elements with data-pdf-export-buttons attribute and hide them */
+    const exportButtons = heroElement.querySelector('[data-pdf-export-buttons]');
+    const originalExportButtonsDisplay = exportButtons ? (exportButtons as HTMLElement).style.display : '';
+    
     if (liveBadge) {
       (liveBadge as HTMLElement).style.display = 'none';
     }
     if (activeBadge) {
       (activeBadge as HTMLElement).style.display = 'none';
+    }
+    if (exportButtons) {
+      (exportButtons as HTMLElement).style.display = 'none';
     }
 
     /* What: Capture hero as canvas
@@ -292,6 +301,9 @@ export async function exportPageWithSmartPagination(
     }
     if (activeBadge) {
       (activeBadge as HTMLElement).style.display = originalActiveBadgeDisplay;
+    }
+    if (exportButtons) {
+      (exportButtons as HTMLElement).style.display = originalExportButtonsDisplay;
     }
 
     console.log(`✅ Captured ${blockCanvases.length} block elements with 3-column layout`);

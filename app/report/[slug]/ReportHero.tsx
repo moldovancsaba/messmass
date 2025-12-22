@@ -35,6 +35,12 @@ interface ReportHeroProps {
   /** Show export options */
   showExport?: boolean;
   
+  /** CSV export handler */
+  onExportCSV?: () => void;
+  
+  /** PDF export handler */
+  onExportPDF?: () => void;
+  
   /** Optional CSS class */
   className?: string;
 }
@@ -57,6 +63,8 @@ export default function ReportHero({
   partnerLogo,
   showDate = true,
   showExport = true,
+  onExportCSV,
+  onExportPDF,
   className 
 }: ReportHeroProps) {
   
@@ -67,10 +75,24 @@ export default function ReportHero({
   // Format date for display
   const formattedDate = showDate ? formatDate(project.eventDate) : null;
   
-  // Handle PDF export
-  const handleExport = () => {
-    // TODO: Implement PDF export in Phase 6
-    alert('PDF export will be implemented in Phase 6');
+  // WHAT: Handle CSV export
+  // WHY: Trigger CSV download with all report data
+  const handleCSVExport = () => {
+    if (onExportCSV) {
+      onExportCSV();
+    } else {
+      console.warn('CSV export handler not provided');
+    }
+  };
+  
+  // WHAT: Handle PDF export
+  // WHY: Trigger PDF generation with hero on every page
+  const handlePDFExport = () => {
+    if (onExportPDF) {
+      onExportPDF();
+    } else {
+      console.warn('PDF export handler not provided');
+    }
   };
   
   return (
@@ -98,11 +120,21 @@ export default function ReportHero({
         </div>
         
         {showExport && (
-          <div className={styles.heroActions}>
+          <div className={styles.heroActions} data-pdf-export-buttons="true">
             <button 
               className={styles.exportButton}
-              onClick={handleExport}
+              onClick={handleCSVExport}
               type="button"
+              title="Download complete report data as CSV"
+            >
+              <span className={styles.exportIcon}>📊</span>
+              <span className={styles.exportText}>Export CSV</span>
+            </button>
+            <button 
+              className={styles.exportButton}
+              onClick={handlePDFExport}
+              type="button"
+              title="Download report as PDF document"
             >
               <span className={styles.exportIcon}>📄</span>
               <span className={styles.exportText}>Export PDF</span>

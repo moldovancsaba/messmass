@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import ReportHero from './ReportHero';
 import ReportContent from './ReportContent';
@@ -13,6 +13,8 @@ import { useReportLayoutForProject } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
+import { exportReportToCSV } from '@/lib/export/csv';
+import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -139,6 +141,64 @@ export default function ReportPage() {
     return results;
   }, [stats, charts]);
 
+  // WHAT: CSV export handler
+  // WHY: Download complete report data including stats, chart results, and content
+  // HOW: Call exportReportToCSV with project data, stats, and chart results
+  const handleCSVExport = useCallback(async () => {
+    if (!project || !stats || !chartResults) {
+      console.warn('Cannot export CSV: missing data');
+      alert('Report data not ready. Please wait for the report to load.');
+      return;
+    }
+
+    try {
+      await exportReportToCSV(
+        {
+          eventName: project.eventName,
+          eventDate: project.eventDate,
+          createdAt: reportData?.project?.createdAt,
+          updatedAt: reportData?.project?.updatedAt,
+          _id: project._id
+        },
+        stats,
+        chartResults
+      );
+      console.log('✅ CSV export completed');
+    } catch (error) {
+      console.error('❌ CSV export failed:', error);
+      alert('Failed to export CSV. Please try again.');
+    }
+  }, [project, stats, chartResults, reportData]);
+
+  // WHAT: PDF export handler
+  // WHY: Generate A4 portrait PDF with hero on every page and no block breaks
+  // HOW: Call exportPageWithSmartPagination with hero and content IDs
+  const handlePDFExport = useCallback(async () => {
+    if (!project) {
+      console.warn('Cannot export PDF: missing project data');
+      alert('Report data not ready. Please wait for the report to load.');
+      return;
+    }
+
+    try {
+      await exportPageWithSmartPagination(
+        'report-hero',
+        'report-content',
+        {
+          filename: `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_report`,
+          format: 'a4',
+          orientation: 'portrait',
+          quality: 0.95,
+          margin: 10
+        }
+      );
+      console.log('✅ PDF export completed');
+    } catch (error) {
+      console.error('❌ PDF export failed:', error);
+      alert('Failed to export PDF. Please try again.');
+    }
+  }, [project]);
+
   // Determine overall loading state
   const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
 
@@ -192,20 +252,26 @@ export default function ReportPage() {
     <div className={styles.page}>
       <div className={styles.container}>
         {/* Hero Section */}
-        <ReportHero 
-          project={project}
-          emoji={heroSettings?.showEmoji !== false ? reportData?.project?.partner1?.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
-          showDate={heroSettings?.showDateInfo ?? true}
-          showExport={heroSettings?.showExportOptions ?? true}
-          partnerLogo={reportData?.project?.partner1?.logoUrl} // WHAT: Show partner1 logo if available
-        />
+        <div id="report-hero">
+          <ReportHero 
+            project={project}
+            emoji={heroSettings?.showEmoji !== false ? reportData?.project?.partner1?.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
+            showDate={heroSettings?.showDateInfo ?? true}
+            showExport={heroSettings?.showExportOptions ?? true}
+            partnerLogo={reportData?.project?.partner1?.logoUrl} // WHAT: Show partner1 logo if available
+            onExportCSV={handleCSVExport}
+            onExportPDF={handlePDFExport}
+          />
+        </div>
 
         {/* Report Content Grid */}
-        <ReportContent 
-          blocks={blocks}
-          chartResults={chartResults}
-          gridSettings={gridSettings}
-        />
+        <div id="report-content">
+          <ReportContent 
+            blocks={blocks}
+            chartResults={chartResults}
+            gridSettings={gridSettings}
+          />
+        </div>
       </div>
     </div>
   );
