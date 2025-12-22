@@ -204,12 +204,12 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     const root = document.documentElement;
     const computedStyle = getComputedStyle(root);
     return [
-      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--pie-color-2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--pieColor2').trim() || '#10b981',
       // Fallback to repeating first two colors if more slices needed
-      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--pie-color-2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6'
+      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--pieColor2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6'
     ];
   };
   
@@ -337,11 +337,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     const root = document.documentElement;
     const computedStyle = getComputedStyle(root);
     return [
-      computedStyle.getPropertyValue('--bar-color-1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--bar-color-2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--bar-color-3').trim() || '#8b5cf6',
-      computedStyle.getPropertyValue('--bar-color-4').trim() || '#f59e0b',
-      computedStyle.getPropertyValue('--bar-color-5').trim() || '#ef4444'
+      computedStyle.getPropertyValue('--barColor1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--barColor2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--barColor3').trim() || '#8b5cf6',
+      computedStyle.getPropertyValue('--barColor4').trim() || '#f59e0b',
+      computedStyle.getPropertyValue('--barColor5').trim() || '#ef4444'
     ];
   };
   

@@ -130,7 +130,7 @@
   font-size: clamp(2rem, 90cqh, 6rem) !important; /* 90% of icon row height - !important overrides MaterialIcon inline styles */
   height: auto !important;
   width: auto !important;
-  color: var(--kpi-icon-color) !important; /* WHAT: Use custom KPI icon color from style */
+  color: var(--kpiIconColor) !important; /* WHAT: Use custom KPI icon color from style */
   line-height: 1 !important; /* WHAT: Prevent extra vertical spacing */
   display: flex !important;
   align-items: center !important;

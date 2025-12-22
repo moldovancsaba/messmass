@@ -176,14 +176,14 @@ function applyStyleToPage(style: PageStyleEnhanced) {
       
       /* WHAT: Individual chart element colors */
       /* WHY: Allow granular control over each bar, pie slice, and KPI icon */
-      --kpi-icon-color: ${chartColorScheme.kpiIconColor};
-      --bar-color-1: ${chartColorScheme.barColor1};
-      --bar-color-2: ${chartColorScheme.barColor2};
-      --bar-color-3: ${chartColorScheme.barColor3};
-      --bar-color-4: ${chartColorScheme.barColor4};
-      --bar-color-5: ${chartColorScheme.barColor5};
-      --pie-color-1: ${chartColorScheme.pieColor1};
-      --pie-color-2: ${chartColorScheme.pieColor2};
+      --kpiIconColor: ${chartColorScheme.kpiIconColor};
+      --barColor1: ${chartColorScheme.barColor1};
+      --barColor2: ${chartColorScheme.barColor2};
+      --barColor3: ${chartColorScheme.barColor3};
+      --barColor4: ${chartColorScheme.barColor4};
+      --barColor5: ${chartColorScheme.barColor5};
+      --pieColor1: ${chartColorScheme.pieColor1};
+      --pieColor2: ${chartColorScheme.pieColor2};
       
       /* WHAT: Hero background CSS variable for ReportHero.module.css */
       /* WHY: Allow CSS modules to read custom hero background */
