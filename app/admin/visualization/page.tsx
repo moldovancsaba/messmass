@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { DataVisualizationBlock, BlockChart } from '@/lib/pageStyleTypes';
 import ReportChart from '@/app/report/[slug]/ReportChart';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/chartCalculator';
@@ -12,6 +11,27 @@ import FormModal from '@/components/modals/FormModal';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
+
+// WHAT: Data visualization block from data_blocks collection
+// WHY: Reusable blocks of charts that can be composed into report templates
+interface DataVisualizationBlock {
+  _id?: string;
+  name: string;
+  charts: BlockChart[];
+  order: number;
+  isActive: boolean;
+  showTitle?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// WHAT: Chart reference within a block
+// WHY: Links charts to blocks with layout information
+interface BlockChart {
+  chartId: string;
+  width: number;
+  order: number;
+}
 
 // Available chart type for chart assignment
 interface AvailableChart {

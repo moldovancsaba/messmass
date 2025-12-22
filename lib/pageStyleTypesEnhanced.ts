@@ -3,8 +3,6 @@
  * HOW: Extends basic PageStyle with detailed customization options
  * REPLACES: Legacy pageStyleTypes.ts with richer feature set */
 
-import { PageStyle as LegacyPageStyle } from './pageStyleTypes';
-
 /**
  * WHAT: Gradient stop with color and position
  * WHY: Define individual color stops in linear gradients
@@ -109,7 +107,7 @@ export interface ChartColorScheme {
 /**
  * WHAT: Enhanced page style configuration with comprehensive options
  * WHY: Single source of truth for all styling customization
- * STORAGE: MongoDB collection 'page_styles'
+ * STORAGE: MongoDB collection 'page_styles_enhanced'
  */
 export interface PageStyleEnhanced {
   _id?: string;                       // MongoDB ObjectId
@@ -188,70 +186,6 @@ export function hexToRgba(hex: string, opacity: number): string {
   const g = parseInt(cleanHex.slice(2, 4), 16);
   const b = parseInt(cleanHex.slice(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
-
-/**
- * WHAT: Convert legacy PageStyle to enhanced format
- * WHY: Backwards compatibility with existing styles
- */
-export function legacyToEnhanced(legacy: LegacyPageStyle): PageStyleEnhanced {
-  // Parse legacy gradient format: "0deg, #ffffffff 0%, #ffffffff 100%"
-  const parseGradient = (gradientStr: string): BackgroundStyle => {
-    const parts = gradientStr.split(',').map(s => s.trim());
-    if (parts.length < 2) {
-      return { type: 'solid', solidColor: '#ffffff' };
-    }
-    
-    const angle = parseInt(parts[0]);
-    const stops: GradientStop[] = [];
-    
-    for (let i = 1; i < parts.length; i++) {
-      const match = parts[i].match(/(#[0-9a-fA-F]{6,8})\s+(\d+)%/);
-      if (match) {
-        stops.push({
-          color: match[1].slice(0, 7), // Remove alpha if present
-          position: parseInt(match[2])
-        });
-      }
-    }
-    
-    return {
-      type: 'gradient',
-      gradientAngle: angle,
-      gradientStops: stops.length >= 2 ? stops : [
-        { color: '#ffffff', position: 0 },
-        { color: '#ffffff', position: 100 }
-      ]
-    };
-  };
-  
-  return {
-    _id: legacy._id,
-    name: legacy.name,
-    isGlobalDefault: false, // Legacy styles not global by default
-    pageBackground: parseGradient(legacy.backgroundGradient),
-    heroBackground: parseGradient(legacy.headerBackgroundGradient),
-    contentBoxBackground: {
-      type: 'solid',
-      solidColor: legacy.contentBackgroundColor || '#ffffff',
-      opacity: 0.95
-    },
-    typography: {
-      fontFamily: 'inter',
-      primaryTextColor: legacy.titleBubble.textColor,
-      secondaryTextColor: '#6b7280',
-      headingColor: '#1f2937'
-    },
-    colorScheme: {
-      primary: legacy.titleBubble.backgroundColor,
-      secondary: '#10b981',
-      success: '#10b981',
-      warning: '#f59e0b',
-      error: '#ef4444'
-    },
-    createdAt: legacy.createdAt ? new Date(legacy.createdAt) : undefined,
-    updatedAt: legacy.updatedAt ? new Date(legacy.updatedAt) : undefined
-  };
 }
 
 /**

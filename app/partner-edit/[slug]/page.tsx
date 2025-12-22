@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import PartnerEditorDashboard from '@/components/PartnerEditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
-import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
+import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from './page.module.css';
 
 interface Partner {
@@ -38,7 +38,6 @@ export default function PartnerEditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [partner, setPartner] = useState<Partner | null>(null);
-  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
 
   const loadPartnerForEditing = useCallback(async () => {
     try {
@@ -75,19 +74,13 @@ export default function PartnerEditPage() {
     }
   }, [slug]);
 
-  // Fetch page configuration (style variables) for this editor page
-  const fetchPageConfig = useCallback(async (partnerIdentifier?: string) => {
-    try {
-      const qs = partnerIdentifier ? `?partnerId=${encodeURIComponent(partnerIdentifier)}` : '';
-      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
-      const data = await response.json();
-      if (data.success) {
-        setPageStyle(data.config.pageStyle);
-      }
-    } catch (err) {
-      console.error('Failed to fetch page config for partner edit page:', err);
-    }
-  }, []);
+  // WHAT: Apply report style colors to partner edit page
+  // WHY: Partner edit pages should use same 26-color system as reports
+  // HOW: useReportStyle fetches and injects CSS variables when partner has styleId
+  const { loading: styleLoading } = useReportStyle({ 
+    styleId: partner?.styleId ? String(partner.styleId) : null,
+    enabled: !!partner // Only fetch after partner is loaded
+  });
 
   // Check authentication on component mount
   useEffect(() => {
@@ -99,10 +92,9 @@ export default function PartnerEditPage() {
       // Only load data if authenticated
       if (authenticated) {
         loadPartnerForEditing();
-        fetchPageConfig(slug);
       }
     }
-  }, [slug, fetchPageConfig, loadPartnerForEditing]);
+  }, [slug, loadPartnerForEditing]);
 
   // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
   // WHY: Ensures partner data and page style are synced without manual refresh
@@ -110,12 +102,11 @@ export default function PartnerEditPage() {
     const handleVisibilityChange = () => {
       if (!document.hidden && isAuthorized) {
         loadPartnerForEditing();
-        fetchPageConfig(slug);
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [isAuthorized, loadPartnerForEditing, fetchPageConfig, slug]);
+  }, [isAuthorized, loadPartnerForEditing]);
 
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
@@ -123,7 +114,6 @@ export default function PartnerEditPage() {
     setCheckingAuth(false);
     // Load data after successful authentication
     loadPartnerForEditing();
-    fetchPageConfig(slug);
   };
 
   /* What: Loading state while checking authentication
@@ -186,28 +176,16 @@ export default function PartnerEditPage() {
   }
 
   /* What: Main editor container with flat TailAdmin V2 design
-     Why: Modern, clean layout with optional custom page style support
+     Why: Modern, clean layout with report style CSS variables applied via useReportStyle hook
      
      Features:
      - Flat gray background for better contrast
-     - Optional partner-specific gradient support
+     - CSS variables from report style system automatically injected by useReportStyle
      - Full viewport height for immersive editing experience
      - Proper integration with PartnerEditorDashboard component */
   if (partner) {
     return (
-      <div 
-        className="page-bg-gray"
-        style={(() => {
-          if (!pageStyle) return undefined;
-          const safeColor = (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : undefined;
-          const safeFont = (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily.trim() : undefined;
-          return {
-            background: generateGradientCSS(pageStyle.pageBackground),
-            color: safeColor,
-            fontFamily: safeFont
-          };
-        })()}
-      >
+      <div className="page-bg-gray">
         <PartnerEditorDashboard partner={partner} />
       </div>
     );

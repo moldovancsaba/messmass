@@ -1,10 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
-import { DataVisualizationBlock } from '@/lib/pageStyleTypes';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
+
+// WHAT: Data visualization block interface
+// WHY: Reusable blocks of charts for report templates
+interface DataVisualizationBlock {
+  _id?: string;
+  name: string;
+  charts: Array<{ chartId: string; width: number; order: number }>;
+  order: number;
+  isActive: boolean;
+  showTitle?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // GET /api/data-blocks - Get all data visualization blocks
 export async function GET() {
@@ -56,7 +68,7 @@ export async function POST(request: NextRequest) {
       charts: charts || [],
       order: order || 0,
       isActive: isActive !== false, // Default to true
-      showTitle: showTitle !== false, // NEW: Default to true
+      showTitle: showTitle !== false, // Default to true
       createdAt: now,
       updatedAt: now
     };

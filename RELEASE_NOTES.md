@@ -1,5 +1,77 @@
 # MessMass Release Notes
 
+## [v11.47.0] — 2025-12-22T19:12:00.000Z
+
+### Summary
+- Complete cleanup of old page styling system dead code
+- Migrated edit pages to use `useReportStyle` hook with 26-color report style system
+- Removed legacy `lib/pageStyleTypes.ts` and all references
+- Removed unused `/api/page-config` endpoint
+- Fixed and verified all pages use correct report styling system
+
+### Technical Cleanup
+
+#### Dead Code Removal ✅
+**Problem**: Old page styling system (pre-v11.0) had accumulated dead code that was no longer used after migration to unified report style system.
+
+**Solution**: Complete cleanup of legacy system:
+- Deleted `lib/pageStyleTypes.ts` (old type definitions)
+- Deleted `/app/api/page-config/route.ts` (unused endpoint)
+- Removed `legacyToEnhanced` conversion function from `lib/pageStyleTypesEnhanced.ts`
+- Removed legacy `PageStyle` import from enhanced types file
+- Updated MongoDB collection comment from 'page_styles' to 'page_styles_enhanced' for accuracy
+
+#### Edit Pages Migration ✅
+**Problem**: `/edit/[slug]` and `/partner-edit/[slug]` pages were still using old inline style logic with deleted `pageStyle` state variable.
+
+**Solution**: Migrated both edit pages to modern report style system:
+- Replaced old `fetchPageConfig()` calls with `useReportStyle()` hook
+- Removed inline style generation using deleted `generateGradientCSS()` function
+- CSS variables now automatically injected by `useReportStyle` hook
+- Simplified container rendering: just `<div className="page-bg-gray">` with CSS variables from hook
+- Added `styleIdEnhanced` field to Project interface for proper type safety
+
+#### Verification ✅
+- ✅ Report pages (`/report/[slug]`, `/partner-report/[slug]`) already using correct system
+- ✅ Edit pages now using `useReportStyle` hook
+- ✅ Events page already using correct `styleId` and `reportTemplateId` fields
+- ✅ No references to old 'page_styles' collection (only 'page_styles_enhanced')
+- ✅ Build passes without TypeScript errors
+
+### Files Modified
+
+**Deleted**:
+- `lib/pageStyleTypes.ts` - Old type system (replaced by reportStyleTypes.ts)
+- `/app/api/page-config/route.ts` - Unused API endpoint
+
+**Modified**:
+- `/app/edit/[slug]/page.tsx` - Migrated to useReportStyle hook, removed inline styles
+- `/app/partner-edit/[slug]/page.tsx` - Migrated to useReportStyle hook, removed inline styles
+- `lib/pageStyleTypesEnhanced.ts` - Removed legacy import and conversion function, updated comment
+- `/app/admin/visualization/page.tsx` - Added inline type definitions
+- `/app/api/data-blocks/route.ts` - Recreated with inline types
+
+### System Architecture
+
+All pages now consistently use the unified report style system:
+- **Report Style System**: Uses `reportStyleTypes.ts` (26-color system)
+- **Style Hook**: `useReportStyle` automatically injects CSS variables
+- **Database Field**: Projects use `styleIdEnhanced` for report template styles
+- **Collections**: `page_styles_enhanced` and `report_templates` collections
+
+### Build
+- ✅ npm run build successful
+- ✅ No TypeScript errors
+- ✅ All pages verified using correct styling system
+- ✅ No references to deleted files
+
+### Version
+`11.46.3` → `11.47.0` (MINOR - System-wide dead code cleanup before commit)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.46.3] — 2025-12-22T18:55:24.000Z
 
 ### Summary

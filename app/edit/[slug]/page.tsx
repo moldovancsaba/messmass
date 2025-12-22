@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import EditorDashboard from '../../../components/EditorDashboard';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
-import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
+import { useReportStyle } from '@/hooks/useReportStyle';
 import styles from './page.module.css';
 
 interface Project {
@@ -13,6 +13,7 @@ interface Project {
   eventDate: string;
   hashtags?: string[];
   categorizedHashtags?: { [categoryName: string]: string[] };
+  styleIdEnhanced?: string; // Reference to page_styles_enhanced collection
   // WHAT: Flexible stats object to support all variables including new ones
   // WHY: Variables are dynamic and managed in database (variables_metadata)
   // HOW: Use index signature to allow any numeric stat field
@@ -54,7 +55,6 @@ export default function EditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
-  const [pageStyle, setPageStyle] = useState<PageStyleEnhanced | null>(null);
 
   const loadProjectForEditing = useCallback(async () => {
     try {
@@ -91,19 +91,13 @@ export default function EditPage() {
     }
   }, [slug]);
 
-  // Fetch page configuration (style variables) for this editor page
-  const fetchPageConfig = useCallback(async (projectIdentifier?: string) => {
-    try {
-      const qs = projectIdentifier ? `?projectId=${encodeURIComponent(projectIdentifier)}` : '';
-      const response = await fetch(`/api/page-config${qs}`, { cache: 'no-store' });
-      const data = await response.json();
-      if (data.success) {
-        setPageStyle(data.config.pageStyle);
-      }
-    } catch (err) {
-      console.error('Failed to fetch page config for edit page:', err);
-    }
-  }, []);
+  // WHAT: Apply report style colors to edit page
+  // WHY: Edit pages should use same 26-color system as reports
+  // HOW: useReportStyle fetches and injects CSS variables when project has styleId
+  const { loading: styleLoading } = useReportStyle({ 
+    styleId: project?.styleIdEnhanced ? String(project.styleIdEnhanced) : null,
+    enabled: !!project // Only fetch after project is loaded
+  });
 
   // Check authentication on component mount
   useEffect(() => {
@@ -115,10 +109,9 @@ export default function EditPage() {
       // Only load data if authenticated
       if (authenticated) {
         loadProjectForEditing();
-        fetchPageConfig(slug);
       }
     }
-  }, [slug, fetchPageConfig, loadProjectForEditing]);
+  }, [slug, loadProjectForEditing]);
 
   // WHAT: Auto-reload when page becomes visible (e.g., returning from another tab)
   // WHY: Ensures project data and page style are synced without manual refresh
@@ -126,12 +119,11 @@ export default function EditPage() {
     const handleVisibilityChange = () => {
       if (!document.hidden && isAuthorized) {
         loadProjectForEditing();
-        fetchPageConfig(slug);
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [isAuthorized, loadProjectForEditing, fetchPageConfig, slug]);
+  }, [isAuthorized, loadProjectForEditing]);
 
   // Handle successful login
   const handleLoginSuccess = (isAdmin: boolean) => {
@@ -139,7 +131,6 @@ export default function EditPage() {
     setCheckingAuth(false);
     // Load data after successful authentication
     loadProjectForEditing();
-    fetchPageConfig(slug);
   };
 
   /* What: Loading state while checking authentication
@@ -201,30 +192,16 @@ export default function EditPage() {
     );
   }
 
-  /* What: Main editor container with flat TailAdmin V2 design
-     Why: Modern, clean layout with optional custom page style support
-     
-     Features:
-     - Flat gray background for better contrast
-     - Optional project-specific gradient support
+  /* WHAT: Main editor container using CSS variables from useReportStyle
+     WHY: Report style system injects CSS variables automatically
+     FEATURES:
+     - Uses --heroBackground, --textColor, --fontFamily from injected styles
+     - Falls back to page-bg-gray class if no custom style
      - Full viewport height for immersive editing experience
      - Proper integration with EditorDashboard component */
-  /* WHAT: Main editor container with flat design */
   if (project) {
     return (
-      <div 
-        className="page-bg-gray"
-        style={(() => {
-          if (!pageStyle) return undefined;
-          const safeColor = (typeof pageStyle.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextColor.trim()) ? pageStyle.typography.primaryTextColor.trim() : undefined;
-          const safeFont = (typeof pageStyle.typography?.fontFamily === 'string' && pageStyle.typography.fontFamily.trim()) ? pageStyle.typography.fontFamily.trim() : undefined;
-          return {
-            background: generateGradientCSS(pageStyle.pageBackground),
-            color: safeColor,
-            fontFamily: safeFont
-          };
-        })()}
-      >
+      <div className="page-bg-gray">
         <EditorDashboard project={project} />
       </div>
     );
