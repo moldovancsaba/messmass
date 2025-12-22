@@ -1,5 +1,29 @@
 # MessMass Release Notes
 
+## [v11.46.1] — 2025-12-22T18:46:00.000Z
+
+### Summary
+- Fix TypeScript build error in clear-cookies route
+
+### Bug Fix
+- Fixed missing Request parameter in GET handler causing Vercel build failure
+- `app/api/admin/clear-cookies/route.ts`: GET() now accepts and forwards Request parameter to POST()
+
+### Technical Details
+- Error: "Type error: Expected 1 arguments, but got 0" at line 48
+- Solution: Added `request: Request` parameter to GET function and passed to POST
+
+### Build
+- ✅ npm run build successful
+- ✅ TypeScript compilation passes for source code
+
+### Version
+`11.46.0` → `11.46.1` (PATCH - Build fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.46.0] — 2025-12-22T18:42:50.000Z
 
 ### Summary
