@@ -1,47 +1,24 @@
-import { getAdminUser } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import styles from './page.module.css';
 
 /**
- * Main page now serves as authentication redirect handler
- * 
- * This page acts as the entry point for the MessMass application:
- * - If user is authenticated → redirects to admin dashboard (/admin)
- * - If user is not authenticated → redirects to login page (/admin/login)
- * 
- * The old statistics dashboard has been moved to the admin section.
- * All authentication and project management is now centralized in the admin area.
+ * WHAT: Public landing page for MessMass
+ * WHY: Root URL should be accessible without authentication
+ * HOW: Simple welcome page with link to admin panel
  */
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default async function HomePage() {
-  // Check if user is authenticated using server-side authentication
-  const user = await getAdminUser();
-  
-  if (user) {
-    // WHAT: Smart redirect based on user role
-    // WHY: Prevent redirect loops to /admin/help for users without dashboard access
-    // HOW: Send users to first accessible page (partners for user/admin, help for guest)
-    
-    if (user.role === 'guest') {
-      // Guests can only access help page
-      redirect('/admin/help');
-    } else if (user.role === 'user' || user.role === 'admin') {
-      // Users and admins can access partners page
-      redirect('/admin/partners');
-    } else if (user.role === 'superadmin') {
-      // Superadmins get full dashboard
-      redirect('/admin');
-    } else {
-      // Fallback for unknown roles
-      redirect('/admin/help');
-    }
-  } else {
-    // User is not authenticated, redirect to login page
-    redirect('/admin/login');
-  }
-  
-  // This should never render due to redirects above
-  // But included as a fallback for edge cases
-  return null;
+export default function HomePage() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h1 className={styles.title}>MessMass</h1>
+        <p className={styles.subtitle}>Event Statistics Dashboard</p>
+        <Link href="/admin" className={styles.button}>
+          Go to Admin Panel
+        </Link>
+      </div>
+    </div>
+  );
 }
