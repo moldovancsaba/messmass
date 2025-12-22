@@ -79,8 +79,8 @@
   align-items: center;
   gap: var(--mm-space-2);
   padding: var(--mm-space-3) var(--mm-space-5);
-  background: var(--mm-white);
-  color: var(--mm-blue-600);
+  background: var(--export-btn-bg);
+  color: var(--export-btn-text);
   border: none;
   border-radius: var(--mm-radius-lg);
   font-size: var(--mm-font-size-base);
@@ -93,7 +93,7 @@
 .exportButton:hover {
   transform: translateY(-2px);
   box-shadow: var(--mm-shadow-lg);
-  background: var(--mm-gray-50);
+  background: var(--export-btn-hover-bg);
 }
 
 .exportButton:active {

@@ -233,6 +233,18 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     }]
   };
   
+  // WHAT: Read tooltip colors from CSS variables
+  // WHY: Respect custom style tooltip colors
+  const getTooltipColors = () => {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    return {
+      bg: computedStyle.getPropertyValue('--chart-tooltip-bg').trim() || 'rgba(31, 41, 55, 0.95)',
+      text: computedStyle.getPropertyValue('--chart-tooltip-text').trim() || '#ffffff'
+    };
+  };
+  const tooltipColors = getTooltipColors();
+
   // Chart.js options
   const options: ChartOptions<'doughnut'> = {
     responsive: true,
@@ -247,7 +259,9 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(31, 41, 55, 0.95)',
+        backgroundColor: tooltipColors.bg,
+        titleColor: tooltipColors.text,
+        bodyColor: tooltipColors.text,
         callbacks: {
           label: (context) => {
             const label = context.label || '';
