@@ -73,6 +73,31 @@
   --mm-chart-indigo: #6366f1;
   --mm-chart-teal: #14b8a6;
 
+  /* Chart defaults for report pages (when no Page Style is applied) */
+  --chartBackground: var(--mm-white);
+  --chartBorder: var(--mm-gray-200);
+  --chartTitleColor: var(--mm-gray-900);
+  --chartLabelColor: var(--mm-gray-600);
+  --chartValueColor: var(--mm-gray-900);
+  --kpiIconColor: var(--mm-color-primary-600);
+  --barColor1: var(--mm-color-primary-600);
+  --barColor2: var(--mm-color-secondary-500);
+  --barColor3: var(--mm-success);
+  --barColor4: var(--mm-warning);
+  --barColor5: var(--mm-error);
+  --pieColor1: var(--mm-color-primary-600);
+  --pieColor2: var(--mm-color-secondary-500);
+  --chartNoDataBackground: var(--mm-gray-50);
+  --chartNoDataBorder: var(--mm-gray-300);
+  --chartNoDataText: var(--mm-gray-500);
+  --chartErrorBackground: #fef2f2;
+  --chartErrorText: #991b1b;
+  --chartTooltipBackground: rgba(0, 0, 0, 0.85);
+  --chartTooltipText: #ffffff;
+  --exportButtonBackground: var(--mm-white);
+  --exportButtonText: var(--mm-color-primary-600);
+  --exportButtonHoverBackground: var(--mm-gray-50);
+
   /* ========================================
      LEGACY GRADIENTS (Deprecated for TailAdmin V2)
   ======================================== */

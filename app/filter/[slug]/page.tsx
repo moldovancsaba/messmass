@@ -9,8 +9,8 @@ import { useParams } from 'next/navigation';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import UnifiedProjectsSection from '@/components/UnifiedProjectsSection';
-import { useReportStyle } from '@/hooks/useReportStyle';
 import { ReportCalculator } from '@/lib/report-calculator';
+import { useReportStyle } from '@/hooks/useReportStyle';
 import PagePasswordLogin, { isAuthenticated } from '@/components/PagePasswordLogin';
 import styles from '@/app/styles/report-page.module.css';
 
@@ -57,6 +57,14 @@ export default function FilterReportPage() {
   // Loading states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // WHAT: Apply custom style colors if template has styleId
+  // WHY: Filter reports can have custom branding via styleId
+  // HOW: useReportStyle fetches style and injects 26 CSS variables
+  const { loading: styleLoading, error: styleError } = useReportStyle({ 
+    styleId: styleId,
+    enabled: !!styleId
+  });
   
   // Check authentication on mount
   useEffect(() => {
@@ -112,7 +120,7 @@ export default function FilterReportPage() {
       const template = templateData.template;
       setBlocks(template.dataBlocks || []);
       setGridSettings(template.gridSettings || { desktopUnits: 3, tabletUnits: 2, mobileUnits: 1 });
-      setStyleId(template.styleId || data.styleId || null);
+      setStyleId(template.styleId || null); // Extract styleId from template
       
       // Step 3: Fetch chart configurations
       const chartsRes = await fetch('/api/chart-config/public', { cache: 'no-store' });
@@ -133,8 +141,6 @@ export default function FilterReportPage() {
     }
   };
   
-  // Apply custom styling
-  const { loading: styleLoading } = useReportStyle({ styleId });
   
   // Calculate chart results using ReportCalculator (v12 system)
   const chartResults = useMemo(() => {
@@ -172,7 +178,7 @@ export default function FilterReportPage() {
   }
   
   // Loading state
-  if (loading || styleLoading) {
+  if (loading) {
     return (
       <div className={styles.page}>
         <div className={styles.loading}>

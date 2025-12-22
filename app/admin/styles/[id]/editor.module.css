@@ -1,0 +1,300 @@
+/* WHAT: Styles for Style Editor Page
+ * WHY: Split layout with preview and form
+ * HOW: Design tokens with responsive layout */
+
+.container {
+  padding: var(--mm-space-6);
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+/* Actions Bar */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-6);
+  padding: var(--mm-space-4);
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.saveStatus {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-md);
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-5);
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.saveButton:hover:not(:disabled) {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3) var(--mm-space-5);
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancelButton:hover:not(:disabled) {
+  border-color: var(--mm-gray-400);
+  background: var(--mm-gray-50);
+}
+
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Split Layout */
+.splitLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mm-space-6);
+  align-items: start;
+}
+
+/* Panels */
+.previewPanel,
+.formPanel {
+  background: var(--mm-white);
+  border-radius: var(--mm-radius-xl);
+  box-shadow: var(--mm-shadow-md);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-4) var(--mm-space-5);
+  background: var(--mm-gray-50);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.panelHeader h3 {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+  margin: 0;
+}
+
+/* Preview Panel */
+.previewPanel {
+  position: sticky;
+  top: var(--mm-space-6);
+  max-height: calc(100vh - var(--mm-space-12));
+  overflow: hidden;
+}
+
+.previewContainer {
+  padding: var(--mm-space-4);
+  background: var(--mm-gray-100);
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+/* Form Panel */
+.formPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.basicFields {
+  padding: var(--mm-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-4);
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.label {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.textInput,
+.textArea {
+  padding: var(--mm-space-3);
+  font-size: var(--mm-font-size-base);
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+.textInput:focus,
+.textArea:focus {
+  outline: none;
+  border-color: var(--mm-color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.textArea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Color Fields */
+.colorFields {
+  padding: var(--mm-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-6);
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.categoryTitle {
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-color-primary-600);
+  margin: 0;
+  padding-bottom: var(--mm-space-2);
+  border-bottom: 2px solid var(--mm-color-primary-200);
+}
+
+.categoryFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-12);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--mm-gray-200);
+  border-top-color: var(--mm-color-primary-500);
+  border-radius: var(--mm-radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading p {
+  font-size: var(--mm-font-size-lg);
+  color: var(--mm-gray-600);
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-12);
+  text-align: center;
+}
+
+.error p {
+  font-size: var(--mm-font-size-base);
+  color: var(--mm-gray-700);
+  margin: 0;
+}
+
+.backButton {
+  padding: var(--mm-space-3) var(--mm-space-5);
+  background: var(--mm-color-primary-500);
+  color: var(--mm-white);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  font-size: var(--mm-font-size-base);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backButton:hover {
+  background: var(--mm-color-primary-600);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .splitLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .previewPanel {
+    position: relative;
+    top: 0;
+    max-height: 500px;
+  }
+  
+  .previewContainer {
+    max-height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--mm-space-4);
+  }
+  
+  .actions {
+    flex-direction: column-reverse;
+  }
+  
+  .saveButton,
+  .cancelButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

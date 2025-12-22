@@ -97,7 +97,7 @@ export default function Sidebar() {
       title: 'System',
       items: [
         { label: 'Reporting', path: '/admin/visualization', icon: 'visibility' },
-        { label: 'Styles', path: '/admin/design', icon: 'palette' },
+        { label: 'Style Editor', path: '/admin/styles', icon: 'palette' },
         { label: 'Cache Management', path: '/admin/cache', icon: 'delete' },
       ],
     },

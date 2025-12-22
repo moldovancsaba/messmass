@@ -68,22 +68,12 @@ export default function PartnerReportPage() {
     error: layoutError
   } = useReportLayoutForPartner(partner?._id || null);
 
-  // Apply custom styling from report (v12.0.0)
-  // WHAT: Fetch and apply PageStyleEnhanced if report has styleId
-  // WHY: Partner reports can have custom branding/themes
-  // HOW: useReportStyle injects CSS into document head
-  const styleId = report?.styleId ? 
-    (typeof report.styleId === 'object' && '_id' in report.styleId ? String((report.styleId as any)._id) : report.styleId.toString()) 
-    : null;
-  
-  console.log('🎨 [PartnerReport] Report styleId:', { 
-    reportId: report?._id, 
-    rawStyleId: report?.styleId, 
-    convertedStyleId: styleId 
-  });
-  
-  const { loading: styleLoading } = useReportStyle({ 
-    styleId 
+  // WHAT: Apply custom style colors if report/template has styleId
+  // WHY: Partners can have custom branding via styleId that overrides template
+  // HOW: useReportStyle fetches style and injects 26 CSS variables
+  const { loading: styleLoading, error: styleError } = useReportStyle({ 
+    styleId: report?.styleId ? String(report.styleId) : null,
+    enabled: !!report // Only fetch style after report is loaded
   });
 
   // Calculate chart results using ReportCalculator
@@ -115,7 +105,7 @@ export default function PartnerReportPage() {
   // Determine overall error state
   // WHAT: Single error state from unified data source
   // WHY: Removed chartsError (no longer needed with unified fetch)
-  const error = dataError || layoutError;
+  const error = dataError || layoutError || styleError;
 
   // Loading state
   if (loading) {

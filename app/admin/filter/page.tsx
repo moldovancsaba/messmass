@@ -151,17 +151,17 @@ function HashtagFilterPageContent() {
   useEffect(() => {
     // Initial load: first page without a search term
     loadAvailableHashtags('');
-    // WHAT: Load page styles from page_styles_enhanced API
-    // WHY: Migrated from old /api/page-styles to new enhanced system
+    // WHAT: Load report styles from NEW /api/report-styles endpoint
+    // WHY: Using new 26-color system instead of old PageStyleEnhanced
     (async () => {
       try {
-        const res = await fetch('/api/page-styles-enhanced');
+        const res = await fetch('/api/report-styles');
         const data = await res.json();
         if (data.success) {
           setPageStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
         }
       } catch (e) {
-        console.error('Failed to load enhanced styles for filter page', e);
+        console.error('Failed to load report styles for filter page', e);
       }
     })();
   }, []);

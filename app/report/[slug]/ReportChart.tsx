@@ -202,15 +202,12 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // HOW: getComputedStyle reads --pie-color-N variables injected by useReportStyle
   const getPieColors = () => {
     const root = document.documentElement;
-    const computedStyle = getComputedStyle(root);
-    return [
-      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--pieColor2').trim() || '#10b981',
-      // Fallback to repeating first two colors if more slices needed
-      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--pieColor2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--pieColor1').trim() || '#3b82f6'
-    ];
+    const cs = getComputedStyle(root);
+    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
+    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
+    const c1 = cs.getPropertyValue('--pieColor1').trim() || primary;
+    const c2 = cs.getPropertyValue('--pieColor2').trim() || secondary;
+    return [c1, c2, c1, c2, c1];
   };
   
   const pieColors = getPieColors();
@@ -238,10 +235,10 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHY: Respect custom style tooltip colors
   const getTooltipColors = () => {
     const root = document.documentElement;
-    const computedStyle = getComputedStyle(root);
+    const cs = getComputedStyle(root);
     return {
-      bg: computedStyle.getPropertyValue('--chart-tooltip-bg').trim() || 'rgba(31, 41, 55, 0.95)',
-      text: computedStyle.getPropertyValue('--chart-tooltip-text').trim() || '#ffffff'
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
+      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
     };
   };
   const tooltipColors = getTooltipColors();
@@ -335,13 +332,18 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
   // HOW: getComputedStyle reads --bar-color-N variables injected by useReportStyle
   const getBarColors = () => {
     const root = document.documentElement;
-    const computedStyle = getComputedStyle(root);
+    const cs = getComputedStyle(root);
+    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
+    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
+    const success = cs.getPropertyValue('--success').trim() || '#10b981';
+    const warning = cs.getPropertyValue('--warning').trim() || '#f59e0b';
+    const error = cs.getPropertyValue('--error').trim() || '#ef4444';
     return [
-      computedStyle.getPropertyValue('--barColor1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--barColor2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--barColor3').trim() || '#8b5cf6',
-      computedStyle.getPropertyValue('--barColor4').trim() || '#f59e0b',
-      computedStyle.getPropertyValue('--barColor5').trim() || '#ef4444'
+      cs.getPropertyValue('--barColor1').trim() || primary,
+      cs.getPropertyValue('--barColor2').trim() || secondary,
+      cs.getPropertyValue('--barColor3').trim() || success,
+      cs.getPropertyValue('--barColor4').trim() || warning,
+      cs.getPropertyValue('--barColor5').trim() || error,
     ];
   };
   

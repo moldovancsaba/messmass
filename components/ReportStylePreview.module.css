@@ -1,0 +1,220 @@
+/* WHAT: Styles for ReportStylePreview component
+ * WHY: Mini report preview using CSS variables from editor
+ * HOW: Scaled-down version of actual report styles */
+
+.preview {
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-4);
+  min-height: 400px;
+}
+
+/* Hero Section */
+.hero {
+  background: var(--heroBackground);
+  border-radius: var(--mm-radius-md);
+  padding: var(--mm-space-4);
+  margin-bottom: var(--mm-space-4);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.heroContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+.heroInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+.heroEmoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.heroTitle {
+  font-size: var(--mm-font-size-lg);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--headingColor);
+  margin: 0;
+}
+
+.heroDate {
+  font-size: var(--mm-font-size-sm);
+  color: var(--headingColor);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.exportButton {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  background: var(--exportButtonBackground);
+  color: var(--exportButtonText);
+  border: none;
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.exportButton:hover {
+  background: var(--exportButtonHoverBackground);
+}
+
+/* Charts Grid */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mm-space-3);
+}
+
+/* Chart Container */
+.chart {
+  background: var(--chartBackground);
+  border: 1px solid var(--chartBorder);
+  border-radius: var(--mm-radius-md);
+  overflow: hidden;
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.chartHeader {
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border-bottom: 1px solid var(--chartBorder);
+}
+
+.chartTitle {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+  margin: 0;
+}
+
+.chartBody {
+  padding: var(--mm-space-3);
+}
+
+/* KPI Chart */
+.kpiContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2);
+}
+
+.kpiIcon {
+  font-size: 32px !important;
+  color: var(--kpiIconColor) !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.kpiValue {
+  font-size: var(--mm-font-size-3xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--chartValueColor);
+  line-height: 1;
+}
+
+.kpiLabel {
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--chartLabelColor);
+  text-align: center;
+}
+
+/* Bar Chart */
+.barElements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 50px;
+  gap: var(--mm-space-2);
+  align-items: center;
+}
+
+.barLabel {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--chartLabelColor);
+  text-align: right;
+}
+
+.barTrack {
+  height: 12px;
+  background: var(--chartNoDataBackground);
+  border-radius: var(--mm-radius-full);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: var(--mm-radius-full);
+  transition: width var(--transition-normal);
+}
+
+.barValue {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--chartValueColor);
+  text-align: center;
+}
+
+/* Pie Chart */
+.pieContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mm-space-3);
+}
+
+.pieSvg {
+  width: 120px;
+  height: 120px;
+}
+
+.pieLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  width: 100%;
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
+.pieLegendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--mm-radius-full);
+  flex-shrink: 0;
+}
+
+.pieLegendItem span {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--chartLabelColor);
+}
+
+/* Text Chart */
+.textContent {
+  font-size: var(--mm-font-size-sm);
+  line-height: 1.6;
+  color: var(--textColor);
+  margin: 0;
+}

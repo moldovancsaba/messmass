@@ -126,11 +126,11 @@ async function resolveReportTemplate(
             console.log(`✅ Using partner template: ${template.name} (via ${partner.name})`);
             const populated = await populateDataBlocks(template);
             
-            // WHAT: Merge partner's styleId if template doesn't have one
-            // WHY: Partner branding should apply even when accessed via project
+            // WHAT: Partner's styleId takes precedence over template styleId
+            // WHY: Partner-specific branding should always override template defaults
             const finalTemplate = {
               ...populated,
-              styleId: populated.styleId || partner.styleId || null
+              styleId: partner.styleId || populated.styleId || null
             };
             
             return {
@@ -168,12 +168,12 @@ async function resolveReportTemplate(
           console.log(`✅ Using partner-specific template: ${template.name}`);
           const populated = await populateDataBlocks(template);
           
-          // WHAT: Merge partner's styleId if template doesn't have one
-          // WHY: Partner branding should apply to their reports even if template is shared
-          // HOW: Override template.styleId with partner.styleId when template has null
+          // WHAT: Partner's styleId takes precedence over template styleId
+          // WHY: Partner-specific branding should always override template defaults
+          // HOW: Use partner.styleId first, then fall back to template.styleId
           const finalTemplate = {
             ...populated,
-            styleId: populated.styleId || partner.styleId || null
+            styleId: partner.styleId || populated.styleId || null
           };
           
           console.log('🎨 StyleId resolution:', {

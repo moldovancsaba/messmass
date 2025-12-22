@@ -61,23 +61,14 @@ export default function ReportPage() {
     error: layoutError
   } = useReportLayoutForProject(slug);
 
-  // Apply custom styling from report (v12.0.0)
-  // WHAT: Fetch and apply PageStyleEnhanced if report has styleId
-  // WHY: Reports can have custom branding/themes
-  // HOW: useReportStyle injects CSS into document head
-  const styleId = report?.styleId ? 
-    (typeof report.styleId === 'object' && '_id' in report.styleId ? String((report.styleId as any)._id) : report.styleId.toString()) 
-    : null;
-  
-  console.log('🎨 [EventReport] Report styleId:', { 
-    reportId: report?._id, 
-    rawStyleId: report?.styleId, 
-    convertedStyleId: styleId 
+  // WHAT: Apply custom style colors if report has styleId
+  // WHY: Reports can have custom branding via 26-color system
+  // HOW: useReportStyle fetches style and injects CSS variables
+  const { loading: styleLoading, error: styleError } = useReportStyle({ 
+    styleId: report?.styleId ? String(report.styleId) : null,
+    enabled: !!report // Only fetch style after report is loaded
   });
-  
-  const { loading: styleLoading } = useReportStyle({ 
-    styleId 
-  });
+
 
   // Fetch chart configurations when layout is loaded
   useEffect(() => {
@@ -152,7 +143,7 @@ export default function ReportPage() {
   const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
 
   // Determine overall error state
-  const error = dataError || layoutError || chartsError;
+  const error = dataError || layoutError || chartsError || styleError;
 
   // Loading state
   if (loading) {

@@ -37,7 +37,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Clicker Manager': ['admin', 'superadmin'],
   'Bitly Manager': ['admin', 'superadmin'],
   'Reporting': ['admin', 'superadmin'],
-  'Styles': ['admin', 'superadmin'],
+  'Style Editor': ['admin', 'superadmin'],
   
   // WHAT: System administration - superadmin only
   'Hashtag Manager': ['superadmin'],

@@ -225,16 +225,16 @@ export default function PartnersAdminPageUnified() {
         }
       })();
       
-      // Load available page styles
+      // Load available report styles
       (async () => {
         try {
-          const res = await fetch('/api/page-styles-enhanced');
+          const res = await fetch('/api/report-styles');
           const data = await res.json();
           if (data.success) {
             setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
           }
         } catch (e) {
-          console.error('Failed to load page styles', e);
+          console.error('Failed to load report styles', e);
         }
       })();
     }
