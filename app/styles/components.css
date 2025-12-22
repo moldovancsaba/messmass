@@ -1459,6 +1459,13 @@ textarea::placeholder {
   margin-bottom: var(--mm-space-4);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--mm-space-2);
+}
+
+.chart-builder-title-row {
+  display: flex;
+  align-items: center;
   gap: var(--mm-space-2);
 }
 
@@ -1575,6 +1582,134 @@ textarea::placeholder {
   border-radius: var(--mm-radius-lg);
   border: 2px solid var(--mm-color-cyan-500);
   box-shadow: var(--mm-shadow-sm);
+}
+
+/* WHAT: Preview toggle button for markdown editing */
+/* WHY: Switch between edit and preview modes */
+.chart-builder-toggle {
+  padding: var(--mm-space-2) var(--mm-space-4);
+  background: var(--mm-gray-100);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-medium);
+  color: var(--mm-gray-700);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+}
+
+.chart-builder-toggle:hover {
+  background: var(--mm-gray-200);
+  border-color: var(--mm-gray-400);
+}
+
+.chart-builder-toggle:active {
+  background: var(--mm-gray-300);
+}
+
+/* WHAT: Markdown preview container */
+/* WHY: Display formatted markdown with proper styling */
+.chart-builder-preview {
+  padding: var(--mm-space-4);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-md);
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* WHAT: Preview content with markdown styles */
+/* WHY: Match TextChart rendering for consistency */
+.chart-builder-preview-content {
+  color: var(--mm-gray-800);
+  line-height: 1.6;
+}
+
+.chart-builder-preview-content h1,
+.chart-builder-preview-content h2,
+.chart-builder-preview-content h3,
+.chart-builder-preview-content h4,
+.chart-builder-preview-content h5,
+.chart-builder-preview-content h6 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--mm-gray-900);
+}
+
+.chart-builder-preview-content h1 { font-size: var(--mm-font-size-2xl); }
+.chart-builder-preview-content h2 { font-size: var(--mm-font-size-xl); }
+.chart-builder-preview-content h3 { font-size: var(--mm-font-size-lg); }
+.chart-builder-preview-content h4 { font-size: var(--mm-font-size-base); }
+.chart-builder-preview-content h5 { font-size: var(--mm-font-size-sm); }
+.chart-builder-preview-content h6 { font-size: var(--mm-font-size-xs); }
+
+.chart-builder-preview-content p {
+  margin: 0 0 1rem 0;
+}
+
+.chart-builder-preview-content p:last-child {
+  margin-bottom: 0;
+}
+
+.chart-builder-preview-content strong {
+  font-weight: 700;
+}
+
+.chart-builder-preview-content em {
+  font-style: italic;
+}
+
+.chart-builder-preview-content ul,
+.chart-builder-preview-content ol {
+  margin: 0 0 1rem 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.chart-builder-preview-content li {
+  margin-bottom: 0.25rem;
+}
+
+.chart-builder-preview-content a {
+  color: var(--mm-color-primary-600);
+  text-decoration: underline;
+}
+
+.chart-builder-preview-content a:hover {
+  color: var(--mm-color-primary-700);
+}
+
+.chart-builder-preview-content blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--mm-gray-300);
+  font-style: italic;
+  color: var(--mm-gray-600);
+}
+
+.chart-builder-preview-content code {
+  background-color: var(--mm-gray-100);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--mm-radius-sm);
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.chart-builder-preview-content pre {
+  background-color: var(--mm-gray-100);
+  padding: 1rem;
+  border-radius: var(--mm-radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.chart-builder-preview-content pre code {
+  background: none;
+  padding: 0;
 }
 
 /* Section headers */

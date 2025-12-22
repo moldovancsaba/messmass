@@ -123,6 +123,98 @@
   margin: 0;
 }
 
+/* WHAT: Markdown element styles that inherit font size from auto-scaling
+ * WHY: Support rich text formatting (headings, lists, bold, links)
+ * HOW: Use relative font sizes (em) to scale with parent dynamic fontSize */
+
+.text h1,
+.text h2,
+.text h3,
+.text h4,
+.text h5,
+.text h6 {
+  margin: 0 0 0.25em 0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text h1 { font-size: 1.2em; }
+.text h2 { font-size: 1.1em; }
+.text h3 { font-size: 1.05em; }
+.text h4 { font-size: 1em; }
+.text h5 { font-size: 0.95em; }
+.text h6 { font-size: 0.9em; }
+
+.text p {
+  margin: 0 0 0.5em 0;
+  line-height: 1.4;
+}
+
+.text p:last-child {
+  margin-bottom: 0;
+}
+
+.text strong {
+  font-weight: 700;
+}
+
+.text em {
+  font-style: italic;
+}
+
+.text ul,
+.text ol {
+  margin: 0 0 0.5em 0;
+  padding-left: 1.5em;
+  text-align: left;
+}
+
+.text li {
+  margin-bottom: 0.25em;
+  line-height: 1.3;
+}
+
+.text li:last-child {
+  margin-bottom: 0;
+}
+
+.text a {
+  color: var(--mm-blue-600);
+  text-decoration: underline;
+}
+
+.text a:hover {
+  color: var(--mm-blue-700);
+}
+
+.text blockquote {
+  margin: 0.5em 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--mm-gray-300);
+  font-style: italic;
+}
+
+.text code {
+  background-color: var(--mm-gray-100);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.text pre {
+  background-color: var(--mm-gray-100);
+  padding: 0.5em;
+  border-radius: var(--mm-radius-md);
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.text pre code {
+  background: none;
+  padding: 0;
+}
+
 /* WHAT: Override external chart-item styles that interfere with TextChart */
 /* WHY: External CSS has min-height: 380px which breaks aspect-ratio */
 /* HOW: Use higher specificity to override external styles */

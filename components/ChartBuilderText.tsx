@@ -1,10 +1,12 @@
-// WHAT: Chart Builder for TEXT charts - textarea with auto-save
-// WHY: Allow inline text editing in Builder mode
-// HOW: Use TextareaField component, extract stats key from formula
+// WHAT: Chart Builder for TEXT charts - textarea with markdown preview
+// WHY: Allow inline text editing with rich formatting preview in Builder mode
+// HOW: TextareaField for editing, markdown preview toggle, reuse existing components
 
 'use client';
 
+import { useState } from 'react';
 import TextareaField from './TextareaField';
+import { parseMarkdown, getMarkdownHint, isMarkdown } from '@/lib/markdownUtils';
 
 interface ChartBuilderTextProps {
   chart: {
@@ -24,26 +26,70 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
   const statsKey = formula.replace(/^stats\./, '').trim();
   const currentText = stats[statsKey] || '';
   
+  // WHAT: Preview mode state (edit vs preview)
+  // WHY: Let users see formatted markdown output before saving
+  const [isPreview, setIsPreview] = useState(false);
+  
+  // WHAT: Check if text contains markdown syntax
+  // WHY: Only show preview toggle if markdown is detected
+  const hasMarkdown = isMarkdown(currentText);
+  
   return (
     <div className="chart-builder-text">
-      {/* Chart title with icon */}
+      {/* Chart title with icon and preview toggle */}
       <div className="chart-builder-header">
-        {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
-        <h3 className="chart-builder-title">
-          {chart.title}
-        </h3>
+        <div className="chart-builder-title-row">
+          {chart.icon && <span className="chart-builder-icon">{chart.icon}</span>}
+          <h3 className="chart-builder-title">
+            {chart.title}
+          </h3>
+        </div>
+        
+        {/* WHAT: Preview toggle button (only show if markdown detected) */}
+        {/* WHY: Allow users to see formatted output */}
+        {currentText && (
+          <button
+            type="button"
+            onClick={() => setIsPreview(!isPreview)}
+            className="chart-builder-toggle"
+            title={isPreview ? 'Edit markdown' : 'Preview formatted text'}
+          >
+            {isPreview ? '✏️ Edit' : '👁️ Preview'}
+          </button>
+        )}
       </div>
       
-      {/* Textarea field */}
-      <TextareaField
-        label=""
-        value={currentText}
-        onSave={(text) => onSave(statsKey, text)}
-        rows={4}
-      />
+      {/* WHAT: Show either textarea (edit mode) or preview (preview mode) */}
+      {isPreview ? (
+        <div className="chart-builder-preview">
+          {/* WHAT: Render markdown preview with same styles as TextChart */}
+          {/* WHY: Show users how text will appear in final report */}
+          <div 
+            className="chart-builder-preview-content"
+            dangerouslySetInnerHTML={{ __html: parseMarkdown(currentText) }}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Textarea field for editing */}
+          <TextareaField
+            label=""
+            value={currentText}
+            onSave={(text) => onSave(statsKey, text)}
+            rows={6}
+            placeholder="Enter text... (markdown supported: **bold**, *italic*, # heading, - lists)"
+          />
+          
+          {/* WHAT: Markdown syntax hint */}
+          {/* WHY: Guide users on formatting options */}
+          <p className="chart-builder-hint" style={{ marginTop: '0.5rem' }}>
+            {getMarkdownHint()}
+          </p>
+        </>
+      )}
       
       {/* Variable hint */}
-      <p className="chart-builder-hint">
+      <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
         Variable: {statsKey}
       </p>
     </div>

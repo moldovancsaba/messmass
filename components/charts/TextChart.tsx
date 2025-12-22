@@ -1,11 +1,12 @@
 // components/charts/TextChart.tsx
-// WHAT: Display text content from reportText* variables in formatted blocks
-// WHY: Partner reports need rich text display for event notes and summaries
-// HOW: Smart auto-scaling that maximizes text size based on content length and container dimensions
+// WHAT: Display text content from reportText* variables with markdown support
+// WHY: Partner reports need rich text display with formatting (bold, lists, links)
+// HOW: Parse markdown to HTML, apply auto-scaling that works with formatted content
 
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { parseMarkdown } from '@/lib/markdownUtils';
 import styles from './TextChart.module.css';
 
 export interface TextChartProps {
@@ -19,8 +20,9 @@ export interface TextChartProps {
 
 export default function TextChart({ title, content, subtitle, className = '', aspectRatio = '1:1', showTitle = true }: TextChartProps) {
   const contentRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const textRef = useRef<HTMLDivElement>(null); // Changed from HTMLParagraphElement to support HTML content
   const [optimalFontSize, setOptimalFontSize] = useState('4cqh'); // Start with relative unit
+  const [htmlContent, setHtmlContent] = useState(''); // Parsed markdown HTML
 
   /* WHAT: Calculate CSS aspect-ratio value from aspectRatio prop
      WHY: CSS aspect-ratio property requires "width / height" format
@@ -29,11 +31,23 @@ export default function TextChart({ title, content, subtitle, className = '', as
   const safeAspectRatio = String(aspectRatio || '1:1');
   const cssAspectRatio = safeAspectRatio.replace(':', ' / ');
 
-  // WHAT: Stable text scaling without flickering
+  // WHAT: Parse markdown on content change
+  // WHY: Convert markdown to HTML for rendering
+  // HOW: Use parseMarkdown utility with safe HTML output
+  useEffect(() => {
+    if (content) {
+      const parsed = parseMarkdown(content);
+      setHtmlContent(parsed);
+    } else {
+      setHtmlContent('');
+    }
+  }, [content]);
+
+  // WHAT: Stable text scaling without flickering (works with HTML content)
   // WHY: Prevent visual flicker during font size calculations
   // HOW: Use hidden clone for measurements, apply final result once
   useEffect(() => {
-    if (!contentRef.current || !textRef.current || !content) return;
+    if (!contentRef.current || !textRef.current || !htmlContent) return;
 
     const calculateMaxFontSize = () => {
       const container = contentRef.current;
@@ -120,7 +134,7 @@ export default function TextChart({ title, content, subtitle, className = '', as
       clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
-  }, [content]);
+  }, [htmlContent]); // Re-run when HTML content changes
 
   return (
     <div 
@@ -146,9 +160,12 @@ export default function TextChart({ title, content, subtitle, className = '', as
       )}
       
       <div className={`${styles.content} text-chart-content`} ref={contentRef}>
-        {content ? (
+        {htmlContent ? (
           <div className={styles.textWrapper}>
-            <p 
+            {/* WHAT: Render markdown as HTML with auto-scaled font size */}
+            {/* WHY: Support rich text formatting while maintaining responsive sizing */}
+            {/* HOW: dangerouslySetInnerHTML with sanitized HTML from parseMarkdown */}
+            <div 
               className={styles.text}
               ref={textRef}
               // WHAT: Dynamic fontSize from auto-scaling calculation
@@ -158,9 +175,16 @@ export default function TextChart({ title, content, subtitle, className = '', as
               style={{
                 fontSize: `clamp(0.75rem, ${optimalFontSize}, 8rem)`
               }}
-            >
-              {content}
-            </p>
+              // WHAT: Render parsed markdown HTML
+              // WHY: Display formatted text (bold, italic, lists, links)
+              // SECURITY: parseMarkdown sanitizes content (admin-controlled only)
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
+          </div>
+        ) : content ? (
+          <div className={styles.textWrapper}>
+            {/* WHAT: Fallback for plain text if markdown parsing fails */}
+            <p className={styles.text}>{content}</p>
           </div>
         ) : (
           <p className={styles.placeholder}>
