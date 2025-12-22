@@ -6,7 +6,10 @@
 import { ObjectId } from 'mongodb'
 import getDb from './db'
 
-export type UserRole = 'admin' | 'super-admin'
+// WHAT: Four-tier role hierarchy for granular access control
+// WHY: Support guest registration, user promotion, admin operations, and superadmin management
+// ROLES: guest (docs only) → user (basic access) → admin (content mgmt) → superadmin (system admin)
+export type UserRole = 'guest' | 'user' | 'admin' | 'superadmin'
 
 export interface UserDoc {
   _id?: ObjectId

@@ -1,4 +1,8 @@
-// app/admin/login/page.tsx - Email + password login UI with existing MessMass styling
+// app/admin/register/page.tsx
+// WHAT: User registration page with auto-assignment of 'guest' role
+// WHY: Enable self-service user registration, start with minimal permissions
+// HOW: Registration form → API endpoint → auto-login → redirect to /admin/help
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,15 +10,18 @@ import { useRouter } from 'next/navigation'
 import ColoredCard from '@/components/ColoredCard'
 import Image from 'next/image'
 
-export default function AdminLogin() {
+export default function AdminRegister() {
   const router = useRouter()
   const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [checkingAuth, setCheckingAuth] = useState(true)
 
-  // Check if already authenticated
+  // WHAT: Check if already authenticated
+  // WHY: Redirect logged-in users away from registration
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -32,61 +39,100 @@ export default function AdminLogin() {
     checkAuth()
   }, [router])
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // WHAT: Client-side validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      setLoading(false)
+      return
+    }
+
     try {
-      const response = await fetch('/api/admin/login', {
+      const response = await fetch('/api/admin/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email: email.trim(), password })
+        body: JSON.stringify({
+          email: email.trim(),
+          name: name.trim(),
+          password,
+        })
       })
+
       const data = await response.json().catch(() => ({}))
+
       if (response.ok) {
-        // WHAT: Use window.location instead of router.push to force full page reload
-        // WHY: Ensures cookie is fully set in browser before middleware checks authentication
-        window.location.href = '/admin'
+        // WHAT: Use window.location to force full page reload with new session
+        // WHY: Ensures cookie is fully set before middleware checks authentication
+        window.location.href = '/admin/help'
       } else {
-        setError(data.error || 'Invalid credentials')
+        setError(data.error || 'Registration failed. Please try again.')
       }
     } catch {
-      setError('Login failed. Please try again.')
+      setError('Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
+  if (checkingAuth) {
+    return null // Prevent flicker while checking auth
+  }
+
   return (
     <div className="app-container">
-      <ColoredCard accentColor="#6366f1" hoverable={false} className="login-card">
+      <ColoredCard accentColor="#10b981" hoverable={false} className="login-card">
         {/* Logo/Icon Section */}
         <div className="login-header">
           <div className="login-logo-container">
             <Image src="/messmass-logo.png" alt="MessMass" className="login-logo" width={48} height={48} priority />
           </div>
           <h1 className="title login-title">
-            MessMass Admin
+            Create Your Account
           </h1>
           <p className="subtitle login-subtitle">
-            Sign in with email and password to access the dashboard
+            Register to access MessMass documentation and request elevated permissions
           </p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleLogin} className="login-form">
+        {/* Registration Form */}
+        <form onSubmit={handleRegister} className="login-form">
           <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="form-input login-input"
+              placeholder="Enter your full name"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
             <input
               id="email"
               name="email"
-              type="text"
+              type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-input login-input"
-              placeholder="admin or admin@messmass.com"
+              placeholder="you@example.com"
               disabled={loading}
             />
           </div>
@@ -98,10 +144,27 @@ export default function AdminLogin() {
               name="password"
               type="password"
               required
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-input login-input"
-              placeholder="Enter your password"
+              placeholder="At least 8 characters"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              required
+              minLength={8}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="form-input login-input"
+              placeholder="Re-enter your password"
               disabled={loading}
             />
           </div>
@@ -120,54 +183,42 @@ export default function AdminLogin() {
             </div>
           )}
 
-          {/* Login Button */}
+          {/* Register Button */}
           <button
             type="submit"
-            disabled={loading || !email.trim() || !password.trim()}
+            disabled={loading || !email.trim() || !name.trim() || !password.trim() || !confirmPassword.trim()}
             className="btn btn-primary w-full login-button"
           >
             {loading ? (
               <div className="login-loading">
                 <div className="login-spinner"></div>
-                Signing in...
+                Creating account...
               </div>
             ) : (
-              <>🔐 Sign in to Admin</>
+              <>✨ Create Account</>
             )}
           </button>
         </form>
 
-        {/* Registration Link */}
+        {/* Login Link */}
         <div className="login-back" style={{ marginTop: '1rem', textAlign: 'center' }}>
           <p style={{ marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
-            Don't have an account?
+            Already have an account?
           </p>
           <button
             type="button"
-            onClick={() => router.push('/admin/register')}
-            className="btn btn-small btn-primary"
-            style={{ marginBottom: '1rem' }}
-          >
-            Create Account
-          </button>
-        </div>
-
-        {/* Back to Main App */}
-        <div className="login-back">
-          <button
-            type="button"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/admin/login')}
             className="btn btn-small btn-secondary"
           >
-            ← Back to MessMass
+            Sign in instead
           </button>
         </div>
 
         {/* Footer */}
         <div className="login-footer">
           <p className="login-footer-text">
-            MessMass Admin Panel<br />
-            Secure Access Required
+            After registration, you'll start as a <strong>Guest</strong> with access to documentation.<br />
+            Contact a superadmin to request elevated permissions.
           </p>
         </div>
       </ColoredCard>

@@ -9,7 +9,7 @@ export interface AdminUser {
   id: string
   name: string
   email: string
-  role: 'admin' | 'super-admin' | 'api'
+  role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api' // WHAT: Support 4-tier role hierarchy + legacy 'api'
   permissions: string[]
   // WHAT: API access fields (v10.6.0+)
   // WHY: Track API key usage and status for external integrations
@@ -23,7 +23,7 @@ export interface AdminUser {
  * Decodes base64 JSON session and validates expiration.
  * Token shape: { token: string; expiresAt: string; userId: string; role: 'admin'|'super-admin' }
  */
-function decodeSessionToken(sessionToken: string): { token: string; expiresAt: string; userId: string; role: 'admin' | 'super-admin' } | null {
+function decodeSessionToken(sessionToken: string): { token: string; expiresAt: string; userId: string; role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api' } | null {
   try {
     const json = Buffer.from(sessionToken, 'base64').toString()
     const tokenData = JSON.parse(json)
@@ -100,11 +100,14 @@ export async function isAuthenticated(): Promise<boolean> {
 /**
  * hasPermission
  * Simplified permission check based on role+permissions.
+ * WHAT: Support 4-tier role hierarchy with superadmin having all permissions
+ * WHY: Maintain backward compatibility while enabling granular access control
  */
 export async function hasPermission(permission: string): Promise<boolean> {
   const user = await getAdminUser()
   if (!user) return false
-  if (user.role === 'super-admin') return true
+  // WHAT: Superadmin has all permissions (backward compatible with 'super-admin')
+  if (user.role === 'superadmin') return true
   return user.permissions.includes(permission)
 }
 

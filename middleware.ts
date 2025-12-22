@@ -8,38 +8,8 @@ import { rateLimitMiddleware, getRateLimitConfig } from '@/lib/rateLimit';
 import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from '@/lib/csrf';
 import { logRequestEnd, logRateLimitExceeded, logCsrfViolation } from '@/lib/logger';
 import { buildCorsHeaders } from '@/lib/cors';
-
-// WHAT: Check if admin session cookie exists and is valid
-// WHY: Protect ALL admin pages from unauthorized access
-function hasValidAdminSession(request: NextRequest): boolean {
-  const adminSession = request.cookies.get('admin-session');
-  
-  if (!adminSession?.value) {
-    return false;
-  }
-  
-  try {
-    // Decode base64 session token
-    const json = Buffer.from(adminSession.value, 'base64').toString();
-    const tokenData = JSON.parse(json);
-    
-    if (!tokenData?.token || !tokenData?.expiresAt || !tokenData?.userId) {
-      return false;
-    }
-    
-    // Check if token is expired
-    const expiresAt = new Date(tokenData.expiresAt);
-    const now = new Date();
-    
-    if (now > expiresAt) {
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
+import { canAccessRoute, getUnauthorizedRedirect } from '@/lib/routeProtection';
+import type { UserRole } from '@/lib/users';
 
 // WHAT: Main middleware function (runs on every request)
 // WHY: Apply security controls before request reaches route handlers
@@ -47,16 +17,53 @@ export async function middleware(request: NextRequest) {
   const startTime = Date.now();
   const pathname = request.nextUrl.pathname;
   
-  // WHAT: 0. Check admin authentication (CRITICAL SECURITY)
-  // WHY: Prevent unauthorized access to ALL admin pages
-  // EXCEPTION: /admin/login is public (users need to access it to log in)
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const isAuthenticated = hasValidAdminSession(request);
+  // WHAT: 0. Check admin authentication and authorization (CRITICAL SECURITY)
+  // WHY: Prevent unauthorized/insufficient access to ALL admin pages
+  // EXCEPTION: /admin/login and /admin/register are public
+  const publicAdminRoutes = ['/admin/login', '/admin/register'];
+  const isPublicRoute = publicAdminRoutes.some(route => pathname.startsWith(route));
+  
+  if (pathname.startsWith('/admin') && !isPublicRoute) {
+    // WHAT: Step 1 - Check authentication (user has valid session)
+    const adminSession = request.cookies.get('admin-session');
     
-    if (!isAuthenticated) {
-      console.warn(`⚠️  Unauthorized admin access attempt: ${pathname}`);
-      // Redirect to login page
+    if (!adminSession?.value) {
+      console.warn(`⚠️  Unauthenticated admin access attempt: ${pathname}`);
       return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    
+    // WHAT: Step 2 - Decode session to get user role
+    let userRole: UserRole | undefined;
+    try {
+      const json = Buffer.from(adminSession.value, 'base64').toString();
+      const tokenData = JSON.parse(json);
+      
+      if (!tokenData?.token || !tokenData?.expiresAt || !tokenData?.userId) {
+        console.warn(`⚠️  Invalid session token: ${pathname}`);
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      
+      // Check if token is expired
+      const expiresAt = new Date(tokenData.expiresAt);
+      const now = new Date();
+      
+      if (now > expiresAt) {
+        console.warn(`⚠️  Expired session token: ${pathname}`);
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+      
+      userRole = tokenData.role as UserRole;
+    } catch (error) {
+      console.warn(`⚠️  Session decode error: ${pathname}`, error);
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    
+    // WHAT: Step 3 - Check role-based authorization
+    // WHY: Enforce permission hierarchy (guest < user < admin < superadmin)
+    if (!canAccessRoute(userRole, pathname)) {
+      console.warn(`⚠️  Insufficient permissions: ${userRole} attempted ${pathname}`);
+      const redirectPath = getUnauthorizedRedirect(userRole);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
   }
   

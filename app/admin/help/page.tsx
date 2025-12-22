@@ -1,15 +1,40 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Metadata } from 'next';
 import styles from './page.module.css';
+import type { UserRole } from '@/lib/users';
 
-/* What: Admin help page displaying the user guide
-   Why: Make END_USER_GUIDE.md content accessible to admins within the application */
-
-export const metadata: Metadata = {
-  title: 'User Guide - MessMass Admin',
-  description: 'Complete user guide for MessMass event statistics dashboard',
-};
+/* What: Admin help page displaying the user guide with role-based welcome messages
+   Why: Make END_USER_GUIDE.md content accessible to admins, provide guidance for guests */
 
 export default function HelpPage() {
+  const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
+  const [userName, setUserName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  
+  // WHAT: Fetch current user info for personalized greeting
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/admin/auth', { cache: 'no-store' });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            setUserRole(data.user.role as UserRole);
+            setUserName(data.user.name || data.user.email);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
+  
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -19,6 +44,58 @@ export default function HelpPage() {
             Complete guide for using MessMass event statistics dashboard
           </p>
         </header>
+        
+        {/* WHAT: Welcome message for guest users
+            WHY: Explain limited permissions and how to request elevation */}
+        {!loading && userRole === 'guest' && (
+          <div style={{ // eslint-disable-line react/forbid-dom-props
+            padding: '1.5rem',
+            marginBottom: '2rem',
+            backgroundColor: '#dbeafe',
+            border: '2px solid #3b82f6',
+            borderRadius: 'var(--mm-radius-lg)',
+          }}>
+            <h2 style={{ // eslint-disable-line react/forbid-dom-props
+              marginTop: 0,
+              marginBottom: '0.75rem',
+              color: '#1e40af',
+              fontSize: '1.25rem',
+            }}>
+              👋 Welcome, {userName}!
+            </h2>
+            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}> {/* eslint-disable-line react/forbid-dom-props */}
+              You're currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
+            </p>
+            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}> {/* eslint-disable-line react/forbid-dom-props */}
+              <strong>🔒 Limited Access:</strong> As a guest, you can only view this User Guide page. To access other features like Events, Partners, and Filters, you'll need elevated permissions.
+            </p>
+            <div style={{ // eslint-disable-line react/forbid-dom-props
+              padding: '1rem',
+              backgroundColor: '#ffffff',
+              borderRadius: 'var(--mm-radius-md)',
+              border: '1px solid #93c5fd',
+            }}>
+              <p style={{ marginBottom: '0.5rem', fontWeight: 600, color: '#1e40af' }}> {/* eslint-disable-line react/forbid-dom-props */}
+                ⬆️ How to Request Elevated Permissions:
+              </p>
+              <ol style={{ // eslint-disable-line react/forbid-dom-props
+                marginBottom: 0,
+                paddingLeft: '1.5rem',
+                color: '#1e3a8a',
+              }}>
+                <li>Contact a <strong>Superadmin</strong> in your organization</li>
+                <li>Provide your email: <strong>{userName.includes('@') ? userName : 'Check with admin'}</strong></li>
+                <li>Explain which role you need:
+                  <ul style={{ marginTop: '0.25rem' }}> {/* eslint-disable-line react/forbid-dom-props */}
+                    <li><strong>User:</strong> View and edit Events, Partners, Filters</li>
+                    <li><strong>Admin:</strong> User access + KYC, Algorithms, Reporting, Styles</li>
+                    <li><strong>Superadmin:</strong> Full system access including user management</li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+          </div>
+        )}
 
         <nav className={styles.toc}>
           <h2>Table of Contents</h2>

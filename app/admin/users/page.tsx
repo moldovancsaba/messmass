@@ -14,7 +14,9 @@ import { FormModal } from '@/components/modals';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import PasswordModal from '@/components/PasswordModal';
 import { ConfirmDialog } from '@/components/modals';
+import RoleDropdown from '@/components/RoleDropdown';
 import type { AdminUser } from '@/lib/auth';
+import type { UserRole } from '@/lib/users';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function AdminUsersPageUnified() {
@@ -24,6 +26,10 @@ export default function AdminUsersPageUnified() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // WHAT: Current user context for role management
+  // WHY: Needed for RoleDropdown to determine if user is superadmin and prevent self-demotion
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: UserRole } | null>(null);
   
   // Create modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -49,7 +55,8 @@ export default function AdminUsersPageUnified() {
     isDangerous?: boolean;
   }>({ isOpen: false, onConfirm: () => {}, title: '', message: '' });
 
-  // Auth guard
+  // WHAT: Auth guard + fetch current user
+  // WHY: Protect page and get user context for role management
   useEffect(() => {
     const run = async () => {
       try {
@@ -57,6 +64,15 @@ export default function AdminUsersPageUnified() {
         if (!res.ok) {
           router.push('/admin/login');
           return;
+        }
+        
+        // WHAT: Fetch current user for role dropdown context
+        const data = await res.json();
+        if (data.user) {
+          setCurrentUser({
+            id: data.user.id,
+            role: data.user.role as UserRole,
+          });
         }
       } catch {
         router.push('/admin/login');
@@ -226,13 +242,55 @@ export default function AdminUsersPageUnified() {
       }
     });
   };
+  
+  // WHAT: Role change handler for RoleDropdown
+  // WHY: Enable superadmins to promote/demote users
+  const onRoleChange = async (userId: string, newRole: UserRole) => {
+    try {
+      const data = await apiPut(`/api/admin/users/${userId}/role`, {
+        newRole,
+      });
+      
+      if (data.success) {
+        await refreshUsers();
+        // WHAT: Show success message
+        console.log(`✅ Role updated: ${data.message}`);
+      } else {
+        setError(data.error || 'Failed to update role');
+        throw new Error(data.error || 'Failed to update role');
+      }
+    } catch (err) {
+      console.error('❌ Role change error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update role';
+      setError(errorMessage);
+      throw err; // Re-throw so RoleDropdown knows it failed
+    }
+  };
 
-  // WHAT: Wire adapter with real action handlers
-  // WHY: Connects unified view actions to actual business logic
+  // WHAT: Wire adapter with real action handlers + role dropdown
+  // WHY: Connects unified view actions to actual business logic and role management
   const adapterWithHandlers = {
     ...usersAdapter,
     listConfig: {
       ...usersAdapter.listConfig,
+      columns: usersAdapter.listConfig.columns.map(col => {
+        // WHAT: Override role column to use RoleDropdown
+        if (col.key === 'role') {
+          return {
+            ...col,
+            render: (user: any) => (
+              <RoleDropdown
+                userId={user.id}
+                currentRole={user.role as UserRole}
+                currentUserRole={currentUser?.role}
+                currentUserId={currentUser?.id}
+                onRoleChange={onRoleChange}
+              />
+            ),
+          };
+        }
+        return col;
+      }),
       rowActions: [
         {
           label: (user: any) => user.apiKeyEnabled ? 'Disable API' : 'Enable API',
@@ -251,6 +309,24 @@ export default function AdminUsersPageUnified() {
     },
     cardConfig: {
       ...usersAdapter.cardConfig,
+      metaFields: usersAdapter.cardConfig.metaFields?.map(field => {
+        // WHAT: Override role field to use RoleDropdown in card view
+        if (field.key === 'role') {
+          return {
+            ...field,
+            render: (user: any) => (
+              <RoleDropdown
+                userId={user.id}
+                currentRole={user.role as UserRole}
+                currentUserRole={currentUser?.role}
+                currentUserId={currentUser?.id}
+                onRoleChange={onRoleChange}
+              />
+            ),
+          };
+        }
+        return field;
+      }),
       cardActions: [
         {
           label: (user: any) => user.apiKeyEnabled ? 'Disable API' : 'Enable API',

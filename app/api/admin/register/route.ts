@@ -1,0 +1,96 @@
+// app/api/admin/register/route.ts
+// WHAT: User registration endpoint with automatic 'guest' role assignment
+// WHY: Enable self-service registration, assign minimal permissions, allow promotion by superadmins
+// HOW: Create user with generated password, set guest role, establish session
+
+import { NextRequest, NextResponse } from 'next/server';
+import { createUser, findUserByEmail } from '@/lib/users';
+import { generatePassword } from '@/lib/pagePassword';
+
+/**
+ * WHAT: POST handler for user registration
+ * WHY: Allow new users to self-register with 'guest' role
+ * SECURITY: No authentication required (public endpoint)
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { email, name, password } = body;
+    
+    // WHAT: Validate required fields
+    if (!email?.trim() || !name?.trim() || !password?.trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Email, name, and password are required' },
+        { status: 400 }
+      );
+    }
+    
+    const emailLower = email.trim().toLowerCase();
+    const nameTrimmed = name.trim();
+    
+    // WHAT: Check if email already exists
+    // WHY: Prevent duplicate accounts
+    const existingUser = await findUserByEmail(emailLower);
+    if (existingUser) {
+      return NextResponse.json(
+        { success: false, error: 'An account with this email already exists' },
+        { status: 409 }
+      );
+    }
+    
+    // WHAT: Create user with 'guest' role
+    // WHY: New users start with minimal permissions (help page only)
+    const now = new Date().toISOString();
+    const newUser = await createUser({
+      email: emailLower,
+      name: nameTrimmed,
+      role: 'guest', // WHAT: Default role for self-registered users
+      password: password.trim(), // WHAT: Store user-provided password
+      createdAt: now,
+      updatedAt: now,
+    });
+    
+    // WHAT: Create session token
+    // WHY: Auto-login user after registration
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const sessionToken = {
+      token: generatePassword(), // Random token
+      expiresAt: expiresAt.toISOString(),
+      userId: newUser._id!.toString(),
+      role: newUser.role,
+    };
+    
+    // WHAT: Encode session as base64 JSON
+    const encodedSession = Buffer.from(JSON.stringify(sessionToken)).toString('base64');
+    
+    // WHAT: Set HTTP-only cookie
+    // WHY: Secure session management, prevent XSS
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: newUser._id!.toString(),
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+      },
+      message: 'Registration successful! Welcome to MessMass.',
+    });
+    
+    response.cookies.set('admin-session', encodedSession, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      path: '/',
+    });
+    
+    return response;
+    
+  } catch (error) {
+    console.error('❌ Registration error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Registration failed. Please try again.' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -8,6 +8,8 @@ import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
 import { useSidebar } from '@/contexts/SidebarContext';
 import MaterialIcon from '@/components/MaterialIcon';
+import { canAccessMenuItem } from '@/lib/permissions';
+import type { UserRole } from '@/lib/users';
 
 /* What: Navigation item structure
    Why: Type-safe navigation configuration with Material Icons */
@@ -23,13 +25,14 @@ interface NavSection {
   items: NavItem[];
 }
 
-/* What: Responsive sidebar component for admin navigation
+/* What: Responsive sidebar component for admin navigation with role-based filtering
    Why: TailAdmin V2-inspired sidebar with desktop/tablet/mobile variants
    
    Behavior:
    - Desktop (≥1280px): Full-width sidebar with section groups
    - Tablet (768-1279px): Collapsed mini variant (icons only)
    - Mobile (<768px): Overlay drawer with scrim, hamburger toggle
+   - Menu items filtered by user role (guest → user → admin → superadmin)
    
    No breadcrumbs (explicitly prohibited by policy) */
 export default function Sidebar() {
@@ -37,6 +40,33 @@ export default function Sidebar() {
   /* WHAT: Use shared sidebar context instead of local state
    * WHY: AdminLayout needs to know collapse state to adjust main content margin */
   const { isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen } = useSidebar();
+  
+  // WHAT: Track user role for menu filtering
+  // WHY: Show only menu items user has permission to access
+  const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
+  const [loadingRole, setLoadingRole] = useState(true);
+  
+  // WHAT: Fetch user role on component mount
+  // WHY: Determine which menu items to show
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await fetch('/api/admin/auth', { cache: 'no-store' });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user?.role) {
+            setUserRole(data.user.role as UserRole);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user role:', error);
+      } finally {
+        setLoadingRole(false);
+      }
+    };
+    
+    fetchUserRole();
+  }, []);
   
   /* WHAT: Reorganized navigation structure per user requirements
      WHY: More intuitive order - removed Dashboard (logo serves same purpose),
@@ -184,44 +214,58 @@ export default function Sidebar() {
           </Link>
         </div>
         
-        {/* What: Scrollable navigation sections
-           Why: Handle many nav items without overflow issues */}
+        {/* What: Scrollable navigation sections with role-based filtering
+           Why: Handle many nav items without overflow issues, show only authorized items */}
         <nav className={styles.sidebarNav}>
-          {navSections.map((section) => (
-            <div key={section.title} className={styles.navSection}>
-              {/* WHAT: Section titles removed to prevent menu jumping
-                  WHY: User request - cleaner UI without section headers */}
-              
-              <ul className={styles.navList}>
-                {section.items.map((item) => (
-                  <li key={item.path}>
-                    <Link
-                      href={item.path}
-                      className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}
-                      title={isCollapsed ? item.label : ''}
-                    >
-                      <span className={styles.navIcon}>
-                        <MaterialIcon
-                          name={item.icon}
-                          variant={item.iconVariant || 'outlined'}
-                          // WHAT: Fixed fontSize override for sidebar icons
-                          // WHY: Sidebar needs larger icons (1.25rem) than MaterialIcon default (1rem)
-                          // eslint-disable-next-line react/forbid-dom-props
-                          style={{ fontSize: '1.25rem' }}
-                        />
-                      </span>
-                      {!isCollapsed && (
-                        <span className={styles.navLabel}>{item.label}</span>
-                      )}
-                      {isActive(item.path) && !isCollapsed && (
-                        <span className={styles.activeIndicator} aria-label="Current page" />
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {navSections.map((section) => {
+            // WHAT: Filter section items based on user role permissions
+            // WHY: Only show menu items user has access to
+            const visibleItems = section.items.filter(item => 
+              !loadingRole && canAccessMenuItem(userRole, item.label)
+            );
+            
+            // WHAT: Skip entire section if no items are visible
+            // WHY: Avoid empty sections in navigation
+            if (visibleItems.length === 0) {
+              return null;
+            }
+            
+            return (
+              <div key={section.title} className={styles.navSection}>
+                {/* WHAT: Section titles removed to prevent menu jumping
+                    WHY: User request - cleaner UI without section headers */}
+                
+                <ul className={styles.navList}>
+                  {visibleItems.map((item) => (
+                    <li key={item.path}>
+                      <Link
+                        href={item.path}
+                        className={`${styles.navLink} ${isActive(item.path) ? styles.active : ''}`}
+                        title={isCollapsed ? item.label : ''}
+                      >
+                        <span className={styles.navIcon}>
+                          <MaterialIcon
+                            name={item.icon}
+                            variant={item.iconVariant || 'outlined'}
+                            // WHAT: Fixed fontSize override for sidebar icons
+                            // WHY: Sidebar needs larger icons (1.25rem) than MaterialIcon default (1rem)
+                            // eslint-disable-next-line react/forbid-dom-props
+                            style={{ fontSize: '1.25rem' }}
+                          />
+                        </span>
+                        {!isCollapsed && (
+                          <span className={styles.navLabel}>{item.label}</span>
+                        )}
+                        {isActive(item.path) && !isCollapsed && (
+                          <span className={styles.activeIndicator} aria-label="Current page" />
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </nav>
         
         {/* WHAT: Unified footer with copyright and auto-updated version from package.json

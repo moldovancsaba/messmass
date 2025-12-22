@@ -52,21 +52,31 @@ export const usersAdapter: AdminPageAdapter<UserDTO> = {
         key: 'role',
         label: 'Role',
         sortable: true,
-        width: '120px',
-        render: (user) => (
-          // WHAT: Role badge with conditional colors based on user role
-          // WHY: Colors are computed at runtime (api=green, admin=blue, other=gray)
-          <span style={{ // eslint-disable-line react/forbid-dom-props
-            padding: '4px 12px',
-            borderRadius: '12px',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            backgroundColor: user.role === 'api' ? '#dcfce7' : user.role === 'admin' ? '#dbeafe' : '#f3f4f6',
-            color: user.role === 'api' ? '#166534' : user.role === 'admin' ? '#1e40af' : '#374151',
-          }}>
-            {user.role === 'api' ? '🔑 API' : user.role === 'admin' ? '👤 Admin' : user.role}
-          </span>
-        ),
+        width: '140px',
+        render: (user) => {
+          // WHAT: Role badge with 4-tier hierarchy colors
+          // WHY: Visual differentiation of privilege levels (guest < user < admin < superadmin)
+          const roleConfig: Record<string, { bg: string; color: string; icon: string; label: string }> = {
+            guest: { bg: '#f3f4f6', color: '#6b7280', icon: '👤', label: 'Guest' },
+            user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
+            admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
+            superadmin: { bg: '#ede9fe', color: '#5b21b6', icon: '⚡', label: 'Superadmin' },
+            api: { bg: '#dcfce7', color: '#166534', icon: '🔑', label: 'API' }, // Legacy
+          };
+          const config = roleConfig[user.role] || roleConfig.guest;
+          return (
+            <span style={{ // eslint-disable-line react/forbid-dom-props
+              padding: '4px 12px',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              backgroundColor: config.bg,
+              color: config.color,
+            }}>
+              {config.icon} {config.label}
+            </span>
+          );
+        },
       },
       {
         key: 'apiAccess',
