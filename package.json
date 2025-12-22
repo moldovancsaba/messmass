@@ -108,7 +108,9 @@
     "migrate:reports-v12": "tsx -r dotenv/config scripts/migrate-to-reports-v12.ts dotenv_config_path=.env.local",
     "fix:chart-formulas": "tsx -r dotenv/config scripts/fix-chart-formulas.ts dotenv_config_path=.env.local",
     "migrate:user-roles": "tsx -r dotenv/config scripts/migrateUserRoles.ts dotenv_config_path=.env.local",
-    "seed:superadmin": "tsx -r dotenv/config scripts/ensureSuperadmin.ts dotenv_config_path=.env.local"
+    "seed:superadmin": "tsx -r dotenv/config scripts/ensureSuperadmin.ts dotenv_config_path=.env.local",
+    "diagnose:reports": "tsx -r dotenv/config scripts/diagnose-report-templates.ts dotenv_config_path=.env.local",
+    "fix:missing-blocks": "tsx -r dotenv/config scripts/restore-missing-blocks.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",
