@@ -135,11 +135,6 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  /* WHAT: Circular border with padding */
-  border: 2px solid var(--mm-primary) !important;
-  border-radius: 50% !important;
-  padding: 0.15em !important; /* em units scale with font-size */
-  aspect-ratio: 1 / 1 !important; /* Keep circle perfectly round */
 }
 
 .kpi .kpiValue {

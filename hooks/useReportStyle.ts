@@ -155,6 +155,10 @@ function applyStyleToPage(style: PageStyleEnhanced) {
       /* WHY: Allow CSS modules to read custom hero background */
       --report-hero-bg: ${heroBackgroundCSS};
       
+      /* WHAT: Hero text color CSS variable for ReportHero.module.css */
+      /* WHY: Allow CSS modules to read custom hero text color */
+      --report-hero-color: ${style.typography.headingColor};
+      
       /* WHAT: Override design token --mm-primary with custom style primary color */
       /* WHY: KPI icons use --mm-primary, must respect custom style */
       --mm-primary: ${style.colorScheme.primary};
