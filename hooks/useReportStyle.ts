@@ -150,6 +150,14 @@ function applyStyleToPage(style: PageStyleEnhanced) {
       --chart-color-3: ${chartColors[2]};
       --chart-color-4: ${chartColors[3]};
       --chart-color-5: ${chartColors[4]};
+      
+      /* WHAT: Hero background CSS variable for ReportHero.module.css */
+      /* WHY: Allow CSS modules to read custom hero background */
+      --report-hero-bg: ${heroBackgroundCSS};
+      
+      /* WHAT: Override design token --mm-primary with custom style primary color */
+      /* WHY: KPI icons use --mm-primary, must respect custom style */
+      --mm-primary: ${style.colorScheme.primary};
     }
     
     body {
