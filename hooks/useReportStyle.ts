@@ -130,12 +130,13 @@ function applyStyleToPage(style: PageStyleEnhanced) {
   // WHAT: Generate chart color palette from theme
   // WHY: Charts (pie, bar) need consistent colors from custom styles
   // HOW: Use colorScheme colors and generate variations
+  // ORDER: primary (red), secondary (white/light), success (green), warning (yellow), error (dark red)
   const chartColors = [
-    style.colorScheme.primary,
-    style.colorScheme.secondary,
-    style.colorScheme.success,
-    style.colorScheme.warning,
-    style.colorScheme.error
+    style.colorScheme.primary,    // Color 1: Primary brand color (e.g., red #d32f2f)
+    style.colorScheme.secondary,  // Color 2: Secondary accent (e.g., white/light gray)
+    style.colorScheme.success,    // Color 3: Success green
+    style.colorScheme.warning,    // Color 4: Warning yellow
+    style.colorScheme.error       // Color 5: Error dark red
   ];
 
   // Generate CSS rules

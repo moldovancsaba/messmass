@@ -8,7 +8,8 @@
   /* WHAT: Default gradient, overridden by custom style via useReportStyle */
   /* WHY: Provide fallback when no custom style is applied */
   /* HOW: Uses --report-hero-bg CSS variable set by useReportStyle (line 156) */
-  background: var(--report-hero-bg, linear-gradient(135deg, var(--mm-blue-600), var(--mm-purple-600)));
+  /* IMPORTANT: !important ensures custom style overrides all other rules */
+  background: var(--report-hero-bg, linear-gradient(135deg, var(--mm-blue-600), var(--mm-purple-600))) !important;
   /* WHAT: Use --report-hero-color CSS variable for text color */
   /* WHY: Allow custom styles to override hero text color */
   color: var(--report-hero-color, var(--mm-white));
