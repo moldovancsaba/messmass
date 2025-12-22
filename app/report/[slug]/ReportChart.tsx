@@ -197,22 +197,23 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   
   const total = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
-  // WHAT: Read theme colors from CSS variables
-  // WHY: Use custom style colors instead of hardcoded values
-  // HOW: getComputedStyle reads --chart-color-N variables injected by useReportStyle
-  const getThemeColors = () => {
+  // WHAT: Read individual pie slice colors from CSS variables
+  // WHY: Use custom style colors for each pie slice (granular control)
+  // HOW: getComputedStyle reads --pie-color-N variables injected by useReportStyle
+  const getPieColors = () => {
     const root = document.documentElement;
     const computedStyle = getComputedStyle(root);
     return [
-      computedStyle.getPropertyValue('--chart-color-1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--chart-color-2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--chart-color-3').trim() || '#8b5cf6',
-      computedStyle.getPropertyValue('--chart-color-4').trim() || '#f59e0b',
-      computedStyle.getPropertyValue('--chart-color-5').trim() || '#ef4444'
+      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--pie-color-2').trim() || '#10b981',
+      // Fallback to repeating first two colors if more slices needed
+      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--pie-color-2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--pie-color-1').trim() || '#3b82f6'
     ];
   };
   
-  const themeColors = getThemeColors();
+  const pieColors = getPieColors();
   
   // Prepare Chart.js data
   // WHAT: Force theme colors to override any element.color
@@ -223,11 +224,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
       label: result.title,
       data: result.elements.map(el => typeof el.value === 'number' ? el.value : 0),
       backgroundColor: result.elements.map((el, idx) => 
-        themeColors[idx % themeColors.length]
+        pieColors[idx % pieColors.length]
       ),
-      // WHAT: Use primary color (red/maroon) as border for all slices
+      // WHAT: Use first pie color as border for all slices
       // WHY: Creates visual separation with consistent branding
-      borderColor: themeColors[0],
+      borderColor: pieColors[0],
       borderWidth: 2,
       hoverOffset: 6 // WHAT: Reduced from 8 to prevent overflow
     }]
@@ -295,7 +296,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             const percentage = total > 0 ? ((numValue / total) * 100).toFixed(1) : '0.0';
-            const color = themeColors[idx % themeColors.length];
+            const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
             
             return (
@@ -329,21 +330,22 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
-  // WHAT: Read theme colors from CSS variables
-  // WHY: Use custom style colors for bar fills
-  const getThemeColors = () => {
+  // WHAT: Read individual bar colors from CSS variables
+  // WHY: Use custom style colors for each bar (granular control)
+  // HOW: getComputedStyle reads --bar-color-N variables injected by useReportStyle
+  const getBarColors = () => {
     const root = document.documentElement;
     const computedStyle = getComputedStyle(root);
     return [
-      computedStyle.getPropertyValue('--chart-color-1').trim() || '#3b82f6',
-      computedStyle.getPropertyValue('--chart-color-2').trim() || '#10b981',
-      computedStyle.getPropertyValue('--chart-color-3').trim() || '#8b5cf6',
-      computedStyle.getPropertyValue('--chart-color-4').trim() || '#f59e0b',
-      computedStyle.getPropertyValue('--chart-color-5').trim() || '#ef4444'
+      computedStyle.getPropertyValue('--bar-color-1').trim() || '#3b82f6',
+      computedStyle.getPropertyValue('--bar-color-2').trim() || '#10b981',
+      computedStyle.getPropertyValue('--bar-color-3').trim() || '#8b5cf6',
+      computedStyle.getPropertyValue('--bar-color-4').trim() || '#f59e0b',
+      computedStyle.getPropertyValue('--bar-color-5').trim() || '#ef4444'
     ];
   };
   
-  const themeColors = getThemeColors();
+  const barColors = getBarColors();
   const maxValue = Math.max(...result.elements.map(el => typeof el.value === 'number' ? el.value : 0));
 
   return (
@@ -371,9 +373,9 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                   className={styles.barFill}
                   style={{ 
                     width: `${widthPercent}%`,
-                    // WHAT: Use only primary color (first theme color) for all bars
-                    // WHY: Bar charts show single metric across categories - uniform color is clearer
-                    backgroundColor: themeColors[0]
+                    // WHAT: Use individual bar color from CSS variables
+                    // WHY: Allow custom color for each bar element
+                    backgroundColor: barColors[idx % barColors.length]
                   }}
                 />
               </div>

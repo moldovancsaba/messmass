@@ -7,14 +7,18 @@
 import React from 'react';
 import styles from './StylePreview.module.css';
 import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
+import MaterialIcon from './MaterialIcon';
 
 interface StylePreviewProps {
   /* WHAT: Style configuration to preview
    * WHY: Display the current form state visually */
   style: Omit<PageStyleEnhanced, '_id' | 'createdAt' | 'updatedAt' | 'projectIds'>;
+  /* WHAT: Active section from PageStyleEditor
+   * WHY: Show charts only when Chart Colors tab is active */
+  activeSection?: 'general' | 'backgrounds' | 'typography' | 'colors' | 'chartColors';
 }
 
-export default function StylePreview({ style }: StylePreviewProps) {
+export default function StylePreview({ style, activeSection }: StylePreviewProps) {
   /* WHAT: Generate background CSS from style config
    * WHY: Apply solid or gradient backgrounds dynamically */
   const getBackgroundStyle = (bg: typeof style.pageBackground) => {
@@ -132,7 +136,8 @@ export default function StylePreview({ style }: StylePreviewProps) {
             </div>
           </div>
 
-          {/* Sample Charts Preview */}
+          {/* Sample Charts Preview - ONLY show in Chart Colors tab */}
+          {activeSection === 'chartColors' && (
           <div className={styles.mockCharts}>
             {/* KPI Chart Sample */}
             <div 
@@ -144,9 +149,9 @@ export default function StylePreview({ style }: StylePreviewProps) {
             >
               <div 
                 className={styles.mockKpiIcon}
-                style={{ color: style.colorScheme.primary }}
+                style={{ color: style.chartColors?.kpiIconColor || style.colorScheme.primary }}
               >
-                📊
+                <MaterialIcon name="monitoring" variant="outlined" />
               </div>
               <div 
                 className={styles.mockKpiValue}
@@ -249,6 +254,7 @@ export default function StylePreview({ style }: StylePreviewProps) {
               </div>
             </div>
           </div>
+          )}
 
           {/* Color Scheme Swatches */}
           <div className={styles.mockColorScheme}>
