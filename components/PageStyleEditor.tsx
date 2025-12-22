@@ -12,7 +12,8 @@ import styles from './PageStyleEditor.module.css';
 import { 
   PageStyleEnhanced, 
   BackgroundStyle, 
-  DEFAULT_PAGE_STYLE_ENHANCED 
+  DEFAULT_PAGE_STYLE_ENHANCED,
+  getDefaultChartColors 
 } from '@/lib/pageStyleTypesEnhanced';
 
 interface PageStyleEditorProps {
@@ -52,13 +53,18 @@ export default function PageStyleEditor({
         contentBoxBackground: style.contentBoxBackground,
         typography: style.typography,
         colorScheme: style.colorScheme,
+        chartColors: style.chartColors || getDefaultChartColors(style.colorScheme),
         createdBy: style.createdBy
       };
     }
-    return { ...DEFAULT_PAGE_STYLE_ENHANCED };
+    const defaultStyle = { ...DEFAULT_PAGE_STYLE_ENHANCED };
+    return {
+      ...defaultStyle,
+      chartColors: getDefaultChartColors(defaultStyle.colorScheme)
+    };
   });
 
-  const [activeSection, setActiveSection] = useState<'general' | 'backgrounds' | 'typography' | 'colors'>('general');
+  const [activeSection, setActiveSection] = useState<'general' | 'backgrounds' | 'typography' | 'colors' | 'chartColors'>('general');
 
   /* WHAT: Update form field
    * WHY: Generic handler for nested state updates */
@@ -100,6 +106,7 @@ export default function PageStyleEditor({
     { id: 'backgrounds', label: '🎨 Backgrounds', icon: '🎨' },
     { id: 'typography', label: '🔤 Typography', icon: '🔤' },
     { id: 'colors', label: '🌈 Colors', icon: '🌈' },
+    { id: 'chartColors', label: '📊 Chart Colors', icon: '📊' },
   ] as const;
 
   return (
@@ -516,6 +523,322 @@ export default function PageStyleEditor({
                       className={styles.colorText}
                       value={formData.colorScheme.error}
                       onChange={(e) => updateField('colorScheme.error', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* CHART COLORS SECTION */}
+            {activeSection === 'chartColors' && formData.chartColors && (
+              <div className={styles.section}>
+                <p className={styles.sectionHint}>
+                  💡 Customize colors for charts in reports. Leave blank to use smart defaults.
+                </p>
+
+                <h3 className={styles.subsectionTitle}>Chart Container</h3>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Chart Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartBackground}
+                      onChange={(e) => updateField('chartColors.chartBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartBackground}
+                      onChange={(e) => updateField('chartColors.chartBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Chart Border</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartBorder}
+                      onChange={(e) => updateField('chartColors.chartBorder', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartBorder}
+                      onChange={(e) => updateField('chartColors.chartBorder', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Chart Text</h3>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Title Color</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartTitleColor}
+                      onChange={(e) => updateField('chartColors.chartTitleColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartTitleColor}
+                      onChange={(e) => updateField('chartColors.chartTitleColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Label Color</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartLabelColor}
+                      onChange={(e) => updateField('chartColors.chartLabelColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartLabelColor}
+                      onChange={(e) => updateField('chartColors.chartLabelColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Value Color</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartValueColor}
+                      onChange={(e) => updateField('chartColors.chartValueColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartValueColor}
+                      onChange={(e) => updateField('chartColors.chartValueColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>No Data State</h3>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartNoDataBackground}
+                      onChange={(e) => updateField('chartColors.chartNoDataBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartNoDataBackground}
+                      onChange={(e) => updateField('chartColors.chartNoDataBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Border</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartNoDataBorder}
+                      onChange={(e) => updateField('chartColors.chartNoDataBorder', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartNoDataBorder}
+                      onChange={(e) => updateField('chartColors.chartNoDataBorder', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Text</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartNoDataText}
+                      onChange={(e) => updateField('chartColors.chartNoDataText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartNoDataText}
+                      onChange={(e) => updateField('chartColors.chartNoDataText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Error State</h3>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartErrorBackground}
+                      onChange={(e) => updateField('chartColors.chartErrorBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartErrorBackground}
+                      onChange={(e) => updateField('chartColors.chartErrorBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Text</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartErrorText}
+                      onChange={(e) => updateField('chartColors.chartErrorText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartErrorText}
+                      onChange={(e) => updateField('chartColors.chartErrorText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Interactive Elements</h3>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Tooltip Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartTooltipBackground}
+                      onChange={(e) => updateField('chartColors.chartTooltipBackground', e.target.value)}
+                      disabled={isLoading}
+                      placeholder="e.g. rgba(0, 0, 0, 0.85)"
+                    />
+                  </div>
+                  <small className={styles.hint}>Use rgba() for transparency</small>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Tooltip Text</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.chartTooltipText}
+                      onChange={(e) => updateField('chartColors.chartTooltipText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.chartTooltipText}
+                      onChange={(e) => updateField('chartColors.chartTooltipText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Export Button</h3>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.exportButtonBackground}
+                      onChange={(e) => updateField('chartColors.exportButtonBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.exportButtonBackground}
+                      onChange={(e) => updateField('chartColors.exportButtonBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Text</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.exportButtonText}
+                      onChange={(e) => updateField('chartColors.exportButtonText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.exportButtonText}
+                      onChange={(e) => updateField('chartColors.exportButtonText', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Hover Background</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.exportButtonHoverBackground}
+                      onChange={(e) => updateField('chartColors.exportButtonHoverBackground', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.exportButtonHoverBackground}
+                      onChange={(e) => updateField('chartColors.exportButtonHoverBackground', e.target.value)}
                       disabled={isLoading}
                     />
                   </div>
