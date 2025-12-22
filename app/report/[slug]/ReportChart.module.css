@@ -14,8 +14,8 @@
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
   /* REMOVED: min-height - row height is deterministic from block calculator */
   
-  /* WHAT: Visual styling - uses custom chart colors */
-  background: var(--chart-bg) !important;
+  /* UNIFIED NAMING: --chartBackground matches database property */
+  background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg);
   box-shadow: var(--mm-shadow-sm);
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
@@ -29,7 +29,7 @@
 /* Chart Header - Titles and metadata */
 .chartHeader {
   padding: var(--mm-space-4) var(--mm-space-5);
-  border-bottom: 1px solid var(--chart-border);
+  border-bottom: 1px solid var(--chartBorder);
   flex-shrink: 0; /* WHAT: Prevent header from shrinking */
 }
 
@@ -49,7 +49,7 @@
   /* Scale title to container width: min 0.9rem, grows with box, caps at 1.25rem */
   font-size: clamp(0.9rem, 2.8cqw, 1.25rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--chart-title-color);
+  color: var(--chartTitleColor);
   margin: 0;
   line-height: 1.2;
   text-align: center; /* WHAT: Center align chart titles */
@@ -61,8 +61,8 @@
   align-items: center;
   justify-content: center;
   height: 100%; /* Fill parent height */
-  background: var(--chart-nodata-bg);
-  border: 2px dashed var(--chart-nodata-border);
+  background: var(--chartNoDataBackground);
+  border: 2px dashed var(--chartNoDataBorder);
 }
 
 .noDataContent {
@@ -70,7 +70,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--mm-space-2);
-  color: var(--chart-nodata-text);
+  color: var(--chartNoDataText);
 }
 
 .noDataIcon {
@@ -85,7 +85,7 @@
 
 .noDataLabel {
   font-size: var(--mm-font-size-sm);
-  color: var(--chart-nodata-text);
+  color: var(--chartNoDataText);
 }
 
 /* KPI Chart - 3-row grid: Icon (30%), Value (40%), Label (30%) */
@@ -146,7 +146,7 @@
   /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (1.5rem → 6rem = 4x) */
   font-size: clamp(1.5rem, min(20cqh, 25cqw), 6rem);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--chart-value-color);
+  color: var(--chartValueColor);
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
@@ -170,7 +170,7 @@
   height: 100%;
   font-size: clamp(0.75rem, 9cqh, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
-  color: var(--chart-label-color);
+  color: var(--chartLabelColor);
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -191,7 +191,7 @@
 .pieTitle {
   font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--chart-title-color);
+  color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
   text-align: center;
 }
@@ -218,19 +218,19 @@
 
 .pieLabel {
   font-size: clamp(0.7rem, 2cqw, 0.9rem);
-  color: var(--chart-label-color);
+  color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
 }
 
 .pieValue {
   font-size: clamp(1rem, 3cqw, 1.4rem);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--chart-value-color);
+  color: var(--chartValueColor);
 }
 
 .piePercent {
   font-size: var(--mm-font-size-sm);
-  color: var(--chart-label-color);
+  color: var(--chartLabelColor);
 }
 
 /* Pie Chart Container for Chart.js */
@@ -274,7 +274,7 @@
   /* WHY: Same pattern as bar labels - 30% of allocated row space */
   font-size: 4.5cqh;
   font-weight: var(--mm-font-weight-medium);
-  color: var(--chart-label-color);
+  color: var(--chartLabelColor);
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -293,7 +293,7 @@
 .barTitle {
   font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--chart-title-color);
+  color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
   flex-shrink: 0; /* WHAT: Prevent title from shrinking */
 }
@@ -331,7 +331,7 @@
   justify-content: flex-end;
   padding-right: var(--mm-space-2);
   font-size: clamp(0.75rem, 4.95cqh, 0.9rem);
-  color: var(--chart-label-color);
+  color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
   line-height: 1.1;
@@ -343,7 +343,7 @@
 }
 
 .barTrack {
-  background: var(--chart-nodata-bg);
+  background: var(--chartNoDataBackground);
   /* WHAT: 11% of cell height, max 50% of cell width, semicircular ends
    * WHY: Centralized system - no hardcoded pixels, responsive to cell size
    * HOW: 11cqh height constrained to 1.2x ratio for tight consistency */
@@ -371,7 +371,7 @@
   padding-left: var(--mm-space-2);
   font-size: clamp(0.875rem, 5.5cqh, 1.05rem);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--chart-value-color);
+  color: var(--chartValueColor);
   text-align: left;
   line-height: 1;
   overflow: hidden;
@@ -394,7 +394,7 @@
 .textTitle {
   font-size: clamp(0.95rem, 2.6cqw, 1.25rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--chart-title-color);
+  color: var(--chartTitleColor);
   margin-bottom: 0;
 }
 
@@ -411,7 +411,7 @@
   height: 100%;
   font-size: clamp(1rem, min(8cqh, 6cqw), 1.5rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--chart-value-color);
+  color: var(--chartValueColor);
   line-height: 1.3;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -421,7 +421,7 @@
 
 /* Image Chart - SIMPLIFIED */
 .image {
-  background: var(--chart-bg) !important;
+  background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
   overflow: hidden !important; /* Clip image to rounded corners */
@@ -453,8 +453,8 @@
   align-items: center;
   justify-content: center;
   height: 100%; /* Fill parent height */
-  background: var(--chart-error-bg);
-  color: var(--chart-error-text);
+  background: var(--chartErrorBackground);
+  color: var(--chartErrorText);
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-medium);
 }

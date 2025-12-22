@@ -143,39 +143,46 @@ function applyStyleToPage(style: PageStyleEnhanced) {
   // WHY: Allow full control over chart colors, fallback to smart defaults
   const chartColorScheme = style.chartColors || getDefaultChartColors(style.colorScheme);
 
-  // Generate CSS rules
+  // WHAT: Generate CSS rules with UNIFIED naming (CSS variables = database property names)
+  // WHY: No mapping, no confusion - one variable name across database, code, and CSS
+  // HOW: Use exact camelCase database names as CSS variable names
   styleTag.textContent = `
     /* Report Styles Enhanced - Auto-generated from theme: ${style.name} */
     
     :root {
-      /* WHAT: Chart color palette CSS variables for Chart.js */
-      /* WHY: Allow Chart.js to read theme colors dynamically */
-      --chart-color-1: ${chartColors[0]};
-      --chart-color-2: ${chartColors[1]};
-      --chart-color-3: ${chartColors[2]};
-      --chart-color-4: ${chartColors[3]};
-      --chart-color-5: ${chartColors[4]};
+      /* UNIFIED NAMING SYSTEM: CSS variables match database properties exactly */
       
-      /* WHAT: Chart-specific color variables */
-      /* WHY: Complete control over all chart element colors */
-      --chart-bg: ${chartColorScheme.chartBackground};
-      --chart-border: ${chartColorScheme.chartBorder};
-      --chart-title-color: ${chartColorScheme.chartTitleColor};
-      --chart-label-color: ${chartColorScheme.chartLabelColor};
-      --chart-value-color: ${chartColorScheme.chartValueColor};
-      --chart-nodata-bg: ${chartColorScheme.chartNoDataBackground};
-      --chart-nodata-border: ${chartColorScheme.chartNoDataBorder};
-      --chart-nodata-text: ${chartColorScheme.chartNoDataText};
-      --chart-error-bg: ${chartColorScheme.chartErrorBackground};
-      --chart-error-text: ${chartColorScheme.chartErrorText};
-      --chart-tooltip-bg: ${chartColorScheme.chartTooltipBackground};
-      --chart-tooltip-text: ${chartColorScheme.chartTooltipText};
-      --export-btn-bg: ${chartColorScheme.exportButtonBackground};
-      --export-btn-text: ${chartColorScheme.exportButtonText};
-      --export-btn-hover-bg: ${chartColorScheme.exportButtonHoverBackground};
+      /* Typography colors (from style.typography.*) */
+      --headingColor: ${style.typography.headingColor};
+      --primaryTextColor: ${style.typography.primaryTextColor};
+      --secondaryTextColor: ${style.typography.secondaryTextColor};
+      --fontFamily: ${getFontFamily(style.typography.fontFamily)};
       
-      /* WHAT: Individual chart element colors */
-      /* WHY: Allow granular control over each bar, pie slice, and KPI icon */
+      /* Color scheme (from style.colorScheme.*) */
+      --primary: ${style.colorScheme.primary};
+      --secondary: ${style.colorScheme.secondary};
+      --success: ${style.colorScheme.success};
+      --warning: ${style.colorScheme.warning};
+      --error: ${style.colorScheme.error};
+      
+      /* Chart colors (from style.chartColors.*) */
+      --chartBackground: ${chartColorScheme.chartBackground};
+      --chartBorder: ${chartColorScheme.chartBorder};
+      --chartTitleColor: ${chartColorScheme.chartTitleColor};
+      --chartLabelColor: ${chartColorScheme.chartLabelColor};
+      --chartValueColor: ${chartColorScheme.chartValueColor};
+      --chartNoDataBackground: ${chartColorScheme.chartNoDataBackground};
+      --chartNoDataBorder: ${chartColorScheme.chartNoDataBorder};
+      --chartNoDataText: ${chartColorScheme.chartNoDataText};
+      --chartErrorBackground: ${chartColorScheme.chartErrorBackground};
+      --chartErrorText: ${chartColorScheme.chartErrorText};
+      --chartTooltipBackground: ${chartColorScheme.chartTooltipBackground};
+      --chartTooltipText: ${chartColorScheme.chartTooltipText};
+      --exportButtonBackground: ${chartColorScheme.exportButtonBackground};
+      --exportButtonText: ${chartColorScheme.exportButtonText};
+      --exportButtonHoverBackground: ${chartColorScheme.exportButtonHoverBackground};
+      
+      /* Individual chart element colors (from style.chartColors.*) */
       --kpiIconColor: ${chartColorScheme.kpiIconColor};
       --barColor1: ${chartColorScheme.barColor1};
       --barColor2: ${chartColorScheme.barColor2};
@@ -185,17 +192,17 @@ function applyStyleToPage(style: PageStyleEnhanced) {
       --pieColor1: ${chartColorScheme.pieColor1};
       --pieColor2: ${chartColorScheme.pieColor2};
       
-      /* WHAT: Hero background CSS variable for ReportHero.module.css */
-      /* WHY: Allow CSS modules to read custom hero background */
-      --report-hero-bg: ${heroBackgroundCSS};
+      /* Background CSS (computed from style.pageBackground, style.heroBackground) */
+      --pageBackground: ${pageBackgroundCSS};
+      --heroBackground: ${heroBackgroundCSS};
+      --contentBoxBackground: ${contentBoxBackgroundCSS};
       
-      /* WHAT: Hero text color CSS variable for ReportHero.module.css */
-      /* WHY: Allow CSS modules to read custom hero text color */
-      --report-hero-color: ${style.typography.headingColor};
-      
-      /* WHAT: Override design token --mm-primary with custom style primary color */
-      /* WHY: KPI icons use --mm-primary, must respect custom style */
-      --mm-primary: ${style.colorScheme.primary};
+      /* Legacy compatibility (Chart.js numbered colors) */
+      --chart-color-1: ${chartColors[0]};
+      --chart-color-2: ${chartColors[1]};
+      --chart-color-3: ${chartColors[2]};
+      --chart-color-4: ${chartColors[3]};
+      --chart-color-5: ${chartColors[4]};
     }
     
     body {
