@@ -52,7 +52,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }
       
-      userRole = tokenData.role as UserRole;
+      // Normalize role (historical tokens may use 'super-admin')
+      const roleRaw = tokenData.role as string
+      const normalizedRole = roleRaw === 'super-admin' ? 'superadmin' : roleRaw
+      userRole = normalizedRole as UserRole;
     } catch (error) {
       console.warn(`⚠️  Session decode error: ${pathname}`, error);
       return NextResponse.redirect(new URL('/admin/login', request.url));

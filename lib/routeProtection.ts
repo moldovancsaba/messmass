@@ -12,8 +12,8 @@ import { hasMinimumRole } from './permissions';
  * FORMAT: { route: minimumRole }
  */
 export const ROUTE_PROTECTION: Record<string, UserRole> = {
-  // WHAT: Main admin dashboard - superadmin only (full overview)
-  '/admin': 'superadmin',
+  // WHAT: Main admin dashboard - accessible to all authenticated users (cards filtered by role)
+  '/admin': 'guest',
   
   // WHAT: Help page - accessible to all authenticated users (guests can read docs)
   '/admin/help': 'guest',

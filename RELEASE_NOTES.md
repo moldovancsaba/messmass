@@ -1,5 +1,36 @@
 # MessMass Release Notes
 
+## [v11.46.0] — 2025-12-22T18:42:50.000Z
+
+### Summary
+- Authentication system improvements and cookie handling
+- Enhanced route protection middleware
+- Login and session management refinements
+
+### Features
+- Improved admin authentication flow
+- Enhanced cookie clearing mechanism
+- Refined route protection logic
+- Session handling improvements
+
+### Technical Details
+- `app/api/admin/clear-cookies/route.ts` - Enhanced cookie clearing
+- `app/api/admin/login/route.ts` - Improved login flow
+- `lib/auth.ts` - Authentication utility refinements
+- `lib/routeProtection.ts` - Route protection enhancements
+- `middleware.ts` - Middleware improvements
+
+### Build
+- ✅ Authentication flow verified
+- ✅ Session management tested
+
+### Version
+`11.45.0` → `11.46.0` (MINOR - Authentication improvements)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.45.0] — 2025-12-22T18:31:10.000Z
 
 ### Summary

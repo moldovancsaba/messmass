@@ -63,7 +63,8 @@ export async function POST(request: NextRequest) {
       token,
       expiresAt: expiresAt.toISOString(),
       userId: user?._id?.toString() || 'admin',
-      role: (user?.role || 'super-admin') as 'admin' | 'super-admin'
+      // Normalize role to canonical set used across app ('guest'|'user'|'admin'|'superadmin'|'api')
+      role: (user?.role || 'superadmin') as 'guest' | 'user' | 'admin' | 'superadmin' | 'api'
     }
 
     const signedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')

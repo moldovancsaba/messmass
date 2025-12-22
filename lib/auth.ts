@@ -31,7 +31,9 @@ function decodeSessionToken(sessionToken: string): { token: string; expiresAt: s
     const expiresAt = new Date(tokenData.expiresAt)
     const now = new Date()
     if (now > expiresAt) return null
-    return tokenData
+    // Normalize historical role values (e.g., 'super-admin' → 'superadmin')
+    const normalizedRole = tokenData.role === 'super-admin' ? 'superadmin' : tokenData.role
+    return { ...tokenData, role: normalizedRole }
   } catch {
     return null
   }
