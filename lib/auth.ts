@@ -72,7 +72,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 
   // Map DB user to AdminUser view model; permissions derived from role
   const basePermissions = ['read', 'write', 'delete', 'manage-users']
-  const permissions = user.role === 'super-admin' ? basePermissions : basePermissions
+  const permissions = user.role === 'superadmin' ? basePermissions : basePermissions
 
   return {
     id: user._id!.toString(),

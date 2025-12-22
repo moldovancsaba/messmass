@@ -16,7 +16,7 @@ import type { UserRole } from '@/lib/users';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // WHAT: Check if current user is superadmin
@@ -36,7 +36,8 @@ export async function PUT(
       );
     }
     
-    const { id } = params;
+    // WHAT: Await params (Next.js 15 requirement)
+    const { id } = await context.params;
     const body = await request.json();
     const { newRole } = body as { newRole: UserRole };
     

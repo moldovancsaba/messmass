@@ -30,10 +30,10 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Only super-admin can regenerate passwords
-    if (admin.role !== 'super-admin') {
-      console.log(`❌ PUT /api/admin/local-users/[id]: User ${admin.email} is not super-admin (role: ${admin.role})`)
-      return NextResponse.json({ error: 'Forbidden: Only super-admin can regenerate passwords' }, { status: 403 })
+    // Only superadmin can regenerate passwords
+    if (admin.role !== 'superadmin') {
+      console.log(`❌ PUT /api/admin/local-users/[id]: User ${admin.email} is not superadmin (role: ${admin.role})`)
+      return NextResponse.json({ error: 'Forbidden: Only superadmin can regenerate passwords' }, { status: 403 })
     }
 
     const userId = params.id
@@ -106,9 +106,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Only super-admin can delete users
-    if (admin.role !== 'super-admin') {
-      return NextResponse.json({ error: 'Forbidden: Only super-admin can delete users' }, { status: 403 })
+    // Only superadmin can delete users
+    if (admin.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Forbidden: Only superadmin can delete users' }, { status: 403 })
     }
 
     const userId = params.id

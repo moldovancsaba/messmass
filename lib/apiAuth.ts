@@ -128,7 +128,7 @@ export async function validateAPIKey(token: string): Promise<APIAuthResult> {
         id: user._id!.toString(),
         name: user.name,
         email: user.email,
-        role: user.role as 'admin' | 'super-admin',
+        role: user.role,
         permissions: ['read'] // API users are read-only in v1
       }
     };

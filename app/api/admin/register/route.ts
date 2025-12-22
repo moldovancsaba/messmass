@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createUser, findUserByEmail } from '@/lib/users';
-import { generatePassword } from '@/lib/pagePassword';
+import { generateMD5StylePassword } from '@/lib/pagePassword';
 
 /**
  * WHAT: POST handler for user registration
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // WHY: Auto-login user after registration
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
     const sessionToken = {
-      token: generatePassword(), // Random token
+      token: generateMD5StylePassword(), // Random token
       expiresAt: expiresAt.toISOString(),
       userId: newUser._id!.toString(),
       role: newUser.role,

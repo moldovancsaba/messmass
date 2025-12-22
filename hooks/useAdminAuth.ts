@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface AdminUser {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'super-admin';
-  permissions: string[];
-}
+import type { AdminUser } from '@/lib/auth';
 
 export function useAdminAuth() {
   const router = useRouter();
