@@ -522,13 +522,13 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Validate that the style exists in page_styles_enhanced collection
-      const pageStylesCollection = db.collection('page_styles_enhanced');
-      const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
+      // Validate that the style exists in report_styles collection (26-color system)
+      const reportStylesCollection = db.collection('report_styles');
+      const styleExists = await reportStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
         return NextResponse.json(
-          { success: false, error: 'Referenced style does not exist' },
+          { success: false, error: 'Referenced report style does not exist' },
           { status: 404 }
         );
       }
@@ -721,8 +721,8 @@ export async function PUT(request: NextRequest) {
 
     console.log('🔄 Updating project:', projectId, { styleId });
 
-    // WHAT: Validate styleId against page_styles_enhanced collection
-    // WHY: Migrated from old pageStyles system to new enhanced system
+    // WHAT: Validate styleId against report_styles collection (26-color system)
+    // WHY: Using new report style system, not legacy page_styles_enhanced
     if (styleId && styleId !== null && styleId !== 'null') {
       if (!ObjectId.isValid(styleId)) {
         return NextResponse.json(
@@ -736,14 +736,14 @@ export async function PUT(request: NextRequest) {
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
     
-    // If styleId is provided, validate it exists in page_styles_enhanced collection
+    // If styleId is provided, validate it exists in report_styles collection
     if (styleId && styleId !== null && styleId !== 'null') {
-      const pageStylesCollection = db.collection('page_styles_enhanced');
-      const styleExists = await pageStylesCollection.findOne({ _id: new ObjectId(styleId) });
+      const reportStylesCollection = db.collection('report_styles');
+      const styleExists = await reportStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
         return NextResponse.json(
-          { success: false, error: 'Referenced style does not exist' },
+          { success: false, error: 'Referenced report style does not exist' },
           { status: 404 }
         );
       }

@@ -757,19 +757,19 @@ export default function PartnersAdminPageUnified() {
         </div>
         
         <div className="form-group mb-4">
-          <label className="form-label-block">Page Style</label>
+          <label className="form-label-block">Report Visual Style</label>
           <select 
             className="form-input"
             value={newPartnerData.styleId || ''}
             onChange={(e) => setNewPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
           >
-            <option value="">— Use Default/Global —</option>
+            <option value="">— Use Default Style —</option>
             {availableStyles.map(s => (
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
           <p className="form-hint">
-            💡 Page styling (fonts, colors, gradients) for partner report page
+            💡 Report color theme (26-color system) for partner report page
           </p>
         </div>
         
@@ -893,19 +893,19 @@ export default function PartnersAdminPageUnified() {
         </div>
         
         <div className="form-group mb-4">
-          <label className="form-label-block">Page Style</label>
+          <label className="form-label-block">Report Visual Style</label>
           <select 
             className="form-input"
             value={editPartnerData.styleId || ''}
             onChange={(e) => setEditPartnerData(prev => ({ ...prev, styleId: e.target.value || null }))}
           >
-            <option value="">— Use Default/Global —</option>
+            <option value="">— Use Default Style —</option>
             {availableStyles.map(s => (
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
           <p className="form-hint">
-            💡 Page styling (fonts, colors, gradients) for partner report page
+            💡 Report color theme (26-color system) for partner report page
           </p>
         </div>
         

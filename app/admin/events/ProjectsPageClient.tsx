@@ -186,17 +186,17 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
 
   useEffect(() => {
     loadProjects();
-    // WHAT: Load styles from page_styles_enhanced API
-    // WHY: Migrated from old /api/page-styles to new enhanced system
+    // WHAT: Load report styles from NEW report_styles collection (26-color system)
+    // WHY: Use modern report styling system instead of legacy page_styles_enhanced
     (async () => {
       try {
-        const res = await fetch('/api/page-styles-enhanced');
+        const res = await fetch('/api/report-styles');
         const data = await res.json();
         if (data.success) {
           setAvailableStyles(data.styles.map((s: any) => ({ _id: s._id, name: s.name })));
         }
       } catch (e) {
-        console.error('Failed to load enhanced styles', e);
+        console.error('Failed to load report styles', e);
       }
     })();
   }, [loadProjects]);
@@ -985,20 +985,23 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
           />
         </div>
         
-        {/* WHAT: Page Style selection
-         * WHY: Allow project-specific styling via page_styles_enhanced */}
+        {/* WHAT: Report Visual Style selection
+         * WHY: Allow project-specific styling using 26-color report style system */}
         <div className="form-group mb-4">
-          <label className="form-label-block">Page Style</label>
+          <label className="form-label-block">Report Visual Style</label>
           <select 
             className="form-input"
             value={newProjectData.styleId || ''}
             onChange={(e) => setNewProjectData(prev => ({ ...prev, styleId: e.target.value }))}
           >
-            <option value="">— Use Default/Global —</option>
+            <option value="">— Use Default Style —</option>
             {availableStyles.map(s => (
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
           </select>
+          <p className="form-hint">
+            💡 Report color theme (26-color system for charts, hero, text)
+          </p>
         </div>
       </FormModal>
 
@@ -1050,20 +1053,23 @@ export default function ProjectsPageClient({ user }: ProjectsPageClientProps) {
             />
           </div>
           
-          {/* WHAT: Page Style selection
-           * WHY: Allow project-specific styling via page_styles_enhanced */}
+          {/* WHAT: Report Visual Style selection
+           * WHY: Allow project-specific styling using 26-color report style system */}
           <div className="form-group">
-            <label>Page Style</label>
+            <label>Report Visual Style</label>
             <select 
               className="form-input"
               value={editProjectData.styleId || ''}
               onChange={(e) => setEditProjectData(prev => ({ ...prev, styleId: e.target.value }))}
             >
-              <option value="">— Use Default/Global —</option>
+              <option value="">— Use Default Style —</option>
               {availableStyles.map(s => (
                 <option key={s._id} value={s._id}>{s.name}</option>
               ))}
             </select>
+            <p className="form-hint">
+              💡 Report color theme (26-color system for charts, hero, text)
+            </p>
           </div>
           
           {/* WHAT: Bitly Links Management Section
