@@ -99,8 +99,23 @@ async function resolveReportTemplate(
         if (template) {
           console.log(`✅ Using project-specific template: ${template.name}`);
           const populated = await populateDataBlocks(template);
+          
+          // WHAT: Project's styleIdEnhanced takes precedence over template styleId
+          // WHY: Event-specific branding should override template defaults
+          // HOW: Use project.styleIdEnhanced first, then fall back to template.styleId
+          const finalTemplate = {
+            ...populated,
+            styleId: project.styleIdEnhanced || populated.styleId || null
+          };
+          
+          console.log('🎨 StyleId resolution (project-level):', {
+            templateStyleId: populated.styleId,
+            projectStyleId: project.styleIdEnhanced,
+            finalStyleId: finalTemplate.styleId
+          });
+          
           return {
-            template: populated as ReportTemplate,
+            template: finalTemplate as ReportTemplate,
             resolvedFrom: 'project',
             source: project.eventName || project._id.toString()
           };
@@ -126,12 +141,20 @@ async function resolveReportTemplate(
             console.log(`✅ Using partner template: ${template.name} (via ${partner.name})`);
             const populated = await populateDataBlocks(template);
             
-            // WHAT: Partner's styleId takes precedence over template styleId
-            // WHY: Partner-specific branding should always override template defaults
+            // WHAT: Style resolution hierarchy: project.styleIdEnhanced > partner.styleId > template.styleId
+            // WHY: Event-specific style overrides partner style, which overrides template default
+            // HOW: Check each level in order of precedence
             const finalTemplate = {
               ...populated,
-              styleId: partner.styleId || populated.styleId || null
+              styleId: project.styleIdEnhanced || partner.styleId || populated.styleId || null
             };
+            
+            console.log('🎨 StyleId resolution (partner-level):', {
+              templateStyleId: populated.styleId,
+              partnerStyleId: partner.styleId,
+              projectStyleId: project.styleIdEnhanced,
+              finalStyleId: finalTemplate.styleId
+            });
             
             return {
               template: finalTemplate as ReportTemplate,
