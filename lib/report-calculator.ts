@@ -29,6 +29,7 @@ export interface Chart {
   };
   aspectRatio?: '16:9' | '9:16' | '1:1';
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
+  showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
 }
 
 /**
@@ -58,6 +59,7 @@ export interface ChartResult {
   formatting?: Chart['formatting'];
   aspectRatio?: Chart['aspectRatio'];
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
+  showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
   error?: string;
 }
 
@@ -195,7 +197,8 @@ export class ReportCalculator {
       iconVariant: chart.iconVariant,
       elements: validElements,
       formatting: chart.formatting,
-      showTitle: chart.showTitle
+      showTitle: chart.showTitle,
+      showPercentages: chart.showPercentages
     };
   }
 

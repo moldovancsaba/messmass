@@ -309,6 +309,7 @@ export async function GET(request: NextRequest) {
       heroSettings: config.heroSettings, // HERO block visibility settings
       alignmentSettings: config.alignmentSettings, // Block alignment settings
       showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+      showPercentages: config.showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
       createdAt: config.createdAt,
       updatedAt: config.updatedAt,
       createdBy: config.createdBy,
@@ -364,7 +365,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio, heroSettings, alignmentSettings, showTitle } = body;
+    const { chartId, title, type, order, isActive, elements, icon, iconVariant, emoji, subtitle, showTotal, totalLabel, aspectRatio, heroSettings, alignmentSettings, showTitle, showPercentages } = body;
 
     // WHAT: Log received data to debug persistence
     console.log('📥 POST RECEIVED - chartId:', chartId);
@@ -420,6 +421,7 @@ export async function POST(request: NextRequest) {
       heroSettings, // HERO block visibility settings
       alignmentSettings, // Block alignment settings
       showTitle, // WHAT: Chart-level title visibility control
+      showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
       createdAt: now,
       updatedAt: now,
       createdBy: user.id

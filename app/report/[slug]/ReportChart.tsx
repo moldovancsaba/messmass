@@ -191,6 +191,10 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Check if percentages should be shown (default: true for backward compatibility)
+  // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
+  const showPercentages = result.showPercentages !== false;
+  
   const total = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
   // WHAT: Read theme colors from CSS variables
@@ -249,7 +253,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
             const label = context.label || '';
             const value = context.parsed as number;
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-            return `${label}: ${value.toLocaleString()} (${percentage}%)`;
+            // WHAT: Conditionally show percentage in tooltip based on showPercentages flag
+            // WHY: Respect chart configuration setting (v11.38.0)
+            return showPercentages 
+              ? `${label}: ${value.toLocaleString()} (${percentage}%)`
+              : `${label}: ${value.toLocaleString()}`;
           }
         }
       }
@@ -283,7 +291,9 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
                     eslint-disable-next-line react/forbid-dom-props */}
                 <div className={styles.pieLegendDot} style={{ backgroundColor: color }} />
                 <div className={styles.pieLegendText}>
-                  {protectedLabel}: {percentage}%
+                  {/* WHAT: Conditionally show percentage based on showPercentages flag (v11.38.0)
+                      WHY: Respect chart configuration - some charts want clean labels without % */}
+                  {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
                 </div>
               </div>
             );

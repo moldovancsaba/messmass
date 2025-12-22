@@ -76,6 +76,7 @@ export async function GET() {
         totalLabel: config.totalLabel,
         aspectRatio: config.aspectRatio, // v9.3.0: Image aspect ratio for grid width calculation
         showTitle: config.showTitle, // WHAT: Chart-level title visibility control
+        showPercentages: config.showPercentages, // WHAT: Pie chart percentage visibility (v11.38.0)
         formatting: config.elements && config.elements.length > 0 ? config.elements[0].formatting : undefined, // WHAT: Extract formatting from first element
         // Exclude sensitive fields like createdBy, lastModifiedBy, etc.
       };

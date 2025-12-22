@@ -167,6 +167,11 @@ export interface ChartConfiguration {
   // WHY: Allow individual charts to hide their titles on report pages
   // HOW: Controls whether title/subtitle appear in the rendered chart
   showTitle?: boolean;
+  
+  // WHAT: Pie chart percentage visibility control (v11.38.0)
+  // WHY: Allow pie charts to hide percentages in legend/tooltips
+  // HOW: Controls whether "Label: 25%" or just "Label" appears
+  showPercentages?: boolean;
 }
 
 /**

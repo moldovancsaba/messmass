@@ -50,6 +50,7 @@ interface ChartConfigFormData {
   totalLabel?: string;
   aspectRatio?: '16:9' | '9:16' | '1:1'; // WHAT: Image aspect ratio (v9.3.0) for automatic grid width calculation
   showTitle?: boolean; // WHAT: Chart-level title visibility control
+  showPercentages?: boolean; // WHAT: Pie chart percentage visibility control (v11.38.0)
 }
 
 // Sample project stats for testing formulas
@@ -504,7 +505,8 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
         showTotal: false,
         totalLabel: '',
         aspectRatio: '16:9', // WHAT: Default aspect ratio for image charts (v9.3.0); WHY: Ensures new image charts have correct display ratio
-        showTitle: true // WHAT: Default to showing title on new charts
+        showTitle: true, // WHAT: Default to showing title on new charts
+        showPercentages: true // WHAT: Default to showing percentages in pie charts (v11.38.0)
       });
     }
     setShowEditor(true);
@@ -1283,9 +1285,29 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                     />
                   )}
                 </div>
+                
+                {/* ROW 4: Show Percentages (Pie Charts Only) - v11.38.0 */}
+                {formData.type === 'pie' && (
+                  <div className="formatting-row">
+                    <label className="formatting-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={formData.showPercentages !== false}
+                        onChange={(e) => {
+                          setFormData({ 
+                            ...formData, 
+                            showPercentages: e.target.checked
+                          });
+                        }}
+                      />
+                      <span>Show Percentages in Legend</span>
+                    </label>
+                  </div>
+                )}
               </div>
               <p className="text-xs text-gray-600 mt-2">
                 💡 Tip: Subtitle appears below the chart title and is useful for explaining KPI metrics.
+                {formData.type === 'pie' && ' Uncheck "Show Percentages" for cleaner pie chart legends.'}
               </p>
             </div>
           </div>
