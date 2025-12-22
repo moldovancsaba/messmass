@@ -503,31 +503,53 @@
     font-size: var(--mm-font-size-xs);
   }
   
-  /* WHAT: Force explicit height on all non-image charts in mobile */
-  /* WHY: aspect-ratio can break document flow, use explicit min-height */
+  /* WHAT: Charts must scale to fit their container on mobile
+   * WHY: Prevent overflow - charts must behave same as desktop (scale and fit)
+   * HOW: Maintain flexbox fill behavior, ensure container queries work properly */
   .chart:not(.image) {
-    min-height: 250px !important; /* Explicit minimum height */
-    height: auto !important;
     width: 100% !important;
-    max-height: none !important;
-    flex: none !important;
-    position: relative !important; /* Ensure normal document flow */
+    height: 100% !important; /* CRITICAL: Fill parent container */
+    min-height: 250px !important; /* Minimum readable size */
+    max-width: 100% !important;
+    flex: 1 1 auto !important; /* Allow flex filling */
+    overflow: hidden !important; /* Prevent content overflow */
+    box-sizing: border-box !important;
+  }
+  
+  /* WHAT: Image charts respect aspect ratio on mobile
+   * WHY: Images must maintain proper proportions without distortion
+   * HOW: Use aspect-ratio CSS property for reliable sizing */
+  .image {
+    width: 100% !important;
+    height: auto !important; /* Let aspect-ratio determine height */
+    min-height: 0 !important; /* Remove min-height constraint */
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
     overflow: hidden !important;
   }
   
-  /* WHAT: Image charts maintain their natural aspect ratio on mobile */
-  /* WHY: Images shouldn't be forced into 2:1, respect original dimensions */
-  .image {
-    height: auto !important;
-    min-height: 250px !important; /* Ensure images are visible */
-    position: relative !important;
+  /* WHAT: Aspect ratio classes for image containers on mobile */
+  .image.aspect169 {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .image.aspect916 {
+    aspect-ratio: 9 / 16;
+  }
+  
+  .image.aspect11 {
+    aspect-ratio: 1 / 1;
   }
   
   .imageContent {
-    /* WHAT: Show full image with natural aspect ratio */
-    height: 100% !important;
+    /* WHAT: Image fills container maintaining aspect ratio
+     * WHY: object-fit: cover ensures image fills space without distortion
+     * HOW: Same behavior as desktop - consistent across breakpoints */
     width: 100% !important;
-    object-fit: contain !important; /* Show full image on mobile */
-    max-height: none !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Fill container, crop to maintain ratio */
+    object-position: center !important;
+    display: block !important;
   }
 }

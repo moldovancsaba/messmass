@@ -1,5 +1,73 @@
 # MessMass Release Notes
 
+## [v11.46.2] — 2025-12-22T18:52:13.000Z
+
+### Summary
+- Fix mobile view report rendering issues
+- Charts now scale and fit properly without overflow on mobile
+- Image aspect ratios correctly maintained on mobile devices
+
+### Bug Fixes
+
+#### Chart Overflow on Mobile ✅
+**Problem**: Charts were overflowing their containers on mobile devices, breaking the layout.
+
+**Solution**: 
+- Changed mobile charts from `height: auto` to `height: 100%` to fill parent container
+- Maintained flexbox fill behavior (`flex: 1 1 auto`) for proper scaling
+- Ensured container queries work correctly with defined heights
+- Charts now behave identically to desktop: scale and fit the cell
+
+#### Image Aspect Ratio on Mobile ✅
+**Problem**: Report images not respecting their aspect ratios on mobile (worked on desktop).
+
+**Solution**:
+- Applied CSS `aspect-ratio` property to image containers on mobile
+- Separate classes for each ratio: `.aspect169` (16:9), `.aspect916` (9:16), `.aspect11` (1:1)
+- Changed image container from `min-height: 250px` to `height: auto` with aspect ratio control
+- Maintained `object-fit: cover` for consistent fill behavior across breakpoints
+
+### Technical Details
+
+**Files Modified**:
+- `app/report/[slug]/ReportChart.module.css` - Mobile responsive styles for charts and images
+- `app/report/[slug]/ReportContent.module.css` - Mobile grid layout with proper height management
+
+**Key Changes**:
+```css
+/* Charts - Mobile */
+.chart:not(.image) {
+  height: 100% !important; /* Fill container */
+  flex: 1 1 auto !important; /* Enable flex filling */
+  overflow: hidden !important; /* Prevent overflow */
+}
+
+/* Images - Mobile */
+.image {
+  height: auto !important; /* Let aspect-ratio determine */
+}
+
+.image.aspect169 { aspect-ratio: 16 / 9; }
+.image.aspect916 { aspect-ratio: 9 / 16; }
+.image.aspect11 { aspect-ratio: 1 / 1; }
+
+.rowItem {
+  min-height: 250px !important; /* Ensure charts have space */
+}
+```
+
+### Build
+- ✅ npm run build successful
+- ✅ Container queries functional on mobile
+- ✅ Responsive layout tested
+
+### Version
+`11.46.1` → `11.46.2` (PATCH - Mobile responsive fixes)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.46.1] — 2025-12-22T18:46:00.000Z
 
 ### Summary

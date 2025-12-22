@@ -138,8 +138,17 @@
   
   .rowItem {
     /* WHAT: All cells become direct children of .content */
-    display: block !important;
+    /* WHY: Must maintain defined height for container queries to work */
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    height: auto !important;
+    min-height: 250px !important; /* CRITICAL: Minimum height for charts */
+    margin-bottom: var(--mm-space-4) !important;
+  }
+  
+  /* WHAT: Ensure charts fill rowItem height on mobile */
+  .rowItem > * {
+    flex: 1 1 auto !important;
+    width: 100% !important;
   }
 }
