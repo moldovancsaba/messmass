@@ -1,5 +1,82 @@
 # MessMass Release Notes
 
+## [v11.46.3] — 2025-12-22T18:55:24.000Z
+
+### Summary
+- Fix Style Editor live preview pie chart implementation
+- Pie chart now matches real report rendering using Chart.js
+- Legend color indicator circles now have proper borders
+
+### Bug Fixes
+
+#### Style Editor Pie Chart Preview ✅
+**Problem**: Live preview in Style Editor used simple SVG instead of actual Chart.js implementation, and legend dots were missing borders.
+
+**Solution**:
+- Replaced SVG pie chart with actual Chart.js Doughnut component
+- Created `PieChartPreview` component matching `ReportChart.tsx` implementation
+- Added proper pie chart container and legend layout (70% chart / 30% legend)
+- Legend dots now have border using first pie color (matches real chart)
+- Reads colors from CSS variables same as real reports
+
+### Technical Details
+
+**Files Modified**:
+- `components/ReportStylePreview.tsx` - Added Chart.js Doughnut implementation
+- `components/ReportStylePreview.module.css` - Added pie chart container styles
+
+**Key Changes**:
+```tsx
+// New PieChartPreview component using Chart.js
+function PieChartPreview() {
+  const chartRef = useRef<ChartJS<'doughnut'>>(null);
+  const getPieColors = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const c1 = cs.getPropertyValue('--pieColor1').trim();
+    const c2 = cs.getPropertyValue('--pieColor2').trim();
+    return [c1, c2];
+  };
+  // ... Chart.js Doughnut with custom legend
+}
+```
+
+**CSS**:
+```css
+.pieChartContainer {
+  flex: 0 0 70%;
+  height: 150px;
+  position: relative;
+}
+
+.pieLegend {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pieLegendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-sizing: border-box; /* Ensure border doesn't expand */
+  /* Border applied via inline style using first pie color */
+}
+```
+
+### Build
+- ✅ npm run build successful
+- ✅ Chart.js properly integrated
+- ✅ Preview matches real report rendering
+
+### Version
+`11.46.2` → `11.46.3` (PATCH - Style Editor preview fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.46.2] — 2025-12-22T18:52:13.000Z
 
 ### Summary

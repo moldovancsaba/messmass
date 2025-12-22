@@ -4,13 +4,137 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
+import { Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  ChartOptions
+} from 'chart.js';
 import { ReportStyle } from '@/lib/reportStyleTypes';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './ReportStylePreview.module.css';
 
+// Register Chart.js components for pie charts
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 interface ReportStylePreviewProps {
   style: ReportStyle;
+}
+
+/**
+ * PieChartPreview - Matches real report pie chart implementation
+ */
+function PieChartPreview() {
+  const chartRef = useRef<ChartJS<'doughnut'>>(null);
+  
+  // WHAT: Read pie colors from CSS variables (same as real report)
+  const getPieColors = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const c1 = cs.getPropertyValue('--pieColor1').trim() || '#3b82f6';
+    const c2 = cs.getPropertyValue('--pieColor2').trim() || '#10b981';
+    return [c1, c2];
+  };
+  
+  const pieColors = getPieColors();
+  const sampleData = [
+    { label: 'Remote', value: 1274 },
+    { label: 'Stadium', value: 1273 }
+  ];
+  const total = sampleData.reduce((sum, d) => sum + d.value, 0);
+  
+  // Prepare Chart.js data (same structure as ReportChart.tsx)
+  const chartData = {
+    labels: sampleData.map(d => d.label),
+    datasets: [{
+      label: 'Fan Distribution',
+      data: sampleData.map(d => d.value),
+      backgroundColor: pieColors,
+      borderColor: pieColors[0],
+      borderWidth: 2,
+      hoverOffset: 6
+    }]
+  };
+  
+  // WHAT: Read tooltip colors from CSS variables
+  const getTooltipColors = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    return {
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
+      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
+    };
+  };
+  const tooltipColors = getTooltipColors();
+  
+  // Chart.js options (same as ReportChart.tsx)
+  const options: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '50%',
+    layout: {
+      padding: 10
+    },
+    plugins: {
+      legend: {
+        display: false // Use custom HTML legend
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: tooltipColors.bg,
+        titleColor: tooltipColors.text,
+        bodyColor: tooltipColors.text,
+        callbacks: {
+          label: (context) => {
+            const label = context.label || '';
+            const value = context.parsed as number;
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+            return `${label}: ${value.toLocaleString()} (${percentage}%)`;
+          }
+        }
+      }
+    }
+  };
+  
+  return (
+    <div className={styles.chart}>
+      <div className={styles.chartHeader}>
+        <div className={styles.chartTitle}>Fan Distribution</div>
+      </div>
+      <div className={styles.chartBody}>
+        <div className={styles.pieContent}>
+          {/* Pie chart container - 70% of body */}
+          <div className={styles.pieChartContainer}>
+            <Doughnut ref={chartRef} data={chartData} options={options} />
+          </div>
+          {/* Custom legend - 30% of body */}
+          <div className={styles.pieLegend}>
+            {sampleData.map((item, idx) => {
+              const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0.0';
+              const color = pieColors[idx % pieColors.length];
+              
+              return (
+                <div key={idx} className={styles.pieLegendItem}>
+                  {/* eslint-disable-next-line react/forbid-dom-props */}
+                  <div 
+                    className={styles.pieLegendDot} 
+                    style={{ 
+                      backgroundColor: color,
+                      border: `2px solid ${pieColors[0]}` // WHAT: Use first pie color as border (matches real chart)
+                    }}
+                  />
+                  <span>{item.label}: {percentage}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -84,61 +208,8 @@ export default function ReportStylePreview({ style }: ReportStylePreviewProps) {
           </div>
         </div>
 
-        {/* Pie Chart */}
-        <div className={styles.chart}>
-          <div className={styles.chartHeader}>
-            <div className={styles.chartTitle}>Fan Distribution</div>
-          </div>
-          <div className={styles.chartBody}>
-            <div className={styles.pieContent}>
-              <svg className={styles.pieSvg} viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="35"
-                  fill="var(--pieColor1)"
-                  stroke="var(--pieBorderColor)"
-                  strokeWidth="2"
-                  strokeDasharray="110 220"
-                  transform="rotate(-90 50 50)"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="35"
-                  fill="var(--pieColor2)"
-                  stroke="var(--pieBorderColor)"
-                  strokeWidth="2"
-                  strokeDasharray="110 220"
-                  strokeDashoffset="-110"
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
-              <div className={styles.pieLegend}>
-                <div className={styles.pieLegendItem}>
-                  <div 
-                    className={styles.pieLegendDot} 
-                    style={{ 
-                      backgroundColor: 'var(--pieColor1)',
-                      border: '2px solid var(--pieBorderColor)'
-                    }}
-                  />
-                  <span>Remote: 50%</span>
-                </div>
-                <div className={styles.pieLegendItem}>
-                  <div 
-                    className={styles.pieLegendDot} 
-                    style={{ 
-                      backgroundColor: 'var(--pieColor2)',
-                      border: '2px solid var(--pieBorderColor)'
-                    }}
-                  />
-                  <span>Stadium: 50%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Pie Chart - Using actual Chart.js Doughnut component */}
+        <PieChartPreview />
 
         {/* TEXT Chart */}
         <div className={styles.chart}>
