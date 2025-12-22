@@ -124,26 +124,18 @@
 }
 
 /* WHAT: Markdown element styles that inherit font size from auto-scaling
- * WHY: Support rich text formatting (headings, lists, bold, links)
+ * WHY: Support limited markdown features: title, bold, italic, lists, links
  * HOW: Use relative font sizes (em) to scale with parent dynamic fontSize */
 
-.text h1,
-.text h2,
-.text h3,
-.text h4,
-.text h5,
-.text h6 {
+/* WHAT: Single heading level - slightly larger than normal text
+ * WHY: User wants only ONE title type that's just a bit larger
+ * HOW: All # headings convert to h1 with 1.15em (15% larger) */
+.text h1 {
   margin: 0 0 0.25em 0;
   font-weight: 700;
   line-height: 1.2;
+  font-size: 1.15em; /* Just slightly larger than normal text */
 }
-
-.text h1 { font-size: 1.2em; }
-.text h2 { font-size: 1.1em; }
-.text h3 { font-size: 1.05em; }
-.text h4 { font-size: 1em; }
-.text h5 { font-size: 0.95em; }
-.text h6 { font-size: 0.9em; }
 
 .text p {
   margin: 0 0 0.5em 0;
@@ -187,33 +179,9 @@
   color: var(--mm-blue-700);
 }
 
-.text blockquote {
-  margin: 0.5em 0;
-  padding-left: 1em;
-  border-left: 3px solid var(--mm-gray-300);
-  font-style: italic;
-}
-
-.text code {
-  background-color: var(--mm-gray-100);
-  padding: 0.1em 0.3em;
-  border-radius: 3px;
-  font-family: monospace;
-  font-size: 0.9em;
-}
-
-.text pre {
-  background-color: var(--mm-gray-100);
-  padding: 0.5em;
-  border-radius: var(--mm-radius-md);
-  overflow-x: auto;
-  margin: 0.5em 0;
-}
-
-.text pre code {
-  background: none;
-  padding: 0;
-}
+/* WHAT: Removed unsupported markdown features
+ * WHY: User only wants: title, bold, italic, lists, links
+ * REMOVED: blockquote, code, pre (not in required feature list) */
 
 /* WHAT: Override external chart-item styles that interfere with TextChart */
 /* WHY: External CSS has min-height: 380px which breaks aspect-ratio */

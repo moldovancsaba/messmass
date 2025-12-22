@@ -17,6 +17,7 @@ import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './ReportChart.module.css';
+import { parseMarkdown } from '@/lib/markdownUtils';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -395,7 +396,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
  * Text Chart - Formatted text display
  */
 function TextChart({ result, className }: { result: ChartResult; className?: string }) {
-  const formattedValue = formatValue(result.kpiValue, result.formatting);
+  // WHAT: Render markdown content on report pages only
+  // WHY: User requirement: text boxes render markdown only on report pages
+  // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
+  const raw = typeof result.kpiValue === 'string' ? result.kpiValue : '';
+  const html = raw ? parseMarkdown(raw) : '';
   
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
@@ -408,7 +413,15 @@ function TextChart({ result, className }: { result: ChartResult; className?: str
         </div>
       )}
       <div className={styles.chartBody}>
-        <div className={styles.textContent}>{formattedValue}</div>
+        {html ? (
+          <div
+            className={`${styles.textContent} ${styles.textMarkdown}`}
+            // eslint-disable-next-line react/forbid-dom-props
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        ) : (
+          <div className={styles.textContent} />
+        )}
       </div>
     </div>
   );

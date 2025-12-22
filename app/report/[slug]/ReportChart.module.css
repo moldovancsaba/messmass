@@ -403,9 +403,7 @@
   /* WHY: Text content should dominate the space like KPI values */
   /* HOW: Use container queries to scale based on both width and height */
   /* CONSTRAINT: 1.5x max ratio (1rem → 1.5rem = 16px → 24px) for visual consistency */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   text-align: center;
   width: 100%;
   height: 100%;
@@ -413,11 +411,39 @@
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
   padding: var(--mm-space-2);
 }
+
+/* WHAT: Markdown element styles inside text content
+ * WHY: Support limited markdown features: title, bold, italic, lists, links
+ * HOW: Use relative font sizes (em) so they inherit container scaling
+ */
+.textMarkdown h1 {
+  margin: 0 0 0.25em 0;
+  font-weight: 700;
+  line-height: 1.2;
+  font-size: 1.15em; /* Single title size, slightly larger */
+}
+
+.textMarkdown p {
+  margin: 0 0 0.5em 0;
+}
+
+.textMarkdown strong { font-weight: 700; }
+.textMarkdown em { font-style: italic; }
+
+.textMarkdown ul,
+.textMarkdown ol {
+  margin: 0.25em 0 0.5em 0;
+  padding-left: 1.5em; /* indent markers */
+  text-align: left; /* lists read better left-aligned */
+  display: inline-block; /* keep centered within overall centered layout */
+}
+
+.textMarkdown li { margin: 0.15em 0; }
+
+.textMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
+.textMarkdown a:hover { color: var(--mm-blue-700); }
 
 /* Image Chart - SIMPLIFIED */
 .image {

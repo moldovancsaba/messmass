@@ -5684,7 +5684,10 @@ This document captures key learnings, insights, and best practices discovered du
 
 ---
 
-## UX/UI Learnings
+## Learnings
+
+### 2025-12-22T18:31:10.000Z
+- Markdown authoring often includes spaces just inside emphasis markers (e.g., "** text **"). CommonMark ignores these. We normalized whitespace inside emphasis markers in the parser to make authoring forgiving while keeping a constrained feature set for brand consistency.
 
 ### 5. Visual Hierarchy for Complex Information
 

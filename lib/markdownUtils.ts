@@ -6,13 +6,47 @@
 import { marked } from 'marked';
 
 /**
- * WHAT: Configure marked with safe defaults
- * WHY: Prevent XSS attacks while allowing standard markdown features
- * HOW: Enable GitHub Flavored Markdown with natural line breaks
+ * WHAT: Configure marked with limited features for text boxes
+ * WHY: Support only specific markdown features: title, bold, italic, lists, links
+ * HOW: Custom renderer that normalizes all headings to h1 and removes unsupported features
  */
+const renderer = new marked.Renderer();
+
+// WHAT: Convert all heading levels to h1
+// WHY: User wants only ONE heading type that's slightly larger than normal text
+// HOW: Override heading renderer to always output h1
+renderer.heading = ({ text }) => {
+  return `<h1>${text}</h1>`;
+};
+
+// WHAT: Remove blockquote support
+// WHY: Not in user's required feature list
+renderer.blockquote = ({ text }) => {
+  return text; // Strip blockquote, return plain text
+};
+
+// WHAT: Remove code block support
+// WHY: Not in user's required feature list
+renderer.code = ({ text }) => {
+  return text; // Strip code formatting, return plain text
+};
+
+// WHAT: Remove inline code support
+// WHY: Not in user's required feature list
+renderer.codespan = ({ text }) => {
+  return text; // Strip code formatting, return plain text
+};
+
+// WHAT: Remove strikethrough support
+// WHY: Not in user's required feature list
+renderer.del = ({ text }) => {
+  return text; // Strip strikethrough, return plain text
+};
+
 marked.setOptions({
   breaks: true,        // Convert \n to <br> (natural line breaks)
-  gfm: true,          // GitHub Flavored Markdown (tables, strikethrough, etc.)
+  gfm: false,          // Disable GitHub Flavored Markdown (no strikethrough, tables)
+  renderer: renderer   // Use custom renderer
 });
 
 /**
@@ -38,9 +72,14 @@ export function parseMarkdown(markdown: string): string {
   }
   
   try {
+    // WHAT: Normalize common authoring quirks before parsing
+    // WHY: Users often add spaces inside emphasis markers which CommonMark ignores
+    // HOW: Trim inner whitespace in ** bold ** and * italic * patterns
+    const normalized = normalizeEmphasisWhitespace(markdown);
+
     // WHAT: Parse markdown to HTML using marked
     // WHY: Convert user-friendly markdown syntax to renderable HTML
-    const html = marked.parse(markdown, {
+    const html = marked.parse(normalized, {
       async: false, // Synchronous parsing for simplicity
     }) as string;
     
@@ -51,6 +90,20 @@ export function parseMarkdown(markdown: string): string {
     // WHY: Graceful degradation ensures content always displays
     return `<p>${escapeHtml(markdown)}</p>`;
   }
+}
+
+/**
+ * normalizeEmphasisWhitespace
+ * WHAT: Make emphasis tolerant to spaces just inside markers
+ * WHY: Treat "** text **" as "**text**" and "* text *" as "*text*"
+ */
+function normalizeEmphasisWhitespace(input: string): string {
+  let out = input;
+  // Normalize bold: ** text ** -> **text** (non-greedy, multiline)
+  out = out.replace(/\*\*\s+([\s\S]*?)\s+\*\*/g, '**$1**');
+  // Normalize italic: * text * -> *text* (avoid matching **bold**)
+  out = out.replace(/(^|[^*])\*\s+([\s\S]*?)\s+\*(?!\*)/g, '$1*$2*');
+  return out;
 }
 
 /**
@@ -75,9 +128,9 @@ function escapeHtml(text: string): string {
 
 /**
  * isMarkdown
- * WHAT: Detect if text contains markdown syntax
+ * WHAT: Detect if text contains supported markdown syntax
  * WHY: Show markdown hints/preview only when relevant
- * HOW: Check for common markdown patterns
+ * HOW: Check for supported markdown patterns only
  * 
  * @param text - Text to check
  * @returns true if text contains markdown syntax
@@ -92,18 +145,15 @@ export function isMarkdown(text: string): boolean {
     return false;
   }
   
-  // WHAT: Regex patterns for common markdown syntax
-  // WHY: Quick detection without full parsing
+  // WHAT: Regex patterns for SUPPORTED markdown syntax only
+  // WHY: Only detect features user wants: title, bold, italic, lists, links
   const markdownPatterns = [
-    /^#{1,6}\s/m,           // Headings: # Heading
+    /^#\s/m,                // Heading: # Title (only single #)
     /\*\*[^*]+\*\*/,        // Bold: **text**
-    /\*[^*]+\*/,            // Italic: *text*
-    /^\s*[-*+]\s/m,         // Unordered lists: - item
+    /(?<!\*)\*(?!\*)[^*]+\*(?!\*)/,  // Italic: *text* (but not **)
+    /^\s*-\s/m,             // Unordered lists: - item
     /^\s*\d+\.\s/m,         // Ordered lists: 1. item
     /\[.+\]\(.+\)/,         // Links: [text](url)
-    /^\s*>\s/m,             // Blockquotes: > quote
-    /`[^`]+`/,              // Inline code: `code`
-    /~~[^~]+~~/,            // Strikethrough: ~~text~~
   ];
   
   return markdownPatterns.some(pattern => pattern.test(text));
@@ -112,11 +162,11 @@ export function isMarkdown(text: string): boolean {
 /**
  * getMarkdownHint
  * WHAT: Generate helpful markdown syntax hint for users
- * WHY: Guide users on how to format text
- * HOW: Return static string with common patterns
+ * WHY: Guide users on supported formatting options
+ * HOW: Return static string with ONLY supported patterns
  * 
  * @returns Markdown syntax guide string
  */
 export function getMarkdownHint(): string {
-  return '💡 Markdown supported: **bold**, *italic*, # heading, - lists, [link](url)';
+  return '💡 Supported: # title, **bold**, *italic*, - list, 1. numbered, [link](url)';
 }

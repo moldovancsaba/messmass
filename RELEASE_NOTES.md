@@ -1,5 +1,37 @@
 # MessMass Release Notes
 
+## [v11.45.0] — 2025-12-22T18:31:10.000Z
+
+### Summary
+- Report Text markdown rendering on report pages with strict, minimal feature set.
+- Emphasis normalization: handles common authoring like "** text **" and "* text *".
+
+### Features
+- Text charts on report pages now parse and render markdown with only:
+  - # title (single, slightly larger)
+  - **bold**
+  - *italic*
+  - 1. ordered list
+  - - unordered list
+  - [link](https://example.com)
+- All headings normalized to one size; blockquotes/code/strikethrough removed.
+
+### Technical Details
+- app/report/[slug]/ReportChart.tsx: render markdown for type 'text' using parseMarkdown.
+- app/report/[slug]/ReportChart.module.css: added .textMarkdown styles for allowed elements.
+- lib/markdownUtils.ts: custom marked renderer (single heading level); emphasis whitespace normalization.
+
+### Why
+- Partners author markdown casually; spaces inside emphasis markers caused raw text to appear. Normalization makes authoring forgiving while keeping output constrained to brand styles.
+
+### Build
+- ✅ next build successful; dev verified locally.
+
+### Version
+`11.44.1` → `11.45.0` (MINOR — user-facing rendering improvement)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
 ## [v11.43.0] — 2025-12-22T11:11:41.000Z
 
 ### Summary
