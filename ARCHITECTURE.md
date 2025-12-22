@@ -3630,6 +3630,130 @@ db.chart_configurations.updateMany(
 
 ---
 
+## Pie Chart Percentage Visibility Control (Version 11.43.0)
+
+### Overview
+
+The Pie Chart Percentage Visibility Control adds a configurable `showPercentages` field to pie charts, allowing admins to toggle percentage display in legends and tooltips on a per-chart basis. This provides flexibility for cleaner chart designs when percentages are not needed.
+
+**Status**: Production-Ready  
+**Release**: v11.43.0 (2025-12-22)  
+**Components**: showPercentages field, Chart Algorithm Manager checkbox
+
+### Key Features
+
+#### 1. Configuration Field
+
+**Database Schema Extension** (`lib/chartConfigTypes.ts`):
+```typescript
+interface ChartConfiguration {
+  chartId: string;
+  title: string;
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'value';
+  showTitle?: boolean;        // Controls title visibility
+  showPercentages?: boolean;  // ✅ NEW: Controls percentage visibility (pie charts only)
+  // ... other fields
+}
+```
+
+**Default Behavior**:
+- `showPercentages` defaults to `true` if not specified
+- All existing pie charts continue showing percentages (backward compatible)
+- Only applies to pie chart type - ignored by other chart types
+
+#### 2. Admin UI Integration
+
+**Chart Algorithm Manager** (`components/ChartAlgorithmManager.tsx`):
+- Checkbox appears in "Display Settings" section when `type === 'pie'`
+- Label: "Show Percentages in Legend"
+- Tooltip: "Uncheck for cleaner pie chart legends"
+- Saved to MongoDB on chart creation/update
+
+**UI Location**:
+```
+Chart Algorithm Manager > Edit Pie Chart
+  └─ Display Settings
+      ├─ Show Title [checkbox]
+      └─ Show Percentages in Legend [checkbox] (✅ NEW)
+```
+
+#### 3. Rendering Implementation
+
+**Legend Display** (`app/report/[slug]/ReportChart.tsx`):
+```tsx
+// Before: Always shows percentages
+<div className={styles.pieLegendText}>
+  {protectedLabel}: {percentage}%
+</div>
+
+// After: Conditional display
+<div className={styles.pieLegendText}>
+  {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
+</div>
+```
+
+**Tooltip Display**:
+```tsx
+// Tooltip callback respects showPercentages flag
+callbacks: {
+  label: (context) => {
+    const label = context.label || '';
+    const value = context.parsed as number;
+    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+    return showPercentages 
+      ? `${label}: ${value.toLocaleString()} (${percentage}%)`
+      : `${label}: ${value.toLocaleString()}`;
+  }
+}
+```
+
+#### 4. Visual Comparison
+
+**With Percentages** (`showPercentages: true` - default):
+```
+● Female: 45%
+● Male: 55%
+```
+
+**Without Percentages** (`showPercentages: false`):
+```
+● Female
+● Male
+```
+
+### Integration Points
+
+**Report Calculator** (`lib/report-calculator.ts`):
+- Passes `showPercentages` field from chart config to ChartResult
+- Field flows through calculation pipeline without modification
+
+**API Endpoints**:
+- `GET /api/chart-config` - Returns `showPercentages` field
+- `POST /api/chart-config` - Accepts `showPercentages` in request body
+- `PUT /api/chart-config` - Updates `showPercentages` field
+- `GET /api/chart-config/public` - Includes `showPercentages` for public access
+
+### Use Cases
+
+1. **Minimalist Reports**: Hide percentages when chart labels alone convey meaning
+2. **Space-Constrained Layouts**: Reduce text length in small pie chart legends
+3. **Design Preferences**: Match specific branding guidelines requiring clean labels
+4. **Redundant Data**: Hide percentages when exact values are shown elsewhere
+
+### Benefits
+
+- ✅ **Per-Chart Control**: Configure percentage visibility independently for each pie chart
+- ✅ **User Control**: Admins decide chart appearance without code changes
+- ✅ **Backward Compatible**: Existing charts unchanged (default: show percentages)
+- ✅ **Type Safety**: Full TypeScript support with proper type guards
+- ✅ **Consistent Pattern**: Follows `showTitle` toggle pattern
+
+### Migration
+
+**Not Required**: Field is optional with default value `true`. All existing pie charts automatically continue showing percentages until explicitly disabled by an admin.
+
+---
+
 ## Image Layout System with Aspect Ratio Support (Version 9.3.0)
 
 ### Overview

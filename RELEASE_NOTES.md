@@ -1,5 +1,96 @@
 # MessMass Release Notes
 
+## [v11.43.0] — 2025-12-22T11:11:41.000Z
+
+### Summary
+- **Pie Chart Percentage Visibility Control**: Added configurable `showPercentages` field to hide/show percentages in pie chart legends and tooltips
+- Bug fix: Pie charts were hardcoded to always display percentages regardless of settings
+- New checkbox in Chart Algorithm Manager for per-chart percentage control
+- Fully backward compatible (default: show percentages)
+
+### Features
+
+#### Pie Chart Percentage Toggle ✅
+
+**Problem**: Pie chart legends always displayed percentages (e.g., "Female: 45%") with no option to show cleaner labels (e.g., "Female").
+
+**Solution**: New `showPercentages` configuration field with UI control in Chart Algorithm Manager.
+
+**Implementation**:
+- Added `showPercentages?: boolean` to chart configuration types
+- Updated pie chart legend rendering to conditionally display percentages
+- Updated tooltip callbacks to respect the setting
+- Default: `true` (maintains existing behavior for all charts)
+
+**User Experience**:
+1. Navigate to `/admin/charts` (Chart Algorithm Manager)
+2. Edit any pie chart configuration
+3. In "Display Settings" section, toggle "Show Percentages in Legend" checkbox
+4. When unchecked: Legend shows "Female" instead of "Female: 45%"
+5. When checked: Legend shows "Female: 45%" (default)
+
+### Technical Details
+
+#### Files Modified (6 files)
+1. **`lib/chartConfigTypes.ts`** - Added `showPercentages` type field with documentation
+2. **`lib/report-calculator.ts`** - Added `showPercentages` to Chart and ChartResult interfaces
+3. **`app/report/[slug]/ReportChart.tsx`** - Conditional percentage display in legend and tooltip
+4. **`components/ChartAlgorithmManager.tsx`** - Added "Show Percentages" checkbox UI (pie charts only)
+5. **`app/api/chart-config/route.ts`** - Added `showPercentages` to POST/PUT handlers
+6. **`app/api/chart-config/public/route.ts`** - Added `showPercentages` to public API response
+
+#### Code Example
+
+**Before** (hardcoded percentages):
+```tsx
+<div className={styles.pieLegendText}>
+  {protectedLabel}: {percentage}%
+</div>
+```
+
+**After** (conditional display):
+```tsx
+<div className={styles.pieLegendText}>
+  {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
+</div>
+```
+
+### Benefits
+
+- ✅ **User Control**: Admins can customize pie chart appearance per-chart
+- ✅ **Cleaner Legends**: Option for minimalist design without percentage clutter
+- ✅ **Backward Compatible**: All existing charts unchanged (default: show percentages)
+- ✅ **Consistent Pattern**: Follows existing `showTitle` toggle pattern
+- ✅ **Type Safety**: Full TypeScript support with proper interfaces
+
+### Database Schema
+
+**chart_configurations collection**:
+```typescript
+{
+  chartId: string,
+  title: string,
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image',
+  showTitle?: boolean,        // Controls title visibility
+  showPercentages?: boolean,  // NEW: Controls percentage visibility (pie charts)
+  // ... other fields
+}
+```
+
+### Migration
+
+**Not Required**: Field is optional with sensible default (`true`). All existing pie charts will continue showing percentages until explicitly disabled.
+
+### GitHub Commit
+
+**Commit**: `9562a56` - Fix pie chart percentage visibility control (v11.38.0)
+
+**Version**: `11.42.0` → `11.43.0` (MINOR - Bug Fix + Feature Addition)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.41.0] — 2025-12-21T17:30:00.000Z
 
 ### Summary
