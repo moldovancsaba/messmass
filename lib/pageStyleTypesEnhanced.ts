@@ -74,6 +74,20 @@ export interface ChartColorScheme {
   chartLabelColor: string;          // Axis labels, legend text (default: #374151)
   chartValueColor: string;          // KPI values, data labels (default: #111827)
   
+  // KPI-specific colors
+  kpiIconColor: string;             // KPI icon color (default: uses primary color)
+  
+  // Bar chart colors (5 bars)
+  barColor1: string;                // First bar color
+  barColor2: string;                // Second bar color
+  barColor3: string;                // Third bar color
+  barColor4: string;                // Fourth bar color
+  barColor5: string;                // Fifth bar color
+  
+  // Pie chart colors (2 slices for now, expandable)
+  pieColor1: string;                // First pie slice color
+  pieColor2: string;                // Second pie slice color
+  
   // Chart states
   chartNoDataBackground: string;    // No data background (default: #f9fafb)
   chartNoDataBorder: string;        // No data border (default: #d1d5db)
@@ -332,13 +346,27 @@ export function getDefaultChartColors(colorScheme: ColorScheme): ChartColorSchem
     chartTitleColor: colorScheme.primary,
     chartLabelColor: '#374151',
     chartValueColor: '#111827',
+    // KPI colors
+    kpiIconColor: colorScheme.primary,
+    // Bar colors (use colorScheme colors in order)
+    barColor1: colorScheme.primary,
+    barColor2: colorScheme.secondary,
+    barColor3: colorScheme.success,
+    barColor4: colorScheme.warning,
+    barColor5: colorScheme.error,
+    // Pie colors
+    pieColor1: colorScheme.primary,
+    pieColor2: colorScheme.secondary,
+    // States
     chartNoDataBackground: '#f9fafb',
     chartNoDataBorder: '#d1d5db',
     chartNoDataText: '#6b7280',
     chartErrorBackground: '#fef2f2',
     chartErrorText: '#991b1b',
+    // Interactive
     chartTooltipBackground: 'rgba(0, 0, 0, 0.85)',
     chartTooltipText: '#ffffff',
+    // Export button
     exportButtonBackground: '#ffffff',
     exportButtonText: colorScheme.primary,
     exportButtonHoverBackground: '#f9fafb'

@@ -797,6 +797,172 @@ export default function PageStyleEditor({
                   </div>
                 </div>
 
+                <h3 className={styles.subsectionTitle}>KPI Chart Colors</h3>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Icon Color</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.kpiIconColor}
+                      onChange={(e) => updateField('chartColors.kpiIconColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.kpiIconColor}
+                      onChange={(e) => updateField('chartColors.kpiIconColor', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Bar Chart Colors (5 bars)</h3>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Bar 1</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.barColor1}
+                      onChange={(e) => updateField('chartColors.barColor1', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.barColor1}
+                      onChange={(e) => updateField('chartColors.barColor1', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Bar 2</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.barColor2}
+                      onChange={(e) => updateField('chartColors.barColor2', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.barColor2}
+                      onChange={(e) => updateField('chartColors.barColor2', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Bar 3</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.barColor3}
+                      onChange={(e) => updateField('chartColors.barColor3', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.barColor3}
+                      onChange={(e) => updateField('chartColors.barColor3', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Bar 4</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.barColor4}
+                      onChange={(e) => updateField('chartColors.barColor4', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.barColor4}
+                      onChange={(e) => updateField('chartColors.barColor4', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Bar 5</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.barColor5}
+                      onChange={(e) => updateField('chartColors.barColor5', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.barColor5}
+                      onChange={(e) => updateField('chartColors.barColor5', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <h3 className={styles.subsectionTitle}>Pie Chart Colors (2 slices)</h3>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Slice 1</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.pieColor1}
+                      onChange={(e) => updateField('chartColors.pieColor1', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.pieColor1}
+                      onChange={(e) => updateField('chartColors.pieColor1', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Slice 2</label>
+                  <div className={styles.colorInputGroup}>
+                    <input
+                      type="color"
+                      className={styles.colorPicker}
+                      value={formData.chartColors.pieColor2}
+                      onChange={(e) => updateField('chartColors.pieColor2', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="text"
+                      className={styles.colorText}
+                      value={formData.chartColors.pieColor2}
+                      onChange={(e) => updateField('chartColors.pieColor2', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+
                 <h3 className={styles.subsectionTitle}>Export Button</h3>
 
                 <div className={styles.formGroup}>
@@ -864,7 +1030,7 @@ export default function PageStyleEditor({
             
             {/* Preview Pane */}
             <div className={styles.previewPane}>
-              <StylePreview style={formData} />
+              <StylePreview style={formData} activeSection={activeSection} />
             </div>
           </div>
     </FormModal>
