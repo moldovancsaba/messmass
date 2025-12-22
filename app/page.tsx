@@ -19,8 +19,23 @@ export default async function HomePage() {
   const user = await getAdminUser();
   
   if (user) {
-    // User is authenticated, redirect to admin dashboard
-    redirect('/admin');
+    // WHAT: Smart redirect based on user role
+    // WHY: Prevent redirect loops to /admin/help for users without dashboard access
+    // HOW: Send users to first accessible page (partners for user/admin, help for guest)
+    
+    if (user.role === 'guest') {
+      // Guests can only access help page
+      redirect('/admin/help');
+    } else if (user.role === 'user' || user.role === 'admin') {
+      // Users and admins can access partners page
+      redirect('/admin/partners');
+    } else if (user.role === 'superadmin') {
+      // Superadmins get full dashboard
+      redirect('/admin');
+    } else {
+      // Fallback for unknown roles
+      redirect('/admin/help');
+    }
   } else {
     // User is not authenticated, redirect to login page
     redirect('/admin/login');

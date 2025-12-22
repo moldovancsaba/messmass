@@ -132,6 +132,124 @@ export default function StylePreview({ style }: StylePreviewProps) {
             </div>
           </div>
 
+          {/* Sample Charts Preview */}
+          <div className={styles.mockCharts}>
+            {/* KPI Chart Sample */}
+            <div 
+              className={styles.mockKpi}
+              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >
+              <div 
+                className={styles.mockKpiIcon}
+                style={{ color: style.colorScheme.primary }}
+              >
+                📊
+              </div>
+              <div 
+                className={styles.mockKpiValue}
+                style={{ color: style.chartColors?.chartValueColor || '#111827' }}
+              >
+                2,531
+              </div>
+              <div 
+                className={styles.mockKpiLabel}
+                style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}
+              >
+                Total Fans
+              </div>
+            </div>
+
+            {/* Pie Chart Sample */}
+            <div 
+              className={styles.mockPie}
+              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >
+              <div 
+                className={styles.mockPieTitle}
+                style={{ color: style.chartColors?.chartTitleColor || style.colorScheme.primary }}
+              >
+                Demographics
+              </div>
+              <div className={styles.mockPieCircle}>
+                {/* Pie slices using chart colors */}
+                <div 
+                  className={styles.mockPieSlice}
+                  style={{ background: style.colorScheme.primary }}
+                />
+                <div 
+                  className={styles.mockPieSlice}
+                  style={{ background: style.colorScheme.secondary }}
+                />
+              </div>
+              <div className={styles.mockPieLegend}>
+                <div className={styles.mockLegendItem}>
+                  <div 
+                    className={styles.mockLegendDot}
+                    style={{ background: style.colorScheme.primary }}
+                  />
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Male 60%</span>
+                </div>
+                <div className={styles.mockLegendItem}>
+                  <div 
+                    className={styles.mockLegendDot}
+                    style={{ background: style.colorScheme.secondary }}
+                  />
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Female 40%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bar Chart Sample */}
+            <div 
+              className={styles.mockBar}
+              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >
+              <div 
+                className={styles.mockBarTitle}
+                style={{ color: style.chartColors?.chartTitleColor || style.colorScheme.primary }}
+              >
+                Merchandise
+              </div>
+              <div className={styles.mockBarRows}>
+                <div className={styles.mockBarRow}>
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Jersey</span>
+                  <div className={styles.mockBarTrack}>
+                    <div 
+                      className={styles.mockBarFill}
+                      style={{ 
+                        width: '80%',
+                        background: style.colorScheme.primary 
+                      }}
+                    />
+                  </div>
+                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>450</span>
+                </div>
+                <div className={styles.mockBarRow}>
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Scarf</span>
+                  <div className={styles.mockBarTrack}>
+                    <div 
+                      className={styles.mockBarFill}
+                      style={{ 
+                        width: '60%',
+                        background: style.colorScheme.primary 
+                      }}
+                    />
+                  </div>
+                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>320</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Color Scheme Swatches */}
           <div className={styles.mockColorScheme}>
             <div 

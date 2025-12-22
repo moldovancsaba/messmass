@@ -66,6 +66,18 @@ export default function PageStyleEditor({
 
   const [activeSection, setActiveSection] = useState<'general' | 'backgrounds' | 'typography' | 'colors' | 'chartColors'>('general');
 
+  /* WHAT: Ensure chartColors is always initialized
+   * WHY: Chart Colors tab should always be visible, even for old styles
+   * HOW: If chartColors is missing, generate defaults from colorScheme */
+  useEffect(() => {
+    if (!formData.chartColors) {
+      setFormData(prev => ({
+        ...prev,
+        chartColors: getDefaultChartColors(prev.colorScheme)
+      }));
+    }
+  }, [formData.chartColors, formData.colorScheme]);
+
   /* WHAT: Update form field
    * WHY: Generic handler for nested state updates */
   const updateField = (path: string, value: any) => {
@@ -531,7 +543,10 @@ export default function PageStyleEditor({
             )}
 
             {/* CHART COLORS SECTION */}
-            {activeSection === 'chartColors' && formData.chartColors && (
+            {/* WHAT: Chart Colors tab - always visible (chartColors initialized by useEffect)
+                WHY: Users should always be able to customize chart colors
+                HOW: useEffect ensures chartColors exists with smart defaults */}
+            {activeSection === 'chartColors' && (
               <div className={styles.section}>
                 <p className={styles.sectionHint}>
                   💡 Customize colors for charts in reports. Leave blank to use smart defaults.
