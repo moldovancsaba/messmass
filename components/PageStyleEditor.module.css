@@ -149,6 +149,16 @@
   margin-top: var(--mm-space-1);
 }
 
+.sectionHint {
+  padding: var(--mm-space-3);
+  background: var(--mm-blue-50);
+  border-left: 4px solid var(--mm-blue-500);
+  border-radius: var(--mm-radius-md);
+  font-size: var(--mm-text-sm);
+  color: var(--mm-gray-700);
+  margin-bottom: var(--mm-space-4);
+}
+
 /* ========================================
    COLOR INPUTS
 ======================================== */
@@ -186,6 +196,8 @@
   font-family: var(--font-mono);
   font-size: var(--mm-text-sm);
   text-transform: uppercase;
+  color: var(--mm-gray-900);
+  background: var(--mm-white);
 }
 
 /* ========================================
