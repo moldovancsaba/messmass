@@ -5,7 +5,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PageStyleEnhanced, generateGradientCSS } from '@/lib/pageStyleTypesEnhanced';
+import { PageStyleEnhanced, generateGradientCSS, getDefaultChartColors } from '@/lib/pageStyleTypesEnhanced';
 
 interface UseReportStyleOptions {
   styleId?: string | null;
@@ -139,18 +139,40 @@ function applyStyleToPage(style: PageStyleEnhanced) {
     style.colorScheme.error       // Color 5: Error dark red
   ];
 
+  // WHAT: Get chart-specific colors (use custom or generate defaults)
+  // WHY: Allow full control over chart colors, fallback to smart defaults
+  const chartColorScheme = style.chartColors || getDefaultChartColors(style.colorScheme);
+
   // Generate CSS rules
   styleTag.textContent = `
     /* Report Styles Enhanced - Auto-generated from theme: ${style.name} */
     
     :root {
-      /* WHAT: Chart color palette CSS variables */
+      /* WHAT: Chart color palette CSS variables for Chart.js */
       /* WHY: Allow Chart.js to read theme colors dynamically */
       --chart-color-1: ${chartColors[0]};
       --chart-color-2: ${chartColors[1]};
       --chart-color-3: ${chartColors[2]};
       --chart-color-4: ${chartColors[3]};
       --chart-color-5: ${chartColors[4]};
+      
+      /* WHAT: Chart-specific color variables */
+      /* WHY: Complete control over all chart element colors */
+      --chart-bg: ${chartColorScheme.chartBackground};
+      --chart-border: ${chartColorScheme.chartBorder};
+      --chart-title-color: ${chartColorScheme.chartTitleColor};
+      --chart-label-color: ${chartColorScheme.chartLabelColor};
+      --chart-value-color: ${chartColorScheme.chartValueColor};
+      --chart-nodata-bg: ${chartColorScheme.chartNoDataBackground};
+      --chart-nodata-border: ${chartColorScheme.chartNoDataBorder};
+      --chart-nodata-text: ${chartColorScheme.chartNoDataText};
+      --chart-error-bg: ${chartColorScheme.chartErrorBackground};
+      --chart-error-text: ${chartColorScheme.chartErrorText};
+      --chart-tooltip-bg: ${chartColorScheme.chartTooltipBackground};
+      --chart-tooltip-text: ${chartColorScheme.chartTooltipText};
+      --export-btn-bg: ${chartColorScheme.exportButtonBackground};
+      --export-btn-text: ${chartColorScheme.exportButtonText};
+      --export-btn-hover-bg: ${chartColorScheme.exportButtonHoverBackground};
       
       /* WHAT: Hero background CSS variable for ReportHero.module.css */
       /* WHY: Allow CSS modules to read custom hero background */

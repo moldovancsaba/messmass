@@ -14,8 +14,8 @@
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
   /* REMOVED: min-height - row height is deterministic from block calculator */
   
-  /* WHAT: Visual styling */
-  background: var(--mm-white) !important;
+  /* WHAT: Visual styling - uses custom chart colors */
+  background: var(--chart-bg) !important;
   border-radius: var(--mm-radius-lg);
   box-shadow: var(--mm-shadow-sm);
   padding: 0; /* WHAT: Remove padding, add to header/body instead */
@@ -29,7 +29,7 @@
 /* Chart Header - Titles and metadata */
 .chartHeader {
   padding: var(--mm-space-4) var(--mm-space-5);
-  border-bottom: 1px solid var(--mm-gray-100);
+  border-bottom: 1px solid var(--chart-border);
   flex-shrink: 0; /* WHAT: Prevent header from shrinking */
 }
 
@@ -49,7 +49,7 @@
   /* Scale title to container width: min 0.9rem, grows with box, caps at 1.25rem */
   font-size: clamp(0.9rem, 2.8cqw, 1.25rem);
   font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
+  color: var(--chart-title-color);
   margin: 0;
   line-height: 1.2;
   text-align: center; /* WHAT: Center align chart titles */
@@ -61,8 +61,8 @@
   align-items: center;
   justify-content: center;
   height: 100%; /* Fill parent height */
-  background: var(--mm-gray-50);
-  border: 2px dashed var(--mm-gray-300);
+  background: var(--chart-nodata-bg);
+  border: 2px dashed var(--chart-nodata-border);
 }
 
 .noDataContent {
@@ -70,7 +70,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--mm-space-2);
-  color: var(--mm-gray-500);
+  color: var(--chart-nodata-text);
 }
 
 .noDataIcon {
@@ -85,7 +85,7 @@
 
 .noDataLabel {
   font-size: var(--mm-font-size-sm);
-  color: var(--mm-gray-400);
+  color: var(--chart-nodata-text);
 }
 
 /* KPI Chart - 3-row grid: Icon (30%), Value (40%), Label (30%) */
@@ -146,7 +146,7 @@
   /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (1.5rem → 6rem = 4x) */
   font-size: clamp(1.5rem, min(20cqh, 25cqw), 6rem);
   font-weight: var(--mm-font-weight-bold);
-  color: var(--mm-gray-900);
+  color: var(--chart-value-color);
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
@@ -170,7 +170,7 @@
   height: 100%;
   font-size: clamp(0.75rem, 9cqh, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
-  color: var(--mm-gray-600);
+  color: var(--chart-label-color);
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;

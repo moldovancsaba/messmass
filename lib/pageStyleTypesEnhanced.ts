@@ -60,6 +60,39 @@ export interface ColorScheme {
 }
 
 /**
+ * WHAT: Chart-specific color customization
+ * WHY: Allow full control over chart colors independent of main color scheme
+ * HOW: Each property controls a specific chart element color
+ */
+export interface ChartColorScheme {
+  // Chart container colors
+  chartBackground: string;          // Chart card background (default: #ffffff)
+  chartBorder: string;              // Chart card border color (default: #f3f4f6)
+  
+  // Chart text colors
+  chartTitleColor: string;          // Chart titles (default: uses primary color)
+  chartLabelColor: string;          // Axis labels, legend text (default: #374151)
+  chartValueColor: string;          // KPI values, data labels (default: #111827)
+  
+  // Chart states
+  chartNoDataBackground: string;    // No data background (default: #f9fafb)
+  chartNoDataBorder: string;        // No data border (default: #d1d5db)
+  chartNoDataText: string;          // No data text (default: #6b7280)
+  
+  chartErrorBackground: string;     // Error background (default: #fef2f2)
+  chartErrorText: string;           // Error text (default: #991b1b)
+  
+  // Interactive elements
+  chartTooltipBackground: string;   // Chart.js tooltip background (default: rgba(0,0,0,0.85))
+  chartTooltipText: string;         // Tooltip text (default: #ffffff)
+  
+  // Hero elements
+  exportButtonBackground: string;   // Export PDF button (default: #ffffff)
+  exportButtonText: string;         // Export button text (default: uses primary color)
+  exportButtonHoverBackground: string; // Hover state (default: #f9fafb)
+}
+
+/**
  * WHAT: Enhanced page style configuration with comprehensive options
  * WHY: Single source of truth for all styling customization
  * STORAGE: MongoDB collection 'page_styles'
@@ -78,6 +111,7 @@ export interface PageStyleEnhanced {
   // Typography and colors
   typography: Typography;             // Font and text color settings
   colorScheme: ColorScheme;           // Brand and semantic colors
+  chartColors?: ChartColorScheme;     // Optional chart-specific colors (uses defaults if not set)
   
   // Metadata
   createdAt?: Date;                   // ISO 8601 timestamp
@@ -285,6 +319,31 @@ export const DARK_THEME_SAMPLE: PageStyleEnhanced = {
     error: '#ef4444'
   }
 };
+
+/**
+ * WHAT: Generate default chart colors from color scheme
+ * WHY: Provide sensible defaults when chartColors not configured
+ * HOW: Use primary color for accents, neutral grays for text/backgrounds
+ */
+export function getDefaultChartColors(colorScheme: ColorScheme): ChartColorScheme {
+  return {
+    chartBackground: '#ffffff',
+    chartBorder: '#f3f4f6',
+    chartTitleColor: colorScheme.primary,
+    chartLabelColor: '#374151',
+    chartValueColor: '#111827',
+    chartNoDataBackground: '#f9fafb',
+    chartNoDataBorder: '#d1d5db',
+    chartNoDataText: '#6b7280',
+    chartErrorBackground: '#fef2f2',
+    chartErrorText: '#991b1b',
+    chartTooltipBackground: 'rgba(0, 0, 0, 0.85)',
+    chartTooltipText: '#ffffff',
+    exportButtonBackground: '#ffffff',
+    exportButtonText: colorScheme.primary,
+    exportButtonHoverBackground: '#f9fafb'
+  };
+}
 
 /**
  * WHAT: Get default page style function
