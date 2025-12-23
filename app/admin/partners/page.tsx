@@ -549,15 +549,12 @@ export default function PartnersAdminPageUnified() {
             return {
               ...action,
               handler: (partner: PartnerResponse) => {
-                // WHAT: Open SharePopup modal with partner report URL and password
+                // WHAT: Open SharePopup modal with partner report URL (using _id for security)
                 // WHY: Allow admin to share partner report page with password
-                console.log('🔍 Report clicked:', { name: partner.name, viewSlug: partner.viewSlug, partnerId: partner._id });
-                if (partner.viewSlug) {
-                  setSharePartnerId(partner.viewSlug);
-                  setSharePopupOpen(true);
-                } else {
-                  alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
-                }
+                // HOW: Use partner._id (MongoDB ObjectId) instead of viewSlug for secure UUID-based URLs
+                console.log('🔍 Report clicked:', { name: partner.name, partnerId: partner._id });
+                setSharePartnerId(partner._id);
+                setSharePopupOpen(true);
               }
             };
           }
@@ -585,14 +582,11 @@ export default function PartnersAdminPageUnified() {
             return {
               ...action,
               handler: (partner: PartnerResponse) => {
-                // WHAT: Open SharePopup modal with partner report URL and password (card view)
+                // WHAT: Open SharePopup modal with partner report URL (using _id for security - card view)
                 // WHY: Same behavior as row actions - share modal for partner reports
-                if (partner.viewSlug) {
-                  setSharePartnerId(partner.viewSlug);
-                  setSharePopupOpen(true);
-                } else {
-                  alert('Partner does not have a viewSlug. Please edit and save the partner to generate one.');
-                }
+                // HOW: Use partner._id (MongoDB ObjectId) instead of viewSlug for secure UUID-based URLs
+                setSharePartnerId(partner._id);
+                setSharePopupOpen(true);
               }
             };
           }
