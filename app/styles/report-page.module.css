@@ -15,14 +15,10 @@
   font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif) !important;
 }
 
-/* WHAT: Ensure ALL elements within reports inherit custom font (v11.51.0)
-   WHY: Some elements might have inherited font from body or global styles
-   HOW: Universal selector with !important, but exclude Material Icons (v11.52.0) */
-.page *:not(.material-icons),
-.page *:not(.material-icons)::before,
-.page *:not(.material-icons)::after {
-  font-family: inherit !important;
-}
+/* WHAT: Elements naturally inherit font from .page container (v11.52.1)
+   WHY: CSS inheritance works by default, no need to force it
+   HOW: .page sets font-family, children inherit automatically
+   NOTE: Removed universal selector to avoid overriding Material Icons inline styles */
 
 /* Content Container */
 .container {

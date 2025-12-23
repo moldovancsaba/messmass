@@ -13,14 +13,10 @@
   font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif) !important;
 }
 
-/* WHAT: Ensure ALL preview elements inherit custom font (v11.51.0)
-   WHY: Match actual report rendering behavior
-   HOW: Exclude Material Icons (v11.52.0) */
-.preview *:not(.material-icons),
-.preview *:not(.material-icons)::before,
-.preview *:not(.material-icons)::after {
-  font-family: inherit !important;
-}
+/* WHAT: Elements naturally inherit font from .preview container (v11.52.1)
+   WHY: CSS inheritance works by default, no need to force it
+   HOW: .preview sets font-family, children inherit automatically
+   NOTE: Removed universal selector to avoid overriding Material Icons inline styles */
 
 /* Hero Section */
 .hero {
