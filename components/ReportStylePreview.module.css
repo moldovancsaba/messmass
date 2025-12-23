@@ -7,6 +7,10 @@
   border-radius: var(--mm-radius-lg);
   padding: var(--mm-space-4);
   min-height: 400px;
+  /* WHAT: Apply custom font from style editor (v11.50.0)
+     WHY: Show selected font in live preview
+     HOW: Uses CSS variable injected by injectStyleAsCSS */
+  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif);
 }
 
 /* Hero Section */
