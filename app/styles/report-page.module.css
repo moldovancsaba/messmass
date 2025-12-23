@@ -10,8 +10,18 @@
   padding: var(--mm-space-6) var(--mm-space-4);
   /* WHAT: Apply custom font from report style (v11.49.0)
      WHY: Allow per-style font customization
-     HOW: Falls back to Inter if not set */
-  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif);
+     HOW: Falls back to Inter if not set
+     !important: Overrides body font-family from globals.css */
+  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif) !important;
+}
+
+/* WHAT: Ensure ALL elements within reports inherit custom font (v11.51.0)
+   WHY: Some elements might have inherited font from body or global styles
+   HOW: Universal selector with !important to override any other font declarations */
+.page *,
+.page *::before,
+.page *::after {
+  font-family: inherit !important;
 }
 
 /* Content Container */

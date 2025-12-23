@@ -10,7 +10,15 @@
   /* WHAT: Apply custom font from style editor (v11.50.0)
      WHY: Show selected font in live preview
      HOW: Uses CSS variable injected by injectStyleAsCSS */
-  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif);
+  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif) !important;
+}
+
+/* WHAT: Ensure ALL preview elements inherit custom font (v11.51.0)
+   WHY: Match actual report rendering behavior */
+.preview *,
+.preview *::before,
+.preview *::after {
+  font-family: inherit !important;
 }
 
 /* Hero Section */

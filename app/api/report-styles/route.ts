@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
     const normalizedStyle: Omit<ReportStyle, '_id'> = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
+      fontFamily: body.fontFamily || 'Inter', // WHAT: Save selected font (v11.52.0)
       ...Object.fromEntries(
         COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
       ) as any,
@@ -116,6 +117,7 @@ export async function PUT(request: NextRequest) {
     const normalizedStyle: Partial<ReportStyle> = {
       name: body.name.trim(),
       description: body.description?.trim() || '',
+      fontFamily: body.fontFamily || 'Inter', // WHAT: Save selected font (v11.52.0)
       ...Object.fromEntries(
         COLOR_FIELDS.map(field => [field.key, normalizeHexColor(body[field.key])])
       ) as any,
