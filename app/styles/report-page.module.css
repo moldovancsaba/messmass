@@ -17,10 +17,10 @@
 
 /* WHAT: Ensure ALL elements within reports inherit custom font (v11.51.0)
    WHY: Some elements might have inherited font from body or global styles
-   HOW: Universal selector with !important to override any other font declarations */
-.page *,
-.page *::before,
-.page *::after {
+   HOW: Universal selector with !important, but exclude Material Icons (v11.52.0) */
+.page *:not(.material-icons),
+.page *:not(.material-icons)::before,
+.page *:not(.material-icons)::after {
   font-family: inherit !important;
 }
 

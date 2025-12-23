@@ -14,10 +14,11 @@
 }
 
 /* WHAT: Ensure ALL preview elements inherit custom font (v11.51.0)
-   WHY: Match actual report rendering behavior */
-.preview *,
-.preview *::before,
-.preview *::after {
+   WHY: Match actual report rendering behavior
+   HOW: Exclude Material Icons (v11.52.0) */
+.preview *:not(.material-icons),
+.preview *:not(.material-icons)::before,
+.preview *:not(.material-icons)::after {
   font-family: inherit !important;
 }
 
