@@ -169,17 +169,24 @@ export async function generateProjectSlugs(): Promise<{
 }
 
 /**
- * Find a project by its view slug (UUID only)
+ * Find a project by its view slug (secure UUID only)
  * WHAT: Populates partner1 and partner2 data from partner references
  * WHY: Stats pages need partner logos and emojis for hero display
- * SECURITY: Only accepts MongoDB ObjectId format (no viewSlug field)
+ * SECURITY: Accepts MongoDB ObjectId OR UUID v4 format (both cryptographically secure)
  */
 export async function findProjectByViewSlug(viewSlug: string): Promise<Project | null> {
   try {
-    // WHAT: Validate UUID format (MongoDB ObjectId)
-    // WHY: Prevent slug-based URL guessing attacks
-    if (!ObjectId.isValid(viewSlug)) {
-      console.log('❌ Invalid ObjectId format:', viewSlug);
+    // WHAT: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
+    // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
+    // HOW: Accept cryptographically random identifiers only
+    
+    // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
+    const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const isMongoObjectId = ObjectId.isValid(viewSlug);
+    const isUuidV4 = uuidV4Pattern.test(viewSlug);
+    
+    if (!isMongoObjectId && !isUuidV4) {
+      console.log('❌ Invalid secure UUID format:', viewSlug);
       return null;
     }
 
@@ -187,9 +194,16 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // WHAT: Find by _id only (UUID-based security)
-    // WHY: Enforce UUID-only URLs to prevent URL guessing attacks
-    const project = await collection.findOne({ _id: new ObjectId(viewSlug) });
+    // WHAT: Find by _id (MongoDB ObjectId) OR viewSlug (UUID v4)
+    // WHY: Both formats are cryptographically secure (prevent URL guessing)
+    // HOW: UUID v4 uses viewSlug lookup, ObjectId uses _id lookup
+    let project;
+    if (isMongoObjectId) {
+      project = await collection.findOne({ _id: new ObjectId(viewSlug) });
+    } else {
+      // UUID v4 format - lookup by viewSlug (secure)
+      project = await collection.findOne({ viewSlug });
+    }
     
     if (!project) {
       return null;
@@ -252,17 +266,24 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
 }
 
 /**
- * Find a project by its edit slug (UUID only)
+ * Find a project by its edit slug (secure UUID only)
  * WHAT: Populates partner1 and partner2 data from partner references
  * WHY: Edit pages need partner logos and emojis for hero display
- * SECURITY: Only accepts MongoDB ObjectId format (no editSlug field)
+ * SECURITY: Accepts MongoDB ObjectId OR UUID v4 format (both cryptographically secure)
  */
 export async function findProjectByEditSlug(editSlug: string): Promise<Project | null> {
   try {
-    // WHAT: Validate UUID format (MongoDB ObjectId)
-    // WHY: Prevent slug-based URL guessing attacks
-    if (!ObjectId.isValid(editSlug)) {
-      console.log('❌ Invalid ObjectId format:', editSlug);
+    // WHAT: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
+    // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
+    // HOW: Accept cryptographically random identifiers only
+    
+    // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
+    const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const isMongoObjectId = ObjectId.isValid(editSlug);
+    const isUuidV4 = uuidV4Pattern.test(editSlug);
+    
+    if (!isMongoObjectId && !isUuidV4) {
+      console.log('❌ Invalid secure UUID format:', editSlug);
       return null;
     }
 
@@ -270,9 +291,16 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // WHAT: Find by _id only (UUID-based security)
-    // WHY: Enforce UUID-only URLs to prevent URL guessing attacks
-    const project = await collection.findOne({ _id: new ObjectId(editSlug) });
+    // WHAT: Find by _id (MongoDB ObjectId) OR editSlug (UUID v4)
+    // WHY: Both formats are cryptographically secure (prevent URL guessing)
+    // HOW: UUID v4 uses editSlug lookup, ObjectId uses _id lookup
+    let project;
+    if (isMongoObjectId) {
+      project = await collection.findOne({ _id: new ObjectId(editSlug) });
+    } else {
+      // UUID v4 format - lookup by editSlug (secure)
+      project = await collection.findOne({ editSlug });
+    }
     
     if (!project) {
       return null;

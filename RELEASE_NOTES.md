@@ -1,5 +1,92 @@
 # MessMass Release Notes
 
+## [v11.53.1] — 2025-12-23T17:50:00.000Z
+
+### Summary
+🔧 **HOTFIX**: Fixed UUID validation to accept BOTH MongoDB ObjectId AND UUID v4 formats. v11.53.0 broke existing UUID v4 URLs by only accepting ObjectId format.
+
+### Bug Fix
+
+#### UUID v4 URLs Rejected (❌ v11.53.0 → ✅ v11.53.1)
+**Problem**: v11.53.0 security fix only validated MongoDB ObjectId format (24 hex chars, no dashes), rejecting valid UUID v4 URLs:
+```
+Failed to Load Partner Report
+Invalid partner ID format - UUID required
+Partner slug: e26cdf82-6017-4105-ab9e-76ffa8c0c933
+```
+
+**Root Cause**: System generates UUID v4 (with dashes) for `viewSlug`/`editSlug` fields using `uuidv4()` from `uuid` package. v11.53.0 validation used `ObjectId.isValid()` which only checks 24-character hex format without dashes.
+
+**Solution**: Accept BOTH secure formats:
+- ✅ **MongoDB ObjectId**: `67478d95e6b1234567890abc` (24 hex chars, no dashes) → lookup by `_id`
+- ✅ **UUID v4**: `e26cdf82-6017-4105-ab9e-76ffa8c0c933` (32 hex + 4 dashes) → lookup by `viewSlug`
+- ❌ **Human-readable**: `szerencsejtk-zrt` → rejected with 400 error
+
+### Technical Changes
+
+**Validation Pattern** (applied to all endpoints):
+```typescript
+// UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isMongoObjectId = ObjectId.isValid(slug);
+const isUuidV4 = uuidV4Pattern.test(slug);
+
+if (!isMongoObjectId && !isUuidV4) {
+  return NextResponse.json(
+    { success: false, error: 'Invalid ID format - secure UUID required' },
+    { status: 400 }
+  );
+}
+
+// Route to appropriate database field
+let partner;
+if (isMongoObjectId) {
+  partner = await db.collection('partners').findOne({ _id: new ObjectId(slug) });
+} else {
+  // UUID v4 format - lookup by viewSlug (secure)
+  partner = await db.collection('partners').findOne({ viewSlug: slug });
+}
+```
+
+### Files Modified
+
+**Updated Endpoints** (all now accept both formats):
+- `app/api/partners/report/[slug]/route.ts` - Partner reports
+- `app/api/partners/edit/[slug]/route.ts` - Partner editing
+- `lib/slugUtils.ts` - `findProjectByViewSlug()` and `findProjectByEditSlug()`
+- `app/api/report-config/[identifier]/route.ts` - Report config resolution
+
+### Security Maintained
+
+✅ **Both formats are cryptographically secure**:
+- MongoDB ObjectId: 96 bits of randomness (2⁹⁶ combinations)
+- UUID v4: 122 bits of randomness (2¹²² combinations)
+
+❌ **Human-readable slugs still blocked**:
+- `szerencsejtk-zrt` → 400 error (fails both validations)
+- `fc-barcelona-vs-real-madrid` → 400 error (fails both validations)
+
+### Testing
+
+- [x] MongoDB ObjectId URLs work (`67478d95e6b1234567890abc`)
+- [x] UUID v4 URLs work (`e26cdf82-6017-4105-ab9e-76ffa8c0c933`)
+- [x] Human-readable slugs rejected (`szerencsejtk-zrt`)
+- [x] All report types tested (event, partner, hashtag, filter)
+- [x] Build passes (`npm run build`)
+- [x] TypeScript validation passes
+
+### Documentation Updates
+
+- ✅ LEARNINGS.md - Updated security entry to clarify dual format support
+- ✅ RELEASE_NOTES.md - This entry
+
+### Version
+`11.53.0` → `11.53.1` (PATCH - Hotfix for UUID v4 support)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.53.0] — 2025-12-23T17:30:00.000Z
 
 ### Summary

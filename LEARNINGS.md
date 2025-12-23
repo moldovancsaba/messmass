@@ -1,9 +1,9 @@
 # MessMass Development Learnings
 
-## [v11.53.0] - 2025-12-23T17:30:00.000Z — SECURITY: UUID-Only URL Enforcement
+## [v11.53.1] - 2025-12-23T17:50:00.000Z — SECURITY: Secure UUID Enforcement (ObjectId + UUID v4)
 
 ### Context
-Discovered that report URLs were accessible via guessable slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`), creating a security vulnerability. The system had dual-access patterns: UUID-based URLs (secure) and viewSlug-based URLs (guessable), allowing attackers to enumerate report URLs by guessing partner/project names.
+Discovered that report URLs were accessible via guessable slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`), creating a security vulnerability. The system needed to reject human-readable slugs while accepting cryptographically secure identifiers (MongoDB ObjectId AND UUID v4).
 
 ### Problem
 **Vulnerable URL patterns:**
@@ -48,20 +48,29 @@ const query = {
 - `/app/api/projects/edit/[slug]/route.ts` (via slugUtils)
 
 ### Solution
-**Enforce UUID-only validation:**
+**Enforce secure UUID validation (both formats):**
 ```typescript
-// ✅ SECURE: Validate ObjectId format first
-if (!ObjectId.isValid(slug)) {
+// ✅ SECURE: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
+// UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isMongoObjectId = ObjectId.isValid(slug);
+const isUuidV4 = uuidV4Pattern.test(slug);
+
+if (!isMongoObjectId && !isUuidV4) {
   return NextResponse.json(
-    { success: false, error: 'Invalid ID format - UUID required' },
+    { success: false, error: 'Invalid ID format - secure UUID required' },
     { status: 400 }
   );
 }
 
-// ✅ SECURE: Lookup by _id only (no viewSlug)
-const partner = await db.collection('partners').findOne({ 
-  _id: new ObjectId(slug) 
-});
+// ✅ SECURE: Lookup by appropriate field based on format
+let partner;
+if (isMongoObjectId) {
+  partner = await db.collection('partners').findOne({ _id: new ObjectId(slug) });
+} else {
+  // UUID v4 format - lookup by viewSlug (secure)
+  partner = await db.collection('partners').findOne({ viewSlug: slug });
+}
 ```
 
 **Changes applied:**
@@ -78,32 +87,52 @@ const partner = await db.collection('partners').findOne({
 ### Key Learnings
 
 **1. URL Security Principles**
-- ✅ Always use cryptographically random UUIDs (MongoDB ObjectId) for URLs
-- ❌ Never use predictable identifiers (names, slugs, sequential IDs)
+- ✅ Always use cryptographically random UUIDs (MongoDB ObjectId OR UUID v4)
+- ❌ Never use predictable identifiers (names, human-readable slugs, sequential IDs)
 - ✅ Validate ID format BEFORE database queries
-- ❌ Never provide multiple URL access patterns (creates attack surface)
+- ✅ Accept multiple secure formats (ObjectId + UUID v4), reject insecure formats
 
-**2. Database Query Patterns**
+**2. Understanding Secure vs Insecure Identifiers**
 ```typescript
-// ❌ BAD: Multiple access patterns
-findOne({ $or: [{ slug }, { _id }] })
+// ✅ SECURE: MongoDB ObjectId (24 hex chars, no dashes)
+"67478d95e6b1234567890abc"
 
-// ✅ GOOD: Single access pattern with validation
-if (!ObjectId.isValid(id)) return null;
-findOne({ _id: new ObjectId(id) })
+// ✅ SECURE: UUID v4 (32 hex chars with dashes, cryptographically random)
+"e26cdf82-6017-4105-ab9e-76ffa8c0c933"
+
+// ❌ INSECURE: Human-readable slug (predictable, guessable)
+"szerencsejtk-zrt"
+"fc-barcelona-vs-real-madrid"
 ```
 
-**3. Migration Strategy**
-- Old projects/partners with viewSlug/editSlug fields remain in database (unused)
-- No migration needed - old URLs simply return 400 errors now
-- Frontend must use UUID-based URLs from project._id
-- Backward compatibility NOT required for security fixes
+**3. Database Query Patterns**
+```typescript
+// ❌ BAD: No validation, accepts any string
+findOne({ viewSlug: slug })
 
-**4. Error Messages**
+// ✅ GOOD: Validate format, route to appropriate field
+const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+if (ObjectId.isValid(id)) {
+  return findOne({ _id: new ObjectId(id) });
+} else if (uuidV4Pattern.test(id)) {
+  return findOne({ viewSlug: id });
+} else {
+  return null; // Reject insecure formats
+}
+```
+
+**4. Migration Strategy**
+- Old projects/partners with viewSlug/editSlug fields remain in database (used if UUID v4)
+- No migration needed - system validates format at runtime
+- Frontend uses either project._id (ObjectId) OR viewSlug (UUID v4)
+- Human-readable slugs rejected with 400 errors
+- Both secure formats fully supported for backward compatibility
+
+**5. Error Messages**
 ```typescript
 // ✅ GOOD: Clear error without exposing internals
 return NextResponse.json(
-  { success: false, error: 'Invalid partner ID format - UUID required' },
+  { success: false, error: 'Invalid ID format - secure UUID required' },
   { status: 400 }
 );
 
@@ -114,10 +143,11 @@ return NextResponse.json(
 );
 ```
 
-**5. Testing Checklist**
+**6. Testing Checklist**
 When changing URL patterns:
-- [ ] Verify old slug-based URLs return 400/404
-- [ ] Verify UUID-based URLs still work
+- [ ] Verify human-readable slugs return 400 errors (e.g., "team-name")
+- [ ] Verify MongoDB ObjectId URLs work (24 hex chars, no dashes)
+- [ ] Verify UUID v4 URLs work (32 hex chars with dashes)
 - [ ] Test all report types (event, partner, hashtag, filter)
 - [ ] Test edit vs view URLs separately
 - [ ] Check error messages don't leak database structure
@@ -134,21 +164,25 @@ When changing URL patterns:
 
 ### Prevention
 **Security code review checklist:**
-- [ ] Are all public URLs using UUIDs/ObjectIds?
-- [ ] Is ObjectId.isValid() called before lookups?
-- [ ] Are there $or queries with multiple identifier patterns?
+- [ ] Are all public URLs using secure UUIDs (MongoDB ObjectId OR UUID v4)?
+- [ ] Is format validation (ObjectId.isValid() OR UUID v4 pattern) called before lookups?
+- [ ] Are human-readable slugs explicitly rejected?
 - [ ] Do error messages expose database field names?
 - [ ] Can URLs be enumerated by guessing common names?
 
 **Architecture principle:**
-> Every public URL must use a cryptographically random identifier (MongoDB ObjectId). No human-readable slugs, no sequential IDs. Validate format before querying.
+> Every public URL must use a cryptographically random identifier (MongoDB ObjectId OR UUID v4). No human-readable slugs, no sequential IDs. Validate format before querying. Reject any identifier that doesn't match a secure format.
 
 ### Impact
-**Breaking change:** Old slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`) now return 400 errors. This is intentional - security fixes override backward compatibility.
+**Breaking change:** Human-readable slug URLs (e.g., `/partner-report/szerencsejtk-zrt`) now return 400 errors. This is intentional - security fixes override backward compatibility.
 
-**User impact:** None - frontend already uses UUID-based URLs from database `_id` fields.
+**User impact:** None - frontend uses secure UUIDs from database fields:
+- MongoDB ObjectId from `_id` field (24 hex chars, no dashes)
+- UUID v4 from `viewSlug`/`editSlug` fields (32 hex chars with dashes)
 
-**Database cleanup:** viewSlug/editSlug fields can remain in database (unused) or be removed in future migration.
+**Database cleanup:** viewSlug/editSlug fields remain in database (actively used for UUID v4 lookups).
+
+**v11.53.1 Update:** Fixed validation to accept BOTH MongoDB ObjectId AND UUID v4 formats. Initial v11.53.0 implementation only accepted ObjectId, breaking existing UUID v4 URLs.
 
 ---
 

@@ -79,16 +79,30 @@ async function resolveReportTemplate(
   // ==========================================
   if (entityType === 'project') {
     try {
-      // WHAT: Validate UUID format (MongoDB ObjectId)
-      // WHY: Prevent slug-based URL guessing attacks
-      if (!ObjectId.isValid(identifier)) {
-        console.log('❌ Invalid project identifier format:', identifier);
+      // WHAT: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
+      // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
+      // HOW: Accept cryptographically random identifiers only
+      
+      // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
+      const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const isMongoObjectId = ObjectId.isValid(identifier);
+      const isUuidV4 = uuidV4Pattern.test(identifier);
+      
+      if (!isMongoObjectId && !isUuidV4) {
+        console.log('❌ Invalid secure UUID format:', identifier);
         throw new Error('Invalid project ID format');
       }
 
-      // WHAT: Match by _id only (UUID-based security)
-      // WHY: Enforce UUID-only URLs to prevent URL guessing
-      const project = await projectsCollection.findOne({ _id: new ObjectId(identifier) });
+      // WHAT: Match by _id (MongoDB ObjectId) OR viewSlug (UUID v4)
+      // WHY: Both formats are cryptographically secure (prevent URL guessing)
+      // HOW: UUID v4 uses viewSlug lookup, ObjectId uses _id lookup
+      let project;
+      if (isMongoObjectId) {
+        project = await projectsCollection.findOne({ _id: new ObjectId(identifier) });
+      } else {
+        // UUID v4 format - lookup by viewSlug (secure)
+        project = await projectsCollection.findOne({ viewSlug: identifier });
+      }
       
       if (project?.reportTemplateId) {
         const templateId = typeof project.reportTemplateId === 'string' && ObjectId.isValid(project.reportTemplateId)
@@ -174,16 +188,30 @@ async function resolveReportTemplate(
   // ==========================================
   if (entityType === 'partner') {
     try {
-      // WHAT: Validate UUID format (MongoDB ObjectId)
-      // WHY: Prevent slug-based URL guessing attacks
-      if (!ObjectId.isValid(identifier)) {
-        console.log('❌ Invalid partner identifier format:', identifier);
+      // WHAT: Validate secure UUID format (MongoDB ObjectId OR UUID v4)
+      // WHY: Prevent slug-based URL guessing attacks (reject human-readable slugs)
+      // HOW: Accept cryptographically random identifiers only
+      
+      // UUID v4 pattern: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (32 hex + 4 dashes)
+      const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const isMongoObjectId = ObjectId.isValid(identifier);
+      const isUuidV4 = uuidV4Pattern.test(identifier);
+      
+      if (!isMongoObjectId && !isUuidV4) {
+        console.log('❌ Invalid secure UUID format:', identifier);
         throw new Error('Invalid partner ID format');
       }
 
-      // WHAT: Match by _id only (UUID-based security)
-      // WHY: Enforce UUID-only URLs to prevent URL guessing
-      const partner = await partnersCollection.findOne({ _id: new ObjectId(identifier) });
+      // WHAT: Match by _id (MongoDB ObjectId) OR viewSlug (UUID v4)
+      // WHY: Both formats are cryptographically secure (prevent URL guessing)
+      // HOW: UUID v4 uses viewSlug lookup, ObjectId uses _id lookup
+      let partner;
+      if (isMongoObjectId) {
+        partner = await partnersCollection.findOne({ _id: new ObjectId(identifier) });
+      } else {
+        // UUID v4 format - lookup by viewSlug (secure)
+        partner = await partnersCollection.findOne({ viewSlug: identifier });
+      }
       if (partner?.reportTemplateId) {
         const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
           ? new ObjectId(partner.reportTemplateId)
