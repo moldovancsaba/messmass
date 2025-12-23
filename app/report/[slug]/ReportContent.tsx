@@ -13,6 +13,38 @@ import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
 import type { CellConfiguration } from '@/lib/blockLayoutTypes';
 
 /**
+ * WHAT: Check if a chart result has valid displayable data (v11.48.0)
+ * WHY: Filter out empty charts before grid calculations
+ * HOW: Type-specific validation matching ReportChart.hasData logic
+ */
+function hasValidChartData(result: ChartResult | undefined): boolean {
+  if (!result || result.error) return false;
+  
+  switch (result.type) {
+    case 'text':
+      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+    
+    case 'image':
+      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+    
+    case 'kpi':
+      return result.kpiValue !== undefined && result.kpiValue !== 'NA';
+    
+    case 'pie':
+    case 'bar':
+    case 'value':
+      if (!result.elements || result.elements.length === 0) return false;
+      const total = result.elements.reduce((sum, el) => 
+        sum + (typeof el.value === 'number' ? el.value : 0), 0
+      );
+      return total > 0;
+    
+    default:
+      return false;
+  }
+}
+
+/**
  * Props for ReportContent component
  */
 interface ReportContentProps {
@@ -136,10 +168,13 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
         setRowWidth(width || 1200);
         
         // WHAT: Immediately recalculate height based on new width
+        // WHY: Only include cells with valid data (v11.48.0)
         const cells: CellConfiguration[] = rowCharts
           .flatMap(chart => {
             const result = chartResults.get(chart.chartId);
-            if (!result) return [];
+            // WHAT: Skip cells with no valid data in height calculation
+            // WHY: Empty cells should not affect row height
+            if (!hasValidChartData(result) || !result) return [];
             
             return [{
               chartId: chart.chartId,
@@ -194,7 +229,9 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
-        if (!result) return null;
+        // WHAT: Skip charts with no valid data (v11.48.0)
+        // WHY: ReportChart returns null for empty data, don't render container
+        if (!hasValidChartData(result) || !result) return null;
         
         // WHAT: Force remount when dimensions change significantly
         // WHY: Container queries cache container size, need remount for single full-width charts
@@ -217,10 +254,13 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
   
-  // Filter out charts that don't have results
-  const validCharts = sortedCharts.filter(chart => 
-    chartResults.has(chart.chartId)
-  );
+  // WHAT: Filter out charts with no data (v11.48.0)
+  // WHY: Hide empty cells and exclude from grid calculations
+  // HOW: Check both existence and valid data using hasValidChartData
+  const validCharts = sortedCharts.filter(chart => {
+    const result = chartResults.get(chart.chartId);
+    return hasValidChartData(result);
+  });
   
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {

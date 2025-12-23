@@ -95,17 +95,11 @@ export default function ReportChart({ result, width, className }: ReportChartPro
     }
   })();
 
-  // No data available - show placeholder
+  // WHAT: Hide cells with no data (v11.48.0)
+  // WHY: Clean reports - only show charts with actual data
+  // HOW: Return null instead of placeholder when no data
   if (!hasData) {
-    return (
-      <div className={`${styles.chart} ${styles.noData} report-chart ${className || ''}`} data-report-section="content">
-        <div className={styles.noDataContent}>
-          <span className={styles.noDataIcon}>📊</span>
-          <span className={styles.noDataText}>{result.title}</span>
-          <span className={styles.noDataLabel}>No Data</span>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Render based on chart type
