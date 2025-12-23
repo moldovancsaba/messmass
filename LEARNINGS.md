@@ -1,5 +1,82 @@
 # MessMass Development Learnings
 
+## [v11.52.1] - 2025-12-23T13:13:00.000Z — Font Inheritance and Icon Fonts
+
+### Context
+Added font selector to report styles (v11.50.0-v11.52.1) to allow per-style font customization. Implemented universal font inheritance to ensure selected font applies to all report elements.
+
+### Problem
+Universal font inheritance rule broke Material Icons in KPI charts:
+```css
+.page * { font-family: inherit !important; }
+```
+
+This forced Material Icons to inherit the report font (Inter, Roboto, etc.) instead of their icon font ("Material Icons Outlined"), causing them to display as text like "emoji_people" instead of the actual icon symbol.
+
+### Root Cause
+Material Icons are not images or SVG - they're a **special font** that maps character codes to icon glyphs. When you force a different font-family on them, the browser tries to render the icon names using the wrong font, displaying the text fallback instead.
+
+### Solution
+Exclude icon fonts from universal inheritance:
+```css
+/* ❌ WRONG: Breaks icon fonts */
+.page * { font-family: inherit !important; }
+
+/* ✅ CORRECT: Preserves icon fonts */
+.page *:not(.material-icons) { font-family: inherit !important; }
+```
+
+### Key Learnings
+
+**1. Icon Fonts Are Special**
+- Icon fonts (Material Icons, Font Awesome, etc.) require specific font-family values
+- Universal font inheritance breaks them
+- Always exclude icon font classes from global font rules
+
+**2. Font Inheritance Patterns**
+```css
+/* When applying custom fonts to a container */
+.container {
+  font-family: var(--custom-font, 'Inter', sans-serif) !important;
+}
+
+/* Exclude icon fonts from inheritance */
+.container *:not(.material-icons):not(.fa):not([class*="icon-"]) {
+  font-family: inherit !important;
+}
+```
+
+**3. Common Icon Font Classes to Exclude**
+- `.material-icons` - Google Material Icons
+- `.material-symbols` - Material Symbols (newer Google icons)
+- `.fa`, `.fas`, `.far`, `.fal` - Font Awesome
+- `.icon-*` - Generic icon class patterns
+
+**4. Testing Checklist for Font Changes**
+When modifying font-family rules:
+- ✅ Check all text elements display correctly
+- ✅ Check KPI chart icons render as symbols (not text)
+- ✅ Check button icons and UI icons
+- ✅ Test in both live preview and actual reports
+
+**5. Alternative: Use SVG Icons**
+If icon fonts cause frequent issues:
+- Consider switching to SVG icons (Lucide, Heroicons)
+- SVG icons don't depend on font-family
+- More reliable but slightly larger bundle size
+
+### Related Files
+- `app/styles/report-page.module.css` - Report font inheritance
+- `components/ReportStylePreview.module.css` - Preview font inheritance
+- `components/MaterialIcon.tsx` - Material Icons implementation
+- `lib/reportStyleTypes.ts` - Font style storage
+
+### Prevention
+**Add to code review checklist:**
+- [ ] Does this change affect font-family?
+- [ ] Are icon fonts excluded from inheritance?
+- [ ] Have icons been tested visually?
+
 ## [v11.40.0] - 2025-12-21T09:02:35.000Z — Systematic Refactoring Strategy for Large-Scale Style System Cleanup
 
 ### Context
