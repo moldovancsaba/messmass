@@ -397,7 +397,43 @@ export async function generateFilterSlug(hashtags: string[], styleId?: string | 
     });
 
     if (existingFilter) {
-      // Update last accessed time and (optionally) update styleId if a new one was provided
+      // WHAT: Check if existing filter has an empty slug (created by style selector)
+      // WHY: Style selector creates entries with empty slugs before Share Filter is clicked
+      // HOW: If slug is empty, generate new slug and update; otherwise return existing slug
+      
+      if (!existingFilter.slug || existingFilter.slug.trim() === '') {
+        // Generate new slug for existing filter entry
+        let newSlug = generateSlug();
+        let isUnique = false;
+        
+        while (!isUnique) {
+          const existingSlug = await collection.findOne({ slug: newSlug });
+          if (!existingSlug) {
+            isUnique = true;
+          } else {
+            newSlug = generateSlug();
+          }
+        }
+        
+        // Update filter with new slug
+        const updates: any = { 
+          slug: newSlug,
+          lastAccessed: new Date().toISOString() 
+        };
+        if (typeof styleId !== 'undefined') {
+          updates.styleId = styleId && styleId !== 'null' ? styleId : null;
+        }
+        
+        await collection.updateOne(
+          { _id: (existingFilter as any)._id },
+          { $set: updates }
+        );
+        
+        console.log('✅ Generated slug for existing filter entry:', newSlug);
+        return newSlug;
+      }
+      
+      // Filter has valid slug - update metadata and return existing slug
       const updates: any = { lastAccessed: new Date().toISOString() };
       if (typeof styleId !== 'undefined') {
         // Persist explicit style choice for this combination so it is remembered
