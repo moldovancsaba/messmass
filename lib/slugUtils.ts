@@ -169,26 +169,27 @@ export async function generateProjectSlugs(): Promise<{
 }
 
 /**
- * Find a project by its view slug
+ * Find a project by its view slug (UUID only)
  * WHAT: Populates partner1 and partner2 data from partner references
  * WHY: Stats pages need partner logos and emojis for hero display
+ * SECURITY: Only accepts MongoDB ObjectId format (no viewSlug field)
  */
 export async function findProjectByViewSlug(viewSlug: string): Promise<Project | null> {
   try {
+    // WHAT: Validate UUID format (MongoDB ObjectId)
+    // WHY: Prevent slug-based URL guessing attacks
+    if (!ObjectId.isValid(viewSlug)) {
+      console.log('❌ Invalid ObjectId format:', viewSlug);
+      return null;
+    }
+
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // WHAT: Try to find by viewSlug first, then fall back to _id
-    // WHY: Old projects don't have viewSlug field populated (backward compatibility)
-    let project = await collection.findOne({ viewSlug });
-    
-    // WHAT: Fallback to _id if viewSlug not found
-    // WHY: Support old projects created before slug system
-    if (!project && ObjectId.isValid(viewSlug)) {
-      console.log('⚠️ View slug not found, trying _id fallback:', viewSlug);
-      project = await collection.findOne({ _id: new ObjectId(viewSlug) });
-    }
+    // WHAT: Find by _id only (UUID-based security)
+    // WHY: Enforce UUID-only URLs to prevent URL guessing attacks
+    const project = await collection.findOne({ _id: new ObjectId(viewSlug) });
     
     if (!project) {
       return null;
@@ -251,27 +252,27 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
 }
 
 /**
- * Find a project by its edit slug
+ * Find a project by its edit slug (UUID only)
  * WHAT: Populates partner1 and partner2 data from partner references
  * WHY: Edit pages need partner logos and emojis for hero display
+ * SECURITY: Only accepts MongoDB ObjectId format (no editSlug field)
  */
 export async function findProjectByEditSlug(editSlug: string): Promise<Project | null> {
   try {
+    // WHAT: Validate UUID format (MongoDB ObjectId)
+    // WHY: Prevent slug-based URL guessing attacks
+    if (!ObjectId.isValid(editSlug)) {
+      console.log('❌ Invalid ObjectId format:', editSlug);
+      return null;
+    }
+
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
     const collection = db.collection('projects');
 
-    // WHAT: Try to find by editSlug first, then fall back to _id
-    // WHY: Old projects don't have editSlug field populated (backward compatibility)
-    // HOW: Use $or query to check both editSlug and _id fields
-    let project = await collection.findOne({ editSlug });
-    
-    // WHAT: Fallback to _id if editSlug not found
-    // WHY: Support old projects created before slug system
-    if (!project && ObjectId.isValid(editSlug)) {
-      console.log('⚠️ Edit slug not found, trying _id fallback:', editSlug);
-      project = await collection.findOne({ _id: new ObjectId(editSlug) });
-    }
+    // WHAT: Find by _id only (UUID-based security)
+    // WHY: Enforce UUID-only URLs to prevent URL guessing attacks
+    const project = await collection.findOne({ _id: new ObjectId(editSlug) });
     
     if (!project) {
       return null;

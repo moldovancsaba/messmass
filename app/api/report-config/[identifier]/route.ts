@@ -79,16 +79,16 @@ async function resolveReportTemplate(
   // ==========================================
   if (entityType === 'project') {
     try {
-      // Build query: match by _id, viewSlug, or editSlug
-      const orConds: any[] = [
-        { viewSlug: identifier },
-        { editSlug: identifier }
-      ];
-      if (ObjectId.isValid(identifier)) {
-        orConds.push({ _id: new ObjectId(identifier) });
+      // WHAT: Validate UUID format (MongoDB ObjectId)
+      // WHY: Prevent slug-based URL guessing attacks
+      if (!ObjectId.isValid(identifier)) {
+        console.log('❌ Invalid project identifier format:', identifier);
+        throw new Error('Invalid project ID format');
       }
 
-      const project = await projectsCollection.findOne({ $or: orConds });
+      // WHAT: Match by _id only (UUID-based security)
+      // WHY: Enforce UUID-only URLs to prevent URL guessing
+      const project = await projectsCollection.findOne({ _id: new ObjectId(identifier) });
       
       if (project?.reportTemplateId) {
         const templateId = typeof project.reportTemplateId === 'string' && ObjectId.isValid(project.reportTemplateId)
@@ -174,13 +174,16 @@ async function resolveReportTemplate(
   // ==========================================
   if (entityType === 'partner') {
     try {
-      // Build query: match by _id or viewSlug
-      const orConds: any[] = [{ viewSlug: identifier }];
-      if (ObjectId.isValid(identifier)) {
-        orConds.push({ _id: new ObjectId(identifier) });
+      // WHAT: Validate UUID format (MongoDB ObjectId)
+      // WHY: Prevent slug-based URL guessing attacks
+      if (!ObjectId.isValid(identifier)) {
+        console.log('❌ Invalid partner identifier format:', identifier);
+        throw new Error('Invalid partner ID format');
       }
 
-      const partner = await partnersCollection.findOne({ $or: orConds });
+      // WHAT: Match by _id only (UUID-based security)
+      // WHY: Enforce UUID-only URLs to prevent URL guessing
+      const partner = await partnersCollection.findOne({ _id: new ObjectId(identifier) });
       if (partner?.reportTemplateId) {
         const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
           ? new ObjectId(partner.reportTemplateId)

@@ -19,7 +19,17 @@ export async function GET(
 
     if (!slug) {
       return NextResponse.json(
-        { success: false, error: 'Partner slug is required' },
+        { success: false, error: 'Partner ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // WHAT: Validate UUID format (MongoDB ObjectId)
+    // WHY: Prevent slug-based URL guessing attacks
+    // HOW: Reject any non-ObjectId format slugs
+    if (!ObjectId.isValid(slug)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid partner ID format - UUID required' },
         { status: 400 }
       );
     }
@@ -27,19 +37,9 @@ export async function GET(
     const client = await clientPromise;
 const db = client.db(config.dbName);
 
-    // WHAT: Find partner by viewSlug, _id, or editSlug (if it exists)
-    // WHY: Support multiple ways to access partner editing (like event editing)
-    const query: any = { viewSlug: slug };
-    
-    // Also try by _id if slug looks like ObjectId
-    if (ObjectId.isValid(slug)) {
-      query.$or = [
-        { viewSlug: slug },
-        { _id: new ObjectId(slug) }
-      ];
-    }
-
-    const partner = await db.collection('partners').findOne(query);
+    // WHAT: Find partner by _id (UUID only, no viewSlug)
+    // WHY: Enforce UUID-only URLs for security (prevent URL guessing)
+    const partner = await db.collection('partners').findOne({ _id: new ObjectId(slug) });
 
     if (!partner) {
       return NextResponse.json(

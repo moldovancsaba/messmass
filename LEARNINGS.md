@@ -1,5 +1,157 @@
 # MessMass Development Learnings
 
+## [v11.53.0] - 2025-12-23T17:30:00.000Z — SECURITY: UUID-Only URL Enforcement
+
+### Context
+Discovered that report URLs were accessible via guessable slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`), creating a security vulnerability. The system had dual-access patterns: UUID-based URLs (secure) and viewSlug-based URLs (guessable), allowing attackers to enumerate report URLs by guessing partner/project names.
+
+### Problem
+**Vulnerable URL patterns:**
+- `/partner-report/szerencsejtk-zrt` ← Guessable slug
+- `/report/fc-barcelona-vs-real-madrid` ← Guessable slug
+- `/edit/my-event-name` ← Guessable slug
+- `/partners/edit/team-name` ← Guessable slug
+
+**Security risks:**
+- URL enumeration attacks (guess common team/event names)
+- Unauthorized access to non-password-protected reports
+- Exposure of business-sensitive event statistics
+- Predictable URL patterns enable automated scraping
+
+### Root Cause
+**Database lookups accepted both UUID and viewSlug:**
+```typescript
+// ❌ VULNERABLE: Accepts both UUID and slug
+const project = await collection.findOne({ viewSlug: slug });
+
+// ❌ VULNERABLE: Fallback to _id
+if (!project && ObjectId.isValid(slug)) {
+  project = await collection.findOne({ _id: new ObjectId(slug) });
+}
+
+// ❌ VULNERABLE: $or query with multiple access patterns
+const query = {
+  $or: [
+    { viewSlug: identifier },
+    { editSlug: identifier },
+    { _id: new ObjectId(identifier) }
+  ]
+};
+```
+
+**Affected endpoints:**
+- `/app/api/partners/report/[slug]/route.ts`
+- `/app/api/partners/edit/[slug]/route.ts`
+- `/lib/slugUtils.ts` (findProjectByViewSlug, findProjectByEditSlug)
+- `/app/api/report-config/[identifier]/route.ts`
+- `/app/api/projects/stats/[slug]/route.ts` (via slugUtils)
+- `/app/api/projects/edit/[slug]/route.ts` (via slugUtils)
+
+### Solution
+**Enforce UUID-only validation:**
+```typescript
+// ✅ SECURE: Validate ObjectId format first
+if (!ObjectId.isValid(slug)) {
+  return NextResponse.json(
+    { success: false, error: 'Invalid ID format - UUID required' },
+    { status: 400 }
+  );
+}
+
+// ✅ SECURE: Lookup by _id only (no viewSlug)
+const partner = await db.collection('partners').findOne({ 
+  _id: new ObjectId(slug) 
+});
+```
+
+**Changes applied:**
+1. **Partner reports** - Added ObjectId validation, removed viewSlug lookup
+2. **Partner editing** - Added ObjectId validation, removed viewSlug lookup
+3. **Event reports** - Modified `findProjectByViewSlug()` to reject non-ObjectId inputs
+4. **Event editing** - Modified `findProjectByEditSlug()` to reject non-ObjectId inputs
+5. **Report config** - Removed viewSlug/editSlug matching in template resolution
+
+**No changes needed:**
+- Hashtag reports (already UUID-based via `filter_slugs` collection)
+- Filter reports (already UUID-based via `filter_slugs` collection)
+
+### Key Learnings
+
+**1. URL Security Principles**
+- ✅ Always use cryptographically random UUIDs (MongoDB ObjectId) for URLs
+- ❌ Never use predictable identifiers (names, slugs, sequential IDs)
+- ✅ Validate ID format BEFORE database queries
+- ❌ Never provide multiple URL access patterns (creates attack surface)
+
+**2. Database Query Patterns**
+```typescript
+// ❌ BAD: Multiple access patterns
+findOne({ $or: [{ slug }, { _id }] })
+
+// ✅ GOOD: Single access pattern with validation
+if (!ObjectId.isValid(id)) return null;
+findOne({ _id: new ObjectId(id) })
+```
+
+**3. Migration Strategy**
+- Old projects/partners with viewSlug/editSlug fields remain in database (unused)
+- No migration needed - old URLs simply return 400 errors now
+- Frontend must use UUID-based URLs from project._id
+- Backward compatibility NOT required for security fixes
+
+**4. Error Messages**
+```typescript
+// ✅ GOOD: Clear error without exposing internals
+return NextResponse.json(
+  { success: false, error: 'Invalid partner ID format - UUID required' },
+  { status: 400 }
+);
+
+// ❌ BAD: Exposes database field names
+return NextResponse.json(
+  { error: 'viewSlug not found in partners collection' },
+  { status: 404 }
+);
+```
+
+**5. Testing Checklist**
+When changing URL patterns:
+- [ ] Verify old slug-based URLs return 400/404
+- [ ] Verify UUID-based URLs still work
+- [ ] Test all report types (event, partner, hashtag, filter)
+- [ ] Test edit vs view URLs separately
+- [ ] Check error messages don't leak database structure
+
+### Related Files
+**Modified for security:**
+- `app/api/partners/report/[slug]/route.ts` - Partner reports
+- `app/api/partners/edit/[slug]/route.ts` - Partner editing
+- `lib/slugUtils.ts` - Project lookup functions
+- `app/api/report-config/[identifier]/route.ts` - Template resolution
+
+**Already secure (no changes):**
+- `app/api/hashtags/filter-by-slug/[slug]/route.ts` - Uses filter_slugs
+
+### Prevention
+**Security code review checklist:**
+- [ ] Are all public URLs using UUIDs/ObjectIds?
+- [ ] Is ObjectId.isValid() called before lookups?
+- [ ] Are there $or queries with multiple identifier patterns?
+- [ ] Do error messages expose database field names?
+- [ ] Can URLs be enumerated by guessing common names?
+
+**Architecture principle:**
+> Every public URL must use a cryptographically random identifier (MongoDB ObjectId). No human-readable slugs, no sequential IDs. Validate format before querying.
+
+### Impact
+**Breaking change:** Old slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`) now return 400 errors. This is intentional - security fixes override backward compatibility.
+
+**User impact:** None - frontend already uses UUID-based URLs from database `_id` fields.
+
+**Database cleanup:** viewSlug/editSlug fields can remain in database (unused) or be removed in future migration.
+
+---
+
 ## [v11.52.1] - 2025-12-23T13:13:00.000Z — Font Inheritance and Icon Fonts
 
 ### Context

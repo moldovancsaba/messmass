@@ -1,5 +1,148 @@
 # MessMass Release Notes
 
+## [v11.53.0] — 2025-12-23T17:30:00.000Z
+
+### Summary
+🔒 **SECURITY FIX**: Enforced UUID-only URL access for all report types to prevent URL enumeration attacks. Old slug-based URLs (e.g., `/partner-report/szerencsejtk-zrt`) are now rejected with 400 errors.
+
+### Security Fixes
+
+#### URL Enumeration Vulnerability ❌→✅
+**Problem**: Report URLs were accessible via both UUID (secure) and viewSlug (guessable) patterns:
+- `/partner-report/szerencsejtk-zrt` ← Guessable slug (VULNERABLE)
+- `/partner-report/67478d95e6b1234567890abc` ← UUID (SECURE)
+- `/report/fc-barcelona-vs-real-madrid` ← Guessable slug (VULNERABLE)
+- `/edit/my-event-name` ← Guessable slug (VULNERABLE)
+
+**Security Risks**:
+- 🚨 URL enumeration attacks (guess common team/event names)
+- 🚨 Unauthorized access to non-password-protected reports
+- 🚨 Exposure of business-sensitive event statistics
+- 🚨 Predictable URL patterns enable automated scraping
+
+**Solution**: Enforce UUID-only validation across all report endpoints:
+```typescript
+// ✅ SECURE: Validate ObjectId format before database query
+if (!ObjectId.isValid(slug)) {
+  return NextResponse.json(
+    { success: false, error: 'Invalid ID format - UUID required' },
+    { status: 400 }
+  );
+}
+
+// ✅ SECURE: Lookup by _id only (no viewSlug fallback)
+const partner = await db.collection('partners').findOne({ 
+  _id: new ObjectId(slug) 
+});
+```
+
+### Breaking Changes
+
+**Old slug-based URLs now return 400 errors**:
+- ❌ `/partner-report/szerencsejtk-zrt` → 400 Bad Request
+- ❌ `/report/fc-barcelona-vs-real-madrid` → 400 Bad Request
+- ❌ `/edit/my-event-name` → 400 Bad Request
+- ❌ `/partners/edit/team-name` → 400 Bad Request
+
+**Only UUID-based URLs work now**:
+- ✅ `/partner-report/67478d95e6b1234567890abc` (24-char hex ObjectId)
+- ✅ `/report/67478d95e6b1234567890abc`
+- ✅ `/edit/67478d95e6b1234567890abc`
+- ✅ `/partners/edit/67478d95e6b1234567890abc`
+
+**User Impact**: None – frontend already uses UUID-based URLs from database `_id` fields.
+
+### Files Modified
+
+**Security Hardening**:
+- `app/api/partners/report/[slug]/route.ts` - Added ObjectId validation, removed viewSlug lookup
+- `app/api/partners/edit/[slug]/route.ts` - Added ObjectId validation, removed viewSlug lookup
+- `lib/slugUtils.ts` - Modified `findProjectByViewSlug()` and `findProjectByEditSlug()` to reject non-ObjectId inputs
+- `app/api/report-config/[identifier]/route.ts` - Removed viewSlug/editSlug matching in template resolution
+
+**No Changes Needed** (already secure):
+- `app/api/hashtags/filter-by-slug/[slug]/route.ts` - Already UUID-based via `filter_slugs` collection
+
+### Technical Details
+
+**Validation Pattern** (applied to all endpoints):
+```typescript
+// Step 1: Validate format
+if (!ObjectId.isValid(slug)) {
+  return NextResponse.json(
+    { success: false, error: 'Invalid partner ID format - UUID required' },
+    { status: 400 }
+  );
+}
+
+// Step 2: Query by _id only
+const entity = await db.collection('collection').findOne({ 
+  _id: new ObjectId(slug) 
+});
+```
+
+**Affected Endpoints**:
+1. ✅ Partner reports (`/api/partners/report/[slug]`)
+2. ✅ Partner editing (`/api/partners/edit/[slug]`)
+3. ✅ Event reports (`/api/projects/stats/[slug]` via slugUtils)
+4. ✅ Event editing (`/api/projects/edit/[slug]` via slugUtils)
+5. ✅ Report config resolution (`/api/report-config/[identifier]`)
+6. ✅ Hashtag reports (already UUID-based)
+7. ✅ Filter reports (already UUID-based)
+
+### Database Impact
+
+**Fields Deprecated (not removed)**:
+- `viewSlug` (projects, partners) - No longer used for lookups
+- `editSlug` (projects) - No longer used for lookups
+
+**Migration Strategy**:
+- No database migration required
+- Old slug fields remain in database (unused)
+- Can be removed in future cleanup migration
+- Frontend already uses `_id` field for URLs
+
+### Security Principles Applied
+
+**1. UUID-Only URLs**:
+- ✅ Use cryptographically random identifiers (MongoDB ObjectId)
+- ❌ Never use predictable identifiers (names, slugs, sequential IDs)
+
+**2. Format Validation**:
+- ✅ Validate ID format BEFORE database queries
+- ✅ Fail fast with clear error messages
+
+**3. Single Access Pattern**:
+- ❌ Never provide multiple URL access patterns ($or queries)
+- ✅ One route, one identifier type, one lookup method
+
+**4. Error Message Safety**:
+- ✅ Don't expose database field names in errors
+- ✅ Use generic messages: "Invalid ID format"
+
+### Testing Checklist
+
+- [x] Old slug-based URLs return 400 errors
+- [x] UUID-based URLs work correctly
+- [x] All report types tested (event, partner, hashtag, filter)
+- [x] Edit vs view URLs tested separately
+- [x] Error messages don't leak database structure
+- [x] Build passes (`npm run build`)
+- [x] TypeScript validation passes
+
+### Documentation Updates
+
+- ✅ LEARNINGS.md - Added comprehensive security entry with prevention checklist
+- ✅ WARP.md - Updated with UUID-only URL enforcement note (future)
+- ✅ RELEASE_NOTES.md - This entry
+
+### Version
+`11.52.2` → `11.53.0` (MINOR - Security fix with breaking changes)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.47.0] — 2025-12-22T19:12:00.000Z
 
 ### Summary
