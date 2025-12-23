@@ -14,6 +14,9 @@ export interface ReportStyle {
   name: string;
   description?: string;
   
+  // Typography
+  fontFamily?: string;                  // Font family for all text
+  
   // Hero Section (5 properties)
   heroBackground: string;               // Hero card background
   headingColor: string;                 // Event title color
@@ -125,6 +128,7 @@ export const COLOR_FIELDS: ColorFieldDefinition[] = [
 export const DEFAULT_STYLE: Omit<ReportStyle, '_id' | 'createdAt' | 'updatedAt'> = {
   name: 'New Style',
   description: '',
+  fontFamily: 'Inter',
   
   // Hero Section
   heroBackground: '#f8fafcff',
@@ -258,6 +262,11 @@ export function validateStyle(style: Partial<ReportStyle>): { valid: boolean; er
 export function injectStyleAsCSS(style: ReportStyle): void {
   const root = document.documentElement;
   
+  // Inject font family if specified
+  if (style.fontFamily) {
+    root.style.setProperty('--reportFontFamily', style.fontFamily);
+  }
+  
   // Inject all color fields as CSS variables
   for (const field of COLOR_FIELDS) {
     const value = style[field.key];
@@ -274,6 +283,9 @@ export function injectStyleAsCSS(style: ReportStyle): void {
  */
 export function removeStyleCSS(): void {
   const root = document.documentElement;
+  
+  // Remove font family
+  root.style.removeProperty('--reportFontFamily');
   
   for (const field of COLOR_FIELDS) {
     root.style.removeProperty(`--${field.key}`);

@@ -8,6 +8,10 @@
   min-height: 100vh;
   background: var(--mm-gray-100); /* WHAT: Gray background for card contrast */
   padding: var(--mm-space-6) var(--mm-space-4);
+  /* WHAT: Apply custom font from report style (v11.49.0)
+     WHY: Allow per-style font customization
+     HOW: Falls back to Inter if not set */
+  font-family: var(--reportFontFamily, 'Inter', system-ui, -apple-system, sans-serif);
 }
 
 /* Content Container */

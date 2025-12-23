@@ -230,6 +230,23 @@ export default function StyleEditorPage() {
                 className={styles.textArea}
               />
             </div>
+            
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Font Family</label>
+              <select
+                value={style.fontFamily || 'Inter'}
+                onChange={(e) => handleChange('fontFamily', e.target.value)}
+                className={styles.selectInput}
+              >
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="AS Roma">AS Roma</option>
+                <option value="system-ui">System Default</option>
+              </select>
+              <small className={styles.hint}>Font used for all text in reports</small>
+            </div>
           </div>
 
           {/* Color Fields by Category */}
@@ -243,7 +260,7 @@ export default function StyleEditorPage() {
                       key={field.key}
                       label={field.label}
                       description={field.description}
-                      value={style[field.key]}
+                      value={style[field.key] || '#000000ff'}
                       onChange={(value) => handleChange(field.key, value)}
                     />
                   ))}
