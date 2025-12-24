@@ -709,8 +709,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId
-    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId } = body;
+    // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId + partner references
+    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -810,6 +810,28 @@ export async function PUT(request: NextRequest) {
       console.log('📊 [PUT /api/projects] Invalid reportTemplateId:', { reportTemplateId });
     }
     // If reportTemplateId is not provided in the request, don't modify existing reportTemplateId
+    
+    // WHAT: Handle partner1Id and partner2Id assignment/removal
+    // WHY: Convert old events to Sports Matches by setting partner references
+    if (partner1Id === null || partner1Id === '' || partner1Id === 'null') {
+      // Remove partner1Id
+      unsetData.partner1Id = '';
+      console.log('🤝 [PUT /api/projects] Removing partner1Id');
+    } else if (partner1Id && partner1Id !== undefined && ObjectId.isValid(partner1Id)) {
+      // Set specific partner1Id
+      setData.partner1Id = new ObjectId(partner1Id);
+      console.log('🤝 [PUT /api/projects] Setting partner1Id:', partner1Id);
+    }
+    
+    if (partner2Id === null || partner2Id === '' || partner2Id === 'null') {
+      // Remove partner2Id (Type 1 event)
+      unsetData.partner2Id = '';
+      console.log('🤝 [PUT /api/projects] Removing partner2Id');
+    } else if (partner2Id && partner2Id !== undefined && ObjectId.isValid(partner2Id)) {
+      // Set specific partner2Id (Type 2 - Sports Match)
+      setData.partner2Id = new ObjectId(partner2Id);
+      console.log('🤝 [PUT /api/projects] Setting partner2Id:', partner2Id);
+    }
     
     // Build the update operation object
     const updateOperation: any = { $set: setData };

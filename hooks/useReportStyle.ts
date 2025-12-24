@@ -55,14 +55,25 @@ export function useReportStyle({
         const response = await fetch(`/api/report-styles/${encodeURIComponent(id)}`, { cache: 'no-store' });
         const data = await response.json();
         if (!response.ok || !data.success || !data.style) {
-          throw new Error(data.error || 'Failed to fetch style');
+          // WHAT: Fallback to first available style when specified style not found
+          // WHY: Reports should still render with default styling instead of failing
+          console.warn('⚠️ Style not found, falling back to first available:', id);
+          await fetchFirstAvailable();
+          return;
         }
         setStyle(data.style);
         injectStyleAsCSS(data.style);
         console.log('✅ Applied report style:', data.style.name, 'with 26 colors');
       } catch (err) {
-        console.error('❌ Failed to fetch report style by id:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load style');
+        console.error('❌ Failed to fetch report style by id, falling back to first available:', err);
+        // WHAT: Fallback instead of throwing error
+        // WHY: Reports must render even if specified style is missing
+        try {
+          await fetchFirstAvailable();
+        } catch (fallbackErr) {
+          // Only set error if fallback also fails
+          setError(fallbackErr instanceof Error ? fallbackErr.message : 'Failed to load any style');
+        }
       } finally {
         setLoading(false);
       }

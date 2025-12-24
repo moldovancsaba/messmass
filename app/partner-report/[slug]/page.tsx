@@ -102,10 +102,10 @@ export default function PartnerReportPage() {
   // WHY: Removed chartsLoading (no longer needed with unified fetch)
   const loading = dataLoading || layoutLoading || styleLoading;
 
-  // Determine overall error state
-  // WHAT: Single error state from unified data source
-  // WHY: Removed chartsError (no longer needed with unified fetch)
-  const error = dataError || layoutError || styleError;
+  // WHAT: Determine overall error state (exclude styleError)
+  // WHY: Style errors should not block report rendering (fallback handles it)
+  // HOW: Only check critical errors that prevent data/layout from loading
+  const error = dataError || layoutError;
 
   // Loading state
   if (loading) {

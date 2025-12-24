@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-  "version": "11.53.4",
+  "version": "11.54.0",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -111,7 +111,9 @@
     "seed:superadmin": "tsx -r dotenv/config scripts/ensureSuperadmin.ts dotenv_config_path=.env.local",
     "diagnose:reports": "tsx -r dotenv/config scripts/diagnose-report-templates.ts dotenv_config_path=.env.local",
     "fix:missing-blocks": "tsx -r dotenv/config scripts/restore-missing-blocks.ts dotenv_config_path=.env.local",
-    "fix:report-warnings": "tsx -r dotenv/config scripts/fix-report-config-warnings.ts dotenv_config_path=.env.local"
+    "fix:report-warnings": "tsx -r dotenv/config scripts/fix-report-config-warnings.ts dotenv_config_path=.env.local",
+    "migrate:partner-slugs": "tsx -r dotenv/config scripts/migratePartnerSlugsToUUID.ts dotenv_config_path=.env.local",
+    "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "chart.js": "^4.5.0",

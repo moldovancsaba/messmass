@@ -29,6 +29,7 @@ export default function ProjectsPageUnified() {
   const [projects, setProjects] = useState<ProjectDTO[]>([]);
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
+  const [availablePartners, setAvailablePartners] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
@@ -67,7 +68,9 @@ export default function ProjectsPageUnified() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     styleId: '' as string | null,
-    reportTemplateId: '' as string | null
+    reportTemplateId: '' as string | null,
+    partner1Id: '' as string | null,
+    partner2Id: '' as string | null
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
@@ -224,6 +227,19 @@ export default function ProjectsPageUnified() {
           console.error('Failed to load report templates', e);
         }
       })();
+      
+      // Load available partners
+      (async () => {
+        try {
+          const res = await fetch('/api/admin/partners');
+          const data = await res.json();
+          if (data.success) {
+            setAvailablePartners(data.partners.map((p: any) => ({ _id: p._id, name: p.name })));
+          }
+        } catch (e) {
+          console.error('Failed to load partners', e);
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only run when user changes, not when loadProjects changes
@@ -344,15 +360,40 @@ export default function ProjectsPageUnified() {
       hashtags: project.hashtags || [],
       categorizedHashtags: project.categorizedHashtags || {},
       styleId: project.styleIdEnhanced || '',
-      reportTemplateId: (project as any).reportTemplateId || ''
+      reportTemplateId: (project as any).reportTemplateId || '',
+      partner1Id: (project as any).partner1Id || '',
+      partner2Id: (project as any).partner2Id || ''
     });
     setShowEditProjectForm(true);
   };
   
   // Update project
   const updateProject = async () => {
-    if (!editingProject || !editProjectData.eventName.trim() || !editProjectData.eventDate) {
-      alert('Please fill in both Event Name and Event Date.');
+    // WHAT: Validate required fields based on event type
+    // WHY: Partner 1 is always required, Event Name required only for Type 1 (single partner events)
+    if (!editingProject || !editProjectData.eventDate) {
+      alert('Please fill in Event Date.');
+      return;
+    }
+    
+    if (!editProjectData.partner1Id) {
+      alert('Partner 1 (Organizer / Home Team) is required.');
+      return;
+    }
+    
+    // WHAT: Auto-generate event name for Type 2 (paired matches)
+    // WHY: Sports matches use "Partner1 x Partner2" format automatically
+    let finalEventName = editProjectData.eventName.trim();
+    if (editProjectData.partner1Id && editProjectData.partner2Id) {
+      // Type 2: Paired match - auto-generate name
+      const partner1 = availablePartners.find(p => p._id === editProjectData.partner1Id);
+      const partner2 = availablePartners.find(p => p._id === editProjectData.partner2Id);
+      if (partner1 && partner2) {
+        finalEventName = `${partner1.name} x ${partner2.name}`;
+      }
+    } else if (!finalEventName) {
+      // Type 1: Single partner event - require manual name
+      alert('Event Name is required for non-match events.');
       return;
     }
     
@@ -361,13 +402,15 @@ export default function ProjectsPageUnified() {
     try {
       const payload = {
         projectId: editingProject._id,
-        eventName: editProjectData.eventName.trim(),
+        eventName: finalEventName,
         eventDate: editProjectData.eventDate,
         hashtags: editProjectData.hashtags,
         categorizedHashtags: editProjectData.categorizedHashtags,
         stats: editingProject.stats,
         styleId: editProjectData.styleId || null,
-        reportTemplateId: editProjectData.reportTemplateId || null
+        reportTemplateId: editProjectData.reportTemplateId || null,
+        partner1Id: editProjectData.partner1Id || null,
+        partner2Id: editProjectData.partner2Id || null
       };
       
       console.log('📤 [UPDATE EVENT] Sending payload:', {
@@ -525,18 +568,11 @@ export default function ProjectsPageUnified() {
         onSortChange={handleSort}
         actionButtons={[
           {
-            label: 'Add New Event',
-            onClick: () => setShowNewProjectForm(true),
-            variant: 'primary',
-            icon: '➕',
-            title: 'Create a new event'
-          },
-          {
-            label: 'Quick Add',
+            label: 'Quick Add 🤝 Sports Match',
             onClick: () => router.push('/admin/quick-add'),
-            variant: 'secondary',
+            variant: 'primary',
             icon: '⚡',
-            title: 'Bulk import events from spreadsheet or match builder'
+            title: 'Create events via match builder or bulk import'
           }
         ]}
       />
@@ -656,15 +692,76 @@ export default function ProjectsPageUnified() {
           size="lg"
         >
           <div className="form-group">
-            <label>Event Name *</label>
-            <input
-              type="text"
+            <label>Partner 1 (Organizer / Home Team) *</label>
+            <select
               className="form-input"
-              value={editProjectData.eventName}
-              onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
-              placeholder="Enter event name..."
-            />
+              value={editProjectData.partner1Id || ''}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, partner1Id: e.target.value || null }))}
+            >
+              <option value="">— Select Partner 1 —</option>
+              {availablePartners.map(p => (
+                <option key={p._id} value={p._id}>{p.name}</option>
+              ))}
+            </select>
+            <p className="form-hint">
+              💡 Required: Primary organizer or home team
+            </p>
           </div>
+          
+          {/* WHAT: Event Name field - hidden for Type 2 (paired matches)
+              WHY: Sports matches auto-generate name from partners */}
+          {!(editProjectData.partner1Id && editProjectData.partner2Id) && (
+            <div className="form-group">
+              <label>Event Name {!editProjectData.partner2Id && '*'}</label>
+              <input
+                type="text"
+                className="form-input"
+                value={editProjectData.eventName}
+                onChange={(e) => setEditProjectData(prev => ({ ...prev, eventName: e.target.value }))}
+                placeholder="Enter event name..."
+              />
+              <p className="form-hint">
+                💡 Leave blank for Sports Match (auto-generated from partners)
+              </p>
+            </div>
+          )}
+          
+          <div className="form-group">
+            <label>Partner 2 (Away Team)</label>
+            <select
+              className="form-input"
+              value={editProjectData.partner2Id || ''}
+              onChange={(e) => setEditProjectData(prev => ({ ...prev, partner2Id: e.target.value || null }))}
+            >
+              <option value="">— No Partner 2 (Single Event) —</option>
+              {availablePartners.map(p => (
+                <option key={p._id} value={p._id}>{p.name}</option>
+              ))}
+            </select>
+            <p className="form-hint">
+              💡 Optional: For Sports Matches, set away team. Event name will be auto-generated.
+            </p>
+          </div>
+          
+          {/* WHAT: Show auto-generated name preview for Type 2 */}
+          {editProjectData.partner1Id && editProjectData.partner2Id && (() => {
+            const partner1 = availablePartners.find(p => p._id === editProjectData.partner1Id);
+            const partner2 = availablePartners.find(p => p._id === editProjectData.partner2Id);
+            if (partner1 && partner2) {
+              return (
+                <div className="form-group">
+                  <label>Event Name (Auto-Generated)</label>
+                  <div className="form-input" style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}>
+                    {partner1.name} x {partner2.name}
+                  </div>
+                  <p className="form-hint">
+                    ✅ Sports Match: Name generated automatically
+                  </p>
+                </div>
+              );
+            }
+            return null;
+          })()}
           
           <div className="form-group">
             <label>Event Date *</label>

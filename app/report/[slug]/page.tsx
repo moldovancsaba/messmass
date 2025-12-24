@@ -202,8 +202,10 @@ export default function ReportPage() {
   // Determine overall loading state
   const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;
 
-  // Determine overall error state
-  const error = dataError || layoutError || chartsError || styleError;
+  // WHAT: Determine overall error state (exclude styleError)
+  // WHY: Style errors should not block report rendering (fallback handles it)
+  // HOW: Only check critical errors that prevent data/layout from loading
+  const error = dataError || layoutError || chartsError;
 
   // Loading state
   if (loading) {
