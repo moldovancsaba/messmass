@@ -354,6 +354,13 @@ export default function ProjectsPageUnified() {
   // Edit project
   const editProject = (project: ProjectDTO) => {
     setEditingProject(project);
+    
+    // WHAT: Extract partner IDs from project
+    // WHY: API returns populated partner objects with nested _id, need to extract the ID
+    // HOW: Check both partner object (_id) and direct partnerId field for backward compatibility
+    const partner1Id = (project as any).partner1?._id || (project as any).partner1Id || '';
+    const partner2Id = (project as any).partner2?._id || (project as any).partner2Id || '';
+    
     setEditProjectData({
       eventName: project.eventName,
       eventDate: project.eventDate,
@@ -361,8 +368,8 @@ export default function ProjectsPageUnified() {
       categorizedHashtags: project.categorizedHashtags || {},
       styleId: project.styleIdEnhanced || '',
       reportTemplateId: (project as any).reportTemplateId || '',
-      partner1Id: (project as any).partner1Id || '',
-      partner2Id: (project as any).partner2Id || ''
+      partner1Id,
+      partner2Id
     });
     setShowEditProjectForm(true);
   };
@@ -424,7 +431,7 @@ export default function ProjectsPageUnified() {
       if (result.success) {
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
-            ? { ...p, eventName: editProjectData.eventName.trim(), eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleIdEnhanced: editProjectData.styleId || null }
+            ? { ...p, eventName: finalEventName, eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleIdEnhanced: editProjectData.styleId || null }
             : p
         ));
         
@@ -432,7 +439,7 @@ export default function ProjectsPageUnified() {
         setEditingProject(null);
         setShowEditProjectForm(false);
         
-        alert(`Project \"${editProjectData.eventName}\" updated successfully!`);
+        alert(`Project \"${finalEventName}\" updated successfully!`);
       } else {
         alert(`Failed to update project: ${result.error || 'Unknown error'}`);
       }
