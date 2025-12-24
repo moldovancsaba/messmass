@@ -428,7 +428,7 @@ export default function ProjectsPageUnified() {
             : p
         ));
         
-        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '' });
+        setEditProjectData({ eventName: '', eventDate: '', hashtags: [], categorizedHashtags: {}, styleId: '', reportTemplateId: '', partner1Id: '', partner2Id: '' });
         setEditingProject(null);
         setShowEditProjectForm(false);
         
