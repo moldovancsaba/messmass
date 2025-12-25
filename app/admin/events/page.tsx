@@ -244,16 +244,9 @@ export default function ProjectsPageUnified() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only run when user changes, not when loadProjects changes
   
-  // Auto-reload on visibility change
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadProjects(true, false); // Silent reload, no spinner
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [loadProjects]);
+  // WHAT: Removed auto-reload on visibility change
+  // WHY: User loses pagination state when returning to tab after "Load More"
+  // HOW: Users can manually refresh if needed, preserving their current view
   
   // Database search with debounce
   // WHAT: Trigger search after user stops typing

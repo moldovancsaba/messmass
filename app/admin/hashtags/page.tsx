@@ -38,7 +38,9 @@ export default function HashtagManagerPage() {
         }
 
         setUser(data.user);
-        setHasAccess(data.user.role === 'admin' || data.user.role === 'super-admin');
+        // WHAT: Check for 'superadmin' (no hyphen) and 'admin'
+        // WHY: Role value is 'superadmin', not 'super-admin' (see lib/auth.ts)
+        setHasAccess(data.user.role === 'admin' || data.user.role === 'superadmin');
         setLoading(false);
       } catch (error) {
         console.error('Auth check failed:', error);
