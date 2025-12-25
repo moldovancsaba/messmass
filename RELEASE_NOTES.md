@@ -1,5 +1,123 @@
 # MessMass Release Notes
 
+## [v11.54.4] — 2025-12-25T21:55:00.000Z
+
+### Summary
+🏛️ **REPORT LAYOUT SPEC V2.0 - PHASE 2 COMPLETE**: Integrated CellWrapper into all chart components, threaded blockHeight calculations, and enforced admin UI width constraints (max 2 units).
+
+### What Was Accomplished
+
+#### CellWrapper Integration ✅
+**WHAT**: All chart components now use `CellWrapper` to enforce 3-zone structure per Report Layout Spec v2.0  
+**WHY**: Ensures consistent title/subtitle/body alignment across all cells in a block  
+**HOW**: Wrapped KPI, PIE, BAR, TEXT, and IMAGE chart bodies with `CellWrapper`
+
+**Implementation Details**:
+- **ReportChart.tsx**: Updated to accept `blockHeight` prop and pass to all chart components
+- **KPIChart**: Moved title to `CellWrapper`, removed duplicate title from body
+- **PieChart, BarChart, TextChart, ImageChart**: Replaced manual title zones with `CellWrapper.title` prop
+- **3-Zone Structure**: Title zone + subtitle zone + body zone (chart content only)
+
+**Files Modified**:
+- `app/report/[slug]/ReportChart.tsx` - All 5 chart component functions updated
+- `app/report/[slug]/ReportContent.tsx` - Passes `blockHeight` to `<ReportChart>`
+
+#### Block Height Threading ✅
+**WHAT**: Calculated block heights now passed from `ReportContent` through `ReportChart` to individual chart components  
+**WHY**: Enables charts to size themselves according to row height constraints calculated from image aspect ratios  
+**HOW**: `rowHeight` from `solveBlockHeightWithImages()` → `ReportChart` → `KPIChart`, `PieChart`, etc.
+
+**Data Flow**:
+1. `ReportContent.ResponsiveRow`: Calculates `rowHeight` using `solveBlockHeightWithImages(cells, width)`
+2. `ReportContent`: Passes `blockHeight={rowHeight}` to `<ReportChart>`
+3. `ReportChart`: Threads `blockHeight` prop to `KPIChart`, `PieChart`, `BarChart`, `TextChart`, `ImageChart`
+4. **Chart Components**: Now accept `blockHeight?: number` prop (available for future dynamic sizing)
+
+**Component Signatures Updated**:
+```typescript
+// Before
+function KPIChart({ result, className }: { result: ChartResult; className?: string })
+
+// After (v11.54.4)
+function KPIChart({ result, blockHeight, className }: { 
+  result: ChartResult; 
+  blockHeight?: number; 
+  className?: string 
+})
+```
+
+#### Admin UI Validation ✅
+**WHAT**: Updated admin UI labels to reflect Spec v2.0 width constraints (max 2 units)  
+**WHY**: Previous labels showed "3 grid units" for landscape images, causing confusion  
+**HOW**: Updated aspect ratio labels in `ChartAlgorithmManager` to match actual clamping behavior
+
+**Changes**:
+- **Landscape (16:9)**: "3 grid units" → "2 grid units" (consistent with auto-clamping)
+- **Square (1:1)**: "2 grid units" (unchanged)
+- **Portrait (9:16)**: "1 grid unit" (unchanged)
+- **Width Selector** (`Visualization` admin): Only shows "1 unit (compact)" and "2 units (detailed)"
+- **Auto-Clamping**: `Math.min(Math.max(newWidth, 1), 2)` enforces [1, 2] range in save logic
+
+**Files Modified**:
+- `components/ChartAlgorithmManager.tsx` - Updated aspect ratio dropdown labels
+- `app/admin/visualization/page.tsx` - Already had correct 2-option width selector
+
+### Technical Details
+
+**CellWrapper Component** (`components/CellWrapper.tsx`):
+```typescript
+export interface CellWrapperProps {
+  title?: string;
+  subtitle?: string;
+  titleFontSize?: number;    // Synced at block level (future)
+  subtitleFontSize?: number; // Synced at block level (future)
+  titleHeight?: number;      // Fixed per block (future)
+  subtitleHeight?: number;   // Fixed per block (future)
+  children: ReactNode;       // Body zone content
+  className?: string;
+}
+```
+
+**3-Zone Structure**:
+1. **Title Zone**: Fixed height, centered, max 2 lines (if title provided)
+2. **Subtitle Zone**: Fixed height, centered, max 2 lines (if subtitle provided)
+3. **Body Zone**: Chart content fills remaining space
+
+**Future Enhancements** (not in Phase 2):
+- Font synchronization calculator integration (calculate `titleFontSize`/`subtitleFontSize` per block)
+- Dynamic height utilization in chart components (use `blockHeight` for sizing)
+- Per-template feature flag for CellWrapper opt-in
+
+### Benefits
+
+✅ **Consistent Layout**: All charts now follow same 3-zone structure  
+✅ **Type Safety**: `blockHeight` prop typed and threaded through components  
+✅ **Admin Clarity**: Width labels match actual behavior (max 2 units)  
+✅ **Future Ready**: Infrastructure in place for font synchronization  
+✅ **Zero Breaking Changes**: CellWrapper preserves existing chart rendering  
+
+### Testing
+
+- [x] Build passes (`npm run build`)
+- [x] TypeScript compilation successful
+- [x] All 5 chart types render with CellWrapper
+- [x] Admin UI aspect ratio labels updated
+- [x] Width selector shows only 1-2 units
+- [x] No visual regressions (CellWrapper transparent)
+
+### Documentation Updates
+
+- ✅ TASKLIST.md - Marked Phase 2 complete
+- ✅ docs/design/LAYOUT_SYSTEM.md - Added Phase 2 completion section
+- ✅ RELEASE_NOTES.md - This entry
+
+### Version
+`11.54.3` → `11.54.4` (PATCH - Phase 2 completion)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.54.3] — 2025-12-25T21:21:00.000Z
 
 ### Summary

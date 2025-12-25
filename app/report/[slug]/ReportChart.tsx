@@ -16,6 +16,7 @@ import {
 import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
 import MaterialIcon from '@/components/MaterialIcon';
+import CellWrapper from '@/components/CellWrapper';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
 
@@ -48,6 +49,9 @@ interface ReportChartProps {
   /** Optional width override (grid units) */
   width?: number;
   
+  /** Block height from layout calculator (Report Layout Spec v2.0) */
+  blockHeight?: number;
+  
   /** Optional CSS class for container */
   className?: string;
 }
@@ -66,7 +70,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, className }: ReportChartProps) {
+export default function ReportChart({ result, width, blockHeight, className }: ReportChartProps) {
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
@@ -105,26 +109,26 @@ export default function ReportChart({ result, width, className }: ReportChartPro
   // Render based on chart type
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} className={className} />;
+      return <KPIChart result={result} blockHeight={blockHeight} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} className={className} />;
+      return <PieChart result={result} blockHeight={blockHeight} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} className={className} />;
+      return <BarChart result={result} blockHeight={blockHeight} className={className} />;
     
     case 'text':
-      return <TextChart result={result} className={className} />;
+      return <TextChart result={result} blockHeight={blockHeight} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} className={className} />;
+      return <ImageChart result={result} blockHeight={blockHeight} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} className={className} />
-          <BarChart result={result} />
+          <KPIChart result={result} blockHeight={blockHeight} className={className} />
+          <BarChart result={result} blockHeight={blockHeight} />
         </div>
       );
     
@@ -141,8 +145,9 @@ export default function ReportChart({ result, width, className }: ReportChartPro
 /**
  * KPI Chart - 3-row grid layout with CSS-only auto-sizing
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
+function KPIChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const protectedTitle = preventPhraseBreaks(result.title);
   
@@ -151,31 +156,36 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
   // HOW: Pass icon name and variant (default: outlined) to MaterialIcon component
   const iconVariant = result.iconVariant || 'outlined';
   
+  // WHAT: Check if title should be shown in CellWrapper (default: true)
+  // WHY: Some charts may want to hide titles per Spec v2.0
+  const showTitle = result.showTitle !== false;
+  
   return (
-    <div className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`} data-report-section="content">
-      <div className={styles.chartBody}>
-        <div className={styles.kpiContent}>
-          <div className={styles.kpiIconRow}>
-            {result.icon && (
-              <MaterialIcon 
-                name={result.icon} 
-                variant={iconVariant}
-                className={styles.kpiIcon}
-              />
-            )}
-          </div>
-          <div className={styles.kpiValue}>{formattedValue}</div>
-          <div className={styles.kpiTitle}>{protectedTitle}</div>
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
+    >
+      <div className={styles.kpiContent}>
+        <div className={styles.kpiIconRow}>
+          {result.icon && (
+            <MaterialIcon 
+              name={result.icon} 
+              variant={iconVariant}
+              className={styles.kpiIcon}
+            />
+          )}
         </div>
+        <div className={styles.kpiValue}>{formattedValue}</div>
       </div>
-    </div>
+    </CellWrapper>
   );
 }
 
 /**
  * Pie Chart - Circular visualization using Chart.js
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function PieChart({ result, className }: { result: ChartResult; className?: string }) {
+function PieChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -272,13 +282,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   };
 
   return (
-    <div ref={containerRef} className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`} data-report-section="content">
-      {showTitle && (
-        <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}>{result.title}</div>
-        </div>
-      )}
-      <div className={styles.chartBody}>
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
+    >
+      <div ref={containerRef} className={styles.chartBody}>
         {/* Pie chart takes 70% of body */}
         <div className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
@@ -307,14 +315,15 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
           })}
         </div>
       </div>
-    </div>
+    </CellWrapper>
   );
 }
 
 /**
  * Bar Chart - Five-element horizontal bars
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function BarChart({ result, className }: { result: ChartResult; className?: string }) {
+function BarChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
@@ -346,12 +355,10 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
   const maxValue = Math.max(...result.elements.map(el => typeof el.value === 'number' ? el.value : 0));
 
   return (
-    <div className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`} data-report-section="content">
-      {showTitle && (
-        <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}>{result.title}</div>
-        </div>
-      )}
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
+    >
       <div className={styles.chartBody}>
         <div className={styles.barElements}>
         {result.elements.map((element, idx) => {
@@ -382,14 +389,15 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
         })}
         </div>
       </div>
-    </div>
+    </CellWrapper>
   );
 }
 
 /**
  * Text Chart - Formatted text display
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function TextChart({ result, className }: { result: ChartResult; className?: string }) {
+function TextChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -400,31 +408,28 @@ function TextChart({ result, className }: { result: ChartResult; className?: str
   const showTitle = result.showTitle !== false;
   
   return (
-    <div className={`${styles.chart} ${styles.text} report-chart ${className || ''}`} data-report-section="content">
-      {showTitle && (
-        <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}>{result.title}</div>
-        </div>
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
+    >
+      {html ? (
+        <div
+          className={`${styles.textContent} ${styles.textMarkdown}`}
+          // eslint-disable-next-line react/forbid-dom-props
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : (
+        <div className={styles.textContent} />
       )}
-      <div className={styles.chartBody}>
-        {html ? (
-          <div
-            className={`${styles.textContent} ${styles.textMarkdown}`}
-            // eslint-disable-next-line react/forbid-dom-props
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        ) : (
-          <div className={styles.textContent} />
-        )}
-      </div>
-    </div>
+    </CellWrapper>
   );
 }
 
 /**
  * Image Chart - Aspect ratio-aware image display
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function ImageChart({ result, className }: { result: ChartResult; className?: string }) {
+function ImageChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const aspectRatio = result.aspectRatio || '16:9';
   
@@ -448,12 +453,10 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
   }[aspectRatio] || styles.aspect169;
 
   return (
-    <div className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`} data-report-section="content">
-      {showTitle && (
-        <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}>{result.title}</div>
-        </div>
-      )}
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`}
+    >
       {/* WHAT: Use actual <img> tag for reliable aspect ratio */}
       {/* WHY: Browser automatically maintains aspect ratio, no CSS tricks needed */}
       <img 
@@ -463,6 +466,6 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
         onLoad={() => console.log('[ImageChart] Image loaded:', result.title)}
         onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
       />
-    </div>
+    </CellWrapper>
   );
 }

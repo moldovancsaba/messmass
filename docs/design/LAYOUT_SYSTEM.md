@@ -1,7 +1,7 @@
 # Report Layout System (Spec v2.0)
 
-**Version:** 11.36.2  
-**Status:** Active (deployed 2025-12-19)
+**Version:** 11.54.4  
+**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25)
 
 ## Overview
 
@@ -239,12 +239,48 @@ PDF export automatically matches screen layout:
 - Templates continue working unchanged
 - Gradual rollout via `blockLayoutMode` flag (optional)
 
+## Phase 2 Completion (v11.54.4 - 2025-12-25)
+
+### CellWrapper Integration ✅
+**WHAT**: All chart components now use `CellWrapper` to enforce 3-zone structure  
+**WHY**: Ensures title/subtitle/body alignment across all cells in a block  
+**HOW**: Wrapped KPI, PIE, BAR, TEXT, and IMAGE chart bodies with `CellWrapper`
+
+**Implementation**:
+- **ReportChart.tsx**: Passes `blockHeight` prop to all chart components
+- **Chart Components**: Moved titles from chart body to `CellWrapper.title` prop
+- **3-Zone Structure**: Title zone + subtitle zone + body zone (chart content)
+
+### Block Height Threading ✅
+**WHAT**: Calculated block heights now passed from `ReportContent` to individual charts  
+**WHY**: Enables charts to size themselves according to row height constraints  
+**HOW**: `rowHeight` from `solveBlockHeightWithImages()` → `ReportChart` → chart components
+
+**Data Flow**:
+1. `ReportContent.ResponsiveRow`: Calculates `rowHeight` using `solveBlockHeightWithImages()`
+2. `ReportContent`: Passes `blockHeight={rowHeight}` to `<ReportChart>`
+3. `ReportChart`: Threads `blockHeight` prop to `KPIChart`, `PieChart`, etc.
+4. **Chart Components**: Accept `blockHeight` prop (future: use for dynamic sizing)
+
+### Admin UI Validation ✅
+**WHAT**: Updated admin UI labels to reflect Spec v2.0 width constraints  
+**WHY**: Prevent confusion about grid unit limits (max 2 units)  
+**HOW**: Updated aspect ratio labels in `ChartAlgorithmManager` and `Visualization` admin
+
+**Changes**:
+- Landscape (16:9): "3 grid units" → "2 grid units"
+- Square (1:1): "2 grid units" (unchanged)
+- Portrait (9:16): "1 grid unit" (unchanged)
+- Width selector: Only shows "1 unit" and "2 units" options
+- Auto-clamping: `Math.min(Math.max(newWidth, 1), 2)` enforces [1, 2] range
+
 ## Future Enhancements
 
-- Optional CellWrapper integration in chart components
-- Feature flag for per-template opt-in
+- Font synchronization calculator integration (calculate title/subtitle sizes per block)
+- Feature flag for per-template opt-in to CellWrapper
 - Migration script for bulk chart updates
 - Admin preview with height calculations visualized
+- Dynamic height prop utilization in chart components
 
 ---
 

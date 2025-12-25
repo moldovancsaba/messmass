@@ -1147,9 +1147,9 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
               </select>
             </div>
 
-            {/* WHAT: Aspect Ratio Selector for Image and Text Charts (v9.3.0) */}
+            {/* WHAT: Aspect Ratio Selector for Image and Text Charts (v9.3.0, updated v11.54.4) */}
             {/* WHY: Determines grid width automatically from aspect ratio */}
-            {/* HOW: Portrait (1 unit), Square (2 units), Landscape (3 units) */}
+            {/* HOW: Portrait (1 unit), Square & Landscape (2 units max per Spec v2.0) */}
             {(formData.type === 'image' || formData.type === 'text') && (
               <div className="form-group">
                 <label className="form-label">
@@ -1161,7 +1161,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   onChange={(e) => setFormData({ ...formData, aspectRatio: e.target.value as '16:9' | '9:16' | '1:1' })}
                 >
                   <option value="16:9">
-                    {formData.type === 'image' ? '🖼️' : '📝'} Landscape (16:9) → 3 grid units
+                    {formData.type === 'image' ? '🖼️' : '📝'} Landscape (16:9) → 2 grid units
                   </option>
                   <option value="9:16">
                     {formData.type === 'image' ? '📱' : '📄'} Portrait (9:16) → 1 grid unit
@@ -1171,7 +1171,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                   </option>
                 </select>
                 <small className="form-help">
-                  💡 Aspect ratio determines automatic grid width for consistent row heights
+                  💡 Aspect ratio determines automatic grid width (max 2 units per Spec v2.0)
                 </small>
               </div>
             )}

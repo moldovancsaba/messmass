@@ -242,7 +242,11 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
             key={dimensionKey}
             className={styles.rowItem}
           >
-            <ReportChart result={result} width={chart.width} />
+            <ReportChart 
+              result={result} 
+              width={chart.width}
+              blockHeight={rowHeight}
+            />
           </div>
         );
       })}

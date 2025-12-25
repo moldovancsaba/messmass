@@ -1,6 +1,6 @@
 # TASKLIST.md
-**Current Version:** 11.54.3  
-**Last Updated:** 2025-12-25T21:21:00.000Z (UTC)
+**Current Version:** 11.54.4  
+**Last Updated:** 2025-12-25T21:55:00.000Z (UTC)
 
 ---
 
@@ -10,14 +10,18 @@
 
 _(No active tasks in progress)_
 
-### Planned - Q4 2025
+### Completed - Q4 2025
 
-#### Report Layout & Rendering Spec v2.0
-- **Status:** ⏳ PLANNED
+#### Report Layout & Rendering Spec v2.0 - Phase 2 ✅
+- **Status:** ✅ COMPLETE
+- **Completed:** 2025-12-25T21:55:00.000Z
 - **Owner:** AI Agent
-- **Expected Delivery:** 2025-12-29T00:00:00.000Z
-- **Scope:** Types, calculators, grid integration, font sync, row height
-- **Follow-ups:** CellWrapper + component updates
+- **Scope:** CellWrapper integration, blockHeight threading, admin UI validation
+- **Deliverables:**
+  - Integrated CellWrapper into all chart components (KPI, PIE, BAR, TEXT, IMAGE)
+  - Passed calculated blockHeight from ReportContent through ReportChart
+  - Enforced 3-zone structure (title | subtitle | body) per Spec v2.0
+  - Updated admin UI labels to reflect max 2-unit width constraint
 
 ---
 
