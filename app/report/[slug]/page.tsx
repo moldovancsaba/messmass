@@ -4,17 +4,16 @@
 
 'use client';
 
-import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ReportHero from './ReportHero';
 import ReportContent from './ReportContent';
 import { useReportData } from '@/hooks/useReportData';
 import { useReportLayoutForProject } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
+import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
-import { exportReportToCSV } from '@/lib/export/csv';
-import { exportPageWithSmartPagination } from '@/lib/export/pdf';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -141,101 +140,15 @@ export default function ReportPage() {
     return results;
   }, [stats, charts]);
 
-  // WHAT: CSV export handler
-  // WHY: Download complete report data including stats, chart results, and content
-  // HOW: Call exportReportToCSV with project data, stats, and chart results
-  const handleCSVExport = useCallback(async () => {
-    console.log('🔵 CSV Export clicked');
-    console.log('   Project:', project ? '✅' : '❌');
-    console.log('   Stats:', stats ? '✅' : '❌');
-    console.log('   Chart Results:', chartResults ? `✅ (${chartResults.size} charts)` : '❌');
-    
-    if (!project || !stats || !chartResults) {
-      const missingData = [];
-      if (!project) missingData.push('project');
-      if (!stats) missingData.push('stats');
-      if (!chartResults) missingData.push('chart results');
-      
-      const message = `Report data not ready. Missing: ${missingData.join(', ')}. Please wait for the report to fully load.`;
-      console.warn('⚠️ Cannot export CSV:', message);
-      alert(message);
-      return;
-    }
-
-    try {
-      console.log('📄 Starting CSV export...');
-      await exportReportToCSV(
-        {
-          eventName: project.eventName,
-          eventDate: project.eventDate,
-          createdAt: reportData?.project?.createdAt,
-          updatedAt: reportData?.project?.updatedAt,
-          _id: project._id
-        },
-        stats,
-        chartResults
-      );
-      console.log('✅ CSV export completed successfully');
-    } catch (error) {
-      console.error('❌ CSV export failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to export CSV: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
-    }
-  }, [project, stats, chartResults, reportData]);
-
-  // WHAT: PDF export handler
-  // WHY: Generate A4 portrait PDF with hero on every page and no block breaks
-  // HOW: Call exportPageWithSmartPagination with hero and content IDs
-  const handlePDFExport = useCallback(async () => {
-    console.log('🗔️ PDF Export clicked');
-    console.log('   Project:', project ? '✅' : '❌');
-    
-    if (!project) {
-      const message = 'Report data not ready. Project information is missing. Please wait for the report to fully load.';
-      console.warn('⚠️ Cannot export PDF:', message);
-      alert(message);
-      return;
-    }
-    
-    // Verify DOM elements exist
-    const heroElement = document.getElementById('report-hero');
-    const contentElement = document.getElementById('report-content');
-    
-    if (!heroElement) {
-      console.error('❌ Hero element not found (id: report-hero)');
-      alert('Cannot export PDF: Report hero section not found. Please refresh the page and try again.');
-      return;
-    }
-    
-    if (!contentElement) {
-      console.error('❌ Content element not found (id: report-content)');
-      alert('Cannot export PDF: Report content section not found. Please refresh the page and try again.');
-      return;
-    }
-
-    try {
-      console.log('📝 Starting PDF export...');
-      console.log('   Hero element:', '✅');
-      console.log('   Content element:', '✅');
-      
-      await exportPageWithSmartPagination(
-        'report-hero',
-        'report-content',
-        {
-          filename: `${project.eventName.replace(/[^a-zA-Z0-9]/g, '_')}_report`,
-          format: 'a4',
-          orientation: 'portrait',
-          quality: 0.95,
-          margin: 10
-        }
-      );
-      console.log('✅ PDF export completed successfully');
-    } catch (error) {
-      console.error('❌ PDF export failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to export PDF: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
-    }
-  }, [project]);
+  // WHAT: Unified export handlers using useReportExport hook
+  // WHY: Centralized export logic eliminates duplication across report types
+  // HOW: Pass project data and chart results to hook
+  const { handleCSVExport, handlePDFExport } = useReportExport({
+    entity: project ? { ...project, createdAt: reportData?.project?.createdAt, updatedAt: reportData?.project?.updatedAt } : null,
+    stats,
+    chartResults,
+    reportType: 'Event Report'
+  });
 
   // Determine overall loading state
   const loading = dataLoading || layoutLoading || chartsLoading || styleLoading;

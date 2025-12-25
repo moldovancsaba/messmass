@@ -12,6 +12,7 @@ import PartnerEventsList from './PartnerEventsList';
 import { usePartnerReportData } from '@/hooks/useReportData';
 import { useReportLayoutForPartner } from '@/hooks/useReportLayout';
 import { useReportStyle } from '@/hooks/useReportStyle';
+import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
@@ -168,24 +169,41 @@ export default function PartnerReportPage() {
     _id: partner._id
   };
 
+  // WHAT: Unified export handlers using useReportExport hook
+  // WHY: Centralized export logic eliminates duplication across report types
+  // HOW: Pass partner data and aggregated stats to hook
+  const { handleCSVExport, handlePDFExport } = useReportExport({
+    entity: partner ? { ...partner, createdAt: (partner as any).createdAt, updatedAt: (partner as any).updatedAt } : null,
+    stats,
+    chartResults,
+    filenamePrefix: 'partner_report',
+    reportType: 'Partner Report'
+  });
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         {/* Hero Section - REUSED from event reports */}
-        <ReportHero 
-          project={partnerAsProject}
-          emoji={heroSettings?.showEmoji !== false ? partner.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
-          partnerLogo={(partner as any).logoUrl} // WHAT: Show partner logo if available
-          showDate={false} // Partners don't have single date
-          showExport={heroSettings?.showExportOptions ?? true}
-        />
+        <div id="report-hero">
+          <ReportHero 
+            project={partnerAsProject}
+            emoji={heroSettings?.showEmoji !== false ? partner.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
+            partnerLogo={(partner as any).logoUrl} // WHAT: Show partner logo if available
+            showDate={false} // Partners don't have single date
+            showExport={heroSettings?.showExportOptions ?? true}
+            onExportCSV={handleCSVExport}
+            onExportPDF={handlePDFExport}
+          />
+        </div>
 
         {/* Report Content Grid - REUSED from event reports */}
-        <ReportContent 
-          blocks={blocks}
-          chartResults={chartResults}
-          gridSettings={gridSettings}
-        />
+        <div id="report-content">
+          <ReportContent 
+            blocks={blocks}
+            chartResults={chartResults}
+            gridSettings={gridSettings}
+          />
+        </div>
 
         {/* Related Events List - Shows all events for this partner */}
         {events.length > 0 && (
