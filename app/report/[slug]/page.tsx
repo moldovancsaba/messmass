@@ -212,7 +212,8 @@ export default function ReportPage() {
             emoji={heroSettings?.showEmoji !== false ? reportData?.project?.partner1?.emoji : undefined} // WHAT: Respect heroSettings.showEmoji
             showDate={heroSettings?.showDateInfo ?? true}
             showExport={heroSettings?.showExportOptions ?? true}
-            partnerLogo={reportData?.project?.partner1?.logoUrl} // WHAT: Show partner1 logo if available
+            partnerLogo={reportData?.project?.partner1?.logoUrl} // WHAT: Show partner1 logo if available (before title)
+            partner2Logo={reportData?.project?.partner2?.logoUrl} // WHAT: Show partner2 logo if available (after title, for match reports)
             onExportCSV={handleCSVExport}
             onExportPDF={handlePDFExport}
           />

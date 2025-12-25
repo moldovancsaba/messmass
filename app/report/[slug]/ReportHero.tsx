@@ -26,8 +26,11 @@ interface ReportHeroProps {
   /** Optional emoji to display */
   emoji?: string;
   
-  /** Partner logo URL */
+  /** Partner 1 logo URL (before title) */
   partnerLogo?: string;
+  
+  /** Partner 2 logo URL (after title) - for match reports */
+  partner2Logo?: string;
   
   /** Show date information */
   showDate?: boolean;
@@ -61,6 +64,7 @@ export default function ReportHero({
   project, 
   emoji,
   partnerLogo,
+  partner2Logo,
   showDate = true,
   showExport = true,
   onExportCSV,
@@ -68,9 +72,11 @@ export default function ReportHero({
   className 
 }: ReportHeroProps) {
   
-  // Debug: Log partnerLogo prop
-  console.log('🖼️ [ReportHero] Received partnerLogo:', partnerLogo);
-  console.log('🖼️ [ReportHero] Will render logo?', !!partnerLogo);
+  // Debug: Log partner logos
+  console.log('🖼️ [ReportHero] Received partnerLogo (Partner 1):', partnerLogo);
+  console.log('🖼️ [ReportHero] Received partner2Logo (Partner 2):', partner2Logo);
+  console.log('🖼️ [ReportHero] Will render Partner 1 logo?', !!partnerLogo);
+  console.log('🖼️ [ReportHero] Will render Partner 2 logo?', !!partner2Logo);
   
   // Format date for display
   const formattedDate = showDate ? formatDate(project.eventDate) : null;
@@ -117,6 +123,13 @@ export default function ReportHero({
               <p className={styles.heroDate}>{formattedDate}</p>
             )}
           </div>
+          {partner2Logo && (
+            <img 
+              src={partner2Logo} 
+              alt="Partner 2 Logo" 
+              className={styles.heroLogo}
+            />
+          )}
         </div>
         
         {showExport && (
