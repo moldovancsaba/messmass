@@ -145,7 +145,7 @@ export default function ReportPage() {
   // HOW: Pass project data and chart results to hook
   const { handleCSVExport, handlePDFExport } = useReportExport({
     entity: project ? { ...project, createdAt: reportData?.project?.createdAt, updatedAt: reportData?.project?.updatedAt } : null,
-    stats,
+    stats: stats || null,
     chartResults,
     reportType: 'Event Report'
   });

@@ -174,7 +174,7 @@ export default function PartnerReportPage() {
   // HOW: Pass partner data and aggregated stats to hook
   const { handleCSVExport, handlePDFExport } = useReportExport({
     entity: partner ? { ...partner, createdAt: (partner as any).createdAt, updatedAt: (partner as any).updatedAt } : null,
-    stats,
+    stats: stats || null,
     chartResults,
     filenamePrefix: 'partner_report',
     reportType: 'Partner Report'
