@@ -145,13 +145,25 @@ export default function ReportPage() {
   // WHY: Download complete report data including stats, chart results, and content
   // HOW: Call exportReportToCSV with project data, stats, and chart results
   const handleCSVExport = useCallback(async () => {
+    console.log('🔵 CSV Export clicked');
+    console.log('   Project:', project ? '✅' : '❌');
+    console.log('   Stats:', stats ? '✅' : '❌');
+    console.log('   Chart Results:', chartResults ? `✅ (${chartResults.size} charts)` : '❌');
+    
     if (!project || !stats || !chartResults) {
-      console.warn('Cannot export CSV: missing data');
-      alert('Report data not ready. Please wait for the report to load.');
+      const missingData = [];
+      if (!project) missingData.push('project');
+      if (!stats) missingData.push('stats');
+      if (!chartResults) missingData.push('chart results');
+      
+      const message = `Report data not ready. Missing: ${missingData.join(', ')}. Please wait for the report to fully load.`;
+      console.warn('⚠️ Cannot export CSV:', message);
+      alert(message);
       return;
     }
 
     try {
+      console.log('📄 Starting CSV export...');
       await exportReportToCSV(
         {
           eventName: project.eventName,
@@ -163,10 +175,11 @@ export default function ReportPage() {
         stats,
         chartResults
       );
-      console.log('✅ CSV export completed');
+      console.log('✅ CSV export completed successfully');
     } catch (error) {
       console.error('❌ CSV export failed:', error);
-      alert('Failed to export CSV. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to export CSV: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
     }
   }, [project, stats, chartResults, reportData]);
 
@@ -174,13 +187,37 @@ export default function ReportPage() {
   // WHY: Generate A4 portrait PDF with hero on every page and no block breaks
   // HOW: Call exportPageWithSmartPagination with hero and content IDs
   const handlePDFExport = useCallback(async () => {
+    console.log('🗔️ PDF Export clicked');
+    console.log('   Project:', project ? '✅' : '❌');
+    
     if (!project) {
-      console.warn('Cannot export PDF: missing project data');
-      alert('Report data not ready. Please wait for the report to load.');
+      const message = 'Report data not ready. Project information is missing. Please wait for the report to fully load.';
+      console.warn('⚠️ Cannot export PDF:', message);
+      alert(message);
+      return;
+    }
+    
+    // Verify DOM elements exist
+    const heroElement = document.getElementById('report-hero');
+    const contentElement = document.getElementById('report-content');
+    
+    if (!heroElement) {
+      console.error('❌ Hero element not found (id: report-hero)');
+      alert('Cannot export PDF: Report hero section not found. Please refresh the page and try again.');
+      return;
+    }
+    
+    if (!contentElement) {
+      console.error('❌ Content element not found (id: report-content)');
+      alert('Cannot export PDF: Report content section not found. Please refresh the page and try again.');
       return;
     }
 
     try {
+      console.log('📝 Starting PDF export...');
+      console.log('   Hero element:', '✅');
+      console.log('   Content element:', '✅');
+      
       await exportPageWithSmartPagination(
         'report-hero',
         'report-content',
@@ -192,10 +229,11 @@ export default function ReportPage() {
           margin: 10
         }
       );
-      console.log('✅ PDF export completed');
+      console.log('✅ PDF export completed successfully');
     } catch (error) {
       console.error('❌ PDF export failed:', error);
-      alert('Failed to export PDF. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to export PDF: ${errorMessage}\n\nPlease check the browser console for details and try again.`);
     }
   }, [project]);
 

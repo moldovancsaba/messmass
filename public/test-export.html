@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export Test</title>
+</head>
+<body>
+    <h1>Export Functionality Test</h1>
+    
+    <button onclick="testCSV()">Test CSV Export</button>
+    <button onclick="testPDF()">Test PDF Export</button>
+    
+    <div id="test-content">
+        <h2>Test Content</h2>
+        <p>This is test content for export.</p>
+    </div>
+    
+    <script>
+        function testCSV() {
+            console.log('CSV button clicked');
+            // Simple CSV export test
+            const data = "Name,Value\nTest,123\nExample,456";
+            const blob = new Blob([data], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'test.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            console.log('CSV export completed');
+        }
+        
+        function testPDF() {
+            console.log('PDF button clicked');
+            alert('PDF export would require html2canvas and jsPDF libraries. Check if they are loaded in your main app.');
+        }
+    </script>
+</body>
+</html>
