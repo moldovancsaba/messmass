@@ -2,6 +2,68 @@
 
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
+## 🎯 CRITICAL: Naming Conventions (VERIFIED 2025-12-25)
+
+### MongoDB Field Names - camelCase (NON-NEGOTIABLE)
+
+**VERIFIED FACT:** MessMass MongoDB uses **camelCase** for ALL fields, NOT snake_case.
+
+```javascript
+// ✅ CORRECT: MongoDB fields (verified from database)
+{
+  createdAt: ISODate("2025-12-25T..."),     // camelCase ✅
+  updatedAt: ISODate("2025-12-25T..."),     // camelCase ✅
+  categorizedHashtags: { "country": [...] }, // camelCase ✅
+  viewSlug: "project-view-uuid",              // camelCase ✅
+  editSlug: "project-edit-uuid",              // camelCase ✅
+  reportTemplateId: ObjectId("..."),          // camelCase ✅
+}
+
+// ❌ WRONG: snake_case (NOT used in MessMass)
+{
+  created_at: "...",           // ❌ Does NOT exist
+  categorized_hashtags: {...}, // ❌ Does NOT exist
+  view_slug: "...",            // ❌ Does NOT exist
+}
+```
+
+**Code MUST use exact MongoDB field names:**
+```typescript
+// ✅ CORRECT: Direct access
+const created = project.createdAt;           // Matches MongoDB
+const hashtags = project.categorizedHashtags; // Matches MongoDB
+const slug = project.viewSlug;                // Matches MongoDB
+
+// ❌ WRONG: Snake case access
+const created = project.created_at;           // Field doesn't exist!
+const hashtags = project.categorized_hashtags; // Field doesn't exist!
+```
+
+**Why camelCase?**
+- Zero transformation overhead (MongoDB → JavaScript)
+- TypeScript interfaces match database exactly
+- No adapter layer needed
+- Fully consistent system-wide
+
+**See:** `MONGODB_FIELD_NAMING_VERIFICATION.md` for complete verification report.
+
+### Role Naming - Single Word (FIXED 2025-12-25)
+
+```typescript
+// ✅ CORRECT: Role naming
+type Role = 'guest' | 'user' | 'admin' | 'superadmin' | 'api';
+//                                      ^^^^^^^^^^^ Single word, no separators
+
+// ❌ WRONG: Old formats (DO NOT USE)
+type OldRole = 'super-admin' | 'super_admin'; // Fixed on 2025-12-25
+```
+
+**All role checks MUST use:** `'superadmin'` (single word, no hyphen, no underscore)
+
+**See:** `NAMING_CONSISTENCY_FULL_AUDIT.md` for complete audit (22 issues fixed).
+
+---
+
 ## 🔐 GitHub Access Token
 
 **Token:** `{{GITHUB_TOKEN}}` (stored in Warp rules)
@@ -19,7 +81,7 @@ git push https://${GITHUB_TOKEN}@github.com/moldovancsaba/messmass.git main
 ### Development Environment
 ```bash
 # Main application development
-npm run dev              # Start Next.js app on :5000
+npm run dev              # Start Next.js app on :3000
 
 # WebSocket server (separate terminal)
 cd server && npm start   # WebSocket server on :7654

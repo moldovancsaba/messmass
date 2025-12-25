@@ -50,7 +50,7 @@ async function createLocalAdmin() {
     const newUser = {
       email: email.toLowerCase(),
       name,
-      role: 'super-admin',
+      role: 'superadmin',
       password,
       createdAt: now,
       updatedAt: now

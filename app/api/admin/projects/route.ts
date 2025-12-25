@@ -59,7 +59,7 @@ interface SSOUser {
 
 // Check if user has admin privileges
 function isAdmin(user: SSOUser | null): boolean {
-  return user !== null && (user.role === 'admin' || user.role === 'super_admin');
+  return user !== null && (user.role === 'admin' || user.role === 'superadmin');
 }
 
 // GET /api/admin/projects - Get all projects (admin only)

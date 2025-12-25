@@ -428,7 +428,7 @@ export function AuthGuard({
   // Check permission requirements
   if (requirePermissions.length > 0) {
     const hasAllPermissions = requirePermissions.every(permission => 
-      user.permissions.includes(permission) || user.role === 'super-admin'
+      user.permissions.includes(permission) || user.role === 'superadmin'
     )
     
     if (!hasAllPermissions) {

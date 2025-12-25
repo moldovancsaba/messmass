@@ -25,7 +25,7 @@ export interface AuthUser {
  */
 export type UserRole = 
   | 'admin'                    // Standard administrator
-  | 'super-admin'             // Super administrator with full access
+  | 'superadmin'              // Super administrator with full access
   | 'user'                    // Regular user (for future expansion)
   | 'viewer'                  // Read-only access (for future expansion)
 
@@ -170,7 +170,7 @@ export const PERMISSIONS = {
   DELETE: 'delete',
   MANAGE_USERS: 'manage-users',
   ADMIN_ACCESS: 'admin-access',
-  SUPER_ADMIN: 'super-admin'
+  SUPER_ADMIN: 'superadmin'
 } as const
 
 /**
@@ -195,7 +195,7 @@ export function hasPermission(user: AuthUser | null, permission: string): boolea
   if (!user) return false
   
   // Super admins have all permissions
-  if (user.role === 'super-admin') return true
+  if (user.role === 'superadmin') return true
   
   // Check if user has specific permission
   return user.permissions.includes(permission)

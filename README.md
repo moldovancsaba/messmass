@@ -82,48 +82,85 @@ SPORTSDB_API_KEY=your_api_key
 SPORTSDB_BASE_URL=https://www.thesportsdb.com/api/v1/json
 ```
 
-## Documentation
+## Documentation Index
 
-### Core Documentation
+### 📘 Core Documentation (Root Level)
 
-| Document | Description |
-|----------|-------------|
-| **ARCHITECTURE.md** | Complete system architecture, database schemas, component hierarchy |
-| **CODING_STANDARDS.md** | **MANDATORY** coding standards, inline style prohibition, style guide |
-| **DESIGN_SYSTEM.md** | Design tokens, utility classes, UI patterns (authoritative source) |
-| **WARP.md** | Development rules, protocols, and AI agent guidelines |
-| **VARIABLE_SYSTEM_V7_MIGRATION.md** | Database-first variable system migration guide (v7.0.0) |
-| **RELEASE_NOTES.md** | Versioned changelog with implementation details |
-| **TASKLIST.md** | Active tasks with priorities, owners, and delivery dates |
-| **ROADMAP.md** | Forward-looking development plans and milestones |
-| **LEARNINGS.md** | Historical decisions, resolved issues, and best practices |
+| Document | Description | Last Updated |
+|----------|-------------|-------------|
+| **WARP.md** | 🤖 AI Development Rules & Protocols - Required reading for AI agents | 2025-12-22 |
+| **ARCHITECTURE.md** | 🏗️ System Architecture - Complete technical overview | 2025-12-22 |
+| **CODING_STANDARDS.md** | ✅ **MANDATORY** - Coding rules, inline style prohibition | 2025-12-22 |
+| **RELEASE_NOTES.md** | 📋 Versioned Changelog - All delivered features | 2025-12-22 |
+| **TASKLIST.md** | ✅ Active Tasks - Current work items only | 2025-12-22 |
+| **ROADMAP.md** | 🗺️ Future Plans - Undelivered features & milestones | 2025-12-22 |
+| **LEARNINGS.md** | 🧠 Historical Decisions - Lessons learned | 2025-12-22 |
 
-### Feature-Specific Guides
+### 📁 Organized Documentation (`docs/` Directory)
 
-| Document | Description |
-|----------|-------------|
-| **ADMIN_VARIABLES_SYSTEM.md** | Database-first variable system, KYC Management, alias editing |
-| **SINGLE_REFERENCE_SYSTEM.md** | Single source of truth with `stats.` prefix convention |
-| **VARIABLES_DATABASE_SCHEMA.md** | MongoDB schema for `variables_metadata` collection |
-| **DATABASE_FIELD_NAMING.md** | Naming conventions for database fields and variables |
-| **HASHTAG_SYSTEM.md** | Unified hashtag system with category colors |
-| **BITLY_INTEGRATION_GUIDE.md** | Bitly API integration, analytics, many-to-many associations |
-|| **AUTHENTICATION_AND_ACCESS.md** | **Complete authentication system**: Admin auth, page passwords, security layers, audit (v8.16.0 - consolidated) |
-|| **API_PUBLIC.md** | **Public API Documentation**: Bearer token auth, rate limits, endpoints, examples (v10.5.1+) |
-|| **ADMIN_LAYOUT_SYSTEM.md** | Admin navigation, sidebar, responsive layout patterns |
-| **CARD_SYSTEM.md** | ColoredCard component API and usage patterns |
-| **NOTIFICATION_INTEGRATION_GUIDE.md** | Multi-user notification system implementation |
-| **TEMPLATE_SYSTEM_DOCUMENTATION.md** | **Complete template system guide**: Report templates, visualization admin, debugging |
-| **TEMPLATE_DROPDOWN_FIX_SUMMARY.md** | Template dropdown issue resolution and fixes |
-| **PARTNER_TEMPLATE_CONNECTION_SOLUTION.md** | Partner report template connection fixes |
-
-### Implementation Guides
+#### Architecture & Design
 
 | Document | Description |
 |----------|-------------|
-| **BITLY_MANY_TO_MANY_IMPLEMENTATION.md** | Many-to-many link-event associations with temporal boundaries |
-| **BITLY_MANY_TO_MANY_TESTING_GUIDE.md** | Testing scenarios for overlapping events |
-| **CATEGORY_COLOR_SETUP_GUIDE.md** | Hashtag category color configuration |
+| `docs/design/DESIGN_SYSTEM.md` | 🎨 Design tokens, utility classes, UI patterns (authoritative) |
+
+#### Features & Systems
+
+| Document | Description |
+|----------|-------------|
+| `docs/features/HASHTAG_SYSTEM.md` | 🏷️ Unified hashtag system with category colors |
+| `docs/features/PARTNERS_SYSTEM_GUIDE.md` | 🤝 Partner management system documentation |
+| `docs/features/AUTHENTICATION.md` | 🔐 Complete auth system: admin, page passwords, security |
+| `docs/features/BITLY_INTEGRATION_GUIDE.md` | 🔗 Bitly API integration, analytics, many-to-many associations |
+
+#### API Documentation
+
+| Document | Description |
+|----------|-------------|
+| `docs/api/API_REFERENCE.md` | 📡 Complete API endpoint reference |
+| `docs/api/API_PUBLIC.md` | 🌐 Public API: Bearer auth, rate limits, examples |
+
+#### Components & Conventions
+
+| Document | Description |
+|----------|-------------|
+| `docs/components/REUSABLE_COMPONENTS_INVENTORY.md` | 🧩 Reusable component library inventory |
+| `docs/conventions/NAMING_CONVENTIONS.md` | 📝 Complete naming guide: MongoDB, roles, variables |
+
+#### Recent Audits & Reports
+
+| Document | Description | Date |
+|----------|-------------|------|
+| `docs/audits/NAMING_AUDIT_REPORT.md` | 🔍 22 role naming fixes (superadmin consistency) | 2025-12-22 |
+| `docs/audits/NAMING_CONSISTENCY_FULL_AUDIT.md` | 📊 Complete system-wide naming audit | 2025-12-22 |
+| `docs/audits/MONGODB_FIELD_NAMING_VERIFICATION.md` | ✅ MongoDB camelCase verification | 2025-12-22 |
+| `docs/audits/SYSTEM_AUDIT_2025.md` | 🔎 Full system audit report | 2025-12-22 |
+
+### 📦 Archive (`docs/archive/2025/`)
+
+Historical documentation preserved for reference:
+- **`old-audits/`** - 9 legacy audit reports
+- **`implementation-reports/`** - 13 feature implementation reports
+- **`deprecated-guides/`** - 16 outdated migration/phase guides
+
+### 🔍 Finding Documentation
+
+**By Topic**:
+- **Getting Started**: README.md (this file) → Quick Start section
+- **Development Setup**: WARP.md → Quick Start Commands
+- **System Architecture**: ARCHITECTURE.md → Complete technical overview
+- **Code Standards**: CODING_STANDARDS.md → **Read before coding**
+- **Design Tokens**: `docs/design/DESIGN_SYSTEM.md` → CSS variables & utilities
+- **API Integration**: `docs/api/` directory → API reference & public docs
+- **Feature Guides**: `docs/features/` directory → Specific systems
+- **Recent Changes**: RELEASE_NOTES.md → Versioned changelog
+
+**By Role**:
+- **AI Agent**: WARP.md (required) + CODING_STANDARDS.md (mandatory)
+- **New Developer**: README.md → ARCHITECTURE.md → CODING_STANDARDS.md
+- **API Consumer**: `docs/api/API_PUBLIC.md` → Bearer token setup
+- **Designer**: `docs/design/DESIGN_SYSTEM.md` → Design tokens
+- **Project Manager**: TASKLIST.md + ROADMAP.md → Current & future work
 
 ### Public Resources
 

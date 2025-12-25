@@ -41,7 +41,7 @@ interface SSOUser {
 
 // Check if user has admin privileges
 function isAdmin(user: SSOUser | null): boolean {
-  return user !== null && (user.role === 'admin' || user.role === 'super_admin');
+  return user !== null && (user.role === 'admin' || user.role === 'superadmin');
 }
 
 // DELETE /api/admin/projects/[id] - Delete project (admin only)

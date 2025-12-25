@@ -207,14 +207,14 @@ export const authHelpers = {
    * Check if user has admin access
    */
   isAdmin: (user: AuthUser | null): boolean => {
-    return user?.role === 'admin' || user?.role === 'super-admin'
+    return user?.role === 'admin' || user?.role === 'superadmin'
   },
 
   /**
    * Check if user has super admin access
    */
   isSuperAdmin: (user: AuthUser | null): boolean => {
-    return user?.role === 'super-admin'
+    return user?.role === 'superadmin'
   },
 
   /**
@@ -222,7 +222,7 @@ export const authHelpers = {
    */
   hasAnyPermission: (user: AuthUser | null, permissions: string[]): boolean => {
     if (!user) return false
-    if (user.role === 'super-admin') return true
+    if (user.role === 'superadmin') return true
     return permissions.some(permission => user.permissions.includes(permission))
   },
 
@@ -231,7 +231,7 @@ export const authHelpers = {
    */
   hasAllPermissions: (user: AuthUser | null, permissions: string[]): boolean => {
     if (!user) return false
-    if (user.role === 'super-admin') return true
+    if (user.role === 'superadmin') return true
     return permissions.every(permission => user.permissions.includes(permission))
   },
 
@@ -247,7 +247,7 @@ export const authHelpers = {
    */
   formatRole: (role: UserRole): string => {
     switch (role) {
-      case 'super-admin': return 'Super Administrator'
+      case 'superadmin': return 'Super Administrator'
       case 'admin': return 'Administrator'
       case 'user': return 'User'
       case 'viewer': return 'Viewer'

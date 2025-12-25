@@ -34,7 +34,7 @@ async function createAdminUser() {
     const adminUser = {
       email: 'moldovancsaba@gmail.com',
       name: 'Csaba Moldovan',
-      role: 'super-admin',
+      role: 'superadmin',
       password: 'admin123', // Simple password for initial setup
       createdAt: now,
       updatedAt: now

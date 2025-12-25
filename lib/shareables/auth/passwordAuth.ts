@@ -28,7 +28,7 @@ const DEFAULT_ADMIN_USER: AuthUser = {
   id: 'admin',
   name: 'Administrator',
   email: 'admin@example.com',
-  role: 'super-admin',
+  role: 'superadmin',
   permissions: ['read', 'write', 'delete', 'manage-users', 'admin-access']
 }
 
