@@ -98,6 +98,18 @@ export default function PartnerReportPage() {
     return results;
   }, [stats, charts]);
 
+  // WHAT: Unified export handlers using useReportExport hook
+  // WHY: Centralized export logic eliminates duplication across report types
+  // HOW: Pass partner data and aggregated stats to hook
+  // IMPORTANT: Must be called before any conditional returns (React Rules of Hooks)
+  const { handleCSVExport, handlePDFExport } = useReportExport({
+    entity: partner ? { ...partner, createdAt: (partner as any).createdAt, updatedAt: (partner as any).updatedAt } : null,
+    stats: stats || null,
+    chartResults,
+    filenamePrefix: 'partner_report',
+    reportType: 'Partner Report'
+  });
+
   // Determine overall loading state
   // WHAT: Single loading state from unified data source
   // WHY: Removed chartsLoading (no longer needed with unified fetch)
@@ -168,17 +180,6 @@ export default function PartnerReportPage() {
     eventDate: new Date().toISOString(), // Partner reports don't have single date
     _id: partner._id
   };
-
-  // WHAT: Unified export handlers using useReportExport hook
-  // WHY: Centralized export logic eliminates duplication across report types
-  // HOW: Pass partner data and aggregated stats to hook
-  const { handleCSVExport, handlePDFExport } = useReportExport({
-    entity: partner ? { ...partner, createdAt: (partner as any).createdAt, updatedAt: (partner as any).updatedAt } : null,
-    stats: stats || null,
-    chartResults,
-    filenamePrefix: 'partner_report',
-    reportType: 'Partner Report'
-  });
 
   return (
     <div className={styles.page}>

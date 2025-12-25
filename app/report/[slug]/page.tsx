@@ -143,6 +143,7 @@ export default function ReportPage() {
   // WHAT: Unified export handlers using useReportExport hook
   // WHY: Centralized export logic eliminates duplication across report types
   // HOW: Pass project data and chart results to hook
+  // IMPORTANT: Must be called before any conditional returns (React Rules of Hooks)
   const { handleCSVExport, handlePDFExport } = useReportExport({
     entity: project ? { ...project, createdAt: reportData?.project?.createdAt, updatedAt: reportData?.project?.updatedAt } : null,
     stats: stats || null,
