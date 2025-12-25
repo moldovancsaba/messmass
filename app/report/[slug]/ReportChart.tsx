@@ -52,6 +52,12 @@ interface ReportChartProps {
   /** Block height from layout calculator (Report Layout Spec v2.0) */
   blockHeight?: number;
   
+  /** Synchronized title font size (Report Layout Spec v2.0 Phase 3) */
+  titleFontSize?: number;
+  
+  /** Synchronized subtitle font size (Report Layout Spec v2.0 Phase 3) */
+  subtitleFontSize?: number;
+  
   /** Optional CSS class for container */
   className?: string;
 }
@@ -70,7 +76,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, blockHeight, className }: ReportChartProps) {
+export default function ReportChart({ result, width, blockHeight, titleFontSize, subtitleFontSize, className }: ReportChartProps) {
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
@@ -109,26 +115,26 @@ export default function ReportChart({ result, width, blockHeight, className }: R
   // Render based on chart type
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} blockHeight={blockHeight} className={className} />;
+      return <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} blockHeight={blockHeight} className={className} />;
+      return <PieChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} blockHeight={blockHeight} className={className} />;
+      return <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'text':
-      return <TextChart result={result} blockHeight={blockHeight} className={className} />;
+      return <TextChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} blockHeight={blockHeight} className={className} />;
+      return <ImageChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} blockHeight={blockHeight} className={className} />
-          <BarChart result={result} blockHeight={blockHeight} />
+          <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
+          <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
         </div>
       );
     
@@ -147,7 +153,7 @@ export default function ReportChart({ result, width, blockHeight, className }: R
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function KPIChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
+function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const protectedTitle = preventPhraseBreaks(result.title);
   
@@ -163,6 +169,9 @@ function KPIChart({ result, blockHeight, className }: { result: ChartResult; blo
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
     >
       <div className={styles.kpiContent}>
@@ -185,7 +194,7 @@ function KPIChart({ result, blockHeight, className }: { result: ChartResult; blo
  * Pie Chart - Circular visualization using Chart.js
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function PieChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
+function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -284,6 +293,9 @@ function PieChart({ result, blockHeight, className }: { result: ChartResult; blo
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
     >
       <div ref={containerRef} className={styles.chartBody}>
@@ -323,7 +335,7 @@ function PieChart({ result, blockHeight, className }: { result: ChartResult; blo
  * Bar Chart - Five-element horizontal bars
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function BarChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
+function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
@@ -357,6 +369,9 @@ function BarChart({ result, blockHeight, className }: { result: ChartResult; blo
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
     >
       <div className={styles.chartBody}>
@@ -397,7 +412,7 @@ function BarChart({ result, blockHeight, className }: { result: ChartResult; blo
  * Text Chart - Formatted text display
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function TextChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
+function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -410,6 +425,9 @@ function TextChart({ result, blockHeight, className }: { result: ChartResult; bl
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
     >
       {html ? (
@@ -429,7 +447,7 @@ function TextChart({ result, blockHeight, className }: { result: ChartResult; bl
  * Image Chart - Aspect ratio-aware image display
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function ImageChart({ result, blockHeight, className }: { result: ChartResult; blockHeight?: number; className?: string }) {
+function ImageChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const aspectRatio = result.aspectRatio || '16:9';
   
@@ -455,6 +473,9 @@ function ImageChart({ result, blockHeight, className }: { result: ChartResult; b
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`}
     >
       {/* WHAT: Use actual <img> tag for reliable aspect ratio */}

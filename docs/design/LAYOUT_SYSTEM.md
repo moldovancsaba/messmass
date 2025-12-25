@@ -1,7 +1,7 @@
 # Report Layout System (Spec v2.0)
 
-**Version:** 11.54.4  
-**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25)
+**Version:** 11.54.5  
+**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25)
 
 ## Overview
 
@@ -274,13 +274,63 @@ PDF export automatically matches screen layout:
 - Width selector: Only shows "1 unit" and "2 units" options
 - Auto-clamping: `Math.min(Math.max(newWidth, 1), 2)` enforces [1, 2] range
 
+## Phase 3 Completion (v11.54.5 - 2025-12-25)
+
+### Font Synchronization Calculator ✅
+**WHAT**: Integrated `fontSyncCalculator` to calculate synchronized font sizes across all cells in a block  
+**WHY**: Ensures all titles share the same font size, all subtitles share the same font size  
+**HOW**: Binary search algorithm finds optimal font sizes that fit all text within 2-line constraints
+
+**Implementation**:
+- **ReportContent.ResponsiveRow**: Calculates synced fonts using `calculateSyncedFontSizes(cells, width, options)`
+- **Font Calculation**: Binary search between 10-28px for titles, 10-22px for subtitles
+- **Options**: `maxTitleLines: 2`, `maxSubtitleLines: 2`, `enableKPISync: false` (not used yet)
+- **State Management**: `titleFontSize` and `subtitleFontSize` state updated on width changes
+- **Threading**: Font sizes passed from ReportContent → ReportChart → chart components → CellWrapper
+
+**Data Flow**:
+1. `ResponsiveRow`: Measures row width with ResizeObserver
+2. Builds `CellConfiguration[]` with titles/subtitles from chart results
+3. Calls `calculateSyncedFontSizes(cells, width, { maxTitleLines: 2, maxSubtitleLines: 2 })`
+4. Returns `{ titlePx: number, subtitlePx: number }`
+5. Passes font sizes to `<ReportChart titleFontSize={...} subtitleFontSize={...}>`
+6. Chart components pass to `<CellWrapper titleFontSize={...} subtitleFontSize={...}>`
+7. CellWrapper applies via inline styles: `style={{ fontSize: '${titleFontSize}px' }}`
+
+### Dynamic Height Utilization ✅
+**WHAT**: CellWrapper now accepts `blockHeight` prop for explicit height control  
+**WHY**: Replaces `height: 100%` inheritance with deterministic pixel height  
+**HOW**: Inline style on CellWrapper root div: `style={{ height: '${blockHeight}px' }}`
+
+**Implementation**:
+- **CellWrapper.tsx**: Added `blockHeight?: number` prop
+- **Explicit Height**: `<div style={blockHeight ? { height: \`\${blockHeight}px\` } : undefined}>`
+- **Threading**: `blockHeight` passed from ReportContent → ReportChart → chart components → CellWrapper
+- **Fallback**: If `blockHeight` undefined, uses `height: 100%` from CSS (backward compatible)
+
+**Benefits**:
+- Deterministic sizing independent of parent container
+- Explicit height prevents layout shifts during loading
+- Consistent height enforcement across all chart types
+
+### Per-Template Feature Flag ✅
+**WHAT**: Existing `blockLayoutMode` field in ReportTemplate serves as feature flag  
+**WHY**: Allow legacy templates to opt out if needed (future use)  
+**HOW**: `blockLayoutMode: 'deterministic'` enables Spec v2.0, `'legacy'` disables
+
+**Implementation**:
+- **Template Field**: `blockLayoutMode?: 'legacy' | 'deterministic'` (line 48 in `reportTemplateTypes.ts`)
+- **Current Behavior**: CellWrapper always used (backward compatible, no breaking changes)
+- **Future Use**: Can conditionally render based on flag if legacy issues arise
+- **Migration Path**: All new templates default to 'deterministic' mode
+
 ## Future Enhancements
 
-- Font synchronization calculator integration (calculate title/subtitle sizes per block)
-- Feature flag for per-template opt-in to CellWrapper
-- Migration script for bulk chart updates
-- Admin preview with height calculations visualized
-- Dynamic height prop utilization in chart components
+- Conditional CellWrapper rendering based on `blockLayoutMode` flag
+- KPI value synchronization (`enableKPISync: true`)
+- Title/subtitle height constraints (`titleHeight`, `subtitleHeight` props)
+- Migration script for bulk template updates
+- Admin preview with font size and height calculations visualized
 
 ---
 

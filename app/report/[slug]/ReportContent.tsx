@@ -10,6 +10,7 @@ import type { ChartResult } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
 import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
+import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/blockLayoutTypes';
 
 /**
@@ -157,6 +158,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
   const rowRef = useRef<HTMLDivElement>(null);
   const [rowWidth, setRowWidth] = useState(1200); // Default fallback
   const [rowHeight, setRowHeight] = useState(400); // Default fallback
+  const [titleFontSize, setTitleFontSize] = useState(18); // Default
+  const [subtitleFontSize, setSubtitleFontSize] = useState(14); // Default
   
   // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
@@ -189,6 +192,18 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
         const height = solveBlockHeightWithImages(cells, width);
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         setRowHeight(height);
+        
+        // WHAT: Calculate synchronized font sizes for titles/subtitles (Spec v2.0 Phase 3)
+        // WHY: All titles in block should have same font size, same for subtitles
+        // HOW: Use fontSyncCalculator with binary search to find optimal sizes
+        const syncedFonts = calculateSyncedFontSizes(cells, width, {
+          maxTitleLines: 2,
+          maxSubtitleLines: 2,
+          enableKPISync: false // KPI sync not used yet
+        });
+        console.log(`[ResponsiveRow ${rowIndex}] Font sizes:`, syncedFonts);
+        setTitleFontSize(syncedFonts.titlePx);
+        setSubtitleFontSize(syncedFonts.subtitlePx);
       }
     };
     
@@ -246,6 +261,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
               result={result} 
               width={chart.width}
               blockHeight={rowHeight}
+              titleFontSize={titleFontSize}
+              subtitleFontSize={subtitleFontSize}
             />
           </div>
         );

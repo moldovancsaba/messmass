@@ -12,6 +12,7 @@ export interface CellWrapperProps {
   subtitleFontSize?: number; // px, synced at block level
   titleHeight?: number; // px, fixed per block
   subtitleHeight?: number; // px, fixed per block
+  blockHeight?: number; // px, calculated block height (Phase 3)
   children: ReactNode; // Body zone content
   className?: string;
 }
@@ -28,11 +29,18 @@ export default function CellWrapper({
   subtitleFontSize,
   titleHeight,
   subtitleHeight,
+  blockHeight,
   children,
   className = ''
 }: CellWrapperProps) {
   return (
-    <div className={`${styles.cellWrapper} ${className}`}>
+    <div 
+      className={`${styles.cellWrapper} ${className}`}
+      // WHAT: Explicit blockHeight for deterministic sizing (Phase 3)
+      // WHY: Enforces exact cell height calculated from image aspect ratios
+      // eslint-disable-next-line react/forbid-dom-props
+      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+    >
       {/* Title Zone - max 2 lines, synced font size */}
       {title && (
         <div 
