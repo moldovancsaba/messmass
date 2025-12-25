@@ -1182,7 +1182,19 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 type="number"
                 className="form-input"
                 value={formData.order}
-                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
+                onChange={(e) => {
+                  // WHAT: Allow typing freely without immediate parsing
+                  // WHY: User can delete "1" to enter new value smoothly
+                  const val = e.target.value;
+                  // Store as is during typing, will validate on blur
+                  setFormData({ ...formData, order: val === '' ? '' as any : val as any });
+                }}
+                onBlur={() => {
+                  // WHAT: Parse and validate only on blur
+                  // WHY: Ensures final value is valid integer >= 1
+                  const parsed = Math.max(1, parseInt(String(formData.order)) || 1);
+                  setFormData({ ...formData, order: parsed });
+                }}
                 min="1"
               />
             </div>

@@ -21,39 +21,41 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
   // WHAT: Parse elements (exactly 2 for pie charts)
   const elements = chart.elements.slice(0, 2);
   
-  // WHAT: State for each input field
-  const [tempValues, setTempValues] = useState<Record<string, number>>(() => {
-    const initial: Record<string, number> = {};
+  // WHAT: State for each input field (store as string to allow deletion)
+  // WHY: Prevents aggressive parsing that resets empty values immediately
+  const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
     elements.forEach((el) => {
       const statsKey = el.formula.replace(/^stats\./, '').trim();
-      initial[statsKey] = stats[statsKey] || 0;
+      initial[statsKey] = (stats[statsKey] || 0).toString();
     });
     return initial;
   });
   
   // WHAT: Sync temp values when stats change externally
   useEffect(() => {
-    const updated: Record<string, number> = {};
+    const updated: Record<string, string> = {};
     elements.forEach((el) => {
       const statsKey = el.formula.replace(/^stats\./, '').trim();
-      updated[statsKey] = stats[statsKey] || 0;
+      updated[statsKey] = (stats[statsKey] || 0).toString();
     });
     setTempValues(updated);
   }, [stats, elements]);
   
   // WHAT: Save individual field on blur
   const handleBlur = (statsKey: string) => {
-    const newValue = Math.max(0, parseInt(tempValues[statsKey]?.toString() || '0') || 0);
+    const newValue = Math.max(0, parseInt(tempValues[statsKey] || '0') || 0);
     const currentValue = stats[statsKey] || 0;
     if (newValue !== currentValue) {
       onSave(statsKey, newValue);
     }
   };
   
-  // WHAT: Calculate percentages for visual feedback
-  const total = Object.values(tempValues).reduce((sum, val) => sum + (val || 0), 0);
+  // WHAT: Calculate percentages for visual feedback (parse strings to numbers)
+  const total = Object.values(tempValues).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
   const percentages = Object.entries(tempValues).reduce((acc, [key, val]) => {
-    acc[key] = total > 0 ? Math.round((val / total) * 100) : 0;
+    const numVal = parseInt(val) || 0;
+    acc[key] = total > 0 ? Math.round((numVal / total) * 100) : 0;
     return acc;
   }, {} as Record<string, number>);
   
@@ -93,10 +95,10 @@ export default function ChartBuilderPie({ chart, stats, onSave }: ChartBuilderPi
               {/* Input field */}
               <input
                 type="number"
-                value={tempValues[statsKey] ?? 0}
+                value={tempValues[statsKey] ?? '0'}
                 onChange={(e) => setTempValues(prev => ({
                   ...prev,
-                  [statsKey]: Math.max(0, parseInt(e.target.value) || 0)
+                  [statsKey]: e.target.value
                 }))}
                 onBlur={() => handleBlur(statsKey)}
                 min="0"

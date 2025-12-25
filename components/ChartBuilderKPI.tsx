@@ -24,17 +24,19 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
   const statsKey = formula.replace(/^stats\./, '').trim();
   const currentValue = stats[statsKey] || 0;
   
-  const [tempValue, setTempValue] = useState<number>(currentValue);
+  // WHAT: Store as string to allow deletion without aggressive parsing
+  // WHY: Prevents resetting empty string to 0 immediately on keystroke
+  const [tempValue, setTempValue] = useState<string>(currentValue.toString());
   
   // WHAT: Sync temp value when stats change externally
   useEffect(() => {
-    setTempValue(currentValue);
+    setTempValue(currentValue.toString());
   }, [currentValue]);
   
   // WHAT: Save on blur with validation
   // WHY: Auto-save behavior consistent with Manual mode
   const handleBlur = () => {
-    const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
+    const newValue = Math.max(0, parseInt(tempValue) || 0);
     if (newValue !== currentValue) {
       onSave(statsKey, newValue);
     }
@@ -58,7 +60,7 @@ export default function ChartBuilderKPI({ chart, stats, onSave }: ChartBuilderKP
         <input
           type="number"
           value={tempValue}
-          onChange={(e) => setTempValue(Math.max(0, parseInt(e.target.value) || 0))}
+          onChange={(e) => setTempValue(e.target.value)}
           onBlur={handleBlur}
           min="0"
           className="form-input chart-builder-input"

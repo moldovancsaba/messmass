@@ -413,7 +413,17 @@ export default function CategoriesPageUnified() {
             type="number"
             className="form-input"
             value={formData.order}
-            onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+            onChange={(e) => {
+              // WHAT: Allow typing freely without immediate parsing
+              // WHY: User can delete "0" to enter new value smoothly
+              const val = e.target.value;
+              setFormData(prev => ({ ...prev, order: val === '' ? '' as any : val as any }));
+            }}
+            onBlur={() => {
+              // WHAT: Parse and validate only on blur
+              const parsed = Math.max(0, parseInt(String(formData.order)) || 0);
+              setFormData(prev => ({ ...prev, order: parsed }));
+            }}
             placeholder="0"
           />
         </div>
@@ -474,7 +484,17 @@ export default function CategoriesPageUnified() {
             type="number"
             className="form-input"
             value={formData.order}
-            onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+            onChange={(e) => {
+              // WHAT: Allow typing freely without immediate parsing
+              // WHY: User can delete "0" to enter new value smoothly
+              const val = e.target.value;
+              setFormData(prev => ({ ...prev, order: val === '' ? '' as any : val as any }));
+            }}
+            onBlur={() => {
+              // WHAT: Parse and validate only on blur
+              const parsed = Math.max(0, parseInt(String(formData.order)) || 0);
+              setFormData(prev => ({ ...prev, order: parsed }));
+            }}
             placeholder="0"
           />
         </div>

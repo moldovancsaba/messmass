@@ -35,6 +35,7 @@
     "test:fanmass": "tsx scripts/test-fanmass-integration.ts",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "validate:inputs": "./scripts/validate-input-patterns.sh",
     "export": "next export",
     "clean": "rm -rf .next out",
     "style:audit": "node scripts/audit-styles.js",

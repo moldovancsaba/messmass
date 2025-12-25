@@ -1122,7 +1122,17 @@ export default function VisualizationPage() {
                   <input
                     type="number"
                     value={blockForm.order}
-                    onChange={(e) => setBlockForm({ ...blockForm, order: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      // WHAT: Allow typing freely without immediate parsing
+                      // WHY: User can delete "0" to enter new value smoothly
+                      const val = e.target.value;
+                      setBlockForm({ ...blockForm, order: val === '' ? '' as any : val as any });
+                    }}
+                    onBlur={() => {
+                      // WHAT: Parse and validate only on blur
+                      const parsed = Math.max(0, parseInt(String(blockForm.order)) || 0);
+                      setBlockForm({ ...blockForm, order: parsed });
+                    }}
                     className="form-input"
                   />
                 </div>
@@ -1346,7 +1356,11 @@ export default function VisualizationPage() {
                                 MIGRATION: Values >2 auto-clamped to 2 on save */}
                             <select
                               value={Math.min(chart.width, 2)}
-                              onChange={(e) => updateChartWidth(block, index, parseFloat(e.target.value))}
+                              onChange={(e) => {
+                                // WHAT: Parse immediately for dropdowns (not text input)
+                                // WHY: Dropdown selections are intentional, no typing involved
+                                updateChartWidth(block, index, parseFloat(e.target.value));
+                              }}
                               className="chart-select"
                             >
                               <option value={1}>Width: 1 unit (compact)</option>
@@ -1524,7 +1538,17 @@ export default function VisualizationPage() {
                   <input
                     type="number"
                     value={editingBlock.order}
-                    onChange={(e) => setEditingBlock({ ...editingBlock, order: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      // WHAT: Allow typing freely without immediate parsing
+                      // WHY: User can delete "0" to enter new value smoothly
+                      const val = e.target.value;
+                      setEditingBlock({ ...editingBlock, order: val === '' ? '' as any : val as any });
+                    }}
+                    onBlur={() => {
+                      // WHAT: Parse and validate only on blur
+                      const parsed = Math.max(0, parseInt(String(editingBlock.order)) || 0);
+                      setEditingBlock({ ...editingBlock, order: parsed });
+                    }}
                     className="form-input"
                   />
                 </div>

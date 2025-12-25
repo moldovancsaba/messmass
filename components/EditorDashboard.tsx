@@ -10,6 +10,8 @@ import ImageUploader from './ImageUploader';
 import TextareaField from './TextareaField';
 import ReportContentManager from './ReportContentManager';
 import BuilderMode from './BuilderMode';
+import UnifiedTextInput from './UnifiedTextInput';
+import UnifiedNumberInput from './UnifiedNumberInput';
 import { 
   mergeHashtagSystems, 
   getAllHashtagRepresentations,
@@ -362,111 +364,57 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
     </div>
   );
 
-  // Manual input card component (for manual mode)
+  // WHAT: Manual input card component - REPLACED WITH UnifiedNumberInput
+  // WHY: Use unified component system for consistency
   const ManualInputCard = ({ label, value, statKey }: { 
     label: string; 
     value: number; 
     statKey: keyof typeof project.stats;
-  }) => {
-    const [tempValue, setTempValue] = useState(value);
+  }) => (
+    <div className="input-card flex-row gap-4">
+      <UnifiedNumberInput
+        value={value}
+        onSave={(newValue) => updateManualField(statKey, newValue)}
+        className="form-input w-120"
+        min={0}
+      />
+      <div className="form-label flex-1">{label}</div>
+    </div>
+  );
 
-    useEffect(() => {
-      setTempValue(value);
-    }, [value]);
+  // WHAT: Manual input for dynamic/custom stats - REPLACED WITH UnifiedNumberInput
+  // WHY: Use unified component system for consistency
+  const ManualInputDynamic = ({ label, keyName }: { label: string; keyName: string }) => (
+    <div className="input-card flex-row gap-4">
+      <UnifiedNumberInput
+        value={getStat(keyName)}
+        onSave={(newValue) => setStat(keyName, newValue)}
+        className="form-input w-120"
+        min={0}
+      />
+      <div className="form-label flex-1">{label}</div>
+    </div>
+  );
 
-    const handleBlur = () => {
-      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
-      if (newValue !== value) {
-        updateManualField(statKey, newValue);
-      }
-    };
-
-    return (
-      <div className="input-card flex-row gap-4">
-        <input
-          type="number"
-          value={tempValue}
-          onChange={(e) => {
-            const newValue = Math.max(0, parseInt(e.target.value) || 0);
-            setTempValue(newValue);
-          }}
-          onBlur={handleBlur}
-          className="form-input w-120"
-          min="0"
-        />
-        <div className="form-label flex-1">{label}</div>
-      </div>
-    );
-  };
-
-  // Manual input for dynamic/custom stats
-  const ManualInputDynamic = ({ label, keyName }: { label: string; keyName: string }) => {
-    const val = getStat(keyName)
-    const [tempValue, setTempValue] = useState<number>(val)
-
-    useEffect(() => { setTempValue(val) }, [keyName, val])
-
-    const handleBlur = () => {
-      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0)
-      if (newValue !== val) {
-        setStat(keyName, newValue)
-      }
-    }
-
-    return (
-      <div className="input-card flex-row gap-4">
-        <input
-          type="number"
-          value={tempValue}
-          onChange={(e) => {
-            const newValue = Math.max(0, parseInt(e.target.value) || 0)
-            setTempValue(newValue)
-          }}
-          onBlur={handleBlur}
-          className="form-input w-120"
-          min="0"
-        />
-        <div className="form-label flex-1">{label}</div>
-      </div>
-    )
-  }
-
-  // Success Manager input card component
+  // WHAT: Text input component - REPLACED WITH UnifiedTextInput
+  // WHY: Use unified component system for consistency (removed duplicate implementation)
+  // WHAT: Success Manager input card component - REPLACED WITH UnifiedNumberInput
+  // WHY: Use unified component system for consistency
   const SuccessManagerCard = ({ label, value, statKey }: { 
     label: string; 
     value: number; 
     statKey: keyof typeof project.stats;
-  }) => {
-    const [tempValue, setTempValue] = useState(value);
-
-    useEffect(() => {
-      setTempValue(value);
-    }, [value]);
-
-    const handleBlur = () => {
-      const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
-      if (newValue !== value) {
-        updateSuccessManagerField(statKey, newValue);
-      }
-    };
-
-    return (
-      <div className="input-card flex-row gap-4">
-        <input
-          type="number"
-          value={tempValue}
-          onChange={(e) => {
-            const newValue = Math.max(0, parseInt(tempValue.toString()) || 0);
-            setTempValue(newValue);
-          }}
-          onBlur={handleBlur}
-          className="form-input w-120"
-          min="0"
-        />
-        <div className="form-label flex-1">{label}</div>
-      </div>
-    );
-  };
+  }) => (
+    <div className="input-card flex-row gap-4">
+      <UnifiedNumberInput
+        value={value}
+        onSave={(newValue) => updateSuccessManagerField(statKey, newValue)}
+        className="form-input w-120"
+        min={0}
+      />
+      <div className="form-label flex-1">{label}</div>
+    </div>
+  );
 
   // Helper: should show variable in clicker/manual by name
   const canShowInClicker = (name: string) => !!varsConfig.find(v => v.name === name)?.flags?.visibleInClicker
@@ -679,31 +627,25 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                   // WHAT: texthyper - URL, email, phone (single line with validation hint)
                   if (v.type === 'texthyper') {
                     return (
-                      <div key={v.name} className="form-group">
-                        <label className="form-label-block">{v.label}</label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          value={getTextField(v.name)}
-                          onChange={(e) => saveTextField(v.name, e.target.value)}
-                          placeholder="URL, email, phone, or social handle"
-                        />
-                      </div>
+                      <UnifiedTextInput
+                        key={v.name}
+                        label={v.label}
+                        value={getTextField(v.name)}
+                        onSave={(text) => saveTextField(v.name, text)}
+                        placeholder="URL, email, phone, or social handle"
+                      />
                     );
                   }
                   
                   // WHAT: text - Single line text (title, name, short notes)
                   if (v.type === 'text') {
                     return (
-                      <div key={v.name} className="form-group">
-                        <label className="form-label-block">{v.label}</label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          value={getTextField(v.name)}
-                          onChange={(e) => saveTextField(v.name, e.target.value)}
-                        />
-                      </div>
+                      <UnifiedTextInput
+                        key={v.name}
+                        label={v.label}
+                        value={getTextField(v.name)}
+                        onSave={(text) => saveTextField(v.name, text)}
+                      />
                     );
                   }
                   

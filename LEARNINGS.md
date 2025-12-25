@@ -1,5 +1,256 @@
 # MessMass Development Learnings
 
+## [v11.54.3] - 2025-12-25T20:48:00.000Z — INPUT PATTERNS: Blur-Based Numeric Input Anti-Pattern
+
+### Context
+Discovered aggressive parsing pattern in 8 numeric input fields across admin interface. Inputs were parsing values on every keystroke, making it impossible to delete "0" or edit values smoothly.
+
+### Problem
+**Aggressive parsing pattern:**
+```tsx
+// ❌ ANTI-PATTERN: Parse on every keystroke
+<input
+  type="number"
+  value={formData.order}
+  onChange={(e) => setFormData({ 
+    ...formData, 
+    order: parseInt(e.target.value) || 0  // ❌ Aggressive
+  })}
+/>
+```
+
+**Issues caused:**
+- ❌ Impossible to delete "0" to enter new value
+- ❌ Empty string immediately converted to 0
+- ❌ User can't type freely (interrupted on every keystroke)
+- ❌ Poor UX - values reset while typing
+- ❌ Inconsistent behavior across application
+
+**Affected components:**
+- PageStyleEditor (gradient angle, opacity)
+- ChartAlgorithmManager (order)
+- Categories Admin (display order in both Create/Edit modals)
+- Visualization Admin (block order in both Create/Edit modals)
+
+### Root Cause
+**Parsing in onChange handler runs on EVERY keystroke:**
+```typescript
+onChange={(e) => parseInt(e.target.value) || 0}
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//            Executes on EVERY character typed
+```
+
+**When user types "123":**
+1. Types "1" → parseInt("1") = 1 ✓
+2. Deletes "1" → parseInt("") = NaN → defaults to 0 ❌
+3. Can't proceed - field shows "0" again
+
+### Solution
+**Blur-based parsing pattern (unified system):**
+```tsx
+// ✅ CORRECT: Parse only on blur
+<input
+  type="number"
+  value={formData.order}
+  onChange={(e) => {
+    // WHAT: Store raw value during typing
+    // WHY: Allows deletion without immediate reset
+    const val = e.target.value;
+    setFormData({ 
+      ...formData, 
+      order: val === '' ? '' as any : val as any 
+    });
+  }}
+  onBlur={() => {
+    // WHAT: Parse and validate only on blur
+    // WHY: User finished typing, safe to validate
+    const parsed = Math.max(0, parseInt(String(formData.order)) || 0);
+    setFormData({ ...formData, order: parsed });
+  }}
+  min="0"
+/>
+```
+
+**For cleaner implementation, use UnifiedNumberInput:**
+```tsx
+import UnifiedNumberInput from '@/components/UnifiedNumberInput';
+
+<UnifiedNumberInput
+  label="Order"
+  value={formData.order}
+  onSave={(newValue) => setFormData({ ...formData, order: newValue })}
+  min={0}
+/>
+```
+
+### Key Learnings
+
+**1. Parsing Timing Rules**
+- ✅ Parse on **blur** (user leaves field)
+- ✅ Parse on **Enter key** (intentional submit)
+- ❌ NEVER parse on **onChange** (every keystroke)
+- ✅ Exception: Dropdowns/selects can parse immediately (no typing)
+
+**2. Temp State Pattern**
+```typescript
+// ✅ CORRECT: String-based temp state
+const [tempValue, setTempValue] = useState<string>('');
+
+// onChange: Store raw string
+setTempValue(e.target.value);
+
+// onBlur: Parse and validate
+const parsed = parseInt(tempValue) || 0;
+setFormData({ ...formData, field: parsed });
+```
+
+**3. When to Use Each Pattern**
+
+| Input Type | Pattern | Reason |
+|------------|---------|--------|
+| Text input | onChange immediate | Strings don't need parsing |
+| Number input | onBlur parsing | Allow deletion and typing |
+| Select/dropdown | onChange immediate | Selection is intentional |
+| Checkbox | onChange immediate | Boolean toggle is instant |
+| Color picker | onChange immediate | Color value is complete |
+
+**4. Unified Components (Preferred)**
+- `UnifiedTextInput` - All text inputs
+- `UnifiedNumberInput` - All numeric inputs
+- `TextareaField` - All multi-line text
+
+**5. Validation Placement**
+```typescript
+// ✅ CORRECT: Validate on blur
+onBlur={() => {
+  const parsed = Math.max(min, Math.min(max, parseInt(value) || min));
+  onSave(parsed);
+}}
+
+// ❌ WRONG: Validate on onChange
+onChange={(e) => {
+  const clamped = Math.max(min, parseInt(e.target.value) || 0);
+  setValue(clamped); // ❌ Prevents typing
+}}
+```
+
+**6. Type Safety Considerations**
+```typescript
+// Temporary workaround for string-in-number-field
+order: val === '' ? '' as any : val as any
+
+// Better: Type form state to allow string | number
+interface FormData {
+  order: number | string; // Allow both during editing
+}
+```
+
+### Migration Guide for Future Forms
+
+**Step 1: Identify numeric inputs**
+```bash
+# Search for aggressive parsing patterns
+grep -r "parseInt.*onChange" .
+grep -r "parseFloat.*onChange" .
+grep -r "Math.max.*onChange" .
+```
+
+**Step 2: Apply blur-based pattern**
+```tsx
+// Before
+<input
+  type="number"
+  value={value}
+  onChange={(e) => setValue(parseInt(e.target.value) || 0)}
+/>
+
+// After
+<input
+  type="number"
+  value={value}
+  onChange={(e) => setValue(e.target.value as any)}
+  onBlur={() => setValue(Math.max(0, parseInt(String(value)) || 0))}
+/>
+```
+
+**Step 3: Or use unified component**
+```tsx
+<UnifiedNumberInput
+  value={value}
+  onSave={setValue}
+  min={0}
+/>
+```
+
+### Prevention Checklist
+
+**Code Review Questions:**
+- [ ] Are numeric inputs parsing on onChange?
+- [ ] Can user delete "0" without immediate reset?
+- [ ] Does validation happen on blur, not onChange?
+- [ ] Are unified components used where possible?
+- [ ] Is there a good reason for immediate parsing?
+
+**Testing Checklist:**
+- [ ] Click on numeric input
+- [ ] Delete all digits (including "0")
+- [ ] Verify field shows empty (not reset to 0)
+- [ ] Type new value
+- [ ] Tab or click out
+- [ ] Verify value is validated
+
+### Related Files
+**Fixed components:**
+- `components/PageStyleEditor.tsx` - Gradient angle, opacity
+- `components/ChartAlgorithmManager.tsx` - Order
+- `app/admin/categories/page.tsx` - Display order (2 modals)
+- `app/admin/visualization/page.tsx` - Block order (2 modals)
+
+**Unified components:**
+- `components/UnifiedNumberInput.tsx` - Numeric input with blur-based save
+- `components/UnifiedTextInput.tsx` - Text input with blur-based save
+- `components/TextareaField.tsx` - Textarea with blur-based save
+
+**Documentation:**
+- `docs/components/UNIFIED_INPUT_SYSTEM.md` - Complete system guide
+- `docs/fixes/NUMERIC_INPUT_CONSISTENCY_FIX.md` - Fix documentation
+- `docs/guides/FORM_INPUT_MIGRATION_GUIDE.md` - Migration guide
+
+### ESLint Rule (Future Enhancement)
+```javascript
+// Potential ESLint rule to prevent this pattern
+module.exports = {
+  rules: {
+    'no-parse-on-change': {
+      create(context) {
+        return {
+          JSXAttribute(node) {
+            if (node.name.name === 'onChange') {
+              const value = node.value;
+              // Check for parseInt/parseFloat in onChange
+              if (value && /parseInt|parseFloat/.test(value.toString())) {
+                context.report({
+                  node,
+                  message: 'Avoid parsing in onChange. Use onBlur instead.'
+                });
+              }
+            }
+          }
+        };
+      }
+    }
+  }
+};
+```
+
+### Impact
+**Fixed**: 8 numeric inputs now use blur-based parsing
+**User Experience**: Smooth editing, deletable zeros, no interruptions
+**Consistency**: All inputs follow unified pattern
+**Build**: ✅ TypeScript compilation successful
+
+---
+
 ## [v11.53.1] - 2025-12-23T17:50:00.000Z — SECURITY: Secure UUID Enforcement (ObjectId + UUID v4)
 
 ### Context

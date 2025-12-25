@@ -21,29 +21,30 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
   // WHAT: Parse all elements (max 5 for bar charts)
   const elements = chart.elements.slice(0, 5);
   
-  // WHAT: State for each input field
-  const [tempValues, setTempValues] = useState<Record<string, number>>(() => {
-    const initial: Record<string, number> = {};
+  // WHAT: State for each input field (store as string to allow deletion)
+  // WHY: Prevents aggressive parsing that resets empty values immediately
+  const [tempValues, setTempValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
     elements.forEach((el) => {
       const statsKey = el.formula.replace(/^stats\./, '').trim();
-      initial[statsKey] = stats[statsKey] || 0;
+      initial[statsKey] = (stats[statsKey] || 0).toString();
     });
     return initial;
   });
   
   // WHAT: Sync temp values when stats change externally
   useEffect(() => {
-    const updated: Record<string, number> = {};
+    const updated: Record<string, string> = {};
     elements.forEach((el) => {
       const statsKey = el.formula.replace(/^stats\./, '').trim();
-      updated[statsKey] = stats[statsKey] || 0;
+      updated[statsKey] = (stats[statsKey] || 0).toString();
     });
     setTempValues(updated);
   }, [stats, elements]);
   
   // WHAT: Save individual field on blur
   const handleBlur = (statsKey: string) => {
-    const newValue = Math.max(0, parseInt(tempValues[statsKey]?.toString() || '0') || 0);
+    const newValue = Math.max(0, parseInt(tempValues[statsKey] || '0') || 0);
     const currentValue = stats[statsKey] || 0;
     if (newValue !== currentValue) {
       onSave(statsKey, newValue);
@@ -81,10 +82,10 @@ export default function ChartBuilderBar({ chart, stats, onSave }: ChartBuilderBa
               {/* Input field */}
               <input
                 type="number"
-                value={tempValues[statsKey] ?? 0}
+                value={tempValues[statsKey] ?? '0'}
                 onChange={(e) => setTempValues(prev => ({
                   ...prev,
-                  [statsKey]: Math.max(0, parseInt(e.target.value) || 0)
+                  [statsKey]: e.target.value
                 }))}
                 onBlur={() => handleBlur(statsKey)}
                 min="0"

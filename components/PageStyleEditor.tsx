@@ -66,6 +66,11 @@ export default function PageStyleEditor({
 
   const [activeSection, setActiveSection] = useState<'general' | 'backgrounds' | 'typography' | 'colors' | 'chartColors'>('general');
 
+  // WHAT: Temp state for numeric inputs (blur-based saving)
+  // WHY: Prevents aggressive parsing on every keystroke
+  const [tempGradientAngle, setTempGradientAngle] = useState<string>('');
+  const [tempOpacity, setTempOpacity] = useState<string>('');
+
   /* WHAT: Ensure chartColors is always initialized
    * WHY: Chart Colors tab should always be visible, even for old styles
    * HOW: If chartColors is missing, generate defaults from colorScheme */
@@ -248,8 +253,14 @@ export default function PageStyleEditor({
                         <input
                           type="number"
                           className={styles.input}
-                          value={formData.pageBackground.gradientAngle || 135}
-                          onChange={(e) => updateField('pageBackground.gradientAngle', parseInt(e.target.value))}
+                          value={tempGradientAngle || (formData.pageBackground.gradientAngle || 135).toString()}
+                          onChange={(e) => setTempGradientAngle(e.target.value)}
+                          onBlur={() => {
+                            const val = Math.max(0, Math.min(360, parseInt(tempGradientAngle) || 135));
+                            updateField('pageBackground.gradientAngle', val);
+                            setTempGradientAngle('');
+                          }}
+                          onFocus={() => setTempGradientAngle((formData.pageBackground.gradientAngle || 135).toString())}
                           min={0}
                           max={360}
                           disabled={isLoading}
@@ -342,8 +353,14 @@ export default function PageStyleEditor({
                     <input
                       type="number"
                       className={styles.input}
-                      value={formData.contentBoxBackground.opacity || 1}
-                      onChange={(e) => updateField('contentBoxBackground.opacity', parseFloat(e.target.value))}
+                      value={tempOpacity || (formData.contentBoxBackground.opacity || 1).toString()}
+                      onChange={(e) => setTempOpacity(e.target.value)}
+                      onBlur={() => {
+                        const val = Math.max(0, Math.min(1, parseFloat(tempOpacity) || 1));
+                        updateField('contentBoxBackground.opacity', val);
+                        setTempOpacity('');
+                      }}
+                      onFocus={() => setTempOpacity((formData.contentBoxBackground.opacity || 1).toString())}
                       min={0}
                       max={1}
                       step={0.1}
