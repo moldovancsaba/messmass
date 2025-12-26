@@ -207,17 +207,6 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         title: 'View partner analytics dashboard',
       },
       {
-        label: 'Google Sheets',
-        icon: '📊',
-        variant: 'secondary',
-        handler: (partner) => {
-          // WHAT: Navigate to partner detail page with Google Sheets integration
-          // WHY: Allow managing bidirectional sync with Google Sheets
-          window.open(`/admin/partners/${partner._id}`, '_blank');
-        },
-        title: 'Manage Google Sheets integration',
-      },
-      {
         label: 'Delete',
         icon: '🗑️',
         variant: 'danger',
@@ -321,16 +310,6 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
           // WHAT: Open partner analytics dashboard
           // WHY: View comprehensive analytics including trends, demographics, and performance metrics
           window.open(`/admin/partners/${partner._id}/analytics`, '_blank');
-        },
-      },
-      {
-        label: 'Google Sheets',
-        icon: '📊',
-        variant: 'secondary',
-        handler: (partner) => {
-          // WHAT: Navigate to partner detail page with Google Sheets integration
-          // WHY: Allow managing bidirectional sync with Google Sheets
-          window.open(`/admin/partners/${partner._id}`, '_blank');
         },
       },
       {
