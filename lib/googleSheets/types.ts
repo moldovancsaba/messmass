@@ -220,11 +220,21 @@ export interface PullOptions {
  */
 export interface PullSummary {
   success?: boolean; // Added success flag
+  error?: string;    // Top-level error message
   totalRows: number;
   eventsCreated: number;
   eventsUpdated: number;
   errors: Array<{ row: number; error: string }>;
   results?: Array<{ id: string; data: any; action: 'created' | 'updated' }>; // Added results detail
+}
+
+export interface PushSummary {
+  success?: boolean;
+  error?: string;
+  totalEvents: number;
+  rowsCreated: number;
+  rowsUpdated: number;
+  errors: Array<{ eventId: string; error: string }>;
 }
 
 /**
