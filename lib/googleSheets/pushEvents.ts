@@ -145,7 +145,7 @@ export async function pushEventsToSheet(
           // Use db abstraction to update event
           await db.updateEventWithUuid(
             event._id.toString(), 
-            uuid.toString(), 
+            String(uuid), 
             options.dryRun ? 0 : 0 // Row number not easily available from append, but that's ok
           );
           
@@ -157,7 +157,7 @@ export async function pushEventsToSheet(
           });
           
           if (!options.dryRun) {
-            console.log(`✨ Appended new row: ${event.eventName} (UUID: ${uuid.toString().slice(0,8)}...)`);
+            console.log(`✨ Appended new row: ${event.eventName} (UUID: ${String(uuid).slice(0,8)}...)`);
           }
         }
       } catch (error) {

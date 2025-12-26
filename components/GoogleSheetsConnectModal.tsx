@@ -52,8 +52,7 @@ export default function GoogleSheetsConnectModal({
     return '';
   };
 
-  const handleConnect = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleConnect = async () => {
     setError('');
     setIsSubmitting(true);
 

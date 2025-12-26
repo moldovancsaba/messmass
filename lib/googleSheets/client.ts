@@ -83,7 +83,7 @@ export async function testConnection(sheetId: string): Promise<{
 
     return {
       success: true,
-      sheetTitle: response.data.properties?.title,
+      sheetTitle: response.data.properties?.title || undefined,
       rowCount: gridProps?.rowCount || 0,
       columnCount: gridProps?.columnCount || 0,
       headerLabels

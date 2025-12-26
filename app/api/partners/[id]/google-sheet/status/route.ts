@@ -112,10 +112,11 @@ export async function GET(
             };
 
             // If sheet has fewer rows than expected, flag it
-            if (healthCheck.rowCount < response.stats.totalEvents) {
+            const rowCount = healthCheck.rowCount || 0;
+            if (rowCount < response.stats.totalEvents) {
               response.healthCheck.status = 'warning';
               response.healthCheck.warning = 
-                `Sheet has ${healthCheck.rowCount} rows but database expects ${response.stats.totalEvents} events`;
+                `Sheet has ${rowCount} rows but database expects ${response.stats.totalEvents} events`;
             }
           } else {
             response.healthCheck = {

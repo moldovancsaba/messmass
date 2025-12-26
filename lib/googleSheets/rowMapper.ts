@@ -4,8 +4,9 @@
 // HOW: Use column map to transform values with type-specific parsing
 
 import { v4 as uuidv4 } from 'uuid';
-import { SHEET_COLUMN_MAP, columnLetterToIndex, type SheetColumnMap } from './columnMap';
+import { SHEET_COLUMN_MAP, columnLetterToIndex } from './columnMap';
 import { detectEventType, hasValidEventDate } from './eventTypeDetector';
+import type { SheetColumnMap } from './types';
 
 /**
  * WHAT: Convert sheet row to MessMass event object

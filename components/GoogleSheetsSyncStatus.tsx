@@ -42,6 +42,7 @@ interface GoogleSheetStatus {
     rowCount?: number;
     lastChecked?: string;
     error?: string;
+    warning?: string; // Added warning message
   };
 }
 
