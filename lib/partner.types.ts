@@ -116,10 +116,6 @@ export interface Partner {
   // WHY: Define which visualization blocks and charts to show on partner reports
   reportTemplateId?: ObjectId;
   
-  // WHAT: Google Sheets URL for syncing event data
-  // WHY: Store the Google Sheet link for partner's event data source
-  googleSheetsUrl?: string;
-  
   // Metadata
   createdAt: string; // ISO 8601 with milliseconds
   updatedAt: string; // ISO 8601 with milliseconds
@@ -172,7 +168,6 @@ export interface CreatePartnerInput {
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
   styleId?: string | null; // Page style ID for partner report styling
   reportTemplateId?: string | null; // Report template ID for partner default
-  googleSheetsUrl?: string; // Google Sheets URL for event data sync
 }
 
 /**
@@ -190,7 +185,6 @@ export interface UpdatePartnerInput {
   sportsDb?: Partner['sportsDb']; // Use same type as Partner interface
   styleId?: string | null; // Page style ID for partner report styling
   reportTemplateId?: string | null; // Report template ID for partner default
-  googleSheetsUrl?: string; // Google Sheets URL for event data sync
 }
 
 /**
