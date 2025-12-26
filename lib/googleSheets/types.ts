@@ -188,3 +188,78 @@ export interface SyncConflict {
   conflictingFields: string[];
   newerSource: 'sheet' | 'messmass';
 }
+
+/**
+ * WHAT: Database access abstraction for sync logic
+ * WHY: Enable dry-run mode and separation of concerns
+ */
+export interface SyncDbAccess {
+  getEventsByUuids(uuids: string[]): Promise<any[]>;
+  createEvents(events: any[]): Promise<Array<{ id: string; data: any }>>;
+  updateEvents(updates: Array<{ uuid: string; data: any }>): Promise<Array<{ id: string; data: any }>>;
+  updateSheetWithUuid(rowNumber: number, uuid: string): Promise<{ success: boolean; message?: string }>;
+  updatePartnerSyncStats(syncStats: any): Promise<{ success: boolean; message?: string }>;
+  updatePartnerError(error: string): Promise<{ success: boolean; message?: string }>;
+}
+
+/**
+ * WHAT: Options for pull operation
+ */
+export interface PullOptions {
+  dryRun?: boolean;
+  partnerId: string;
+  context?: {
+    timestamp: string;
+    operation: string;
+    userAgent: string;
+  };
+}
+
+/**
+ * WHAT: Summary of pull operation returned by the function
+ */
+export interface PullSummary {
+  success?: boolean; // Added success flag
+  totalRows: number;
+  eventsCreated: number;
+  eventsUpdated: number;
+  errors: Array<{ row: number; error: string }>;
+  results?: Array<{ id: string; data: any; action: 'created' | 'updated' }>; // Added results detail
+}
+
+/**
+ * WHAT: Database access abstraction for push logic
+ */
+export interface PushDbAccess {
+  getEvents(): Promise<Array<{ id: string; data: any }>>;
+  updateEventWithUuid(eventId: string, uuid: string, rowNumber: number): Promise<{ success: boolean }>;
+  updatePartnerSyncStats(syncStats: any): Promise<{ success: boolean }>;
+  updatePartnerError(error: string): Promise<{ success: boolean }>;
+}
+
+/**
+ * WHAT: Options for push operation
+ */
+export interface PushOptions {
+  dryRun?: boolean;
+  partnerId: string;
+  eventId?: string;
+  context?: {
+    timestamp: string;
+    operation: string;
+    userAgent: string;
+  };
+}
+
+/**
+ * WHAT: Extended summary for push with preview
+ */
+export interface PushSummaryWithPreview extends PushSummary {
+  success?: boolean;
+  preview?: Array<{
+    action: 'create' | 'update';
+    eventName: string;
+    rowNumber?: number;
+    data: any;
+  }>;
+}

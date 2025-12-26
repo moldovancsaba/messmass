@@ -7,37 +7,39 @@ import { Db, ObjectId } from 'mongodb';
 import { writeSheetRows, findRowByUuid, appendSheetRows } from './client';
 import { eventsToRows, updateRowFormulas } from './rowMapper';
 import { SHEET_COLUMN_MAP } from './columnMap';
-import type { GoogleSheetConfig, PushSummary } from './types';
+import type { GoogleSheetConfig, PushSummary, PushDbAccess, PushOptions, PushSummaryWithPreview } from './types';
 
 /**
  * WHAT: Push all partner events to Google Sheet
  * WHY: Main entry point for partner-level sync (MessMass → Sheet)
  * HOW: Fetch events from database, map to rows, write to sheet
  * 
- * @param db - MongoDB database instance
- * @param partnerId - Partner ID (ObjectId or string)
- * @param sheetConfig - Google Sheet configuration
+ * @param sheetId - Google Sheet ID
+ * @param sheetName - Sheet tab name
+ * @param db - Database access abstraction
+ * @param options - Push options
  * @returns Summary of push operation
  */
 export async function pushEventsToSheet(
-  db: Db,
-  partnerId: string | ObjectId,
-  sheetConfig: GoogleSheetConfig
-): Promise<PushSummary> {
-  const summary: PushSummary = {
+  sheetId: string,
+  sheetName: string,
+  db: PushDbAccess,
+  options: PushOptions
+): Promise<PushSummaryWithPreview> {
+  const summary: PushSummaryWithPreview = {
+    success: true,
     totalEvents: 0,
     rowsCreated: 0,
     rowsUpdated: 0,
-    errors: []
+    errors: [],
+    preview: []
   };
   
   try {
-    // WHAT: Fetch all events for this partner
-    // WHY: Get latest MessMass data to push
-    const projectsCollection = db.collection('projects');
-    const events = await projectsCollection.find({
-      partnerId: new ObjectId(partnerId)
-    }).toArray();
+    // WHAT: Fetch events via abstraction
+    // WHY: Decouple from direct DB access
+    const wrappedEvents = await db.getEvents();
+    const events = wrappedEvents.map(e => e.data);
     
     summary.totalEvents = events.length;
     
@@ -46,11 +48,11 @@ export async function pushEventsToSheet(
       return summary;
     }
     
-    console.log(`📤 Pushing ${events.length} events to sheet`);
+    console.log(`📤 Pushing ${events.length} events to sheet (Dry Run: ${options.dryRun})`);
     
     // WHAT: Convert events to row arrays
     // WHY: Transform database format to sheet format
-    const rows = eventsToRows(events, sheetConfig.columnMap);
+    const rows = eventsToRows(events, SHEET_COLUMN_MAP);
     
     // WHAT: Process each event/row
     // WHY: Create or update in sheet
@@ -62,64 +64,101 @@ export async function pushEventsToSheet(
         if (event.googleSheetUuid) {
           // WHAT: Event has UUID - find and update existing row
           // WHY: Sync changes to existing sheet row
-          const rowNumber = await findRowByUuid(
-            sheetConfig.sheetId,
-            sheetConfig.sheetName,
-            event.googleSheetUuid
-          );
+          let rowNumber: number | null = null;
+          
+          if (!options.dryRun) {
+            rowNumber = await findRowByUuid(
+              sheetId,
+              sheetName,
+              event.googleSheetUuid
+            );
+          } else {
+            // Mock row number for dry run
+            rowNumber = 100 + i; 
+          }
           
           if (rowNumber) {
             // WHAT: Update existing row
             // WHY: Row found in sheet
             const updatedRow = updateRowFormulas(row, rowNumber);
-            await writeSheetRows(
-              sheetConfig.sheetId,
-              sheetConfig.sheetName,
-              rowNumber,
-              [updatedRow]
-            );
+            
+            if (!options.dryRun) {
+              await writeSheetRows(
+                sheetId,
+                sheetName,
+                rowNumber,
+                [updatedRow]
+              );
+            }
             
             summary.rowsUpdated++;
-            console.log(`✏️ Updated row ${rowNumber}: ${event.eventName}`);
+            summary.preview?.push({
+              action: 'update',
+              eventName: event.eventName,
+              rowNumber: rowNumber,
+              data: updatedRow
+            });
+            
+            if (!options.dryRun) {
+              console.log(`✏️ Updated row ${rowNumber}: ${event.eventName}`);
+            }
           } else {
             // WHAT: UUID exists but row not found in sheet
             // WHY: Row may have been deleted - append as new
             console.warn(`⚠️ UUID ${event.googleSheetUuid.slice(0,8)}... not found in sheet - appending as new row`);
-            await appendSheetRows(
-              sheetConfig.sheetId,
-              sheetConfig.sheetName,
-              [row]
-            );
+            
+            if (!options.dryRun) {
+              await appendSheetRows(
+                sheetId,
+                sheetName,
+                [row]
+              );
+            }
             
             summary.rowsCreated++;
-            console.log(`✨ Appended new row: ${event.eventName}`);
+            summary.preview?.push({
+              action: 'create',
+              eventName: event.eventName,
+              data: row
+            });
+            
+            if (!options.dryRun) {
+              console.log(`✨ Appended new row: ${event.eventName}`);
+            }
           }
         } else {
           // WHAT: Event has no UUID - append as new row
           // WHY: First time pushing this event to sheet
-          await appendSheetRows(
-            sheetConfig.sheetId,
-            sheetConfig.sheetName,
-            [row]
-          );
+          
+          if (!options.dryRun) {
+            await appendSheetRows(
+              sheetId,
+              sheetName,
+              [row]
+            );
+          }
           
           // WHAT: Update event in database with generated UUID
           // WHY: Track row identity for future pushes
           const uuid = row[0]; // Column A contains UUID
-          await projectsCollection.updateOne(
-            { _id: event._id },
-            {
-              $set: {
-                googleSheetUuid: uuid,
-                isSyncedFromSheet: true,
-                googleSheetSource: 'messmass',
-                googleSheetSyncedAt: new Date().toISOString()
-              }
-            }
+          
+          // Use db abstraction to update event
+          await db.updateEventWithUuid(
+            event._id.toString(), 
+            uuid.toString(), 
+            options.dryRun ? 0 : 0 // Row number not easily available from append, but that's ok
           );
           
           summary.rowsCreated++;
-          console.log(`✨ Appended new row: ${event.eventName} (UUID: ${uuid.toString().slice(0,8)}...)`);
+          summary.preview?.push({
+            action: 'create',
+            eventName: event.eventName,
+            data: row
+          });
+          
+          if (!options.dryRun) {
+            console.log(`✨ Appended new row: ${event.eventName} (UUID: ${uuid.toString().slice(0,8)}...)`);
+          }
         }
       } catch (error) {
         summary.errors.push({
@@ -132,20 +171,12 @@ export async function pushEventsToSheet(
     
     // WHAT: Update partner sync metadata
     // WHY: Track last push time and statistics
-    const partnersCollection = db.collection('partners');
-    await partnersCollection.updateOne(
-      { _id: new ObjectId(partnerId) },
-      {
-        $set: {
-          'googleSheetConfig.lastSyncAt': new Date().toISOString(),
-          'googleSheetConfig.lastSyncStatus': summary.errors.length > 0 ? 'partial_success' : 'success',
-          'googleSheetStats.lastPushAt': new Date().toISOString()
-        },
-        $inc: {
-          'googleSheetStats.pushCount': 1
-        }
-      }
-    );
+    await db.updatePartnerSyncStats({
+      lastPushAt: new Date().toISOString(),
+      pushCount: 1, // This is an increment in the implementation
+      eventsCreated: summary.rowsCreated,
+      eventsUpdated: summary.rowsUpdated
+    });
     
     console.log(`\n📊 Push Summary:`);
     console.log(`   Created: ${summary.rowsCreated}`);
@@ -155,7 +186,12 @@ export async function pushEventsToSheet(
     return summary;
   } catch (error) {
     console.error('❌ Push operation failed:', error);
-    throw error;
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    await db.updatePartnerError(errorMsg);
+    
+    summary.success = false;
+    summary.errors.push({ eventId: 'general', error: errorMsg });
+    return summary;
   }
 }
 
