@@ -24,6 +24,30 @@ When pulling data, we detect formulas (starting with `=`) and calculate their va
 **4. Batch Operations:**
 Using `spreadsheets.values.batchUpdate` significantly reduces API quota usage compared to row-by-row updates (1 call vs 100 calls).
 
+## [v11.55.0] - 2025-12-26T15:20:00.000Z — NEXT.JS 15: API Route Params Breaking Change
+
+### Context
+Next.js 15 introduced a breaking change for dynamic route handlers (App Router).
+
+### Problem
+Build failed with `Type "{ params: { id: string; }; }" is not a valid type`.
+In Next.js 15, the `params` prop passed to route handlers is now a **Promise**, not a direct object.
+
+### Solution
+**Update Route Signatures:**
+```typescript
+// Old (Next.js 14)
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const id = params.id;
+}
+
+// New (Next.js 15)
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params; // Must await!
+}
+```
+We updated all 5 Google Sheets API endpoints to match this new signature.
+
 ## [v11.54.3] - 2025-12-25T20:48:00.000Z — INPUT PATTERNS: Blur-Based Numeric Input Anti-Pattern
 
 ### Context
