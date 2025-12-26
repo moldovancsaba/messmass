@@ -112,7 +112,8 @@ export async function POST(
         }));
         
         const result = await projectsCollection.insertMany(projects);
-        return result.insertedIds.map((id, index) => ({
+        // Convert insertedIds object to array (MongoDB 6+ returns object, not array)
+        return Object.values(result.insertedIds).map((id, index) => ({
           id: id.toString(),
           data: projects[index]
         }));
