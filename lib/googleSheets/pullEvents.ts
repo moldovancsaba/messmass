@@ -42,7 +42,7 @@ export async function pullEventsFromSheet(
     const rows = await readSheetRows(
       sheetId,
       sheetName,
-      DEFAULT_SHEET_CONFIG.dataStartRow
+      options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow
     );
     
     summary.totalRows = rows.length;
@@ -56,8 +56,8 @@ export async function pullEventsFromSheet(
     
     // WHAT: Convert rows to event objects
     // WHY: Transform sheet format to database format
-    // Use default column map for now (or could pass in options if needed)
-    const { events, errors } = rowsToEvents(rows, SHEET_COLUMN_MAP);
+    // Use provided column map or fallback to default
+    const { events, errors } = rowsToEvents(rows, options.config.columnMap || SHEET_COLUMN_MAP);
     summary.errors = errors;
     
     if (events.length === 0) {
@@ -73,7 +73,7 @@ export async function pullEventsFromSheet(
     
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
-      const rowIndex = i + DEFAULT_SHEET_CONFIG.dataStartRow;
+      const rowIndex = i + (options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow);
       
       let uuid = event.googleSheetUuid;
       

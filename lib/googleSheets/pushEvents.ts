@@ -52,7 +52,7 @@ export async function pushEventsToSheet(
     
     // WHAT: Convert events to row arrays
     // WHY: Transform database format to sheet format
-    const rows = eventsToRows(events, SHEET_COLUMN_MAP);
+    const rows = eventsToRows(events, options.config.columnMap || SHEET_COLUMN_MAP);
     
     // WHAT: Process each event/row
     // WHY: Create or update in sheet

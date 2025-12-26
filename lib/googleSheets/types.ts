@@ -208,6 +208,7 @@ export interface SyncDbAccess {
 export interface PullOptions {
   dryRun?: boolean;
   partnerId: string;
+  config: GoogleSheetConfig; // Pass full config from DB
   context?: {
     timestamp: string;
     operation: string;
@@ -254,6 +255,7 @@ export interface PushOptions {
   dryRun?: boolean;
   partnerId: string;
   eventId?: string;
+  config: GoogleSheetConfig; // Pass full config from DB
   context?: {
     timestamp: string;
     operation: string;
