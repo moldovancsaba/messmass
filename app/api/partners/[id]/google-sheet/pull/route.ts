@@ -203,6 +203,7 @@ export async function POST(
     const result = await pullEventsFromSheet(sheetId, sheetName, dbAccess, {
       dryRun,
       partnerId: id,
+      config: googleSheetConfig,
       // Additional context for the operations
       context: {
         timestamp: new Date().toISOString(),
@@ -216,7 +217,7 @@ export async function POST(
         { 
           success: false, 
           error: result.error || 'Failed to pull events from Google Sheet',
-          summary: result.summary
+          summary: result
         },
         { status: 500 }
       );
@@ -226,9 +227,9 @@ export async function POST(
       success: true,
       message: dryRun 
         ? 'Dry run completed. No changes were made.'
-        : `Successfully pulled ${result.summary.eventsCreated + result.summary.eventsUpdated} events from Google Sheet`,
-      summary: result.summary,
-      preview: result.preview || null
+        : `Successfully pulled ${result.eventsCreated + result.eventsUpdated} events from Google Sheet`,
+      summary: result,
+      preview: result.results || null
     });
 
   } catch (error) {

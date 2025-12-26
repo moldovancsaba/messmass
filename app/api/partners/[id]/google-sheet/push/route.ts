@@ -204,6 +204,7 @@ export async function POST(
     const result = await pushEventsToSheet(sheetId, sheetName, dbAccess, {
       dryRun,
       partnerId: id,
+      config: googleSheetConfig,
       eventId,
       // Additional context for the operations
       context: {
@@ -218,7 +219,7 @@ export async function POST(
         { 
           success: false, 
           error: result.error || 'Failed to push events to Google Sheet',
-          summary: result.summary
+          summary: result
         },
         { status: 500 }
       );
@@ -228,8 +229,8 @@ export async function POST(
       success: true,
       message: dryRun 
         ? 'Dry run completed. No changes were made.'
-        : `Successfully pushed ${result.summary.rowsCreated + result.summary.rowsUpdated} rows to Google Sheet`,
-      summary: result.summary,
+        : `Successfully pushed ${result.rowsCreated + result.rowsUpdated} rows to Google Sheet`,
+      summary: result,
       preview: result.preview || null
     });
 
