@@ -123,6 +123,35 @@ export interface Partner {
   // WHAT: Draft flag for auto-created partners
   // WHY: Identify entities created by automation for later review
   isDraft?: boolean;
+  
+  // WHAT: Google Sheets integration configuration (v12.0.0)
+  // WHY: Enable automated event sync from Google Sheets to MessMass
+  googleSheetConfig?: {
+    enabled: boolean;                    // Is Google Sheets sync active?
+    sheetId: string;                     // Google Sheet ID (from URL)
+    sheetName: string;                   // Sheet tab name (e.g., "Events")
+    serviceAccountEmail: string;         // Service account with access
+    uuidColumn: string;                  // Column letter for UUID (default: "A")
+    headerRow: number;                   // Header row number (default: 1)
+    dataStartRow: number;                // First data row (default: 2)
+    lastSyncAt?: string;                 // ISO 8601 timestamp of last sync
+    lastSyncStatus?: 'success' | 'error' | 'pending'; // Last sync result
+    lastSyncError?: string;              // Error message if failed
+    syncMode: 'manual' | 'auto';         // Manual button vs daily cron
+    columnMap: Record<string, unknown>;  // Column letter -> field mapping
+  };
+  
+  // WHAT: Google Sheets sync statistics (v12.0.0)
+  // WHY: Track sync activity and performance metrics
+  googleSheetStats?: {
+    totalEvents: number;                 // Total events in linked sheet
+    lastPullAt?: string;                 // ISO 8601 timestamp of last pull
+    lastPushAt?: string;                 // ISO 8601 timestamp of last push
+    pullCount: number;                   // Total pull operations
+    pushCount: number;                   // Total push operations
+    eventsCreated: number;               // Events created via sync
+    eventsUpdated: number;               // Events updated via sync
+  };
 }
 
 /**

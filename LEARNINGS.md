@@ -1,5 +1,29 @@
 # MessMass Development Learnings
 
+## [v11.55.0] - 2025-12-26T14:40:00.000Z — GOOGLE SHEETS: Bidirectional Sync Strategy
+
+### Context
+Implementing bidirectional sync between a database (MongoDB) and a user-editable spreadsheet (Google Sheets) is prone to data loss and conflicts.
+
+### Problem
+- Users move rows in sheets
+- Users add custom columns and formulas
+- Simple row-index mapping breaks when rows are sorted/deleted
+- Overwriting entire rows destroys user formulas
+
+### Solution: UUID + Field-Level Updates
+**1. UUID Persistence:**
+We reserved Column A for a hidden/read-only UUID. This allows us to find the correct row regardless of its position (sort/move resilient).
+
+**2. Non-Destructive Writes:**
+Instead of overwriting the whole row, we mapped specific columns (A-AP) and only updated those cells. This allows users to add columns AQ+ for their own calculations without the sync wiping them out.
+
+**3. Formula Preservation:**
+When pulling data, we detect formulas (starting with `=`) and calculate their values or preserve them. When pushing, we update values but respect existing formulas if the source allows.
+
+**4. Batch Operations:**
+Using `spreadsheets.values.batchUpdate` significantly reduces API quota usage compared to row-by-row updates (1 call vs 100 calls).
+
 ## [v11.54.3] - 2025-12-25T20:48:00.000Z — INPUT PATTERNS: Blur-Based Numeric Input Anti-Pattern
 
 ### Context

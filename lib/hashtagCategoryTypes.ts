@@ -87,6 +87,14 @@ export interface ProjectWithCategories {
   editSlug?: string;               // UUID for editing access
   createdAt: string;               // ISO 8601 timestamp
   updatedAt: string;               // ISO 8601 timestamp
+  
+  // Google Sheets sync fields (v12.0.0)
+  googleSheetUuid?: string;        // UUID stored in Google Sheet column A
+  googleSheetSyncedAt?: string;    // ISO 8601 timestamp of last sync
+  googleSheetModifiedAt?: string;  // ISO 8601 timestamp of last modification
+  googleSheetSource?: 'messmass' | 'sheet' | 'both'; // Last modification source
+  isSyncedFromSheet?: boolean;     // Is this event synced from sheet?
+  partnerId?: string;              // Partner reference if synced
 }
 
 /**

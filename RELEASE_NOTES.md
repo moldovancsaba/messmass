@@ -1,5 +1,47 @@
 # MessMass Release Notes
 
+## [v11.55.0] — 2025-12-26T14:40:00.000Z
+
+### Summary
+📊 **GOOGLE SHEETS INTEGRATION - PARTNER SYNC**: Implemented bidirectional synchronization between MessMass events and Google Sheets at the partner level. Partners can now connect a sheet to pull/push event data, enabling spreadsheet-based workflows.
+
+### What Was Accomplished
+
+#### Partner-Level Synchronization ✅
+**WHAT**: A complete system for syncing event data between MessMass and Google Sheets.
+**WHY**: Enable partners who prefer spreadsheets to manage their event data externally while keeping MessMass as the source of truth for analytics.
+**HOW**: Bidirectional sync logic with UUID tracking, formula preservation, and dry-run capabilities.
+
+**Key Features**:
+- **Connect/Disconnect**: Securely link a Google Sheet to a partner profile
+- **Pull (Sheet → App)**: Create/Update projects from sheet rows
+- **Push (App → Sheet)**: Export projects to sheet rows
+- **Dry Run Mode**: Preview changes safely before committing
+- **Status Dashboard**: Real-time health checks and sync history
+
+#### Technical Architecture
+- **UUID Tracking**: Column A is used as a stable identifier (UUID) to track rows across moves/edits
+- **Formula Preservation**: Sync logic updates only value columns, preserving user-defined formulas in other columns
+- **Event Type Detection**: Smart logic to detect Single Partner vs. Two Partner vs. Standalone events from sheet data
+- **Batch Processing**: Optimized Google Sheets API calls for performance
+
+#### New UI Components
+- **Partner Detail Page**: `/admin/partners/[id]` with dedicated Google Sheets section
+- **Sync Console**: Connect modal, Sync buttons (Pull/Push), Status display
+
+### Files Created
+- `lib/googleSheets/*` (Client, RowMapper, EventTypeDetector, Pull/Push logic)
+- `app/api/partners/[id]/google-sheet/*` (5 API endpoints)
+- `components/GoogleSheets*.tsx` (3 UI components)
+- `app/admin/partners/[id]/page.tsx` (New admin route)
+
+### Version
+`11.54.5` → `11.55.0` (MINOR - New feature)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.54.4] — 2025-12-25T21:55:00.000Z
 
 ### Summary

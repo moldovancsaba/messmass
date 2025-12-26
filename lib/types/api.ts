@@ -132,6 +132,14 @@ export interface ProjectDTO {
   editSlug?: string;
   createdAt: string;
   updatedAt: string;
+  
+  // Google Sheets sync fields (v12.0.0)
+  googleSheetUuid?: string;
+  googleSheetSyncedAt?: string;
+  googleSheetModifiedAt?: string;
+  googleSheetSource?: 'messmass' | 'sheet' | 'both';
+  isSyncedFromSheet?: boolean;
+  partnerId?: string;
 }
 
 /**

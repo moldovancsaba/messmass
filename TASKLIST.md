@@ -1,6 +1,6 @@
 # TASKLIST.md
-**Current Version:** 11.54.4  
-**Last Updated:** 2025-12-25T21:55:00.000Z (UTC)
+**Current Version:** 11.55.0
+**Last Updated:** 2025-12-26T14:35:00.000Z (UTC)
 
 ---
 
@@ -8,9 +8,30 @@
 
 ### In Progress
 
-_(No active tasks in progress)_
+#### Google Sheets Integration - Phase 2 (Partner Sync)
+- **Status:** 🚧 IN PROGRESS
+- **Started:** 2025-12-26
+- **Owner:** AI Agent
+- **Scope:** Partner-level bidirectional sync, Admin UI
+- **Deliverables:**
+  - ✅ API Endpoints (connect, disconnect, pull, push, status)
+  - ✅ UI Components (Modal, Buttons, Status)
+  - ✅ Partner Detail Page integration
+  - ⏳ End-to-end testing & Validation
+  - ⏳ Phase 2.5: Auto-provisioning via Drive API
 
 ### Completed - Q4 2025
+
+#### Google Sheets Integration - Phase 1 (Foundation) ✅
+- **Status:** ✅ COMPLETE
+- **Completed:** 2025-12-26
+- **Owner:** AI Agent
+- **Scope:** Auth, Client, Types, Schema updates
+- **Deliverables:**
+  - `googleapis` integration with Service Account
+  - Type definitions and Column mapping
+  - MongoDB schema updates (Partner, Project)
+  - Core logic (EventTypeDetector, RowMapper, Pull/Push events)
 
 #### Report Layout & Rendering Spec v2.0 - Phase 2 ✅
 - **Status:** ✅ COMPLETE

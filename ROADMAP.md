@@ -28,6 +28,35 @@ Last Updated: 2025-12-22T18:31:10.000Z (UTC)
 
 ## 🔧 Operational Initiatives
 
+### Google Sheets Integration (Q4 2025)
+**Priority**: High
+**Status**: Active — Phase 2 Implementation Complete (Testing pending)
+**Completed**: Phase 1 (Foundation) on 2025-12-25
+**Dependencies**: Google Cloud Service Account, Google Drive API
+
+**Vision**: Enable bidirectional synchronization between MessMass events and Google Sheets for partners who prefer spreadsheet-based workflows.
+
+**Core Objectives**:
+- Auto-provision Google Sheets for new partners (Phase 2.5)
+- Bidirectional sync (Pull/Push) of event data
+- Support for formula preservation and custom column mapping
+- Real-time status monitoring and health checks
+
+**Implementation Phases**:
+1. **Phase 1**: Foundation (Auth, Client, Types) — ✅ Complete
+2. **Phase 2**: Partner-Level Sync (APIs, UI) — ✅ Implementation Complete
+3. **Phase 2.5**: Auto-provisioning & Drive Integration — ⏳ Planned
+4. **Phase 3**: Event-Level Granular Sync — 🔮 Future
+
+**Acceptance Criteria**:
+- ✅ Connect/Disconnect Google Sheets via Admin UI
+- ✅ Pull events from Sheet → MessMass (create/update)
+- ✅ Push events from MessMass → Sheet (create/update rows)
+- ✅ Status dashboard shows sync history and health
+- ⬜ Auto-create sheets for new partners
+
+---
+
 ### SSO Integration with DoneIsBetter (Q1 2026)
 **Priority**: High  
 **Status**: Planning  
