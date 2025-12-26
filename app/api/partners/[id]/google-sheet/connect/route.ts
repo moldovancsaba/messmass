@@ -56,7 +56,7 @@ export async function POST(
     }
 
     // Test connection to verify sheet exists and is accessible
-    const connectionTest = await testConnection(sheetId, sheetName);
+    const connectionTest = await testConnection(sheetId);
     if (!connectionTest.success) {
       return NextResponse.json(
         { 
