@@ -58,14 +58,35 @@ export async function testConnection(sheetId: string): Promise<{
   success: boolean;
   error?: string;
   sheetTitle?: string;
+  rowCount?: number;
+  columnCount?: number;
+  headerLabels?: string[];
 }> {
   try {
     const sheets = createSheetsClient();
     const response = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     
+    // Get first sheet properties
+    const sheetProps = response.data.sheets?.[0]?.properties;
+    const gridProps = sheetProps?.gridProperties;
+
+    // Fetch header row to verify access and get labels
+    let headerLabels: string[] = [];
+    try {
+      const headerRow = await readSheetRows(sheetId, sheetProps?.title || 'Events', 1);
+      if (headerRow.length > 0 && Array.isArray(headerRow[0])) {
+        headerLabels = headerRow[0] as string[];
+      }
+    } catch (e) {
+      // Ignore header fetch error, basic connection is success
+    }
+
     return {
       success: true,
-      sheetTitle: response.data.properties?.title
+      sheetTitle: response.data.properties?.title,
+      rowCount: gridProps?.rowCount || 0,
+      columnCount: gridProps?.columnCount || 0,
+      headerLabels
     };
   } catch (error: unknown) {
     console.error('Google Sheets connection test failed:', error);
