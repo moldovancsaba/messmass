@@ -18,7 +18,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { getDb } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { pushEventsToSheet } from '@/lib/googleSheets/pushEvents';
 
 interface PushRequest {
@@ -28,11 +28,13 @@ interface PushRequest {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Validate partner ID
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, error: 'Invalid partner ID' },
         { status: 400 }
@@ -44,13 +46,14 @@ export async function POST(
     const { dryRun = false, eventId } = body;
 
     // Get database connection
-    const db = await getDb();
+    const client = await clientPromise;
+    const db = client.db();
     const partnersCollection = db.collection('partners');
     const projectsCollection = db.collection('projects');
 
     // Fetch partner with Google Sheets configuration
     const partner = await partnersCollection.findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
 
     if (!partner) {
@@ -84,7 +87,7 @@ export async function POST(
     const dbAccess = {
       // Get events for this partner (or single event if specified)
       getEvents: async () => {
-        const query: any = { partnerId: params.id };
+        const query: any = { partnerId: id };
 
         // If eventId is specified, filter by it
         if (eventId) {
@@ -161,7 +164,7 @@ export async function POST(
         
         const now = new Date().toISOString();
         await partnersCollection.updateOne(
-          { _id: new ObjectId(params.id) },
+          { _id: new ObjectId(id) },
           { 
             $set: {
               'googleSheetStats': syncStats,
@@ -183,7 +186,7 @@ export async function POST(
         }
         
         await partnersCollection.updateOne(
-          { _id: new ObjectId(params.id) },
+          { _id: new ObjectId(id) },
           { 
             $set: {
               'googleSheetConfig.lastSyncStatus': 'error',
@@ -200,7 +203,7 @@ export async function POST(
     // Execute the push operation
     const result = await pushEventsToSheet(sheetId, sheetName, dbAccess, {
       dryRun,
-      partnerId: params.id,
+      partnerId: id,
       eventId,
       // Additional context for the operations
       context: {

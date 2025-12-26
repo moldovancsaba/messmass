@@ -13,15 +13,17 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { getDb } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Validate partner ID
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, error: 'Invalid partner ID' },
         { status: 400 }
@@ -29,12 +31,13 @@ export async function DELETE(
     }
 
     // Get database connection
-    const db = await getDb();
+    const client = await clientPromise;
+    const db = client.db();
     const partnersCollection = db.collection('partners');
 
     // Check if partner exists and has Google Sheets configured
     const partner = await partnersCollection.findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
 
     if (!partner) {
@@ -57,7 +60,7 @@ export async function DELETE(
 
     // Remove Google Sheets configuration and stats
     const result = await partnersCollection.updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $unset: {
           googleSheetConfig: '',

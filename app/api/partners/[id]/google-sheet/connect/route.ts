@@ -19,8 +19,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { getDb } from '@/lib/mongodb';
-import { testSheetConnection } from '@/lib/googleSheets/client';
+import clientPromise from '@/lib/mongodb';
+import { testConnection } from '@/lib/googleSheets/client';
 
 interface ConnectRequest {
   sheetId: string;
@@ -30,11 +30,13 @@ interface ConnectRequest {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Validate partner ID
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, error: 'Invalid partner ID' },
         { status: 400 }
@@ -54,7 +56,7 @@ export async function POST(
     }
 
     // Test connection to verify sheet exists and is accessible
-    const connectionTest = await testSheetConnection(sheetId, sheetName);
+    const connectionTest = await testConnection(sheetId, sheetName);
     if (!connectionTest.success) {
       return NextResponse.json(
         { 
@@ -103,11 +105,12 @@ export async function POST(
     };
 
     // Update partner in database
-    const db = await getDb();
+    const client = await clientPromise;
+    const db = client.db();
     const partnersCollection = db.collection('partners');
     
     const result = await partnersCollection.updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           googleSheetConfig,

@@ -19,16 +19,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { getDb } from '@/lib/mongodb';
-import { testSheetConnection } from '@/lib/googleSheets/client';
+import clientPromise from '@/lib/mongodb';
+import { testConnection } from '@/lib/googleSheets/client';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Validate partner ID
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, error: 'Invalid partner ID' },
         { status: 400 }
@@ -40,12 +42,13 @@ export async function GET(
     const checkHealth = url.searchParams.get('checkHealth') === 'true';
 
     // Get database connection
-    const db = await getDb();
+    const client = await clientPromise;
+    const db = client.db();
     const partnersCollection = db.collection('partners');
 
     // Fetch partner with Google Sheets configuration
     const partner = await partnersCollection.findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
 
     if (!partner) {
@@ -61,7 +64,7 @@ export async function GET(
     const response: any = {
       success: true,
       connected: !!googleSheetConfig?.enabled,
-      partnerId: params.id,
+      partnerId: id,
       partnerName: partner.name || 'Unknown'
     };
 
@@ -93,9 +96,8 @@ export async function GET(
       // Optional health check to verify sheet accessibility
       if (checkHealth && googleSheetConfig.sheetId) {
         try {
-          const healthCheck = await testSheetConnection(
-            googleSheetConfig.sheetId,
-            googleSheetConfig.sheetName
+          const healthCheck = await testConnection(
+            googleSheetConfig.sheetId
           );
           
           if (healthCheck.success) {
