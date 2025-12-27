@@ -150,7 +150,11 @@ export async function POST(
 
     const partner = await partners.findOne({ _id: new ObjectId(id) });
     if (!partner) {
-      return NextResponse.json({ success: false, error: 'Partner not found' }, { status: 404 });
+      console.error(`Partner not found: ${id}`);
+      return NextResponse.json({ 
+        success: false, 
+        error: `Partner not found with ID: ${id}. Please verify the partner exists in the database.` 
+      }, { status: 404 });
     }
 
     const sheets = createSheetsClient();

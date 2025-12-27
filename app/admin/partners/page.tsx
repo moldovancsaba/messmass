@@ -975,6 +975,7 @@ export default function PartnersAdminPageUnified() {
                 
                 try {
                   // Step 1: Auto-setup the sheet (rename Sheet1, add columns, populate data, prefix UUID)
+                  console.log('🔧 Setting up Google Sheet for partner:', (editingPartner as any)?._id);
                   const setupRes = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/setup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
