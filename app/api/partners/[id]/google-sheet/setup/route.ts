@@ -162,7 +162,21 @@ export async function POST(
     let eventsWritten = 0;
     if (events.length > 0) {
       // Step 6: Populate events using shared rowMapper
-      const rows = events.map(event => eventToRow(event));
+      const rows = events.map(event => {
+        // WHAT: Ensure partner name is populated
+        // WHY: Project documents might not store partnerName redundantly
+        // Since we are in the context of this partner, we can safely assign it
+        if (!event.partnerName && !event.partner1Name) {
+          // If it's a match (has partner2Id), set partner1Name
+          if (event.partner2Id) {
+            event.partner1Name = partner.name;
+          } else {
+            // Otherwise set generic partnerName
+            event.partnerName = partner.name;
+          }
+        }
+        return eventToRow(event);
+      });
       const dataLastCol = columnIndexToLetter(Math.max(headers.length - 1, MIN_COLUMNS - 1));
 
       await sheets.spreadsheets.values.update({
