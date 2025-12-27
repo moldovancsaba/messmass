@@ -161,7 +161,7 @@ export async function POST(
     const sheet1 = metadata.data.sheets?.find((s: any) => s.properties?.title === 'Sheet1');
 
     // Step 2: Rename Sheet1 to Events (if it exists)
-    if (sheet1) {
+    if (sheet1 && sheet1.properties) {
       const sheet1Id = sheet1.properties.sheetId;
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: sheetId,
@@ -185,7 +185,7 @@ export async function POST(
     const updatedMetadata = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     const eventsTab = updatedMetadata.data.sheets?.find((s: any) => s.properties?.title === SHEET_NAME);
 
-    if (!eventsTab) {
+    if (!eventsTab || !eventsTab.properties) {
       return NextResponse.json({ success: false, error: 'Events tab not found after rename' }, { status: 500 });
     }
 
