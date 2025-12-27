@@ -10,11 +10,25 @@ import { JWT } from 'google-auth-library';
 // WHY: Authenticate with Google APIs using service account
 const getAuthClient = (): JWT => {
   const email = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
+  let privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
 
   if (!email || !privateKey) {
     throw new Error('Google Sheets credentials not configured in environment variables');
   }
+
+  // WHAT: Handle private key that may be quoted, escaped, or multi-line
+  // WHY: Environment variables from .env files come in various formats
+  
+  // Remove surrounding quotes if present
+  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    privateKey = privateKey.slice(1, -1);
+  }
+  
+  // Handle escaped newlines (\\n becomes \n)
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  // Normalize line endings
+  privateKey = privateKey.replace(/\r\n/g, '\n');
 
   return new JWT({
     email,
@@ -22,6 +36,7 @@ const getAuthClient = (): JWT => {
     scopes: [
       'https://www.googleapis.com/auth/spreadsheets',
       'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file',
     ],
   });
 };

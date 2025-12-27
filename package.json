@@ -116,7 +116,8 @@
     "fix:missing-blocks": "tsx -r dotenv/config scripts/restore-missing-blocks.ts dotenv_config_path=.env.local",
     "fix:report-warnings": "tsx -r dotenv/config scripts/fix-report-config-warnings.ts dotenv_config_path=.env.local",
     "migrate:partner-slugs": "tsx -r dotenv/config scripts/migratePartnerSlugsToUUID.ts dotenv_config_path=.env.local",
-    "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local"
+    "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local",
+    "sheets:create-partner-sheets": "tsx -r dotenv/config scripts/createPartnerSheets.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.4",
