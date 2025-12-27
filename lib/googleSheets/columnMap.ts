@@ -189,7 +189,20 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
   // --- METADATA (ES-EU) ---
   ES: { field: 'lastModified', type: 'timestamp', readOnly: false },
   ET: { field: 'syncStatus', type: 'status', readOnly: true },
-  EU: { field: 'notes', type: 'text', required: false }
+  EU: { field: 'notes', type: 'text', required: false },
+
+  // --- GAMES (EV-FC) ---
+  EV: { field: 'stats.totalGames', type: 'number' },
+  EW: { field: 'stats.gamesWithoutAds', type: 'number' },
+  EX: { field: 'stats.gamesWithAds', type: 'number' },
+  EY: { field: 'stats.gamesWithoutSlideshow', type: 'number' },
+  EZ: { field: 'stats.gamesWithSlideshow', type: 'number' },
+  FA: { field: 'stats.gamesWithoutTech', type: 'number' },
+  FB: { field: 'stats.gamesWithSelfie', type: 'number' },
+  FC: { field: 'stats.gamesWithoutSelfie', type: 'number' },
+
+  // --- REGISTRATION (FD) ---
+  FD: { field: 'stats.userRegistration', type: 'number' }
 };
 
 export const SHEET_HEADER_LABELS: Record<string, string> = {
@@ -224,7 +237,9 @@ export const SHEET_HEADER_LABELS: Record<string, string> = {
   // DY-ER
   DY: 'Report Txt 1', DZ: 'Report Txt 2', EA: 'Report Txt 3', EB: 'Report Txt 4', EC: 'Report Txt 5', ED: 'Report Txt 6', EE: 'Report Txt 7', EF: 'Report Txt 8', EG: 'Report Txt 9', EH: 'Report Txt 10', EI: 'Report Txt 11', EJ: 'Report Txt 12', EK: 'Report Txt 13', EL: 'Report Txt 14', EM: 'Report Txt 15', EN: 'Report Txt 16', EO: 'Report Txt 17', EP: 'Report Txt 18', EQ: 'Report Txt 19', ER: 'Report Txt 20',
   // ES-EU
-  ES: 'Last Modified', ET: 'Sync Status', EU: 'Notes'
+  ES: 'Last Modified', ET: 'Sync Status', EU: 'Notes',
+  // EV-FD
+  EV: 'Total Games', EW: 'Games No Ads', EX: 'Games With Ads', EY: 'Games No Slide', EZ: 'Games With Slide', FA: 'Games No Tech', FB: 'Games With Selfie', FC: 'Games No Selfie', FD: 'User Registration'
 };
 
 export function columnLetterToIndex(letter: string): number {

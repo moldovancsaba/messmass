@@ -87,6 +87,19 @@ export interface ProjectStats {
   bitlyTopCountry?: string;
   bitlyReferrers?: { [key: string]: number };
   bitlyTopReferrer?: string;
+  
+  // Games (Added v12.3.0)
+  totalGames?: number;
+  gamesWithoutAds?: number;
+  gamesWithAds?: number;
+  gamesWithoutSlideshow?: number;
+  gamesWithSlideshow?: number;
+  gamesWithoutTech?: number;
+  gamesWithSelfie?: number;
+  gamesWithoutSelfie?: number;
+  
+  // Registration
+  userRegistration?: number;
 }
 
 /**
