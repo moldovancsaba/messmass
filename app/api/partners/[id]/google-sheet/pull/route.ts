@@ -201,6 +201,11 @@ export async function POST(
     };
 
     // Execute the pull operation
+    console.log(`🔄 Starting Pull operation for partner ${id}`);
+    console.log(`   Sheet ID: ${sheetId}`);
+    console.log(`   Sheet Name: ${sheetName}`);
+    console.log(`   Dry Run: ${dryRun}`);
+    
     const result = await pullEventsFromSheet(sheetId, sheetName, dbAccess, {
       dryRun,
       partnerId: id,
@@ -212,6 +217,15 @@ export async function POST(
         userAgent: request.headers.get('user-agent') || 'Unknown'
       }
     });
+    
+    console.log(`✅ Pull completed:`);
+    console.log(`   Total rows: ${result.totalRows}`);
+    console.log(`   Created: ${result.eventsCreated}`);
+    console.log(`   Updated: ${result.eventsUpdated}`);
+    console.log(`   Errors: ${result.errors?.length || 0}`);
+    if (result.errors && result.errors.length > 0) {
+      console.log(`   Error details:`, result.errors);
+    }
 
     if (!result.success) {
       return NextResponse.json(
