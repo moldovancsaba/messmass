@@ -1,7 +1,7 @@
 // lib/googleSheets/columnMap.ts
-// WHAT: Hardcoded column mapping for Google Sheets integration (v12.2.0)
-// WHY: Define how sheet columns map to MessMass fields - COMPREHENSIVE KYC UPDATE
-// HOW: Maps column letters (A...EU) to field paths
+// WHAT: Hardcoded column mapping for Google Sheets integration (v12.3.0)
+// WHY: Define how sheet columns map to MessMass fields - USER DEFINED ORDER
+// HOW: Maps column letters (A...EG) to field paths
 
 import type { SheetColumnMap } from './types';
 
@@ -17,229 +17,201 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
   D: { field: 'eventTitle', type: 'string', required: false },
   E: { field: 'eventName', type: 'string', readOnly: true },
 
-  // --- EVENT METADATA (F-J) ---
+  // --- EVENT & GAMES (F-N) ---
   F: { field: 'eventDate', type: 'date', required: true },
-  G: { field: 'stats.eventAttendees', type: 'number' },
-  H: { field: 'stats.eventResultHome', type: 'number' },
-  I: { field: 'stats.eventResultVisitor', type: 'number' },
-  J: { field: 'stats.eventTicketPurchases', type: 'number' },
+  G: { field: 'stats.totalGames', type: 'number' },
+  H: { field: 'stats.gamesWithoutAds', type: 'number' },
+  I: { field: 'stats.gamesWithAds', type: 'number' },
+  J: { field: 'stats.gamesWithoutSlideshow', type: 'number' },
+  K: { field: 'stats.gamesWithSlideshow', type: 'number' },
+  L: { field: 'stats.gamesWithoutTech', type: 'number' },
+  M: { field: 'stats.gamesWithSelfie', type: 'number' },
+  N: { field: 'stats.gamesWithoutSelfie', type: 'number' },
 
-  // --- IMAGES (K-P) ---
-  K: { field: 'stats.remoteImages', type: 'number' },
-  L: { field: 'stats.hostessImages', type: 'number' },
-  M: { field: 'stats.selfies', type: 'number' },
-  N: { field: 'stats.approvedImages', type: 'number' },
-  O: { field: 'stats.rejectedImages', type: 'number' },
-  P: { field: 'stats.allImages', type: 'number', computed: true },
+  // --- USERS & FANS (O-U) ---
+  O: { field: 'stats.eventAttendees', type: 'number' },
+  P: { field: 'stats.uniqueUsers', type: 'number' },
+  Q: { field: 'stats.newUsersAdded', type: 'number' },
+  R: { field: 'stats.userRegistration', type: 'number' },
+  S: { field: 'stats.userRegistrationHostess', type: 'number' }, // NEW
+  T: { field: 'stats.totalFans', type: 'number', computed: true },
+  U: { field: 'stats.marketingOptin', type: 'number' },
 
-  // --- FANS (Q-U) ---
-  Q: { field: 'stats.remoteFans', type: 'number' },
-  R: { field: 'stats.stadium', type: 'number' },
-  S: { field: 'stats.indoor', type: 'number' },
-  T: { field: 'stats.outdoor', type: 'number' },
-  U: { field: 'stats.totalFans', type: 'number', computed: true },
+  // --- IMAGES (V-AA) ---
+  V: { field: 'stats.allImages', type: 'number', computed: true },
+  W: { field: 'stats.female', type: 'number' },
+  X: { field: 'stats.male', type: 'number' },
+  Y: { field: 'stats.selfies', type: 'number' },
+  Z: { field: 'stats.remoteImages', type: 'number' },
+  AA: { field: 'stats.hostessImages', type: 'number' },
 
-  // --- DEMOGRAPHICS (V-AA) ---
-  V: { field: 'stats.female', type: 'number' },
-  W: { field: 'stats.male', type: 'number' },
-  X: { field: 'stats.genAlpha', type: 'number' },
-  Y: { field: 'stats.genYZ', type: 'number' },
-  Z: { field: 'stats.genX', type: 'number' },
-  AA: { field: 'stats.boomer', type: 'number' },
+  // --- FANS & QR (AB-AH) ---
+  AB: { field: 'stats.remoteFans', type: 'number' },
+  AC: { field: 'stats.stadium', type: 'number' },
+  AD: { field: 'stats.visitQrCode', type: 'number' },
+  AE: { field: 'stats.ventQr', type: 'number' },
+  AF: { field: 'stats.bitlyClicksFromQRCode', type: 'number' },
+  AG: { field: 'stats.qrscanIphone', type: 'number' },
+  AH: { field: 'stats.qrscanAndroid', type: 'number' },
 
-  // --- MERCHANDISE (AB-AI) ---
-  AB: { field: 'stats.merched', type: 'number' },
-  AC: { field: 'stats.jersey', type: 'number' },
-  AD: { field: 'stats.scarf', type: 'number' },
-  AE: { field: 'stats.flags', type: 'number' },
-  AF: { field: 'stats.baseballCap', type: 'number' },
-  AG: { field: 'stats.Caps', type: 'number' },
-  AH: { field: 'stats.specialMerch', type: 'number' },
-  AI: { field: 'stats.other', type: 'number' },
+  // --- URLS & SOCIAL (AI-AU) ---
+  AI: { field: 'stats.visitShortUrl', type: 'number' },
+  AJ: { field: 'stats.ventUrl', type: 'string' },
+  AK: { field: 'stats.directUrl', type: 'number' },
+  AL: { field: 'stats.ventCtaEmail', type: 'number' },
+  AM: { field: 'stats.ventFacebook', type: 'number' },
+  AN: { field: 'stats.ventGoogle', type: 'number' },
+  AO: { field: 'stats.ventInstagram', type: 'number' },
+  AP: { field: 'stats.bitlyClicksFromFacebook', type: 'number' },
+  AQ: { field: 'stats.bitlyClicksFromInstagram', type: 'number' },
+  AR: { field: 'stats.bitlyClicksFromTwitter', type: 'number' },
+  AS: { field: 'stats.bitlyClicksFromLinkedIn', type: 'number' },
+  AT: { field: 'stats.bitlyClicksFromGoogle', type: 'number' },
+  AU: { field: 'stats.socialVisit', type: 'number' },
 
-  // --- VISITS (AJ-AS) ---
-  AJ: { field: 'stats.visitQrCode', type: 'number' },
-  AK: { field: 'stats.visitShortUrl', type: 'number' },
-  AL: { field: 'stats.visitWeb', type: 'number' },
-  AM: { field: 'stats.visitFacebook', type: 'number' },
-  AN: { field: 'stats.visitInstagram', type: 'number' },
-  AO: { field: 'stats.visitYoutube', type: 'number' },
-  AP: { field: 'stats.visitTiktok', type: 'number' },
-  AQ: { field: 'stats.visitX', type: 'number' },
-  AR: { field: 'stats.visitTrustpilot', type: 'number' },
-  AS: { field: 'stats.socialVisit', type: 'number' },
+  // --- VISITS CTA & OTHER (AV-AY) ---
+  AV: { field: 'stats.visitCta1', type: 'number' }, // NEW
+  AW: { field: 'stats.visitCta2', type: 'number' }, // NEW
+  AX: { field: 'stats.visitCta3', type: 'number' }, // NEW
+  AY: { field: 'stats.outdoor', type: 'number' },
 
-  // --- VENT / OTHER (AT-BE) ---
-  AT: { field: 'stats.ventCtaEmail', type: 'number' },
-  AU: { field: 'stats.marketingOptin', type: 'number' },
-  AV: { field: 'stats.newUsersAdded', type: 'number' },
-  AW: { field: 'stats.uniqueUsers', type: 'number' },
-  AX: { field: 'stats.ventAndroid', type: 'number' },
-  AY: { field: 'stats.ventIos', type: 'number' },
-  AZ: { field: 'stats.ventCtaPopup', type: 'number' },
-  BA: { field: 'stats.ventFacebook', type: 'number' },
-  BB: { field: 'stats.ventGoogle', type: 'number' },
-  BC: { field: 'stats.ventInstagram', type: 'number' },
-  BD: { field: 'stats.ventQr', type: 'number' },
-  BE: { field: 'stats.ventUrl', type: 'string' },
+  // --- SCORES & TICKET (AZ-BB) ---
+  AZ: { field: 'stats.eventResultHome', type: 'number' },
+  BA: { field: 'stats.eventResultVisitor', type: 'number' },
+  BB: { field: 'stats.eventTicketPurchases', type: 'number' },
 
-  // --- QR & COUNTRIES (BF-BO) ---
-  BF: { field: 'stats.directUrl', type: 'number' },
-  BG: { field: 'stats.countriesReached', type: 'number' },
-  BH: { field: 'stats.qrscanIphone', type: 'number' },
-  BI: { field: 'stats.qrscanAndroid', type: 'number' },
-  BJ: { field: 'stats.walletPasses', type: 'number' },
-  BK: { field: 'stats.topCountryone', type: 'string' },
-  BL: { field: 'stats.topCountrytwo', type: 'string' },
-  BM: { field: 'stats.topCountrythree', type: 'string' },
-  BN: { field: 'stats.topCountryfour', type: 'string' },
-  BO: { field: 'stats.topCountryfive', type: 'string' },
+  // --- APPROVALS & GEN (BC-BH) ---
+  BC: { field: 'stats.approvedImages', type: 'number' },
+  BD: { field: 'stats.rejectedImages', type: 'number' },
+  BE: { field: 'stats.genAlpha', type: 'number' },
+  BF: { field: 'stats.genYZ', type: 'number' },
+  BG: { field: 'stats.genX', type: 'number' },
+  BH: { field: 'stats.boomer', type: 'number' },
 
-  // --- BITLY CORE (BP-BU) ---
-  BP: { field: 'stats.totalBitlyClicks', type: 'number' },
-  BQ: { field: 'stats.uniqueBitlyClicks', type: 'number' },
-  BR: { field: 'stats.bitlyMobileClicks', type: 'number' },
-  BS: { field: 'stats.bitlyDesktopClicks', type: 'number' },
-  BT: { field: 'stats.bitlyTabletClicks', type: 'number' },
-  BU: { field: 'stats.bitlyTopCountry', type: 'string' },
+  // --- MERCHANDISE (BI-BP) ---
+  BI: { field: 'stats.merched', type: 'number' },
+  BJ: { field: 'stats.jersey', type: 'number' },
+  BK: { field: 'stats.scarf', type: 'number' },
+  BL: { field: 'stats.flags', type: 'number' },
+  BM: { field: 'stats.baseballCap', type: 'number' },
+  BN: { field: 'stats.Caps', type: 'number' },
+  BO: { field: 'stats.specialMerch', type: 'number' },
+  BP: { field: 'stats.other', type: 'number' },
 
-  // --- BITLY SOURCES (BV-CD) ---
-  BV: { field: 'stats.bitlyClicksFromFacebook', type: 'number' },
-  BW: { field: 'stats.bitlyClicksFromInstagram', type: 'number' },
-  BX: { field: 'stats.bitlyClicksFromTwitter', type: 'number' },
-  BY: { field: 'stats.bitlyClicksFromLinkedIn', type: 'number' },
-  BZ: { field: 'stats.bitlyClicksFromDirect', type: 'number' },
-  CA: { field: 'stats.bitlyClicksFromQRCode', type: 'number' },
-  CB: { field: 'stats.bitlyClicksFromGoogle', type: 'number' },
-  CC: { field: 'stats.bitlyClicksFromInstagramApp', type: 'number' },
-  CD: { field: 'stats.bitlyClicksFromFacebookMobile', type: 'number' },
+  // --- VISITS (BQ-BW) ---
+  BQ: { field: 'stats.visitWeb', type: 'number' },
+  BR: { field: 'stats.visitFacebook', type: 'number' },
+  BS: { field: 'stats.visitInstagram', type: 'number' },
+  BT: { field: 'stats.visitYoutube', type: 'number' },
+  BU: { field: 'stats.visitTiktok', type: 'number' },
+  BV: { field: 'stats.visitX', type: 'number' },
+  BW: { field: 'stats.visitTrustpilot', type: 'number' },
 
-  // --- BITLY COUNTRIES (CE-DD) ---
-  CE: { field: 'stats.bitlyClicksByCountry.MK', type: 'number' },
-  CF: { field: 'stats.bitlyClicksByCountry.IE', type: 'number' },
-  CG: { field: 'stats.bitlyClicksByCountry.HU', type: 'number' },
-  CH: { field: 'stats.bitlyClicksByCountry.CH', type: 'number' },
-  CI: { field: 'stats.bitlyClicksByCountry.HR', type: 'number' },
-  CJ: { field: 'stats.bitlyClicksByCountry.CA', type: 'number' },
-  CK: { field: 'stats.bitlyClicksByCountry.GR', type: 'number' },
-  CL: { field: 'stats.bitlyClicksByCountry.DE', type: 'number' },
-  CM: { field: 'stats.bitlyClicksByCountry.AT', type: 'number' },
-  CN: { field: 'stats.bitlyClicksByCountry.GB', type: 'number' },
-  CO: { field: 'stats.bitlyClicksByCountry.FR', type: 'number' },
-  CP: { field: 'stats.bitlyClicksByCountry.ES', type: 'number' },
-  CQ: { field: 'stats.bitlyClicksByCountry.EG', type: 'number' },
-  CR: { field: 'stats.bitlyClicksByCountry.DK', type: 'number' },
-  CS: { field: 'stats.bitlyClicksByCountry.US', type: 'number' },
-  CT: { field: 'stats.bitlyClicksByCountry.SK', type: 'number' },
-  CU: { field: 'stats.bitlyClicksByCountry.SI', type: 'number' },
-  CV: { field: 'stats.bitlyClicksByCountry.SE', type: 'number' },
-  CW: { field: 'stats.bitlyClicksByCountry.RU', type: 'number' },
-  CX: { field: 'stats.bitlyClicksByCountry.RS', type: 'number' },
-  CY: { field: 'stats.bitlyClicksByCountry.RO', type: 'number' },
-  CZ: { field: 'stats.bitlyClicksByCountry.PT', type: 'number' },
-  DA: { field: 'stats.bitlyClicksByCountry.PL', type: 'number' },
-  DB: { field: 'stats.bitlyClicksByCountry.NO', type: 'number' },
-  DC: { field: 'stats.bitlyClicksByCountry.NL', type: 'number' },
-  DD: { field: 'stats.bitlyClicksByCountry.IT', type: 'number' },
+  // --- VENT / COUNTRIES (BX-CG) ---
+  BX: { field: 'stats.ventAndroid', type: 'number' },
+  BY: { field: 'stats.ventIos', type: 'number' },
+  BZ: { field: 'stats.ventCtaPopup', type: 'number' },
+  CA: { field: 'stats.countriesReached', type: 'number' },
+  CB: { field: 'stats.walletPasses', type: 'number' },
+  CC: { field: 'stats.topCountryone', type: 'string' },
+  CD: { field: 'stats.topCountrytwo', type: 'string' },
+  CE: { field: 'stats.topCountrythree', type: 'string' },
+  CF: { field: 'stats.topCountryfour', type: 'string' },
+  CG: { field: 'stats.topCountryfive', type: 'string' },
 
-  // --- REPORT IMAGES (DE-DX) ---
-  DE: { field: 'stats.reportImage1', type: 'string' },
-  DF: { field: 'stats.reportImage2', type: 'string' },
-  DG: { field: 'stats.reportImage3', type: 'string' },
-  DH: { field: 'stats.reportImage4', type: 'string' },
-  DI: { field: 'stats.reportImage5', type: 'string' },
-  DJ: { field: 'stats.reportImage6', type: 'string' },
-  DK: { field: 'stats.reportImage7', type: 'string' },
-  DL: { field: 'stats.reportImage8', type: 'string' },
-  DM: { field: 'stats.reportImage9', type: 'string' },
-  DN: { field: 'stats.reportImage10', type: 'string' },
-  DO: { field: 'stats.reportImage11', type: 'string' },
-  DP: { field: 'stats.reportImage12', type: 'string' },
-  DQ: { field: 'stats.reportImage13', type: 'string' },
-  DR: { field: 'stats.reportImage14', type: 'string' },
-  DS: { field: 'stats.reportImage15', type: 'string' },
-  DT: { field: 'stats.reportImage16', type: 'string' },
-  DU: { field: 'stats.reportImage17', type: 'string' },
-  DV: { field: 'stats.reportImage18', type: 'string' },
-  DW: { field: 'stats.reportImage19', type: 'string' },
-  DX: { field: 'stats.reportImage20', type: 'string' },
+  // --- BITLY (CH-CP) ---
+  CH: { field: 'stats.totalBitlyClicks', type: 'number' },
+  CI: { field: 'stats.uniqueBitlyClicks', type: 'number' },
+  CJ: { field: 'stats.bitlyMobileClicks', type: 'number' },
+  CK: { field: 'stats.bitlyDesktopClicks', type: 'number' },
+  CL: { field: 'stats.bitlyTabletClicks', type: 'number' },
+  CM: { field: 'stats.bitlyTopCountry', type: 'string' },
+  CN: { field: 'stats.bitlyClicksFromInstagramApp', type: 'number' },
+  CO: { field: 'stats.bitlyClicksFromFacebookMobile', type: 'number' },
+  CP: { field: 'stats.bitlyClicksFromDirect', type: 'number' },
 
-  // --- REPORT TEXTS (DY-ER) ---
-  DY: { field: 'stats.reportText1', type: 'string' },
-  DZ: { field: 'stats.reportText2', type: 'string' },
-  EA: { field: 'stats.reportText3', type: 'string' },
-  EB: { field: 'stats.reportText4', type: 'string' },
-  EC: { field: 'stats.reportText5', type: 'string' },
-  ED: { field: 'stats.reportText6', type: 'string' },
-  EE: { field: 'stats.reportText7', type: 'string' },
-  EF: { field: 'stats.reportText8', type: 'string' },
-  EG: { field: 'stats.reportText9', type: 'string' },
-  EH: { field: 'stats.reportText10', type: 'string' },
-  EI: { field: 'stats.reportText11', type: 'string' },
-  EJ: { field: 'stats.reportText12', type: 'string' },
-  EK: { field: 'stats.reportText13', type: 'string' },
-  EL: { field: 'stats.reportText14', type: 'string' },
-  EM: { field: 'stats.reportText15', type: 'string' },
-  EN: { field: 'stats.reportText16', type: 'string' },
-  EO: { field: 'stats.reportText17', type: 'string' },
-  EP: { field: 'stats.reportText18', type: 'string' },
-  EQ: { field: 'stats.reportText19', type: 'string' },
-  ER: { field: 'stats.reportText20', type: 'string' },
+  // --- REPORT IMAGES (CQ-DJ) ---
+  CQ: { field: 'stats.reportImage1', type: 'string' },
+  CR: { field: 'stats.reportImage2', type: 'string' },
+  CS: { field: 'stats.reportImage3', type: 'string' },
+  CT: { field: 'stats.reportImage4', type: 'string' },
+  CU: { field: 'stats.reportImage5', type: 'string' },
+  CV: { field: 'stats.reportImage6', type: 'string' },
+  CW: { field: 'stats.reportImage7', type: 'string' },
+  CX: { field: 'stats.reportImage8', type: 'string' },
+  CY: { field: 'stats.reportImage9', type: 'string' },
+  CZ: { field: 'stats.reportImage10', type: 'string' },
+  DA: { field: 'stats.reportImage11', type: 'string' },
+  DB: { field: 'stats.reportImage12', type: 'string' },
+  DC: { field: 'stats.reportImage13', type: 'string' },
+  DD: { field: 'stats.reportImage14', type: 'string' },
+  DE: { field: 'stats.reportImage15', type: 'string' },
+  DF: { field: 'stats.reportImage16', type: 'string' },
+  DG: { field: 'stats.reportImage17', type: 'string' },
+  DH: { field: 'stats.reportImage18', type: 'string' },
+  DI: { field: 'stats.reportImage19', type: 'string' },
+  DJ: { field: 'stats.reportImage20', type: 'string' },
 
-  // --- METADATA (ES-EU) ---
-  ES: { field: 'lastModified', type: 'timestamp', readOnly: false },
-  ET: { field: 'syncStatus', type: 'status', readOnly: true },
-  EU: { field: 'notes', type: 'text', required: false },
+  // --- REPORT TEXTS (DK-ED) ---
+  DK: { field: 'stats.reportText1', type: 'string' },
+  DL: { field: 'stats.reportText2', type: 'string' },
+  DM: { field: 'stats.reportText3', type: 'string' },
+  DN: { field: 'stats.reportText4', type: 'string' },
+  DO: { field: 'stats.reportText5', type: 'string' },
+  DP: { field: 'stats.reportText6', type: 'string' },
+  DQ: { field: 'stats.reportText7', type: 'string' },
+  DR: { field: 'stats.reportText8', type: 'string' },
+  DS: { field: 'stats.reportText9', type: 'string' },
+  DT: { field: 'stats.reportText10', type: 'string' },
+  DU: { field: 'stats.reportText11', type: 'string' },
+  DV: { field: 'stats.reportText12', type: 'string' },
+  DW: { field: 'stats.reportText13', type: 'string' },
+  DX: { field: 'stats.reportText14', type: 'string' },
+  DY: { field: 'stats.reportText15', type: 'string' },
+  DZ: { field: 'stats.reportText16', type: 'string' },
+  EA: { field: 'stats.reportText17', type: 'string' },
+  EB: { field: 'stats.reportText18', type: 'string' },
+  EC: { field: 'stats.reportText19', type: 'string' },
+  ED: { field: 'stats.reportText20', type: 'string' },
 
-  // --- GAMES (EV-FC) ---
-  EV: { field: 'stats.totalGames', type: 'number' },
-  EW: { field: 'stats.gamesWithoutAds', type: 'number' },
-  EX: { field: 'stats.gamesWithAds', type: 'number' },
-  EY: { field: 'stats.gamesWithoutSlideshow', type: 'number' },
-  EZ: { field: 'stats.gamesWithSlideshow', type: 'number' },
-  FA: { field: 'stats.gamesWithoutTech', type: 'number' },
-  FB: { field: 'stats.gamesWithSelfie', type: 'number' },
-  FC: { field: 'stats.gamesWithoutSelfie', type: 'number' },
-
-  // --- REGISTRATION (FD) ---
-  FD: { field: 'stats.userRegistration', type: 'number' }
+  // --- METADATA (EE-EG) ---
+  EE: { field: 'lastModified', type: 'timestamp', readOnly: false },
+  EF: { field: 'syncStatus', type: 'status', readOnly: true },
+  EG: { field: 'notes', type: 'text', required: false }
 };
 
 export const SHEET_HEADER_LABELS: Record<string, string> = {
-  // A-E
   A: 'MessMass UUID', B: 'Partner 1 (Home)', C: 'Partner 2 (Away)', D: 'Event Title (Custom)', E: 'Event Name (Auto)',
-  // F-J
-  F: 'Event Date', G: 'Event Attendees', H: 'Home Score', I: 'Visitor Score', J: 'Ticket Purchases',
-  // K-P
-  K: 'Remote Images', L: 'Hostess Images', M: 'Selfies', N: 'Approved Images', O: 'Rejected Images', P: 'All Images',
-  // Q-U
-  Q: 'Remote Fans', R: 'Stadium Fans', S: 'Indoor Fans', T: 'Outdoor Fans', U: 'Total Fans',
-  // V-AA
-  V: 'Female', W: 'Male', X: 'Gen Alpha', Y: 'Gen YZ', Z: 'Gen X', AA: 'Boomer',
-  // AB-AI
-  AB: 'Merched', AC: 'Jersey', AD: 'Scarf', AE: 'Flags', AF: 'Baseball Cap', AG: 'Caps', AH: 'Special Merch', AI: 'Other',
-  // AJ-AS
-  AJ: 'Visit QR', AK: 'Visit Short URL', AL: 'Visit Web', AM: 'Visit Facebook', AN: 'Visit Instagram', AO: 'Visit Youtube', AP: 'Visit Tiktok', AQ: 'Visit X', AR: 'Visit Trustpilot', AS: 'Social Visits',
-  // AT-BE
-  AT: 'Vent Email', AU: 'Marketing Optin', AV: 'New Users', AW: 'Unique Users', AX: 'Vent Android', AY: 'Vent iOS', AZ: 'Vent Popup',
-  BA: 'Vent Facebook', BB: 'Vent Google', BC: 'Vent Instagram', BD: 'Vent QR', BE: 'Vent URL',
-  // BF-BO
-  BF: 'Direct URL', BG: 'Countries Reached', BH: 'QR iPhone', BI: 'QR Android', BJ: 'Wallet Passes',
-  BK: 'Top Country 1', BL: 'Top Country 2', BM: 'Top Country 3', BN: 'Top Country 4', BO: 'Top Country 5',
-  // BP-BU
-  BP: 'Bitly Clicks', BQ: 'Bitly Unique', BR: 'Bitly Mobile', BS: 'Bitly Desktop', BT: 'Bitly Tablet', BU: 'Bitly Top Country',
-  // BV-CD
-  BV: 'From Facebook', BW: 'From Instagram', BX: 'From Twitter', BY: 'From LinkedIn', BZ: 'Direct Click', CA: 'From QR', CB: 'From Google', CC: 'From Insta App', CD: 'From FB Mobile',
-  // CE-DD
-  CE: 'Clicks MK', CF: 'Clicks IE', CG: 'Clicks HU', CH: 'Clicks CH', CI: 'Clicks HR', CJ: 'Clicks CA', CK: 'Clicks GR', CL: 'Clicks DE', CM: 'Clicks AT', CN: 'Clicks GB', CO: 'Clicks FR', CP: 'Clicks ES', CQ: 'Clicks EG', CR: 'Clicks DK', CS: 'Clicks US', CT: 'Clicks SK', CU: 'Clicks SI', CV: 'Clicks SE', CW: 'Clicks RU', CX: 'Clicks RS', CY: 'Clicks RO', CZ: 'Clicks PT', DA: 'Clicks PL', DB: 'Clicks NO', DC: 'Clicks NL', DD: 'Clicks IT',
-  // DE-DX
-  DE: 'Report Img 1', DF: 'Report Img 2', DG: 'Report Img 3', DH: 'Report Img 4', DI: 'Report Img 5', DJ: 'Report Img 6', DK: 'Report Img 7', DL: 'Report Img 8', DM: 'Report Img 9', DN: 'Report Img 10', DO: 'Report Img 11', DP: 'Report Img 12', DQ: 'Report Img 13', DR: 'Report Img 14', DS: 'Report Img 15', DT: 'Report Img 16', DU: 'Report Img 17', DV: 'Report Img 18', DW: 'Report Img 19', DX: 'Report Img 20',
-  // DY-ER
-  DY: 'Report Txt 1', DZ: 'Report Txt 2', EA: 'Report Txt 3', EB: 'Report Txt 4', EC: 'Report Txt 5', ED: 'Report Txt 6', EE: 'Report Txt 7', EF: 'Report Txt 8', EG: 'Report Txt 9', EH: 'Report Txt 10', EI: 'Report Txt 11', EJ: 'Report Txt 12', EK: 'Report Txt 13', EL: 'Report Txt 14', EM: 'Report Txt 15', EN: 'Report Txt 16', EO: 'Report Txt 17', EP: 'Report Txt 18', EQ: 'Report Txt 19', ER: 'Report Txt 20',
-  // ES-EU
-  ES: 'Last Modified', ET: 'Sync Status', EU: 'Notes',
-  // EV-FD
-  EV: 'Total Games', EW: 'Games No Ads', EX: 'Games With Ads', EY: 'Games No Slide', EZ: 'Games With Slide', FA: 'Games No Tech', FB: 'Games With Selfie', FC: 'Games No Selfie', FD: 'User Registration'
+  F: 'Event Date', G: 'Total Games', H: 'Games No Ads', I: 'Games With Ads', J: 'Games No Slide',
+  K: 'Games With Slide', L: 'Games No Tech', M: 'Games With Selfie', N: 'Games No Selfie', O: 'Event Attendees',
+  P: 'Unique Users', Q: 'New Users', R: 'User Registration', S: 'User Registration by Hostess', T: 'Total Fans',
+  U: 'Marketing Optin', V: 'All Images', W: 'Female', X: 'Male', Y: 'Selfies',
+  Z: 'Remote Images', AA: 'Hostess Images', AB: 'Remote Fans', AC: 'Stadium Fans', AD: 'Visit QR',
+  AE: 'Vent QR', AF: 'From QR', AG: 'QR iPhone', AH: 'QR Android', AI: 'Visit Short URL',
+  AJ: 'Vent URL', AK: 'Direct URL', AL: 'Vent Email', AM: 'Vent Facebook', AN: 'Vent Google',
+  AO: 'Vent Instagram', AP: 'From Facebook', AQ: 'From Instagram', AR: 'From Twitter', AS: 'From LinkedIn',
+  AT: 'From Google', AU: 'Social Visits', AV: 'Visit CTA1', AW: 'Visit CTA2', AX: 'Visit CTA3',
+  AY: 'Outdoor Fans', AZ: 'Home Score', BA: 'Visitor Score', BB: 'Ticket Purchases', BC: 'Approved Images',
+  BD: 'Rejected Images', BE: 'Gen Alpha', BF: 'Gen YZ', BG: 'Gen X', BH: 'Boomer',
+  BI: 'Merched', BJ: 'Jersey', BK: 'Scarf', BL: 'Flags', BM: 'Baseball Cap',
+  BN: 'Caps', BO: 'Special Merch', BP: 'Other', BQ: 'Visit Web', BR: 'Visit Facebook',
+  BS: 'Visit Instagram', BT: 'Visit Youtube', BU: 'Visit Tiktok', BV: 'Visit X', BW: 'Visit Trustpilot',
+  BX: 'Vent Android', BY: 'Vent iOS', BZ: 'Vent Popup', CA: 'Countries Reached', CB: 'Wallet Passes',
+  CC: 'Top Country 1', CD: 'Top Country 2', CE: 'Top Country 3', CF: 'Top Country 4', CG: 'Top Country 5',
+  CH: 'Bitly Clicks', CI: 'Bitly Unique', CJ: 'Bitly Mobile', CK: 'Bitly Desktop', CL: 'Bitly Tablet',
+  CM: 'Bitly Top Country', CN: 'From Insta App', CO: 'From FB Mobile', CP: 'Direct Click',
+  // Report Img
+  CQ: 'Report Img 1', CR: 'Report Img 2', CS: 'Report Img 3', CT: 'Report Img 4', CU: 'Report Img 5',
+  CV: 'Report Img 6', CW: 'Report Img 7', CX: 'Report Img 8', CY: 'Report Img 9', CZ: 'Report Img 10',
+  DA: 'Report Img 11', DB: 'Report Img 12', DC: 'Report Img 13', DD: 'Report Img 14', DE: 'Report Img 15',
+  DF: 'Report Img 16', DG: 'Report Img 17', DH: 'Report Img 18', DI: 'Report Img 19', DJ: 'Report Img 20',
+  // Report Txt
+  DK: 'Report Txt 1', DL: 'Report Txt 2', DM: 'Report Txt 3', DN: 'Report Txt 4', DO: 'Report Txt 5',
+  DP: 'Report Txt 6', DQ: 'Report Txt 7', DR: 'Report Txt 8', DS: 'Report Txt 9', DT: 'Report Txt 10',
+  DU: 'Report Txt 11', DV: 'Report Txt 12', DW: 'Report Txt 13', DX: 'Report Txt 14', DY: 'Report Txt 15',
+  DZ: 'Report Txt 16', EA: 'Report Txt 17', EB: 'Report Txt 18', EC: 'Report Txt 19', ED: 'Report Txt 20',
+  // Meta
+  EE: 'Last Modified', EF: 'Sync Status', EG: 'Notes'
 };
 
 export function columnLetterToIndex(letter: string): number {

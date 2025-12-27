@@ -100,6 +100,12 @@ export interface ProjectStats {
   
   // Registration
   userRegistration?: number;
+  userRegistrationHostess?: number; // Added v12.3.0
+  
+  // CTA Visits (Added v12.3.0)
+  visitCta1?: number;
+  visitCta2?: number;
+  visitCta3?: number;
 }
 
 /**
