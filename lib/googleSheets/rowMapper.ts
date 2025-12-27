@@ -97,15 +97,15 @@ export function rowToEvent(
  * 
  * @param event - MessMass event object
  * @param columnMap - Column mapping configuration (default: SHEET_COLUMN_MAP)
- * @returns Array of cell values (42 columns A-AP)
+ * @returns Array of cell values (60 columns A-BH)
  */
 export function eventToRow(
   event: any,
   columnMap: SheetColumnMap = SHEET_COLUMN_MAP
 ): unknown[] {
-  // WHAT: Initialize row array with 42 empty values
-  // WHY: Match sheet structure (columns A-AP)
-  const row: unknown[] = new Array(42).fill('');
+  // WHAT: Initialize row array with 60 empty values
+  // WHY: Match sheet structure (columns A-BH to support extended KYC variables)
+  const row: unknown[] = new Array(60).fill('');
   
   // WHAT: Map each column from event fields
   // WHY: Transform database format to sheet format

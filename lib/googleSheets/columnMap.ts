@@ -71,6 +71,16 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
   AL: { field: 'stats.totalBitlyClicks', type: 'number' },
   AM: { field: 'stats.uniqueBitlyClicks', type: 'number' },
   
+  // Stats - Extended KYC (Added v12.1.0)
+  AQ: { field: 'stats.approvedImages', type: 'number' },
+  AR: { field: 'stats.rejectedImages', type: 'number' },
+  AS: { field: 'stats.socialVisit', type: 'number' },
+  AT: { field: 'stats.eventValuePropositionVisited', type: 'number' },
+  AU: { field: 'stats.eventValuePropositionPurchases', type: 'number' },
+  AV: { field: 'stats.bitlyMobileClicks', type: 'number' },
+  AW: { field: 'stats.bitlyDesktopClicks', type: 'number' },
+  AX: { field: 'stats.bitlyTabletClicks', type: 'number' },
+  
   // Sync metadata
   AN: { field: 'lastModified', type: 'timestamp', readOnly: false },
   AO: { field: 'syncStatus', type: 'status', readOnly: true },
@@ -123,7 +133,15 @@ export const SHEET_HEADER_LABELS: Record<string, string> = {
   AM: 'Unique Bitly Clicks',
   AN: 'Last Modified',
   AO: 'Sync Status',
-  AP: 'Notes'
+  AP: 'Notes',
+  AQ: 'Approved Images',
+  AR: 'Rejected Images',
+  AS: 'Social Visits',
+  AT: 'Prop. Visited',
+  AU: 'Prop. Purchases',
+  AV: 'Bitly Mobile',
+  AW: 'Bitly Desktop',
+  AX: 'Bitly Tablet'
 };
 
 /**

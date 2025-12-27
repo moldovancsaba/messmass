@@ -70,7 +70,15 @@ const SHEET_HEADERS = [
   'Report Text 3',
   'Last Modified',
   'Sync Status',
-  'Notes'
+  'Notes',
+  'Approved Images',
+  'Rejected Images',
+  'Social Visits',
+  'Prop. Visited',
+  'Prop. Purchases',
+  'Bitly Mobile',
+  'Bitly Desktop',
+  'Bitly Tablet'
 ];
 
 // Convert event data to sheet row
@@ -124,7 +132,15 @@ function eventToRow(event: any): (string | number | null)[] {
     event.stats?.reportText3 || '',
     event.updatedAt || '',
     'Synced',
-    ''
+    '',
+    event.stats?.approvedImages || 0,
+    event.stats?.rejectedImages || 0,
+    event.stats?.socialVisit || 0,
+    event.stats?.eventValuePropositionVisited || 0,
+    event.stats?.eventValuePropositionPurchases || 0,
+    event.stats?.bitlyMobileClicks || 0,
+    event.stats?.bitlyDesktopClicks || 0,
+    event.stats?.bitlyTabletClicks || 0
   ];
 }
 
