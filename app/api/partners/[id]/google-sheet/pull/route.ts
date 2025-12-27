@@ -127,8 +127,10 @@ export async function POST(
           return updates.map(u => ({ id: 'dryrun-' + u.uuid, data: u.data }));
         }
         
+        console.log(`🔄 updateEvents called with ${updates.length} updates`);
         const results = [];
         for (const update of updates) {
+          console.log(`   Searching for UUID: ${update.uuid}`);
           const result = await projectsCollection.updateOne(
             { googleSheetUuid: update.uuid },
             { 
@@ -140,10 +142,15 @@ export async function POST(
             }
           );
           
+          console.log(`   Match count: ${result.matchedCount}, Modified: ${result.modifiedCount}`);
+          
           if (result.matchedCount > 0) {
             results.push({ id: update.uuid, data: update.data });
+          } else {
+            console.log(`   ⚠️ No match found for UUID: ${update.uuid}`);
           }
         }
+        console.log(`✅ updateEvents completed: ${results.length}/${updates.length} updated`);
         return results;
       },
       
