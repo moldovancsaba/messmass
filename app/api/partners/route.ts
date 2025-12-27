@@ -58,6 +58,7 @@ const db = client.db(config.dbName);
       sportsDb: partner.sportsDb,
       styleId: partner.styleId?.toString(),
       reportTemplateId: partner.reportTemplateId?.toString(),
+      googleSheetsUrl: partner.googleSheetsUrl,
       viewSlug: partner.viewSlug,
       createdAt: partner.createdAt,
       updatedAt: partner.updatedAt
@@ -88,7 +89,7 @@ const db = client.db(config.dbName);
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId } = body;
+    const { partnerId, name, emoji, logoUrl, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, googleSheetsUrl } = body;
 
     if (!partnerId) {
       return NextResponse.json(
@@ -114,6 +115,7 @@ const db = client.db(config.dbName);
     if (stats !== undefined) updateData.stats = stats;
     if (styleId !== undefined) updateData.styleId = styleId ? new ObjectId(styleId) : null;
     if (reportTemplateId !== undefined) updateData.reportTemplateId = reportTemplateId ? new ObjectId(reportTemplateId) : null;
+    if (googleSheetsUrl !== undefined) updateData.googleSheetsUrl = googleSheetsUrl || null;
 
     // WHAT: Update partner document
     // WHY: Persist partner-level content changes
@@ -150,7 +152,7 @@ const db = client.db(config.dbName);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, styleId, reportTemplateId, sportsDb, logoUrl } = body;
+    const { name, emoji, hashtags, categorizedHashtags, bitlyLinkIds, styleId, reportTemplateId, sportsDb, logoUrl, googleSheetsUrl } = body;
 
     if (!name || !emoji) {
       return NextResponse.json(
@@ -177,6 +179,7 @@ const db = client.db(config.dbName);
       bitlyLinks: [],
       sportsDb: sportsDb || undefined,
       logoUrl: logoUrl || undefined,
+      googleSheetsUrl: googleSheetsUrl || undefined,
       viewSlug,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
