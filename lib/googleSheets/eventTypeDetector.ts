@@ -34,6 +34,7 @@ export function detectEventType(row: unknown[]): DetectedEventType {
   const partner1Name = normalizeValue(row[1]); // Column B
   const partner2Name = normalizeValue(row[2]); // Column C
   const eventTitle = normalizeValue(row[3]);   // Column D
+  const eventNameAuto = normalizeValue(row[4]); // Column E (fallback)
   
   // WHAT: Rule 1 - Two-partner event (e.g., "FC Barcelona vs Real Madrid")
   // WHY: Both partners present indicates a match/game between two teams
@@ -66,8 +67,17 @@ export function detectEventType(row: unknown[]): DetectedEventType {
       eventName: eventTitle
     };
   }
+
+  // WHAT: Rule 4 - Fallback to Auto-Event Name (Column E)
+  // WHY: Setup/Push writes to Col E but leaves B/C/D empty. Pull needs to handle this.
+  if (eventNameAuto) {
+    return {
+      type: 'standalone',
+      eventName: eventNameAuto
+    };
+  }
   
-  // WHAT: Rule 4 - Invalid row (no identifying information)
+  // WHAT: Rule 5 - Invalid row (no identifying information)
   // WHY: Cannot create event without name or partners
   throw new Error(
     'Invalid sheet row: At least one of Partner1, Partner2, or Event Title is required. ' +
