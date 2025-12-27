@@ -15,6 +15,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { createSheetsClient, createDriveClient } from '@/lib/googleSheets/client';
 import { columnIndexToLetter } from '@/lib/googleSheets/columnMap';
+import config from '@/lib/config';
 
 const SHEET_NAME = 'Events';
 const MIN_COLUMNS = 100;
@@ -145,7 +146,7 @@ export async function POST(
     }
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const partners = db.collection('partners');
 
     const partner = await partners.findOne({ _id: new ObjectId(id) });

@@ -13,6 +13,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { createDriveClient } from '@/lib/googleSheets/client';
 import { google } from 'googleapis';
+import config from '@/lib/config';
 
 export async function POST(
   request: NextRequest,
@@ -28,7 +29,7 @@ export async function POST(
     const prefixUuid: string | undefined = body?.prefixUuid;
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const partners = db.collection('partners');
 
     const partner = await partners.findOne({ _id: new ObjectId(id) });

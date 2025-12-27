@@ -20,6 +20,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { pushEventsToSheet } from '@/lib/googleSheets/pushEvents';
+import config from '@/lib/config';
 
 interface PushRequest {
   dryRun?: boolean;
@@ -47,7 +48,7 @@ export async function POST(
 
     // Get database connection
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const partnersCollection = db.collection('partners');
     const projectsCollection = db.collection('projects');
 

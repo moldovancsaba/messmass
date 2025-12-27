@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
+import config from '@/lib/config';
 
 export async function GET(
   request: NextRequest,
@@ -43,7 +44,7 @@ export async function GET(
 
     // Get database connection
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const partnersCollection = db.collection('partners');
 
     // Fetch partner with Google Sheets configuration

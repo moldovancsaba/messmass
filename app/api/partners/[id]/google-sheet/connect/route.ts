@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
+import config from '@/lib/config';
 
 interface ConnectRequest {
   sheetId: string;
@@ -106,7 +107,7 @@ export async function POST(
 
     // Update partner in database
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(config.dbName);
     const partnersCollection = db.collection('partners');
     
     const result = await partnersCollection.updateOne(
