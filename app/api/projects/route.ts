@@ -710,7 +710,7 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
     // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId + partner references
-    const { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
+    let { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -737,15 +737,16 @@ export async function PUT(request: NextRequest) {
     const collection = db.collection('projects');
     
     // If styleId is provided, validate it exists in report_styles collection
+    // If invalid, remove it instead of rejecting (use default style)
     if (styleId && styleId !== null && styleId !== 'null') {
       const reportStylesCollection = db.collection('report_styles');
       const styleExists = await reportStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
-        return NextResponse.json(
-          { success: false, error: 'Referenced report style does not exist' },
-          { status: 404 }
-        );
+        console.warn(`⚠️ Invalid styleId ${styleId} provided, removing to use default style`);
+        // Don't reject - just remove the invalid styleId to use default
+        // This prevents "Referenced report style does not exist" errors
+        styleId = null;
       }
     }
     
