@@ -87,7 +87,8 @@ export default function PartnersAdminPageUnified() {
     logoUrl: undefined as string | undefined,
     sportsDb: undefined as any,
     styleId: '' as string | null,
-    reportTemplateId: '' as string | null
+    reportTemplateId: '' as string | null,
+    googleSheetsUrl: '' as string | undefined
   });
   const [isUpdatingPartner, setIsUpdatingPartner] = useState(false);
   
@@ -509,7 +510,8 @@ export default function PartnersAdminPageUnified() {
       logoUrl: partner.logoUrl,
       sportsDb: partner.sportsDb,
       styleId: partner.styleId || '',
-      reportTemplateId: partner.reportTemplateId || ''
+      reportTemplateId: partner.reportTemplateId || '',
+      googleSheetsUrl: partner.googleSheetsUrl || ''
     });
     setSportsDbSearch('');
     setSportsDbResults([]);
@@ -941,11 +943,10 @@ export default function PartnersAdminPageUnified() {
           <input
             type="text"
             className="form-input"
-            value={(editingPartner as any)?.googleSheetsUrl || ''}
+            value={editPartnerData.googleSheetsUrl || ''}
             onChange={(e) => {
-              // store in local edit payload so PUT /api/partners updates it
               const url = e.target.value;
-              setEditingPartner(prev => prev ? ({ ...prev, googleSheetsUrl: url } as any) : prev);
+              setEditPartnerData(prev => ({ ...prev, googleSheetsUrl: url }));
             }}
             placeholder="https://docs.google.com/spreadsheets/d/... or just the Sheet ID"
           />
@@ -959,7 +960,7 @@ export default function PartnersAdminPageUnified() {
             className="btn btn-secondary mr-2"
             onClick={async () => {
               try {
-                const raw = (editingPartner as any)?.googleSheetsUrl || '';
+                const raw = editPartnerData.googleSheetsUrl || '';
                 const m = raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
                 const sheetId = m ? m[1] : (/^[a-zA-Z0-9-_]+$/.test(raw) ? raw : '');
                 if (!sheetId) {
@@ -1025,9 +1026,9 @@ export default function PartnersAdminPageUnified() {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
                   });
                   const data = await res.json();
-                  if (!data.success) alert(data.error || 'Pull failed'); else alert(`Pulled: created ${data.summary.eventsCreated}, updated ${data.summary.eventsUpdated}`);
+                  if (!data.success) alert(data.error || 'Pull failed'); else alert(`Sheet → Mess: created ${data.summary.eventsCreated}, updated ${data.summary.eventsUpdated}`);
                 }}
-              >⬇️ Pull Events</button>
+              >📥 Sheet → Mess</button>
               <button
                 type="button"
                 className="btn btn-primary"
@@ -1036,9 +1037,9 @@ export default function PartnersAdminPageUnified() {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
                   });
                   const data = await res.json();
-                  if (!data.success) alert(data.error || 'Push failed'); else alert(`Pushed: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
+                  if (!data.success) alert(data.error || 'Push failed'); else alert(`Mess → Sheet: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
                 }}
-              >⬆️ Push Events</button>
+              >📤 Mess → Sheet</button>
             </span>
           )}
         </div>

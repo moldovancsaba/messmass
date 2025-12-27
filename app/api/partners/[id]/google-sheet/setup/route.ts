@@ -257,6 +257,25 @@ export async function POST(
         }
       });
       eventsWritten = rows.length;
+
+      // Step 6b: Write googleSheetUuid back to project documents
+      // WHY: Enable Pull to update existing events by UUID
+      console.log('📝 Writing googleSheetUuid back to project documents...');
+      const projectsCollection = db.collection('projects');
+      const updatePromises = events.map((event: any) => 
+        projectsCollection.updateOne(
+          { _id: event._id },
+          {
+            $set: {
+              googleSheetUuid: String(event._id),
+              googleSheetSource: 'messmass',
+              googleSheetSyncedAt: new Date().toISOString()
+            }
+          }
+        )
+      );
+      await Promise.all(updatePromises);
+      console.log(`✅ Updated ${events.length} projects with googleSheetUuid`);
     }
 
     // Step 7: Prefix sheet title with Partner UUID
