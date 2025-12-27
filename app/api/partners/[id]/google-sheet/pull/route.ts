@@ -127,10 +127,8 @@ export async function POST(
           return updates.map(u => ({ id: 'dryrun-' + u.uuid, data: u.data }));
         }
         
-        console.log(`🔄 updateEvents called with ${updates.length} updates`);
         const results = [];
         for (const update of updates) {
-          console.log(`   Searching for UUID: ${update.uuid}`);
           const result = await projectsCollection.updateOne(
             { googleSheetUuid: update.uuid },
             { 
@@ -142,15 +140,10 @@ export async function POST(
             }
           );
           
-          console.log(`   Match count: ${result.matchedCount}, Modified: ${result.modifiedCount}`);
-          
           if (result.matchedCount > 0) {
             results.push({ id: update.uuid, data: update.data });
-          } else {
-            console.log(`   ⚠️ No match found for UUID: ${update.uuid}`);
           }
         }
-        console.log(`✅ updateEvents completed: ${results.length}/${updates.length} updated`);
         return results;
       },
       
@@ -208,11 +201,6 @@ export async function POST(
     };
 
     // Execute the pull operation
-    console.log(`🔄 Starting Pull operation for partner ${id}`);
-    console.log(`   Sheet ID: ${sheetId}`);
-    console.log(`   Sheet Name: ${sheetName}`);
-    console.log(`   Dry Run: ${dryRun}`);
-    
     const result = await pullEventsFromSheet(sheetId, sheetName, dbAccess, {
       dryRun,
       partnerId: id,
@@ -224,15 +212,6 @@ export async function POST(
         userAgent: request.headers.get('user-agent') || 'Unknown'
       }
     });
-    
-    console.log(`✅ Pull completed:`);
-    console.log(`   Total rows: ${result.totalRows}`);
-    console.log(`   Created: ${result.eventsCreated}`);
-    console.log(`   Updated: ${result.eventsUpdated}`);
-    console.log(`   Errors: ${result.errors?.length || 0}`);
-    if (result.errors && result.errors.length > 0) {
-      console.log(`   Error details:`, result.errors);
-    }
 
     if (!result.success) {
       return NextResponse.json(
