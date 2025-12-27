@@ -159,11 +159,13 @@ export function columnIndexToLetter(index: number): string {
  */
 export function getSheetRange(sheetName: string, startRow: number, endRow?: number): string {
   const firstCol = 'A';
-  const lastCol = 'AP'; // Last column in our mapping
+  const lastCol = 'CV'; // Support up to 100 columns (A..CV) to future-proof headers/data
   if (endRow) {
     return `${sheetName}!${firstCol}${startRow}:${lastCol}${endRow}`;
   }
-  return `${sheetName}!${firstCol}${startRow}:${lastCol}`;
+  // If no endRow specified, use a large number (Google Sheets will handle empty rows)
+  // Format: SheetName!A1:AP1000000
+  return `${sheetName}!${firstCol}${startRow}:${lastCol}${startRow + 100000}`;
 }
 
 /**

@@ -2,9 +2,12 @@
 // WHAT: Google Sheets API client wrapper (v12.0.0)
 // WHY: Centralized authentication and sheet operations
 // HOW: Uses googleapis with service account authentication
+// NOTE: This file is server-side only - contains private credentials
 
 import { google } from 'googleapis';
 import type { sheets_v4 } from 'googleapis';
+import * as fs from 'fs';
+import * as path from 'path';
 import { getSheetRange } from './columnMap';
 
 /**
@@ -18,12 +21,29 @@ import { getSheetRange } from './columnMap';
  * - GOOGLE_SHEETS_CLIENT_EMAIL (usually same as service account email)
  */
 export function createSheetsClient(): sheets_v4.Sheets {
+  // Try to load from JSON file first (more reliable)
+  const jsonPath = path.join(process.cwd(), '.google-service-account.json');
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const keyFile = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+      const auth = new google.auth.JWT({
+        email: keyFile.client_email,
+        key: keyFile.private_key,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets']
+      });
+      return google.sheets({ version: 'v4', auth });
+    } catch (error) {
+      console.error('Failed to load credentials from JSON file, falling back to env vars:', error);
+    }
+  }
+
+  // Fallback to environment variables
   const email = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
   const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
 
   if (!email || !privateKey) {
     throw new Error(
-      'Missing Google Sheets credentials. Set GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL and GOOGLE_SHEETS_PRIVATE_KEY in environment variables.'
+      'Missing Google Sheets credentials. Either create .google-service-account.json or set GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL and GOOGLE_SHEETS_PRIVATE_KEY in environment variables.'
     );
   }
 
@@ -43,6 +63,104 @@ export function createSheetsClient(): sheets_v4.Sheets {
     email,
     key: decodedKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets']
+  });
+
+  // Return authenticated Sheets API client
+  return google.sheets({ version: 'v4', auth });
+}
+
+/**
+ * WHAT: Create Google Drive client with Drive scopes
+ * WHY: Needed for operations like renaming spreadsheet (file title)
+ */
+export function createDriveClient() {
+  // Try to load from JSON file first
+  const jsonPath = path.join(process.cwd(), '.google-service-account.json');
+  if (fs.existsSync(jsonPath)) {
+    const keyFile = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+    const auth = new google.auth.JWT({
+      email: keyFile.client_email,
+      key: keyFile.private_key,
+      scopes: [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/spreadsheets'
+      ]
+    });
+    return google.drive({ version: 'v3', auth });
+  }
+  // Fallback to env vars
+  const email = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY || '';
+  const decodedKey = privateKey.includes('BEGIN PRIVATE KEY') ? privateKey : Buffer.from(privateKey, 'base64').toString('utf-8');
+  const auth = new google.auth.JWT({
+    email,
+    key: decodedKey,
+    scopes: [
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file',
+      'https://www.googleapis.com/auth/spreadsheets'
+    ]
+  });
+  return google.drive({ version: 'v3', auth });
+}
+
+/**
+ * WHAT: Create Google Sheets client with Drive API scope (for creating sheets)
+ * WHY: Creating new spreadsheets requires Drive API permissions
+ * HOW: Same auth as createSheetsClient but with expanded scopes
+ */
+export function createSheetsClientWithDriveAccess() {
+  // Try to load from JSON file first (more reliable)
+  const jsonPath = path.join(process.cwd(), '.google-service-account.json');
+  if (fs.existsSync(jsonPath)) {
+    try {
+      const keyFile = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+      const auth = new google.auth.JWT({
+        email: keyFile.client_email,
+        key: keyFile.private_key,
+        scopes: [
+          'https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file'
+        ]
+      });
+      return google.sheets({ version: 'v4', auth });
+    } catch (error) {
+      console.error('Failed to load credentials from JSON file, falling back to env vars:', error);
+    }
+  }
+
+  // Fallback to environment variables
+  const email = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
+
+  if (!email || !privateKey) {
+    throw new Error(
+      'Missing Google Sheets credentials. Either create .google-service-account.json or set GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL and GOOGLE_SHEETS_PRIVATE_KEY in environment variables.'
+    );
+  }
+
+  // Parse private key (handle base64 encoding if used)
+  let decodedKey = privateKey;
+  try {
+    // If key is base64 encoded, decode it
+    if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+      decodedKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+    }
+  } catch (error) {
+    console.error('Failed to decode private key:', error);
+  }
+
+  // Create JWT auth client with Drive scope for creating sheets
+  const auth = new google.auth.JWT({
+    email,
+    key: decodedKey,
+    scopes: [
+      'https://www.googleapis.com/auth/spreadsheets',
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file'
+    ]
   });
 
   // Return authenticated Sheets API client
@@ -238,7 +356,7 @@ export async function appendSheetRows(
 ): Promise<void> {
   try {
     const sheets = createSheetsClient();
-    const range = `${sheetName}!A:AP`; // Append to columns A-AP
+    const range = `${sheetName}!A:CV`; // Append to columns A-CV (support up to 100 columns)
     
     await sheets.spreadsheets.values.append({
       spreadsheetId: sheetId,

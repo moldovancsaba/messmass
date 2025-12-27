@@ -5,9 +5,8 @@
 
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { google } from 'googleapis';
-import { JWT } from 'google-auth-library';
 import config from '@/lib/config';
+import { createSheetsClientWithDriveAccess } from '@/lib/googleSheets/client';
 
 // Partner names to create sheets for
 const PARTNER_NAMES = [
@@ -69,47 +68,13 @@ const SHEET_HEADERS = [
   'Notes'
 ];
 
-// Get auth client
-const getAuthClient = (): JWT => {
-  const email = process.env.GOOGLE_SHEETS_SERVICE_ACCOUNT_EMAIL;
-  let privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
-
-  if (!email || !privateKey) {
-    throw new Error('Google Sheets credentials not configured');
-  }
-
-  // WHAT: Handle private key that may be quoted or have escaped newlines
-  // WHY: Environment variables from .env files may have quotes or escaped characters
-  // Remove surrounding quotes if present
-  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-    privateKey = privateKey.slice(1, -1);
-  }
-  
-  // Replace escaped newlines with actual newlines
-  privateKey = privateKey.replace(/\\n/g, '\n');
-
-  console.log('📋 Auth config:');
-  console.log(`  Email: ${email}`);
-  console.log(`  Key starts with: ${privateKey.substring(0, 30)}...`);
-  console.log(`  Key contains BEGIN: ${privateKey.includes('BEGIN PRIVATE KEY')}`);
-  console.log(`  Key contains END: ${privateKey.includes('END PRIVATE KEY')}`);
-
-  return new JWT({
-    email,
-    key: privateKey,
-    scopes: [
-      'https://www.googleapis.com/auth/spreadsheets',
-      'https://www.googleapis.com/auth/drive',
-      'https://www.googleapis.com/auth/drive.file',
-    ],
-  });
-};
+// WHAT: Use Google Sheets client with Drive API scope
+// WHY: Creating new spreadsheets requires Drive API permissions
+const getSheetsClient = () => createSheetsClientWithDriveAccess();
 
 // Create a new Google Sheet
 async function createSheet(partnerName: string): Promise<string> {
-  const auth = getAuthClient();
-  const sheets = google.sheets({ version: 'v4', auth });
-  const drive = google.drive({ version: 'v3', auth });
+  const sheets = getSheetsClient();
 
   try {
     // Create spreadsheet
@@ -233,8 +198,7 @@ async function appendEventsToSheet(sheetId: string, events: any[]): Promise<void
     return;
   }
 
-  const auth = getAuthClient();
-  const sheets = google.sheets({ version: 'v4', auth });
+  const sheets = getSheetsClient();
 
   const rows = events.map(eventToRow);
 

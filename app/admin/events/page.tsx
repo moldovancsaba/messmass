@@ -691,6 +691,15 @@ export default function ProjectsPageUnified() {
           isSubmitting={isUpdatingProject}
           size="lg"
         >
+          {/* WHAT: Read-only Event UUID field
+              WHY: Provide a stable reference ID to copy/paste when coordinating across systems
+              HOW: Show MongoDB ObjectId from editingProject._id; non-editable */}
+          <div className="form-group">
+            <label>Event UUID</label>
+            <input type="text" className="form-input" value={editingProject._id} readOnly disabled />
+            <p className="form-hint">Auto-generated at creation; read-only identifier.</p>
+          </div>
+
           <div className="form-group">
             <label>Partner 1 (Organizer / Home Team) *</label>
             <select

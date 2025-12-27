@@ -5,6 +5,28 @@ const nextConfig = {
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
+  // WHAT: Webpack configuration for server-only modules
+  // WHY: Prevent bundling Node.js modules (fs, path) in client code
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Don't bundle Node.js modules in client
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        http: false,
+        https: false,
+        net: false,
+      };
+      // Exclude googleapis and google-auth-library from client bundle
+      config.externals = config.externals || [];
+      config.externals.push({
+        googleapis: 'commonjs googleapis',
+        'google-auth-library': 'commonjs google-auth-library',
+      });
+    }
+    return config;
+  },
   eslint: {
     // Disable ESLint during builds to prevent dependency conflicts
     ignoreDuringBuilds: true,

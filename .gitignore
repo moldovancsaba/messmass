@@ -87,3 +87,4 @@ layout 3.tsx
 
 # Local WARP configuration (contains sensitive tokens)
 WARP.md
+.google-service-account.json

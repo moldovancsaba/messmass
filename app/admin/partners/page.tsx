@@ -816,6 +816,21 @@ export default function PartnersAdminPageUnified() {
           />
         </div>
         
+        {/* WHAT: Read-only Partner UUID field
+            WHY: Editors need a stable reference to share/identify partners across tools (e.g., Sheets/analytics)
+            HOW: Display MongoDB ObjectId from editingPartner._id, non-editable to avoid accidental changes */}
+        <div className="form-group mb-4">
+          <label className="form-label-block">Partner UUID</label>
+          <input
+            type="text"
+            className="form-input"
+            value={editingPartner?._id || ''}
+            readOnly
+            disabled
+          />
+          <p className="form-hint">Auto-generated at creation; read-only identifier.</p>
+        </div>
+        
         <div className="form-group mb-4">
           <label className="form-label-block">Partner Emoji *</label>
           <EmojiSelector
@@ -918,6 +933,130 @@ export default function PartnersAdminPageUnified() {
           <p className="form-hint">
             💡 All events from this partner will use this template by default
           </p>
+        </div>
+
+        {/* Google Sheets Integration (inline in Edit modal) */}
+        <div className="form-group mb-4">
+          <label className="form-label-block">Google Sheet URL or ID</label>
+          <input
+            type="text"
+            className="form-input"
+            value={(editingPartner as any)?.googleSheetsUrl || ''}
+            onChange={(e) => {
+              // store in local edit payload so PUT /api/partners updates it
+              const url = e.target.value;
+              setEditingPartner(prev => prev ? ({ ...prev, googleSheetsUrl: url } as any) : prev);
+            }}
+            placeholder="https://docs.google.com/spreadsheets/d/... or just the Sheet ID"
+          />
+          <p className="form-hint">Store the canonical sheet URL here for reference and auto-connect.</p>
+        </div>
+
+        {/* Inline Connect + Pull/Push */}
+        <div className="form-group mb-4">
+          <button
+            type="button"
+            className="btn btn-secondary mr-2"
+            onClick={async () => {
+              try {
+                const raw = (editingPartner as any)?.googleSheetsUrl || '';
+                const m = raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                const sheetId = m ? m[1] : (/^[a-zA-Z0-9-_]+$/.test(raw) ? raw : '');
+                if (!sheetId) {
+                  alert('Please enter a valid Google Sheets URL or ID first.');
+                  return;
+                }
+                
+                // Show loading state
+                const btn = event?.target as HTMLButtonElement;
+                const originalText = btn?.textContent || '';
+                if (btn) btn.textContent = '⏳ Setting up...';
+                if (btn) btn.disabled = true;
+                
+                try {
+                  // Step 1: Auto-setup the sheet (rename Sheet1, add columns, populate data, prefix UUID)
+                  const setupRes = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/setup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheetId })
+                  });
+                  const setupData = await setupRes.json();
+                  
+                  if (!setupData.success) {
+                    alert(`Setup failed: ${setupData.error || 'Unknown error'}`);
+                    return;
+                  }
+                  
+                  // Step 2: Connect the sheet (save config to partner document)
+                  const connectRes = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/connect`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheetId, sheetName: 'Events', syncMode: 'manual' })
+                  });
+                  const connectData = await connectRes.json();
+                  
+                  if (!connectData.success) {
+                    alert(`Connection failed: ${connectData.error || 'Unknown error'}`);
+                    return;
+                  }
+                  
+                  alert(`✅ Google Sheet connected and populated!\n\n📊 ${setupData.eventsWritten || 0} events added\n🏷️  Sheet renamed with UUID prefix`);
+                } finally {
+                  if (btn) btn.textContent = originalText;
+                  if (btn) btn.disabled = false;
+                }
+              } catch (e) {
+                alert('Failed to connect sheet: ' + (e instanceof Error ? e.message : 'Unknown error'));
+              }
+            }}
+          >
+            ✅ Connect & Setup Google Sheet
+          </button>
+
+          {/* Pull / Push buttons */}
+          {(editingPartner as any)?._id && (
+            <span className="inline-flex gap-2 align-middle ml-2">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={async () => {
+                  const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/pull`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
+                  });
+                  const data = await res.json();
+                  if (!data.success) alert(data.error || 'Pull failed'); else alert(`Pulled: created ${data.summary.eventsCreated}, updated ${data.summary.eventsUpdated}`);
+                }}
+              >⬇️ Pull Events</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={async () => {
+                  const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/push`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
+                  });
+                  const data = await res.json();
+                  if (!data.success) alert(data.error || 'Push failed'); else alert(`Pushed: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
+                }}
+              >⬆️ Push Events</button>
+            </span>
+          )}
+        </div>
+
+        {/* One-click: Prefix UUID to Sheet Title */}
+        <div className="form-group mb-2">
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={async () => {
+              const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/rename`, { method: 'POST' });
+              const data = await res.json();
+              if (!data.success) alert(data.error || 'Rename failed');
+              else alert(`Renamed to: ${data.name}`);
+            }}
+          >
+            🏷️ Prefix UUID in Sheet Title
+          </button>
+          <p className="form-hint">Adds the partner UUID to the beginning of the spreadsheet title.</p>
         </div>
       </FormModal>
       
