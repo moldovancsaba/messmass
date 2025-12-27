@@ -132,10 +132,16 @@ export function eventToRow(
     } else if (colDef.field.startsWith('stats.')) {
       const statsKey = colDef.field.replace('stats.', '');
       value = event.stats?.[statsKey];
-    } else if (colDef.field === 'partner1Name' || colDef.field === 'partner2Name' || colDef.field === 'eventTitle') {
-      // WHAT: Skip partner/title columns on push
-      // WHY: These are input columns, not output (event name is in column E)
-      value = '';
+    } else if (colDef.field === 'partner1Name') {
+      // WHAT: Populate Partner 1 for context
+      // WHY: Allow identifying the partner in the sheet
+      value = event.partner1Name || event.partnerName;
+    } else if (colDef.field === 'partner2Name') {
+      value = event.partner2Name;
+    } else if (colDef.field === 'eventTitle') {
+      // WHAT: Populate Event Title
+      // WHY: This acts as the custom name input
+      value = event.eventTitle || event.eventName;
     } else {
       value = undefined;
     }
