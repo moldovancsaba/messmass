@@ -3,7 +3,7 @@
  * 
  * WHAT: Automatically configure a blank Google Sheet for MessMass event sync
  * WHY: User creates sheet → pastes URL → clicks Connect → everything else is automated
- * HOW: Rename Sheet1 → Events, add 100 columns, write headers, populate events, prefix UUID
+ * HOW: Rename Sheet1 → Events, add 300 columns, write headers, populate events, prefix UUID
  * 
  * POST /api/partners/[id]/google-sheet/setup
  * Body: { sheetId: string }
@@ -14,134 +14,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { createSheetsClient, createDriveClient } from '@/lib/googleSheets/client';
-import { columnIndexToLetter } from '@/lib/googleSheets/columnMap';
+import { columnIndexToLetter, columnLetterToIndex, SHEET_HEADER_LABELS } from '@/lib/googleSheets/columnMap';
+import { eventToRow } from '@/lib/googleSheets/rowMapper';
 import config from '@/lib/config';
 
 const SHEET_NAME = 'Events';
-const MIN_COLUMNS = 100;
+const MIN_COLUMNS = 300; // Increased to support extended KYC variables
 
-// Column headers matching MessMass event structure
-const SHEET_HEADERS = [
-  'MessMass UUID',
-  'Partner 1 (Home)',
-  'Partner 2 (Away)',
-  'Event Title (Custom)',
-  'Event Name (Auto)',
-  'Event Date',
-  'Event Attendees',
-  'Event Result Home',
-  'Event Result Visitor',
-  'Remote Images',
-  'Hostess Images',
-  'Selfies',
-  'All Images',
-  'Remote Fans',
-  'Stadium Fans',
-  'Total Fans',
-  'Female',
-  'Male',
-  'Gen Alpha',
-  'Gen YZ',
-  'Gen X',
-  'Boomer',
-  'Merched',
-  'Jersey',
-  'Scarf',
-  'Flags',
-  'Baseball Cap',
-  'Other',
-  'Visit QR Code',
-  'Visit Short URL',
-  'Visit Web',
-  'Visit Facebook',
-  'Visit Instagram',
-  'Visit YouTube',
-  'Visit TikTok',
-  'Visit X',
-  'Visit Trustpilot',
-  'Total Visit',
-  'Bitly Clicks',
-  'Unique Bitly Clicks',
-  'Report Image 1',
-  'Report Image 2',
-  'Report Image 3',
-  'Report Text 1',
-  'Report Text 2',
-  'Report Text 3',
-  'Last Modified',
-  'Sync Status',
-  'Notes',
-  'Approved Images',
-  'Rejected Images',
-  'Social Visits',
-  'Prop. Visited',
-  'Prop. Purchases',
-  'Bitly Mobile',
-  'Bitly Desktop',
-  'Bitly Tablet'
-];
-
-// Convert event data to sheet row
-function eventToRow(event: any): (string | number | null)[] {
-  return [
-    event._id?.toString() || '',
-    event.partnerId || '',
-    event.opponentId || '',
-    event.eventTitle || '',
-    event.eventName || '',
-    event.eventDate || '',
-    event.stats?.eventAttendees || 0,
-    event.stats?.eventResultHome || 0,
-    event.stats?.eventResultVisitor || 0,
-    event.stats?.remoteImages || 0,
-    event.stats?.hostessImages || 0,
-    event.stats?.selfies || 0,
-    event.stats?.allImages || 0,
-    event.stats?.remoteFans || 0,
-    event.stats?.stadium || 0,
-    event.stats?.totalFans || 0,
-    event.stats?.female || 0,
-    event.stats?.male || 0,
-    event.stats?.genAlpha || 0,
-    event.stats?.genYZ || 0,
-    event.stats?.genX || 0,
-    event.stats?.boomer || 0,
-    event.stats?.merched || 0,
-    event.stats?.jersey || 0,
-    event.stats?.scarf || 0,
-    event.stats?.flags || 0,
-    event.stats?.baseballCap || 0,
-    event.stats?.other || 0,
-    event.stats?.visitQrCode || 0,
-    event.stats?.visitShortUrl || 0,
-    event.stats?.visitWeb || 0,
-    event.stats?.visitFacebook || 0,
-    event.stats?.visitInstagram || 0,
-    event.stats?.visitYoutube || 0,
-    event.stats?.visitTiktok || 0,
-    event.stats?.visitX || 0,
-    event.stats?.visitTrustpilot || 0,
-    event.stats?.totalVisit || 0,
-    event.stats?.totalBitlyClicks || 0,
-    event.stats?.uniqueBitlyClicks || 0,
-    event.stats?.reportImage1 || '',
-    event.stats?.reportImage2 || '',
-    event.stats?.reportImage3 || '',
-    event.stats?.reportText1 || '',
-    event.stats?.reportText2 || '',
-    event.stats?.reportText3 || '',
-    event.updatedAt || '',
-    'Synced',
-    '',
-    event.stats?.approvedImages || 0,
-    event.stats?.rejectedImages || 0,
-    event.stats?.socialVisit || 0,
-    event.stats?.eventValuePropositionVisited || 0,
-    event.stats?.eventValuePropositionPurchases || 0,
-    event.stats?.bitlyMobileClicks || 0,
-    event.stats?.bitlyDesktopClicks || 0,
-    event.stats?.bitlyTabletClicks || 0
-  ];
+// Dynamically construct headers from shared configuration
+// WHAT: Ensure headers match the column map exactly
+// WHY: Prevent drift between setup headers and sync logic
+function getSheetHeaders(): string[] {
+  const headers: string[] = [];
+  // Find the last defined column in SHEET_HEADER_LABELS
+  const cols = Object.keys(SHEET_HEADER_LABELS);
+  let maxIndex = 0;
+  
+  cols.forEach(col => {
+    const idx = columnLetterToIndex(col);
+    if (idx > maxIndex) maxIndex = idx;
+  });
+  
+  // Fill array up to maxIndex
+  for (let i = 0; i <= maxIndex; i++) {
+    const letter = columnIndexToLetter(i);
+    headers.push(SHEET_HEADER_LABELS[letter] || '');
+  }
+  
+  return headers;
 }
 
 export async function POST(
@@ -202,7 +102,7 @@ export async function POST(
       });
     }
 
-    // Step 3: Ensure 100 columns
+    // Step 3: Ensure 300 columns
     const updatedMetadata = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     const eventsTab = updatedMetadata.data.sheets?.find((s: any) => s.properties?.title === SHEET_NAME);
 
@@ -233,13 +133,14 @@ export async function POST(
     }
 
     // Step 4: Write headers
-    const headerLastCol = columnIndexToLetter(Math.max(SHEET_HEADERS.length - 1, MIN_COLUMNS - 1));
+    const headers = getSheetHeaders();
+    const headerLastCol = columnIndexToLetter(Math.max(headers.length - 1, MIN_COLUMNS - 1));
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
       range: `${SHEET_NAME}!A1:${headerLastCol}1`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
-        values: [SHEET_HEADERS]
+        values: [headers]
       }
     });
 
@@ -260,9 +161,9 @@ export async function POST(
 
     let eventsWritten = 0;
     if (events.length > 0) {
-      // Step 6: Populate events
-      const rows = events.map(eventToRow);
-      const dataLastCol = columnIndexToLetter(Math.max(SHEET_HEADERS.length - 1, MIN_COLUMNS - 1));
+      // Step 6: Populate events using shared rowMapper
+      const rows = events.map(event => eventToRow(event));
+      const dataLastCol = columnIndexToLetter(Math.max(headers.length - 1, MIN_COLUMNS - 1));
 
       await sheets.spreadsheets.values.update({
         spreadsheetId: sheetId,
