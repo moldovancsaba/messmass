@@ -88,7 +88,18 @@ export async function POST(
     const dbAccess = {
       // Get events for this partner (or single event if specified)
       getEvents: async () => {
-        const query: any = { partnerId: id };
+        // WHAT: Match the comprehensive partner query from setup endpoint
+        // WHY: Projects can have partnerId in multiple fields and formats
+        const query: any = {
+          $or: [
+            { partnerId: partner._id },
+            { partnerId: String(partner._id) },
+            { partnerName: partner.name },
+            { 'partnerContext.partnerId': partner._id },
+            { 'partnerContext.partnerName': partner.name },
+            { partner1Id: partner._id }
+          ]
+        };
 
         // If eventId is specified, filter by it
         if (eventId) {
