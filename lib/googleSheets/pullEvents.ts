@@ -38,51 +38,89 @@ export async function pullEventsFromSheet(
   };
   
   try {
+    console.log('🚀 Starting pull operation...');
+    console.log(`   Sheet ID: ${sheetId}`);
+    console.log(`   Sheet Name: ${sheetName}`);
+    console.log(`   Partner ID: ${options.partnerId}`);
+    
     // WHAT: Read header row first to generate dynamic column mapping
     // WHY: Handle sheets with different column orders or offsets
-    const headerRowOnly = await readSheetRows(
-      sheetId,
-      sheetName,
-      (options.config.headerRow || DEFAULT_SHEET_CONFIG.headerRow)
-    );
+    let headerRowOnly: unknown[][] = [];
+    try {
+      headerRowOnly = await readSheetRows(
+        sheetId,
+        sheetName,
+        (options.config.headerRow || DEFAULT_SHEET_CONFIG.headerRow)
+      );
+      console.log(`✅ Header row read: ${headerRowOnly.length} rows, ${headerRowOnly[0]?.length || 0} columns`);
+    } catch (headerError) {
+      console.warn('⚠️ Failed to read header row, using default column map:', headerError);
+    }
     
     let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
     if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
       // WHAT: Generate dynamic mapping from actual sheet headers
       // WHY: Automatically adapt to any column order in the sheet
       console.log('📋 Generating dynamic column mapping from sheet headers...');
-      columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+      try {
+        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+        console.log('✅ Dynamic column map generated');
+      } catch (mapError) {
+        console.warn('⚠️ Failed to generate dynamic map, using default:', mapError);
+        columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+      }
     }
     
     // WHAT: Read all data rows from sheet
     // WHY: Get latest sheet data for sync
-    const rows = await readSheetRows(
-      sheetId,
-      sheetName,
-      options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow
-    );
+    console.log(`\n📄 Reading data rows starting from row ${options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow}...`);
+    let rows: unknown[][] = [];
+    try {
+      rows = await readSheetRows(
+        sheetId,
+        sheetName,
+        options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow
+      );
+      console.log(`✅ Successfully read ${rows.length} rows from sheet`);
+    } catch (readError) {
+      console.error('❌ Failed to read data rows:', readError);
+      summary.success = false;
+      summary.errors.push({ row: 0, error: `Failed to read sheet: ${readError instanceof Error ? readError.message : 'Unknown error'}` });
+      return summary;
+    }
     
     summary.totalRows = rows.length;
     
     if (rows.length === 0) {
-      console.log('📭 Sheet is empty - no events to pull');
+      console.log('📭 Sheet has no data rows - operation complete');
       return summary;
     }
-    
-    console.log(`📖 Read ${rows.length} rows from sheet`);
     
     // WHAT: Convert rows to event objects
     // WHY: Transform sheet format to database format
     // Use dynamically generated column map
+    console.log(`\n🔄 Converting ${rows.length} sheet rows to event objects...`);
     const { events, errors } = rowsToEvents(rows, columnMap);
     summary.errors = errors;
     
-    if (events.length === 0) {
-      console.log('⚠️ No valid events found in sheet');
-      return summary;
+    console.log(`✅ Conversion complete:`);
+    console.log(`   Valid events: ${events.length}`);
+    console.log(`   Conversion errors: ${errors.length}`);
+    
+    if (errors.length > 0) {
+      console.error('⚠️ Conversion errors found:');
+      errors.slice(0, 5).forEach(err => {
+        console.error(`   Row ${err.row}: ${err.error}`);
+      });
+      if (errors.length > 5) {
+        console.error(`   ... and ${errors.length - 5} more errors`);
+      }
     }
     
-    console.log(`✅ Parsed ${events.length} valid events`);
+    if (events.length === 0) {
+      console.log('📭 No valid events could be extracted from sheet');
+      return summary;
+    }
     
     // Pre-process events to ensure UUIDs
     const eventsToProcess = [];
