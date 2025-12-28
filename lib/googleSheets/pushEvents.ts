@@ -7,6 +7,8 @@ import { Db, ObjectId } from 'mongodb';
 import { writeSheetRows, findRowByUuid, appendSheetRows } from './client';
 import { eventsToRows, updateRowFormulas } from './rowMapper';
 import { SHEET_COLUMN_MAP } from './columnMap';
+import { generateDynamicColumnMap } from './dynamicMapping';
+import { readSheetRows } from './client';
 import type { GoogleSheetConfig, PushSummary, PushDbAccess, PushOptions, PushSummaryWithPreview } from './types';
 
 /**
@@ -36,6 +38,26 @@ export async function pushEventsToSheet(
   };
   
   try {
+    // WHAT: Read header row to generate dynamic column mapping
+    // WHY: Handle sheets with different column orders or offsets
+    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+    try {
+      const headerRowOnly = await readSheetRows(
+        sheetId,
+        sheetName,
+        (options.config.headerRow || 1)
+      );
+      
+      if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
+        // WHAT: Generate dynamic mapping from actual sheet headers
+        // WHY: Automatically adapt to any column order in the sheet
+        console.log('📋 Generating dynamic column mapping from sheet headers...');
+        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not generate dynamic mapping, using default:', error instanceof Error ? error.message : 'Unknown error');
+    }
+    
     // WHAT: Fetch events via abstraction
     // WHY: Decouple from direct DB access
     const wrappedEvents = await db.getEvents();
@@ -52,7 +74,7 @@ export async function pushEventsToSheet(
     
     // WHAT: Convert events to row arrays
     // WHY: Transform database format to sheet format
-    const rows = eventsToRows(events, options.config.columnMap || SHEET_COLUMN_MAP);
+    const rows = eventsToRows(events, columnMap);
     
     // WHAT: Process each event/row
     // WHY: Create or update in sheet
@@ -222,7 +244,24 @@ export async function pushSingleEvent(
     
     // WHAT: Convert event to row array
     // WHY: Transform database format to sheet format
-    const rows = eventsToRows([event], sheetConfig.columnMap);
+    // WHAT: Generate dynamic column mapping from sheet headers if available
+    // WHY: Handle sheets with different column orders
+    let columnMap = sheetConfig.columnMap;
+    try {
+      const headerRowOnly = await readSheetRows(
+        sheetConfig.sheetId,
+        sheetConfig.sheetName,
+        (sheetConfig.headerRow || 1)
+      );
+      
+      if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
+        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not generate dynamic mapping for single push, using default');
+    }
+    
+    const rows = eventsToRows([event], columnMap);
     const row = rows[0];
     
     if (event.googleSheetUuid) {
@@ -306,6 +345,23 @@ export async function pushEventsBatch(
   };
   
   try {
+    // WHAT: Generate dynamic column mapping from sheet headers if available
+    // WHY: Handle sheets with different column orders
+    let columnMap = sheetConfig.columnMap;
+    try {
+      const headerRowOnly = await readSheetRows(
+        sheetConfig.sheetId,
+        sheetConfig.sheetName,
+        (sheetConfig.headerRow || 1)
+      );
+      
+      if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
+        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not generate dynamic mapping for batch push, using default');
+    }
+    
     // WHAT: Fetch all events
     // WHY: Get data to push
     const projectsCollection = db.collection('projects');
@@ -328,7 +384,7 @@ export async function pushEventsBatch(
     // WHAT: Append all new events in batch
     // WHY: Single API call for new rows
     if (newEvents.length > 0) {
-      const newRows = eventsToRows(newEvents, sheetConfig.columnMap);
+      const newRows = eventsToRows(newEvents, columnMap);
       await appendSheetRows(
         sheetConfig.sheetId,
         sheetConfig.sheetName,
