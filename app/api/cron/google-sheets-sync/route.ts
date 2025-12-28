@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
             const projects = events.map(event => ({
               ...event,
               _id: new ObjectId(),
-              partnerId: partnerId,
+              partnerId: partner._id,  // WHAT: Use actual partner ObjectId from DB. WHY: Ensures proper partner association.
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString()
             }));

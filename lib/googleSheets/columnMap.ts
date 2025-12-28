@@ -45,112 +45,109 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
   Z: { field: 'stats.remoteImages', type: 'number' },
   AA: { field: 'stats.hostessImages', type: 'number' },
 
-  // --- FANS & QR (AB-AH) ---
-  AB: { field: 'stats.remoteFans', type: 'number' },
-  AC: { field: 'stats.stadium', type: 'number' },
-  AD: { field: 'stats.visitQrCode', type: 'number' },
-  AE: { field: 'stats.ventQr', type: 'number' },
-  AF: { field: 'stats.bitlyClicksFromQRCode', type: 'number' },
-  AG: { field: 'stats.qrscanIphone', type: 'number' },
-  AH: { field: 'stats.qrscanAndroid', type: 'number' },
+  // --- FANS & QR (AB-AH) --- NOTE: ACTUAL COLUMNS BA-BG DUE TO SHEET OFFSET
+  // WHAT: Shift mapping to actual sheet layout (columns are BA, BB, BC, BD, BE, BF, BG)
+  // WHY: Szerencsejáték Zrt sheet has offset starting from column AA - actual data is 1 column right
+  BA: { field: 'stats.remoteFans', type: 'number' },
+  BB: { field: 'stats.stadium', type: 'number' },
+  BC: { field: 'stats.visitQrCode', type: 'number' },
+  BD: { field: 'stats.ventQr', type: 'number' },
+  BE: { field: 'stats.bitlyClicksFromQRCode', type: 'number' },
+  BF: { field: 'stats.qrscanIphone', type: 'number' },
+  BG: { field: 'stats.qrscanAndroid', type: 'number' },
 
-  // --- URLS & SOCIAL (AI-AU) ---
-  AI: { field: 'stats.visitShortUrl', type: 'number' },
-  AJ: { field: 'stats.ventUrl', type: 'string' },
-  AK: { field: 'stats.directUrl', type: 'number' },
-  AL: { field: 'stats.ventCtaEmail', type: 'number' },
-  AM: { field: 'stats.ventFacebook', type: 'number' },
-  AN: { field: 'stats.ventGoogle', type: 'number' },
-  AO: { field: 'stats.ventInstagram', type: 'number' },
-  AP: { field: 'stats.bitlyClicksFromFacebook', type: 'number' },
-  AQ: { field: 'stats.bitlyClicksFromInstagram', type: 'number' },
-  AR: { field: 'stats.bitlyClicksFromTwitter', type: 'number' },
-  AS: { field: 'stats.bitlyClicksFromLinkedIn', type: 'number' },
-  AT: { field: 'stats.bitlyClicksFromGoogle', type: 'number' },
-  AU: { field: 'stats.socialVisit', type: 'number' },
+  // --- URLS & SOCIAL (AI-AU) --- ACTUAL COLUMNS BI-BU DUE TO SHEET OFFSET
+  BI: { field: 'stats.visitShortUrl', type: 'number' },
+  BJ: { field: 'stats.ventUrl', type: 'string' },
+  BK: { field: 'stats.directUrl', type: 'number' },
+  BL: { field: 'stats.ventCtaEmail', type: 'number' },
+  BM: { field: 'stats.ventFacebook', type: 'number' },
+  BN: { field: 'stats.ventGoogle', type: 'number' },
+  BO: { field: 'stats.ventInstagram', type: 'number' },
+  BP: { field: 'stats.bitlyClicksFromFacebook', type: 'number' },
+  BQ: { field: 'stats.bitlyClicksFromInstagram', type: 'number' },
+  BR: { field: 'stats.bitlyClicksFromTwitter', type: 'number' },
+  BS: { field: 'stats.bitlyClicksFromLinkedIn', type: 'number' },
+  BT: { field: 'stats.bitlyClicksFromGoogle', type: 'number' },
+  BU: { field: 'stats.socialVisit', type: 'number' },
 
-  // --- VISITS CTA & OTHER (AV-AY) ---
-  AV: { field: 'stats.visitCta1', type: 'number' }, // NEW
-  AW: { field: 'stats.visitCta2', type: 'number' }, // NEW
-  AX: { field: 'stats.visitCta3', type: 'number' }, // NEW
-  AY: { field: 'stats.outdoor', type: 'number' },
+  // --- VISITS CTA & OTHER (AV-AY) --- ACTUAL COLUMNS BV-BY DUE TO SHEET OFFSET
+  BV: { field: 'stats.visitCta1', type: 'number' }, // NEW
+  BW: { field: 'stats.visitCta2', type: 'number' }, // NEW
+  BX: { field: 'stats.visitCta3', type: 'number' }, // NEW
+  BY: { field: 'stats.outdoor', type: 'number' },
 
-  // --- SCORES & TICKET (AZ-BB) ---
-  AZ: { field: 'stats.eventResultHome', type: 'number' },
-  BA: { field: 'stats.eventResultVisitor', type: 'number' },
-  BB: { field: 'stats.eventTicketPurchases', type: 'number' },
+  // --- SCORES & TICKET (AZ-BB) --- ACTUAL COLUMNS BZ-CB DUE TO SHEET OFFSET
+  BZ: { field: 'stats.eventResultHome', type: 'number' },
+  CA: { field: 'stats.eventResultVisitor', type: 'number' },
+  CB: { field: 'stats.eventTicketPurchases', type: 'number' },
 
-  // --- APPROVALS & GEN (BC-BH) ---
-  BC: { field: 'stats.approvedImages', type: 'number' },
-  BD: { field: 'stats.rejectedImages', type: 'number' },
-  BE: { field: 'stats.genAlpha', type: 'number' },
-  BF: { field: 'stats.genYZ', type: 'number' },
-  BG: { field: 'stats.genX', type: 'number' },
-  BH: { field: 'stats.boomer', type: 'number' },
+  // --- APPROVALS & GEN (BC-BH) --- ACTUAL COLUMNS CC-CH DUE TO SHEET OFFSET
+  CC: { field: 'stats.approvedImages', type: 'number' },
+  CD: { field: 'stats.rejectedImages', type: 'number' },
+  CE: { field: 'stats.genAlpha', type: 'number' },
+  CF: { field: 'stats.genYZ', type: 'number' },
+  CG: { field: 'stats.genX', type: 'number' },
+  CH: { field: 'stats.boomer', type: 'number' },
 
-  // --- MERCHANDISE (BI-BP) ---
-  BI: { field: 'stats.merched', type: 'number' },
-  BJ: { field: 'stats.jersey', type: 'number' },
-  BK: { field: 'stats.scarf', type: 'number' },
-  BL: { field: 'stats.flags', type: 'number' },
-  BM: { field: 'stats.baseballCap', type: 'number' },
-  BN: { field: 'stats.Caps', type: 'number' },
-  BO: { field: 'stats.specialMerch', type: 'number' },
-  BP: { field: 'stats.other', type: 'number' },
+  // --- MERCHANDISE (BI-BP) --- ACTUAL COLUMNS CI-CP DUE TO SHEET OFFSET
+  CI: { field: 'stats.merched', type: 'number' },
+  CJ: { field: 'stats.jersey', type: 'number' },
+  CK: { field: 'stats.scarf', type: 'number' },
+  CL: { field: 'stats.flags', type: 'number' },
+  CM: { field: 'stats.baseballCap', type: 'number' },
+  CN: { field: 'stats.Caps', type: 'number' },
+  CO: { field: 'stats.specialMerch', type: 'number' },
+  CP: { field: 'stats.other', type: 'number' },
 
-  // --- VISITS (BQ-BW) ---
-  BQ: { field: 'stats.visitWeb', type: 'number' },
-  BR: { field: 'stats.visitFacebook', type: 'number' },
-  BS: { field: 'stats.visitInstagram', type: 'number' },
-  BT: { field: 'stats.visitYoutube', type: 'number' },
-  BU: { field: 'stats.visitTiktok', type: 'number' },
-  BV: { field: 'stats.visitX', type: 'number' },
-  BW: { field: 'stats.visitTrustpilot', type: 'number' },
+  // --- VISITS (BQ-BW) --- ACTUAL COLUMNS CQ-CW DUE TO SHEET OFFSET
+  CQ: { field: 'stats.visitWeb', type: 'number' },
+  CR: { field: 'stats.visitFacebook', type: 'number' },
+  CS: { field: 'stats.visitInstagram', type: 'number' },
+  CT: { field: 'stats.visitYoutube', type: 'number' },
+  CU: { field: 'stats.visitTiktok', type: 'number' },
+  CV: { field: 'stats.visitX', type: 'number' },
+  CW: { field: 'stats.visitTrustpilot', type: 'number' },
 
-  // --- VENT / COUNTRIES (BX-CG) ---
-  BX: { field: 'stats.ventAndroid', type: 'number' },
-  BY: { field: 'stats.ventIos', type: 'number' },
-  BZ: { field: 'stats.ventCtaPopup', type: 'number' },
-  CA: { field: 'stats.countriesReached', type: 'number' },
-  CB: { field: 'stats.walletPasses', type: 'number' },
-  CC: { field: 'stats.topCountryone', type: 'string' },
-  CD: { field: 'stats.topCountrytwo', type: 'string' },
-  CE: { field: 'stats.topCountrythree', type: 'string' },
-  CF: { field: 'stats.topCountryfour', type: 'string' },
-  CG: { field: 'stats.topCountryfive', type: 'string' },
+  // --- VENT / COUNTRIES (BX-CG) --- ACTUAL COLUMNS CX-DG DUE TO SHEET OFFSET
+  CX: { field: 'stats.ventAndroid', type: 'number' },
+  CY: { field: 'stats.ventIos', type: 'number' },
+  CZ: { field: 'stats.ventCtaPopup', type: 'number' },
+  DA: { field: 'stats.countriesReached', type: 'number' },
+  DB: { field: 'stats.walletPasses', type: 'number' },
+  DC: { field: 'stats.topCountryone', type: 'string' },
+  DD: { field: 'stats.topCountrytwo', type: 'string' },
+  DE: { field: 'stats.topCountrythree', type: 'string' },
+  DF: { field: 'stats.topCountryfour', type: 'string' },
+  DG: { field: 'stats.topCountryfive', type: 'string' },
 
-  // --- BITLY (CH-CP) ---
-  CH: { field: 'stats.totalBitlyClicks', type: 'number' },
-  CI: { field: 'stats.uniqueBitlyClicks', type: 'number' },
-  CJ: { field: 'stats.bitlyMobileClicks', type: 'number' },
-  CK: { field: 'stats.bitlyDesktopClicks', type: 'number' },
-  CL: { field: 'stats.bitlyTabletClicks', type: 'number' },
-  CM: { field: 'stats.bitlyTopCountry', type: 'string' },
-  CN: { field: 'stats.bitlyClicksFromInstagramApp', type: 'number' },
-  CO: { field: 'stats.bitlyClicksFromFacebookMobile', type: 'number' },
-  CP: { field: 'stats.bitlyClicksFromDirect', type: 'number' },
+  // --- BITLY (CH-CP) --- ACTUAL COLUMNS DH-DP DUE TO SHEET OFFSET
+  DH: { field: 'stats.totalBitlyClicks', type: 'number' },
+  DI: { field: 'stats.uniqueBitlyClicks', type: 'number' },
+  DJ: { field: 'stats.bitlyMobileClicks', type: 'number' },
+  DK: { field: 'stats.bitlyDesktopClicks', type: 'number' },
+  DL: { field: 'stats.bitlyTabletClicks', type: 'number' },
+  DM: { field: 'stats.bitlyTopCountry', type: 'string' },
+  DN: { field: 'stats.bitlyClicksFromInstagramApp', type: 'number' },
+  DO: { field: 'stats.bitlyClicksFromFacebookMobile', type: 'number' },
+  DP: { field: 'stats.bitlyClicksFromDirect', type: 'number' },
 
   // --- REPORT IMAGES (CQ-DJ) ---
-  CQ: { field: 'stats.reportImage1', type: 'string' },
-  CR: { field: 'stats.reportImage2', type: 'string' },
-  CS: { field: 'stats.reportImage3', type: 'string' },
-  CT: { field: 'stats.reportImage4', type: 'string' },
-  CU: { field: 'stats.reportImage5', type: 'string' },
-  CV: { field: 'stats.reportImage6', type: 'string' },
-  CW: { field: 'stats.reportImage7', type: 'string' },
-  CX: { field: 'stats.reportImage8', type: 'string' },
-  CY: { field: 'stats.reportImage9', type: 'string' },
-  CZ: { field: 'stats.reportImage10', type: 'string' },
-  DA: { field: 'stats.reportImage11', type: 'string' },
-  DB: { field: 'stats.reportImage12', type: 'string' },
-  DC: { field: 'stats.reportImage13', type: 'string' },
-  DD: { field: 'stats.reportImage14', type: 'string' },
-  DE: { field: 'stats.reportImage15', type: 'string' },
-  DF: { field: 'stats.reportImage16', type: 'string' },
-  DG: { field: 'stats.reportImage17', type: 'string' },
-  DH: { field: 'stats.reportImage18', type: 'string' },
-  DI: { field: 'stats.reportImage19', type: 'string' },
-  DJ: { field: 'stats.reportImage20', type: 'string' },
+  // NOTE: These columns have complex naming conflicts, using the actual sheet layout from sheet headers
+  1P: { field: 'stats.reportImage7', type: 'string' },
+  1Q: { field: 'stats.reportImage8', type: 'string' },
+  1R: { field: 'stats.reportImage9', type: 'string' },
+  1S: { field: 'stats.reportImage10', type: 'string' },
+  1T: { field: 'stats.reportImage11', type: 'string' },
+  1U: { field: 'stats.reportImage12', type: 'string' },
+  1V: { field: 'stats.reportImage13', type: 'string' },
+  1W: { field: 'stats.reportImage14', type: 'string' },
+  1X: { field: 'stats.reportImage15', type: 'string' },
+  1Y: { field: 'stats.reportImage16', type: 'string' },
+  1Z: { field: 'stats.reportImage17', type: 'string' },
+  20: { field: 'stats.reportImage18', type: 'string' },  // Column 20 in 1-indexed (19th in 0-indexed)
+  21: { field: 'stats.reportImage19', type: 'string' },
+  22: { field: 'stats.reportImage20', type: 'string' },
 
   // --- REPORT TEXTS (DK-ED) ---
   DK: { field: 'stats.reportText1', type: 'string' },

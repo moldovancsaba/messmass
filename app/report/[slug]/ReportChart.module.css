@@ -88,27 +88,33 @@
   color: var(--chartNoDataText);
 }
 
-/* KPI Chart - 3-row grid: Icon (30%), Value (40%), Label (30%) */
+/* KPI Chart - 3-row grid: Icon (30%), Value (40%), Title (30%) */
 .kpi {
+  /* WHAT: Full height cell with internal 3-row grid */
+  /* WHY: Title MUST be inside grid to maintain 3fr-4fr-3fr proportions */
+  /* HOW: Remove CellWrapper title, use internal grid rows */
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 3fr 4fr 3fr; /* Icon:Value:Title = 30%:40%:30% */
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .kpi .chartBody {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  padding: 0;
+  /* WHAT: Body takes full height - grid layout handled by .kpi */
+  /* WHY: No flex needed, grid handles all sizing */
+  display: contents; /* CRITICAL: Pass grid layout through to children */
 }
 
 .kpiContent {
-  display: grid;
-  grid-template-rows: 3fr 4fr 3fr;
-  height: 100%;
-  width: 100%;
+  /* WHAT: Content wrapper for icon + value (rows 1-2) */
+  /* WHY: Flex layout for vertical stacking within grid */
+  display: flex;
+  flex-direction: column;
   gap: 0;
+  /* CRITICAL: Spans first two grid rows via CSS Grid flow */
+  /* Using auto-placement, items fill rows 1-2 */
 }
 
 .kpiIconRow {
@@ -156,36 +162,41 @@
 }
 
 .kpi .kpiTitle {
-  /* WHAT: 30% text height of 30cqh row, 10% line spacing, max 2 lines */
-  /* WHY: More breathing room, no overflow, centered */
-  /* HOW: 9cqh font (30% of 30cqh), line-height 1.1 (10% spacing) */
-  /* CONSTRAINT: 1.5x max ratio (0.75rem → 1.125rem = 12px → 18px) for visual consistency */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  /* WHAT: 3rd grid row (30%) - title at bottom of KPI */
+  /* WHY: Grid row 3 = bottom 30% of cell */
+  /* HOW: Text centered within 3fr row using flex */
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   width: 100%;
   height: 100%;
+  padding: var(--mm-space-2);
+  /* Font scales based on container height (3fr row) */
   font-size: clamp(0.75rem, 9cqh, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
   overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: keep-all;
-  overflow-wrap: break-word;
+  /* Max 2 lines with ellipsis */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-break: break-word;
   hyphens: none;
-  padding: var(--mm-space-2);
 }
 
 /* Pie Chart - Uses base .chart structure */
 .pie .chartBody {
-  padding: var(--mm-space-3);
+  /* WHAT: No padding - let body fill entire cell */
+  /* WHY: Pie container gets fixed 70% height regardless of cell size */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-2);
+  gap: 0; /* Fixed gap - pies align regardless of title length */
+  height: 100%;
+  /* WHAT: Enable container queries for proper sizing */
+  container-type: size;
 }
 
 .pieTitle {
@@ -233,22 +244,33 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js */
+/* Pie Chart Container for Chart.js - CRITICAL for alignment */
 .pieChartContainer {
-  flex: 0 0 70%; /* WHAT: Pie takes 70% of body height */
+  /* WHAT: Fixed 70% height container for pie chart */
+  /* WHY: Ensures all pies align vertically regardless of cell content variance */
+  height: 70%; /* FIXED: Always 70% of cell height */
   width: 100%;
-  height: 70%; /* CRITICAL: Explicit height for Chart.js */
   position: relative;
+  /* WHAT: Center pie within container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* WHAT: Container queries for responsive sizing */
+  container-type: size;
 }
 
-/* Custom Pie Legend - 30% of body height */
+/* Custom Pie Legend - 30% of body height - CRITICAL for alignment */
 .pieLegend {
-  flex: 0 0 30%; /* WHAT: Legend takes 30% of body height */
+  /* WHAT: Fixed 30% height container for legend */
+  /* WHY: Ensures consistent layout regardless of text length */
+  height: 30%; /* FIXED: Always 30% of cell height */
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: var(--mm-space-1);
   width: 100%;
+  /* WHAT: Container queries for text scaling */
+  container-type: size;
 }
 
 .pieLegendItem {
@@ -260,19 +282,21 @@
 
 .pieLegendDot {
   /* WHAT: Circle size with border matching pie slices */
+  /* WHY: Use legend container height for consistent sizing */
+  /* HOW: 45% of legend height (based on 2 items per legend) */
   width: 4.5cqh;
   height: 4.5cqh;
   border-radius: 50%;
   flex-shrink: 0;
-  /* NO FALLBACK - browser decides */
-  border: 2px solid var(--chart-color-1);
+  /* WHAT: Default color fallback */
+  border: 2px solid var(--mm-color-primary-500);
   box-sizing: border-box;
 }
 
 .pieLegendText {
-  /* WHAT: Calculate based on legend row height (30cqh legend / 2 items = 15cqh per row) */
-  /* WHY: Same pattern as bar labels - 30% of allocated row space */
-  font-size: 4.5cqh;
+  /* WHAT: Text scales with legend container height */
+  /* WHY: 45% of legend height ensures readable text at all sizes */
+  font-size: clamp(0.7rem, 4.5cqh, 1rem);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
@@ -313,11 +337,14 @@
   display: grid;
   /* WHAT: Fixed ratio - 40% label, 40% bar, 20% value */
   /* WHY: Balanced space for label and bar, more room for value */
+  /* HOW: Use CSS Grid with proportional sizing - NO viewport mixing */
   grid-template-columns: 40% 40% 20%;
   gap: 0 var(--mm-space-1);
   align-items: center;
   flex: 1;
   padding: 0 var(--mm-space-1);
+  /* WHAT: Enable container queries for proper responsive sizing */
+  container-type: size;
 }
 
 .barLabel {
@@ -330,6 +357,8 @@
   align-items: center;
   justify-content: flex-end;
   padding-right: var(--mm-space-2);
+  /* WHAT: Use container query height ONLY, not width mixing */
+  /* WHY: Container query ensures consistent scaling across cell sizes */
   font-size: clamp(0.75rem, 4.95cqh, 0.9rem);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
@@ -344,12 +373,14 @@
 
 .barTrack {
   background: var(--chartNoDataBackground);
-  /* WHAT: 11% of cell height, max 50% of cell width, semicircular ends
-   * WHY: Centralized system - no hardcoded pixels, responsive to cell size
+  /* WHAT: 11% of cell height, max 80% of cell width, semicircular ends
+   * WHY: Use full container width, not mixing viewport queries
    * HOW: 11cqh height constrained to 1.2x ratio for tight consistency */
   /* CONSTRAINT: 1.2x max ratio (0.6rem → 0.72rem = 9.6px → 11.5px) for tight consistency */
   height: clamp(0.6rem, 11cqh, 0.72rem);
-  max-width: 50cqw;
+  /* WHAT: Use 80% of available container width (label 40% + track 40% + value 20%) */
+  /* WHY: Grid gives us 40% for track, no need for max-width restriction */
+  width: 100%; /* Use full grid column width, no restrictions */
   border-radius: calc(clamp(0.6rem, 11cqh, 0.72rem) / 2); /* WHAT: 50% of bar height for semicircular ends */
   overflow: hidden;
 }
@@ -485,6 +516,35 @@
   font-weight: var(--mm-font-weight-medium);
 }
 
+/* Special Cases: CellWrapper + Chart Combinations */
+/* WHAT: CellWrapper breaks container query inheritance */
+/* WHY: Charts need separate container-type for proper sizing */
+
+/* CellWrapper + KPI Chart - No longer needed (KPI grid handles sizing) */
+
+/* CellWrapper + Pie Chart */
+.CellWrapper_bodyZone__ps_rO .pieChartContainer {
+  /* WHAT: Fixed 70% height regardless of wrapper */
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.CellWrapper_bodyZone__ps_rO .pieLegend {
+  /* WHAT: Fixed 30% height regardless of wrapper */
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* CellWrapper + Bar Chart */
+.CellWrapper_bodyZone__ps_rO .barRow {
+  /* WHAT: Container queries for bar sizing inside wrapper */
+  container-type: size;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .pieSegments {
@@ -514,6 +574,7 @@
     flex: 1 1 auto !important; /* Allow flex filling */
     overflow: hidden !important; /* Prevent content overflow */
     box-sizing: border-box !important;
+    container-type: size; /* Ensure container queries work on mobile */
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile

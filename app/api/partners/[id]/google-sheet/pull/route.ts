@@ -107,7 +107,7 @@ export async function POST(
         const projects = events.map(event => ({
           ...event,
           _id: new ObjectId(),
-          partnerId: id,
+          partnerId: new ObjectId(id),  // WHAT: Convert string ID to ObjectId. WHY: Ensures consistent DB field type.
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }));

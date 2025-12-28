@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { readSheetRows, updateSheetRow, findRowByUuid } from './client';
 import { rowsToEvents } from './rowMapper';
 import { SHEET_COLUMN_MAP, DEFAULT_SHEET_CONFIG } from './columnMap';
+import { generateDynamicColumnMap } from './dynamicMapping';
+import { readSheetRows } from './client';
 import type { GoogleSheetConfig, PullSummary, SyncDbAccess, PullOptions } from './types';
 
 /**
@@ -37,6 +39,22 @@ export async function pullEventsFromSheet(
   };
   
   try {
+    // WHAT: Read header row first to generate dynamic column mapping
+    // WHY: Handle sheets with different column orders or offsets
+    const headerRowOnly = await readSheetRows(
+      sheetId,
+      sheetName,
+      (options.config.headerRow || DEFAULT_SHEET_CONFIG.headerRow)
+    );
+    
+    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+    if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
+      // WHAT: Generate dynamic mapping from actual sheet headers
+      // WHY: Automatically adapt to any column order in the sheet
+      console.log('📋 Generating dynamic column mapping from sheet headers...');
+      columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+    }
+    
     // WHAT: Read all data rows from sheet
     // WHY: Get latest sheet data for sync
     const rows = await readSheetRows(
@@ -56,8 +74,8 @@ export async function pullEventsFromSheet(
     
     // WHAT: Convert rows to event objects
     // WHY: Transform sheet format to database format
-    // Use provided column map or fallback to default
-    const { events, errors } = rowsToEvents(rows, options.config.columnMap || SHEET_COLUMN_MAP);
+    // Use dynamically generated column map
+    const { events, errors } = rowsToEvents(rows, columnMap);
     summary.errors = errors;
     
     if (events.length === 0) {

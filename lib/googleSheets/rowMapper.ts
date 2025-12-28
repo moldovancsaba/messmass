@@ -6,6 +6,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { SHEET_COLUMN_MAP, columnLetterToIndex } from './columnMap';
 import { detectEventType, hasValidEventDate } from './eventTypeDetector';
+import { generateDynamicColumnMap } from './dynamicMapping';
 import type { SheetColumnMap } from './types';
 
 /**
@@ -43,9 +44,13 @@ export function rowToEvent(
     googleSheetModifiedAt: new Date().toISOString()
   };
   
+  // WHAT: Support dynamic column mappings
+  // WHY: Handle sheets with different column orders or offsets
+  const actualColumnMap = columnMap._dynamicMap || columnMap;
+  
   // WHAT: Map each column to event field
   // WHY: Transform sheet data to database format
-  Object.entries(columnMap).forEach(([colLetter, colDef]) => {
+  Object.entries(actualColumnMap).forEach(([colLetter, colDef]) => {
     const colIndex = columnLetterToIndex(colLetter);
     const value = row[colIndex];
     
@@ -84,6 +89,9 @@ export function rowToEvent(
       if (parsed) {
         event.notes = parsed;
       }
+    } else if (colDef.field === 'ventUrl') {
+      // Vent URL is string type, handle separately
+      event.stats['ventUrl'] = parsed;
     }
   });
   

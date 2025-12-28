@@ -98,9 +98,12 @@ export interface ProjectStats {
   gamesWithSelfie?: number;
   gamesWithoutSelfie?: number;
   
-  // Registration
+  // Registration & Users (Added v12.3.0)
   userRegistration?: number;
-  userRegistrationHostess?: number; // Added v12.3.0
+  userRegistrationHostess?: number;
+  uniqueUsers?: number;                 // Total unique users
+  newUsersAdded?: number;               // New users in this event
+  marketingOptin?: number;              // Users who opted in for marketing
   
   // CTA Visits (Added v12.3.0)
   visitCta1?: number;

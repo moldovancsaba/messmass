@@ -162,17 +162,18 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   // HOW: Pass icon name and variant (default: outlined) to MaterialIcon component
   const iconVariant = result.iconVariant || 'outlined';
   
-  // WHAT: Check if title should be shown in CellWrapper (default: true)
+  // WHAT: Check if title should be shown in KPI grid (default: true)
   // WHY: Some charts may want to hide titles per Spec v2.0
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Use div with blockHeight instead of CellWrapper
+  // WHY: CellWrapper adds separate title zone -> breaks 3fr-4fr-3fr grid proportions
+  // HOW: Height enforced by CSS grid, not wrapper
   return (
-    <CellWrapper
-      title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
+    <div 
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
+      // eslint-disable-next-line react/forbid-dom-props
+      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
       <div className={styles.kpiContent}>
         <div className={styles.kpiIconRow}>
@@ -186,7 +187,12 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
         </div>
         <div className={styles.kpiValue}>{formattedValue}</div>
       </div>
-    </CellWrapper>
+      {/* WHAT: Title is now 3rd grid row directly in KPI grid */}
+      {/* WHY: Maintains exact 3fr-4fr-3fr proportions across full cell height */}
+      {showTitle && (
+        <div className={styles.kpiTitle}>{protectedTitle}</div>
+      )}
+    </div>
   );
 }
 
