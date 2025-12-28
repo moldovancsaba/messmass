@@ -4,11 +4,10 @@
 // HOW: Fetch events, map to rows, write/update in sheet
 
 import { Db, ObjectId } from 'mongodb';
-import { writeSheetRows, findRowByUuid, appendSheetRows } from './client';
+import { writeSheetRows, findRowByUuid, appendSheetRows, readSheetRows } from './client';
 import { eventsToRows, updateRowFormulas } from './rowMapper';
-import { SHEET_COLUMN_MAP } from './columnMap';
 import { generateDynamicColumnMap } from './dynamicMapping';
-import { readSheetRows } from './client';
+import type { IndexBasedColumnMap } from './dynamicMapping';
 import type { GoogleSheetConfig, PushSummary, PushDbAccess, PushOptions, PushSummaryWithPreview } from './types';
 
 /**
@@ -38,9 +37,9 @@ export async function pushEventsToSheet(
   };
   
   try {
-    // WHAT: Read header row to generate dynamic column mapping
-    // WHY: Handle sheets with different column orders or offsets
-    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+    // WHAT: Generate column mapping from actual sheet headers
+    // WHY: Row 1 is the source of truth - headers show exact field names
+    let columnMap: IndexBasedColumnMap = {};
     try {
       const headerRowOnly = await readSheetRows(
         sheetId,

@@ -7,9 +7,9 @@ import { Db, ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import { readSheetRows, updateSheetRow, findRowByUuid } from './client';
 import { rowsToEvents } from './rowMapper';
-import { SHEET_COLUMN_MAP, DEFAULT_SHEET_CONFIG } from './columnMap';
 import { generateDynamicColumnMap } from './dynamicMapping';
 import { visualizeColumnMapping, visualizeRowMapping, analyzeStatsMapping } from './columnMappingVisualizer';
+import type { IndexBasedColumnMap } from './dynamicMapping';
 import type { GoogleSheetConfig, PullSummary, SyncDbAccess, PullOptions } from './types';
 
 /**
@@ -44,16 +44,18 @@ export async function pullEventsFromSheet(
     console.log(`   Sheet Name: ${sheetName}`);
     console.log(`   Partner ID: ${options.partnerId}`);
     
-    // WHAT: Read header row first to generate dynamic column mapping
-    // WHY: The actual sheet headers ARE the source of truth for field names
-    // HOW: Generate mapping directly from row 1 which contains the field names
-    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+    // WHAT: Generate column mapping from actual sheet headers
+    // WHY: Row 1 is the source of truth - headers show exact field names
+    // HOW: Read headers and match to field definitions dynamically
+    let columnMap: IndexBasedColumnMap = {};
     
     try {
+      // Default to row 1 for headers
+      const headerRow = options.config?.headerRow ?? 1;
       const headerRowOnly = await readSheetRows(
         sheetId,
         sheetName,
-        (options.config.headerRow || DEFAULT_SHEET_CONFIG.headerRow)
+        headerRow
       );
       
       if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
@@ -73,13 +75,14 @@ export async function pullEventsFromSheet(
     
     // WHAT: Read all data rows from sheet
     // WHY: Get latest sheet data for sync
-    console.log(`\n📄 Reading data rows starting from row ${options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow}...`);
+    const dataStartRow = options.config?.dataStartRow ?? 2; // Default to row 2 (row 1 is headers)
+    console.log(`\n📄 Reading data rows starting from row ${dataStartRow}...`);
     let rows: unknown[][] = [];
     try {
       rows = await readSheetRows(
         sheetId,
         sheetName,
-        options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow
+        dataStartRow
       );
       console.log(`✅ Successfully read ${rows.length} rows from sheet`);
     } catch (readError) {
@@ -148,7 +151,7 @@ export async function pullEventsFromSheet(
     
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
-      const rowIndex = i + (options.config.dataStartRow || DEFAULT_SHEET_CONFIG.dataStartRow);
+      const rowIndex = i + dataStartRow;
       
       let uuid = event.googleSheetUuid;
       

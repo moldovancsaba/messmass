@@ -3,13 +3,19 @@
 // WHY: Handle sheets with different column orders or offsets automatically
 // HOW: Read first row, match header names to field definitions, generate mapping at runtime
 
-import type { SheetColumnMap, SheetColumnDefinition } from './types';
+import type { SheetColumnDefinition } from './types';
+
+// WHAT: Index-based column map (columnIndex -> fieldDef)
+// WHY: Eliminate hardcoded column letters, use actual positions instead
+export type IndexBasedColumnMap = Record<number, SheetColumnDefinition>;
 
 /**
  * WHAT: Standard field definitions with header name variations
  * WHY: Allow multiple header names to map to same field (case-insensitive matching)
+ * HOW: Exact list of all supported fields in MessMass
+ * EXPORTED: Used by columnMap.ts and other modules
  */
-const FIELD_DEFINITIONS: Record<string, SheetColumnDefinition> = {
+export const FIELD_DEFINITIONS: Record<string, SheetColumnDefinition> = {
   'googleSheetUuid': { field: 'googleSheetUuid', type: 'uuid', readOnly: true },
   'partner1Name': { field: 'partner1Name', type: 'string', required: false },
   'partner2Name': { field: 'partner2Name', type: 'string', required: false },
@@ -150,33 +156,35 @@ const FIELD_DEFINITIONS: Record<string, SheetColumnDefinition> = {
 };
 
 /**
- * WHAT: Generate dynamic column mapping from actual sheet headers
- * WHY: Handle sheets with different column orders automatically
- * HOW: Match header names (case-insensitive) to field definitions
+ * WHAT: Generate index-based column mapping from actual sheet headers
+ * WHY: Handle sheets with any column order automatically without hardcoding letters
+ * HOW: Match header names to field definitions, return { 0: fieldDef, 1: fieldDef, ... }
  * 
  * @param headerRow - First row of sheet containing column headers
- * @returns SheetColumnMap with dynamic column letter assignments
+ * @returns IndexBasedColumnMap with column indices instead of letters
  */
-export function generateDynamicColumnMap(headerRow: string[]): SheetColumnMap {
-  const dynamicMap: SheetColumnMap = {};
+export function generateDynamicColumnMap(headerRow: string[]): IndexBasedColumnMap {
+  const dynamicMap: IndexBasedColumnMap = {};
   
   headerRow.forEach((headerName, columnIndex) => {
     if (!headerName || headerName.trim() === '') {
       return; // Skip empty headers
     }
     
-    // Convert header to camelCase for matching (e.g., "Remote Images" → "remoteImages")
+    // WHAT: Convert header to camelCase for matching
+    // WHY: Header could be "Remote Images" or bare field name "remoteImages"
     const normalizedHeader = headerToFieldName(headerName);
     const fieldDef = FIELD_DEFINITIONS[normalizedHeader];
     
     if (fieldDef) {
-      // Map using column letter instead of hardcoded letter
-      const columnLetter = indexToColumnLetter(columnIndex);
-      dynamicMap[columnLetter] = fieldDef;
+      // WHAT: Map by column INDEX not letter
+      // WHY: No more hardcoded letters, just actual positions
+      // Example: column 0 → googleSheetUuid, column 5 → eventDate, column 25 → remoteImages
+      dynamicMap[columnIndex] = fieldDef;
       
-      console.log(`✓ Mapped "${headerName}" → ${columnLetter} → ${fieldDef.field}`);
+      console.log(`✓ Mapped "${headerName}" → column ${columnIndex} → ${fieldDef.field}`);
     } else {
-      console.warn(`⚠️ Unknown header: "${headerName}" (column ${indexToColumnLetter(columnIndex)})`);
+      console.warn(`⚠️ Unknown header: "${headerName}" (column ${columnIndex})`);
     }
   });
   
@@ -231,14 +239,5 @@ export function indexToColumnLetter(index: number): string {
   return letter;
 }
 
-/**
- * WHAT: Convert column letter to 0-based index
- * WHY: Reverse mapping for validation
- */
-export function columnLetterToIndex(letter: string): number {
-  let index = 0;
-  for (let i = 0; i < letter.length; i++) {
-    index = index * 26 + (letter.charCodeAt(i) - 64);
-  }
-  return index - 1;
-}
+// Removed: columnLetterToIndex function
+// WHY: Using index-based mapping now, no need to convert letters

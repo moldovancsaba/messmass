@@ -4,24 +4,45 @@
 // HOW: Use column map to transform values with type-specific parsing
 
 import { v4 as uuidv4 } from 'uuid';
-import { SHEET_COLUMN_MAP, columnLetterToIndex } from './columnMap';
+import { FIELD_DEFINITIONS } from './dynamicMapping';
+import type { IndexBasedColumnMap } from './dynamicMapping';
 import { detectEventType, hasValidEventDate } from './eventTypeDetector';
-import { generateDynamicColumnMap } from './dynamicMapping';
 import type { SheetColumnMap } from './types';
+
+// WHAT: Default empty map for backward compatibility
+// WHY: Old code might pass undefined
+// TODO: Remove this after full migration to index-based mapping
+const DEFAULT_COLUMN_MAP: IndexBasedColumnMap = {};
+
+/**
+ * WHAT: Convert 0-based column index to Excel column letter
+ * WHY: Google Sheets API and formulas use letters (A, B, Z, AA, AB, etc.)
+ * HOW: Base-26 conversion
+ * Examples: 0 -> A, 25 -> Z, 26 -> AA, 701 -> ZZ
+ */
+function indexToColumnLetter(index: number): string {
+  let letter = '';
+  let num = index;
+  while (num >= 0) {
+    letter = String.fromCharCode(65 + (num % 26)) + letter;
+    num = Math.floor(num / 26) - 1;
+  }
+  return letter;
+}
 
 /**
  * WHAT: Convert sheet row to MessMass event object
  * WHY: Create or update events from sheet data
- * HOW: Map each column to corresponding event field using column map
+ * HOW: Map each column (by index) to corresponding event field
  * 
  * @param row - Array of cell values from sheet row
- * @param columnMap - Column mapping configuration (default: SHEET_COLUMN_MAP)
+ * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
  * @returns Partial event object ready for database insertion
  * @throws Error if row is invalid (missing required fields)
  */
 export function rowToEvent(
   row: unknown[],
-  columnMap: SheetColumnMap = SHEET_COLUMN_MAP
+  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
 ): Partial<any> {
   // WHAT: Validate row has required event date
   // WHY: Prevent creating events without dates
@@ -44,14 +65,11 @@ export function rowToEvent(
     googleSheetModifiedAt: new Date().toISOString()
   };
   
-  // WHAT: Support dynamic column mappings
-  // WHY: Handle sheets with different column orders or offsets
-  const actualColumnMap = columnMap._dynamicMap || columnMap;
-  
-  // WHAT: Map each column to event field
+  // WHAT: Map each column (by index) to event field
   // WHY: Transform sheet data to database format
-  Object.entries(actualColumnMap).forEach(([colLetter, colDef]) => {
-    const colIndex = columnLetterToIndex(colLetter);
+  // HOW: Iterate over actual column positions in the map
+  Object.entries(columnMap).forEach(([colIndexStr, colDef]) => {
+    const colIndex = parseInt(colIndexStr, 10);
     const value = row[colIndex];
     
     // WHAT: Skip read-only computed columns (formulas)
@@ -101,24 +119,27 @@ export function rowToEvent(
 /**
  * WHAT: Convert MessMass event to sheet row array
  * WHY: Push event data back to sheet
- * HOW: Map event fields to row array positions using column map
+ * HOW: Map event fields to row array positions using index-based map
  * 
  * @param event - MessMass event object
- * @param columnMap - Column mapping configuration (default: SHEET_COLUMN_MAP)
- * @returns Array of cell values (300 columns)
+ * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
+ * @returns Array of cell values (size = max column index + 1)
  */
 export function eventToRow(
   event: any,
-  columnMap: SheetColumnMap = SHEET_COLUMN_MAP
+  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
 ): unknown[] {
-  // WHAT: Initialize row array with 300 empty values
-  // WHY: Match sheet structure (columns A-ZZ to support comprehensive KYC variables)
-  const row: unknown[] = new Array(300).fill('');
+  // WHAT: Calculate row array size dynamically
+  // WHY: No more hardcoded 300 - use actual max column index
+  // HOW: Find the maximum column index in the map and add 1
+  const maxColIndex = Math.max(...Object.keys(columnMap).map(k => parseInt(k, 10)), 0);
+  const row: unknown[] = new Array(maxColIndex + 1).fill('');
   
   // WHAT: Map each column from event fields
   // WHY: Transform database format to sheet format
-  Object.entries(columnMap).forEach(([colLetter, colDef]) => {
-    const colIndex = columnLetterToIndex(colLetter);
+  // HOW: Iterate by index, not by letter
+  Object.entries(columnMap).forEach(([colIndexStr, colDef]) => {
+    const colIndex = parseInt(colIndexStr, 10);
     let value: unknown;
     
     // WHAT: Handle special column mappings
@@ -155,16 +176,47 @@ export function eventToRow(
     }
     
     // WHAT: Handle computed columns (formulas)
-    // WHY: Preserve spreadsheet formulas for All Images, Total Fans
+    // WHY: Preserve spreadsheet formulas (dynamically generated from field definitions)
+    // HOW: Find component fields in column map and reference their indices
     if (colDef.computed) {
-      if (colLetter === 'M') {
-        // All Images formula: =J2+K2+L2
-        const rowNum = 2; // Will be replaced with actual row number by caller
-        value = `=J${rowNum}+K${rowNum}+L${rowNum}`;
-      } else if (colLetter === 'P') {
-        // Total Fans formula: =N2+O2
-        const rowNum = 2;
-        value = `=N${rowNum}+O${rowNum}`;
+      // WHAT: Generate formula based on field type
+      // WHY: Each computed field has specific calculation logic
+      // Example: allImages = remoteImages + hostessImages + selfies
+      const rowNum = 2; // Will be replaced with actual row number by caller
+      
+      if (colDef.field === 'stats.allImages') {
+        // Formula: remoteImages + hostessImages + selfies
+        // Find indices of these fields in columnMap
+        const remoteImagesIdx = Object.entries(columnMap).find(
+          ([_, def]) => def.field === 'stats.remoteImages'
+        )?.[0];
+        const hostessImagesIdx = Object.entries(columnMap).find(
+          ([_, def]) => def.field === 'stats.hostessImages'
+        )?.[0];
+        const selfiesIdx = Object.entries(columnMap).find(
+          ([_, def]) => def.field === 'stats.selfies'
+        )?.[0];
+        
+        if (remoteImagesIdx && hostessImagesIdx && selfiesIdx) {
+          const r = indexToColumnLetter(parseInt(remoteImagesIdx, 10));
+          const h = indexToColumnLetter(parseInt(hostessImagesIdx, 10));
+          const s = indexToColumnLetter(parseInt(selfiesIdx, 10));
+          value = `=${r}${rowNum}+${h}${rowNum}+${s}${rowNum}`;
+        }
+      } else if (colDef.field === 'stats.totalFans') {
+        // Formula: remoteFans + stadium
+        const remoteFansIdx = Object.entries(columnMap).find(
+          ([_, def]) => def.field === 'stats.remoteFans'
+        )?.[0];
+        const stadiumIdx = Object.entries(columnMap).find(
+          ([_, def]) => def.field === 'stats.stadium'
+        )?.[0];
+        
+        if (remoteFansIdx && stadiumIdx) {
+          const r = indexToColumnLetter(parseInt(remoteFansIdx, 10));
+          const s = indexToColumnLetter(parseInt(stadiumIdx, 10));
+          value = `=${r}${rowNum}+${s}${rowNum}`;
+        }
       }
     }
     
@@ -270,12 +322,12 @@ export function updateRowFormulas(row: unknown[], rowNumber: number): unknown[] 
  * HOW: Map each row, collect errors separately
  * 
  * @param rows - Array of sheet rows
- * @param columnMap - Column mapping configuration
+ * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
  * @returns Object with successful events and errors
  */
 export function rowsToEvents(
   rows: unknown[][],
-  columnMap: SheetColumnMap = SHEET_COLUMN_MAP
+  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
 ): { events: any[]; errors: Array<{ row: number; error: string }> } {
   const events: any[] = [];
   const errors: Array<{ row: number; error: string }> = [];
@@ -301,12 +353,12 @@ export function rowsToEvents(
  * HOW: Map each event to row array
  * 
  * @param events - Array of MessMass events
- * @param columnMap - Column mapping configuration
+ * @param columnMap - Index-based column mapping (columnIndex -> fieldDef)
  * @returns Array of row arrays
  */
 export function eventsToRows(
   events: any[],
-  columnMap: SheetColumnMap = SHEET_COLUMN_MAP
+  columnMap: IndexBasedColumnMap = DEFAULT_COLUMN_MAP
 ): unknown[][] {
   return events.map(event => eventToRow(event, columnMap));
 }
