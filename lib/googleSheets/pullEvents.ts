@@ -9,7 +9,6 @@ import { readSheetRows, updateSheetRow, findRowByUuid } from './client';
 import { rowsToEvents } from './rowMapper';
 import { SHEET_COLUMN_MAP, DEFAULT_SHEET_CONFIG } from './columnMap';
 import { generateDynamicColumnMap } from './dynamicMapping';
-import { readSheetRows } from './client';
 import type { GoogleSheetConfig, PullSummary, SyncDbAccess, PullOptions } from './types';
 
 /**

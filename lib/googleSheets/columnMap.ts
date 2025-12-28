@@ -134,47 +134,47 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
 
   // --- REPORT IMAGES (CQ-DJ) ---
   // NOTE: These columns have complex naming conflicts, using the actual sheet layout from sheet headers
-  1P: { field: 'stats.reportImage7', type: 'string' },
-  1Q: { field: 'stats.reportImage8', type: 'string' },
-  1R: { field: 'stats.reportImage9', type: 'string' },
-  1S: { field: 'stats.reportImage10', type: 'string' },
-  1T: { field: 'stats.reportImage11', type: 'string' },
-  1U: { field: 'stats.reportImage12', type: 'string' },
-  1V: { field: 'stats.reportImage13', type: 'string' },
-  1W: { field: 'stats.reportImage14', type: 'string' },
-  1X: { field: 'stats.reportImage15', type: 'string' },
-  1Y: { field: 'stats.reportImage16', type: 'string' },
-  1Z: { field: 'stats.reportImage17', type: 'string' },
-  20: { field: 'stats.reportImage18', type: 'string' },  // Column 20 in 1-indexed (19th in 0-indexed)
-  21: { field: 'stats.reportImage19', type: 'string' },
-  22: { field: 'stats.reportImage20', type: 'string' },
+  '1P': { field: 'stats.reportImage7', type: 'string' },
+  '1Q': { field: 'stats.reportImage8', type: 'string' },
+  '1R': { field: 'stats.reportImage9', type: 'string' },
+  '1S': { field: 'stats.reportImage10', type: 'string' },
+  '1T': { field: 'stats.reportImage11', type: 'string' },
+  '1U': { field: 'stats.reportImage12', type: 'string' },
+  '1V': { field: 'stats.reportImage13', type: 'string' },
+  '1W': { field: 'stats.reportImage14', type: 'string' },
+  '1X': { field: 'stats.reportImage15', type: 'string' },
+  '1Y': { field: 'stats.reportImage16', type: 'string' },
+  '1Z': { field: 'stats.reportImage17', type: 'string' },
+  '20': { field: 'stats.reportImage18', type: 'string' },  // Column 20 in 1-indexed (19th in 0-indexed)
+  '21': { field: 'stats.reportImage19', type: 'string' },
+  '22': { field: 'stats.reportImage20', type: 'string' },
 
-  // --- REPORT TEXTS (DK-ED) ---
-  DK: { field: 'stats.reportText1', type: 'string' },
-  DL: { field: 'stats.reportText2', type: 'string' },
-  DM: { field: 'stats.reportText3', type: 'string' },
-  DN: { field: 'stats.reportText4', type: 'string' },
-  DO: { field: 'stats.reportText5', type: 'string' },
-  DP: { field: 'stats.reportText6', type: 'string' },
-  DQ: { field: 'stats.reportText7', type: 'string' },
-  DR: { field: 'stats.reportText8', type: 'string' },
-  DS: { field: 'stats.reportText9', type: 'string' },
-  DT: { field: 'stats.reportText10', type: 'string' },
-  DU: { field: 'stats.reportText11', type: 'string' },
-  DV: { field: 'stats.reportText12', type: 'string' },
-  DW: { field: 'stats.reportText13', type: 'string' },
-  DX: { field: 'stats.reportText14', type: 'string' },
-  DY: { field: 'stats.reportText15', type: 'string' },
-  DZ: { field: 'stats.reportText16', type: 'string' },
-  EA: { field: 'stats.reportText17', type: 'string' },
-  EB: { field: 'stats.reportText18', type: 'string' },
-  EC: { field: 'stats.reportText19', type: 'string' },
-  ED: { field: 'stats.reportText20', type: 'string' },
+  // --- REPORT TEXTS (DQ-ED) ---
+  DQ: { field: 'stats.reportText1', type: 'string' },
+  DR: { field: 'stats.reportText2', type: 'string' },
+  DS: { field: 'stats.reportText3', type: 'string' },
+  DT: { field: 'stats.reportText4', type: 'string' },
+  DU: { field: 'stats.reportText5', type: 'string' },
+  DV: { field: 'stats.reportText6', type: 'string' },
+  DW: { field: 'stats.reportText7', type: 'string' },
+  DX: { field: 'stats.reportText8', type: 'string' },
+  DY: { field: 'stats.reportText9', type: 'string' },
+  DZ: { field: 'stats.reportText10', type: 'string' },
+  EA: { field: 'stats.reportText11', type: 'string' },
+  EB: { field: 'stats.reportText12', type: 'string' },
+  EC: { field: 'stats.reportText13', type: 'string' },
+  ED: { field: 'stats.reportText14', type: 'string' },
+  EE: { field: 'stats.reportText15', type: 'string' },
+  EF: { field: 'stats.reportText16', type: 'string' },
+  EG: { field: 'stats.reportText17', type: 'string' },
+  EH: { field: 'stats.reportText18', type: 'string' },
+  EI: { field: 'stats.reportText19', type: 'string' },
+  EJ: { field: 'stats.reportText20', type: 'string' },
 
-  // --- METADATA (EE-EG) ---
-  EE: { field: 'lastModified', type: 'timestamp', readOnly: false },
-  EF: { field: 'syncStatus', type: 'status', readOnly: true },
-  EG: { field: 'notes', type: 'text', required: false }
+  // --- METADATA (EK-EM) ---
+  EK: { field: 'lastModified', type: 'timestamp', readOnly: false },
+  EL: { field: 'syncStatus', type: 'status', readOnly: true },
+  EM: { field: 'notes', type: 'text', required: false }
 };
 
 export const SHEET_HEADER_LABELS: Record<string, string> = {
@@ -203,12 +203,12 @@ export const SHEET_HEADER_LABELS: Record<string, string> = {
   DA: 'Report Img 11', DB: 'Report Img 12', DC: 'Report Img 13', DD: 'Report Img 14', DE: 'Report Img 15',
   DF: 'Report Img 16', DG: 'Report Img 17', DH: 'Report Img 18', DI: 'Report Img 19', DJ: 'Report Img 20',
   // Report Txt
-  DK: 'Report Txt 1', DL: 'Report Txt 2', DM: 'Report Txt 3', DN: 'Report Txt 4', DO: 'Report Txt 5',
-  DP: 'Report Txt 6', DQ: 'Report Txt 7', DR: 'Report Txt 8', DS: 'Report Txt 9', DT: 'Report Txt 10',
-  DU: 'Report Txt 11', DV: 'Report Txt 12', DW: 'Report Txt 13', DX: 'Report Txt 14', DY: 'Report Txt 15',
-  DZ: 'Report Txt 16', EA: 'Report Txt 17', EB: 'Report Txt 18', EC: 'Report Txt 19', ED: 'Report Txt 20',
+  DQ: 'Report Txt 1', DR: 'Report Txt 2', DS: 'Report Txt 3', DT: 'Report Txt 4', DU: 'Report Txt 5',
+  DV: 'Report Txt 6', DW: 'Report Txt 7', DX: 'Report Txt 8', DY: 'Report Txt 9', DZ: 'Report Txt 10',
+  EA: 'Report Txt 11', EB: 'Report Txt 12', EC: 'Report Txt 13', ED: 'Report Txt 14', EE: 'Report Txt 15',
+  EF: 'Report Txt 16', EG: 'Report Txt 17', EH: 'Report Txt 18', EI: 'Report Txt 19', EJ: 'Report Txt 20',
   // Meta
-  EE: 'Last Modified', EF: 'Sync Status', EG: 'Notes'
+  EK: 'Last Modified', EL: 'Sync Status', EM: 'Notes'
 };
 
 export function columnLetterToIndex(letter: string): number {
