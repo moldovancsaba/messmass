@@ -179,11 +179,18 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
 
 // WHAT: Generate sheet headers from column map field names
 // WHY: Headers must exactly match MongoDB field names for proper syncing
-// HOW: Automatically derive from SHEET_COLUMN_MAP to ensure consistency
+// HOW: Strip 'stats.' prefix since MongoDB stores fields as: { stats: { remoteImages: 123 } }
+// not as top-level: { 'stats.remoteImages': 123 }
 export function generateSheetHeaderLabels(): Record<string, string> {
   const headers: Record<string, string> = {};
   Object.entries(SHEET_COLUMN_MAP).forEach(([col, def]) => {
-    headers[col] = def.field;
+    // WHAT: Remove 'stats.' prefix from header
+    // WHY: MongoDB stores as stats object with bare keys, not prefixed keys
+    // Example: { stats: { remoteImages: 123 } } not { 'stats.remoteImages': 123 }
+    const headerName = def.field.startsWith('stats.') 
+      ? def.field.replace('stats.', '')  // stats.remoteImages → remoteImages
+      : def.field;                         // eventName stays eventName
+    headers[col] = headerName;
   });
   return headers;
 }
