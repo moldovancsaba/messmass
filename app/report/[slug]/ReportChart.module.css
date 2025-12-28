@@ -88,69 +88,57 @@
   color: var(--chartNoDataText);
 }
 
-/* KPI Chart - 3-row grid: Icon (30%), Value (40%), Title (30%) */
+/* KPI Chart - 3-row grid: Icon (40%), Value (30%), Title (30%) */
 .kpi {
-  /* WHAT: Full height cell with internal 3-row grid */
-  /* WHY: Title MUST be inside grid to maintain 3fr-4fr-3fr proportions */
-  /* HOW: Remove CellWrapper title, use internal grid rows */
+  /* WHAT: Full height cell with internal 3-row grid (4fr:3fr:3fr = 40%:30%:30%) */
+  /* WHY: Larger icon section for visual impact */
+  /* HOW: Direct grid layout with vertical centering for all content */
   height: 100%;
   display: grid;
-  grid-template-rows: 3fr 4fr 3fr; /* Icon:Value:Title = 30%:40%:30% */
+  grid-template-rows: 4fr 3fr 3fr; /* Icon (top 40%) : Value (middle 30%) : Title (bottom 30%) */
   gap: 0;
   width: 100%;
   box-sizing: border-box;
-}
-
-.kpi .chartBody {
-  /* WHAT: Body takes full height - grid layout handled by .kpi */
-  /* WHY: No flex needed, grid handles all sizing */
-  display: contents; /* CRITICAL: Pass grid layout through to children */
-}
-
-.kpiContent {
-  /* WHAT: Content wrapper for icon + value (rows 1-2) */
-  /* WHY: Flex layout for vertical stacking within grid */
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  /* CRITICAL: Spans first two grid rows via CSS Grid flow */
-  /* Using auto-placement, items fill rows 1-2 */
+  align-items: center; /* CRITICAL: Vertically center content in each row */
+  justify-items: center; /* CRITICAL: Horizontally center content */
 }
 
 .kpiIconRow {
+  /* WHAT: Grid row 1 (40%) for icon */
+  /* WHY: First row of 4fr-3fr-3fr grid */
+  /* HOW: Flex centering with container queries, fully centered vertically */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  /* WHAT: Enable container queries so icon can size relative to THIS row */
-  /* WHY: Icon needs to query its immediate parent, not the whole chart */
   container-type: size;
 }
 
 .kpiIcon {
-  /* WHAT: Material Icons scale by font-size, not SVG dimensions */
-  /* WHY: Switched from Lucide (SVG) to Material Icons (font) */
-  /* HOW: Now queries .kpiIconRow container for 90% fill */
-  /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (2rem → 6rem = 3x) */
-  font-size: clamp(2rem, 90cqh, 6rem) !important; /* 90% of icon row height - !important overrides MaterialIcon inline styles */
+  /* WHAT: Material Icons scale by font-size, 85% of icon row */
+  /* WHY: Visual impact - large icon dominates top 40% */
+  /* HOW: Container query on .kpiIconRow, vertically centered */
+  font-size: clamp(2.5rem, 85cqh, 7rem) !important; /* 85% of icon row height */
   height: auto !important;
   width: auto !important;
-  color: var(--kpiIconColor) !important; /* WHAT: Use custom KPI icon color from style */
-  line-height: 1 !important; /* WHAT: Prevent extra vertical spacing */
+  color: var(--kpiIconColor) !important;
+  line-height: 1 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
-.kpi .kpiValue {
+.kpiValueRow {
+  /* WHAT: Grid row 2 (30%) for value */
+  /* WHY: Middle row of 4fr-3fr-3fr grid */
+  /* HOW: Flex centering for responsive value scaling, fully vertically centered */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  /* CONSTRAINT: Unconstrained - allow maximum scaling for visual impact (1.5rem → 6rem = 4x) */
-  font-size: clamp(1.5rem, min(20cqh, 25cqw), 6rem);
+  font-size: clamp(1.25rem, min(18cqh, 20cqw), 5rem);
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;
@@ -159,12 +147,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  container-type: size;
 }
 
 .kpi .kpiTitle {
   /* WHAT: 3rd grid row (30%) - title at bottom of KPI */
   /* WHY: Grid row 3 = bottom 30% of cell */
-  /* HOW: Text centered within 3fr row using flex */
+  /* HOW: Flex with center alignment - fully vertically centered */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,30 +162,64 @@
   height: 100%;
   padding: var(--mm-space-2);
   /* Font scales based on container height (3fr row) */
-  font-size: clamp(0.75rem, 9cqh, 1.125rem);
+  font-size: clamp(0.75rem, 8cqh, 1.125rem);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
-  overflow: hidden;
   /* Max 2 lines with ellipsis */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   word-break: break-word;
   hyphens: none;
+  overflow: hidden;
+}
+
+/* Pie Chart - Uses base .chart structure */
+
+/* Container grid for title (40%), pie (40%), legend (20%) */
+.pieGrid {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* Title row: 40% of cell, vertically centered */
+.pieTitleRow {
+  flex: 0 0 30%; /* 3:4:3 → title 30% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-1) var(--mm-space-2);
+}
+
+.pieTitleText {
+  margin: 0;
+  text-align: center;
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+  /* Doubled title font vs. previous */
+  font-size: clamp(1rem, 9cqh, 1.5rem);
+  line-height: 1.2;
 }
 
 /* Pie Chart - Uses base .chart structure */
 .pie .chartBody {
-  /* WHAT: No padding - let body fill entire cell */
-  /* WHY: Pie container gets fixed 70% height regardless of cell size */
+  /* WHAT: Flex column with 40:40:20 split (title:pie:legend) */
+  /* WHY: Balanced proportions for all elements */
+  /* HOW: Use flex-basis for fixed height proportions */
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0; /* Fixed gap - pies align regardless of title length */
+  gap: 0;
   height: 100%;
-  /* WHAT: Enable container queries for proper sizing */
+  width: 100%;
   container-type: size;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .pieTitle {
@@ -244,74 +267,87 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js - CRITICAL for alignment */
+/* Pie Chart Container for Chart.js - 40% of body height */
 .pieChartContainer {
-  /* WHAT: Fixed 70% height container for pie chart */
-  /* WHY: Ensures all pies align vertically regardless of cell content variance */
-  height: 70%; /* FIXED: Always 70% of cell height */
+  /* WHAT: 50% of body height for pie chart */
+  /* WHY: Middle section of 3:5:2 ratio (title:pie:legend) */
+  /* HOW: Flex basis for fixed height proportion */
+  flex: 0 0 50%; /* 3:5:2 → pie 50% */
   width: 100%;
   position: relative;
-  /* WHAT: Center pie within container */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* WHAT: Container queries for responsive sizing */
   container-type: size;
+  min-height: 0;
 }
 
-/* Custom Pie Legend - 30% of body height - CRITICAL for alignment */
+/* Custom Pie Legend - 20% of body height */
 .pieLegend {
-  /* WHAT: Fixed 30% height container for legend */
-  /* WHY: Ensures consistent layout regardless of text length */
-  height: 30%; /* FIXED: Always 30% of cell height */
+  /* WHAT: 20% of body height for legend items */
+  /* WHY: Bottom section of 3:5:2 ratio (title:pie:legend) */
+  /* HOW: Flex basis for fixed height proportion, centered vertically */
+  flex: 0 0 20%; /* 3:5:2 → legend 20% */
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: var(--mm-space-1);
   width: 100%;
-  /* WHAT: Container queries for text scaling */
   container-type: size;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--mm-space-1);
 }
 
 .pieLegendItem {
+  /* WHAT: Flex container for legend item with colored square */
+  /* WHY: Display indicator + label in horizontal layout */
+  /* HOW: Flex with center alignment for vertical centering */
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--mm-space-2);
   width: 100%;
+  /* Remove fixed height so items don't stretch; rely on content and legend container */
 }
 
 .pieLegendDot {
-  /* WHAT: Circle size with border matching pie slices */
-  /* WHY: Use legend container height for consistent sizing */
-  /* HOW: 45% of legend height (based on 2 items per legend) */
-  width: 4.5cqh;
-  height: 4.5cqh;
-  border-radius: 50%;
+  /* WHAT: Colored SQUARE (not dot) matching pie slice color */
+  /* WHY: Visual indicator of which legend item corresponds to which pie slice */
+  /* HOW: Square shape with 60% of legend item height, no border radius */
+  width: clamp(0.8rem, 10cqh, 1.2rem); /* Doubled: 4.5cqh → 10cqh (doubled for 5cqh) */
+  height: clamp(0.8rem, 10cqh, 1.2rem);
+  border-radius: 0; /* SQUARE, not circle */
   flex-shrink: 0;
-  /* WHAT: Default color fallback */
-  border: 2px solid var(--mm-color-primary-500);
   box-sizing: border-box;
 }
 
 .pieLegendText {
-  /* WHAT: Text scales with legend container height */
-  /* WHY: 45% of legend height ensures readable text at all sizes */
-  font-size: clamp(0.7rem, 4.5cqh, 1rem);
+  /* WHAT: Legend text scaled and doubled */
+  /* WHY: Better readability with larger fonts */
+  /* HOW: 9cqh (doubled from 4.5cqh) for text scaling */
+  font-size: clamp(0.9rem, 9cqh, 1.2rem); /* DOUBLED: 4.5cqh → 9cqh */
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
 }
 
 /* Bar Chart - Uses base .chart structure */
 .bar .chartBody {
+  /* WHAT: Remove restrictive width constraints - let chart fill parent */
+  /* WHY: chartBody was limiting width to ~40px, breaking bar visibility */
+  /* HOW: Use flex with no width limitations */
   padding: var(--mm-space-2);
-  display: flex; /* CRITICAL: Enable flex layout */
-  flex-direction: column; /* CRITICAL: Stack content vertically */
-  flex: 1; /* CRITICAL: Fill available vertical space */
-  min-height: 0; /* CRITICAL: Allow flex shrinking */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100% !important; /* CRITICAL: No width restrictions */
+  max-width: none !important; /* CRITICAL: Remove max-width */
 }
 
 .barTitle {
@@ -334,73 +370,67 @@
 }
 
 .barRow {
+  /* WHAT: 5 bars distributed evenly with label, track, and value */
+  /* WHY: Each bar gets equal vertical space in barElements container */
+  /* HOW: Grid layout: 25% label | 50% track | 25% value */
   display: grid;
-  /* WHAT: Fixed ratio - 40% label, 40% bar, 20% value */
-  /* WHY: Balanced space for label and bar, more room for value */
-  /* HOW: Use CSS Grid with proportional sizing - NO viewport mixing */
-  grid-template-columns: 40% 40% 20%;
-  gap: 0 var(--mm-space-1);
+  grid-template-columns: 25% 1fr 25%; /* Label 25% | Track fills (50%) | Value 25% */
+  gap: 0 var(--mm-space-2);
   align-items: center;
   flex: 1;
   padding: 0 var(--mm-space-1);
-  /* WHAT: Enable container queries for proper responsive sizing */
   container-type: size;
 }
 
 .barLabel {
-  /* WHAT: Bar label - 45% of bar height with 10% line spacing */
-  /* WHY: Proportional to bar, readable with 2-line wrapping */
-  /* CONSTRAINT: 1.2x max ratio (0.75rem → 0.9rem = 12px → 14.4px) for tight consistency */
+  /* WHAT: Bar label - flexible, wraps to 2 lines if needed */
+  /* WHY: Left column (25%) - readable labels, doubled font */
+  /* HOW: Text truncation with 2-line max */
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: var(--mm-space-2);
-  /* WHAT: Use container query height ONLY, not width mixing */
-  /* WHY: Container query ensures consistent scaling across cell sizes */
-  font-size: clamp(0.75rem, 4.95cqh, 0.9rem);
+  font-size: clamp(0.85rem, 9cqh, 1.1rem); /* DOUBLED: 4.5cqh → 9cqh */
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  hyphens: none;
+  padding-right: var(--mm-space-1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .barTrack {
+  /* WHAT: Full-width bar track (50% of grid - middle column) */
+  /* WHY: Track fills available space between label and value */
+  /* HOW: 100% width of grid column, 22% of cell height (doubled from 11%) */
   background: var(--chartNoDataBackground);
-  /* WHAT: 11% of cell height, max 80% of cell width, semicircular ends
-   * WHY: Use full container width, not mixing viewport queries
-   * HOW: 11cqh height constrained to 1.2x ratio for tight consistency */
-  /* CONSTRAINT: 1.2x max ratio (0.6rem → 0.72rem = 9.6px → 11.5px) for tight consistency */
-  height: clamp(0.6rem, 11cqh, 0.72rem);
-  /* WHAT: Use 80% of available container width (label 40% + track 40% + value 20%) */
-  /* WHY: Grid gives us 40% for track, no need for max-width restriction */
-  width: 100%; /* Use full grid column width, no restrictions */
-  border-radius: calc(clamp(0.6rem, 11cqh, 0.72rem) / 2); /* WHAT: 50% of bar height for semicircular ends */
+  height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
+  width: 100%; /* CRITICAL: Fills entire middle grid column (50%) */
+  border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   overflow: hidden;
 }
 
 .barFill {
+  /* WHAT: Fills track based on percentage of max value */
+  /* WHY: Visual representation of bar data */
+  /* HOW: Dynamic width from percentage calculation */
   height: 100%;
-  border-radius: calc(clamp(0.6rem, 11cqh, 0.72rem) / 2); /* WHAT: Match track radius (50% of bar height) for seamless pill shape */
+  border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   transition: width var(--transition-normal);
 }
 
 .barValue {
-  /* WHAT: Bar value - always 50% of bar height (5.5cqh) */
-  /* WHY: Proportional to bar across all chart dimensions */
-  /* CONSTRAINT: 1.2x max ratio (0.875rem → 1.05rem = 14px → 16.8px) for tight consistency */
+  /* WHAT: Bar value - right column (25%), displays formatted number */
+  /* WHY: Right alignment for easy reading */
+  /* HOW: Flex container for alignment, doubled font size */
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: clamp(0.6rem, 11cqh, 0.72rem); /* Match bar track height */
-  padding-left: var(--mm-space-2);
-  font-size: clamp(0.875rem, 5.5cqh, 1.05rem);
+  height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: Match bar height */
+  font-size: clamp(1rem, 10cqh, 1.4rem); /* DOUBLED: 5cqh → 10cqh */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   text-align: left;

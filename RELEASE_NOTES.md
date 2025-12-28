@@ -1,5 +1,236 @@
 # MessMass Release Notes
 
+## [v11.45.7] — 2025-12-28T23:22:31.000Z
+
+### Summary
+PIE CHART FINE-TUNE: Adjusted layout to 3:5:2 (title:pie:legend).
+
+### Changes
+- Title row flex-basis: 30%
+- Pie row flex-basis: 50%
+- Legend row flex-basis: 20%
+
+---
+
+## [v11.45.6] — 2025-12-28T23:21:09.000Z
+
+### Summary
+PIE CHART FINE-TUNE: Adjusted layout to 3:4:3 (title:pie:legend) while preserving vertical centering and sizing.
+
+### Changes
+- Title row flex-basis: 30%
+- Pie row flex-basis: 40%
+- Legend row flex-basis: 30%
+
+---
+
+## [v11.45.5] — 2025-12-28T23:12:45.000Z
+
+### Summary
+PIE CHART DISTRIBUTION FIX: Title, pie, and legend now occupy 40% / 40% / 20% of the cell height and are vertically centered.
+
+### Changes
+- Refactored PieChart to manage layout without CellWrapper to guarantee full-height distribution
+- Added `.pieGrid` container and `.pieTitleRow` for 40% title height
+- Set `.pieChartContainer` flex-basis to 40% and `.pieLegend` to 20%
+- Removed legend item fixed height to prevent stretching; centered items
+
+### Result
+- No more top-smashing; the full cell height is used exactly as 40:40:20
+- Legend squares match slice colors; fonts remain doubled
+
+---
+
+## [v11.45.4] — 2025-12-28T23:15:00.000Z
+
+### Summary
+
+PIE CHART COMPLETE REDESIGN: Updated ratio to 40:40:20, replaced legend dots with colored squares, doubled all fonts, and ensured vertical centering for all elements.
+
+### What Was Fixed
+
+#### PIE Chart - Ratio & Layout
+**WHAT**: Changed proportion ratio to 40:40:20 (title:pie:legend)  
+**WHY**: Better balance with title 40%, pie 40%, legend 20%  
+**HOW**: Updated flex-basis: pieChartContainer 40%, pieLegend 20%
+
+#### PIE Chart - Legend Indicators
+**WHAT**: Changed legend from circles to colored SQUARES matching pie slices  
+**WHY**: Users can see exactly which square represents which pie slice  
+**HOW**: Changed border-radius from 50% to 0 (square), use dynamic color
+
+#### PIE Chart - Font Sizes & Centering
+**WHAT**: Doubled font size (4.5cqh to 9cqh); centered all legend items vertically  
+**WHY**: Better readability; proper vertical distribution  
+**HOW**: Updated font-size clamps; added align-items: center and height: 100%
+
+### Technical Details
+
+**CSS Changes**:
+- PIE chart container: flex 0 0 40% (was 70%)
+- PIE legend: flex 0 0 20% (was 30%)
+- Legend squares: border-radius 0 (SQUARE, not circle)
+- Legend text: font-size clamp(0.9rem, 9cqh, 1.2rem) - DOUBLED
+- Legend items: align-items center, height 100% - vertically centered
+
+### Testing
+- PIE chart uses 40:40:20 ratio (title:pie:legend)
+- Legend shows colored SQUARES (not dots)
+- Each square matches its pie slice color
+- Font sizes doubled for readability
+- All legend elements centered vertically
+- Build passes (npm run build)
+
+### Version
+11.45.3 to 11.45.4 (PATCH - PIE chart redesign)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
+## [v11.45.3] — 2025-12-28T23:05:00.000Z
+
+### Summary
+
+📏 **CHART REFINEMENTS**: Updated KPI grid ratio from 3:4:3 to 4:3:3, ensured full vertical centering for all content, fixed BAR chart width constraints, and doubled bar heights and font sizes for better visibility.
+
+### What Was Fixed
+
+#### KPI Chart - Ratio Change & Vertical Centering ✅
+**WHAT**: Changed grid proportions from 3:4:3 to 4:3:3 and centered all content vertically  
+**WHY**: Icon needs more space; content wasn't centered in grid rows  
+**HOW**: Changed grid-template-rows to `4fr 3fr 3fr`; added `align-items: center` to grid
+
+**Changes**:
+- Icon row: 40% (up from 30%) - more visual impact
+- Value row: 30% (down from 40%)
+- Title row: 30% (unchanged)
+- All content centered vertically within each row
+- Result: Perfect proportions with centered alignment
+
+#### BAR Chart - Width Fix & Size Doubling ✅
+**WHAT**: Removed width constraints on chartBody; doubled bar heights and font sizes  
+**WHY**: chartBody had `min-height: 0` causing width restriction; bars were too thin  
+**HOW**: Added `width: 100% !important` and `max-width: none !important`; doubled measurements
+
+**Changes**:
+- Bar height: `11cqh` → `22cqh` (DOUBLED)
+- Label font: `4.5cqh` → `9cqh` (DOUBLED)
+- Value font: `5cqh` → `10cqh` (DOUBLED)
+- Bar track displays full width without constraints
+- Result: Larger, more visible bars with readable text
+
+### Technical Details
+
+**CSS Changes**:
+```css
+/* KPI: 4:3:3 ratio with vertical centering */
+.kpi {
+  grid-template-rows: 4fr 3fr 3fr;    /* Icon 40% : Value 30% : Title 30% */
+  align-items: center;                 /* Center content in each row */
+}
+
+/* BAR: Remove width constraints */
+.bar .chartBody {
+  width: 100% !important;              /* No restriction */
+  max-width: none !important;          /* No max-width */
+}
+
+/* BAR: Double heights and fonts */
+.barTrack { height: clamp(1.2rem, 22cqh, 1.44rem); }     /* 11 → 22 */
+.barLabel { font-size: clamp(0.85rem, 9cqh, 1.1rem); }  /* 4.5 → 9 */
+.barValue { font-size: clamp(1rem, 10cqh, 1.4rem); }    /* 5 → 10 */
+```
+
+### Testing
+- ✅ KPI charts use 4:3:3 ratio
+- ✅ All KPI elements centered vertically
+- ✅ BAR charts display full width
+- ✅ Bar heights doubled
+- ✅ Font sizes doubled (labels and values)
+- ✅ Build passes (`npm run build`)
+
+### Version
+`11.45.2` → `11.45.3` (PATCH - Refinements)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
+## [v11.45.2] — 2025-12-28T22:40:00.000Z
+
+### Summary
+📊 **CHART LAYOUT RESTORATION**: Fixed critical regressions in KPI, PIE, and BAR chart layouts. All three chart types now display correctly with proper proportional distributions.
+
+### What Was Fixed
+
+#### KPI Chart - Vertical Distribution (3fr:4fr:3fr) ✅
+**WHAT**: Icon, Value, and Title now properly distributed across full cell height  
+**WHY**: Grid rows were collapsing due to CellWrapper complications  
+**HOW**: Removed CellWrapper from KPI; use direct CSS Grid (3fr:4fr:3fr = 30%:40%:30%)
+
+**Fixes**:
+- Icon row (top 30%): Scales to 90% of available height
+- Value row (middle 40%): Dominates cell with responsive font sizing
+- Title row (bottom 30%): Fixed proportional spacing
+- Result: Perfect 3:4:3 ratio maintained at all cell sizes
+
+#### PIE Chart - 70:30 Flex Split ✅
+**WHAT**: Pie chart (70%) and legend (30%) now display side-by-side  
+**WHY**: Fixed height flex-basis was ignored, causing both to collapse  
+**HOW**: Changed from percentage heights to `flex: 0 0 70%` and `flex: 0 0 30%`
+
+**Fixes**:
+- Pie chart container: Always 70% of body height
+- Legend container: Always 30% of body height
+- Both visible and properly proportioned
+- Result: Both pie and legend display correctly
+
+#### BAR Chart - Full-Width Track ✅
+**WHAT**: Bar track now fills full width between label and value  
+**WHY**: Track was only 40% width (5% visible), rest unused  
+**HOW**: Changed grid from `40% 40% 20%` to `25% 1fr 25%` (label | track fills | value)
+
+**Fixes**:
+- Label: 25% width (left side)
+- Track: `1fr` (fills remaining space - now 50%)
+- Value: 25% width (right side)
+- Result: Track fills entire middle section, fully visible
+
+### Technical Details
+
+**CSS Changes**:
+```css
+/* KPI: Direct grid layout */
+.kpi {
+  display: grid;
+  grid-template-rows: 3fr 4fr 3fr; /* 30% : 40% : 30% */
+}
+
+/* PIE: Flex-basis proportions */
+.pieChartContainer { flex: 0 0 70%; }
+.pieLegend { flex: 0 0 30%; }
+
+/* BAR: Flexible middle column */
+.barRow {
+  grid-template-columns: 25% 1fr 25%; /* Label fills | Track | Value */
+}
+```
+
+### Testing
+- ✅ KPI charts distribute correctly (icon → value → title)
+- ✅ PIE charts show pie AND legend (not collapsed)
+- ✅ BAR charts have full-width visible bars
+- ✅ Build passes (`npm run build`)
+- ✅ All proportions match spec (3:4:3 for KPI, 70:30 for PIE, 25:50:25 for BAR)
+
+### Version
+`11.45.1` → `11.45.2` (PATCH - Bug fixes)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.45.1] — 2025-12-28T20:15:00.000Z
 
 ### Summary

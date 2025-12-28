@@ -166,28 +166,26 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   // WHY: Some charts may want to hide titles per Spec v2.0
   const showTitle = result.showTitle !== false;
   
-  // WHAT: Use div with blockHeight instead of CellWrapper
-  // WHY: CellWrapper adds separate title zone -> breaks 3fr-4fr-3fr grid proportions
-  // HOW: Height enforced by CSS grid, not wrapper
+  // WHAT: KPI uses 3fr-4fr-3fr grid (Icon:Value:Title = 30%:40%:30%)
+  // WHY: Maintains proportional distribution with full blockHeight
+  // HOW: CellWrapper unnecessary - grid handles all layout
   return (
     <div 
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
       // eslint-disable-next-line react/forbid-dom-props
       style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
-      <div className={styles.kpiContent}>
-        <div className={styles.kpiIconRow}>
-          {result.icon && (
-            <MaterialIcon 
-              name={result.icon} 
-              variant={iconVariant}
-              className={styles.kpiIcon}
-            />
-          )}
-        </div>
-        <div className={styles.kpiValue}>{formattedValue}</div>
+      <div className={styles.kpiIconRow}>
+        {result.icon && (
+          <MaterialIcon 
+            name={result.icon} 
+            variant={iconVariant}
+            className={styles.kpiIcon}
+          />
+        )}
       </div>
-      {/* WHAT: Title is now 3rd grid row directly in KPI grid */}
+      <div className={styles.kpiValueRow}>{formattedValue}</div>
+      {/* WHAT: Title is 3rd grid row directly in KPI grid */}
       {/* WHY: Maintains exact 3fr-4fr-3fr proportions across full cell height */}
       {showTitle && (
         <div className={styles.kpiTitle}>{protectedTitle}</div>
@@ -297,35 +295,30 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   };
 
   return (
-    <CellWrapper
-      title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
+    <div 
       className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
+      // eslint-disable-next-line react/forbid-dom-props
+      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
-      <div ref={containerRef} className={styles.chartBody}>
-        {/* Pie chart takes 70% of body */}
+      <div className={styles.pieGrid}>
+        {showTitle && (
+          <div className={styles.pieTitleRow}>
+            <h3 className={styles.pieTitleText}>{result.title}</h3>
+          </div>
+        )}
         <div className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
         </div>
-        {/* Custom legend takes 30% of body */}
         <div className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             const percentage = total > 0 ? ((numValue / total) * 100).toFixed(1) : '0.0';
             const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
-            
             return (
               <div key={idx} className={styles.pieLegendItem}>
-                {/* WHAT: Dynamic pie legend dot color from theme
-                    WHY: Color comes from CSS variables/theme (legitimate dynamic)
-                    eslint-disable-next-line react/forbid-dom-props */}
                 <div className={styles.pieLegendDot} style={{ backgroundColor: color }} />
                 <div className={styles.pieLegendText}>
-                  {/* WHAT: Conditionally show percentage based on showPercentages flag (v11.38.0)
-                      WHY: Respect chart configuration - some charts want clean labels without % */}
                   {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
                 </div>
               </div>
@@ -333,7 +326,7 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
           })}
         </div>
       </div>
-    </CellWrapper>
+    </div>
   );
 }
 
