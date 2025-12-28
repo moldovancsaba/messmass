@@ -79,39 +79,66 @@ export async function POST(
 
     // Step 1: Get spreadsheet metadata
     const metadata = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
+    const existingEvents = metadata.data.sheets?.find((s: any) => s.properties?.title === SHEET_NAME);
     const sheet1 = metadata.data.sheets?.find((s: any) => s.properties?.title === 'Sheet1');
 
-    // Step 2: Rename Sheet1 to Events (if it exists)
-    if (sheet1 && sheet1.properties) {
-      const sheet1Id = sheet1.properties.sheetId;
-      await sheets.spreadsheets.batchUpdate({
-        spreadsheetId: sheetId,
-        requestBody: {
-          requests: [
-            {
-              updateSheetProperties: {
-                properties: {
-                  sheetId: sheet1Id,
-                  title: SHEET_NAME
-                },
-                fields: 'title'
+    // Step 2: Ensure Events tab exists (rename Sheet1 or create new)
+    if (!existingEvents) {
+      if (sheet1 && sheet1.properties) {
+        // Rename Sheet1 to Events
+        const sheet1Id = sheet1.properties.sheetId;
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: sheetId,
+          requestBody: {
+            requests: [
+              {
+                updateSheetProperties: {
+                  properties: {
+                    sheetId: sheet1Id,
+                    title: SHEET_NAME
+                  },
+                  fields: 'title'
+                }
               }
-            }
-          ]
-        }
-      });
+            ]
+          }
+        });
+      } else {
+        // Create Events tab if Sheet1 doesn't exist
+        console.log('📝 Creating "Events" sheet tab...');
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: sheetId,
+          requestBody: {
+            requests: [
+              {
+                addSheet: {
+                  properties: {
+                    title: SHEET_NAME,
+                    gridProperties: {
+                      rowCount: 10000,
+                      columnCount: MIN_COLUMNS
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        });
+      }
     }
 
-    // Step 3: Ensure 300 columns
+    // Step 3: Ensure 300 columns (if not already set during creation)
     const updatedMetadata = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
     const eventsTab = updatedMetadata.data.sheets?.find((s: any) => s.properties?.title === SHEET_NAME);
 
     if (!eventsTab || !eventsTab.properties) {
-      return NextResponse.json({ success: false, error: 'Events tab not found after rename' }, { status: 500 });
+      // This should never happen now, but fail gracefully if it does
+      return NextResponse.json({ success: false, error: 'Events tab not found after setup' }, { status: 500 });
     }
 
     const currentColumns = eventsTab.properties.gridProperties?.columnCount || 26;
     if (currentColumns < MIN_COLUMNS) {
+      console.log(`📐 Expanding columns from ${currentColumns} to ${MIN_COLUMNS}...`);
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: sheetId,
         requestBody: {
@@ -130,6 +157,8 @@ export async function POST(
           ]
         }
       });
+    } else {
+      console.log(`✓ Sheet already has ${currentColumns} columns (need ${MIN_COLUMNS})`);
     }
 
     // Step 4: Write headers

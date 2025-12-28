@@ -1,5 +1,61 @@
 # MessMass Release Notes
 
+## [v11.45.1] — 2025-12-28T20:15:00.000Z
+
+### Summary
+🔧 **GOOGLE SHEETS SETUP ROBUSTNESS**: Fixed critical issue where Google Sheets auto-setup failed when sheet didn't have a "Sheet1" tab. Now properly creates "Events" tab automatically if missing.
+
+### What Was Fixed
+
+#### Events Tab Creation Logic ✅
+**WHAT**: Setup endpoint now handles sheets without "Sheet1" tab by creating "Events" tab from scratch  
+**WHY**: User sheets might be created empty or have custom tab names, causing setup to fail silently  
+**HOW**: Added conditional logic: if no "Events" tab exists, either rename "Sheet1" OR create new "Events" tab
+
+**Changes**:
+- **Before**: Only renamed Sheet1 → Events; failed silently if Sheet1 missing
+- **After**: Creates Events tab if neither exists; handles both scenarios
+- **Result**: "✅ Connect & Setup Google Sheet" button now works reliably
+
+#### Technical Details
+
+**Updated Setup Flow**:
+```typescript
+// Step 2: Ensure Events tab exists (rename Sheet1 or create new)
+if (!existingEvents) {
+  if (sheet1 && sheet1.properties) {
+    // Rename Sheet1 to Events
+  } else {
+    // Create Events tab if Sheet1 doesn't exist
+    await sheets.spreadsheets.batchUpdate({
+      requestBody: {
+        requests: [{
+          addSheet: {
+            properties: {
+              title: 'Events',
+              gridProperties: { rowCount: 10000, columnCount: 300 }
+            }
+          }
+        }]
+      }
+    });
+  }
+}
+```
+
+### Testing
+- ✅ Setup works with blank sheets
+- ✅ Setup works with existing "Events" tab
+- ✅ Setup works when only "Sheet1" exists
+- ✅ All three operations functional: Connect, Pull, Push
+
+### Version
+`11.45.0` → `11.45.1` (PATCH - Bug fix)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.45.0] — 2025-12-28T19:21:00.000Z
 
 ### Summary
