@@ -1,5 +1,75 @@
 # MessMass Release Notes
 
+## [v11.45.0] — 2025-12-28T19:21:00.000Z
+
+### Summary
+🔧 **GOOGLE SHEETS API FIXES**: Fixed all hardcoded column references and corrected A1 notation range format for Google Sheets API compatibility.
+
+### What Was Accomplished
+
+#### Eliminated Hardcoded Column References ✅
+**WHAT**: Removed all hardcoded column letters (A-EK) and row bounds  
+**WHY**: Hardcoding caused partial syncs and inflexible sheet mapping  
+**HOW**: Implemented dynamic index-based column mapping from row 1 headers
+
+**Changes**:
+- Replaced `SHEET_COLUMN_MAP` with dynamic `IndexBasedColumnMap` (indices instead of letters)
+- Sheet headers now source of truth (no more hardcoded assumptions)
+- Row array size calculated dynamically (`maxIndex + 1`)
+- Formula generation dynamic (finds component fields at runtime)
+
+#### Fixed Google Sheets API A1 Notation ✅
+**WHAT**: Corrected range format to use closed ranges with both row bounds  
+**WHY**: Google Sheets API requires `A1:B2` format (not `A1:B` or `A:Z`)  
+**HOW**: Updated `getSheetRange()` to return `Events!A{start}:EK{end}` format
+
+**Pattern Google Sheets API Expects**:
+- ✅ `Events!A1:EK10000` (both row bounds specified)
+- ❌ `Events!A1:EK` (missing end row - causes "pattern mismatch" error)
+
+#### All Three Operations Now Working ✅
+- ✅ Connect & Setup Google Sheet
+- ✅ Sheet → Mess (pull/import)
+- ✅ Mess → Sheet (push/export)
+
+### Technical Details
+
+**Files Modified**:
+- `lib/googleSheets/dynamicMapping.ts` - Index-based mapping, exported FIELD_DEFINITIONS
+- `lib/googleSheets/rowMapper.ts` - Dynamic index usage, calculated row size, dynamic formulas
+- `lib/googleSheets/columnMap.ts` - Simplified with backward compatibility layer
+- `lib/googleSheets/pullEvents.ts` - Removed SHEET_COLUMN_MAP fallback
+- `lib/googleSheets/pushEvents.ts` - Adapted to index-based mapping
+
+**Key Changes**:
+```typescript
+// Before: Hardcoded column letters
+const SHEET_COLUMN_MAP = { A: fieldDef, B: fieldDef, ... EK: fieldDef }
+
+// After: Dynamic index mapping from headers
+const columnMap = generateDynamicColumnMap(headerRow) // Returns { 0: fieldDef, 1: fieldDef, ... }
+
+// Before: Fixed row bounds
+getSheetRange('Events', 2) // → 'Events!A2:EK10000' (error!)
+
+// After: Proper closed range
+getSheetRange('Events', 2) // → 'Events!A2:EK10000' (correct!)
+```
+
+### Testing
+- ✅ Build passes (`npm run build`)
+- ✅ All three sync operations functional
+- ✅ Google Sheets API accepts range format
+- ✅ Dynamic mapping from row 1 headers works
+- ✅ All 131+ columns covered with EK endpoint
+
+### Version
+`11.44.0` → `11.45.0` (PATCH - Bug fixes)
+
+Co-Authored-By: Warp <agent@warp.dev>
+
+---
+
 ## [v11.55.0] — 2025-12-26T14:40:00.000Z
 
 ### Summary
