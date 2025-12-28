@@ -71,19 +71,23 @@ export const SHEET_HEADER_LABELS: Record<string, string> = generateSheetHeaderLa
 /**
  * WHAT: Get sheet range string for API calls
  * WHY: Utility function for building sheet A1 notation ranges
- * HOW: Convert row numbers to A1 notation ranges
+ * HOW: For open-ended ranges (entire rows), just use 'Sheet!A2:Z' format
+ * 
  * Examples:
- *   - getSheetRange('Events', 1) -> 'Events!A1:ZZ1000' (entire range)
- *   - getSheetRange('Events', 2, 2) -> 'Events!A2:ZZ2' (single row)
- *   - getSheetRange('Events', 1, 10) -> 'Events!A1:ZZ10' (rows 1-10)
+ *   - getSheetRange('Events', 1) -> 'Events!A1:Z' (row 1 and beyond)
+ *   - getSheetRange('Events', 2) -> 'Events!A2:Z' (row 2 and beyond)
+ *   - getSheetRange('Events', 1, 5) -> 'Events!A1:Z5' (rows 1-5)
  */
 export function getSheetRange(
   sheetName: string,
   startRow: number,
   endRow?: number
 ): string {
-  // Default to large number for end row if not specified
-  const actualEndRow = endRow || 10000;
-  // Use full alphabet range (A to ZZ) for flexibility
-  return `${sheetName}!A${startRow}:ZZ${actualEndRow}`;
+  if (endRow !== undefined) {
+    // Specific range: A2:Z10
+    return `${sheetName}!A${startRow}:Z${endRow}`;
+  } else {
+    // Open-ended range: A2:Z (rows 2 and beyond, all columns A-Z)
+    return `${sheetName}!A${startRow}:Z`;
+  }
 }
