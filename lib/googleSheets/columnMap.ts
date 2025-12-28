@@ -71,11 +71,11 @@ export const SHEET_HEADER_LABELS: Record<string, string> = generateSheetHeaderLa
 /**
  * WHAT: Get sheet range string for API calls
  * WHY: Utility function for building sheet A1 notation ranges
- * HOW: Return simple range that Google Sheets API understands
+ * HOW: Google Sheets API requires BOTH row and column bounds in A1:B2 format
  * 
  * Examples:
- *   - getSheetRange('Events', 1) -> 'Events!A1:EK' (all rows starting from 1)
- *   - getSheetRange('Events', 2) -> 'Events!A2:EK' (all rows starting from 2)
+ *   - getSheetRange('Events', 1) -> 'Events!A1:EK10000' (rows 1-10000)
+ *   - getSheetRange('Events', 2) -> 'Events!A2:EK10000' (rows 2-10000)
  *   - getSheetRange('Events', 1, 5) -> 'Events!A1:EK5' (rows 1-5)
  */
 export function getSheetRange(
@@ -83,12 +83,7 @@ export function getSheetRange(
   startRow: number,
   endRow?: number
 ): string {
-  if (endRow !== undefined) {
-    // Specific row range: A1:EK5
-    return `${sheetName}!A${startRow}:EK${endRow}`;
-  } else {
-    // Open-ended range: A1:EK (all rows from startRow onwards)
-    // Google Sheets API handles this correctly
-    return `${sheetName}!A${startRow}:EK`;
-  }
+  // Google Sheets API REQUIRES both row bounds: A1:EK10000 (not A1:EK)
+  const actualEndRow = endRow || 10000;
+  return `${sheetName}!A${startRow}:EK${actualEndRow}`;
 }
