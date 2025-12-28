@@ -234,6 +234,12 @@ export async function readSheetRows(
     const sheets = createSheetsClient();
     const range = getSheetRange(sheetName, startRow);
     
+    // DEBUG: Log the exact range being used
+    console.log(`[readSheetRows] Using range: "${range}"`);
+    console.log(`[readSheetRows] sheetId: "${sheetId}"`);
+    console.log(`[readSheetRows] sheetName: "${sheetName}"`);
+    console.log(`[readSheetRows] startRow: ${startRow}`);
+    
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetId,
       range
@@ -242,6 +248,7 @@ export async function readSheetRows(
     return (response.data.values as unknown[][]) || [];
   } catch (error: unknown) {
     console.error('Failed to read sheet rows:', error);
+    console.error('Full error object:', JSON.stringify(error, null, 2));
     throw new Error(
       `Failed to read sheet: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

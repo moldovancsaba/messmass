@@ -55,6 +55,20 @@ export async function POST(
         { status: 400 }
       );
     }
+    
+    // DEBUG: Log sheet ID details
+    console.log(`[connect] Received sheetId: "${sheetId}"`);
+    console.log(`[connect] sheetId length: ${sheetId.length}`);
+    console.log(`[connect] sheetId type: ${typeof sheetId}`);
+    console.log(`[connect] sheetId regex test (valid chars): ${/^[a-zA-Z0-9_-]+$/.test(sheetId)}`);
+    
+    // Validate sheet ID format (should be alphanumeric with hyphens/underscores)
+    if (!/^[a-zA-Z0-9_-]+$/.test(sheetId)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid Sheet ID format. Received: "${sheetId}"` },
+        { status: 400 }
+      );
+    }
 
     // Test connection to verify sheet exists and is accessible
     const connectionTest = await testConnection(sheetId);
