@@ -71,12 +71,15 @@ export const SHEET_HEADER_LABELS: Record<string, string> = generateSheetHeaderLa
 /**
  * WHAT: Get sheet range string for API calls
  * WHY: Utility function for building sheet A1 notation ranges
- * HOW: For open-ended ranges (entire rows), just use 'Sheet!A2:Z' format
+ * HOW: Use full alphabet range to cover all 131+ columns
+ * 
+ * Note: We use ZZZ to ensure we cover all possible columns (131+)
+ * Google Sheets API is smart enough to only return actual data
  * 
  * Examples:
- *   - getSheetRange('Events', 1) -> 'Events!A1:Z' (row 1 and beyond)
- *   - getSheetRange('Events', 2) -> 'Events!A2:Z' (row 2 and beyond)
- *   - getSheetRange('Events', 1, 5) -> 'Events!A1:Z5' (rows 1-5)
+ *   - getSheetRange('Events', 1) -> 'Events!A1:ZZZ' (row 1 and beyond, all columns)
+ *   - getSheetRange('Events', 2) -> 'Events!A2:ZZZ' (row 2 and beyond, all columns)
+ *   - getSheetRange('Events', 1, 5) -> 'Events!A1:ZZZ5' (rows 1-5, all columns)
  */
 export function getSheetRange(
   sheetName: string,
@@ -84,10 +87,10 @@ export function getSheetRange(
   endRow?: number
 ): string {
   if (endRow !== undefined) {
-    // Specific range: A2:Z10
-    return `${sheetName}!A${startRow}:Z${endRow}`;
+    // Specific range: A2:ZZZ10 (all columns, rows 2-10)
+    return `${sheetName}!A${startRow}:ZZZ${endRow}`;
   } else {
-    // Open-ended range: A2:Z (rows 2 and beyond, all columns A-Z)
-    return `${sheetName}!A${startRow}:Z`;
+    // Open-ended range: A2:ZZZ (rows 2 and beyond, all columns)
+    return `${sheetName}!A${startRow}:ZZZ`;
   }
 }
