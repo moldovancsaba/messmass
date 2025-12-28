@@ -177,39 +177,20 @@ export const SHEET_COLUMN_MAP: SheetColumnMap = {
   EM: { field: 'notes', type: 'text', required: false }
 };
 
-export const SHEET_HEADER_LABELS: Record<string, string> = {
-  A: 'MessMass UUID', B: 'Partner 1 (Home)', C: 'Partner 2 (Away)', D: 'Event Title (Custom)', E: 'Event Name (Auto)',
-  F: 'Event Date', G: 'Total Games', H: 'Games No Ads', I: 'Games With Ads', J: 'Games No Slide',
-  K: 'Games With Slide', L: 'Games No Tech', M: 'Games With Selfie', N: 'Games No Selfie', O: 'Event Attendees',
-  P: 'Unique Users', Q: 'New Users', R: 'User Registration', S: 'User Registration by Hostess', T: 'Total Fans',
-  U: 'Marketing Optin', V: 'All Images', W: 'Female', X: 'Male', Y: 'Selfies',
-  Z: 'Remote Images', AA: 'Hostess Images', AB: 'Remote Fans', AC: 'Stadium Fans', AD: 'Visit QR',
-  AE: 'Vent QR', AF: 'From QR', AG: 'QR iPhone', AH: 'QR Android', AI: 'Visit Short URL',
-  AJ: 'Vent URL', AK: 'Direct URL', AL: 'Vent Email', AM: 'Vent Facebook', AN: 'Vent Google',
-  AO: 'Vent Instagram', AP: 'From Facebook', AQ: 'From Instagram', AR: 'From Twitter', AS: 'From LinkedIn',
-  AT: 'From Google', AU: 'Social Visits', AV: 'Visit CTA1', AW: 'Visit CTA2', AX: 'Visit CTA3',
-  AY: 'Outdoor Fans', AZ: 'Home Score', BA: 'Visitor Score', BB: 'Ticket Purchases', BC: 'Approved Images',
-  BD: 'Rejected Images', BE: 'Gen Alpha', BF: 'Gen YZ', BG: 'Gen X', BH: 'Boomer',
-  BI: 'Merched', BJ: 'Jersey', BK: 'Scarf', BL: 'Flags', BM: 'Baseball Cap',
-  BN: 'Caps', BO: 'Special Merch', BP: 'Other', BQ: 'Visit Web', BR: 'Visit Facebook',
-  BS: 'Visit Instagram', BT: 'Visit Youtube', BU: 'Visit Tiktok', BV: 'Visit X', BW: 'Visit Trustpilot',
-  BX: 'Vent Android', BY: 'Vent iOS', BZ: 'Vent Popup', CA: 'Countries Reached', CB: 'Wallet Passes',
-  CC: 'Top Country 1', CD: 'Top Country 2', CE: 'Top Country 3', CF: 'Top Country 4', CG: 'Top Country 5',
-  CH: 'Bitly Clicks', CI: 'Bitly Unique', CJ: 'Bitly Mobile', CK: 'Bitly Desktop', CL: 'Bitly Tablet',
-  CM: 'Bitly Top Country', CN: 'From Insta App', CO: 'From FB Mobile', CP: 'Direct Click',
-  // Report Img
-  CQ: 'Report Img 1', CR: 'Report Img 2', CS: 'Report Img 3', CT: 'Report Img 4', CU: 'Report Img 5',
-  CV: 'Report Img 6', CW: 'Report Img 7', CX: 'Report Img 8', CY: 'Report Img 9', CZ: 'Report Img 10',
-  DA: 'Report Img 11', DB: 'Report Img 12', DC: 'Report Img 13', DD: 'Report Img 14', DE: 'Report Img 15',
-  DF: 'Report Img 16', DG: 'Report Img 17', DH: 'Report Img 18', DI: 'Report Img 19', DJ: 'Report Img 20',
-  // Report Txt
-  DQ: 'Report Txt 1', DR: 'Report Txt 2', DS: 'Report Txt 3', DT: 'Report Txt 4', DU: 'Report Txt 5',
-  DV: 'Report Txt 6', DW: 'Report Txt 7', DX: 'Report Txt 8', DY: 'Report Txt 9', DZ: 'Report Txt 10',
-  EA: 'Report Txt 11', EB: 'Report Txt 12', EC: 'Report Txt 13', ED: 'Report Txt 14', EE: 'Report Txt 15',
-  EF: 'Report Txt 16', EG: 'Report Txt 17', EH: 'Report Txt 18', EI: 'Report Txt 19', EJ: 'Report Txt 20',
-  // Meta
-  EK: 'Last Modified', EL: 'Sync Status', EM: 'Notes'
-};
+// WHAT: Generate sheet headers from column map field names
+// WHY: Headers must exactly match MongoDB field names for proper syncing
+// HOW: Automatically derive from SHEET_COLUMN_MAP to ensure consistency
+export function generateSheetHeaderLabels(): Record<string, string> {
+  const headers: Record<string, string> = {};
+  Object.entries(SHEET_COLUMN_MAP).forEach(([col, def]) => {
+    headers[col] = def.field;
+  });
+  return headers;
+}
+
+// WHAT: Cached header labels derived from column map
+// WHY: Ensure headers always match the field definitions
+export const SHEET_HEADER_LABELS: Record<string, string> = generateSheetHeaderLabels();
 
 export function columnLetterToIndex(letter: string): number {
   let index = 0;
