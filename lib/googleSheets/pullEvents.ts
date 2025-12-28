@@ -9,6 +9,7 @@ import { readSheetRows, updateSheetRow, findRowByUuid } from './client';
 import { rowsToEvents } from './rowMapper';
 import { SHEET_COLUMN_MAP, DEFAULT_SHEET_CONFIG } from './columnMap';
 import { generateDynamicColumnMap } from './dynamicMapping';
+import { visualizeColumnMapping, visualizeRowMapping, analyzeStatsMapping } from './columnMappingVisualizer';
 import type { GoogleSheetConfig, PullSummary, SyncDbAccess, PullOptions } from './types';
 
 /**
@@ -106,6 +107,26 @@ export async function pullEventsFromSheet(
     console.log(`✅ Conversion complete:`);
     console.log(`   Valid events: ${events.length}`);
     console.log(`   Conversion errors: ${errors.length}`);
+    
+    // WHAT: Show the column mapping being used
+    // WHY: Debug partial syncs by seeing which columns map to what
+    console.log(`\n${visualizeColumnMapping(columnMap)}`);
+    
+    // WHAT: Show sample row mapping if we have data
+    // WHY: See which values from sheet are mapping to which database fields
+    if (rows.length > 0) {
+      console.log(`${visualizeRowMapping(rows[0], columnMap)}`);
+      const statsAnalysis = analyzeStatsMapping(rows[0], columnMap);
+      console.log(`📊 Stats Field Population (Sample Row):`);
+      console.log(`   Populated: ${statsAnalysis.populated.length} fields`);
+      statsAnalysis.populated.slice(0, 10).forEach(item => {
+        console.log(`      ${item.col} → ${item.field} = ${item.value}`);
+      });
+      if (statsAnalysis.populated.length > 10) {
+        console.log(`      ... and ${statsAnalysis.populated.length - 10} more`);
+      }
+      console.log(`   Empty: ${statsAnalysis.empty.length} fields`);
+    }
     
     if (errors.length > 0) {
       console.error('⚠️ Conversion errors found:');
