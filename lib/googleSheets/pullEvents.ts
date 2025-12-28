@@ -45,31 +45,30 @@ export async function pullEventsFromSheet(
     console.log(`   Partner ID: ${options.partnerId}`);
     
     // WHAT: Read header row first to generate dynamic column mapping
-    // WHY: Handle sheets with different column orders or offsets
-    let headerRowOnly: unknown[][] = [];
+    // WHY: The actual sheet headers ARE the source of truth for field names
+    // HOW: Generate mapping directly from row 1 which contains the field names
+    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
+    
     try {
-      headerRowOnly = await readSheetRows(
+      const headerRowOnly = await readSheetRows(
         sheetId,
         sheetName,
         (options.config.headerRow || DEFAULT_SHEET_CONFIG.headerRow)
       );
-      console.log(`✅ Header row read: ${headerRowOnly.length} rows, ${headerRowOnly[0]?.length || 0} columns`);
+      
+      if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
+        console.log(`✅ Header row read: ${headerRowOnly[0].length} columns`);
+        // WHAT: Generate dynamic mapping from actual sheet headers
+        // WHY: Use row 1 as source of truth - it contains exact field names
+        // HOW: Match each header (A: googleSheetUuid, B: partner1Name, etc.) to field definitions
+        console.log('📋 Generating dynamic column mapping from sheet headers...');
+        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
+        console.log(`✅ Dynamic column map generated with ${Object.keys(columnMap).length} columns`);
+      } else {
+        console.warn('⚠️ Could not read header row, using default column map');
+      }
     } catch (headerError) {
       console.warn('⚠️ Failed to read header row, using default column map:', headerError);
-    }
-    
-    let columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
-    if (headerRowOnly.length > 0 && Array.isArray(headerRowOnly[0])) {
-      // WHAT: Generate dynamic mapping from actual sheet headers
-      // WHY: Automatically adapt to any column order in the sheet
-      console.log('📋 Generating dynamic column mapping from sheet headers...');
-      try {
-        columnMap = generateDynamicColumnMap(headerRowOnly[0] as string[]);
-        console.log('✅ Dynamic column map generated');
-      } catch (mapError) {
-        console.warn('⚠️ Failed to generate dynamic map, using default:', mapError);
-        columnMap = options.config.columnMap || SHEET_COLUMN_MAP;
-      }
     }
     
     // WHAT: Read all data rows from sheet

@@ -185,10 +185,20 @@ export function generateDynamicColumnMap(headerRow: string[]): SheetColumnMap {
 
 /**
  * WHAT: Convert header name to camelCase field name
- * WHY: Normalize header text for matching (e.g., "Remote Images" → "remoteImages")
+ * WHY: Normalize header text for matching - handle both formatted and bare field names
+ * HOW: If already camelCase, use as-is; if formatted text, convert to camelCase
  */
 function headerToFieldName(header: string): string {
-  // Handle special cases first
+  // WHAT: Return as-is if it looks like a bare field name (no spaces, already camelCase)
+  // WHY: Sheet headers are already the exact field names (googleSheetUuid, remoteImages, etc.)
+  // HOW: Check if header contains spaces - if not, it's probably a bare field name
+  if (!header.includes(' ') && !header.includes('(') && !header.includes('-')) {
+    return header; // Already in correct format: googleSheetUuid, remoteImages, etc.
+  }
+  
+  // Handle formatted text headers (if any exist)
+  // "Remote Images" → "remoteImages"
+  // "Partner 1 (Home)" → "partner1Name"
   if (header === 'MessMass UUID') return 'googleSheetUuid';
   if (header === 'Partner 1 (Home)') return 'partner1Name';
   if (header === 'Partner 2 (Away)') return 'partner2Name';
