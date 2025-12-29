@@ -539,7 +539,7 @@
   padding: var(--mm-space-3) var(--mm-space-4);
   text-align: left;
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
-  color: var(--chartTitleColor, var(--mm-gray-900));
+  color: var(--chartTextColor, var(--mm-gray-700));
 }
 
 .tableMarkdown table td {
