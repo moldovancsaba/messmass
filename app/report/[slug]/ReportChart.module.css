@@ -299,14 +299,15 @@
   flex: 0 0 20%; /* 3:5:2 → legend 20% */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Start from top, allow scrolling */
   align-items: center;
   gap: var(--mm-space-1);
   width: 100%;
   container-type: size;
   min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
-  max-height: 100%; /* CRITICAL: Prevent overflow in small containers */
-  overflow-y: auto;
+  height: 20%; /* CRITICAL: Constrain to exactly 20% of parent */
+  max-height: 20%; /* CRITICAL: Never exceed 20% of parent */
+  overflow-y: auto; /* CRITICAL: Scroll when content exceeds height */
   overflow-x: hidden;
   padding: var(--mm-space-1);
   box-sizing: border-box;
@@ -459,13 +460,8 @@
 /* Text Chart - Uses base .chart structure */
 .text {
   /* REMOVED: min-height - height is deterministic from block calculator */
-}
-
-.text .chartBody {
-  /* WHAT: Center text and fill space */
-  align-items: center;
-  justify-content: center;
-  padding: var(--mm-space-4); /* More padding for better visual breathing */
+  /* CRITICAL: CellWrapper handles flex-direction: column, don't override */
+  /* The .chart base class already has flex-direction: column */
 }
 
 .textTitle {
@@ -649,11 +645,14 @@
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Fixed 30% height regardless of wrapper */
-  height: 30%;
+  /* WHAT: Fixed 20% height regardless of wrapper */
+  height: 20%;
+  max-height: 20%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Start from top, allow scrolling */
+  overflow-y: auto; /* CRITICAL: Scroll when content exceeds height */
+  box-sizing: border-box;
 }
 
 /* CellWrapper + Bar Chart */
