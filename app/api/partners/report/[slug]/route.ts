@@ -149,7 +149,7 @@ const db = client.db(config.dbName);
       totalEvents: events.length
     });
   } catch (error) {
-    logError('Failed to fetch partner report', { context: 'partners-report', slug }, error instanceof Error ? error : new Error(String(error)));
+    logError('Failed to fetch partner report', { context: 'partners-report', slug: slug || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
