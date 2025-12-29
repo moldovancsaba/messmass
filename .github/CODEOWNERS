@@ -1,0 +1,25 @@
+# CODEOWNERS - Policy Surface Protection
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Layout Grammar Progress Tracker (Critical Policy Document)
+LAYOUT_GRAMMAR_PROGRESS_TRACKER.md @moldovancsaba
+
+# Design System Documentation (Policy Surface)
+docs/design/ @moldovancsaba
+
+# Guardrail Scripts (Policy Enforcement)
+scripts/check-layout-grammar-violations.ts @moldovancsaba
+scripts/check-dependency-guardrail.ts @moldovancsaba
+
+# CI/CD Workflows (Policy Enforcement)
+.github/workflows/layout-grammar-guardrail.yml @moldovancsaba
+.github/workflows/dependency-guardrail.yml @moldovancsaba
+
+# Program Standards (Canonical Policy)
+LAYOUT_GRAMMAR_PROGRESS_TRACKER.md @moldovancsaba
+DESIGN_SYSTEM_PLAN.md @moldovancsaba
+UNIFIED_DESIGN_SYSTEM_MASTER_PLAN.md @moldovancsaba
+
+# Agent Coordination Protocol
+docs/AGENT_COORDINATION.md @moldovancsaba
+
