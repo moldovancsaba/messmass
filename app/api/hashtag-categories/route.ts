@@ -457,14 +457,14 @@ export async function DELETE(request: NextRequest): Promise<NextResponse<Hashtag
       );
     }
 
-    console.log(`✅ Deleted hashtag category: ${existingCategory.name}`);
+    logInfo('Deleted hashtag category', { context: 'hashtag-categories', categoryName: existingCategory.name });
 
     return NextResponse.json({
       success: true
     });
 
   } catch (error) {
-    console.error('❌ Failed to delete hashtag category:', error);
+    logError('Failed to delete hashtag category', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to delete category', debug: error },
       { status: 500 }

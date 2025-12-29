@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { getDb } from '@/lib/db';
 import { ReportTemplate, ResolvedTemplate, HARDCODED_DEFAULT_TEMPLATE } from '@/lib/reportTemplateTypes';
+import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
 
 // WHAT: Report configuration resolution endpoint (v11.0.0)
 // WHY: Central API for resolving report templates with hierarchy support
@@ -23,7 +24,7 @@ async function resolveReportTemplate(
   const projectsCollection = db.collection('projects');
   const partnersCollection = db.collection('partners');
 
-  console.log(`🔍 Resolving template for ${entityType}: ${identifier}`);
+  logDebug('Resolving template', { context: 'report-config', entityType, identifier });
 
   /**
    * WHAT: Populate template dataBlocks with full block documents
@@ -52,7 +53,7 @@ async function resolveReportTemplate(
       const block = blocks.find(b => b._id.toString() === blockId);
       
       if (!block) {
-        console.warn(`⚠️  Block not found: ${blockId}`);
+        logWarn('Block not found', { context: 'report-config', blockId });
         return null;
       }
 
@@ -89,7 +90,7 @@ async function resolveReportTemplate(
       const isUuidV4 = uuidV4Pattern.test(identifier);
       
       if (!isMongoObjectId && !isUuidV4) {
-        console.log('❌ Invalid secure UUID format:', identifier);
+        logWarn('Invalid secure UUID format', { context: 'report-config', entityType: 'project', identifier });
         throw new Error('Invalid project ID format');
       }
 
@@ -111,7 +112,7 @@ async function resolveReportTemplate(
         
         const template = await templatesCollection.findOne({ _id: templateId });
         if (template) {
-          console.log(`✅ Using project-specific template: ${template.name}`);
+          logInfo('Using project-specific template', { context: 'report-config', templateName: template.name, projectId: identifier });
           const populated = await populateDataBlocks(template);
           
           // WHAT: Project's styleIdEnhanced takes precedence over template styleId
@@ -122,11 +123,7 @@ async function resolveReportTemplate(
             styleId: project.styleIdEnhanced || populated.styleId || null
           };
           
-          console.log('🎨 StyleId resolution (project-level):', {
-            templateStyleId: populated.styleId,
-            projectStyleId: project.styleIdEnhanced,
-            finalStyleId: finalTemplate.styleId
-          });
+          logDebug('StyleId resolution (project-level)', { context: 'report-config', templateStyleId: populated.styleId, projectStyleId: project.styleIdEnhanced, finalStyleId: finalTemplate.styleId });
           
           return {
             template: finalTemplate as ReportTemplate,
@@ -152,7 +149,7 @@ async function resolveReportTemplate(
           
           const template = await templatesCollection.findOne({ _id: templateId });
           if (template) {
-            console.log(`✅ Using partner template: ${template.name} (via ${partner.name})`);
+            logInfo('Using partner template', { context: 'report-config', templateName: template.name, partnerName: partner.name, projectId: identifier });
             const populated = await populateDataBlocks(template);
             
             // WHAT: Style resolution hierarchy: project.styleIdEnhanced > partner.styleId > template.styleId
@@ -163,12 +160,7 @@ async function resolveReportTemplate(
               styleId: project.styleIdEnhanced || partner.styleId || populated.styleId || null
             };
             
-            console.log('🎨 StyleId resolution (partner-level):', {
-              templateStyleId: populated.styleId,
-              partnerStyleId: partner.styleId,
-              projectStyleId: project.styleIdEnhanced,
-              finalStyleId: finalTemplate.styleId
-            });
+            logDebug('StyleId resolution (partner-level)', { context: 'report-config', templateStyleId: populated.styleId, partnerStyleId: partner.styleId, projectStyleId: project.styleIdEnhanced, finalStyleId: finalTemplate.styleId });
             
             return {
               template: finalTemplate as ReportTemplate,
@@ -179,7 +171,7 @@ async function resolveReportTemplate(
         }
       }
     } catch (error) {
-      console.error('⚠️  Error resolving project/partner template:', error);
+      logWarn('Error resolving project/partner template', { context: 'report-config', entityType: 'project', identifier }, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -198,7 +190,7 @@ async function resolveReportTemplate(
       const isUuidV4 = uuidV4Pattern.test(identifier);
       
       if (!isMongoObjectId && !isUuidV4) {
-        console.log('❌ Invalid secure UUID format:', identifier);
+        logWarn('Invalid secure UUID format', { context: 'report-config', entityType: 'partner', identifier });
         throw new Error('Invalid partner ID format');
       }
 
@@ -219,7 +211,7 @@ async function resolveReportTemplate(
         
         const template = await templatesCollection.findOne({ _id: templateId });
         if (template) {
-          console.log(`✅ Using partner-specific template: ${template.name}`);
+          logInfo('Using partner-specific template', { context: 'report-config', templateName: template.name, partnerId: identifier });
           const populated = await populateDataBlocks(template);
           
           // WHAT: Partner's styleId takes precedence over template styleId
@@ -230,11 +222,7 @@ async function resolveReportTemplate(
             styleId: partner.styleId || populated.styleId || null
           };
           
-          console.log('🎨 StyleId resolution:', {
-            templateStyleId: populated.styleId,
-            partnerStyleId: partner.styleId,
-            finalStyleId: finalTemplate.styleId
-          });
+          logDebug('StyleId resolution', { context: 'report-config', templateStyleId: populated.styleId, partnerStyleId: partner.styleId, finalStyleId: finalTemplate.styleId });
           
           return {
             template: finalTemplate as ReportTemplate,
@@ -244,7 +232,7 @@ async function resolveReportTemplate(
         }
       }
     } catch (error) {
-      console.error('⚠️  Error resolving partner template:', error);
+      logWarn('Error resolving partner template', { context: 'report-config', entityType: 'partner', identifier }, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -253,13 +241,13 @@ async function resolveReportTemplate(
   // ==========================================
   if (identifier === '__default_event__') {
     try {
-      console.log('🎯 Special case: Forcing default event template for partner report');
+      logDebug('Special case: Forcing default event template for partner report', { context: 'report-config' });
       const defaultEventTemplate = await templatesCollection.findOne({ 
         type: 'event', 
         isDefault: true 
       });
       if (defaultEventTemplate) {
-        console.log(`✅ Using forced default event template: ${defaultEventTemplate.name}`);
+        logInfo('Using forced default event template', { context: 'report-config', templateName: defaultEventTemplate.name });
         const populated = await populateDataBlocks(defaultEventTemplate);
         return {
           template: populated as ReportTemplate,
@@ -268,7 +256,7 @@ async function resolveReportTemplate(
         };
       }
     } catch (error) {
-      console.error('⚠️  Error resolving forced default event template:', error);
+      logWarn('Error resolving forced default event template', { context: 'report-config' }, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -279,7 +267,7 @@ async function resolveReportTemplate(
   // WHY: Hashtags/filters don't have individual templates, but should use same v12 system
   // HOW: Skip to default template (no entity-specific lookups needed)
   if (entityType === 'hashtag' || entityType === 'filter') {
-    console.log(`🏷️  Resolving template for ${entityType} report: ${identifier}`);
+    logDebug('Resolving template for hashtag/filter report', { context: 'report-config', entityType, identifier });
     // Fall through to default template resolution below
   }
 
@@ -289,7 +277,7 @@ async function resolveReportTemplate(
   try {
     const defaultTemplate = await templatesCollection.findOne({ isDefault: true });
     if (defaultTemplate) {
-      console.log(`✅ Using default template: ${defaultTemplate.name}`);
+      logInfo('Using default template', { context: 'report-config', templateName: defaultTemplate.name });
       const populated = await populateDataBlocks(defaultTemplate);
       return {
         template: populated as ReportTemplate,
@@ -298,13 +286,13 @@ async function resolveReportTemplate(
       };
     }
   } catch (error) {
-    console.error('⚠️  Error resolving default template:', error);
+    logWarn('Error resolving default template', { context: 'report-config' }, error instanceof Error ? error : new Error(String(error)));
   }
 
   // ==========================================
   // LEVEL 4: Hardcoded Fallback
   // ==========================================
-  console.log('⚠️  No database templates found, using hardcoded fallback');
+  logWarn('No database templates found, using hardcoded fallback', { context: 'report-config' });
   return {
     template: {
       ...HARDCODED_DEFAULT_TEMPLATE,
@@ -368,7 +356,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('❌ Failed to resolve report config:', error);
+    logError('Failed to resolve report config', { context: 'report-config', identifier, entityType }, error instanceof Error ? error : new Error(String(error)));
     
     // Return hardcoded fallback on any error
     return NextResponse.json({
