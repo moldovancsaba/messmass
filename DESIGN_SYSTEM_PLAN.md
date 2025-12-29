@@ -682,9 +682,10 @@ font-size: clamp(min, responsive-value, max);
    - Layouts flatten to single column
 
 3. **Overflow:**
-   - Content scrolls if it exceeds container
-   - Legends scroll if they exceed space
-   - No horizontal overflow
+   - **FORBIDDEN:** No scrolling allowed (see Section 0)
+   - **FORBIDDEN:** No truncation, ellipsis, or hidden overflow
+   - If content exceeds container → Block height increases or Block splits
+   - If neither is possible → Publishing is blocked
 
 ### Breakpoints
 
