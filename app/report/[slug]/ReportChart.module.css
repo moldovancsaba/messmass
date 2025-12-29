@@ -458,52 +458,72 @@
 
 /* Text Chart - Simple table structure to guarantee vertical layout */
 .text {
-  display: block;
-  height: 100%;
-  width: 100%;
+  /* CRITICAL: Override base .chart flex display to allow table structure */
+  display: block !important;
+  flex-direction: unset !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 .textTable {
   /* WHAT: Table structure to force title above content */
   /* WHY: Tables guarantee vertical stacking - cannot be overridden */
-  width: 100%;
-  height: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  table-layout: fixed;
+  display: table !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  table-layout: fixed !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.textTable tbody {
+  display: table-row-group !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.textTable tr {
+  display: table-row !important;
+  width: 100% !important;
 }
 
 .textTitleCell {
   /* WHAT: Title row - top of chart */
-  height: auto;
-  padding: var(--mm-space-2);
-  text-align: center;
-  vertical-align: middle;
-  border: none;
+  display: table-cell !important;
+  height: auto !important;
+  width: 100% !important;
+  padding: var(--mm-space-2) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  border: none !important;
 }
 
 .textTitleText {
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--chartTitleColor);
-  font-size: clamp(0.95rem, 2.6cqw, 1.25rem);
-  line-height: 1.25;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  word-break: break-word;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  font-weight: var(--mm-font-weight-semibold) !important;
+  color: var(--chartTitleColor) !important;
+  font-size: clamp(0.95rem, 2.6cqw, 1.25rem) !important;
+  line-height: 1.25 !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+  word-break: break-word !important;
 }
 
 .textContentCell {
   /* WHAT: Content row - bottom of chart, fills remaining space */
-  height: 100%;
-  padding: var(--mm-space-2);
-  text-align: center;
-  vertical-align: middle;
-  border: none;
+  display: table-cell !important;
+  height: 100% !important;
+  width: 100% !important;
+  padding: var(--mm-space-2) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  border: none !important;
 }
 
 .textContent {
