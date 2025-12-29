@@ -1,0 +1,28 @@
+name: Dependency Guardrail
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your project's Node.js version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Dependency Guardrail
+        run: npm run check:dependencies
+
