@@ -37,14 +37,23 @@
 **Signing rule:** Every note, PR description, and decision entry in this repo must end with:
 `— Sultan` / `— Cursora` / `— Chappie`
 
-### Approved Tech Stack (No Exceptions)
+### Approved Tech Stack (No Exceptions) — LOCKED
 - Next.js (frontend + backend)
-- WebSocket (ws) (real-time) — Note: Codebase uses `ws` package, not Socket.io library
-- MongoDB (database) — Note: Codebase uses native MongoDB driver, not Mongoose
+- **WebSocket (`ws` package)** (real-time) — **NOT Socket.io library**
+- **MongoDB (native driver)** (database) — **NOT Mongoose**
 - Vercel (hosting/deployment)
 - GitHub (version control)
 
-**Prohibited:** adding other frameworks/services/libraries to replace any of the above. If tooling is needed, prefer built-ins and minimal internal scripts.
+**Decision Date:** 2025-01-XX  
+**Decision By:** Sultan  
+**Rationale:** Codebase uses `ws` package and native MongoDB driver. Migration to Socket.io/Mongoose would be architectural change requiring separate approval.
+
+**Prohibited:** 
+- Adding Socket.io library (use `ws` package)
+- Adding Mongoose (use native MongoDB driver)
+- Adding other frameworks/services/libraries to replace any of the above
+
+**If tooling is needed, prefer built-ins and minimal internal scripts.**
 
 ### Non-Negotiable Rendering Policy (P0)
 - **No scrolling anywhere** (vertical or horizontal) in report rendering.
