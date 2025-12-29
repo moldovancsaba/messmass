@@ -171,29 +171,48 @@ export class ReportCalculator {
     let value: number | 'NA' = 'NA';
     
     if (isPercentage) {
-      // WHAT: Try to detect if formula is a sum of variables (e.g., [stats.var1] + [stats.var2] + [stats.var3])
+      // WHAT: Try to detect if formula is a sum of variables (e.g., [stats.var1] + [stats.var2] OR stats.var1 + stats.var2)
       // WHY: For percentage KPIs, we want the average of the percentages, not the sum
       // HOW: Check if formula contains only variable references and addition operators
       const trimmedFormula = chart.formula.trim();
-      // WHAT: Pattern matches formulas that are only additions of variables (no other operators)
-      // WHY: Only simple sums should use average calculation, complex formulas should work as-is
-      // PATTERN: One or more [variable] + [variable] patterns, optionally with spaces
-      const sumPattern = /^(\[[^\]]+\]\s*\+\s*)+\[[^\]]+\]$/;
-      // WHAT: Also check if formula contains only variables and + operators (no -, *, /, etc.)
-      // WHY: More flexible detection for formulas like "[var1] + [var2] + [var3]"
-      const onlyAdditions = /^[\s\[\]a-zA-Z0-9_.:+\-]+$/.test(trimmedFormula) && 
-                           trimmedFormula.includes('+') && 
-                           !trimmedFormula.match(/[-*/()]/);
-      const simpleSumMatch = trimmedFormula.match(sumPattern) || onlyAdditions;
       
-      if (simpleSumMatch) {
+      // WHAT: Check if formula contains only additions (no -, *, /, etc.)
+      // WHY: Only simple sums should use average calculation, complex formulas should work as-is
+      // PATTERN: Must contain + operator and no other arithmetic operators (except +)
+      const hasOnlyAdditions = trimmedFormula.includes('+') && 
+                               !trimmedFormula.match(/[-*/()]/) &&
+                               /^[\s\[\]a-zA-Z0-9_.:+\-]+$/.test(trimmedFormula);
+      
+      if (hasOnlyAdditions) {
         // WHAT: Extract all variable references from the formula
         // WHY: Need to evaluate each variable separately to calculate average
-        const variableRegex = /\[([^\]]+)\]/g;
+        // HOW: Handle both bracketed format [stats.var1] and non-bracketed format stats.var1
         const variables: string[] = [];
+        
+        // First, try to extract from bracketed format: [stats.var1] or [var1]
+        const bracketRegex = /\[([^\]]+)\]/g;
         let match;
-        while ((match = variableRegex.exec(chart.formula)) !== null) {
+        while ((match = bracketRegex.exec(trimmedFormula)) !== null) {
           variables.push(match[1]);
+        }
+        
+        // If no bracketed variables found, try non-bracketed format: stats.var1 or var1
+        if (variables.length === 0) {
+          // Split by + and extract variable names
+          const parts = trimmedFormula.split('+').map(p => p.trim()).filter(p => p.length > 0);
+          for (const part of parts) {
+            // Remove any leading/trailing whitespace and extract variable name
+            // Handle both stats.varName and varName formats
+            const varMatch = part.match(/^(?:stats\.)?([a-zA-Z][a-zA-Z0-9_]*)$/);
+            if (varMatch) {
+              // If it doesn't start with stats., add it for consistency
+              const varName = part.startsWith('stats.') ? part : `stats.${part}`;
+              variables.push(varName);
+            } else if (part.match(/^stats\.[a-zA-Z][a-zA-Z0-9_]*$/)) {
+              // Already in stats.varName format
+              variables.push(part);
+            }
+          }
         }
         
         if (variables.length > 0) {
@@ -204,8 +223,24 @@ export class ReportCalculator {
           for (const variable of variables) {
             // WHAT: Create a formula with just this variable to evaluate it
             // WHY: Need individual values to calculate average
-            const varFormula = `[${variable}]`;
-            const varValue = this.evaluateFormula(varFormula);
+            // HOW: Try bracketed format first, fallback to direct variable access
+            let varValue: number | 'NA' = 'NA';
+            
+            // Try bracketed format: [stats.varName]
+            const bracketFormula = `[${variable}]`;
+            varValue = this.evaluateFormula(bracketFormula);
+            
+            // If that fails, try direct variable access from stats
+            if (varValue === 'NA' || (typeof varValue !== 'number')) {
+              // Extract field name (remove stats. prefix if present)
+              const fieldName = variable.startsWith('stats.') ? variable.substring(6) : variable;
+              // Try direct access
+              const directValue = (this.stats as any)[fieldName];
+              if (typeof directValue === 'number' && !isNaN(directValue)) {
+                varValue = directValue;
+              }
+            }
+            
             if (typeof varValue === 'number' && !isNaN(varValue)) {
               values.push(varValue);
             }
