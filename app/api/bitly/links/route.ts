@@ -388,7 +388,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('[GET /api/bitly/links] Error:', error);
+    logError('GET /api/bitly/links error', { context: 'bitly-links' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
