@@ -82,6 +82,9 @@ const APPROVED_RUNTIME_DEPENDENCIES: ApprovedDependency[] = [
   { name: 'lucide-react', category: 'ui', required: false },
   { name: 'focus-trap-react', category: 'ui', required: false },
   
+  // Type Definitions (some @types packages are in dependencies, not devDependencies)
+  { name: '@types/nodemailer', category: 'core', required: false },
+  
 ];
 
 /**
