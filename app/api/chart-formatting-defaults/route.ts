@@ -23,6 +23,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,7 @@ const db = client.db(config.dbName);
       availableSuffixes: defaults.availableSuffixes || []
     });
   } catch (error) {
-    console.error('Error fetching formatting defaults:', error);
+    logError('Error fetching formatting defaults', { context: 'chart-formatting-defaults' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch formatting defaults' },
       { status: 500 }
@@ -95,7 +96,7 @@ const db = client.db(config.dbName);
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating formatting defaults:', error);
+    logError('Error updating formatting defaults', { context: 'chart-formatting-defaults' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update formatting defaults' },
       { status: 500 }

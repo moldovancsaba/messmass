@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { ChartConfiguration } from '@/lib/chartConfigTypes';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
         }
       );
 
-      console.log(`✅ Updated chart configuration: ${chartId}`);
+      logInfo('Updated chart configuration', { context: 'auto-generate-chart-block', chartId });
 
       return NextResponse.json({
         success: true,
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
       // WHY: First time this slot is used
       const chartResult = await chartsCollection.insertOne(chartConfig);
 
-      console.log(`✅ Created chart configuration: ${chartId}`);
+      logInfo('Created chart configuration', { context: 'auto-generate-chart-block', chartId });
 
       // WHAT: Also create data_block wrapper for visualization editor
       // WHY: Visualization editor uses data_blocks as container, which references chart_algorithms
@@ -140,7 +141,7 @@ export async function POST(request: NextRequest) {
 
       if (!existingBlock) {
         const blockResult = await blocksCollection.insertOne(dataBlock);
-        console.log(`✅ Created data block wrapper: ${dataBlockName}`);
+        logInfo('Created data block wrapper', { context: 'auto-generate-chart-block', dataBlockName, chartId });
       }
 
       return NextResponse.json({
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('❌ Failed to auto-generate chart block:', error);
+    logError('Failed to auto-generate chart block', { context: 'auto-generate-chart-block' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to auto-generate chart block' },
       { status: 500 }

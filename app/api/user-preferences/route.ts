@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getAdminUser } from '@/lib/auth';
+import { error as logError } from '@/lib/logger';
 
 interface UserPreferences {
   userId: string; // User email/identifier
@@ -36,7 +37,7 @@ export async function GET() {
       preferences: preferences || { userId: user.email }
     });
   } catch (error) {
-    console.error('Failed to fetch user preferences:', error);
+    logError('Failed to fetch user preferences', { context: 'user-preferences' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch preferences' },
       { status: 500 }
@@ -82,7 +83,7 @@ export async function PUT(request: NextRequest) {
       message: 'Preferences updated'
     });
   } catch (error) {
-    console.error('Failed to update user preferences:', error);
+    logError('Failed to update user preferences', { context: 'user-preferences' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update preferences' },
       { status: 500 }

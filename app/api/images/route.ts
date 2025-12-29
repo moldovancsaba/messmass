@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { cookies } from 'next/headers';
+import { error as logError } from '@/lib/logger';
 
 export const runtime = 'nodejs';
 
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('[GET /api/images] Error:', error);
+    logError('GET /api/images error', { context: 'images' }, error instanceof Error ? error : new Error(String(error)));
     
     return NextResponse.json(
       {
