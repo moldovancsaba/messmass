@@ -539,13 +539,13 @@
   padding: var(--mm-space-3) var(--mm-space-4);
   text-align: left;
   border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
-  color: var(--chartTextColor, var(--mm-gray-700));
+  color: var(--chartValueColor, var(--mm-gray-900));
 }
 
 .tableMarkdown table td {
   padding: var(--mm-space-3) var(--mm-space-4);
   border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
-  color: var(--chartTextColor, var(--mm-gray-700));
+  color: var(--chartValueColor, var(--mm-gray-900));
 }
 
 .tableMarkdown table tbody tr:hover {
