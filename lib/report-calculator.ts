@@ -462,6 +462,10 @@ export class ReportCalculator {
         // Image valid if URL present
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
 
+      case 'table':
+        // Table valid if non-empty string (markdown table content)
+        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
+
       case 'kpi':
         // KPI valid if not NA
         return result.kpiValue !== 'NA' && result.kpiValue !== undefined;

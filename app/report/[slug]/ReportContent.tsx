@@ -28,6 +28,9 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
     case 'image':
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
     
+    case 'table':
+      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+    
     case 'kpi':
       return result.kpiValue !== undefined && result.kpiValue !== 'NA';
     
