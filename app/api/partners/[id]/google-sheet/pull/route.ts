@@ -30,8 +30,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
 
     // Validate partner ID
     if (!ObjectId.isValid(id)) {
@@ -235,7 +237,7 @@ export async function POST(
     });
 
   } catch (error) {
-    logError('Error pulling events from Google Sheet', { context: 'google-sheet-pull', partnerId: id }, error instanceof Error ? error : new Error(String(error)));
+    logError('Error pulling events from Google Sheet', { context: 'google-sheet-pull', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
