@@ -707,10 +707,12 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/projects - Update existing project
 export async function PUT(request: NextRequest) {
+  let projectId: string | undefined;
   try {
     const body = await request.json();
     // Enhanced to support both traditional and categorized hashtags + styleId + reportTemplateId + partner references
-    let { projectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
+    let { projectId: bodyProjectId, eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, reportTemplateId, partner1Id, partner2Id } = body;
+    projectId = bodyProjectId;
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -943,7 +945,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    logError('Failed to update project', { context: 'projects', projectId }, error instanceof Error ? error : new Error(String(error)));
+    logError('Failed to update project', { context: 'projects', projectId: projectId || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -956,9 +958,10 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/projects - Delete project
 export async function DELETE(request: NextRequest) {
+  let projectId: string | null = null;
   try {
     const url = new URL(request.url);
-    const projectId = url.searchParams.get('projectId');
+    projectId = url.searchParams.get('projectId');
 
     if (!projectId || !ObjectId.isValid(projectId)) {
       return NextResponse.json(
@@ -1025,7 +1028,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    logError('Failed to delete project', { context: 'projects', projectId }, error instanceof Error ? error : new Error(String(error)));
+    logError('Failed to delete project', { context: 'projects', projectId: projectId || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
