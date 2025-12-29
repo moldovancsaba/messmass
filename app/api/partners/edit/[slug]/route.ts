@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
