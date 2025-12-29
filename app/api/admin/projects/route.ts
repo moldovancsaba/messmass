@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { error as logError, info as logInfo } from '@/lib/logger';
 import { MongoClient, ObjectId } from 'mongodb';
 import config from '@/lib/config';
 
@@ -22,7 +23,7 @@ async function connectToDatabase() {
     cachedClient = client;
     return client;
   } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
+    logError('Failed to connect to MongoDB', { context: 'admin/projects' }, error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -44,7 +45,7 @@ async function verifySSO(token: string) {
     const userData = await response.json();
     return userData.user;
   } catch (error) {
-    console.error('SSO verification failed:', error);
+    logError('SSO verification failed', { context: 'admin/projects' }, error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }
@@ -91,7 +92,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} accessing projects`);
+    logInfo('Admin accessing projects', { context: 'admin/projects', adminName: user.name, adminEmail: user.email });
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
       .sort({ updatedAt: -1 })
       .toArray();
 
-    console.log(`✅ Retrieved ${projects.length} projects for admin`);
+    logInfo('Retrieved projects for admin', { context: 'admin/projects', projectCount: projects.length, adminEmail: user.email });
 
     const formattedProjects = projects.map(project => ({
       _id: project._id.toString(),
@@ -127,7 +128,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch admin projects:', error);
+    logError('Failed to fetch admin projects', { context: 'admin/projects' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -176,7 +177,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} creating project: ${eventName}`);
+    logInfo('Admin creating project', { context: 'admin/projects', adminName: user.name, adminEmail: user.email, eventName });
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
@@ -195,7 +196,7 @@ export async function POST(request: NextRequest) {
     };
 
     const result = await collection.insertOne(project);
-    console.log(`✅ Admin project created with ID: ${result.insertedId}`);
+    logInfo('Admin project created successfully', { context: 'admin/projects', projectId: result.insertedId.toString(), eventName, adminEmail: user.email });
 
     return NextResponse.json({
       success: true,
@@ -207,7 +208,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to create admin project:', error);
+    logError('Failed to create admin project', { context: 'admin/projects' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
