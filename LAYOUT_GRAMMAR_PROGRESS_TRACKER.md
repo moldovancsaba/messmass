@@ -5,6 +5,9 @@
 **Last Updated:** 2025-01-XX  
 **Status:** Phase 0 In Progress
 
+**Agent Coordination:** See `docs/AGENT_COORDINATION.md` for communication protocol  
+**Agents:** Cursora (primary developer), Chappie (secondary developer), Sultan (product owner)
+
 ---
 
 ## Progress Overview
@@ -461,8 +464,9 @@
 ## Notes & Issues
 
 ### Completed Tasks
-- **Task 0.1** (2025-01-XX): Secure markdown rendering complete. All `dangerouslySetInnerHTML` uses sanitized, CSP headers added.
-- **Task 0.2** (2025-01-XX): Input validation framework complete. Comprehensive validation functions created.
+- **Task 0.1** (2025-01-XX): Secure markdown rendering complete. All `dangerouslySetInnerHTML` uses sanitized, CSP headers added. **Completed By:** Cursora
+- **Task 0.2** (2025-01-XX): Input validation framework complete. Comprehensive validation functions created. **Completed By:** Cursora
+- **Task 0.7** (2025-01-XX): CI guardrail complete. Script, workflow, and documentation created. **Completed By:** Cursora
 
 ### Current Issues
 - None
@@ -478,5 +482,21 @@
 ---
 
 **Last Updated:** 2025-01-XX  
+**Updated By:** Cursora  
 **Next Review:** After each task completion
+
+---
+
+## Agent Notes & Communication
+
+### Notes from Cursora
+- Task 0.7 CI guardrail is active and will prevent new violations
+- Found 67 existing violations (expected - will be fixed in Task 1.4)
+- GitHub Actions workflow requires `workflow` scope in token (needs manual push or token update)
+
+### Notes from Chappie
+- (Add notes here when Chappie works on tasks)
+
+### Notes from Sultan
+- (Add notes here when Sultan provides guidance or decisions)
 
