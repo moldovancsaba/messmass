@@ -39,6 +39,7 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ linkId: string }> }
 ) {
+  let linkId: string | undefined;
   try {
     // WHAT: Verify admin authentication
     // WHY: Analytics data is sensitive and admin-only
@@ -51,7 +52,8 @@ export async function GET(
     }
 
     // WHAT: Validate linkId parameter
-    const { linkId } = await context.params;
+    const params = await context.params;
+    linkId = params.linkId;
     if (!ObjectId.isValid(linkId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid linkId format' },
@@ -79,7 +81,7 @@ export async function GET(
     // WHY: Allows on-demand analytics refresh before automated sync
     if (refresh) {
       try {
-        console.log(`[Analytics] Refreshing data for link ${linkId} (${link.bitlink})`);
+        logInfo('Refreshing analytics data for link', { context: 'bitly-analytics', linkId: linkId || 'unknown', bitlink: link.bitlink });
 
         // WHAT: Fetch all analytics from Bitly API in parallel
         // WHY: Minimizes total request time and respects rate limits
@@ -128,7 +130,7 @@ export async function GET(
         });
 
       } catch (error) {
-        logError('Analytics refresh failed', { context: 'bitly-analytics', linkId }, error instanceof Error ? error : new Error(String(error)));
+        logError('Analytics refresh failed', { context: 'bitly-analytics', linkId: linkId || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
         // WHAT: Return stale data if refresh fails
         // WHY: Partial failure shouldn't break the entire request
         return NextResponse.json({
@@ -150,7 +152,7 @@ export async function GET(
     });
 
   } catch (error) {
-    logError('GET /api/bitly/analytics/[linkId] error', { context: 'bitly-analytics', linkId }, error instanceof Error ? error : new Error(String(error)));
+    logError('GET /api/bitly/analytics/[linkId] error', { context: 'bitly-analytics', linkId: linkId || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
