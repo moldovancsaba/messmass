@@ -228,16 +228,19 @@ export class ReportCalculator {
             
             // Try bracketed format: [stats.varName]
             const bracketFormula = `[${variable}]`;
-            varValue = this.evaluateFormula(bracketFormula);
+            const evalResult = this.evaluateFormula(bracketFormula);
             
-            // If that fails, try direct variable access from stats
-            if (varValue === 'NA' || (typeof varValue !== 'number')) {
+            // Handle evaluateFormula return type (string | number | 'NA')
+            if (typeof evalResult === 'number' && !isNaN(evalResult)) {
+              varValue = evalResult;
+            } else {
+              // If that fails, try direct variable access from stats
               // Extract field name (remove stats. prefix if present)
               const fieldName = variable.startsWith('stats.') ? variable.substring(6) : variable;
               // Try direct access
               const directValue = (this.stats as any)[fieldName];
               if (typeof directValue === 'number' && !isNaN(directValue)) {
-                varValue = directValue as number;
+                varValue = directValue;
               } else {
                 varValue = 'NA';
               }
