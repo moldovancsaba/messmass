@@ -106,6 +106,27 @@ export async function middleware(request: NextRequest) {
   const corsHeaders = buildCorsHeaders(request);
   corsHeaders.forEach((v, k) => response.headers.set(k, v));
   
+  // WHAT: Add Content Security Policy (CSP) headers
+  // WHY: Prevent XSS attacks by restricting what resources can be loaded
+  // HOW: Strict CSP that allows only same-origin resources and inline styles (for design tokens)
+  // SECURITY: Phase 0 Task 0.1 - Secure Markdown Rendering
+  const cspHeader = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for Next.js scripts
+    "style-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for CSS custom properties (design tokens)
+    "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
+    "font-src 'self' data: https:", // Allow fonts from same origin, data URIs, and HTTPS (Google Fonts)
+    "connect-src 'self'", // API calls to same origin only
+    "frame-ancestors 'none'", // Prevent clickjacking
+    "base-uri 'self'", // Restrict base tag
+    "form-action 'self'", // Restrict form submissions
+  ].join('; ');
+  
+  response.headers.set('Content-Security-Policy', cspHeader);
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
   // NOTE: Cookie setting removed from middleware - Next.js middleware cannot reliably set cookies
   // CSRF tokens are now set via /api/csrf-token endpoint, which clients must call on first load
   // See: lib/apiClient.ts ensureCsrfToken() for automatic token fetching
