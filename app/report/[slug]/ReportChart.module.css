@@ -503,7 +503,9 @@
 .textContentWrapper {
   /* WHAT: Content container - bottom of chart, fills remaining space */
   /* WHY: Separate block-level div that cannot be inline */
-  display: block !important;
+  display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
+  align-items: center !important; /* CRITICAL: Center content vertically */
+  justify-content: center !important; /* CRITICAL: Center content horizontally */
   width: 100% !important;
   height: calc(100% - var(--mm-space-4)) !important; /* Fill remaining space minus title padding */
   min-height: 0 !important;
@@ -524,11 +526,14 @@
   /* HOW: Use block display with vertical stacking, centered content, scales to fit */
   display: block !important; /* CRITICAL: Block display allows children to stack */
   width: 100% !important;
-  height: 100% !important;
+  max-width: 100% !important;
+  height: auto !important; /* CRITICAL: Auto height to fit content, parent flexbox centers it */
+  max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
   /* WHY: All text charts in a block should use the same font-size */
   /* HOW: Check for CSS custom property first, fallback to container query scaling */
-  font-size: var(--unified-text-font-size, clamp(0.75rem, min(10cqh, 8cqw), 1.5rem)) !important;
+  /* INCREASED: Max font-size from 1.5rem to 2.5rem for larger text */
+  font-size: var(--unified-text-font-size, clamp(0.75rem, min(12cqh, 10cqw), 2.5rem)) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
