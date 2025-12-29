@@ -23,9 +23,10 @@ export interface Chart {
     color?: string;
   }>;
   formatting?: {
+    rounded?: boolean; // true = whole numbers (0 decimals), false = 2 decimals
     prefix?: string;
     suffix?: string;
-    decimals?: number;
+    decimals?: number; // DEPRECATED: Use rounded instead
   };
   aspectRatio?: '16:9' | '9:16' | '1:1';
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart

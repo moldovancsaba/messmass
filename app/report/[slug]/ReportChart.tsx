@@ -25,17 +25,48 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 /**
  * Helper function to format values with prefix/suffix and decimals
+ * WHAT: Formats numeric values with proper decimal places based on rounded flag
+ * WHY: Support both rounded (whole numbers) and decimal (2 places) formatting
+ * HOW: Uses rounded flag from formatting object, converts to decimals
  */
 function formatValue(
   value: number | string | undefined, 
-  formatting?: { prefix?: string; suffix?: string; decimals?: number }
+  formatting?: { rounded?: boolean; prefix?: string; suffix?: string; decimals?: number }
 ): string {
   if (value === undefined || value === 'NA') return 'NA';
   if (typeof value === 'string') return value;
   
-  const { prefix = '', suffix = '', decimals = 0 } = formatting || {};
+  // WHAT: Determine decimal places from rounded flag or legacy decimals field
+  // WHY: Support both new formatting.rounded and legacy decimals format
+  let decimals = 0;
+  if (formatting) {
+    if (formatting.rounded !== undefined) {
+      // WHAT: New format - rounded flag determines decimals
+      // WHY: rounded=true → whole numbers (0 decimals), rounded=false → 2 decimals
+      decimals = formatting.rounded ? 0 : 2;
+    } else if (formatting.decimals !== undefined) {
+      // WHAT: Legacy format - use decimals field directly
+      // WHY: Backward compatibility with old chart configurations
+      decimals = formatting.decimals;
+    }
+  }
+  
+  const { prefix = '', suffix = '' } = formatting || {};
   const formattedNumber = value.toFixed(decimals);
   return `${prefix}${formattedNumber}${suffix}`;
+}
+
+/**
+ * Helper function to get decimal places from formatting
+ * WHAT: Extracts decimal count from formatting object
+ * WHY: Reusable logic for percentage calculations
+ */
+function getDecimalsFromFormatting(formatting?: { rounded?: boolean; decimals?: number }): number {
+  if (!formatting) return 0;
+  if (formatting.rounded !== undefined) {
+    return formatting.rounded ? 0 : 2;
+  }
+  return formatting.decimals ?? 0;
 }
 
 
@@ -282,7 +313,10 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
           label: (context) => {
             const label = context.label || '';
             const value = context.parsed as number;
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+            // WHAT: Format percentage based on rounded setting
+            // WHY: Respect formatting.rounded flag for decimal places
+            const decimals = getDecimalsFromFormatting(result.formatting);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(decimals) : '0';
             // WHAT: Conditionally show percentage in tooltip based on showPercentages flag
             // WHY: Respect chart configuration setting (v11.38.0)
             return showPercentages 
@@ -312,7 +346,10 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
         <div className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
-            const percentage = total > 0 ? ((numValue / total) * 100).toFixed(1) : '0.0';
+            // WHAT: Format percentage based on rounded setting
+            // WHY: Respect formatting.rounded flag for decimal places
+            const decimals = getDecimalsFromFormatting(result.formatting);
+            const percentage = total > 0 ? ((numValue / total) * 100).toFixed(decimals) : '0';
             const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
             return (
