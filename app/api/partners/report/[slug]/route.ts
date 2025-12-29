@@ -13,10 +13,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined;
   try {
     // WHAT: Await params Promise (Next.js 15 requirement)
     // WHY: Next.js 15 changed params to async to support edge runtime
-    const { slug } = await params;
+    const paramsResolved = await params;
+    slug = paramsResolved.slug;
 
     if (!slug) {
       return NextResponse.json(
