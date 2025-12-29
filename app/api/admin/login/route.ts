@@ -7,8 +7,10 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
-import { findUserByEmail, updateUserLastLogin } from '@/lib/users'
+import { findUserByEmail, updateUserLastLogin, verifyPassword, updateUserPasswordHash, hashPassword } from '@/lib/users'
+import { FEATURE_FLAGS } from '@/lib/featureFlags'
 import { env } from '@/lib/config'
+import { logAuthSuccess, logAuthFailure, error as logError } from '@/lib/logger'
 
 // Legacy env-based admin password has been removed. Authentication is fully DB-backed.
 
@@ -36,12 +38,51 @@ export async function POST(request: NextRequest) {
       if (alias) user = alias
     }
 
-    // Validate credentials using stored plaintext-like MD5-style token
-    const isValid = !!(user && user.password === password)
+    // WHAT: Validate credentials with dual-write support (plaintext or bcrypt hash)
+    // WHY: Zero-downtime migration - users can login with either format during transition
+    // HOW: Check passwordHash first (new), fallback to plaintext password (legacy), migrate on success
+    let isValid = false
+    
+    if (user) {
+      if (user.passwordHash) {
+        // WHAT: New secure password (bcrypt hash)
+        // WHY: Feature flag enabled or user already migrated
+        isValid = await verifyPassword(password, user.passwordHash)
+      } else if (user.password) {
+        // WHAT: Legacy plaintext password - validate and migrate
+        // WHY: Gradually migrate users without forcing password reset
+        isValid = user.password === password
+        
+        if (isValid && FEATURE_FLAGS.USE_BCRYPT_AUTH) {
+          // WHAT: Migrate password to bcrypt on successful login
+          // WHY: Gradually migrate users without forcing password reset
+          // HOW: Hash the plaintext password and store as passwordHash
+          try {
+            const passwordHash = await hashPassword(password)
+            await updateUserPasswordHash(user._id!.toString(), passwordHash)
+            // Log migration for monitoring (no PII)
+            logAuthSuccess(user._id!.toString(), request.headers.get('x-forwarded-for') || undefined)
+          } catch (migrationError) {
+            // WHAT: Log migration error but don't block login
+            // WHY: User can still login, migration will retry on next login
+            logError('Password migration failed during login', {
+              userId: user._id!.toString(),
+              error: migrationError instanceof Error ? migrationError.message : 'Unknown error'
+            })
+          }
+        }
+      }
+    }
 
     if (!isValid) {
-      // Simple brute force protection delay
+      // WHAT: Brute force protection delay
+      // WHY: Prevent rapid password guessing attacks
       await new Promise((r) => setTimeout(r, 800))
+      
+      // WHAT: Log authentication failure (no PII - email is logged but redacted by logger)
+      // WHY: Security monitoring and audit trail
+      logAuthFailure(email, 'Invalid password', request.headers.get('x-forwarded-for') || undefined)
+      
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
@@ -75,10 +116,12 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     const isProduction = env.get('NODE_ENV') === 'production'
     
-    // Log for debugging (user is guaranteed to exist at this point)
-    console.log('🔐 Login successful for:', user?.email || 'unknown')
-    console.log('🍪 Setting cookie for domain:', request.headers.get('host'))
-    console.log('🌍 Environment:', isProduction ? 'production' : 'development')
+    // WHAT: Log authentication success (no PII - logger redacts sensitive data)
+    // WHY: Security monitoring and audit trail
+    // NOTE: user is guaranteed to exist at this point (isValid check above)
+    if (user?._id) {
+      logAuthSuccess(user._id.toString(), request.headers.get('x-forwarded-for') || undefined)
+    }
     
     // CRITICAL: Delete any existing cookie first to prevent stale cookie issues
     // WHY: Browsers may keep old cookies that reference deleted users
@@ -90,7 +133,6 @@ export async function POST(request: NextRequest) {
       maxAge: 0, // Tell browser to delete the cookie
       path: '/'
     })
-    console.log('🗑️  Cleared old cookie')
     
     // Now set the new cookie on response (more reliable across runtimes)
     const response = NextResponse.json({ success: true, token: signedToken, message: 'Login successful' })
@@ -108,7 +150,7 @@ export async function POST(request: NextRequest) {
       domain,
     })
 
-    console.log('✅ Cookie set successfully (response.cookies)')
+    // Cookie set successfully - no logging needed (already logged auth success)
 
     // CORS: Echo allowed origin and credentials for cross-origin admin consoles
     const origin = request.headers.get('origin') || ''
@@ -120,7 +162,14 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Admin login error:', error)
+    // WHAT: Log authentication error (logger redacts sensitive data)
+    // WHY: Security monitoring and debugging
+    logError('Admin login error', {
+      pathname: '/api/admin/login',
+      method: 'POST',
+      ip: request.headers.get('x-forwarded-for') || undefined
+    }, error instanceof Error ? error : new Error(String(error)))
+    
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -135,10 +184,8 @@ export async function DELETE(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined
     
-    console.log('🚪 Logout requested')
-    console.log('🗑️  Deleting cookie with domain:', domain || 'none (localhost)')
-    
-    // Delete via cookieStore
+    // WHAT: Delete session cookie
+    // WHY: Invalidate user session on logout
     cookieStore.delete('admin-session')
     
     // Also set explicit deletion response cookie
@@ -152,10 +199,16 @@ export async function DELETE(request: NextRequest) {
       domain,
     })
     
-    console.log('✅ Logout successful')
     return response
   } catch (error) {
-    console.error('Admin logout error:', error)
+    // WHAT: Log logout error (logger redacts sensitive data)
+    // WHY: Security monitoring and debugging
+    logError('Admin logout error', {
+      pathname: '/api/admin/login',
+      method: 'DELETE',
+      ip: request.headers.get('x-forwarded-for') || undefined
+    }, error instanceof Error ? error : new Error(String(error)))
+    
     return NextResponse.json({ error: 'Logout failed' }, { status: 500 })
   }
 }

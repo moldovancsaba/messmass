@@ -1,6 +1,6 @@
 {
   "name": "messmass",
-"version": "11.45.7",
+  "version": "11.45.8",
   "description": "Enterprise-grade event analytics platform with comprehensive partner management, intelligent link tracking, automated event creation (Sports Match Builder), and advanced real-time statistics dashboard for sports organizations, venues, brands, and event managers",
   "keywords": [
     "event-statistics",
@@ -122,6 +122,7 @@
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.4",
+    "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.0",
     "dotenv": "^17.2.1",
     "focus-trap-react": "^11.0.4",
@@ -146,6 +147,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/bcryptjs": "^2.4.6",
     "@types/html2canvas": "^0.5.35",
     "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",

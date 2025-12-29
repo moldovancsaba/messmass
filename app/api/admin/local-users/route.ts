@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
 import { createUser, listUsers } from '@/lib/users'
 import { generateMD5StylePassword } from '@/lib/pagePassword'
+import { error as logError } from '@/lib/logger'
 
 // WHAT: Force Node.js runtime for this route.
 // WHY: Password generation uses Node's crypto (randomBytes) via lib/pagePassword.ts.
@@ -165,7 +166,12 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create user'
-    console.error('Failed to create user:', message)
+    // WHAT: Log user creation error (logger redacts sensitive data)
+    // WHY: Security monitoring and debugging
+    logError('Failed to create user', {
+      pathname: '/api/admin/local-users',
+      method: 'POST'
+    }, error instanceof Error ? error : new Error(message))
     // Duplicate email guard
     if (message.includes('E11000')) {
       return NextResponse.json({ success: false, error: 'Email already exists' }, { status: 409 })

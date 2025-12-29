@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUser, findUserByEmail } from '@/lib/users';
 import { generateMD5StylePassword } from '@/lib/pagePassword';
+import { logAuthSuccess, logAuthFailure, error as logError } from '@/lib/logger';
 
 /**
  * WHAT: POST handler for user registration
@@ -84,10 +85,21 @@ export async function POST(request: NextRequest) {
       path: '/',
     });
     
+    // WHAT: Log successful registration (no PII - logger redacts sensitive data)
+    // WHY: Security monitoring and audit trail
+    logAuthSuccess(newUser._id!.toString(), request.headers.get('x-forwarded-for') || undefined);
+    
     return response;
     
   } catch (error) {
-    console.error('❌ Registration error:', error);
+    // WHAT: Log registration error (logger redacts sensitive data)
+    // WHY: Security monitoring and debugging
+    logError('User registration error', {
+      pathname: '/api/admin/register',
+      method: 'POST',
+      ip: request.headers.get('x-forwarded-for') || undefined
+    }, error instanceof Error ? error : new Error(String(error)));
+    
     return NextResponse.json(
       { success: false, error: 'Registration failed. Please try again.' },
       { status: 500 }

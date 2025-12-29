@@ -4,7 +4,13 @@
 // WHY: Centralizes user logic, maximizes reuse, and keeps API routes concise
 
 import { ObjectId } from 'mongodb'
+import bcrypt from 'bcryptjs'
 import getDb from './db'
+import { FEATURE_FLAGS } from './featureFlags'
+
+// WHAT: Bcrypt salt rounds for password hashing
+// WHY: OWASP recommends minimum 12 rounds for production (balance between security and performance)
+const BCRYPT_SALT_ROUNDS = 12
 
 // WHAT: Four-tier role hierarchy for granular access control
 // WHY: Support guest registration, user promotion, admin operations, and superadmin management
@@ -16,7 +22,8 @@ export interface UserDoc {
   email: string
   name: string
   role: UserRole
-  password: string // Note: per project requirements, we store generated plaintext-like token (MD5-style)
+  password?: string // WHAT: Legacy plaintext password (deprecated - use passwordHash instead)
+  passwordHash?: string // WHAT: Bcrypt-hashed password (secure, production-ready)
   lastLogin?: string // ISO 8601 with milliseconds (optional for backward compatibility)
   // API Access fields (v10.5.1+)
   apiKeyEnabled?: boolean // Enable/disable API access for this user (default: false)
@@ -67,31 +74,105 @@ export async function findUserById(id: string): Promise<UserDoc | null> {
 
 /**
  * createUser
- * Creates a new user with provided email, name, role, password.
- * The password should be generated via the MD5-style generator used for page passwords.
+ * WHAT: Creates a new user with provided email, name, role, password
+ * WHY: Centralized user creation with automatic password hashing
+ * HOW: Hashes password before storage if feature flag enabled, otherwise stores plaintext (legacy)
  */
 export async function createUser(user: Omit<UserDoc, '_id'>): Promise<UserDoc> {
   const col = await getUsersCollection()
   const now = new Date().toISOString()
+  
+  // WHAT: Prepare user document with password handling
+  // WHY: Zero-downtime migration - support both hashed and plaintext during transition
   const doc: Omit<UserDoc, '_id'> = {
     ...user,
     email: user.email.toLowerCase(),
     createdAt: user.createdAt || now,
     updatedAt: user.updatedAt || now,
   }
+  
+  // WHAT: Hash password if feature flag enabled
+  // WHY: New users get secure passwords immediately, existing users migrate on login
+  if (FEATURE_FLAGS.USE_BCRYPT_AUTH && user.password) {
+    const passwordHash = await hashPassword(user.password)
+    doc.passwordHash = passwordHash
+    delete doc.password // Remove plaintext password
+  }
+  // If feature flag disabled, password is stored as-is (legacy behavior)
+  
   const res = await col.insertOne(doc)
   return { _id: res.insertedId, ...doc }
 }
 
 /**
+ * hashPassword
+ * WHAT: Hash a plaintext password using bcrypt
+ * WHY: Secure password storage - passwords are never stored in plaintext
+ * HOW: Uses bcrypt with 12 salt rounds (OWASP recommended minimum)
+ */
+export async function hashPassword(plaintextPassword: string): Promise<string> {
+  return await bcrypt.hash(plaintextPassword, BCRYPT_SALT_ROUNDS)
+}
+
+/**
+ * verifyPassword
+ * WHAT: Verify a plaintext password against a bcrypt hash
+ * WHY: Secure password comparison without storing plaintext
+ * HOW: Uses bcrypt.compare() which handles salt extraction automatically
+ */
+export async function verifyPassword(plaintextPassword: string, passwordHash: string): Promise<boolean> {
+  return await bcrypt.compare(plaintextPassword, passwordHash)
+}
+
+/**
  * updateUserPassword
- * Regenerates/sets a user's password and updates updatedAt timestamp.
+ * WHAT: Regenerates/sets a user's password and updates updatedAt timestamp
+ * WHY: Allow password changes and regeneration
+ * HOW: Hashes password before storage if feature flag enabled
  */
 export async function updateUserPassword(id: string, password: string): Promise<UserDoc | null> {
   const col = await getUsersCollection()
   if (!ObjectId.isValid(id)) return null
   const now = new Date().toISOString()
-  await col.updateOne({ _id: new ObjectId(id) }, { $set: { password, updatedAt: now } })
+  
+  // WHAT: Hash password if feature flag enabled, otherwise store plaintext (legacy)
+  // WHY: Zero-downtime migration - support both formats during transition
+  if (FEATURE_FLAGS.USE_BCRYPT_AUTH) {
+    const passwordHash = await hashPassword(password)
+    await col.updateOne(
+      { _id: new ObjectId(id) },
+      { 
+        $set: { passwordHash, updatedAt: now },
+        $unset: { password: "" } // Remove plaintext password
+      }
+    )
+  } else {
+    // Legacy: Store plaintext password
+    await col.updateOne({ _id: new ObjectId(id) }, { $set: { password, updatedAt: now } })
+  }
+  
+  return findUserById(id)
+}
+
+/**
+ * updateUserPasswordHash
+ * WHAT: Update user's passwordHash field directly (for migration)
+ * WHY: Used during password migration to set hash without plaintext
+ * HOW: Sets passwordHash and removes plaintext password field
+ */
+export async function updateUserPasswordHash(id: string, passwordHash: string): Promise<UserDoc | null> {
+  const col = await getUsersCollection()
+  if (!ObjectId.isValid(id)) return null
+  const now = new Date().toISOString()
+  
+  await col.updateOne(
+    { _id: new ObjectId(id) },
+    { 
+      $set: { passwordHash, updatedAt: now },
+      $unset: { password: "" } // Remove plaintext password
+    }
+  )
+  
   return findUserById(id)
 }
 
