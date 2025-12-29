@@ -87,10 +87,24 @@ export function parseMarkdown(markdown: string): string {
   }
   
   try {
+    // WHAT: Pre-process input to handle mixed HTML and markdown
+    // WHY: marked doesn't parse markdown when HTML tags are present
+    // HOW: Temporarily replace HTML tags, parse markdown, then restore HTML
+    const htmlPlaceholders: string[] = [];
+    let processed = markdown;
+    
+    // WHAT: Replace HTML tags with placeholders before markdown parsing
+    // WHY: Allow markdown to be parsed even when HTML is mixed in
+    // HOW: Use unique placeholders that won't conflict with markdown
+    processed = processed.replace(/<br\s*\/?>/gi, (match) => {
+      htmlPlaceholders.push(match);
+      return `\nHTML_PLACEHOLDER_${htmlPlaceholders.length - 1}\n`;
+    });
+    
     // WHAT: Normalize common authoring quirks before parsing
     // WHY: Users often add spaces inside emphasis markers which CommonMark ignores
     // HOW: Trim inner whitespace in ** bold ** and * italic * patterns
-    const normalized = normalizeEmphasisWhitespace(markdown);
+    const normalized = normalizeEmphasisWhitespace(processed);
 
     // WHAT: Parse markdown to HTML using marked
     // WHY: Convert user-friendly markdown syntax to renderable HTML
@@ -98,10 +112,18 @@ export function parseMarkdown(markdown: string): string {
       async: false, // Synchronous parsing for simplicity
     }) as string;
     
+    // WHAT: Restore HTML tags from placeholders
+    // WHY: Put back the original HTML tags after markdown parsing
+    // HOW: Replace placeholders with original HTML tags
+    let finalHtml = html;
+    htmlPlaceholders.forEach((tag, index) => {
+      finalHtml = finalHtml.replace(`HTML_PLACEHOLDER_${index}`, tag);
+    });
+    
     // WHAT: Sanitize parsed HTML to prevent XSS
     // WHY: Even though marked is safe, additional sanitization provides defense in depth
     // HOW: Use DOMPurify with markdown-specific allowlist
-    return sanitizeMarkdownHTML(html);
+    return sanitizeMarkdownHTML(finalHtml);
   } catch (error) {
     console.error('Markdown parsing error:', error);
     // WHAT: Fallback to plain text on parse error
