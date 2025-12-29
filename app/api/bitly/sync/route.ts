@@ -11,6 +11,7 @@ import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getFullAnalytics } from '@/lib/bitly';
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger';
 import {
   mapClicksSummary,
   mapSeriesToDaily,
@@ -48,7 +49,7 @@ async function syncSingleLink(
   let apiCalls = 0;
 
   try {
-    console.log(`[Sync ${runId}] Syncing link: ${link.bitlink}`);
+    logDebug('Syncing link', { context: 'bitly-sync', runId, bitlink: link.bitlink });
 
     // WHAT: Fetch all analytics from Bitly API in parallel
     // WHY: Minimizes total sync time and reduces sequential API calls
@@ -89,10 +90,10 @@ async function syncSingleLink(
       }
     );
 
-    console.log(`[Sync ${runId}] ✓ Successfully synced ${link.bitlink}`);
+    logInfo('Successfully synced link', { context: 'bitly-sync', runId, bitlink: link.bitlink });
     return { success: true, apiCalls };
   } catch (error) {
-    console.error(`[Sync ${runId}] ✗ Failed to sync ${link.bitlink}:`, error);
+    logError('Failed to sync link', { context: 'bitly-sync', runId, bitlink: link.bitlink }, error instanceof Error ? error : new Error(String(error)));
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -193,7 +194,7 @@ export async function POST(request: NextRequest) {
     }
 
     const scope = isCron ? 'cron' : 'manual';
-    console.log(`[Sync ${runId}] Starting ${scope} sync at ${startedAt}`);
+    logInfo('Starting sync', { context: 'bitly-sync', runId, scope, startedAt });
 
     // WHAT: Parse request body for selective sync
     const body = await request.json().catch(() => ({}));
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
     const links = await db.collection('bitly_links').find(filter).toArray();
 
     if (links.length === 0) {
-      console.log(`[Sync ${runId}] No links to sync`);
+      logInfo('No links to sync', { context: 'bitly-sync', runId });
       return NextResponse.json({
         success: true,
         runId,
@@ -231,7 +232,7 @@ export async function POST(request: NextRequest) {
       } as BitlySyncResponse);
     }
 
-    console.log(`[Sync ${runId}] Found ${links.length} links to sync`);
+    logInfo('Found links to sync', { context: 'bitly-sync', runId, linkCount: links.length });
 
     // WHAT: Execute sync with concurrency control
     // WHY: Respects Growth tier rate limits while maximizing throughput
@@ -285,11 +286,11 @@ export async function POST(request: NextRequest) {
           : `Synced ${syncResults.linksUpdated}/${links.length} links with ${syncResults.errors.length} errors`,
     };
 
-    console.log(`[Sync ${runId}] Completed:`, response.summary);
+    logInfo('Sync completed', { context: 'bitly-sync', runId, summary: response.summary });
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error(`[Sync ${runId}] Fatal error:`, error);
+    logError('Fatal sync error', { context: 'bitly-sync', runId }, error instanceof Error ? error : new Error(String(error)));
 
     // WHAT: Log fatal error to database
     const endedAt = new Date().toISOString();
@@ -319,8 +320,8 @@ export async function POST(request: NextRequest) {
         createdAt: endedAt,
         updatedAt: endedAt,
       });
-    } catch (logError) {
-      console.error(`[Sync ${runId}] Failed to log error:`, logError);
+    } catch (dbError) {
+      logError('Failed to log error to database', { context: 'bitly-sync', runId }, dbError instanceof Error ? dbError : new Error(String(dbError)));
     }
 
     return NextResponse.json(

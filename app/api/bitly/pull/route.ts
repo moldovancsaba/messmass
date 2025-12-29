@@ -10,6 +10,7 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { getGroupBitlinks } from '@/lib/bitly';
 import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
+import { info as logInfo } from '@/lib/logger';
 
 /**
  * POST /api/bitly/pull
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const limit = body.limit || 100; // Default to 100 links (fast batch import)
 
-    console.log(`[Bitly Pull] Starting import of up to ${limit} links from Bitly group`);
+    logInfo('Starting Bitly pull import', { context: 'bitly-pull', limit });
 
     // WHAT: Fetch links from Bitly group using configured BITLY_GROUP_GUID
     // WHY: This endpoint returns basic link info (id, long_url, title) without analytics

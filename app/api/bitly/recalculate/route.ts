@@ -24,6 +24,7 @@ import {
   recalculateProjectLinks,
   refreshAllCachedMetrics,
 } from '@/lib/bitly-recalculator';
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger';
 
 /**
  * Request body schema
@@ -78,9 +79,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(
-        `[Recalculate API] Mode=bitlink, ID=${body.bitlyLinkId}, Time=${timestamp}`
-      );
+      logInfo('Recalculating bitlink', { context: 'bitly-recalculate', mode: 'bitlink', bitlyLinkId: body.bitlyLinkId, timestamp });
 
       const bitlyLinkId = new ObjectId(body.bitlyLinkId);
       const updatedAssociations = await recalculateLinkRanges(bitlyLinkId);
@@ -112,9 +111,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(
-        `[Recalculate API] Mode=project, ID=${body.projectId}, Time=${timestamp}`
-      );
+      logInfo('Recalculating project', { context: 'bitly-recalculate', mode: 'project', projectId: body.projectId, timestamp });
 
       const projectId = new ObjectId(body.projectId);
       const bitlinksAffected = await recalculateProjectLinks(projectId);
@@ -132,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     // MODE 3: Recalculate all associations
     if (body.mode === 'all') {
-      console.log(`[Recalculate API] Mode=all (full refresh), Time=${timestamp}`);
+      logInfo('Recalculating all associations', { context: 'bitly-recalculate', mode: 'all', timestamp });
 
       const associationsUpdated = await refreshAllCachedMetrics();
 
@@ -153,7 +150,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   } catch (error) {
-    console.error('[Recalculate API] Error:', error);
+    logError('Recalculate API error', { context: 'bitly-recalculate' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         error: 'Failed to recalculate',
@@ -181,7 +178,7 @@ export async function GET(request: NextRequest) {
       method: 'POST',
     });
   } catch (error) {
-    console.error('[Recalculate API] GET Error:', error);
+    logError('Recalculate API GET error', { context: 'bitly-recalculate' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: 'Failed to get status' },
       { status: 500 }
