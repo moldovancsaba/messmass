@@ -15,9 +15,11 @@ export const runtime = 'nodejs';
 
 // POST /api/page-passwords - Generate or retrieve page password and create shareable link
 export async function POST(request: NextRequest) {
+  let pageType: string = 'unknown';
   try {
     const body = await request.json();
-    const { pageId, pageType, regenerate = false } = body;
+    const { pageId, pageType: bodyPageType, regenerate = false } = body;
+    pageType = (bodyPageType || 'unknown').toString();
 
     if (!pageId || !pageType) {
       return NextResponse.json(
@@ -33,10 +35,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    logInfo('Generating password for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
+    logInfo('Generating password for page', { context: 'page-passwords', pageType: pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     // Generate or retrieve password
-    const pagePassword = await getOrCreatePagePassword(pageId, pageType as PageType, regenerate);
+    const pagePassword = await getOrCreatePagePassword(pageId, bodyPageType as PageType, regenerate);
 
     // Get base URL from request headers
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
@@ -44,9 +46,9 @@ export async function POST(request: NextRequest) {
     const baseUrl = `${protocol}://${host}`;
 
     // Generate shareable link
-    const shareableLink = await generateShareableLink(pageId, pageType as PageType, baseUrl);
+    const shareableLink = await generateShareableLink(pageId, bodyPageType as PageType, baseUrl);
 
-    logInfo('Generated password for page successfully', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
+    logInfo('Generated password for page successfully', { context: 'page-passwords', pageType: pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     return NextResponse.json({
       success: true,
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    logError('Failed to generate page password', { context: 'page-passwords', pageType: pageType || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
+    logError('Failed to generate page password', { context: 'page-passwords', pageType: (pageType || 'unknown') }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
