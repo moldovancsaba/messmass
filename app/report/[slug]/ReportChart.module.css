@@ -320,6 +320,9 @@
   border-radius: 0; /* SQUARE, not circle */
   flex-shrink: 0;
   box-sizing: border-box;
+  /* WHAT: Border matching pie chart slices for visibility */
+  /* WHY: Ensures legend indicators are visible when colors are close to background */
+  /* HOW: Border color and width match pie chart border (2px solid first pie color) */
 }
 
 .pieLegendText {

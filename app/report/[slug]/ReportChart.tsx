@@ -362,7 +362,13 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
             const protectedLabel = preventPhraseBreaks(element.label);
             return (
               <div key={idx} className={styles.pieLegendItem}>
-                <div className={styles.pieLegendDot} style={{ backgroundColor: color }} />
+                <div 
+                  className={styles.pieLegendDot} 
+                  style={{ 
+                    backgroundColor: color,
+                    border: `2px solid ${pieColors[0]}`
+                  }} 
+                />
                 <div className={styles.pieLegendText}>
                   {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
                 </div>
