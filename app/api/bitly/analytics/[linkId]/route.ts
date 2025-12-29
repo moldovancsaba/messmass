@@ -127,7 +127,7 @@ export async function GET(
         });
 
       } catch (error) {
-        console.error('[Analytics] Refresh failed:', error);
+        logError('Analytics refresh failed', { context: 'bitly-analytics', linkId }, error instanceof Error ? error : new Error(String(error)));
         // WHAT: Return stale data if refresh fails
         // WHY: Partial failure shouldn't break the entire request
         return NextResponse.json({
