@@ -157,9 +157,87 @@ export class ReportCalculator {
    * WHAT: Calculate KPI chart (single numeric value)
    * WHY: KPI charts display one number prominently
    * HOW: Evaluate formula, return as kpiValue
+   * 
+   * SPECIAL CASE: If suffix is "%" and formula is a sum of variables, calculate average instead
+   * WHY: Percentage values should be averaged, not summed (e.g., 50% + 50% = 50%, not 100%)
    */
   private calculateKPI(chart: Chart): ChartResult {
-    const value = this.evaluateFormula(chart.formula);
+    // WHAT: Check if this is a percentage KPI that should use average calculation
+    // WHY: Summing percentages gives incorrect results (e.g., 50% + 50% = 100% should be 50%)
+    // HOW: Detect if suffix is "%" and formula is a simple sum of variables
+    const isPercentage = chart.formatting?.suffix === '%';
+    let value: number | 'NA' = 'NA';
+    
+    if (isPercentage) {
+      // WHAT: Try to detect if formula is a sum of variables (e.g., [stats.var1] + [stats.var2] + [stats.var3])
+      // WHY: For percentage KPIs, we want the average of the percentages, not the sum
+      // HOW: Check if formula contains only variable references and addition operators
+      const trimmedFormula = chart.formula.trim();
+      // WHAT: Pattern matches formulas that are only additions of variables (no other operators)
+      // WHY: Only simple sums should use average calculation, complex formulas should work as-is
+      // PATTERN: One or more [variable] + [variable] patterns, optionally with spaces
+      const sumPattern = /^(\[[^\]]+\]\s*\+\s*)+\[[^\]]+\]$/;
+      // WHAT: Also check if formula contains only variables and + operators (no -, *, /, etc.)
+      // WHY: More flexible detection for formulas like "[var1] + [var2] + [var3]"
+      const onlyAdditions = /^[\s\[\]a-zA-Z0-9_.:+\-]+$/.test(trimmedFormula) && 
+                           trimmedFormula.includes('+') && 
+                           !trimmedFormula.match(/[-*/()]/);
+      const simpleSumMatch = trimmedFormula.match(sumPattern) || onlyAdditions;
+      
+      if (simpleSumMatch) {
+        // WHAT: Extract all variable references from the formula
+        // WHY: Need to evaluate each variable separately to calculate average
+        const variableRegex = /\[([^\]]+)\]/g;
+        const variables: string[] = [];
+        let match;
+        while ((match = variableRegex.exec(chart.formula)) !== null) {
+          variables.push(match[1]);
+        }
+        
+        if (variables.length > 0) {
+          // WHAT: Evaluate each variable and calculate average
+          // WHY: Average of percentages is the correct metric (e.g., (50% + 50% + 50%) / 3 = 50%)
+          // HOW: Evaluate each variable, filter out invalid values, calculate mean
+          const values: number[] = [];
+          for (const variable of variables) {
+            // WHAT: Create a formula with just this variable to evaluate it
+            // WHY: Need individual values to calculate average
+            const varFormula = `[${variable}]`;
+            const varValue = this.evaluateFormula(varFormula);
+            if (typeof varValue === 'number' && !isNaN(varValue)) {
+              values.push(varValue);
+            }
+          }
+          
+          if (values.length > 0) {
+            // WHAT: Calculate average of all percentage values
+            // WHY: Average is the correct metric for percentage summaries
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            value = sum / values.length;
+          } else {
+            // WHAT: Fallback to normal evaluation if no valid values
+            // WHY: Graceful degradation if variable extraction fails
+            const evalResult = this.evaluateFormula(chart.formula);
+            value = typeof evalResult === 'number' ? evalResult : 'NA';
+          }
+        } else {
+          // WHAT: Fallback to normal evaluation if no variables found
+          // WHY: Formula might be more complex than simple sum
+          const evalResult = this.evaluateFormula(chart.formula);
+          value = typeof evalResult === 'number' ? evalResult : 'NA';
+        }
+      } else {
+        // WHAT: Formula is not a simple sum, use normal evaluation
+        // WHY: Complex formulas (with division, multiplication, etc.) should work as-is
+        const evalResult = this.evaluateFormula(chart.formula);
+        value = typeof evalResult === 'number' ? evalResult : 'NA';
+      }
+    } else {
+      // WHAT: Not a percentage KPI, use normal evaluation
+      // WHY: Sum calculation is correct for non-percentage values
+      const evalResult = this.evaluateFormula(chart.formula);
+      value = typeof evalResult === 'number' ? evalResult : 'NA';
+    }
     
     return {
       chartId: chart.chartId,
