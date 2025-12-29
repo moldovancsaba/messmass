@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
+    const pageType = (body?.pageType || 'unknown').toString();
     logError('Failed to generate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
@@ -129,6 +130,7 @@ export async function PUT(request: NextRequest) {
     }
 
   } catch (error) {
+    const pageType = (body?.pageType || 'unknown').toString();
     logError('Failed to validate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
