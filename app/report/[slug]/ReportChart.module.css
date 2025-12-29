@@ -516,21 +516,22 @@
 }
 
 .textContent {
-  /* WHAT: Maximize font size to fill cell while staying readable */
-  /* WHY: Text content should dominate the space like KPI values */
-  /* HOW: Use container queries to scale based on both width and height */
-  /* CONSTRAINT: 1.5x max ratio (1rem → 1.5rem = 16px → 24px) for visual consistency */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  height: 100%;
+  /* WHAT: Container for markdown content - allows children to stack vertically */
+  /* WHY: Markdown elements (p, h1, etc.) must stack vertically, not inline */
+  /* HOW: Use block display with vertical stacking, centered content */
+  display: block !important; /* CRITICAL: Block display allows children to stack */
+  width: 100% !important;
+  height: 100% !important;
   font-size: clamp(1rem, min(8cqh, 6cqw), 1.5rem);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
   box-sizing: border-box;
+  /* CRITICAL: Center the entire block of content */
+  text-align: center !important;
+  /* CRITICAL: Allow vertical scrolling if content overflows */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 /* WHAT: Markdown element styles inside text content
@@ -597,21 +598,29 @@
 }
 
 /* CRITICAL: Ensure all markdown content is block-level by default */
-.textMarkdown > * {
-  display: block !important;
+.textMarkdown {
+  display: block !important; /* CRITICAL: Markdown container is block */
   width: 100% !important;
+  height: 100% !important;
   box-sizing: border-box !important;
+  /* CRITICAL: Allow children to stack vertically */
+  text-align: center !important;
 }
 
-/* Override for inline elements */
-.textMarkdown > strong,
-.textMarkdown > em,
-.textMarkdown > a,
+.textMarkdown > * {
+  display: block !important; /* CRITICAL: All direct children are blocks */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  text-align: center !important; /* Center each block */
+}
+
+/* Override for inline elements (they stay inline within their block parent) */
 .textMarkdown strong,
 .textMarkdown em,
 .textMarkdown a {
   display: inline !important;
   width: auto !important;
+  text-align: inherit !important;
 }
 
 /* Table Chart - Markdown table display */
