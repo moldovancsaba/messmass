@@ -75,13 +75,15 @@ If content cannot fit:
 
 #### 1.1 Allowed Fit Mechanisms (Exhaustive List)
 
-When content does not fit inside a Cell at the resolved Block height, the system may only do the following, in this order:
+When content does not fit inside a Cell at the resolved Block height, the system may only do the following, **in this order**:
 
 1. **Increase Block Height**
 2. **Reflow internal layout** (e.g. legend position, chart orientation)
-3. **Reduce semantic density** (Top-N, aggregation — never data loss)
+3. **Reduce semantic density** (Top-N, aggregation — **never data loss**)
 4. **Split into additional Blocks**
 5. **Fail validation** (publish blocked)
+
+**⚠️ CRITICAL:** The order is mandatory. The system must attempt each mechanism in sequence before proceeding to the next.
 
 #### Explicitly Forbidden
 
@@ -210,15 +212,20 @@ This ensures:
 
 **There is no truncation mode. There is no "summary text" shortcut. Text either fits or the structure adapts.**
 
+**⚠️ CRITICAL:** Markdown rendering must preserve all content. No content may be hidden, truncated, or summarized. The structure must adapt to accommodate all content.
+
 ---
 
 #### 5.2 KPI Element
 
-- KPI value scales independently
-- KPI label participates in block typography
+- **KPI value scales independently** (explicit exemption from unified typography)
+- **KPI label participates in block typography** (uses `--block-base-font-size`)
+- **Description participates in block typography** (uses `--block-base-font-size`)
 - Description is optional but must still fit
 
-**If a KPI cannot fit at minimum sizes → validation failure (KPIs are designed to be concise)**
+**If a KPI cannot fit at minimum sizes → validation failure**
+
+**⚠️ CRITICAL:** KPIs are designed to be concise. If a KPI cannot fit at minimum font sizes, the configuration is invalid, not the layout system.
 
 ---
 
@@ -226,14 +233,16 @@ This ensures:
 
 - Pie radius has a minimum
 - Legends must fit without scroll
-- **Allowed actions:**
-  - Reflow legend position
-  - Reduce legend count via aggregation (Top-N + Other)
-  - Increase Block height
+- **Allowed actions (in order):**
+  1. Reflow legend position
+  2. Reduce legend count via aggregation (Top-N + Other) — **never data loss**
+  3. Increase Block height
 
 **If still not fitting → Block height increase**
 
 **If height cannot increase → Block split**
+
+**⚠️ CRITICAL:** Aggregation must preserve data integrity. "Other" category must represent the sum of excluded items, not data loss.
 
 ---
 
@@ -295,6 +304,38 @@ A Table Element is not a full data dump.
 - Preview that shows actual resolved height, not optimistic layout
 
 **If the editor allows invalid layouts, the design system is not enforced.**
+
+---
+
+### 7. Why This Is Now Rock Solid
+
+With:
+- No scroll
+- No truncation
+- Unified typography
+- Explicit height precedence
+- Structural change as the only escape hatch
+
+You now have:
+- Predictable layouts
+- Honest reports (no hidden data)
+- A system AI agents can reason about
+- Zero "but it worked on my screen" arguments
+
+**This is how newspapers, financial terminals, and serious reporting tools think — not dashboards that cheat.**
+
+---
+
+### Final CXO Statement
+
+At this point:
+- The naming is closed
+- The hierarchy is closed
+- The conflict resolution rules are closed
+
+**This is no longer a UI system.**
+
+**It's a layout grammar.**
 
 ---
 
