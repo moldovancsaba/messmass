@@ -558,7 +558,7 @@ export function calculateChart(
     kpiValue,
     hasErrors,
     // WHAT: Pass through showTitle for chart-level title visibility control
-    // WHY: DynamicChart needs this to control title display
+    // WHY: ReportChart needs this to control title display
     // HOW: Pass through from configuration, default to true if not specified
     showTitle: configuration.showTitle !== false,
     // WHAT: Pass through aspectRatio for image and text charts (v9.3.0)

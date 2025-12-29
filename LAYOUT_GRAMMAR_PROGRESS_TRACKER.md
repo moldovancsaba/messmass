@@ -139,12 +139,14 @@ A change is “done” only when it is:
 - **Commit:** `2c7d289` - feat(phase0): Input validation framework - Task 0.2 complete
 
 ### Task 0.3: Remove Deprecated Code
-- [ ] Find all imports of `DynamicChart.tsx`
-- [ ] Update all imports to use `ReportChart.tsx`
-- [ ] Remove `components/DynamicChart.tsx`
-- [ ] Verify no legacy code references remain
-- [ ] Test build passes
-- **Status:** ⚪ **PENDING**
+- [x] Find all imports of `DynamicChart.tsx` (verified: no imports found)
+- [x] Update all imports to use `ReportChart.tsx` (already using ReportChart)
+- [x] Remove `components/DynamicChart.tsx` (file already removed)
+- [x] Verify no legacy code references remain (updated comment in chartCalculator.ts)
+- [x] Test build passes (build successful)
+- **Status:** ✅ **COMPLETE** (2025-01-XX)
+- **Commit:** In progress
+- **Completed By:** Cursora
 
 ### Task 0.4: Design Token Migration Foundation
 - [ ] Audit all hardcoded values in layout grammar code
