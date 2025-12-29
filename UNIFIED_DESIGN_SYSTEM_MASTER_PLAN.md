@@ -993,13 +993,31 @@ DONE
 
 ## Success Criteria
 
-### Functional
-- [ ] No scrolling in any chart type
+### Functional (Layout Grammar Compliance)
+- [ ] No scrolling in any chart type (vertical or horizontal)
 - [ ] No truncation in any chart type
-- [ ] Block height resolves deterministically
-- [ ] Unified typography works correctly
+- [ ] No line clamping (except title max 2 lines)
+- [ ] No ellipsis (except title max 2 lines)
+- [ ] No hidden overflow
+- [ ] Block height resolves deterministically (4-priority algorithm)
+- [ ] Unified typography works correctly (`--block-base-font-size`)
+- [ ] KPI values scale independently (explicit exemption)
 - [ ] All elements fit without violations
 - [ ] Editor validates correctly
+- [ ] Height increases when content doesn't fit
+- [ ] Block splits when height cannot increase
+- [ ] Publishing blocked when split not possible
+- [ ] Allowed fit mechanisms work in correct order (1-5)
+- [ ] Reflow works (legend position, chart orientation)
+- [ ] Semantic density reduction works (Top-N, aggregation — no data loss)
+- [ ] Intrinsic media authority works (Priority 1)
+- [ ] Block aspect ratio works (Priority 2)
+- [ ] Readability enforcement works (Priority 3)
+- [ ] Structural failure handled correctly (Priority 4)
+- [ ] All element-specific rules enforced (Text, KPI, Pie, Bar, Table, Image)
+- [ ] Editor prevents invalid states
+- [ ] Editor provides deterministic controls
+- [ ] Preview shows actual resolved height (not optimistic)
 
 ### Security ⚠️ **CRITICAL**
 - [ ] All markdown rendering sanitized
