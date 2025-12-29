@@ -121,6 +121,9 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
       case 'image':
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
       
+      case 'table':
+        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      
       case 'kpi':
         return result.kpiValue !== undefined && result.kpiValue !== 'NA';
       
