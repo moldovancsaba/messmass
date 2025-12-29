@@ -11,7 +11,7 @@
 
 | Phase | Status | Progress | Started | Completed |
 |-------|--------|----------|---------|-----------|
-| Phase 0: Security Hardening Prerequisites | 🟡 In Progress | 2/6 tasks | 2025-01-XX | - |
+| Phase 0: Security Hardening Prerequisites | 🟡 In Progress | 2/8 tasks | 2025-01-XX | - |
 | Phase 1: Foundation & Core Infrastructure | ⚪ Not Started | 0/4 tasks | - | - |
 | Phase 2: Height Resolution System | ⚪ Not Started | 0/3 tasks | - | - |
 | Phase 3: Unified Typography System | ⚪ Not Started | 0/3 tasks | - | - |
@@ -19,16 +19,15 @@
 | Phase 5: Editor Integration | ⚪ Not Started | 0/3 tasks | - | - |
 | Phase 6: Migration & Validation | ⚪ Not Started | 0/3 tasks | - | - |
 
-**Overall Progress:** 2/26 tasks (7.7%)
+**Overall Progress:** 2/28 tasks (7.1%)
 
 ---
 
 ## Phase 0: Security Hardening Prerequisites ⚠️ **MUST COMPLETE FIRST**
 
-**Duration:** 1 week  
 **Dependencies:** None  
 **Priority:** 🔴 **CRITICAL**  
-**Status:** 🟡 In Progress (2/6 tasks)
+**Status:** 🟡 In Progress (2/8 tasks)
 
 ### Task 0.1: Secure Markdown Rendering
 - [x] Verify all `dangerouslySetInnerHTML` uses sanitization
@@ -76,18 +75,38 @@
 - **Status:** ⚪ **PENDING**
 
 ### Task 0.6: Testing Infrastructure
-- [ ] Set up testing framework (Jest/Vitest)
+- [ ] Set up testing using the existing Next.js/Node toolchain only (no new test frameworks added)
 - [ ] Create test utilities (`createMockBlock`, etc.)
 - [ ] Add security test helpers
-- [ ] Add visual regression test setup
+- [ ] Add internal visual regression harness (screenshot comparison) using existing tooling only (no Playwright/Cypress introduced)
 - [ ] Configure CI/CD integration
+- **Status:** ⚪ **PENDING**
+
+### Task 0.7: CI Guardrail — No Scroll / No Truncation / No Clipping
+- [x] Create `scripts/check-layout-grammar-violations.ts` guardrail script
+- [x] Add npm script `check:layout-grammar`
+- [x] Add GitHub Actions workflow `.github/workflows/layout-grammar-guardrail.yml`
+- [x] Scan for forbidden patterns:
+  - `overflow: auto`, `overflow: scroll`, `overflow-x`, `overflow-y`
+  - `text-overflow: ellipsis`
+  - `line-clamp`, `-webkit-line-clamp`
+  - `overflow: hidden` on content layers (allowed only on decorative/mask layers)
+- [x] Add whitelist mechanism for decorative-only clipping (explicit comment required)
+- [x] Document guardrail rules in `docs/design/LAYOUT_GRAMMAR.md`
+- [ ] Verify CI fails when a forbidden pattern is introduced (test with PR)
+- **Status:** 🟡 **IN PROGRESS** (needs CI test)
+- **Commit:** In progress
+
+### Task 0.8: Dependency Guardrail — Approved Stack Only
+- [ ] Add a CI step that fails if new runtime dependencies are introduced outside the approved stack
+- [ ] Document approved stack constraints (Next.js, Socket.io, MongoDB/Mongoose, Vercel, GitHub)
+- [ ] Verify CI fails on attempts to add disallowed packages
 - **Status:** ⚪ **PENDING**
 
 ---
 
 ## Phase 1: Foundation & Core Infrastructure
 
-**Duration:** 1-2 weeks  
 **Dependencies:** Phase 0 complete  
 **Status:** ⚪ Not Started (0/4 tasks)
 
@@ -124,9 +143,10 @@
 
 ### Task 1.4: Remove All Scrolling/Truncation Code
 - [ ] Find all `overflow: auto` or `overflow: scroll` in chart CSS
-- [ ] Find all `text-overflow: ellipsis` (except allowed cases)
-- [ ] Find all `line-clamp` (except title max 2 lines)
+- [ ] Find all `text-overflow: ellipsis` (no exceptions — prohibited)
+- [ ] Find all `line-clamp` / `-webkit-line-clamp` (no exceptions — prohibited)
 - [ ] Remove all scrolling/truncation code
+- [ ] Find any `overflow: hidden` that can clip content and remove it (allowed only on decorative layers, never on content layers)
 - [ ] Update CSS to remove overflow properties
 - [ ] Test no scrolling occurs
 - [ ] Document all changes
@@ -136,7 +156,6 @@
 
 ## Phase 2: Height Resolution System
 
-**Duration:** 1 week  
 **Dependencies:** Phase 1 complete  
 **Status:** ⚪ Not Started (0/3 tasks)
 
@@ -174,7 +193,6 @@
 
 ## Phase 3: Unified Typography System
 
-**Duration:** 1 week  
 **Dependencies:** Phase 2 complete  
 **Status:** ⚪ Not Started (0/3 tasks)
 
@@ -209,7 +227,6 @@
 
 ## Phase 4: Element-Specific Enforcement
 
-**Duration:** 1 week  
 **Dependencies:** Phase 3 complete  
 **Status:** ⚪ Not Started (0/4 tasks)
 
@@ -220,18 +237,19 @@
 - [ ] Increase block height if not fitting
 - [ ] Require block split if height can't increase
 - [ ] Test text always fits
-- [ ] Test no truncation or scrolling
+- [ ] Test no truncation (no ellipsis, no clamp, no clipping) and no scrolling
 - **Status:** ⚪ **PENDING**
 
 ### Task 4.2: Table Element Enforcement
 - [ ] Update `lib/elementFitValidator.ts`
 - [ ] Update `app/report/[slug]/ReportChart.tsx`
-- [ ] Validate table fits with all required rows
-- [ ] Enforce row count limits
+- [ ] Define Table as a dashboard summary element: **max 17 visible rows**
+- [ ] If source data exceeds 17 rows, enforce deterministic aggregation (Top-N + Other) so there is **no data loss**
 - [ ] Increase block height if needed
+- [ ] If aggregation is not semantically valid for the configured table, require block split or block redesign (publish blocked if not possible)
 - [ ] Require block split if height can't increase
-- [ ] Test tables always fit fully
-- [ ] Test no scrolling
+- [ ] Test tables always fit fully within the cell without scroll
+- [ ] Test no truncation (no ellipsis, no clamp, no clipping) and no scrolling
 - **Status:** ⚪ **PENDING**
 
 ### Task 4.3: Pie Element Enforcement
@@ -239,11 +257,11 @@
 - [ ] Update `app/report/[slug]/ReportChart.tsx`
 - [ ] Validate pie chart and legend fit
 - [ ] Enforce minimum pie radius
-- [ ] Ensure legend fits without scroll
+- [ ] Ensure legend fits without scroll via reflow + aggregation (Top-N + Other)
 - [ ] Implement reflow (horizontal to vertical)
 - [ ] Implement aggregation (Top-N + Other)
 - [ ] Test pie radius has minimum
-- [ ] Test legends fit without scroll
+- [ ] Test no truncation (no ellipsis, no clamp, no clipping) and no scrolling
 - **Status:** ⚪ **PENDING**
 
 ### Task 4.4: Bar Element Enforcement
@@ -254,14 +272,13 @@
 - [ ] Reduce label density if needed
 - [ ] Increase block height if needed
 - [ ] Test bars always fit
-- [ ] Test no scrolling or truncation
+- [ ] Test no truncation (no ellipsis, no clamp, no clipping) and no scrolling
 - **Status:** ⚪ **PENDING**
 
 ---
 
 ## Phase 5: Editor Integration
 
-**Duration:** 1 week  
 **Dependencies:** Phase 4 complete  
 **Status:** ⚪ Not Started (0/3 tasks)
 
@@ -300,7 +317,6 @@
 
 ## Phase 6: Migration & Validation
 
-**Duration:** 1 week  
 **Dependencies:** All phases complete  
 **Status:** ⚪ Not Started (0/3 tasks)
 
@@ -308,7 +324,7 @@
 - [ ] Create `scripts/migrate-reports-to-layout-grammar.ts`
 - [ ] Load all report configurations
 - [ ] Validate each block
-- [ ] Fix violations (remove scrolling, adjust heights)
+- [ ] Fix violations (remove scrolling/truncation/clipping, adjust heights, enforce table max 17 rows with aggregation)
 - [ ] Update font-size calculations
 - [ ] Generate migration report
 - [ ] Test no data loss
@@ -397,9 +413,8 @@
 ### Functional (Layout Grammar Compliance)
 - [ ] No scrolling in any chart type
 - [ ] No truncation in any chart type
-- [ ] No line clamping (except title max 2 lines)
-- [ ] No ellipsis (except title max 2 lines)
 - [ ] No hidden overflow
+- [ ] No clipping (no `overflow: hidden` on content layers)
 - [ ] Block height resolves deterministically (4-priority algorithm)
 - [ ] Unified typography works correctly (`--block-base-font-size`)
 - [ ] KPI values scale independently (explicit exemption)
@@ -456,8 +471,8 @@
 - None
 
 ### Decisions Made
-- CSP headers allow `unsafe-inline` for styles (required for CSS custom properties/design tokens)
-- CSP headers allow `unsafe-inline` for scripts (required for Next.js)
+- CSP uses nonces/hashes for inline scripts where unavoidable; avoid `unsafe-inline` for scripts
+- CSS custom properties do not require `unsafe-inline`; keep styles policy strict and token-driven
 - Input validation uses machine-readable error codes for programmatic handling
 
 ---

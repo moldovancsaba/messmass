@@ -38,6 +38,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "validate:inputs": "./scripts/validate-input-patterns.sh",
+    "check:layout-grammar": "tsx scripts/check-layout-grammar-violations.ts",
     "export": "next export",
     "clean": "rm -rf .next out",
     "style:audit": "node scripts/audit-styles.js",

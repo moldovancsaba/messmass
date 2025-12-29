@@ -1,0 +1,50 @@
+name: Layout Grammar Guardrail
+
+on:
+  pull_request:
+    paths:
+      - 'app/report/**'
+      - 'components/charts/**'
+      - 'app/report/[slug]/**'
+      - '*.css'
+      - '*.tsx'
+      - '*.ts'
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/report/**'
+      - 'components/charts/**'
+      - 'app/report/[slug]/**'
+      - '*.css'
+      - '*.tsx'
+      - '*.ts'
+
+jobs:
+  check-layout-grammar:
+    name: Check Layout Grammar Violations
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check for Layout Grammar violations
+        run: npm run check:layout-grammar
+      
+      - name: Report violations
+        if: failure()
+        run: |
+          echo "::error::Layout Grammar violations detected. See output above for details."
+          echo "::error::This CI check enforces the Structural Fit & Typography Enforcement Policy."
+          echo "::error::See: DESIGN_SYSTEM_PLAN.md Section 0 for policy details."
+
