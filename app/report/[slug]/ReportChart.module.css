@@ -456,8 +456,55 @@
   white-space: nowrap;
 }
 
-/* Text Chart - Uses base .chart structure with CellWrapper */
-/* CellWrapper handles the layout structure (titleZone + bodyZone) */
+/* Text Chart - Simple table structure to guarantee vertical layout */
+.text {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.textTable {
+  /* WHAT: Table structure to force title above content */
+  /* WHY: Tables guarantee vertical stacking - cannot be overridden */
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.textTitleCell {
+  /* WHAT: Title row - top of chart */
+  height: auto;
+  padding: var(--mm-space-2);
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+}
+
+.textTitleText {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-weight: var(--mm-font-weight-semibold);
+  color: var(--chartTitleColor);
+  font-size: clamp(0.95rem, 2.6cqw, 1.25rem);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.textContentCell {
+  /* WHAT: Content row - bottom of chart, fills remaining space */
+  height: 100%;
+  padding: var(--mm-space-2);
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+}
 
 .textContent {
   /* WHAT: Maximize font size to fill cell while staying readable */
@@ -474,7 +521,6 @@
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
-  padding: var(--mm-space-2);
   box-sizing: border-box;
 }
 
