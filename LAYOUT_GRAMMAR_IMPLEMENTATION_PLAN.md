@@ -5,6 +5,12 @@
 **Status:** Ready for Execution  
 **Authority:** Based on DESIGN_SYSTEM_PLAN.md Section 0 (Structural Fit & Typography Enforcement Policy)
 
+**⚠️ SECURITY & AUDIT COMPLIANCE:** This plan incorporates findings from:
+- COMPREHENSIVE_CRITICAL_AUDIT.md (412+ vulnerabilities)
+- SECURITY_TEAM_REVIEW.md (10 critical security issues)
+- CTO_REMEDIATION_PLAN.md (zero-downtime migration strategy)
+- SYSTEM_AUDIT_2025.md (architectural issues)
+
 ---
 
 ## Executive Summary
@@ -16,21 +22,28 @@ This document provides a detailed, actionable plan to refactor/rebuild the MessM
 - Block height is elastic and resolves deterministically
 - Unified typography (`--block-base-font-size`) applies to all elements except KPI values
 - Content always fits through structural change or height increase
+- **Security hardened** (XSS prevention, input validation, CSP)
+- **Future-proof** (design tokens, type safety, test coverage)
+- **Maintainable** (no inline styles, no hardcoded values, no deprecated code)
 
 ---
 
 ## Table of Contents
 
 1. [Current State Analysis](#current-state-analysis)
-2. [Implementation Phases](#implementation-phases)
-3. [Phase 1: Foundation & Core Infrastructure](#phase-1-foundation--core-infrastructure)
-4. [Phase 2: Height Resolution System](#phase-2-height-resolution-system)
-5. [Phase 3: Unified Typography System](#phase-3-unified-typography-system)
-6. [Phase 4: Element-Specific Enforcement](#phase-4-element-specific-enforcement)
-7. [Phase 5: Editor Integration](#phase-5-editor-integration)
-8. [Phase 6: Migration & Validation](#phase-6-migration--validation)
-9. [Testing Strategy](#testing-strategy)
-10. [Rollout Plan](#rollout-plan)
+2. [Audit Findings Integration](#audit-findings-integration) ⚠️ **CRITICAL**
+3. [Security Requirements](#security-requirements) ⚠️ **CRITICAL**
+4. [Implementation Phases](#implementation-phases)
+5. [Phase 0: Security Hardening Prerequisites](#phase-0-security-hardening-prerequisites) ⚠️ **MUST COMPLETE FIRST**
+6. [Phase 1: Foundation & Core Infrastructure](#phase-1-foundation--core-infrastructure)
+7. [Phase 2: Height Resolution System](#phase-2-height-resolution-system)
+8. [Phase 3: Unified Typography System](#phase-3-unified-typography-system)
+9. [Phase 4: Element-Specific Enforcement](#phase-4-element-specific-enforcement)
+10. [Phase 5: Editor Integration](#phase-5-editor-integration)
+11. [Phase 6: Migration & Validation](#phase-6-migration--validation)
+12. [Testing Strategy](#testing-strategy)
+13. [Security Validation](#security-validation) ⚠️ **CRITICAL**
+14. [Rollout Plan](#rollout-plan)
 
 ---
 
@@ -58,6 +71,8 @@ This document provides a detailed, actionable plan to refactor/rebuild the MessM
 
 ### Issues to Fix
 
+#### Layout Grammar Issues
+
 1. **Scrolling/Truncation Violations:**
    - Text charts: `overflow-y: auto` ❌
    - Pie legends: Potential overflow ❌
@@ -77,6 +92,48 @@ This document provides a detailed, actionable plan to refactor/rebuild the MessM
    - No height resolution validation
    - No "content doesn't fit" warnings
    - No Block split suggestions
+
+#### Security Issues (From Audits) ⚠️ **CRITICAL**
+
+5. **XSS Vulnerabilities:**
+   - 6 instances of `dangerouslySetInnerHTML` without proper sanitization
+   - No Content Security Policy (CSP) headers
+   - Markdown rendering may allow script injection
+
+6. **Input Validation:**
+   - No validation on height resolution inputs
+   - No validation on typography calculations
+   - No validation on block configurations
+
+7. **Code Injection Risks:**
+   - Formula evaluation may use unsafe patterns
+   - Dynamic content rendering without validation
+
+#### Architectural Issues (From Audits)
+
+8. **Design System Bypassed:**
+   - 87+ files with inline styles ❌
+   - 200+ files with hardcoded values ❌
+   - Design tokens ignored
+
+9. **Deprecated Code:**
+   - DynamicChart.tsx still imported in 3+ files
+   - Dual chart systems causing confusion
+
+10. **Type Safety:**
+    - 56+ instances of TypeScript `any` types
+    - No proper interfaces for layout grammar types
+
+#### Testing & Quality Issues
+
+11. **Zero Test Coverage:**
+    - No unit tests for layout grammar
+    - No integration tests
+    - No visual regression tests
+
+12. **Code Quality:**
+    - ESLint disabled during builds
+    - Console.log statements in production code
 
 ---
 
@@ -117,6 +174,7 @@ Phase 6: Migration & Validation (Week 6-7)
 - Core types and interfaces for layout grammar
 - Block height resolution types
 - Element fit validation types
+- **SECURITY:** All types must be type-safe (no `any`)
 
 **Code Structure:**
 ```typescript
@@ -130,33 +188,51 @@ export enum HeightResolutionPriority {
 
 // Block height resolution result
 export interface BlockHeightResolution {
-  height: number;
+  height: number; // Must be positive, validated
   priority: HeightResolutionPriority;
-  reason: string;
+  reason: string; // Sanitized, no user input
   canIncrease: boolean;
   requiresSplit: boolean;
+  securityFlags?: SecurityFlags; // NEW: Security validation
 }
 
 // Element fit validation
 export interface ElementFitValidation {
   fits: boolean;
-  requiredHeight?: number;
-  minFontSize?: number;
-  currentFontSize?: number;
-  violations: string[];
+  requiredHeight?: number; // Must be positive, validated
+  minFontSize?: number; // Must be positive, validated
+  currentFontSize?: number; // Must be positive, validated
+  violations: string[]; // Sanitized error messages
+  securityWarnings?: string[]; // NEW: Security warnings
 }
 
 // Block typography contract
 export interface BlockTypography {
-  baseFontSize: number; // --block-base-font-size
-  kpiValueFontSize?: number; // Independent scaling
+  baseFontSize: number; // --block-base-font-size, validated range
+  kpiValueFontSize?: number; // Independent scaling, validated range
+}
+
+// NEW: Security flags for validation
+export interface SecurityFlags {
+  inputValidated: boolean;
+  sanitizationApplied: boolean;
+  cspCompliant: boolean;
 }
 ```
 
+**Security Requirements:**
+- All numeric inputs validated (positive, within ranges)
+- All string inputs sanitized
+- No `any` types allowed
+- Runtime validation where needed
+
 **Acceptance Criteria:**
 - [ ] All types defined and exported
-- [ ] TypeScript compilation passes
+- [ ] TypeScript compilation passes with strict mode
 - [ ] Types match policy requirements
+- [ ] No `any` types
+- [ ] Input validation interfaces included
+- [ ] Security flags included
 
 ---
 
@@ -266,6 +342,7 @@ export function validateBarElementFit(
 - Remove `text-overflow: ellipsis`
 - Remove `line-clamp` (except for titles with max 2 lines)
 - Remove `overflow: hidden` that hides content
+- **SECURITY:** Ensure no hidden content that could contain XSS payloads
 
 **Search Patterns:**
 ```bash
@@ -275,11 +352,18 @@ grep -r "text-overflow" app/report
 grep -r "line-clamp" app/report
 ```
 
+**Security Considerations:**
+- Hidden overflow can mask XSS attacks
+- Ensure all content is visible or properly sanitized
+- No content hidden that could bypass validation
+
 **Acceptance Criteria:**
 - [ ] No `overflow: auto` or `overflow: scroll` in chart CSS
 - [ ] No `text-overflow: ellipsis` except in allowed cases
 - [ ] No `line-clamp` except for title max 2 lines
+- [ ] No hidden content that could contain XSS
 - [ ] All changes documented
+- [ ] Security review passed
 
 ---
 
@@ -956,19 +1040,37 @@ export interface ValidationError {
 - [ ] Height increases when needed
 - [ ] Block splits when needed
 
+### Security ⚠️ **NEW - CRITICAL**
+
+- [ ] All markdown rendering sanitized
+- [ ] All inputs validated
+- [ ] No XSS vulnerabilities
+- [ ] No code injection risks
+- [ ] CSP headers configured
+- [ ] No `any` types in layout grammar code
+- [ ] All security tests pass
+- [ ] Security audit passed
+
 ### Performance
 
 - [ ] Height resolution < 50ms per block
 - [ ] Typography calculation < 100ms per block
 - [ ] Editor validation < 200ms
 - [ ] No performance regressions
+- [ ] Security validation < 10ms overhead
 
 ### Quality
 
 - [ ] Test coverage > 80%
-- [ ] No TypeScript errors
+- [ ] Security test coverage > 90% ⚠️ **NEW**
+- [ ] No TypeScript errors (strict mode)
 - [ ] No linting errors
+- [ ] ESLint enabled in builds ⚠️ **NEW**
+- [ ] No console.log statements ⚠️ **NEW**
 - [ ] All documentation complete
+- [ ] Design tokens used exclusively ⚠️ **NEW**
+- [ ] No inline styles ⚠️ **NEW**
+- [ ] No hardcoded values ⚠️ **NEW**
 
 ---
 
@@ -1033,7 +1135,139 @@ export interface ValidationError {
 
 ---
 
+---
+
+## Security Validation ⚠️ **CRITICAL SECTION**
+
+### Pre-Implementation Security Checklist
+
+Before starting Phase 1, ensure:
+
+- [ ] All markdown rendering uses sanitization (Phase 0 Task 0.1)
+- [ ] Input validation framework created (Phase 0 Task 0.2)
+- [ ] Deprecated code removed (Phase 0 Task 0.3)
+- [ ] Design tokens foundation ready (Phase 0 Task 0.4)
+- [ ] Type safety foundation ready (Phase 0 Task 0.5)
+- [ ] Testing infrastructure ready (Phase 0 Task 0.6)
+
+### Security Review Gates
+
+**Gate 1: After Phase 0**
+- Security review of foundation
+- XSS prevention verified
+- Input validation verified
+- Type safety verified
+
+**Gate 2: After Phase 1**
+- Security review of core module
+- No `any` types introduced
+- All inputs validated
+- All outputs sanitized
+
+**Gate 3: After Phase 3**
+- Security review of typography system
+- Markdown rendering secure
+- CSP compliance verified
+
+**Gate 4: Before Production**
+- Full security audit
+- Penetration testing
+- All security tests pass
+- Security documentation complete
+
+### Security Testing Requirements
+
+**Mandatory Tests:**
+1. **XSS Prevention:**
+   - Test script injection in markdown
+   - Test script injection in text content
+   - Test script injection in table content
+   - Verify CSP blocks inline scripts
+
+2. **Input Validation:**
+   - Test negative heights
+   - Test invalid font sizes
+   - Test malicious block configurations
+   - Test SQL injection attempts (if applicable)
+   - Test command injection attempts
+
+3. **Type Safety:**
+   - Verify no `any` types
+   - Verify runtime validation
+   - Verify type coercion safety
+
+4. **Code Injection:**
+   - Test formula evaluation safety
+   - Test dynamic content rendering
+   - Verify no `Function()` constructor usage
+
+### Security Documentation
+
+**Required Documents:**
+- Security architecture diagram
+- Threat model for layout grammar
+- Security test results
+- Penetration test report
+- Security review sign-off
+
+---
+
+## Future-Proofing Requirements
+
+### Design Token Enforcement
+
+**Automated Checks:**
+```bash
+# CI/CD checks
+npm run check:design-tokens  # Fail if hardcoded values found
+npm run check:inline-styles  # Fail if inline styles found
+npm run check:types          # Fail if any types found
+```
+
+**ESLint Rules:**
+- Enforce design token usage
+- Block inline styles
+- Block hardcoded values
+- Block `any` types
+
+### Type Safety Enforcement
+
+**TypeScript Configuration:**
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
+  }
+}
+```
+
+**Runtime Validation:**
+- Zod schemas for all inputs
+- Runtime type checking where needed
+- Type guards for all user inputs
+
+### Code Quality Enforcement
+
+**Build Requirements:**
+- ESLint must pass (no `ignoreDuringBuilds`)
+- TypeScript must pass (strict mode)
+- All tests must pass
+- Security tests must pass
+- Design token checks must pass
+
+**Pre-commit Hooks:**
+- Lint-staged for changed files
+- Type checking
+- Security scanning
+- Design token validation
+
+---
+
 **Document Maintained By:** Development Team  
 **Last Updated:** 2025-01-XX  
-**Next Review:** Weekly during implementation
+**Next Review:** Weekly during implementation  
+**Security Review:** Before each phase gate
 
