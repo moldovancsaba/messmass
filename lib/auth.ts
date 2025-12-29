@@ -4,6 +4,8 @@
 
 import { cookies } from 'next/headers'
 import { findUserById } from './users'
+import { validateSessionToken, type SessionTokenData } from './sessionTokens'
+import { debug, warn } from './logger'
 
 export interface AdminUser {
   id: string
@@ -20,23 +22,29 @@ export interface AdminUser {
 
 /**
  * decodeSessionToken
- * Decodes base64 JSON session and validates expiration.
- * Token shape: { token: string; expiresAt: string; userId: string; role: 'admin'|'super-admin' }
+ * WHAT: Decodes and validates session token (supports both JWT and Base64 formats)
+ * WHY: Zero-downtime migration - supports both token formats during transition
+ * HOW: Uses unified validation function that auto-detects format
+ * 
+ * @deprecated Use validateSessionToken from lib/sessionTokens.ts directly
+ * This function is kept for backward compatibility but delegates to the new system
  */
-function decodeSessionToken(sessionToken: string): { token: string; expiresAt: string; userId: string; role: 'guest' | 'user' | 'admin' | 'superadmin' | 'api' } | null {
-  try {
-    const json = Buffer.from(sessionToken, 'base64').toString()
-    const tokenData = JSON.parse(json)
-    if (!tokenData?.token || !tokenData?.expiresAt || !tokenData?.userId || !tokenData?.role) return null
-    const expiresAt = new Date(tokenData.expiresAt)
-    const now = new Date()
-    if (now > expiresAt) return null
-    // Normalize historical role values (e.g., 'super-admin' → 'superadmin')
-    const normalizedRole = tokenData.role === 'super-admin' ? 'superadmin' : tokenData.role
-    return { ...tokenData, role: normalizedRole }
-  } catch {
+function decodeSessionToken(sessionToken: string, format?: 'jwt' | 'legacy'): SessionTokenData | null {
+  // WHAT: Use unified validation function
+  // WHY: Supports both JWT and Base64 formats
+  const tokenData = validateSessionToken(sessionToken, format)
+  
+  if (!tokenData) {
     return null
   }
+  
+  // WHAT: Normalize historical role values (e.g., 'super-admin' → 'superadmin')
+  // WHY: Backward compatibility with old tokens
+  // NOTE: Type assertion needed because old tokens may have 'super-admin' string
+  const roleRaw = tokenData.role as string;
+  const normalizedRole = (roleRaw === 'super-admin' ? 'superadmin' : tokenData.role) as SessionTokenData['role'];
+  
+  return { ...tokenData, role: normalizedRole }
 }
 
 /**
@@ -47,30 +55,33 @@ function decodeSessionToken(sessionToken: string): { token: string; expiresAt: s
 export async function getAdminUser(): Promise<AdminUser | null> {
   const cookieStore = await cookies()
   const adminSession = cookieStore.get('admin-session')
+  const sessionFormat = cookieStore.get('session-format')?.value as 'jwt' | 'legacy' | undefined
   
-  // Debug logging
-  console.log('🔍 getAdminUser called')
-  console.log('🍪 Cookie found:', !!adminSession)
+  // WHAT: Log authentication check (debug level, no PII)
+  // WHY: Security monitoring and debugging
+  debug('getAdminUser called', { hasCookie: !!adminSession?.value, format: sessionFormat })
   
   if (!adminSession?.value) {
-    console.log('❌ No admin-session cookie found')
+    debug('No admin-session cookie found')
     return null
   }
 
-  const tokenData = decodeSessionToken(adminSession.value)
+  // WHAT: Validate token with format hint (if available)
+  // WHY: Route to correct validator (JWT vs Base64)
+  const tokenData = decodeSessionToken(adminSession.value, sessionFormat)
   if (!tokenData) {
-    console.log('❌ Token decode failed or expired')
+    warn('Token validation failed', { format: sessionFormat })
     return null
   }
 
-  console.log('✅ Token valid, fetching user:', tokenData.userId)
+  debug('Token valid, fetching user', { userId: tokenData.userId })
   const user = await findUserById(tokenData.userId)
   if (!user) {
-    console.log('❌ User not found in database:', tokenData.userId)
+    warn('User not found in database', { userId: tokenData.userId })
     return null
   }
   
-  console.log('✅ User authenticated:', user.email)
+  debug('User authenticated', { email: user.email })
 
   // Map DB user to AdminUser view model; permissions derived from role
   const basePermissions = ['read', 'write', 'delete', 'manage-users']

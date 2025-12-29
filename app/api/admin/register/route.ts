@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createUser, findUserByEmail } from '@/lib/users';
 import { generateMD5StylePassword } from '@/lib/pagePassword';
 import { logAuthSuccess, logAuthFailure, error as logError } from '@/lib/logger';
+import { generateSessionToken, type SessionTokenData } from '@/lib/sessionTokens';
+import { FEATURE_FLAGS } from '@/lib/featureFlags';
 
 /**
  * WHAT: POST handler for user registration
@@ -51,18 +53,19 @@ export async function POST(request: NextRequest) {
       updatedAt: now,
     });
     
-    // WHAT: Create session token
-    // WHY: Auto-login user after registration
+    // WHAT: Create session token with dual-format support
+    // WHY: Auto-login user after registration, supports both JWT and Base64 formats
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    const sessionToken = {
+    const tokenData: SessionTokenData = {
       token: generateMD5StylePassword(), // Random token
       expiresAt: expiresAt.toISOString(),
       userId: newUser._id!.toString(),
       role: newUser.role,
     };
     
-    // WHAT: Encode session as base64 JSON
-    const encodedSession = Buffer.from(JSON.stringify(sessionToken)).toString('base64');
+    // WHAT: Generate token based on feature flag (JWT or Base64)
+    // WHY: Zero-downtime migration - supports both formats
+    const encodedSession = generateSessionToken(tokenData);
     
     // WHAT: Set HTTP-only cookie
     // WHY: Secure session management, prevent XSS
@@ -84,6 +87,18 @@ export async function POST(request: NextRequest) {
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: '/',
     });
+    
+    // WHAT: Store token format indicator (for validation routing)
+    // WHY: Helps middleware route to correct validator (JWT vs Base64)
+    if (FEATURE_FLAGS.USE_JWT_SESSIONS) {
+      response.cookies.set('session-format', 'jwt', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60,
+        path: '/',
+      });
+    }
     
     // WHAT: Log successful registration (no PII - logger redacts sensitive data)
     // WHY: Security monitoring and audit trail

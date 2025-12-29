@@ -6,9 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimitMiddleware, getRateLimitConfig } from '@/lib/rateLimit';
 import { csrfProtectionMiddleware, setCsrfTokenCookie, generateCsrfToken } from '@/lib/csrf';
-import { logRequestEnd, logRateLimitExceeded, logCsrfViolation } from '@/lib/logger';
+import { logRequestEnd, logRateLimitExceeded, logCsrfViolation, warn } from '@/lib/logger';
 import { buildCorsHeaders } from '@/lib/cors';
 import { canAccessRoute, getUnauthorizedRedirect } from '@/lib/routeProtection';
+import { validateSessionToken } from '@/lib/sessionTokens';
 import type { UserRole } from '@/lib/users';
 
 // WHAT: Main middleware function (runs on every request)
@@ -25,41 +26,30 @@ export async function middleware(request: NextRequest) {
   
   if (pathname.startsWith('/admin') && !isPublicRoute) {
     // WHAT: Step 1 - Check authentication (user has valid session)
+    // WHY: Protect admin routes from unauthorized access
     const adminSession = request.cookies.get('admin-session');
+    const sessionFormat = request.cookies.get('session-format')?.value as 'jwt' | 'legacy' | undefined;
     
     if (!adminSession?.value) {
-      console.warn(`⚠️  Unauthenticated admin access attempt: ${pathname}`);
+      warn('Unauthenticated admin access attempt', { pathname });
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
     
-    // WHAT: Step 2 - Decode session to get user role
-    let userRole: UserRole | undefined;
-    try {
-      const json = Buffer.from(adminSession.value, 'base64').toString();
-      const tokenData = JSON.parse(json);
-      
-      if (!tokenData?.token || !tokenData?.expiresAt || !tokenData?.userId) {
-        console.warn(`⚠️  Invalid session token: ${pathname}`);
-        return NextResponse.redirect(new URL('/admin/login', request.url));
-      }
-      
-      // Check if token is expired
-      const expiresAt = new Date(tokenData.expiresAt);
-      const now = new Date();
-      
-      if (now > expiresAt) {
-        console.warn(`⚠️  Expired session token: ${pathname}`);
-        return NextResponse.redirect(new URL('/admin/login', request.url));
-      }
-      
-      // Normalize role (historical tokens may use 'super-admin')
-      const roleRaw = tokenData.role as string
-      const normalizedRole = roleRaw === 'super-admin' ? 'superadmin' : roleRaw
-      userRole = normalizedRole as UserRole;
-    } catch (error) {
-      console.warn(`⚠️  Session decode error: ${pathname}`, error);
+    // WHAT: Step 2 - Validate session token (supports both JWT and Base64)
+    // WHY: Zero-downtime migration - supports both token formats
+    // HOW: Uses unified validation that auto-detects format or uses format hint
+    const tokenData = validateSessionToken(adminSession.value, sessionFormat);
+    
+    if (!tokenData) {
+      warn('Invalid or expired session token', { pathname, format: sessionFormat });
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
+    
+    // WHAT: Normalize role (historical tokens may use 'super-admin')
+    // WHY: Backward compatibility with old token format
+    const roleRaw = tokenData.role as string;
+    const normalizedRole = roleRaw === 'super-admin' ? 'superadmin' : roleRaw;
+    const userRole = normalizedRole as UserRole;
     
     // WHAT: Step 3 - Check role-based authorization
     // WHY: Enforce permission hierarchy (guest < user < admin < superadmin)

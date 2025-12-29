@@ -11,6 +11,7 @@ import { findUserByEmail, updateUserLastLogin, verifyPassword, updateUserPasswor
 import { FEATURE_FLAGS } from '@/lib/featureFlags'
 import { env } from '@/lib/config'
 import { logAuthSuccess, logAuthFailure, error as logError } from '@/lib/logger'
+import { generateSessionToken, type SessionTokenData } from '@/lib/sessionTokens'
 
 // Legacy env-based admin password has been removed. Authentication is fully DB-backed.
 
@@ -96,11 +97,13 @@ export async function POST(request: NextRequest) {
     // If you need to create the initial super-admin, use the Admin → Users page
     // (or insert directly in the Users collection), then log in with that credential.
 
-    // Build session token (7 days)
+    // WHAT: Build session token (7 days) with dual-format support
+    // WHY: Zero-downtime migration - supports both Base64 (legacy) and JWT (new)
+    // HOW: Feature flag determines format, both work during transition
     const token = crypto.randomBytes(32).toString('hex')
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-    const tokenData = {
+    const tokenData: SessionTokenData = {
       token,
       expiresAt: expiresAt.toISOString(),
       userId: user?._id?.toString() || 'admin',
@@ -108,7 +111,9 @@ export async function POST(request: NextRequest) {
       role: (user?.role || 'superadmin') as 'guest' | 'user' | 'admin' | 'superadmin' | 'api'
     }
 
-    const signedToken = Buffer.from(JSON.stringify(tokenData)).toString('base64')
+    // WHAT: Generate token based on feature flag (JWT or Base64)
+    // WHY: Dual-format support during migration
+    const sessionToken = generateSessionToken(tokenData)
 
     // WHAT: Set cookie with environment-aware configuration  
     // WHY: Each domain gets its own cookie - this is correct behavior
@@ -134,14 +139,15 @@ export async function POST(request: NextRequest) {
       path: '/'
     })
     
-    // Now set the new cookie on response (more reliable across runtimes)
-    const response = NextResponse.json({ success: true, token: signedToken, message: 'Login successful' })
+    // WHAT: Set the new cookie on response (more reliable across runtimes)
+    // WHY: HttpOnly cookie prevents XSS attacks
+    const response = NextResponse.json({ success: true, token: sessionToken, message: 'Login successful' })
 
     // Determine cookie domain for production (supports apex and www)
     const host = request.headers.get('host') || ''
     const domain = isProduction && host.endsWith('messmass.com') ? '.messmass.com' : undefined
 
-    response.cookies.set('admin-session', signedToken, {
+    response.cookies.set('admin-session', sessionToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
@@ -149,6 +155,20 @@ export async function POST(request: NextRequest) {
       path: '/',
       domain,
     })
+    
+    // WHAT: Store token format indicator (for validation routing)
+    // WHY: Helps middleware route to correct validator (JWT vs Base64)
+    // NOTE: Not HttpOnly - helps debugging but not security-critical
+    if (FEATURE_FLAGS.USE_JWT_SESSIONS) {
+      response.cookies.set('session-format', 'jwt', {
+        httpOnly: false,
+        secure: isProduction,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60,
+        path: '/',
+        domain,
+      })
+    }
 
     // Cookie set successfully - no logging needed (already logged auth success)
 
