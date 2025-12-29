@@ -11,7 +11,7 @@ import { evaluateFormula } from './formulaEngine';
 export interface Chart {
   chartId: string;
   title: string;
-  type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value';
+  type: 'kpi' | 'pie' | 'bar' | 'text' | 'image' | 'value' | 'table';
   formula: string;
   icon?: string; // Optional - not all charts have icons
   iconVariant?: 'outlined' | 'rounded'; // Material Icons variant
@@ -134,6 +134,8 @@ export class ReportCalculator {
           return this.calculateText(chart);
         case 'image':
           return this.calculateImage(chart);
+        case 'table':
+          return this.calculateTable(chart);
         case 'value':
           return this.calculateValue(chart);
         default:
@@ -307,6 +309,40 @@ export class ReportCalculator {
     return {
       chartId: chart.chartId,
       type: 'text',
+      title: chart.title,
+      icon: chart.icon,
+      iconVariant: chart.iconVariant,
+      kpiValue: typeof value === 'string' && value !== 'NA' ? value : '',
+      showTitle: chart.showTitle
+    };
+  }
+
+  /**
+   * WHAT: Calculate table chart (markdown table content)
+   * WHY: Table charts display markdown tables with styling
+   * HOW: For simple variable references, access directly; otherwise evaluate formula
+   */
+  private calculateTable(chart: Chart): ChartResult {
+    // WHAT: Detect simple variable reference (e.g., "stats.reportTable1" OR "reportTable1")
+    // WHY: Direct access preserves string values, bypasses numeric evaluation
+    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+    
+    let value: string | number | 'NA';
+    
+    if (simpleVarMatch) {
+      // Direct access for simple variable references
+      const fieldName = simpleVarMatch[1];
+      const fieldValue = this.stats[fieldName];
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : 'NA';
+    } else {
+      // Complex formula evaluation
+      value = this.evaluateFormula(chart.formula);
+    }
+    
+    return {
+      chartId: chart.chartId,
+      type: 'table',
       title: chart.title,
       icon: chart.icon,
       iconVariant: chart.iconVariant,

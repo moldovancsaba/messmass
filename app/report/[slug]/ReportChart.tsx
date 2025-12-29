@@ -19,6 +19,7 @@ import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
+import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
 
 // Register Chart.js components for pie charts
@@ -160,6 +161,9 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
     
     case 'image':
       return <ImageChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+    
+    case 'table':
+      return <TableChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
@@ -475,6 +479,41 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, class
         />
       ) : (
         <div className={styles.textContent} />
+      )}
+    </CellWrapper>
+  );
+}
+
+/**
+ * Table Chart - Markdown table display with styling
+ * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ */
+function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+  // WHAT: Render markdown table content on report pages
+  // WHY: User requirement: table charts render markdown tables with styling
+  // HOW: Use parseTableMarkdown to convert markdown table to HTML
+  const raw = typeof result.kpiValue === 'string' ? result.kpiValue : '';
+  const html = raw ? parseTableMarkdown(raw) : '';
+  
+  // WHAT: Check if title should be shown (default: true for backward compatibility)
+  const showTitle = result.showTitle !== false;
+  
+  return (
+    <CellWrapper
+      title={showTitle ? result.title : undefined}
+      titleFontSize={titleFontSize}
+      subtitleFontSize={subtitleFontSize}
+      blockHeight={blockHeight}
+      className={`${styles.chart} ${styles.table} report-chart ${className || ''}`}
+    >
+      {html ? (
+        <div
+          className={`${styles.tableContent} ${styles.tableMarkdown}`}
+          // eslint-disable-next-line react/forbid-dom-props
+          dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
+        />
+      ) : (
+        <div className={styles.tableContent} />
       )}
     </CellWrapper>
   );

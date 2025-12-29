@@ -506,6 +506,67 @@
 .textMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
 .textMarkdown a:hover { color: var(--mm-blue-700); }
 
+/* Table Chart - Markdown table display */
+.table {
+  background: var(--chartBackground) !important;
+  border-radius: var(--mm-radius-lg);
+}
+
+.tableContent {
+  width: 100%;
+  overflow-x: auto;
+  padding: var(--mm-space-4);
+}
+
+.tableMarkdown {
+  width: 100%;
+}
+
+.tableMarkdown table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+  font-size: clamp(0.875rem, 2cqw, 1rem);
+}
+
+.tableMarkdown table thead {
+  background: var(--chartTitleColor, var(--mm-gray-100));
+  font-weight: var(--mm-font-weight-semibold);
+}
+
+.tableMarkdown table th {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  text-align: left;
+  border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300));
+  color: var(--chartTitleColor, var(--mm-gray-900));
+}
+
+.tableMarkdown table td {
+  padding: var(--mm-space-3) var(--mm-space-4);
+  border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
+  color: var(--chartTextColor, var(--mm-gray-700));
+}
+
+.tableMarkdown table tbody tr:hover {
+  background: var(--mm-gray-50);
+}
+
+.tableMarkdown table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table markdown content styling */
+.tableMarkdown p {
+  margin: 0 0 0.5em 0;
+}
+
+.tableMarkdown strong { font-weight: 700; }
+.tableMarkdown em { font-style: italic; }
+
+.tableMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
+.tableMarkdown a:hover { color: var(--mm-blue-700); }
+
 /* Image Chart - SIMPLIFIED */
 .image {
   background: var(--chartBackground) !important;

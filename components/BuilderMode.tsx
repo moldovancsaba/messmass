@@ -10,6 +10,7 @@ import ChartBuilderBar from './ChartBuilderBar';
 import ChartBuilderPie from './ChartBuilderPie';
 import ChartBuilderImage from './ChartBuilderImage';
 import ChartBuilderText from './ChartBuilderText';
+import ChartBuilderTable from './ChartBuilderTable';
 
 interface BuilderModeProps {
   projectId: string;
@@ -33,7 +34,7 @@ interface DataBlock {
 interface ChartConfig {
   chartId: string;
   title: string;
-  type: 'kpi' | 'bar' | 'pie' | 'image' | 'text' | 'value';
+  type: 'kpi' | 'bar' | 'pie' | 'image' | 'text' | 'table' | 'value';
   icon: string;
   elements: Array<{
     formula: string;
@@ -185,6 +186,8 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
         return 1;
       case 'text':
         return 2;
+      case 'table':
+        return 2; // Tables use 2 grid units like text charts
       case 'pie':
         return 2;
       case 'bar':
@@ -298,6 +301,11 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                       case 'text':
                         builderComponent = (
                           <ChartBuilderText chart={chart} stats={stats} onSave={handleSave} />
+                        );
+                        break;
+                      case 'table':
+                        builderComponent = (
+                          <ChartBuilderTable chart={chart} stats={stats} onSave={handleSave} />
                         );
                         break;
                       case 'value':

@@ -99,8 +99,8 @@ export interface ChartConfiguration {
   _id?: string; // MongoDB ObjectId (optional for new documents)
   chartId: string; // Unique identifier for the chart (e.g., "gender-distribution", "merchandise-sales")
   title: string; // Display title (e.g., "Gender Distribution", "Merchandise Sales")
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // Chart type
-  // WHY: text displays reportText* variables as formatted text blocks, image shows reportImage* URLs as full-width images
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'table'; // Chart type
+  // WHY: text displays reportText* variables as formatted text blocks, image shows reportImage* URLs as full-width images, table displays markdown tables
   order: number; // Display order in admin grid (1, 2, 3, etc.)
   isActive: boolean; // Whether this chart is currently enabled/visible
   elements: ChartElement[]; // Array of chart elements (2 for pie, 5 for bar, 1 for kpi/text/image)
@@ -257,7 +257,7 @@ export interface FormulaValidationResult {
 export interface ChartCalculationResult {
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'; // Chart type
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'table'; // Chart type
   
   /** WHAT: Material Icon name (v10.4.0) */
   icon?: string;

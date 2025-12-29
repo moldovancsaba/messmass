@@ -31,7 +31,7 @@ interface ChartConfigFormData {
   _id?: string;
   chartId: string;
   title: string;
-  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image';
+  type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'table';
   order: number;
   isActive: boolean;
   elements: {
@@ -798,11 +798,12 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
   // WHAT: Get the exact required element count for each chart type
   // WHY: Enforce chart type constraints (text/image have 1 element like KPI)
   // HOW: Switch on chart type and return expected element count
-  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi' | 'text' | 'image'): number => {
+  const getRequiredElementCount = (type: 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'table'): number => {
     switch (type) {
       case 'kpi': return 1;
       case 'text': return 1; // Text charts display one text variable
       case 'image': return 1; // Image charts display one image URL
+      case 'table': return 1; // Table charts display one markdown table variable
       case 'pie': return 2;
       case 'bar': return 5;
       default: return 1;
@@ -1170,6 +1171,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                 <option value="kpi">KPI Chart (1 element)</option>
                 <option value="text">📝 Text Chart (1 element)</option>
                 <option value="image">🖼️ Image Chart (1 element)</option>
+                <option value="table">📋 Table Chart (1 element)</option>
                 <option value="pie">Pie Chart (2 elements)</option>
                 <option value="bar">Bar Chart (5 elements)</option>
               </select>
@@ -1485,6 +1487,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                       {formData.type === 'kpi' && <span className="chart-type-info">📈 KPI Value</span>}
                       {formData.type === 'text' && <span className="chart-type-info">📝 Text Content</span>}
                       {formData.type === 'image' && <span className="chart-type-info">🖼️ Image URL</span>}
+                      {formData.type === 'table' && <span className="chart-type-info">📋 Markdown Table</span>}
                       {formData.type === 'pie' && <span className="chart-type-info">🥧 {index === 0 ? 'Segment 1' : 'Segment 2'}</span>}
                       {formData.type === 'bar' && <span className="chart-type-info">📊 Bar {index + 1}</span>}
                     </div>

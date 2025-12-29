@@ -123,10 +123,10 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
     return { isValid: false, error: 'Missing required fields: chartId, title, or type' };
   }
   
-  // WHAT: Chart type validation including text/image
-  // WHY: Support new chart types for reportText*, reportImage*
-  if (!['pie', 'bar', 'kpi', 'text', 'image'].includes(config.type)) {
-    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", or "image"' };
+  // WHAT: Chart type validation including text/image/table
+  // WHY: Support new chart types for reportText*, reportImage*, and markdown tables
+  if (!['pie', 'bar', 'kpi', 'text', 'image', 'table'].includes(config.type)) {
+    return { isValid: false, error: 'Chart type must be "pie", "bar", "kpi", "text", "image", or "table"' };
   }
   
   // Elements validation
@@ -155,6 +155,12 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   
   if (config.type === 'image' && config.elements.length !== 1) {
     return { isValid: false, error: 'Image charts must have exactly 1 element' };
+  }
+  
+  // WHAT: Validate table charts require exactly 1 element
+  // WHY: Table displays one markdown table variable
+  if (config.type === 'table' && config.elements.length !== 1) {
+    return { isValid: false, error: 'Table charts must have exactly 1 element' };
   }
   
   // WHAT: Validate element-level formatting if present

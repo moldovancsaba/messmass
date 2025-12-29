@@ -310,6 +310,57 @@ export function calculateChart(
     }
   }
   
+  // Special handling for table charts
+  else if (configuration.type === 'table') {
+    // WHAT: Table charts display markdown table content from stats fields (e.g., stats.reportTable1)
+    // WHY: Table content is strings (markdown), not numeric calculations
+    // HOW: Extract string value directly from stats field
+    if (elements.length > 0 && configuration.elements.length > 0) {
+      kpiValue = elements[0].value;
+      
+      // WHAT: If numeric evaluation failed, try direct stats field access
+      // WHY: evaluateFormula returns 'NA' for string fields
+      // HOW: Check if formula is simple fieldName pattern
+      if (kpiValue === 'NA' && configuration.elements[0].formula) {
+        const formula = configuration.elements[0].formula.trim();
+        let fieldValue: string | undefined;
+        let fieldName: string = '';
+        
+        // WHAT: Handle stats.reportTable1 format (old format from database)
+        if (formula.startsWith('stats.')) {
+          fieldName = formula.substring(6); // Remove "stats." prefix
+          // Try direct field name (e.g., reportTable1)
+          fieldValue = (stats as any)[fieldName];
+          // Try with stats. prefix (e.g., stats.reportTable1)
+          if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+            fieldValue = (stats as any)[`stats.${fieldName}`];
+          }
+        }
+        // WHAT: Handle reportTable1 format (new simple format)
+        else if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(formula)) {
+          fieldName = formula;
+          // Try direct field name (e.g., reportTable1)
+          fieldValue = (stats as any)[fieldName];
+          // Try with stats. prefix (e.g., stats.reportTable1)
+          if (!fieldValue && typeof (stats as any)[`stats.${fieldName}`] === 'string') {
+            fieldValue = (stats as any)[`stats.${fieldName}`];
+          }
+        }
+        
+        if (typeof fieldValue === 'string' && fieldValue.length > 0) {
+          kpiValue = fieldValue as any;
+          console.log(`✅ Table markdown for "${configuration.title}" (${formula}): ${fieldValue.substring(0, 50)}...`);
+        } else {
+          console.warn(`⚠️ Table chart "${configuration.title}" has no valid markdown for formula: ${formula}`);
+        }
+      }
+    } else {
+      kpiValue = 'NA';
+      hasErrors = true;
+      console.error(`❌ Table chart "${configuration.title}" has no elements`);
+    }
+  }
+  
   // Special handling for text charts
   else if (configuration.type === 'text') {
     // WHAT: Text charts display string content from stats fields (e.g., stats.reportText1) or content assets ([TEXT:slug])
@@ -513,7 +564,7 @@ export function calculateChart(
     // WHAT: Pass through aspectRatio for image and text charts (v9.3.0)
     // WHY: UnifiedDataVisualization needs this to calculate grid width
     // HOW: Optional field, set for image and text charts
-    ...((configuration.type === 'image' || configuration.type === 'text') && 'aspectRatio' in configuration && configuration.aspectRatio 
+    ...((configuration.type === 'image' || configuration.type === 'text' || configuration.type === 'table') && 'aspectRatio' in configuration && configuration.aspectRatio 
       ? { aspectRatio: configuration.aspectRatio } 
       : {})
   };
@@ -782,7 +833,7 @@ export function getCalculationSummary(
   chartsWithErrors: number;
   elementsWithErrors: number;
   totalElements: number;
-  chartTypes: { pie: number; bar: number; kpi: number; text: number; image: number };
+  chartTypes: { pie: number; bar: number; kpi: number; text: number; image: number; table: number };
 } {
   const activeCharts = configurations.filter(config => config.isActive).length;
   const chartsWithErrors = results.filter(result => result.hasErrors).length;
@@ -801,12 +852,12 @@ export function getCalculationSummary(
   
   const chartTypes = results.reduce(
     (acc, result) => {
-      if (result.type === 'pie' || result.type === 'bar' || result.type === 'kpi' || result.type === 'text' || result.type === 'image') {
+      if (result.type === 'pie' || result.type === 'bar' || result.type === 'kpi' || result.type === 'text' || result.type === 'image' || result.type === 'table') {
         acc[result.type]++;
       }
       return acc;
     },
-    { pie: 0, bar: 0, kpi: 0, text: 0, image: 0 }
+    { pie: 0, bar: 0, kpi: 0, text: 0, image: 0, table: 0 }
   );
   
   return {
