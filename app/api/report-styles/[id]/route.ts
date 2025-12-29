@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { ReportStyle } from '@/lib/reportStyleTypes';
+import { error as logError } from '@/lib/logger';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
 const COLLECTION = 'report_styles';
@@ -47,7 +48,7 @@ export async function GET(
       style: { ...style, _id: style._id?.toString() }
     });
   } catch (error) {
-    console.error('Failed to fetch report style:', error);
+    logError('Failed to fetch report style', { context: 'report-styles', styleId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch style' },
       { status: 500 }

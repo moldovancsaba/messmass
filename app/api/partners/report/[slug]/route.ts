@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -148,7 +149,7 @@ const db = client.db(config.dbName);
       totalEvents: events.length
     });
   } catch (error) {
-    console.error('Failed to fetch partner report:', error);
+    logError('Failed to fetch partner report', { context: 'partners-report', slug }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

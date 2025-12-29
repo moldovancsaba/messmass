@@ -15,13 +15,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
 
     // Validate partner ID
     if (!ObjectId.isValid(id)) {
@@ -87,7 +90,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Error disconnecting Google Sheet:', error);
+    logError('Error disconnecting Google Sheet', { context: 'google-sheet-disconnect', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

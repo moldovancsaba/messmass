@@ -14,13 +14,16 @@ import clientPromise from '@/lib/mongodb';
 import { createDriveClient } from '@/lib/googleSheets/client';
 import { google } from 'googleapis';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ success: false, error: 'Invalid partner ID' }, { status: 400 });
     }
@@ -66,7 +69,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, name: newName });
   } catch (error) {
-    console.error('Rename sheet failed:', error);
+    logError('Rename sheet failed', { context: 'google-sheet-rename', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

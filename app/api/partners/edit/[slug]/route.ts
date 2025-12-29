@@ -86,7 +86,7 @@ const db = client.db(config.dbName);
       partner: partnerData
     });
   } catch (error) {
-    console.error('Failed to fetch partner for editing:', error);
+    logError('Failed to fetch partner for editing', { context: 'partners-edit', slug }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

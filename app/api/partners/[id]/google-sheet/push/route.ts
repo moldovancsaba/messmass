@@ -21,6 +21,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { pushEventsToSheet } from '@/lib/googleSheets/pushEvents';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 interface PushRequest {
   dryRun?: boolean;
@@ -31,8 +32,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
 
     // Validate partner ID
     if (!ObjectId.isValid(id)) {
@@ -247,7 +250,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Error pushing events to Google Sheet:', error);
+    logError('Error pushing events to Google Sheet', { context: 'google-sheet-push', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

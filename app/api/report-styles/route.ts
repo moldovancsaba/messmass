@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { ReportStyle, validateStyle, normalizeHexColor, COLOR_FIELDS } from '@/lib/reportStyleTypes';
+import { error as logError } from '@/lib/logger';
 
 const DB_NAME = process.env.MONGODB_DB || 'messmass';
 const COLLECTION = 'report_styles';
@@ -30,7 +31,7 @@ export async function GET() {
       styles: styles.map(s => ({ ...s, _id: s._id?.toString() }))
     });
   } catch (error) {
-    console.error('Failed to fetch report styles:', error);
+    logError('Failed to fetch report styles', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch styles' },
       { status: 500 }
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
       style: { ...normalizedStyle, _id: result.insertedId.toString() }
     });
   } catch (error) {
-    console.error('Failed to create report style:', error);
+    logError('Failed to create report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to create style' },
       { status: 500 }
@@ -144,7 +145,7 @@ export async function PUT(request: NextRequest) {
       style: { ...normalizedStyle, _id: id }
     });
   } catch (error) {
-    console.error('Failed to update report style:', error);
+    logError('Failed to update report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update style' },
       { status: 500 }
@@ -187,7 +188,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Style deleted successfully'
     });
   } catch (error) {
-    console.error('Failed to delete report style:', error);
+    logError('Failed to delete report style', { context: 'report-styles' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to delete style' },
       { status: 500 }

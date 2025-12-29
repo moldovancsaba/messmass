@@ -22,13 +22,16 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
 
     // Validate partner ID
     if (!ObjectId.isValid(id)) {
@@ -151,7 +154,7 @@ export async function GET(
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error fetching Google Sheets status:', error);
+    logError('Error fetching Google Sheets status', { context: 'google-sheet-status', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
