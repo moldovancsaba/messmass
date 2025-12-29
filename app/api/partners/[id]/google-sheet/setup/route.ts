@@ -17,6 +17,7 @@ import { createSheetsClient, createDriveClient } from '@/lib/googleSheets/client
 import { columnIndexToLetter, columnLetterToIndex, SHEET_HEADER_LABELS } from '@/lib/googleSheets/columnMap';
 import { eventToRow } from '@/lib/googleSheets/rowMapper';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 const SHEET_NAME = 'Events';
 const MIN_COLUMNS = 300; // Increased to support extended KYC variables
@@ -67,7 +68,7 @@ export async function POST(
 
     const partner = await partners.findOne({ _id: new ObjectId(id) });
     if (!partner) {
-      console.error(`Partner not found: ${id}`);
+      logError('Partner not found', { context: 'google-sheet-setup', partnerId: id });
       return NextResponse.json({ 
         success: false, 
         error: `Partner not found with ID: ${id}. Please verify the partner exists in the database.` 
@@ -105,7 +106,7 @@ export async function POST(
         });
       } else {
         // Create Events tab if Sheet1 doesn't exist
-        console.log('📝 Creating "Events" sheet tab...');
+        logInfo('Creating Events sheet tab', { context: 'google-sheet-setup', partnerId: id, sheetId });
         await sheets.spreadsheets.batchUpdate({
           spreadsheetId: sheetId,
           requestBody: {
@@ -138,7 +139,7 @@ export async function POST(
 
     const currentColumns = eventsTab.properties.gridProperties?.columnCount || 26;
     if (currentColumns < MIN_COLUMNS) {
-      console.log(`📐 Expanding columns from ${currentColumns} to ${MIN_COLUMNS}...`);
+      logInfo('Expanding columns', { context: 'google-sheet-setup', partnerId: id, sheetId, currentColumns, minColumns: MIN_COLUMNS });
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: sheetId,
         requestBody: {
@@ -158,7 +159,7 @@ export async function POST(
         }
       });
     } else {
-      console.log(`✓ Sheet already has ${currentColumns} columns (need ${MIN_COLUMNS})`);
+      logInfo('Sheet already has sufficient columns', { context: 'google-sheet-setup', partnerId: id, sheetId, currentColumns, minColumns: MIN_COLUMNS });
     }
 
     // Step 4: Write headers
@@ -220,7 +221,7 @@ export async function POST(
 
       // Step 6b: Write googleSheetUuid back to project documents
       // WHY: Enable Pull to update existing events by UUID
-      console.log('📝 Writing googleSheetUuid back to project documents...');
+      logInfo('Writing googleSheetUuid back to project documents', { context: 'google-sheet-setup', partnerId: id, sheetId, eventCount: events.length });
       const projectsCollection = db.collection('projects');
       const updatePromises = events.map((event: any) => 
         projectsCollection.updateOne(
@@ -235,7 +236,7 @@ export async function POST(
         )
       );
       await Promise.all(updatePromises);
-      console.log(`✅ Updated ${events.length} projects with googleSheetUuid`);
+      logInfo('Updated projects with googleSheetUuid', { context: 'google-sheet-setup', partnerId: id, sheetId, updatedCount: events.length });
     }
 
     // Step 7: Prefix sheet title with Partner UUID
@@ -269,7 +270,7 @@ export async function POST(
     });
 
   } catch (error: any) {
-    console.error('Auto-setup failed:', error);
+    logError('Auto-setup failed', { context: 'google-sheet-setup' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: error.message || 'Internal server error'

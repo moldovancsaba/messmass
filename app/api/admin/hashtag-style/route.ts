@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * GET /api/admin/hashtag-style?hashtag=xxx
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       slug: record?.slug || null
     });
   } catch (error) {
-    console.error('[admin/hashtag-style GET] Error:', error);
+    logError('admin/hashtag-style GET error', { context: 'admin-hashtag-style' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch hashtag style'
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
       { upsert: true }
     );
     
-    console.log(`✅ Saved styleId for hashtag "${hashtag}":`, styleId || 'null');
+    logInfo('Saved styleId for hashtag', { context: 'admin-hashtag-style', hashtag, styleId: styleId || 'null' });
     
     return NextResponse.json({
       success: true,
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       upserted: result.upsertedCount
     });
   } catch (error) {
-    console.error('[admin/hashtag-style POST] Error:', error);
+    logError('admin/hashtag-style POST error', { context: 'admin-hashtag-style' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: 'Failed to save hashtag style'

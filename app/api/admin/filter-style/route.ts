@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 // POST /api/admin/filter-style - Save style selection for filter combination
 // WHAT: Update styleId for an existing filter hashtag combination
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         lastAccessed: now
       });
 
-      console.log('✅ Created new filter entry with style:', { hashtags: normalizedHashtags, styleId });
+      logInfo('Created new filter entry with style', { context: 'admin-filter-style', hashtags: normalizedHashtags, styleId });
       return NextResponse.json({ success: true, created: true });
     }
 
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
       { $set: updates }
     );
 
-    console.log('✅ Updated filter style:', { hashtags: normalizedHashtags, styleId });
+    logInfo('Updated filter style', { context: 'admin-filter-style', hashtags: normalizedHashtags, styleId });
 
     return NextResponse.json({ 
       success: true, 
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to save filter style:', error);
+    logError('Failed to save filter style', { context: 'admin-filter-style' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to save filter style'
@@ -145,7 +146,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch filter style:', error);
+    logError('Failed to fetch filter style', { context: 'admin-filter-style' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch filter style'

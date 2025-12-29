@@ -20,6 +20,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { pullEventsFromSheet } from '@/lib/googleSheets/pullEvents';
 import config from '@/lib/config';
+import { error as logError } from '@/lib/logger';
 
 interface PullRequest {
   dryRun?: boolean;
@@ -234,7 +235,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Error pulling events from Google Sheet:', error);
+    logError('Error pulling events from Google Sheet', { context: 'google-sheet-pull', partnerId: id }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

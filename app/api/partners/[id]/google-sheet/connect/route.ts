@@ -22,6 +22,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { testConnection } from '@/lib/googleSheets/client';
 import config from '@/lib/config';
+import { error as logError, debug as logDebug } from '@/lib/logger';
 
 interface ConnectRequest {
   sheetId: string;
@@ -57,10 +58,7 @@ export async function POST(
     }
     
     // DEBUG: Log sheet ID details
-    console.log(`[connect] Received sheetId: "${sheetId}"`);
-    console.log(`[connect] sheetId length: ${sheetId.length}`);
-    console.log(`[connect] sheetId type: ${typeof sheetId}`);
-    console.log(`[connect] sheetId regex test (valid chars): ${/^[a-zA-Z0-9_-]+$/.test(sheetId)}`);
+    logDebug('Received sheetId for connection', { context: 'google-sheet-connect', partnerId: id, sheetId, sheetIdLength: sheetId.length, sheetIdType: typeof sheetId, isValidFormat: /^[a-zA-Z0-9_-]+$/.test(sheetId) });
     
     // Validate sheet ID format (should be alphanumeric with hyphens/underscores)
     if (!/^[a-zA-Z0-9_-]+$/.test(sheetId)) {
@@ -150,7 +148,7 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error('Error connecting Google Sheet:', error);
+    logError('Error connecting Google Sheet', { context: 'google-sheet-connect', partnerId: id }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

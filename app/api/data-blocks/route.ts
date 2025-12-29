@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
+import { error as logError } from '@/lib/logger';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -36,7 +37,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch data blocks:', error);
+    logError('Failed to fetch data blocks', { context: 'data-blocks' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch data blocks' },
       { status: 500 }
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to create data block:', error);
+    logError('Failed to create data block', { context: 'data-blocks' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to create data block' },
       { status: 500 }
@@ -140,7 +141,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to update data block:', error);
+    logError('Failed to update data block', { context: 'data-blocks' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update data block' },
       { status: 500 }
@@ -180,7 +181,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to delete data block:', error);
+    logError('Failed to delete data block', { context: 'data-blocks' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to delete data block' },
       { status: 500 }
