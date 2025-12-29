@@ -99,7 +99,7 @@ A change is “done” only when it is:
 
 | Phase | Status | Progress | Started | Completed |
 |-------|--------|----------|---------|-----------|
-| Phase 0: Security Hardening Prerequisites | 🟡 In Progress | 6/8 tasks | 2025-01-XX | - |
+| Phase 0: Security Hardening Prerequisites | 🟡 In Progress | 7/8 tasks | 2025-01-XX | - |
 | Phase 1: Foundation & Core Infrastructure | ⚪ Not Started | 0/4 tasks | - | - |
 | Phase 2: Height Resolution System | ⚪ Not Started | 0/3 tasks | - | - |
 | Phase 3: Unified Typography System | ⚪ Not Started | 0/3 tasks | - | - |
@@ -107,7 +107,7 @@ A change is “done” only when it is:
 | Phase 5: Editor Integration | ⚪ Not Started | 0/3 tasks | - | - |
 | Phase 6: Migration & Validation | ⚪ Not Started | 0/3 tasks | - | - |
 
-**Overall Progress:** 6/28 tasks (21.4%)
+**Overall Progress:** 7/28 tasks (25.0%)
 
 ---
 
@@ -115,7 +115,7 @@ A change is “done” only when it is:
 
 **Dependencies:** None  
 **Priority:** 🔴 **CRITICAL**  
-**Status:** 🟡 In Progress (6/8 tasks)
+**Status:** 🟡 In Progress (7/8 tasks)
 
 ### Task 0.1: Secure Markdown Rendering
 - [x] Verify all `dangerouslySetInnerHTML` uses sanitization
@@ -590,7 +590,7 @@ A change is “done” only when it is:
 - **Program Standards Acknowledged:** Reviewed and aligned with Chappie's Program Standards. Noted tech stack clarification: codebase uses `ws` (WebSocket) package, not Socket.io library; uses native MongoDB driver, not Mongoose. Updated Program Standards section to reflect actual stack.
 - **Task 0.7 Status:** CI guardrail is active and will prevent new violations. Found 67 existing violations (expected - will be fixed in Task 1.4). Tested locally - script correctly detects violations. GitHub Actions workflow created but requires `workflow` scope in token for automated runs. CI test verification can be done with actual PR when permissions are fixed.
 - **Task 0.8 Status:** Dependency guardrail complete - script, CI workflow, and documentation created. All current dependencies pass guardrail check. Tested locally - script correctly detects violations. CI test verification can be done with actual PR when permissions are fixed.
-- **Phase 0 Progress:** 6/8 tasks complete (75%). Remaining: Task 0.3 (Remove Deprecated Code), Task 0.4 (Design Token Migration), Task 0.5 (Type Safety Foundation), Task 0.6 (Testing Infrastructure).
+- **Phase 0 Progress:** 7/8 tasks complete (87.5%). Remaining: Task 0.4 (Design Token Migration), Task 0.5 (Type Safety Foundation), Task 0.6 (Testing Infrastructure).
 - **Next Steps:** Per Program Standards, Tasks 0.7 and 0.8 require CI proof (intentional violation PR). This can be done when workflow permissions are fixed, or manually verified. Ready to proceed with remaining Phase 0 tasks.
 
 ### Notes from Chappie
