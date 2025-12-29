@@ -513,16 +513,21 @@
   float: none !important;
   /* CRITICAL: Ensure this is below title */
   position: relative !important;
+  /* CRITICAL: Enable container queries for font scaling */
+  container-type: size !important;
 }
 
 .textContent {
   /* WHAT: Container for markdown content - allows children to stack vertically */
   /* WHY: Markdown elements (p, h1, etc.) must stack vertically, not inline */
-  /* HOW: Use block display with vertical stacking, centered content */
+  /* HOW: Use block display with vertical stacking, centered content, scales to fit */
   display: block !important; /* CRITICAL: Block display allows children to stack */
   width: 100% !important;
   height: 100% !important;
-  font-size: clamp(1rem, min(8cqh, 6cqw), 1.5rem);
+  /* CRITICAL: Scale font-size to fit available space using container queries */
+  /* WHY: Text should fill available space while staying readable */
+  /* HOW: Use both height (cqh) and width (cqw) for responsive scaling */
+  font-size: clamp(0.75rem, min(10cqh, 8cqw), 1.5rem) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
@@ -532,6 +537,8 @@
   /* CRITICAL: Allow vertical scrolling if content overflows */
   overflow-y: auto !important;
   overflow-x: hidden !important;
+  /* CRITICAL: Enable container queries for responsive scaling */
+  container-type: size !important;
 }
 
 /* WHAT: Markdown element styles inside text content
