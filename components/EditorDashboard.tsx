@@ -366,35 +366,54 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
 
   // WHAT: Manual input card component - REPLACED WITH UnifiedNumberInput
   // WHY: Use unified component system for consistency
-  const ManualInputCard = ({ label, value, statKey }: { 
+  const ManualInputCard = ({ label, value, statKey, variableType }: { 
     label: string; 
     value: number; 
     statKey: keyof typeof project.stats;
-  }) => (
-    <div className="input-card flex-row gap-4">
-      <UnifiedNumberInput
-        value={value}
-        onSave={(newValue) => updateManualField(statKey, newValue)}
-        className="form-input w-120"
-        min={0}
-      />
-      <div className="form-label flex-1">{label}</div>
-    </div>
-  );
+    variableType?: VariableWithFlags['type'];
+  }) => {
+    // WHAT: Allow decimals for percentage, numeric, and currency types
+    // WHY: These types require decimal precision (e.g., 45.5%, 3.14, $99.99)
+    const allowDecimal = variableType === 'percentage' || variableType === 'numeric' || variableType === 'currency';
+    const step = allowDecimal ? 0.01 : 1;
+    
+    return (
+      <div className="input-card flex-row gap-4">
+        <UnifiedNumberInput
+          value={value}
+          onSave={(newValue) => updateManualField(statKey, newValue)}
+          className="form-input w-120"
+          min={0}
+          allowDecimal={allowDecimal}
+          step={step}
+        />
+        <div className="form-label flex-1">{label}</div>
+      </div>
+    );
+  };
 
   // WHAT: Manual input for dynamic/custom stats - REPLACED WITH UnifiedNumberInput
   // WHY: Use unified component system for consistency
-  const ManualInputDynamic = ({ label, keyName }: { label: string; keyName: string }) => (
-    <div className="input-card flex-row gap-4">
-      <UnifiedNumberInput
-        value={getStat(keyName)}
-        onSave={(newValue) => setStat(keyName, newValue)}
-        className="form-input w-120"
-        min={0}
-      />
-      <div className="form-label flex-1">{label}</div>
-    </div>
-  );
+  const ManualInputDynamic = ({ label, keyName, variableType }: { label: string; keyName: string; variableType?: VariableWithFlags['type'] }) => {
+    // WHAT: Allow decimals for percentage, numeric, and currency types
+    // WHY: These types require decimal precision (e.g., 45.5%, 3.14, $99.99)
+    const allowDecimal = variableType === 'percentage' || variableType === 'numeric' || variableType === 'currency';
+    const step = allowDecimal ? 0.01 : 1;
+    
+    return (
+      <div className="input-card flex-row gap-4">
+        <UnifiedNumberInput
+          value={getStat(keyName)}
+          onSave={(newValue) => setStat(keyName, newValue)}
+          className="form-input w-120"
+          min={0}
+          allowDecimal={allowDecimal}
+          step={step}
+        />
+        <div className="form-label flex-1">{label}</div>
+      </div>
+    );
+  };
 
   // WHAT: Text input component - REPLACED WITH UnifiedTextInput
   // WHY: Use unified component system for consistency (removed duplicate implementation)
@@ -673,9 +692,9 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                     )
                   ) : (
                     isRemoteFans ? (
-                      <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} />
+                      <ManualInputCard key={v.name} label={v.label} value={(project.stats as any).remoteFans ?? (project.stats.indoor + project.stats.outdoor)} statKey={"remoteFans" as keyof typeof project.stats} variableType={v.type} />
                     ) : (
-                      <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={normalizedName as keyof typeof project.stats} />
+                      <ManualInputCard key={v.name} label={v.label} value={getStat(v.name)} statKey={normalizedName as keyof typeof project.stats} variableType={v.type} />
                     )
                   );
                 })}
@@ -721,7 +740,7 @@ export default function EditorDashboard({ project: initialProject }: EditorDashb
                 ) : (
                   <>
                     {customVars.filter(v => v.flags?.editableInManual).map(v => (
-                      <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} />
+                      <ManualInputDynamic key={v.name} label={v.label} keyName={v.name} variableType={v.type} />
                     ))}
                   </>
                 )}

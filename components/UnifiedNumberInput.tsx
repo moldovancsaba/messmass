@@ -127,7 +127,7 @@ export default function UnifiedNumberInput({
         required={required}
         min={min}
         max={max}
-        step={step}
+        step={allowDecimal ? (step || 0.01) : (step || 1)}
         className={className}
       />
       
