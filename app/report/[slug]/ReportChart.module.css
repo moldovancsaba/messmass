@@ -543,9 +543,9 @@
   display: block !important; /* CRITICAL: Force block display */
   margin: 0 0 0.5em 0 !important; /* Space after heading */
   padding: 0 !important;
-  font-weight: 700 !important;
+  font-weight: 700 !important; /* Bold for emphasis, but same size */
   line-height: 1.2 !important;
-  font-size: 1.15em !important; /* Single title size, slightly larger */
+  font-size: 1em !important; /* CRITICAL: Same size as content (inherit from .textContent) */
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -556,6 +556,7 @@
   padding: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  font-size: 1em !important; /* CRITICAL: Explicit same size (inherit from .textContent) */
 }
 
 .textMarkdown p:last-child {
@@ -580,11 +581,13 @@
   text-align: left !important; /* lists read better left-aligned */
   width: 100% !important;
   box-sizing: border-box !important;
+  font-size: 1em !important; /* CRITICAL: Same size as content */
 }
 
 .textMarkdown li { 
   display: list-item !important; /* CRITICAL: Force list-item display */
   margin: 0.15em 0 !important;
+  font-size: 1em !important; /* CRITICAL: Same size as content */
 }
 
 .textMarkdown a { 
@@ -605,6 +608,8 @@
   box-sizing: border-box !important;
   /* CRITICAL: Allow children to stack vertically */
   text-align: center !important;
+  /* CRITICAL: All markdown elements inherit same font-size from .textContent */
+  font-size: inherit !important;
 }
 
 .textMarkdown > * {
@@ -612,6 +617,7 @@
   width: 100% !important;
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
+  font-size: 1em !important; /* CRITICAL: Same size for all elements */
 }
 
 /* Override for inline elements (they stay inline within their block parent) */
