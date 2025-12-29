@@ -3,6 +3,7 @@ import { MongoClient } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
+import { error as logError } from '@/lib/logger';
 
 // Use centralized Mongo client and config
 
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
     ) as any;
     
   } catch (error) {
-    console.error('Hashtags API error:', error);
+    logError('Hashtags API error', { context: 'hashtags' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch hashtags' },
       { status: 500 }
@@ -135,7 +136,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Hashtag validation error:', error);
+    logError('Hashtag validation error', { context: 'hashtags' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to validate hashtag' },
       { status: 500 }
@@ -368,7 +369,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Hashtag cleanup error:', error);
+    logError('Hashtag cleanup error', { context: 'hashtags' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to cleanup hashtag' },
       { status: 500 }

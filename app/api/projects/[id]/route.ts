@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { MongoClient, ObjectId } from 'mongodb'
 import clientPromise from '@/lib/mongodb'
 import config from '@/lib/config'
+import { error as logError, info as logInfo } from '@/lib/logger'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -34,7 +35,7 @@ export async function GET(
       project
     })
   } catch (error) {
-    console.error('❌ Error fetching project:', error)
+    logError('Error fetching project', { context: 'projects/[id]' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(
       { 
         success: false, 
@@ -57,7 +58,7 @@ export async function PUT(
   try {
     const { id } = await context.params
     const updateData = await request.json()
-    console.log('📝 Updating project:', id, 'with data:', updateData)
+    logInfo('Updating project', { context: 'projects/[id]', projectId: id })
     
     const db = client.db(config.dbName)
     const collection = db.collection('projects')
@@ -100,7 +101,7 @@ export async function PUT(
     
     // Fetch updated project
     const updatedProject = await collection.findOne({ _id: new ObjectId(id) })
-    console.log('✅ Project updated successfully')
+    logInfo('Project updated successfully', { context: 'projects/[id]', projectId: id })
     
     // WHAT: Log notification for stats update
     // WHY: Notify all users when project statistics are modified
@@ -116,7 +117,7 @@ export async function PUT(
         projectSlug: existingProject.viewSlug || null
       });
     } catch (notifError) {
-      console.error('Failed to create notification:', notifError);
+      logError('Failed to create notification', { context: 'projects/[id]', projectId: id }, notifError instanceof Error ? notifError : new Error(String(notifError)));
       // Don't fail the request if notification fails
     }
     
@@ -125,7 +126,7 @@ export async function PUT(
       project: updatedProject
     })
   } catch (error) {
-    console.error('❌ Error updating project:', error)
+    logError('Error updating project', { context: 'projects/[id]' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(
       { 
         success: false, 
@@ -147,7 +148,7 @@ export async function DELETE(
   
   try {
     const { id } = await context.params
-    console.log('🗑️ Deleting project:', id)
+    logInfo('Deleting project', { context: 'projects/[id]', projectId: id })
     
     const db = client.db(config.dbName)
     const collection = db.collection('projects')
@@ -161,14 +162,14 @@ export async function DELETE(
       )
     }
     
-    console.log('✅ Project deleted successfully')
+    logInfo('Project deleted successfully', { context: 'projects/[id]', projectId: id })
     
     return NextResponse.json({
       success: true,
       message: 'Project deleted successfully'
     })
   } catch (error) {
-    console.error('❌ Error deleting project:', error)
+    logError('Error deleting project', { context: 'projects/[id]' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(
       { 
         success: false, 

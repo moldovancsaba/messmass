@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findProjectByEditSlug } from '@/lib/slugUtils';
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger';
 
 // GET /api/projects/edit/[slug] - Fetch project by edit slug (editor access)
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
       );
     }
 
-    console.log('🔍 Finding project by edit slug:', slug.substring(0, 8) + '...');
+    logDebug('Finding project by edit slug', { context: 'projects/edit/[slug]', slugPrefix: slug.substring(0, 8) });
     
     const project = await findProjectByEditSlug(slug);
 
@@ -26,7 +27,7 @@ export async function GET(
       );
     }
 
-    console.log('✅ Found project for editing:', project.eventName);
+    logInfo('Found project for editing', { context: 'projects/edit/[slug]', eventName: project.eventName });
 
     // Format project data for editor access (includes all information for editing)
     const editableProject = {
@@ -48,7 +49,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch project by edit slug:', error);
+    logError('Failed to fetch project by edit slug', { context: 'projects/edit/[slug]', slug }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

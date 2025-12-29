@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,7 +76,7 @@ const db = client.db(config.dbName);
       }
     });
   } catch (error) {
-    console.error('Failed to fetch partners:', error);
+    logError('Failed to fetch partners', { context: 'partners' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -131,14 +132,14 @@ const db = client.db(config.dbName);
       );
     }
 
-    console.log(`✅ Partner updated: ${partnerId}`);
+    logInfo('Partner updated successfully', { context: 'partners', partnerId });
 
     return NextResponse.json({
       success: true,
       message: 'Partner updated successfully'
     });
   } catch (error) {
-    console.error('Failed to update partner:', error);
+    logError('Failed to update partner', { context: 'partners' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -190,7 +191,7 @@ const db = client.db(config.dbName);
 
     const result = await db.collection('partners').insertOne(partnerData);
 
-    console.log(`✅ Partner created: ${result.insertedId}`);
+    logInfo('Partner created successfully', { context: 'partners', partnerId: result.insertedId.toString(), partnerName: name });
 
     return NextResponse.json({
       success: true,
@@ -200,7 +201,7 @@ const db = client.db(config.dbName);
       }
     });
   } catch (error) {
-    console.error('Failed to create partner:', error);
+    logError('Failed to create partner', { context: 'partners' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -237,14 +238,14 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log(`✅ Partner deleted: ${partnerId}`);
+    logInfo('Partner deleted successfully', { context: 'partners', partnerId });
 
     return NextResponse.json({
       success: true,
       message: 'Partner deleted successfully'
     });
   } catch (error) {
-    console.error('Failed to delete partner:', error);
+    logError('Failed to delete partner', { context: 'partners' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
