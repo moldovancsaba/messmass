@@ -223,25 +223,38 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // WHAT: Name validation - REQUIRE stats.camelCase format
-    // WHY: Database stores variables with stats. prefix for Single Reference System (see VARIABLES_DATABASE_SCHEMA.md)
-    // RULE: Variable names MUST follow: stats.variableName (e.g., stats.female, stats.vipGuests)
-    if (!/^stats\.[a-zA-Z][a-zA-Z0-9]*$/.test(name)) {
+    // WHAT: Name validation - Accept plain camelCase (no prefix required)
+    // WHY: User wants to use exact same variable name everywhere (KYC, MongoDB, Algorithms)
+    // RULE: Variable names MUST follow camelCase format (e.g., fanCount, vipGuests, female)
+    // NOTE: System accepts both formats for backward compatibility, but stores as plain camelCase
+    const normalizedName = name.startsWith('stats.') ? name.substring(6) : name;
+    if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(normalizedName)) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Invalid variable name format. Must use stats.camelCase (e.g., stats.fanCount, stats.vipGuests)' 
+        error: 'Invalid variable name format. Must use camelCase (e.g., fanCount, vipGuests, female)' 
       }, { status: 400 });
     }
 
     const col = db.collection<VariableMetadata>(COLLECTION);
     
-    // WHAT: Check if variable exists
+    // WHAT: Normalize variable name (remove stats. prefix if present)
+    // WHY: Store variables as plain camelCase for consistency across KYC, MongoDB, and Algorithms
+    const finalName = normalizedName;
+    
+    // WHAT: Check if variable exists (check both formats for backward compatibility)
     // WHY: Determine if update or create, protect system variables
-    const existing = await col.findOne({ name });
+    const existing = await col.findOne({ 
+      $or: [
+        { name: finalName },
+        { name: `stats.${finalName}` }
+      ]
+    });
 
     // WHAT: Block name changes for system variables
     // WHY: System variables map to database schema fields
-    if (existing?.isSystem && label && existing.name !== name) {
+    const existingName = existing?.name || '';
+    const existingNameNormalized = existingName.startsWith('stats.') ? existingName.substring(6) : existingName;
+    if (existing?.isSystem && label && existingNameNormalized !== finalName) {
       return NextResponse.json({ 
         success: false, 
         error: 'Cannot change name of system variables' 
@@ -270,7 +283,7 @@ export async function POST(request: NextRequest) {
       // RATIONALE: $set applies to both insert and update, $setOnInsert only to insert
       
       updateOperation.$setOnInsert = {
-        name,                    // Immutable after creation
+        name: finalName,         // Immutable after creation - store as plain camelCase
         isSystem: false,        // Default for custom variables
         createdAt: now,         // Set once at creation
       };
@@ -338,18 +351,31 @@ export async function POST(request: NextRequest) {
       if (alias !== undefined) updateOperation.$set.alias = alias;
     }
 
+    // WHAT: Use normalized name for query (handle both formats for backward compatibility)
+    // WHY: Support existing variables with stats. prefix while storing new ones as plain camelCase
+    const queryName = existing?.name || finalName;
+    
     const result = await col.updateOne(
-      { name },
+      { name: queryName },
       updateOperation,
       { upsert: true }
     );
+
+    // WHAT: If existing variable had stats. prefix, migrate it to plain camelCase
+    // WHY: Normalize all variables to plain camelCase format
+    if (existing && existing.name.startsWith('stats.') && existing.name !== finalName) {
+      await col.updateOne(
+        { name: existing.name },
+        { $set: { name: finalName, updatedAt: now } }
+      );
+    }
 
     // WHAT: Invalidate cache
     // WHY: Force next GET to fetch fresh data
     invalidateCache();
     console.log('🗑️ Variables cache invalidated');
 
-    const saved = await col.findOne({ name });
+    const saved = await col.findOne({ name: finalName });
 
     return NextResponse.json({ 
       success: true, 

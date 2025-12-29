@@ -348,7 +348,7 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
       <div className="grid gap-3 grid-1fr-1fr">
         <div>
           <label className="form-label-block">Name (camelCase)</label>
-          <input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. vipGuests" />
+          <input className="form-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. vipGuests (no stats. prefix)" />
         </div>
         <div>
           <label className="form-label-block">Label</label>
@@ -443,10 +443,10 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
       <div className="flex justify-end gap-2 mt-4">
         <button className="btn btn-small btn-secondary" onClick={onClose} disabled={form.saving}>Cancel</button>
         <button className="btn btn-small btn-primary" disabled={form.saving} onClick={async () => {
-          // WHAT: Allow stats.variableName format (database format)
-          // WHY: Variables are stored as stats.variableName in database
-          if (!form.name || !/^(stats\.)?[a-zA-Z][a-zA-Z0-9]*$/.test(form.name)) { 
-            setForm({ ...form, error: 'Name must be camelCase or stats.camelCase (e.g., fanCount or stats.fanCount)' }); 
+          // WHAT: Accept plain camelCase (no prefix required)
+          // WHY: Use exact same variable name everywhere (KYC, MongoDB, Algorithms)
+          if (!form.name || !/^[a-zA-Z][a-zA-Z0-9]*$/.test(form.name)) { 
+            setForm({ ...form, error: 'Name must be camelCase (e.g., fanCount, vipGuests, female)' }); 
             return; 
           }
           if (!form.label || !form.category) { setForm({ ...form, error: 'Label and Category are required' }); return; }
