@@ -19,6 +19,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { cachedResponse, generateETag, checkIfNoneMatch, notModifiedResponse, CACHE_PRESETS } from '@/lib/api/caching';
+import { error as logError, info as logInfo } from '@/lib/logger';
 import {
   HashtagCategory,
   HashtagCategoryInput,
@@ -52,7 +53,7 @@ async function validateAdminAccess(request: NextRequest): Promise<boolean> {
     // In production, this should validate the session properly
     return true; // Simplified for MVP - actual validation should check admin role
   } catch (error) {
-    console.error('Admin validation error:', error);
+    logError('Admin validation error', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return false;
   }
 }
@@ -133,7 +134,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
     const hasMore = offset + categories.length < totalMatched;
     const nextOffset = hasMore ? offset + limit : null;
 
-    console.log(`✅ Retrieved ${categories.length} of ${totalMatched} hashtag categories (offset: ${offset}, search: "${search}")`);
+    logInfo('Retrieved hashtag categories', { context: 'hashtag-categories', count: categories.length, total: totalMatched, offset, search });
 
     // WHAT: Return paginated response with metadata
     // WHY: Consistent API pattern allows reusable client-side pagination components
@@ -167,7 +168,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
     ) as any;
 
   } catch (error) {
-    console.error('❌ Failed to fetch hashtag categories:', error);
+    logError('Failed to fetch hashtag categories', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch categories', debug: error },
       { status: 500 }
@@ -260,7 +261,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<HashtagCa
       updatedAt: timestamp
     };
 
-    console.log(`✅ Created new hashtag category: ${normalizedName}`);
+    logInfo('Created new hashtag category', { context: 'hashtag-categories', categoryName: normalizedName });
 
     return NextResponse.json({
       success: true,
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<HashtagCa
     }, { status: 201 });
 
   } catch (error) {
-    console.error('❌ Failed to create hashtag category:', error);
+    logError('Failed to create hashtag category', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to create category', debug: error },
       { status: 500 }
@@ -373,7 +374,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<HashtagCat
       updatedAt: timestamp
     };
 
-    console.log(`✅ Updated hashtag category: ${normalizedName}`);
+    logInfo('Updated hashtag category', { context: 'hashtag-categories', categoryName: normalizedName });
 
     return NextResponse.json({
       success: true,
@@ -381,7 +382,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<HashtagCat
     });
 
   } catch (error) {
-    console.error('❌ Failed to update hashtag category:', error);
+    logError('Failed to update hashtag category', { context: 'hashtag-categories' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update category', debug: error },
       { status: 500 }
