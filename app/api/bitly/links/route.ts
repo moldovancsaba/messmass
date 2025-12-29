@@ -160,9 +160,9 @@ export async function POST(request: NextRequest) {
           projectId: projectObjectId,
           autoCalculated: true,
         });
-        console.log(`[Bitly Links API] Created junction association for new link`);
+        logInfo('Created junction association for new link', { context: 'bitly-links', bitlink: normalized, projectId: projectObjectId.toString() });
       } catch (error) {
-        console.error('[Bitly Links API] Failed to create association:', error);
+        logError('Failed to create association for new link', { context: 'bitly-links', bitlink: normalized, projectId: projectObjectId.toString() }, error instanceof Error ? error : new Error(String(error)));
         // Link created but association failed - log and continue
       }
     }
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('[POST /api/bitly/links] Error:', error);
+    logError('POST /api/bitly/links error', { context: 'bitly-links' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
