@@ -524,10 +524,10 @@
   display: block !important; /* CRITICAL: Block display allows children to stack */
   width: 100% !important;
   height: 100% !important;
-  /* CRITICAL: Scale font-size to fit available space using container queries */
-  /* WHY: Text should fill available space while staying readable */
-  /* HOW: Use both height (cqh) and width (cqw) for responsive scaling */
-  font-size: clamp(0.75rem, min(10cqh, 8cqw), 1.5rem) !important;
+  /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
+  /* WHY: All text charts in a block should use the same font-size */
+  /* HOW: Check for CSS custom property first, fallback to container query scaling */
+  font-size: var(--unified-text-font-size, clamp(0.75rem, min(10cqh, 8cqw), 1.5rem)) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
@@ -537,7 +537,7 @@
   /* CRITICAL: Allow vertical scrolling if content overflows */
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  /* CRITICAL: Enable container queries for responsive scaling */
+  /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
 

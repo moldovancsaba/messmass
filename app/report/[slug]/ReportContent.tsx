@@ -12,6 +12,7 @@ import styles from './ReportContent.module.css';
 import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
 import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/blockLayoutTypes';
+import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
@@ -155,9 +156,10 @@ interface ResponsiveRowProps {
   rowCharts: Array<{ chartId: string; width: number; order: number }>;
   chartResults: Map<string, ChartResult>;
   rowIndex: number;
+  unifiedTextFontSize?: number | null;
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [rowWidth, setRowWidth] = useState(1200); // Default fallback
   const [rowHeight, setRowHeight] = useState(400); // Default fallback
@@ -266,6 +268,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex }: ResponsiveRowProps
               blockHeight={rowHeight}
               titleFontSize={titleFontSize}
               subtitleFontSize={subtitleFontSize}
+              unifiedTextFontSize={unifiedTextFontSize}
             />
           </div>
         );
@@ -315,8 +318,25 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
     });
   }
 
+  // WHAT: Calculate unified font-size for all text charts in this block
+  // WHY: All text charts should use the same font-size, fitting the largest content
+  // HOW: Use hook to measure containers and calculate optimal size
+  const blockRef = useRef<HTMLDivElement>(null);
+  const chartIds = validCharts.map(c => c.chartId);
+  const unifiedTextFontSize = useUnifiedTextFontSize(chartResults, chartIds, blockRef);
+
   return (
-    <div className={styles.block} data-pdf-block="true">
+    <div 
+      ref={blockRef}
+      className={styles.block} 
+      data-pdf-block="true"
+      // WHAT: Apply unified font-size as CSS custom property
+      // WHY: Text charts can read this value via CSS
+      // eslint-disable-next-line react/forbid-dom-props
+      style={unifiedTextFontSize ? {
+        '--unified-text-font-size': `${unifiedTextFontSize}rem`
+      } as React.CSSProperties : undefined}
+    >
       {block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
@@ -328,6 +348,7 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           rowCharts={rowCharts}
           chartResults={chartResults}
           rowIndex={rowIndex}
+          unifiedTextFontSize={unifiedTextFontSize}
         />
       ))}
     </div>

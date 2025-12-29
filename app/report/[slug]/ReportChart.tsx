@@ -91,6 +91,9 @@ interface ReportChartProps {
   /** Synchronized subtitle font size (Report Layout Spec v2.0 Phase 3) */
   subtitleFontSize?: number;
   
+  /** Unified font-size for text charts in block (rem) */
+  unifiedTextFontSize?: number | null;
+  
   /** Optional CSS class for container */
   className?: string;
 }
@@ -109,7 +112,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, blockHeight, titleFontSize, subtitleFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, width, blockHeight, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: ReportChartProps) {
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
@@ -160,7 +163,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
       return <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'text':
-      return <TextChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <TextChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
       return <ImageChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
@@ -464,7 +467,7 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Text Chart - Formatted text display
  * REBUILT: Simple table structure to guarantee title above content
  */
-function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -478,6 +481,7 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, class
     <div 
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
       // eslint-disable-next-line react/forbid-dom-props
+      data-chart-id={result.chartId}
       style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
       {showTitle && (
