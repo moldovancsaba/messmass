@@ -679,28 +679,33 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
-  /* WHAT: Pie chart container must scale down on mobile but maintain minimum size
-   * WHY: Pie chart was not scaling into the block on mobile view, but also disappearing
-   * HOW: Allow flex shrinking with minimum height, constrain dimensions, ensure Chart.js canvas scales */
+  /* WHAT: Pie chart container must scale down on mobile but maintain aspect ratio
+   * WHY: Pie chart was distorted and overflowing its div in mobile view
+   * HOW: Constrain container to square aspect ratio, ensure it fits within available space */
   .pieChartContainer {
-    flex: 1 1 40% !important; /* Allow shrinking but maintain minimum 40% of container */
+    flex: 0 0 50% !important; /* Maintain 50% of pieGrid height (same as desktop) */
+    width: 100% !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    min-height: 150px !important; /* Minimum size to prevent disappearing */
-    min-width: 150px !important; /* Minimum width for proper rendering */
+    min-height: 0 !important; /* Allow flex shrinking */
+    aspect-ratio: 1 !important; /* CRITICAL: Force square aspect ratio to prevent distortion */
+    position: relative !important;
     overflow: hidden !important;
-    position: relative !important; /* Ensure proper positioning context */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   
-  /* WHAT: Ensure Chart.js canvas scales within container on mobile
-   * WHY: Chart.js canvas needs explicit constraints to scale properly
-   * HOW: Make canvas responsive to container size with proper aspect ratio */
+  /* WHAT: Ensure Chart.js canvas scales within square container on mobile
+   * WHY: Canvas must fill container while maintaining circular shape
+   * HOW: Make canvas fill container with proper constraints */
   .pieChartContainer canvas {
+    width: 100% !important;
+    height: 100% !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    width: auto !important; /* Let Chart.js handle width based on container */
-    height: auto !important; /* Let Chart.js handle height based on container */
-    aspect-ratio: 1 !important; /* Maintain circular shape */
+    object-fit: contain !important; /* Maintain aspect ratio within container */
+    aspect-ratio: 1 !important; /* Ensure circular shape */
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile

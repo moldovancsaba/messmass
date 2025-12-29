@@ -34,9 +34,36 @@ interface MaterialIconProps {
 }
 
 /**
+ * WHAT: Normalize Material Icon name to match Google Fonts ligature format
+ * WHY: Material Icons use underscores, but users may enter hyphens or spaces
+ * HOW: Convert hyphens and spaces to underscores, trim whitespace, lowercase
+ * 
+ * @param iconName - Raw icon name from user input
+ * @returns Normalized icon name compatible with Material Icons ligatures
+ */
+function normalizeIconName(iconName: string): string {
+  if (!iconName || typeof iconName !== 'string') {
+    return '';
+  }
+  
+  // WHAT: Normalize icon name for Material Icons ligature format
+  // WHY: Material Icons use underscores (e.g., "trending_up"), but users may enter hyphens or spaces
+  // HOW: Convert hyphens/spaces to underscores, trim, lowercase
+  return iconName
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .replace(/-/g, '_'); // Replace hyphens with underscores
+}
+
+/**
  * WHAT: Material Icon component with automatic color inheritance and fallback
  * WHY: Consistent icon rendering with parent text color + fallback when font fails to load
  * HOW: Uses currentColor CSS keyword + emoji fallback for reliability
+ * 
+ * IMPROVEMENTS (v11.46.0):
+ * - Normalizes icon names (handles hyphens/spaces → underscores)
+ * - Better compatibility with all Google Font Material Icons
  */
 export default function MaterialIcon({ 
   name, 
@@ -44,16 +71,27 @@ export default function MaterialIcon({
   className = '', 
   style 
 }: MaterialIconProps) {
+  // WHAT: Normalize icon name for Material Icons ligature compatibility
+  // WHY: Users may enter "trending-up" or "trending up" but Material Icons require "trending_up"
+  // HOW: Convert hyphens and spaces to underscores
+  const normalizedName = normalizeIconName(name);
+  
   // WHAT: Determine font family based on variant
   // WHY: Google provides separate font families for each icon style
   const fontFamily = variant === 'rounded' 
     ? 'Material Icons Round' 
     : 'Material Icons Outlined';
   
-  // WHAT: Fallback emoji when Material Icons font fails to load
+  // WHAT: Fallback emoji when Material Icons font fails to load or icon name is invalid
   // WHY: Ensures charts always have a visual indicator even if Google Fonts is blocked
   // HOW: Use font stack with emoji fallback, display emoji if icon text is visible
   const fallbackEmoji = '📊'; // 📊 chart icon as universal fallback
+  
+  // WHAT: If icon name is empty after normalization, don't render icon
+  // WHY: Prevent rendering empty/invalid icons
+  if (!normalizedName) {
+    return null;
+  }
   
   return (
     <span 
@@ -67,12 +105,14 @@ export default function MaterialIcon({
         color: 'currentColor', // WHAT: Inherit text color from parent
         verticalAlign: 'middle', // WHAT: Align with adjacent text
         userSelect: 'none', // WHY: Icons shouldn't be selectable as text
+        fontFeatureSettings: '"liga"', // WHAT: Enable ligatures for Material Icons
         ...style 
       }}
       aria-hidden="true" // WHY: Decorative icons should be hidden from screen readers
       data-fallback={fallbackEmoji} // WHAT: Store fallback for CSS ::after pseudo-element
+      data-icon-name={normalizedName} // WHAT: Store normalized name for debugging
     >
-      {name}
+      {normalizedName}
     </span>
   );
 }
