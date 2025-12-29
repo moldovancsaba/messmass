@@ -16,6 +16,7 @@ import {
   mapReferrers,
   mergeTimeseries 
 } from '@/lib/bitly-mappers';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * GET /api/bitly/analytics/[linkId]
