@@ -480,30 +480,22 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, class
       // eslint-disable-next-line react/forbid-dom-props
       style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
-      <table className={styles.textTable} role="presentation">
-        <tbody>
-          {showTitle && (
-            <tr>
-              <td className={styles.textTitleCell}>
-                <h3 className={styles.textTitleText}>{result.title}</h3>
-              </td>
-            </tr>
-          )}
-          <tr>
-            <td className={styles.textContentCell}>
-              {html ? (
-                <div
-                  className={`${styles.textContent} ${styles.textMarkdown}`}
-                  // eslint-disable-next-line react/forbid-dom-props
-                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
-                />
-              ) : (
-                <div className={styles.textContent} />
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {showTitle && (
+        <div className={styles.textTitleWrapper}>
+          <h3 className={styles.textTitleText}>{result.title}</h3>
+        </div>
+      )}
+      <div className={styles.textContentWrapper}>
+        {html ? (
+          <div
+            className={`${styles.textContent} ${styles.textMarkdown}`}
+            // eslint-disable-next-line react/forbid-dom-props
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
+          />
+        ) : (
+          <div className={styles.textContent} />
+        )}
+      </div>
     </div>
   );
 }

@@ -456,49 +456,30 @@
   white-space: nowrap;
 }
 
-/* Text Chart - Simple table structure to guarantee vertical layout */
+/* Text Chart - Simple block structure with explicit vertical stacking */
 .text {
-  /* CRITICAL: Override base .chart flex display to allow table structure */
+  /* CRITICAL: Override base .chart flex display */
   display: block !important;
   flex-direction: unset !important;
   height: 100% !important;
   width: 100% !important;
+  /* CRITICAL: Ensure children stack vertically */
+  position: relative !important;
 }
 
-.textTable {
-  /* WHAT: Table structure to force title above content */
-  /* WHY: Tables guarantee vertical stacking - cannot be overridden */
-  display: table !important;
+.textTitleWrapper {
+  /* WHAT: Title container - top of chart, fixed height */
+  /* WHY: Separate block-level div that cannot be inline */
+  display: block !important;
   width: 100% !important;
-  height: 100% !important;
-  border-collapse: collapse !important;
-  border-spacing: 0 !important;
-  table-layout: fixed !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.textTable tbody {
-  display: table-row-group !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.textTable tr {
-  display: table-row !important;
-  width: 100% !important;
-}
-
-.textTitleCell {
-  /* WHAT: Title row - top of chart */
-  display: table-cell !important;
-  height: 1% !important; /* Use 1% to allow table to distribute space, but keep it minimal */
-  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 30% !important; /* Limit title to max 30% of container */
   padding: var(--mm-space-2) !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  border: none !important;
-  white-space: nowrap !important; /* Prevent wrapping that might cause horizontal layout */
+  box-sizing: border-box !important;
+  /* CRITICAL: Force block display - cannot be inline */
+  clear: both !important;
+  float: none !important;
 }
 
 .textTitleText {
@@ -514,17 +495,24 @@
   -webkit-line-clamp: 2 !important;
   overflow: hidden !important;
   word-break: break-word !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.textContentCell {
-  /* WHAT: Content row - bottom of chart, fills remaining space */
-  display: table-cell !important;
-  height: 99% !important; /* Use 99% to fill remaining space after title row */
+.textContentWrapper {
+  /* WHAT: Content container - bottom of chart, fills remaining space */
+  /* WHY: Separate block-level div that cannot be inline */
+  display: block !important;
   width: 100% !important;
+  height: calc(100% - var(--mm-space-4)) !important; /* Fill remaining space minus title padding */
+  min-height: 0 !important;
   padding: var(--mm-space-2) !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  border: none !important;
+  box-sizing: border-box !important;
+  /* CRITICAL: Force block display - cannot be inline */
+  clear: both !important;
+  float: none !important;
+  /* CRITICAL: Ensure this is below title */
+  position: relative !important;
 }
 
 .textContent {
