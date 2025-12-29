@@ -7,6 +7,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { getAdminUser } from '@/lib/auth';
 import { ChartConfiguration } from '@/lib/chartConfigTypes';
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -17,18 +18,18 @@ const MONGODB_DB = config.dbName;
  */
 async function connectToDatabase() {
   try {
-    console.log('🔗 Connecting to MongoDB Atlas for chart configurations...');
+    logDebug('Connecting to MongoDB Atlas for chart configurations', { context: 'chart-config' });
     
     // Use the shared MongoDB client from lib/mongodb.ts
     const client = await clientPromise;
     
     // Test the connection with a ping
     await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully for chart configs');
+    logDebug('MongoDB Atlas connected successfully for chart configs', { context: 'chart-config' });
     
     return client;
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
+    logError('Failed to connect to MongoDB Atlas', { context: 'chart-config' }, error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -172,7 +173,7 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
       // WHAT: Only validate formatting if it exists (not undefined)
       // WHY: formatting is optional - charts without formatting should pass validation
       if (element.formatting !== undefined && !validateFormatting(element.formatting)) {
-        console.error('❌ Formatting validation failed for element', i + 1, ':', JSON.stringify(element.formatting));
+        logError('Formatting validation failed for element', { context: 'chart-config', elementIndex: i + 1, formatting: JSON.stringify(element.formatting) });
         return { isValid: false, error: `Invalid formatting in element ${i + 1}: formatting must be an object with optional rounded (boolean), prefix (string), suffix (string)` };
       }
     }
@@ -181,14 +182,14 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
   // WHAT: Validate HERO block settings if present
   // WHY: Ensure HERO visibility flags are boolean values
   if (config.heroSettings && !validateHeroSettings(config.heroSettings)) {
-    console.error('❌ HERO settings validation failed:', JSON.stringify(config.heroSettings));
+    logError('HERO settings validation failed', { context: 'chart-config', heroSettings: JSON.stringify(config.heroSettings) });
     return { isValid: false, error: 'Invalid HERO settings: showEmoji, showDateInfo, and showExportOptions must be boolean values if present' };
   }
   
   // WHAT: Validate block alignment settings if present
   // WHY: Ensure alignment flags are boolean and minElementHeight is number
   if (config.alignmentSettings && !validateAlignmentSettings(config.alignmentSettings)) {
-    console.error('❌ Alignment settings validation failed:', JSON.stringify(config.alignmentSettings));
+    logError('Alignment settings validation failed', { context: 'chart-config', alignmentSettings: JSON.stringify(config.alignmentSettings) });
     return { isValid: false, error: 'Invalid alignment settings: alignTitles, alignDescriptions, alignCharts must be boolean if present, minElementHeight must be number if present' };
   }
   
@@ -227,7 +228,7 @@ function validateChartConfiguration(config: Partial<ChartConfiguration>): { isVa
  */
 export async function GET(request: NextRequest) {
   try {
-    console.log('📊 Fetching chart configurations from database...');
+    logDebug('Fetching chart configurations from database', { context: 'chart-config' });
     
     // Check admin authentication
     const user = await getAdminUser();
@@ -295,7 +296,7 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .toArray();
 
-    console.log(`✅ Retrieved ${configurations.length} of ${totalMatched} chart configurations (offset: ${offset}, search: "${search}")`);
+    logInfo('Retrieved chart configurations', { context: 'chart-config', count: configurations.length, total: totalMatched, offset, search });
 
     const formattedConfigurations = configurations.map(config => ({
       _id: config._id.toString(),
@@ -340,7 +341,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch chart configurations:', error);
+    logError('Failed to fetch chart configurations', { context: 'chart-config' }, error instanceof Error ? error : new Error(String(error)));
     
     return NextResponse.json({
       success: false,

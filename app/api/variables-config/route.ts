@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 
@@ -69,7 +70,7 @@ export async function GET() {
     // WHAT: Check cache first for performance
     // WHY: Variables queried on every page load
     if (isCacheValid() && variablesCache) {
-      console.log('✅ Variables cache hit');
+      logDebug('Variables cache hit', { context: 'variables-config' });
       return NextResponse.json({ 
         success: true, 
         variables: variablesCache.data,
@@ -77,7 +78,7 @@ export async function GET() {
       });
     }
 
-    console.log('📊 Fetching variables from database...');
+    logDebug('Fetching variables from database', { context: 'variables-config' });
     const db = await getDb();
 
     // WHAT: Fetch all variables from database
@@ -88,7 +89,7 @@ export async function GET() {
       .sort({ category: 1, order: 1, label: 1 })
       .toArray();
 
-    console.log(`✅ Loaded ${rawVariables.length} variables from database`);
+    logInfo('Loaded variables from database', { context: 'variables-config', count: rawVariables.length });
 
     // WHAT: Normalize legacy schema → v7 schema
     // WHY: Some databases store flags at root (visibleInClicker/editableInManual) instead of flags object
@@ -141,7 +142,7 @@ export async function GET() {
       cached: false 
     });
   } catch (error) {
-    console.error('❌ Failed to fetch variables-config:', error);
+    logError('Failed to fetch variables-config', { context: 'variables-config' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to fetch variables-config' 
@@ -373,7 +374,7 @@ export async function POST(request: NextRequest) {
     // WHAT: Invalidate cache
     // WHY: Force next GET to fetch fresh data
     invalidateCache();
-    console.log('🗑️ Variables cache invalidated');
+    logDebug('Variables cache invalidated', { context: 'variables-config' });
 
     const saved = await col.findOne({ name: finalName });
 
@@ -383,7 +384,7 @@ export async function POST(request: NextRequest) {
       created: result.upsertedCount > 0 
     });
   } catch (error) {
-    console.error('❌ Failed to upsert variable:', error);
+    logError('Failed to upsert variable', { context: 'variables-config' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to upsert variable' 
@@ -401,7 +402,7 @@ export async function PUT(request: NextRequest) {
 
     if (action === 'invalidateCache') {
       invalidateCache();
-      console.log('🗑️ Variables cache manually invalidated');
+      logDebug('Variables cache manually invalidated', { context: 'variables-config' });
       return NextResponse.json({ 
         success: true, 
         message: 'Cache invalidated successfully' 
@@ -413,7 +414,7 @@ export async function PUT(request: NextRequest) {
       error: 'Unknown action' 
     }, { status: 400 });
   } catch (error) {
-    console.error('❌ Failed to invalidate cache:', error);
+    logError('Failed to invalidate cache', { context: 'variables-config' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to invalidate cache' 
@@ -470,7 +471,7 @@ export async function DELETE(request: NextRequest) {
 
     // WHAT: Invalidate cache
     invalidateCache();
-    console.log(`🗑️ Deleted variable: ${name}`);
+    logInfo('Deleted variable', { context: 'variables-config', variableName: name });
 
     return NextResponse.json({ 
       success: true, 
