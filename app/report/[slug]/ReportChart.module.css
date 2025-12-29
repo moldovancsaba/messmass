@@ -295,22 +295,23 @@
 .pieLegend {
   /* WHAT: 20% of body height for legend items */
   /* WHY: Bottom section of 3:5:2 ratio (title:pie:legend) */
-  /* HOW: Flex basis for fixed height proportion, centered vertically */
-  flex: 0 0 20%; /* 3:5:2 → legend 20% */
+  /* HOW: Flex basis for fixed height proportion, scrollable when content exceeds */
+  flex: 0 0 20%; /* 3:5:2 → legend 20% - don't grow or shrink */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Start from top, allow scrolling */
+  justify-content: center; /* Center content vertically when it fits */
   align-items: center;
   gap: var(--mm-space-1);
   width: 100%;
   container-type: size;
   min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
-  height: 20%; /* CRITICAL: Constrain to exactly 20% of parent */
-  max-height: 20%; /* CRITICAL: Never exceed 20% of parent */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds height */
+  max-height: 20%; /* CRITICAL: Never exceed 20% of parent - this enables scrolling */
+  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
   overflow-x: hidden;
   padding: var(--mm-space-1);
   box-sizing: border-box;
+  /* CRITICAL: Remove height: 20% - let flex: 0 0 20% handle sizing */
+  /* WHY: flex: 0 0 20% sets the size, height: 20% can conflict */
 }
 
 .pieLegendItem {
@@ -328,9 +329,9 @@
 .pieLegendDot {
   /* WHAT: Colored SQUARE (not dot) matching pie slice color */
   /* WHY: Visual indicator of which legend item corresponds to which pie slice */
-  /* HOW: Square shape with 60% of legend item height, no border radius */
-  width: clamp(0.8rem, 10cqh, 1.2rem); /* Doubled: 4.5cqh → 10cqh (doubled for 5cqh) */
-  height: clamp(0.8rem, 10cqh, 1.2rem);
+  /* HOW: Square shape scaled to fit available space, no border radius */
+  width: clamp(0.7rem, 6cqh, 1rem); /* Reduced: 10cqh → 6cqh to prevent overflow */
+  height: clamp(0.7rem, 6cqh, 1rem);
   border-radius: 0; /* SQUARE, not circle */
   flex-shrink: 0;
   box-sizing: border-box;
@@ -340,13 +341,13 @@
 }
 
 .pieLegendText {
-  /* WHAT: Legend text scaled and doubled */
-  /* WHY: Better readability with larger fonts */
-  /* HOW: 9cqh (doubled from 4.5cqh) for text scaling */
-  font-size: clamp(0.9rem, 9cqh, 1.2rem); /* DOUBLED: 4.5cqh → 9cqh */
+  /* WHAT: Legend text scaled to fit available space */
+  /* WHY: Prevent overflow by using smaller, responsive font size */
+  /* HOW: Use container query height (cqh) scaled to legend container */
+  font-size: clamp(0.75rem, 6cqh, 1rem); /* Reduced: 9cqh → 6cqh to prevent overflow */
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
-  line-height: 1.1;
+  line-height: 1.2; /* Slightly increased for better readability */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -460,8 +461,10 @@
 /* Text Chart - Uses base .chart structure */
 .text {
   /* REMOVED: min-height - height is deterministic from block calculator */
-  /* CRITICAL: CellWrapper handles flex-direction: column, don't override */
-  /* The .chart base class already has flex-direction: column */
+  /* CRITICAL: Ensure CellWrapper's flex-direction: column is preserved */
+  /* WHY: CellWrapper must stack titleZone and bodyZone vertically */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .textTitle {
@@ -646,13 +649,15 @@
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
   /* WHAT: Fixed 20% height regardless of wrapper */
-  height: 20%;
-  max-height: 20%;
+  /* WHY: Maintain consistent legend size when inside CellWrapper */
+  flex: 0 0 20% !important; /* Override any conflicting flex values */
+  max-height: 20% !important; /* CRITICAL: Never exceed 20% - enables scrolling */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Start from top, allow scrolling */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds height */
+  justify-content: center; /* Center when content fits */
+  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
   box-sizing: border-box;
+  /* CRITICAL: Remove height: 20% - let flex handle sizing */
 }
 
 /* CellWrapper + Bar Chart */
