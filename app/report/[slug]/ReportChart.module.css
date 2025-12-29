@@ -166,13 +166,21 @@
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
-  /* Max 2 lines with ellipsis */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
   word-break: break-word;
   hyphens: none;
   overflow: hidden;
+}
+
+.kpi .kpiTitle > * {
+  /* WHAT: Inner content wrapper for text truncation */
+  /* WHY: Allows flex centering while maintaining line clamp */
+  /* HOW: Use -webkit-box for line clamping inside flex container */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
 }
 
 /* Pie Chart - Uses base .chart structure */
@@ -292,12 +300,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: var(--mm-space-1);
   width: 100%;
   container-type: size;
   min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
+  max-height: 100%; /* CRITICAL: Prevent overflow in small containers */
   overflow-y: auto;
+  overflow-x: hidden;
   padding: var(--mm-space-1);
+  box-sizing: border-box;
 }
 
 .pieLegendItem {
@@ -468,7 +480,9 @@
   /* WHY: Text content should dominate the space like KPI values */
   /* HOW: Use container queries to scale based on both width and height */
   /* CONSTRAINT: 1.5x max ratio (1rem → 1.5rem = 16px → 24px) for visual consistency */
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   width: 100%;
   height: 100%;

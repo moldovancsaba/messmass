@@ -227,7 +227,9 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
       {/* WHAT: Title is 3rd grid row directly in KPI grid */}
       {/* WHY: Maintains exact 3fr-4fr-3fr proportions across full cell height */}
       {showTitle && (
-        <div className={styles.kpiTitle}>{protectedTitle}</div>
+        <div className={styles.kpiTitle}>
+          <span>{protectedTitle}</span>
+        </div>
       )}
     </div>
   );
