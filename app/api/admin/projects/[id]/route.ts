@@ -3,6 +3,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { env } from '@/lib/config';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 // Use centralized Mongo client and config
 
@@ -26,7 +27,7 @@ async function verifySSO(token: string) {
     const userData = await response.json();
     return userData.user;
   } catch (error) {
-    console.error('SSO verification failed:', error);
+    logError('SSO verification failed', { context: 'admin/projects/[id]' }, error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }
@@ -87,7 +88,7 @@ export async function DELETE(
       );
     }
 
-    console.log(`🔐 Admin ${user.name} deleting project: ${params.id}`);
+    logInfo('Admin deleting project', { context: 'admin/projects/[id]', adminName: user.name, adminEmail: user.email, projectId: params.id });
 
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -113,7 +114,7 @@ export async function DELETE(
       );
     }
 
-    console.log(`✅ Admin deleted project: ${project.eventName} (${params.id})`);
+    logInfo('Admin deleted project successfully', { context: 'admin/projects/[id]', projectId: params.id, projectName: project.eventName, adminEmail: user.email });
 
     // Log the deletion for audit purposes
     const auditCollection = db.collection('audit_logs');
@@ -138,7 +139,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('❌ Failed to delete admin project:', error);
+    logError('Failed to delete admin project', { context: 'admin/projects/[id]' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

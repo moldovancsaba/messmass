@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
 import { createUser, listUsers } from '@/lib/users'
 import { generateMD5StylePassword } from '@/lib/pagePassword'
-import { error as logError } from '@/lib/logger'
+import { error as logError, info as logInfo } from '@/lib/logger'
 
 // WHAT: Force Node.js runtime for this route.
 // WHY: Password generation uses Node's crypto (randomBytes) via lib/pagePassword.ts.
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     const hasMore = offset + paginatedUsers.length < totalMatched
     const nextOffset = hasMore ? offset + limit : null
 
-    console.log(`✅ Retrieved ${paginatedUsers.length} of ${totalMatched} users (offset: ${offset}, search: "${search}")`)
+    logInfo('Retrieved users list', { context: 'admin/local-users', count: paginatedUsers.length, total: totalMatched, offset, search })
 
     return NextResponse.json({
       success: true,
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('Failed to list users:', error)
+    logError('Failed to list users', { context: 'admin/local-users' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ success: false, error: 'Failed to list users' }, { status: 500 })
   }
 }

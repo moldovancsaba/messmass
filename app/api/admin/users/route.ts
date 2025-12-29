@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 // Verify SSO token with the external service
 async function verifySSO(token: string) {
@@ -21,7 +22,7 @@ async function verifySSO(token: string) {
     const userData = await response.json();
     return userData.user;
   } catch (error) {
-    console.error('SSO verification failed:', error);
+    logError('SSO verification failed', { context: 'admin/users' }, error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }
@@ -56,7 +57,7 @@ async function fetchUsers(token: string) {
     const data = await response.json();
     return data.users || [];
   } catch (error) {
-    console.error('Failed to fetch users from SSO:', error);
+    logError('Failed to fetch users from SSO', { context: 'admin/users' }, error instanceof Error ? error : new Error(String(error)));
     return [];
   }
 }
@@ -90,12 +91,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} accessing users list`);
+    logInfo('Admin accessing users list', { context: 'admin/users', adminName: user.name, adminEmail: user.email });
 
     // Fetch users from SSO service
     const users = await fetchUsers(token);
 
-    console.log(`✅ Retrieved ${users.length} users for admin`);
+    logInfo('Retrieved users for admin', { context: 'admin/users', userCount: users.length, adminEmail: user.email });
 
     return NextResponse.json({
       success: true,
@@ -108,7 +109,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch admin users:', error);
+    logError('Failed to fetch admin users', { context: 'admin/users' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -157,7 +158,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} updating user ${userId}: ${action}`);
+    logInfo('Admin updating user', { context: 'admin/users', adminName: user.name, adminEmail: user.email, userId, action });
 
     // Update user via SSO service
     const response = await fetch(`${config.ssoBaseUrl}/api/admin/users`, {
@@ -180,7 +181,7 @@ export async function PUT(request: NextRequest) {
 
     const result = await response.json();
 
-    console.log(`✅ Admin updated user ${userId} successfully`);
+    logInfo('Admin updated user successfully', { context: 'admin/users', userId, action, adminEmail: user.email });
 
     return NextResponse.json({
       success: true,
@@ -189,7 +190,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to update user:', error);
+    logError('Failed to update user', { context: 'admin/users' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
