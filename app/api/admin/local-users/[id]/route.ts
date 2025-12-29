@@ -8,6 +8,7 @@ import clientPromise from '@/lib/mongodb'
 import config from '@/lib/config'
 import { ObjectId } from 'mongodb'
 import crypto from 'crypto'
+import { error as logError, info as logInfo, debug as logDebug } from '@/lib/logger'
 
 // WHAT: Force Node.js runtime for crypto operations
 // WHY: Edge runtime doesn't support crypto.randomBytes
@@ -26,24 +27,23 @@ export async function PUT(
     // Check authentication
     const admin = await getAdminUser()
     if (!admin) {
-      console.log('❌ PUT /api/admin/local-users/[id]: No admin user found')
+      logInfo('PUT /api/admin/local-users/[id]: No admin user found', { context: 'admin-local-users' })
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Only superadmin can regenerate passwords
     if (admin.role !== 'superadmin') {
-      console.log(`❌ PUT /api/admin/local-users/[id]: User ${admin.email} is not superadmin (role: ${admin.role})`)
+      logInfo('PUT /api/admin/local-users/[id]: User is not superadmin', { context: 'admin-local-users', adminEmail: admin.email, role: admin.role })
       return NextResponse.json({ error: 'Forbidden: Only superadmin can regenerate passwords' }, { status: 403 })
     }
 
-    const userId = params.id
     const body = await request.json()
     
-    console.log(`🔍 PUT /api/admin/local-users/${userId}:`, { body, adminEmail: admin.email })
+    logDebug('PUT /api/admin/local-users/[id]', { context: 'admin-local-users', userId, adminEmail: admin.email, body })
 
     // Validate user ID
     if (!ObjectId.isValid(userId)) {
-      console.log(`❌ Invalid ObjectId: ${userId}`)
+      logInfo('Invalid ObjectId', { context: 'admin-local-users', userId })
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
@@ -52,17 +52,16 @@ export async function PUT(
     const usersCollection = db.collection('users')
 
     // Check if user exists
-    console.log(`🔍 Looking for user with _id: ${userId}`)
+    logDebug('Looking for user', { context: 'admin-local-users', userId })
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
     if (!user) {
-      console.log(`❌ User not found with _id: ${userId}`)
+      logInfo('User not found', { context: 'admin-local-users', userId })
       const allUsers = await usersCollection.find({}).toArray()
-      console.log(`📋 Total users in collection: ${allUsers.length}`)
-      console.log(`📋 User IDs in collection:`, allUsers.map(u => u._id.toString()))
+      logDebug('All users in collection', { context: 'admin-local-users', totalUsers: allUsers.length, userIds: allUsers.map(u => u._id.toString()) })
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
     
-    console.log(`✅ Found user: ${user.email}`)
+    logInfo('Found user', { context: 'admin-local-users', userId, userEmail: user.email })
 
     // Handle password regeneration
     if (body.regeneratePassword) {
@@ -78,7 +77,7 @@ export async function PUT(
         }
       )
 
-      console.log(`🔐 Password regenerated for user: ${user.email}`)
+      logInfo('Password regenerated for user', { context: 'admin-local-users', userId, userEmail: user.email })
 
       return NextResponse.json({
         success: true,
@@ -89,7 +88,7 @@ export async function PUT(
 
     return NextResponse.json({ error: 'No action specified' }, { status: 400 })
   } catch (error) {
-    console.error('Error updating user:', error)
+    logError('Error updating user', { context: 'admin-local-users', userId: params.id }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -99,7 +98,9 @@ export async function DELETE(
   context: RouteContext
 ) {
   const params = await context.params
+  let userId: string | undefined;
   try {
+    userId = params.id;
     // Check authentication
     const admin = await getAdminUser()
     if (!admin) {
@@ -110,8 +111,6 @@ export async function DELETE(
     if (admin.role !== 'superadmin') {
       return NextResponse.json({ error: 'Forbidden: Only superadmin can delete users' }, { status: 403 })
     }
-
-    const userId = params.id
 
     // Validate user ID
     if (!ObjectId.isValid(userId)) {
@@ -136,14 +135,14 @@ export async function DELETE(
     // Delete user
     await usersCollection.deleteOne({ _id: new ObjectId(userId) })
 
-    console.log(`🗑️  User deleted: ${user.email}`)
+    logInfo('User deleted', { context: 'admin-local-users', userId, userEmail: user.email })
 
     return NextResponse.json({
       success: true,
       message: 'User deleted successfully'
     })
   } catch (error) {
-    console.error('Error deleting user:', error)
+    logError('Error deleting user', { context: 'admin-local-users', userId: params.id }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

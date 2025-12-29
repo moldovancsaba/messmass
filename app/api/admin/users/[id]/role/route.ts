@@ -8,6 +8,7 @@ import { getAdminUser } from '@/lib/auth';
 import { findUserById, getUsersCollection } from '@/lib/users';
 import { ObjectId } from 'mongodb';
 import type { UserRole } from '@/lib/users';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * WHAT: PUT handler to update user role
@@ -101,7 +102,7 @@ export async function PUT(
     );
     
     // WHAT: Log role change for audit trail
-    console.log(`✅ Role changed: ${targetUser.email} (${targetUser.role} → ${newRole}) by ${currentUser.email}`);
+    logInfo('Role changed', { context: 'admin-users-role', targetUserId: id, targetUserEmail: targetUser.email, oldRole: targetUser.role, newRole, changedBy: currentUser.email });
     
     // WHAT: Fetch updated user
     const updatedUser = await findUserById(id);
@@ -118,7 +119,7 @@ export async function PUT(
     });
     
   } catch (error) {
-    console.error('❌ Role update error:', error);
+    logError('Role update error', { context: 'admin-users-role', userId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to update role' },
       { status: 500 }

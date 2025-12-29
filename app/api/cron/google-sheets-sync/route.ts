@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { pullEventsFromSheet } from '@/lib/googleSheets/pullEvents';
 import { ObjectId } from 'mongodb';
+import { error as logError, warn as logWarn } from '@/lib/logger';
 
 // Use Node.js runtime (not edge) because googleapis requires Node.js modules
 export const maxDuration = 300; // 5 minutes max execution (adjust based on your plan)
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     const expectedSecret = process.env.CRON_SECRET;
     
     if (!expectedSecret) {
-      console.warn('CRON_SECRET not configured - cron endpoint is unprotected!');
+      logWarn('CRON_SECRET not configured - cron endpoint is unprotected', { context: 'cron-google-sheets-sync' });
     } else if (authHeader !== `Bearer ${expectedSecret}`) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -236,7 +237,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Cron sync failed:', error);
+    logError('Cron sync failed', { context: 'cron-google-sheets-sync' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
