@@ -237,7 +237,9 @@ export class ReportCalculator {
               // Try direct access
               const directValue = (this.stats as any)[fieldName];
               if (typeof directValue === 'number' && !isNaN(directValue)) {
-                varValue = directValue;
+                varValue = directValue as number;
+              } else {
+                varValue = 'NA';
               }
             }
             
