@@ -23,17 +23,18 @@ export async function PUT(
   context: RouteContext
 ) {
   const params = await context.params
+  const userId = params.id
   try {
     // Check authentication
     const admin = await getAdminUser()
     if (!admin) {
-      logInfo('PUT /api/admin/local-users/[id]: No admin user found', { context: 'admin-local-users' })
+      logInfo('PUT /api/admin/local-users/[id]: No admin user found', { context: 'admin-local-users', userId })
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Only superadmin can regenerate passwords
     if (admin.role !== 'superadmin') {
-      logInfo('PUT /api/admin/local-users/[id]: User is not superadmin', { context: 'admin-local-users', adminEmail: admin.email, role: admin.role })
+      logInfo('PUT /api/admin/local-users/[id]: User is not superadmin', { context: 'admin-local-users', userId, adminEmail: admin.email, role: admin.role })
       return NextResponse.json({ error: 'Forbidden: Only superadmin can regenerate passwords' }, { status: 403 })
     }
 
@@ -88,7 +89,7 @@ export async function PUT(
 
     return NextResponse.json({ error: 'No action specified' }, { status: 400 })
   } catch (error) {
-    logError('Error updating user', { context: 'admin-local-users', userId: params.id }, error instanceof Error ? error : new Error(String(error)))
+    logError('Error updating user', { context: 'admin-local-users', userId: params.id || 'unknown' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -142,7 +143,7 @@ export async function DELETE(
       message: 'User deleted successfully'
     })
   } catch (error) {
-    logError('Error deleting user', { context: 'admin-local-users', userId: params.id }, error instanceof Error ? error : new Error(String(error)))
+    logError('Error deleting user', { context: 'admin-local-users', userId: params.id || 'unknown' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
