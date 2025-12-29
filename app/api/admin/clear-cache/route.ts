@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { error as logError } from '@/lib/logger';
 
 /* WHAT: API endpoint to revalidate Next.js cache
    WHY: Allow admins to force fresh content by revalidating caches
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error('Clear cache error:', error);
+    logError('Clear cache error', { context: 'admin-clear-cache' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to clear cache' },
       { status: 500 }

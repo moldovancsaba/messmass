@@ -7,6 +7,7 @@ import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * DELETE /api/bitly/associations
@@ -66,7 +67,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log(`[DELETE /api/bitly/associations] Removed association: link=${bitlyLinkId}, project=${projectId}`);
+    logInfo('Removed association', { context: 'bitly-associations', bitlyLinkId, projectId });
 
     return NextResponse.json({
       success: true,
@@ -74,7 +75,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('[DELETE /api/bitly/associations] Error:', error);
+    logError('DELETE /api/bitly/associations error', { context: 'bitly-associations' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

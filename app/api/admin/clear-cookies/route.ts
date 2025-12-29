@@ -5,6 +5,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/config'
+import { error as logError, info as logInfo } from '@/lib/logger'
 
 export async function POST(request: Request) {
   try {
@@ -32,11 +33,11 @@ export async function POST(request: Request) {
       domain,
     })
     
-    console.log('🗑️  Cleared admin-session cookie (including domain-scoped)')
+    logInfo('Cleared admin-session cookie', { context: 'admin-clear-cookies', domain })
     
     return response
   } catch (error) {
-    console.error('Error clearing cookies:', error)
+    logError('Error clearing cookies', { context: 'admin-clear-cookies' }, error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to clear cookies' 

@@ -11,6 +11,7 @@ import { getAdminUser } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import type { UpdateLinkInput } from '@/lib/bitly-db.types';
+import { error as logError, warn as logWarn } from '@/lib/logger';
 
 /**
  * PUT /api/bitly/links/[linkId]
@@ -122,7 +123,7 @@ export async function PUT(
     });
 
   } catch (error) {
-    console.error('[PUT /api/bitly/links/[linkId]] Error:', error);
+    logError('PUT /api/bitly/links/[linkId] error', { context: 'bitly-links' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -179,7 +180,7 @@ export async function DELETE(
     if (hardDelete) {
       // WHAT: Permanent deletion (use with extreme caution)
       // WHY: Only for cleaning up erroneous entries or test data
-      console.warn(`[DELETE] Hard deleting link ${linkId}`);
+      logWarn('Hard deleting link', { context: 'bitly-links', linkId });
       
       const result = await db.collection('bitly_links').deleteOne({ _id: new ObjectId(linkId) });
       
@@ -223,7 +224,7 @@ export async function DELETE(
     }
 
   } catch (error) {
-    console.error('[DELETE /api/bitly/links/[linkId]] Error:', error);
+    logError('DELETE /api/bitly/links/[linkId] error', { context: 'bitly-links' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

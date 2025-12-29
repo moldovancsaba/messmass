@@ -149,7 +149,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('[GET /api/bitly/analytics/[linkId]] Error:', error);
+    logError('GET /api/bitly/analytics/[linkId] error', { context: 'bitly-analytics', linkId }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
