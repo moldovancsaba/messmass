@@ -325,10 +325,12 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ identifier: string }> }
 ) {
+  let identifier: string = 'unknown';
+  let entityType: 'project' | 'partner' | 'hashtag' | 'filter' | null = null;
   try {
-    const { identifier } = await context.params;
+    identifier = (await context.params).identifier;
     const { searchParams } = new URL(request.url);
-    const entityType = searchParams.get('type') as 'project' | 'partner' | null;
+    entityType = searchParams.get('type') as 'project' | 'partner' | 'hashtag' | 'filter' | null;
 
     // Validation
     if (!identifier) {
@@ -356,7 +358,7 @@ export async function GET(
     });
 
   } catch (error) {
-    logError('Failed to resolve report config', { context: 'report-config', identifier, entityType }, error instanceof Error ? error : new Error(String(error)));
+    logError('Failed to resolve report config', { context: 'report-config', identifier: identifier || 'unknown', entityType: entityType || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     
     // Return hardcoded fallback on any error
     return NextResponse.json({
