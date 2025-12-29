@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    const pageType = (body?.pageType || 'unknown').toString();
     logError('Failed to generate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
@@ -75,9 +74,11 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/page-passwords - Validate page password
 export async function PUT(request: NextRequest) {
+  let pageType: string = 'unknown';
   try {
     const body = await request.json();
-    const { pageId, pageType, password } = body;
+    pageType = (body?.pageType || 'unknown').toString();
+    const { pageId, password } = body;
 
     if (!pageId || !pageType || !password) {
       return NextResponse.json(
@@ -130,7 +131,6 @@ export async function PUT(request: NextRequest) {
     }
 
   } catch (error) {
-    const pageType = (body?.pageType || 'unknown').toString();
     logError('Failed to validate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
