@@ -19,8 +19,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
     
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json(
