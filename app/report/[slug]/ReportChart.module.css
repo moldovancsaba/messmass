@@ -681,14 +681,13 @@
   
   /* WHAT: Pie chart container must scale down on mobile but maintain aspect ratio
    * WHY: Pie chart was distorted and overflowing its div in mobile view
-   * HOW: Constrain container to square aspect ratio, ensure it fits within available space */
+   * HOW: Constrain container to fit within available space, let canvas scale proportionally */
   .pieChartContainer {
     flex: 0 0 50% !important; /* Maintain 50% of pieGrid height (same as desktop) */
     width: 100% !important;
     max-width: 100% !important;
     max-height: 100% !important;
     min-height: 0 !important; /* Allow flex shrinking */
-    aspect-ratio: 1 !important; /* CRITICAL: Force square aspect ratio to prevent distortion */
     position: relative !important;
     overflow: hidden !important;
     display: flex !important;
@@ -696,16 +695,16 @@
     justify-content: center !important;
   }
   
-  /* WHAT: Ensure Chart.js canvas scales within square container on mobile
-   * WHY: Canvas must fill container while maintaining circular shape
-   * HOW: Make canvas fill container with proper constraints */
+  /* WHAT: Ensure Chart.js canvas scales within container on mobile without overflow
+   * WHY: Canvas must fit within container while maintaining circular shape
+   * HOW: Use min() to constrain canvas to smallest dimension, maintain aspect ratio */
   .pieChartContainer canvas {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important; /* Maintain aspect ratio within container */
-    aspect-ratio: 1 !important; /* Ensure circular shape */
+    max-width: min(100%, 100cqh) !important; /* Constrain to container width or height, whichever is smaller */
+    max-height: min(100%, 100cqw) !important; /* Constrain to container height or width, whichever is smaller */
+    width: auto !important; /* Let Chart.js calculate width */
+    height: auto !important; /* Let Chart.js calculate height */
+    aspect-ratio: 1 !important; /* Maintain circular shape */
+    object-fit: contain !important; /* Ensure it fits within constraints */
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
