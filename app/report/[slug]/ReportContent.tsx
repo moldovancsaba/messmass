@@ -332,9 +332,10 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       data-pdf-block="true"
       // WHAT: Apply unified font-size as CSS custom property
       // WHY: Text charts can read this value via CSS
+      // HOW: Use inline style to set CSS custom property
       // eslint-disable-next-line react/forbid-dom-props
       style={unifiedTextFontSize ? {
-        '--unified-text-font-size': `${unifiedTextFontSize}rem`
+        ['--unified-text-font-size' as string]: `${unifiedTextFontSize}rem`
       } as React.CSSProperties : undefined}
     >
       {block.showTitle && block.title && (

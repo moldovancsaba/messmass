@@ -57,19 +57,47 @@ export function useUnifiedTextFontSize(
 
       // WHAT: Find all text chart containers in the DOM
       // WHY: Need to measure actual container dimensions
+      // HOW: Use more specific selector and add debugging
       const textChartContainers = textCharts
         .map(({ id }) => {
-          const container = blockRef.current?.querySelector(
+          // WHAT: Try multiple selector strategies
+          // WHY: DOM might not be fully ready, try different approaches
+          let container = blockRef.current?.querySelector(
             `[data-chart-id="${id}"] .textContentWrapper`
           ) as HTMLElement;
+          
+          // WHAT: Fallback: search by chart class
+          // WHY: If data attribute isn't set yet, try class-based search
+          if (!container) {
+            const chartElement = blockRef.current?.querySelector(
+              `.report-chart[data-chart-id="${id}"]`
+            ) as HTMLElement;
+            container = chartElement?.querySelector('.textContentWrapper') as HTMLElement;
+          }
+          
+          // WHAT: Final fallback: search all text charts
+          // WHY: Last resort if selectors fail
+          if (!container) {
+            const allTextCharts = blockRef.current?.querySelectorAll('.text .textContentWrapper');
+            const index = textCharts.findIndex(tc => tc.id === id);
+            if (allTextCharts && index >= 0 && index < allTextCharts.length) {
+              container = allTextCharts[index] as HTMLElement;
+            }
+          }
+          
           return container;
         })
         .filter((container): container is HTMLElement => container !== null);
 
       if (textChartContainers.length === 0 || textChartContainers.length !== textCharts.length) {
-        // WHAT: Not all containers found yet, retry later
+        // WHAT: Not all containers found yet, retry with longer delay
         // WHY: DOM might not be fully rendered
-        // Retry will happen on next effect run or resize
+        // HOW: Retry after a longer delay
+        calculationTimeoutRef.current = setTimeout(() => {
+          // Retry calculation
+          const event = new Event('resize');
+          window.dispatchEvent(event);
+        }, 300);
         return;
       }
 
@@ -125,9 +153,26 @@ export function useUnifiedTextFontSize(
 
         const textChartContainers = textCharts
           .map(({ id }) => {
-            const container = blockRef.current?.querySelector(
+            // WHAT: Try multiple selector strategies (same as initial calculation)
+            let container = blockRef.current?.querySelector(
               `[data-chart-id="${id}"] .textContentWrapper`
             ) as HTMLElement;
+            
+            if (!container) {
+              const chartElement = blockRef.current?.querySelector(
+                `.report-chart[data-chart-id="${id}"]`
+              ) as HTMLElement;
+              container = chartElement?.querySelector('.textContentWrapper') as HTMLElement;
+            }
+            
+            if (!container) {
+              const allTextCharts = blockRef.current?.querySelectorAll('.text .textContentWrapper');
+              const index = textCharts.findIndex(tc => tc.id === id);
+              if (allTextCharts && index >= 0 && index < allTextCharts.length) {
+                container = allTextCharts[index] as HTMLElement;
+              }
+            }
+            
             return container;
           })
           .filter((container): container is HTMLElement => container !== null);

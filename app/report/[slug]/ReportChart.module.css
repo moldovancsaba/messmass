@@ -617,6 +617,8 @@
   text-align: center !important;
   /* CRITICAL: All markdown elements inherit same font-size from .textContent */
   font-size: inherit !important;
+  /* CRITICAL: Preserve line breaks and whitespace */
+  white-space: pre-wrap !important; /* Preserve line breaks and wrap text */
 }
 
 .textMarkdown > * {

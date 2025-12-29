@@ -47,10 +47,14 @@ export function calculateOptimalFontSize(
   // WHAT: Create a temporary element to measure content
   // WHY: Need to measure actual rendered size
   // HOW: Create off-screen element, test different font-sizes
+  // CRITICAL: Match the exact styles from .textContent and .textMarkdown
   const measureElement = document.createElement('div');
   measureElement.style.position = 'absolute';
   measureElement.style.visibility = 'hidden';
+  measureElement.style.top = '-9999px';
+  measureElement.style.left = '-9999px';
   measureElement.style.width = `${containerWidth}px`;
+  measureElement.style.maxWidth = `${containerWidth}px`;
   measureElement.style.height = 'auto';
   measureElement.style.overflow = 'hidden';
   measureElement.style.fontSize = '1rem';
@@ -59,8 +63,13 @@ export function calculateOptimalFontSize(
   measureElement.style.textAlign = 'center';
   measureElement.style.padding = '0.5rem';
   measureElement.style.boxSizing = 'border-box';
+  measureElement.style.whiteSpace = 'pre-wrap'; // CRITICAL: Match CSS
   measureElement.innerHTML = htmlContent;
   document.body.appendChild(measureElement);
+  
+  // WHAT: Force layout calculation
+  // WHY: Ensure measurements are accurate
+  void measureElement.offsetHeight;
 
   try {
     while (high - low > tolerance) {

@@ -20,6 +20,20 @@ renderer.heading = ({ text }) => {
   return `<h1>${text}</h1>`;
 };
 
+// WHAT: Override paragraph renderer to preserve line breaks
+// WHY: Ensure single line breaks create <br> tags, not just paragraph breaks
+// HOW: Custom paragraph renderer - marked with breaks:true already handles this
+// NOTE: The paragraph renderer receives a Paragraph token object, not a string
+renderer.paragraph = ({ tokens }: any) => {
+  // WHAT: Render paragraph tokens and ensure line breaks are preserved
+  // WHY: Preserve user's line breaks from Enter key
+  // HOW: marked with breaks:true should already convert \n to <br>
+  // NOTE: We just ensure the paragraph wraps correctly
+  if (!tokens || tokens.length === 0) return '<p></p>';
+  // Let marked handle the rendering, we just wrap it
+  return '<p>' + (tokens.map((t: any) => t.raw || '').join('') || '') + '</p>';
+};
+
 // WHAT: Remove blockquote support
 // WHY: Not in user's required feature list
 renderer.blockquote = ({ text }) => {
