@@ -679,6 +679,28 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
+  /* WHAT: Pie chart container must scale down on mobile
+   * WHY: Pie chart was not scaling into the block on mobile view
+   * HOW: Allow flex shrinking, constrain width, ensure Chart.js canvas scales */
+  .pieChartContainer {
+    flex: 1 1 auto !important; /* Allow shrinking on mobile */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    min-height: 0 !important; /* Allow container to shrink below content size */
+  }
+  
+  /* WHAT: Ensure Chart.js canvas scales within container on mobile
+   * WHY: Chart.js canvas needs explicit constraints to scale properly
+   * HOW: Make canvas responsive to container size */
+  .pieChartContainer canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+  
   /* WHAT: Image charts respect aspect ratio on mobile
    * WHY: Images must maintain proper proportions without distortion
    * HOW: Use aspect-ratio CSS property for reliable sizing */
