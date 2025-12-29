@@ -456,69 +456,8 @@
   white-space: nowrap;
 }
 
-/* Text Chart - Custom structure with title (30%) and content (70%) */
-.text {
-  /* REMOVED: min-height - height is deterministic from block calculator */
-  /* CRITICAL: Force vertical layout - override any conflicting styles */
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100% !important;
-  width: 100% !important;
-}
-
-/* Text Chart Grid - 30:70 ratio (title:content = 3:7) */
-.textGrid {
-  height: 100% !important;
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  /* CRITICAL: Ensure no horizontal layout */
-  flex-wrap: nowrap !important;
-}
-
-/* Text Title Row - 30% of textGrid height */
-.textTitleRow {
-  flex: 0 0 30% !important; /* 3:7 → title 30% - force no grow/shrink */
-  display: flex !important;
-  flex-direction: row !important; /* Title row itself is horizontal */
-  align-items: center !important;
-  justify-content: center !important;
-  padding: var(--mm-space-1) var(--mm-space-2);
-  overflow: hidden;
-  width: 100% !important;
-  /* CRITICAL: Ensure this row doesn't cause horizontal layout */
-  min-width: 0 !important;
-}
-
-.textTitleText {
-  margin: 0;
-  text-align: center;
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--chartTitleColor);
-  font-size: clamp(0.95rem, 9cqh, 1.25rem);
-  line-height: 1.2;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  word-break: break-word;
-}
-
-/* Text Content Row - 70% of textGrid height */
-.textContentRow {
-  flex: 0 0 70% !important; /* 3:7 → content 70% - force no grow/shrink */
-  display: flex !important;
-  flex-direction: row !important; /* Content row itself is horizontal */
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  overflow: hidden;
-  container-type: size;
-  /* CRITICAL: Ensure this row doesn't cause horizontal layout */
-  min-width: 0 !important;
-}
+/* Text Chart - Uses base .chart structure with CellWrapper */
+/* CellWrapper handles the layout structure (titleZone + bodyZone) */
 
 .textContent {
   /* WHAT: Maximize font size to fill cell while staying readable */
