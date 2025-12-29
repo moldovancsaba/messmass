@@ -492,12 +492,13 @@
 .textTitleCell {
   /* WHAT: Title row - top of chart */
   display: table-cell !important;
-  height: auto !important;
+  height: 1% !important; /* Use 1% to allow table to distribute space, but keep it minimal */
   width: 100% !important;
   padding: var(--mm-space-2) !important;
   text-align: center !important;
   vertical-align: middle !important;
   border: none !important;
+  white-space: nowrap !important; /* Prevent wrapping that might cause horizontal layout */
 }
 
 .textTitleText {
@@ -518,7 +519,7 @@
 .textContentCell {
   /* WHAT: Content row - bottom of chart, fills remaining space */
   display: table-cell !important;
-  height: 100% !important;
+  height: 99% !important; /* Use 99% to fill remaining space after title row */
   width: 100% !important;
   padding: var(--mm-space-2) !important;
   text-align: center !important;
