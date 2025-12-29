@@ -549,13 +549,16 @@
  */
 .textMarkdown h1 {
   display: block !important; /* CRITICAL: Force block display */
-  margin: 0 0 0.5em 0 !important; /* Space after heading */
+  margin: 0.5em 0 !important; /* Space before and after heading */
   padding: 0 !important;
-  font-weight: 700 !important; /* Bold for emphasis, but same size */
+  font-weight: 700 !important; /* Bold for emphasis */
   line-height: 1.2 !important;
   font-size: 1em !important; /* CRITICAL: Same size as content (inherit from .textContent) */
   width: 100% !important;
   box-sizing: border-box !important;
+  /* CRITICAL: Ensure heading is visible and styled */
+  color: inherit !important;
+  text-align: center !important;
 }
 
 .textMarkdown p {
@@ -628,6 +631,20 @@
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
+}
+
+/* CRITICAL: Ensure h1 headings are properly styled and visible */
+.textMarkdown h1 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1em !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
 }
 
 /* Override for inline elements (they stay inline within their block parent) */
