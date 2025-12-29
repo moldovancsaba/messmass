@@ -14,6 +14,7 @@ import { getLink, normalizeBitlink } from '@/lib/bitly';
 import { mapBitlyLinkToDoc } from '@/lib/bitly-mappers';
 import type { AssociateLinkInput, BitlyLinkResponse } from '@/lib/bitly-db.types';
 import { createLinkAssociation } from '@/lib/bitly-recalculator';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 /**
  * POST /api/bitly/links
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     try {
       bitlyMetadata = await getLink(normalized);
     } catch (error) {
-      console.error('[Bitly API] Failed to fetch link:', error);
+      logError('Failed to fetch link from Bitly API', { context: 'bitly-links', normalized }, error instanceof Error ? error : new Error(String(error)));
       return NextResponse.json(
         { 
           success: false, 
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
     if (existingLink && projectObjectId) {
       // WHAT: Link already exists - create junction table association
       // WHY: Many-to-many support - same link can be used by multiple events
-      console.log(`[Bitly Links API] Link exists, creating junction association`);
+      logInfo('Link exists, creating junction association', { context: 'bitly-links', bitlink: normalized, projectId: projectObjectId.toString() });
       
       try {
         const association = await createLinkAssociation({
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
           message: 'Bitly link associated with project (many-to-many)',
         });
       } catch (error) {
-        console.error('[Bitly Links API] Failed to create association:', error);
+        logError('Failed to create association', { context: 'bitly-links', bitlink: normalized, projectId: projectObjectId.toString() }, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json(
           { 
             success: false, 
