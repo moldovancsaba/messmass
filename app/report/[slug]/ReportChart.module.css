@@ -679,26 +679,28 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
-  /* WHAT: Pie chart container must scale down on mobile
-   * WHY: Pie chart was not scaling into the block on mobile view
-   * HOW: Allow flex shrinking, constrain width, ensure Chart.js canvas scales */
+  /* WHAT: Pie chart container must scale down on mobile but maintain minimum size
+   * WHY: Pie chart was not scaling into the block on mobile view, but also disappearing
+   * HOW: Allow flex shrinking with minimum height, constrain dimensions, ensure Chart.js canvas scales */
   .pieChartContainer {
-    flex: 1 1 auto !important; /* Allow shrinking on mobile */
+    flex: 1 1 40% !important; /* Allow shrinking but maintain minimum 40% of container */
     max-width: 100% !important;
     max-height: 100% !important;
+    min-height: 150px !important; /* Minimum size to prevent disappearing */
+    min-width: 150px !important; /* Minimum width for proper rendering */
     overflow: hidden !important;
-    min-height: 0 !important; /* Allow container to shrink below content size */
+    position: relative !important; /* Ensure proper positioning context */
   }
   
   /* WHAT: Ensure Chart.js canvas scales within container on mobile
    * WHY: Chart.js canvas needs explicit constraints to scale properly
-   * HOW: Make canvas responsive to container size */
+   * HOW: Make canvas responsive to container size with proper aspect ratio */
   .pieChartContainer canvas {
     max-width: 100% !important;
     max-height: 100% !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important;
+    width: auto !important; /* Let Chart.js handle width based on container */
+    height: auto !important; /* Let Chart.js handle height based on container */
+    aspect-ratio: 1 !important; /* Maintain circular shape */
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
