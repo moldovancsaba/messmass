@@ -536,33 +536,83 @@
 /* WHAT: Markdown element styles inside text content
  * WHY: Support limited markdown features: title, bold, italic, lists, links
  * HOW: Use relative font sizes (em) so they inherit container scaling
+ * CRITICAL: All block elements must be display: block to stack vertically
  */
 .textMarkdown h1 {
-  margin: 0 0 0.25em 0;
-  font-weight: 700;
-  line-height: 1.2;
-  font-size: 1.15em; /* Single title size, slightly larger */
+  display: block !important; /* CRITICAL: Force block display */
+  margin: 0 0 0.5em 0 !important; /* Space after heading */
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1.15em !important; /* Single title size, slightly larger */
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .textMarkdown p {
-  margin: 0 0 0.5em 0;
+  display: block !important; /* CRITICAL: Force block display */
+  margin: 0 0 0.5em 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.textMarkdown strong { font-weight: 700; }
-.textMarkdown em { font-style: italic; }
+.textMarkdown p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.textMarkdown strong { 
+  font-weight: 700 !important;
+  display: inline !important; /* Bold stays inline within block */
+}
+
+.textMarkdown em { 
+  font-style: italic !important;
+  display: inline !important; /* Italic stays inline within block */
+}
 
 .textMarkdown ul,
 .textMarkdown ol {
-  margin: 0.25em 0 0.5em 0;
-  padding-left: 1.5em; /* indent markers */
-  text-align: left; /* lists read better left-aligned */
-  display: inline-block; /* keep centered within overall centered layout */
+  display: block !important; /* CRITICAL: Force block display */
+  margin: 0.5em 0 !important;
+  padding-left: 1.5em !important; /* indent markers */
+  text-align: left !important; /* lists read better left-aligned */
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.textMarkdown li { margin: 0.15em 0; }
+.textMarkdown li { 
+  display: list-item !important; /* CRITICAL: Force list-item display */
+  margin: 0.15em 0 !important;
+}
 
-.textMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
-.textMarkdown a:hover { color: var(--mm-blue-700); }
+.textMarkdown a { 
+  color: var(--mm-blue-600) !important; 
+  text-decoration: underline !important;
+  display: inline !important; /* Links stay inline */
+}
+
+.textMarkdown a:hover { 
+  color: var(--mm-blue-700) !important; 
+}
+
+/* CRITICAL: Ensure all markdown content is block-level by default */
+.textMarkdown > * {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Override for inline elements */
+.textMarkdown > strong,
+.textMarkdown > em,
+.textMarkdown > a,
+.textMarkdown strong,
+.textMarkdown em,
+.textMarkdown a {
+  display: inline !important;
+  width: auto !important;
+}
 
 /* Table Chart - Markdown table display */
 .table {
