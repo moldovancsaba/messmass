@@ -282,7 +282,7 @@
   /* HOW: Flex basis for fixed height proportion with minimum size guarantee */
   flex: 0 0 40%; /* 3:4:3 → pie 40% */
   width: 100%;
-  min-height: 150px; /* CRITICAL: Prevent collapse on mobile */
+  min-height: 100px; /* CRITICAL: Reduced from 150px to prevent overflow in small containers (1 unit in 5-unit block) */
   position: relative;
   display: flex;
   align-items: center;
@@ -459,30 +459,37 @@
 /* Text Chart - Custom structure with title (30%) and content (70%) */
 .text {
   /* REMOVED: min-height - height is deterministic from block calculator */
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
+  /* CRITICAL: Force vertical layout - override any conflicting styles */
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 /* Text Chart Grid - 30:70 ratio (title:content = 3:7) */
 .textGrid {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  /* CRITICAL: Ensure no horizontal layout */
+  flex-wrap: nowrap !important;
 }
 
 /* Text Title Row - 30% of textGrid height */
 .textTitleRow {
-  flex: 0 0 30%; /* 3:7 → title 30% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 30% !important; /* 3:7 → title 30% - force no grow/shrink */
+  display: flex !important;
+  flex-direction: row !important; /* Title row itself is horizontal */
+  align-items: center !important;
+  justify-content: center !important;
   padding: var(--mm-space-1) var(--mm-space-2);
   overflow: hidden;
+  width: 100% !important;
+  /* CRITICAL: Ensure this row doesn't cause horizontal layout */
+  min-width: 0 !important;
 }
 
 .textTitleText {
@@ -501,13 +508,16 @@
 
 /* Text Content Row - 70% of textGrid height */
 .textContentRow {
-  flex: 0 0 70%; /* 3:7 → content 70% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  flex: 0 0 70% !important; /* 3:7 → content 70% - force no grow/shrink */
+  display: flex !important;
+  flex-direction: row !important; /* Content row itself is horizontal */
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
   overflow: hidden;
   container-type: size;
+  /* CRITICAL: Ensure this row doesn't cause horizontal layout */
+  min-width: 0 !important;
 }
 
 .textContent {
@@ -738,9 +748,9 @@
    * WHY: Consistent sizing across all viewports, prevent collapse
    * HOW: Maintain flex basis with minimum height, let canvas fill container */
   .pieChartContainer {
-    flex: 0 0 50% !important; /* Same as desktop - 50% of pieGrid */
+    flex: 0 0 40% !important; /* Same as desktop - 40% of pieGrid (3:4:3 ratio) */
     width: 100% !important;
-    min-height: 150px !important; /* CRITICAL: Prevent collapse */
+    min-height: 100px !important; /* CRITICAL: Reduced from 150px to prevent overflow in small containers */
     max-width: 100% !important;
     max-height: 100% !important;
     position: relative !important;
