@@ -295,7 +295,7 @@
   gap: var(--mm-space-1);
   width: 100%;
   container-type: size;
-  min-height: 0;
+  min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
   overflow-y: auto;
   padding: var(--mm-space-1);
 }
@@ -706,6 +706,21 @@
     max-height: 100% !important;
     aspect-ratio: 1 !important; /* Maintain circular shape */
     object-fit: contain !important; /* Ensure it fits within constraints */
+  }
+  
+  /* WHAT: Pie legend - same behavior as desktop on mobile
+   * WHY: Consistent sizing across all viewports, prevent collapse
+   * HOW: Maintain flex basis with minimum height */
+  .pieLegend {
+    flex: 0 0 20% !important; /* Same as desktop - 20% of pieGrid */
+    width: 100% !important;
+    min-height: 60px !important; /* CRITICAL: Prevent collapse */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
