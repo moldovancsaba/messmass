@@ -3,6 +3,7 @@ import { ObjectId, Db } from 'mongodb';
 import { generateProjectSlugs } from '@/lib/slugUtils';
 import clientPromise from '@/lib/mongodb';
 import { createNotification, getCurrentUser } from '@/lib/notificationUtils';
+import { error as logError, info as logInfo, warn as logWarn, debug as logDebug } from '@/lib/logger';
 
 // Import hashtag category types for categorized hashtags support
 import { CategorizedHashtagMap } from '@/lib/hashtagCategoryTypes';
@@ -29,7 +30,7 @@ interface ProjectDocument {
 // Hashtag cleanup utility function
 async function cleanupUnusedHashtags(db: Db) {
   try {
-    console.log('🧹 Starting hashtag cleanup...');
+    logDebug('Starting hashtag cleanup', { context: 'projects' });
     
     const projectsCollection = db.collection('projects');
     const hashtagsCollection = db.collection('hashtags');
@@ -64,10 +65,10 @@ async function cleanupUnusedHashtags(db: Db) {
       hashtag: { $not: { $in: Array.from(usedHashtags) } }
     });
     
-    console.log(`✅ Cleaned up ${deleteResult.deletedCount} unused hashtags`);
+    logInfo('Cleaned up unused hashtags', { context: 'projects', deletedCount: deleteResult.deletedCount });
     return deleteResult.deletedCount;
   } catch (error) {
-    console.error('❌ Failed to cleanup hashtags:', error);
+    logError('Failed to cleanup hashtags', { context: 'projects' }, error instanceof Error ? error : new Error(String(error)));
     return 0;
   }
 }
@@ -77,16 +78,16 @@ const MONGODB_DB = config.dbName;
 
 async function connectToDatabase() {
   try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
+    logDebug('Connecting to MongoDB Atlas', { context: 'projects' });
     const client = await clientPromise;
     
     // Test the connection
     await client.db(MONGODB_DB).admin().ping();
-    console.log('✅ MongoDB Atlas connected successfully');
+    logDebug('MongoDB Atlas connected successfully', { context: 'projects' });
     
     return client;
   } catch (error) {
-    console.error('❌ Failed to connect to MongoDB Atlas:', error);
+    logError('Failed to connect to MongoDB Atlas', { context: 'projects' }, error instanceof Error ? error : new Error(String(error)));
     throw error;
   }
 }
@@ -290,7 +291,7 @@ export async function GET(request: NextRequest) {
 
       const formatted = results.map((project: any) => {
         const projectId = project._id.toString();
-        console.log('🔍 Formatting project:', { eventName: project.eventName, _id: projectId });
+        logDebug('Formatting project', { context: 'projects', eventName: project.eventName, projectId });
         const result: any = {
           _id: projectId,
           eventName: project.eventName,
@@ -399,7 +400,7 @@ export async function GET(request: NextRequest) {
       // WHY: Inform frontend about incomplete data for UI indicators
       const validation = validateProjectStats(project.stats || {});
       const projectId = project._id.toString();
-      console.log('🔍 Formatting project (cursor mode):', { eventName: project.eventName, _id: projectId });
+      logDebug('Formatting project (cursor mode)', { context: 'projects', eventName: project.eventName, projectId });
       
       const result: any = {
         _id: projectId,
@@ -469,7 +470,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch projects:', error);
+    logError('Failed to fetch projects', { context: 'projects' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Failed to fetch projects'
@@ -498,16 +499,15 @@ export async function POST(request: NextRequest) {
     // WHAT: Warn if data quality is poor (but don't reject)
     // WHY: Allow creation with incomplete data but flag for admin attention
     if (!validation.hasMinimumData) {
-      console.warn(`⚠️ Creating project with insufficient data quality: ${validation.dataQuality} (${validation.completeness}%)`);
-      console.warn(`Missing required metrics: ${validation.missingRequired.join(', ')}`);
+      logWarn('Creating project with insufficient data quality', { context: 'projects', dataQuality: validation.dataQuality, completeness: validation.completeness, missingRequired: validation.missingRequired });
     }
 
-    console.log('💾 Creating new project:', eventName);
+    logInfo('Creating new project', { context: 'projects', eventName });
 
     // Generate unique slugs for the project
-    console.log('🔑 Generating unique slugs...');
+    logDebug('Generating unique slugs', { context: 'projects' });
     const { viewSlug, editSlug } = await generateProjectSlugs();
-    console.log('✅ Generated slugs:', { viewSlug: viewSlug.substring(0, 8) + '...', editSlug: editSlug.substring(0, 8) + '...' });
+    logDebug('Generated slugs', { context: 'projects', viewSlugPrefix: viewSlug.substring(0, 8), editSlugPrefix: editSlug.substring(0, 8) });
 
     // WHAT: Validate styleId against page_styles_enhanced collection
     // WHY: Migrated from old pageStyles system to new enhanced system
@@ -555,9 +555,9 @@ export async function POST(request: NextRequest) {
     // WHY: Migrated from old styleId to new styleIdEnhanced field name
     if (styleId && styleId !== null && styleId !== 'null') {
       project.styleIdEnhanced = styleId;
-      console.log('🎨 [POST /api/projects] Setting styleIdEnhanced:', styleId);
+      logDebug('Setting styleIdEnhanced', { context: 'projects', styleId, method: 'POST' });
     } else {
-      console.log('🎨 [POST /api/projects] No styleId provided:', { styleId });
+      logDebug('No styleId provided', { context: 'projects', styleId, method: 'POST' });
     }
     
     // WHAT: Add partner references for Sports Match projects
@@ -573,9 +573,9 @@ export async function POST(request: NextRequest) {
     // WHY: Allow events to have custom report templates
     if (reportTemplateId && reportTemplateId !== '' && reportTemplateId !== 'null' && ObjectId.isValid(reportTemplateId)) {
       project.reportTemplateId = new ObjectId(reportTemplateId);
-      console.log('📊 [POST /api/projects] Setting reportTemplateId:', reportTemplateId);
+      logDebug('Setting reportTemplateId', { context: 'projects', reportTemplateId, method: 'POST' });
     } else {
-      console.log('📊 [POST /api/projects] No reportTemplateId provided:', { reportTemplateId });
+      logDebug('No reportTemplateId provided', { context: 'projects', reportTemplateId, method: 'POST' });
     }
 
     // Enhanced hashtag processing to handle both traditional and categorized hashtags
@@ -614,11 +614,11 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      console.log(`✅ Updated hashtag counts for ${allHashtagRepresentations.length} hashtag representations (${hashtags.length} traditional, ${Object.keys(categorizedHashtags).length} categories)`);
+      logInfo('Updated hashtag counts', { context: 'projects', totalRepresentations: allHashtagRepresentations.length, traditionalCount: hashtags.length, categoryCount: Object.keys(categorizedHashtags).length });
     }
 
     const result = await collection.insertOne(project);
-    console.log('✅ Project created with ID:', result.insertedId);
+    logInfo('Project created successfully', { context: 'projects', projectId: result.insertedId.toString(), eventName });
 
     // WHAT: Auto-associate Partner 1's Bitly links with new project (many-to-many)
     // WHY: Quick Add shows partner Bitly links in preview, must connect them automatically
@@ -629,7 +629,7 @@ export async function POST(request: NextRequest) {
         const partner = await partnersCollection.findOne({ _id: new ObjectId(partner1Id) });
         
         if (partner && partner.bitlyLinkIds && Array.isArray(partner.bitlyLinkIds)) {
-          console.log(`🔗 Auto-associating ${partner.bitlyLinkIds.length} Bitly links from Partner 1 (${partner.name})`);
+          logInfo('Auto-associating Bitly links from Partner 1', { context: 'projects', linkCount: partner.bitlyLinkIds.length, partnerName: partner.name, projectId: result.insertedId.toString() });
           
           // Create junction table entries for each Bitly link
           // This will automatically calculate date ranges and populate cached metrics
@@ -643,17 +643,17 @@ export async function POST(request: NextRequest) {
               });
               associatedCount++;
             } catch (linkError) {
-              console.error(`❌ Failed to associate Bitly link ${bitlyLinkId}:`, linkError);
+              logError('Failed to associate Bitly link', { context: 'projects', bitlyLinkId: bitlyLinkId.toString(), projectId: result.insertedId.toString() }, linkError instanceof Error ? linkError : new Error(String(linkError)));
               // Continue with other links even if one fails
             }
           }
           
-          console.log(`✅ Successfully associated ${associatedCount}/${partner.bitlyLinkIds.length} Bitly links`);
+          logInfo('Successfully associated Bitly links', { context: 'projects', associatedCount, totalLinks: partner.bitlyLinkIds.length, projectId: result.insertedId.toString() });
         } else {
-          console.log('ℹ️ Partner 1 has no Bitly links to associate');
+          logDebug('Partner 1 has no Bitly links to associate', { context: 'projects', projectId: result.insertedId.toString() });
         }
       } catch (bitlyError) {
-        console.error('❌ Failed to auto-associate Bitly links:', bitlyError);
+        logError('Failed to auto-associate Bitly links', { context: 'projects', projectId: result.insertedId.toString() }, bitlyError instanceof Error ? bitlyError : new Error(String(bitlyError)));
         // Don't fail the project creation if Bitly association fails
       }
     }
@@ -719,7 +719,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('🔄 Updating project:', projectId, { styleId });
+    logInfo('Updating project', { context: 'projects', projectId, styleId });
 
     // WHAT: Validate styleId against report_styles collection (26-color system)
     // WHY: Using new report style system, not legacy page_styles_enhanced
@@ -743,7 +743,7 @@ export async function PUT(request: NextRequest) {
       const styleExists = await reportStylesCollection.findOne({ _id: new ObjectId(styleId) });
       
       if (!styleExists) {
-        console.warn(`⚠️ Invalid styleId ${styleId} provided, removing to use default style`);
+        logWarn('Invalid styleId provided, removing to use default style', { context: 'projects', projectId, styleId });
         // Don't reject - just remove the invalid styleId to use default
         // This prevents "Referenced report style does not exist" errors
         styleId = null;
@@ -766,8 +766,7 @@ export async function PUT(request: NextRequest) {
     // WHAT: Warn if data quality is poor (but don't reject)
     // WHY: Allow updates with incomplete data but flag for admin attention
     if (!validation.hasMinimumData) {
-      console.warn(`⚠️ Updating project with insufficient data quality: ${validation.dataQuality} (${validation.completeness}%)`);
-      console.warn(`Missing required metrics: ${validation.missingRequired.join(', ')}`);
+      logWarn('Updating project with insufficient data quality', { context: 'projects', projectId, dataQuality: validation.dataQuality, completeness: validation.completeness, missingRequired: validation.missingRequired });
     }
     
     // Enhanced update data to include categorized hashtags
@@ -787,13 +786,13 @@ export async function PUT(request: NextRequest) {
     if (styleId === null || styleId === 'null') {
       // Remove styleIdEnhanced to use global/default style
       unsetData.styleIdEnhanced = '';
-      console.log('🎨 [PUT /api/projects] Removing styleIdEnhanced');
+      logDebug('Removing styleIdEnhanced', { context: 'projects', projectId, method: 'PUT' });
     } else if (styleId && styleId !== undefined) {
       // Set specific styleIdEnhanced
       setData.styleIdEnhanced = styleId;
-      console.log('🎨 [PUT /api/projects] Setting styleIdEnhanced:', styleId);
+      logDebug('Setting styleIdEnhanced', { context: 'projects', projectId, styleId, method: 'PUT' });
     } else {
-      console.log('🎨 [PUT /api/projects] No styleId in request');
+      logDebug('No styleId in request', { context: 'projects', projectId, method: 'PUT' });
     }
     // If styleId is not provided in the request, don't modify existing styleIdEnhanced
     
@@ -802,13 +801,13 @@ export async function PUT(request: NextRequest) {
     if (reportTemplateId === null || reportTemplateId === '' || reportTemplateId === 'null') {
       // Remove reportTemplateId (use partner or default template)
       unsetData.reportTemplateId = '';
-      console.log('📊 [PUT /api/projects] Removing reportTemplateId');
+      logDebug('Removing reportTemplateId', { context: 'projects', projectId, method: 'PUT' });
     } else if (reportTemplateId && reportTemplateId !== undefined && ObjectId.isValid(reportTemplateId)) {
       // Set specific reportTemplateId
       setData.reportTemplateId = new ObjectId(reportTemplateId);
-      console.log('📊 [PUT /api/projects] Setting reportTemplateId:', reportTemplateId);
+      logDebug('Setting reportTemplateId', { context: 'projects', projectId, reportTemplateId, method: 'PUT' });
     } else if (reportTemplateId !== undefined) {
-      console.log('📊 [PUT /api/projects] Invalid reportTemplateId:', { reportTemplateId });
+      logWarn('Invalid reportTemplateId', { context: 'projects', projectId, reportTemplateId, method: 'PUT' });
     }
     // If reportTemplateId is not provided in the request, don't modify existing reportTemplateId
     
@@ -817,21 +816,21 @@ export async function PUT(request: NextRequest) {
     if (partner1Id === null || partner1Id === '' || partner1Id === 'null') {
       // Remove partner1Id
       unsetData.partner1Id = '';
-      console.log('🤝 [PUT /api/projects] Removing partner1Id');
+      logDebug('Removing partner1Id', { context: 'projects', projectId, method: 'PUT' });
     } else if (partner1Id && partner1Id !== undefined && ObjectId.isValid(partner1Id)) {
       // Set specific partner1Id
       setData.partner1Id = new ObjectId(partner1Id);
-      console.log('🤝 [PUT /api/projects] Setting partner1Id:', partner1Id);
+      logDebug('Setting partner1Id', { context: 'projects', projectId, partner1Id, method: 'PUT' });
     }
     
     if (partner2Id === null || partner2Id === '' || partner2Id === 'null') {
       // Remove partner2Id (Type 1 event)
       unsetData.partner2Id = '';
-      console.log('🤝 [PUT /api/projects] Removing partner2Id');
+      logDebug('Removing partner2Id', { context: 'projects', projectId, method: 'PUT' });
     } else if (partner2Id && partner2Id !== undefined && ObjectId.isValid(partner2Id)) {
       // Set specific partner2Id (Type 2 - Sports Match)
       setData.partner2Id = new ObjectId(partner2Id);
-      console.log('🤝 [PUT /api/projects] Setting partner2Id:', partner2Id);
+      logDebug('Setting partner2Id', { context: 'projects', projectId, partner2Id, method: 'PUT' });
     }
     
     // Build the update operation object
@@ -885,7 +884,7 @@ export async function PUT(request: NextRequest) {
           );
         }
       }
-      console.log(`✅ Added ${hashtagsToAdd.length} new hashtags`);
+      logInfo('Added new hashtags', { context: 'projects', projectId, hashtagCount: hashtagsToAdd.length });
     }
     
     if (hashtagsToRemove.length > 0) {
@@ -896,7 +895,7 @@ export async function PUT(request: NextRequest) {
           { $inc: { count: -1 } }
         );
       }
-      console.log(`✅ Decremented count for ${hashtagsToRemove.length} hashtags`);
+      logInfo('Decremented count for hashtags', { context: 'projects', projectId, hashtagCount: hashtagsToRemove.length });
     }
 
     const result = await collection.updateOne(
@@ -904,17 +903,17 @@ export async function PUT(request: NextRequest) {
       updateOperation
     );
 
-    console.log('✅ Project updated successfully');
+    logInfo('Project updated successfully', { context: 'projects', projectId });
     
     // WHAT: Trigger Bitly recalculation if eventDate changed
     // WHY: Date changes affect temporal boundaries for Bitly analytics attribution
     if (currentProject.eventDate !== eventDate) {
-      console.log('📅 Event date changed, triggering Bitly recalculation...');
+      logInfo('Event date changed, triggering Bitly recalculation', { context: 'projects', projectId });
       try {
         const bitlinksAffected = await recalculateProjectLinks(new ObjectId(projectId));
-        console.log(`✅ Recalculated ${bitlinksAffected} Bitly links due to date change`);
+        logInfo('Recalculated Bitly links due to date change', { context: 'projects', projectId, bitlinksAffected });
       } catch (bitlyError) {
-        console.error('⚠️ Failed to recalculate Bitly links:', bitlyError);
+        logWarn('Failed to recalculate Bitly links', { context: 'projects', projectId }, bitlyError instanceof Error ? bitlyError : new Error(String(bitlyError)));
         // Don't fail the request if Bitly recalculation fails
       }
     }
@@ -931,7 +930,7 @@ export async function PUT(request: NextRequest) {
         projectSlug: currentProject.viewSlug || null
       });
     } catch (notifError) {
-      console.error('Failed to create notification:', notifError);
+      logError('Failed to create notification', { context: 'projects', projectId }, notifError instanceof Error ? notifError : new Error(String(notifError)));
       // Don't fail the request if notification fails
     }
     
@@ -944,7 +943,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to update project:', error);
+    logError('Failed to update project', { context: 'projects', projectId }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -968,7 +967,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log('🗑️ Deleting project:', projectId);
+    logInfo('Deleting project', { context: 'projects', projectId });
 
     const client = await connectToDatabase();
     const db = client.db(MONGODB_DB);
@@ -986,16 +985,16 @@ export async function DELETE(request: NextRequest) {
     // Delete the project
     const result = await collection.deleteOne({ _id: new ObjectId(projectId) });
 
-    console.log('✅ Project deleted successfully');
+    logInfo('Project deleted successfully', { context: 'projects', projectId });
     
     // WHAT: Trigger Bitly recalculation for affected links
     // WHY: Deleted event's date ranges must be redistributed to remaining events
-    console.log('🔗 Handling Bitly link redistribution after project deletion...');
+    logInfo('Handling Bitly link redistribution after project deletion', { context: 'projects', projectId });
     try {
       const bitlinksAffected = await handleProjectDeletion(new ObjectId(projectId));
-      console.log(`✅ Redistributed date ranges for ${bitlinksAffected} Bitly links`);
+      logInfo('Redistributed date ranges for Bitly links', { context: 'projects', projectId, bitlinksAffected });
     } catch (bitlyError) {
-      console.error('⚠️ Failed to handle Bitly redistribution:', bitlyError);
+      logWarn('Failed to handle Bitly redistribution', { context: 'projects', projectId }, bitlyError instanceof Error ? bitlyError : new Error(String(bitlyError)));
       // Don't fail the request if Bitly handling fails
     }
     
@@ -1017,7 +1016,7 @@ export async function DELETE(request: NextRequest) {
         );
       }
       
-      console.log(`✅ Decremented count for ${allDeletedHashtagRepresentations.length} hashtag representations (including categorized)`);
+      logInfo('Decremented count for hashtag representations', { context: 'projects', projectId, hashtagCount: allDeletedHashtagRepresentations.length });
       
       // Clean up unused hashtags
       await cleanupUnusedHashtags(db);
@@ -1026,7 +1025,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('❌ Failed to delete project:', error);
+    logError('Failed to delete project', { context: 'projects', projectId }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
