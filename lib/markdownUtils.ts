@@ -4,6 +4,7 @@
 // HOW: Use marked library with safe options, no inline HTML allowed
 
 import { marked } from 'marked';
+import { sanitizeMarkdownHTML } from './sanitize';
 
 /**
  * WHAT: Configure marked with limited features for text boxes
@@ -83,7 +84,10 @@ export function parseMarkdown(markdown: string): string {
       async: false, // Synchronous parsing for simplicity
     }) as string;
     
-    return html;
+    // WHAT: Sanitize parsed HTML to prevent XSS
+    // WHY: Even though marked is safe, additional sanitization provides defense in depth
+    // HOW: Use DOMPurify with markdown-specific allowlist
+    return sanitizeMarkdownHTML(html);
   } catch (error) {
     console.error('Markdown parsing error:', error);
     // WHAT: Fallback to plain text on parse error

@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import TextareaField from './TextareaField';
 import { parseMarkdown, getMarkdownHint, isMarkdown } from '@/lib/markdownUtils';
+import { sanitizeHTML } from '@/lib/sanitize';
 
 interface ChartBuilderTextProps {
   chart: {
@@ -64,9 +65,10 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
         <div className="chart-builder-preview">
           {/* WHAT: Render markdown preview with same styles as TextChart */}
           {/* WHY: Show users how text will appear in final report */}
+          {/* SECURITY: Sanitize HTML to prevent XSS in preview */}
           <div 
             className="chart-builder-preview-content"
-            dangerouslySetInnerHTML={{ __html: parseMarkdown(currentText) }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseMarkdown(currentText)) }}
           />
         </div>
       ) : (

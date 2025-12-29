@@ -7,6 +7,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { parseMarkdown } from '@/lib/markdownUtils';
+import { sanitizeHTML } from '@/lib/sanitize';
 import styles from './TextChart.module.css';
 
 export interface TextChartProps {
@@ -177,8 +178,8 @@ export default function TextChart({ title, content, subtitle, className = '', as
               }}
               // WHAT: Render parsed markdown HTML
               // WHY: Display formatted text (bold, italic, lists, links)
-              // SECURITY: parseMarkdown sanitizes content (admin-controlled only)
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
+              // SECURITY: Double sanitization - parseMarkdown + sanitizeHTML for defense in depth
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(htmlContent) }}
             />
           </div>
         ) : content ? (

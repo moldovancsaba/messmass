@@ -19,6 +19,7 @@ import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
+import { sanitizeHTML } from '@/lib/sanitize';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -470,7 +471,7 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, class
         <div
           className={`${styles.textContent} ${styles.textMarkdown}`}
           // eslint-disable-next-line react/forbid-dom-props
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
         />
       ) : (
         <div className={styles.textContent} />

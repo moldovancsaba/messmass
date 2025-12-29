@@ -4,6 +4,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { sanitizeHTML } from '@/lib/sanitize'
 import styles from './CodeViewer.module.css'
 
 /**
@@ -311,14 +312,20 @@ export default function CodeViewer({
               {/* Code */}
               <div 
                 dangerouslySetInnerHTML={{
-                  __html: highlightedCode
+                  __html: sanitizeHTML(highlightedCode, {
+                    allowTags: ['span', 'div', 'pre', 'code'],
+                    allowAttributes: ['class']
+                  })
                 }}
               />
             </div>
           ) : (
             <div 
               dangerouslySetInnerHTML={{
-                __html: highlightedCode
+                __html: sanitizeHTML(highlightedCode, {
+                  allowTags: ['span', 'div', 'pre', 'code'],
+                  allowAttributes: ['class']
+                })
               }}
             />
           )}
