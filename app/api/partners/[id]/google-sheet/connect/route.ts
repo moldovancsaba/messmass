@@ -34,8 +34,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
-    const { id } = await params;
+    const paramsResolved = await params;
+    id = paramsResolved.id;
 
     // Validate partner ID
     if (!ObjectId.isValid(id)) {
@@ -148,7 +150,7 @@ export async function POST(
     });
 
   } catch (error) {
-    logError('Error connecting Google Sheet', { context: 'google-sheet-connect', partnerId: id }, error instanceof Error ? error : new Error(String(error)));
+    logError('Error connecting Google Sheet', { context: 'google-sheet-connect', partnerId: id || 'unknown' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
