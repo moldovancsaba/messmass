@@ -275,12 +275,12 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js - 50% of pieGrid height */
+/* Pie Chart Container for Chart.js - 40% of pieGrid height */
 .pieChartContainer {
-  /* WHAT: 50% of pieGrid height for pie chart */
-  /* WHY: Middle section of 30:50:20 ratio (title:pie:legend) */
+  /* WHAT: 40% of pieGrid height for pie chart */
+  /* WHY: Middle section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
   /* HOW: Flex basis for fixed height proportion with minimum size guarantee */
-  flex: 0 0 50%;
+  flex: 0 0 40%; /* 3:4:3 → pie 40% */
   width: 100%;
   min-height: 150px; /* CRITICAL: Prevent collapse on mobile */
   position: relative;
@@ -291,27 +291,25 @@
   overflow: hidden;
 }
 
-/* Custom Pie Legend - 20% of body height */
+/* Custom Pie Legend - 30% of body height */
 .pieLegend {
-  /* WHAT: 20% of body height for legend items */
-  /* WHY: Bottom section of 3:5:2 ratio (title:pie:legend) */
-  /* HOW: Flex basis for fixed height proportion, scrollable when content exceeds */
-  flex: 0 0 20%; /* 3:5:2 → legend 20% - don't grow or shrink */
+  /* WHAT: 30% of body height for legend items */
+  /* WHY: Bottom section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
+  /* HOW: Flex basis for fixed height proportion, vertically centered, scrollable when content exceeds */
+  flex: 0 0 30%; /* 3:4:3 → legend 30% - don't grow or shrink */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically when it fits */
+  justify-content: center; /* CRITICAL: Center content vertically in its space */
   align-items: center;
   gap: var(--mm-space-1);
   width: 100%;
   container-type: size;
   min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
-  max-height: 20%; /* CRITICAL: Never exceed 20% of parent - this enables scrolling */
+  max-height: 30%; /* CRITICAL: Never exceed 30% of parent - this enables scrolling */
   overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
   overflow-x: hidden;
   padding: var(--mm-space-1);
   box-sizing: border-box;
-  /* CRITICAL: Remove height: 20% - let flex: 0 0 20% handle sizing */
-  /* WHY: flex: 0 0 20% sets the size, height: 20% can conflict */
 }
 
 .pieLegendItem {
@@ -458,20 +456,58 @@
   white-space: nowrap;
 }
 
-/* Text Chart - Uses base .chart structure */
+/* Text Chart - Custom structure with title (30%) and content (70%) */
 .text {
   /* REMOVED: min-height - height is deterministic from block calculator */
-  /* CRITICAL: Ensure CellWrapper's flex-direction: column is preserved */
-  /* WHY: CellWrapper must stack titleZone and bodyZone vertically */
-  display: flex !important;
-  flex-direction: column !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
-.textTitle {
-  font-size: clamp(0.95rem, 2.6cqw, 1.25rem);
+/* Text Chart Grid - 30:70 ratio (title:content = 3:7) */
+.textGrid {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* Text Title Row - 30% of textGrid height */
+.textTitleRow {
+  flex: 0 0 30%; /* 3:7 → title 30% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-1) var(--mm-space-2);
+  overflow: hidden;
+}
+
+.textTitleText {
+  margin: 0;
+  text-align: center;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
-  margin-bottom: 0;
+  font-size: clamp(0.95rem, 9cqh, 1.25rem);
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Text Content Row - 70% of textGrid height */
+.textContentRow {
+  flex: 0 0 70%; /* 3:7 → content 70% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  container-type: size;
 }
 
 .textContent {
@@ -490,6 +526,7 @@
   color: var(--textColor);
   line-height: 1.3;
   padding: var(--mm-space-2);
+  box-sizing: border-box;
 }
 
 /* WHAT: Markdown element styles inside text content
@@ -640,24 +677,23 @@
 
 /* CellWrapper + Pie Chart */
 .CellWrapper_bodyZone__ps_rO .pieChartContainer {
-  /* WHAT: Fixed 70% height regardless of wrapper */
-  height: 70%;
+  /* WHAT: Fixed 40% height regardless of wrapper */
+  flex: 0 0 40% !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Fixed 20% height regardless of wrapper */
-  /* WHY: Maintain consistent legend size when inside CellWrapper */
-  flex: 0 0 20% !important; /* Override any conflicting flex values */
-  max-height: 20% !important; /* CRITICAL: Never exceed 20% - enables scrolling */
+  /* WHAT: Fixed 30% height regardless of wrapper */
+  /* WHY: Maintain consistent legend size when inside CellWrapper (3:4:3 ratio) */
+  flex: 0 0 30% !important; /* Override any conflicting flex values */
+  max-height: 30% !important; /* CRITICAL: Never exceed 30% - enables scrolling */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center when content fits */
+  justify-content: center; /* CRITICAL: Center content vertically in its space */
   overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
   box-sizing: border-box;
-  /* CRITICAL: Remove height: 20% - let flex handle sizing */
 }
 
 /* CellWrapper + Bar Chart */

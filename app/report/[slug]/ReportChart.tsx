@@ -462,7 +462,7 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
 
 /**
  * Text Chart - Formatted text display
- * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * UPDATED: Custom structure with title (30%) and content (70%) ratio
  */
 function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   // WHAT: Render markdown content on report pages only
@@ -475,23 +475,30 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, class
   const showTitle = result.showTitle !== false;
   
   return (
-    <CellWrapper
-      title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
+    <div 
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
+      // eslint-disable-next-line react/forbid-dom-props
+      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >
-      {html ? (
-        <div
-          className={`${styles.textContent} ${styles.textMarkdown}`}
-          // eslint-disable-next-line react/forbid-dom-props
-          dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
-        />
-      ) : (
-        <div className={styles.textContent} />
-      )}
-    </CellWrapper>
+      <div className={styles.textGrid}>
+        {showTitle && (
+          <div className={styles.textTitleRow}>
+            <h3 className={styles.textTitleText}>{result.title}</h3>
+          </div>
+        )}
+        <div className={styles.textContentRow}>
+          {html ? (
+            <div
+              className={`${styles.textContent} ${styles.textMarkdown}`}
+              // eslint-disable-next-line react/forbid-dom-props
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
+            />
+          ) : (
+            <div className={styles.textContent} />
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
