@@ -120,6 +120,7 @@ export function useUnifiedTextFontSize(
       // WHAT: Calculate unified font-size
       // WHY: All charts should use the same size
       const unifiedSize = calculateUnifiedFontSize(contents, dimensions);
+      console.log('[useUnifiedTextFontSize] Calculated unified font-size:', unifiedSize, 'for', textCharts.length, 'charts');
       setUnifiedFontSize(unifiedSize);
     }, 100);
 

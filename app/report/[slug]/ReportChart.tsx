@@ -494,7 +494,7 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
           <div
             className={`${styles.textContent} ${styles.textMarkdown}`}
             // eslint-disable-next-line react/forbid-dom-props
-            dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
+            dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
           <div className={styles.textContent} />

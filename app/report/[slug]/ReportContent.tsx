@@ -337,6 +337,7 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       style={unifiedTextFontSize ? {
         ['--unified-text-font-size' as string]: `${unifiedTextFontSize}rem`
       } as React.CSSProperties : undefined}
+      data-unified-font-size={unifiedTextFontSize || undefined}
     >
       {block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
