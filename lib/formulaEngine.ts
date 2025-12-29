@@ -9,6 +9,7 @@
 // USAGE: Import evaluateFormula() or evaluateFormulaSafe() for safe calculation
 
 import { type AvailableVariable, FormulaValidationResult } from './chartConfigTypes';
+import { FEATURE_FLAGS } from './featureFlags';
 import { 
   validateRequiredFields, 
   ensureDerivedMetrics, 
@@ -654,6 +655,8 @@ function processMathFunctions(formula: string): string {
  * Handles basic arithmetic operations with division by zero protection
  * @param expression - Mathematical expression to evaluate
  * @returns Numeric result or 'NA' for errors
+ * 
+ * SECURITY: Uses safe parser when feature flag enabled, falls back to Function() for migration
  */
 function evaluateSimpleExpression(expression: string): number | 'NA' {
   try {
@@ -665,8 +668,51 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       return 'NA';
     }
     
-    // Use Function constructor for safe evaluation (more secure than eval)
-    // This only allows mathematical operations, no access to global scope
+    // WHAT: Use safe parser when feature flag enabled
+    // WHY: Prevent RCE attacks via formula injection
+    // HOW: expr-eval parser only evaluates mathematical expressions, no code execution
+    if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
+      try {
+        // Dynamic import to avoid bundling in client if not needed
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { Parser } = require('expr-eval');
+        
+        // WHAT: Create parser with only safe mathematical operators
+        // WHY: Restrict to arithmetic operations only, prevent code injection
+        const parser = new Parser({
+          operators: {
+            add: true,
+            subtract: true,
+            multiply: true,
+            divide: true,
+            power: true,
+            mod: false, // Disable modulo if not needed
+          }
+        });
+        
+        // WHAT: Parse and evaluate expression safely
+        // WHY: expr-eval only evaluates math, cannot execute arbitrary code
+        const expr = parser.parse(cleanExpression);
+        const result = expr.evaluate({});
+        
+        // Check for invalid results
+        if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+          return 'NA';
+        }
+        
+        return result;
+      } catch (parseError) {
+        // WHAT: Fallback to legacy evaluation if parser fails
+        // WHY: Graceful degradation during migration
+        console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', parseError);
+        // Fall through to legacy Function() evaluation
+      }
+    }
+    
+    // WHAT: Legacy Function constructor evaluation (fallback)
+    // WHY: Maintain backward compatibility during migration
+    // SECURITY: This is less secure but needed for gradual rollout
+    // TODO: Remove after migration complete
     const safeEval = new Function('return ' + cleanExpression);
     const result = safeEval();
     

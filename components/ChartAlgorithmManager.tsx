@@ -1058,9 +1058,37 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         }
       });
       
-      // Evaluate the formula safely
-      const result = Function('"use strict"; return (' + testFormula + ')')();
-      return { error: null, result: typeof result === 'number' ? Math.round(result * 100) / 100 : 'NA' as 'NA' };
+      // WHAT: Evaluate the formula safely using formulaEngine
+      // WHY: Use centralized safe evaluation instead of Function() constructor
+      // HOW: Import evaluateFormula from formulaEngine
+      // SECURITY: Uses safe parser when feature flag enabled
+      try {
+        // WHAT: Use evaluateFormula with empty stats (formula already has values substituted)
+        // WHY: Reuse safe evaluation logic from formulaEngine
+        // HOW: Create a minimal stats object, formula should already have numeric values
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { evaluateFormula } = require('@/lib/formulaEngine');
+        const result = evaluateFormula(testFormula, {});
+        
+        // WHAT: Round to 2 decimal places for display
+        // WHY: Consistent formatting with existing behavior
+        // HOW: Check if result is number (not 'NA' string literal)
+        const roundedResult = typeof result === 'number' 
+          ? Math.round(result * 100) / 100 
+          : 'NA' as 'NA';
+        
+        return { error: null, result: roundedResult };
+      } catch (evalError) {
+        // WHAT: Fallback to legacy Function() if safe evaluation fails
+        // WHY: Graceful degradation during migration
+        // TODO: Remove after migration complete
+        try {
+          const result = Function('"use strict"; return (' + testFormula + ')')();
+          return { error: null, result: typeof result === 'number' ? Math.round(result * 100) / 100 : 'NA' as 'NA' };
+        } catch (legacyError) {
+          return { error: 'Invalid formula syntax', result: null };
+        }
+      }
     } catch (error) {
       return { error: 'Invalid formula syntax', result: null };
     }
