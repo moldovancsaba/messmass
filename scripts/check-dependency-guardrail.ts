@@ -82,16 +82,6 @@ const APPROVED_RUNTIME_DEPENDENCIES: ApprovedDependency[] = [
   { name: 'lucide-react', category: 'ui', required: false },
   { name: 'focus-trap-react', category: 'ui', required: false },
   
-  // Type Definitions (allowed in dependencies if needed at runtime)
-  { name: '@types/nodemailer', category: 'dev', required: false },
-  { name: '@types/bcryptjs', category: 'dev', required: false },
-  { name: '@types/dompurify', category: 'dev', required: false },
-  { name: '@types/expr-eval', category: 'dev', required: false },
-  { name: '@types/html2canvas', category: 'dev', required: false },
-  { name: '@types/js-cookie', category: 'dev', required: false },
-  { name: '@types/jsonwebtoken', category: 'dev', required: false },
-  { name: '@types/uuid', category: 'dev', required: false },
-  { name: '@types/ws', category: 'dev', required: false },
 ];
 
 /**
@@ -104,6 +94,15 @@ const APPROVED_DEV_DEPENDENCIES: ApprovedDependency[] = [
   { name: '@types/react', category: 'dev', required: true },
   { name: '@types/react-dom', category: 'dev', required: true },
   { name: '@types/jest', category: 'dev', required: false },
+  { name: '@types/nodemailer', category: 'dev', required: false },
+  { name: '@types/bcryptjs', category: 'dev', required: false },
+  { name: '@types/dompurify', category: 'dev', required: false },
+  { name: '@types/expr-eval', category: 'dev', required: false },
+  { name: '@types/html2canvas', category: 'dev', required: false },
+  { name: '@types/js-cookie', category: 'dev', required: false },
+  { name: '@types/jsonwebtoken', category: 'dev', required: false },
+  { name: '@types/uuid', category: 'dev', required: false },
+  { name: '@types/ws', category: 'dev', required: false },
   
   // Linting & Formatting
   { name: 'eslint', category: 'dev', required: true },
