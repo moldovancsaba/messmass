@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/auth';
+import { error as logError } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Auth check error:', error);
+    logError('Auth check error', { context: 'auth/check' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({
       authenticated: false,
       user: null

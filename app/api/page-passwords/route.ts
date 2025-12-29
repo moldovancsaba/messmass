@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateShareableLink, getOrCreatePagePassword, validateAnyPassword } from '@/lib/pagePassword';
 import { PageType } from '@/lib/pagePassword';
 import { getAdminUser } from '@/lib/auth';
+import { error as logError, info as logInfo, warn as logWarn } from '@/lib/logger';
 
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Generating password for ${pageType} page:`, pageId.substring(0, 8) + '...');
+    logInfo('Generating password for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     // Generate or retrieve password
     const pagePassword = await getOrCreatePagePassword(pageId, pageType as PageType, regenerate);
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Generate shareable link
     const shareableLink = await generateShareableLink(pageId, pageType as PageType, baseUrl);
 
-    console.log(`✅ Generated password for ${pageType} page successfully`);
+    logInfo('Generated password for page successfully', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     return NextResponse.json({
       success: true,
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to generate page password:', error);
+    logError('Failed to generate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -102,13 +103,13 @@ export async function PUT(request: NextRequest) {
       })
     }
 
-    console.log(`🔍 Validating password for ${pageType} page:`, pageId.substring(0, 8) + '...');
+    logInfo('Validating password for page', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
 
     // Validate password (admin or page-specific)
     const validation = await validateAnyPassword(pageId, pageType as PageType, password);
 
     if (validation.isValid) {
-      console.log(`✅ Password validation successful for ${pageType} page (${validation.isAdmin ? 'admin' : 'page-specific'})`);
+      logInfo('Password validation successful', { context: 'page-passwords', pageType, isAdmin: validation.isAdmin, pageIdPrefix: pageId.substring(0, 8) });
       
       return NextResponse.json({
         success: true,
@@ -117,7 +118,7 @@ export async function PUT(request: NextRequest) {
         message: validation.isAdmin ? 'Admin password accepted' : 'Page password accepted'
       });
     } else {
-      console.log(`❌ Password validation failed for ${pageType} page`);
+      logWarn('Password validation failed', { context: 'page-passwords', pageType, pageIdPrefix: pageId.substring(0, 8) });
       
       return NextResponse.json({
         success: false,
@@ -128,7 +129,7 @@ export async function PUT(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('❌ Failed to validate page password:', error);
+    logError('Failed to validate page password', { context: 'page-passwords', pageType }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 

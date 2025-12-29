@@ -3,6 +3,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { env } from '@/lib/config';
 import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
+import { error as logError, info as logInfo } from '@/lib/logger';
 
 // Use centralized Mongo client and config
 
@@ -26,7 +27,7 @@ async function verifySSO(token: string) {
     const userData = await response.json();
     return userData.user;
   } catch (error) {
-    console.error('SSO verification failed:', error);
+    logError('SSO verification failed', { context: 'admin/permissions' }, error instanceof Error ? error : new Error(String(error)));
     return null;
   }
 }
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} accessing permissions`);
+    logInfo('Admin accessing permissions', { context: 'admin/permissions', adminName: user.name, adminEmail: user.email });
 
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
       .sort({ grantedAt: -1 })
       .toArray();
 
-    console.log(`✅ Retrieved ${permissions.length} permissions for admin`);
+    logInfo('Retrieved permissions for admin', { context: 'admin/permissions', permissionCount: permissions.length, adminEmail: user.email });
 
     const formattedPermissions = permissions.map(permission => ({
       _id: permission._id.toString(),
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to fetch admin permissions:', error);
+    logError('Failed to fetch admin permissions', { context: 'admin/permissions' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} setting permission: ${userId} -> ${role} on ${projectId}`);
+    logInfo('Admin setting permission', { context: 'admin/permissions', adminName: user.name, adminEmail: user.email, userId, role, projectId });
 
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest) {
         }
       );
 
-      console.log(`✅ Permission updated for user ${userId} on project ${projectId}`);
+      logInfo('Permission updated successfully', { context: 'admin/permissions', userId, projectId, role, adminEmail: user.email });
 
       return NextResponse.json({
         success: true,
@@ -224,7 +225,7 @@ export async function POST(request: NextRequest) {
 
       const result = await collection.insertOne(permission);
 
-      console.log(`✅ Permission granted: ${userId} -> ${role} on project ${projectId}`);
+      logInfo('Permission granted successfully', { context: 'admin/permissions', userId, projectId, role, adminEmail: user.email });
 
       return NextResponse.json({
         success: true,
@@ -238,7 +239,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('❌ Failed to grant permission:', error);
+    logError('Failed to grant permission', { context: 'admin/permissions' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
@@ -288,7 +289,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log(`🔐 Admin ${user.name} revoking permission: ${userId} from ${projectId}`);
+    logInfo('Admin revoking permission', { context: 'admin/permissions', adminName: user.name, adminEmail: user.email, userId, projectId });
 
     const client = await clientPromise;
     const db = client.db(config.dbName);
@@ -307,7 +308,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log(`✅ Permission revoked: ${userId} from project ${projectId}`);
+    logInfo('Permission revoked successfully', { context: 'admin/permissions', userId, projectId, adminEmail: user.email });
 
     // Log the revocation for audit purposes
     const auditCollection = db.collection('audit_logs');
@@ -331,7 +332,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Failed to revoke permission:', error);
+    logError('Failed to revoke permission', { context: 'admin/permissions' }, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { 
         success: false, 
