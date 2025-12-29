@@ -4,12 +4,21 @@
 **Last Updated:** 2025-01-XX  
 **Status:** Planning Phase
 
+## ⚠️ FINAL AUTHORITY - NO EXCEPTIONS
+
+**The MessMass Structural Fit & Typography Enforcement Policy (Section 0) is the absolute, final authority for all layout decisions. It supersedes all other rules, guidelines, and patterns in this document. No scrolling, truncation, or overflow is permitted. Content must fit through structural change or height increase only.**
+
+---
+
 ## Executive Summary
 
 This document outlines a comprehensive design system for the MessMass report rendering system. Based on recent development experiences with text charts, font scaling, alignment, and markdown rendering, this plan establishes unified rules and patterns to ensure consistent, maintainable, and visually pleasing report layouts.
 
+**CRITICAL:** All implementations must comply with the Structural Fit & Typography Enforcement Policy (Section 0). This is not optional.
+
 ## Table of Contents
 
+0. **[MessMass Structural Fit & Typography Enforcement Policy](#0-messmass-structural-fit--typography-enforcement-policy)** ⚠️ **FINAL AUTHORITY**
 1. [Core Principles](#core-principles)
 2. [Recent Experiences & Lessons Learned](#recent-experiences--lessons-learned)
 3. [Chart Layout System](#chart-layout-system)
@@ -21,6 +30,291 @@ This document outlines a comprehensive design system for the MessMass report ren
 
 ---
 
+## 0. MessMass Structural Fit & Typography Enforcement Policy
+
+**⚠️ FINAL AUTHORITY – NO EXCEPTIONS**
+
+This policy section locks everything together. It supersedes all earlier overflow, truncation, and scroll-related ambiguity.
+
+### Absolute Rule (P0)
+
+**Scrolling is prohibited. Truncation is prohibited. Content must always fit by structural change or height increase.**
+
+If content cannot fit:
+- We increase height
+- Or we split structure
+- Or we block publishing
+
+**Nothing else is allowed.**
+
+---
+
+### 1. Canonical Fit Doctrine
+
+#### 1.1 Allowed Fit Mechanisms (Exhaustive List)
+
+When content does not fit inside a Cell at the resolved Block height, the system may only do the following, in this order:
+
+1. **Increase Block Height**
+2. **Reflow internal layout** (e.g. legend position, chart orientation)
+3. **Reduce semantic density** (Top-N, aggregation — never data loss)
+4. **Split into additional Blocks**
+5. **Fail validation** (publish blocked)
+
+#### Explicitly Forbidden
+
+- ❌ Vertical scroll
+- ❌ Horizontal scroll
+- ❌ Line clamping
+- ❌ Ellipsis
+- ❌ Hidden overflow
+- ❌ "Looks OK on desktop"
+
+**If any of these appear in code, the implementation is wrong.**
+
+---
+
+### 2. Block Height Is Elastic (Now Fully Explicit)
+
+#### 2.1 Block Height Is Not Fixed by Design
+
+**Blocks are elastic containers.**
+
+They may:
+- Grow vertically to preserve readability
+- Override aesthetic ratios when content demands it
+
+**Aspect ratios are preferences, not laws.**
+
+---
+
+### 3. Height Resolution Algorithm (Final)
+
+Block height is resolved deterministically using the following priority chain:
+
+#### Priority 1 — Intrinsic Media Authority (Unstoppable Bullet)
+
+**If any Cell contains:**
+- Image Element
+- Mode = SET / Intrinsic
+
+**Then:**
+- Block height is resolved from that image's aspect ratio
+- All other Cells stretch to match
+- Typography scales within that height
+- If typography reaches minimums and still doesn't fit → Block height increases further
+
+**Intrinsic media never causes truncation.**
+
+---
+
+#### Priority 2 — Block Aspect Ratio (Soft Constraint)
+
+**If:**
+- No intrinsic media exists
+- A Block aspect ratio is defined
+
+**Then:**
+- Initial Block height = width × ratio
+- This height may increase if text, charts, or tables require more space
+
+**Aspect ratios never override readability.**
+
+---
+
+#### Priority 3 — Readability Enforcement (Hard Constraint)
+
+**If any Element:**
+- Reaches minimum font size
+- Still cannot fit vertically
+
+**Then:**
+- Block height must increase
+- Units and layout remain intact
+- All Cells re-align to new height
+
+**This guarantees typographic integrity.**
+
+---
+
+#### Priority 4 — Structural Failure
+
+**If Block height increase would:**
+- Break a template constraint
+- Violate report maximum height rules
+
+**Then:**
+- Editor must split the Block
+- If split is not possible → publishing is blocked
+
+**Silent failure is forbidden.**
+
+---
+
+### 4. Unified Typography (Final Scope Locked)
+
+#### 4.1 Block Typography Contract
+
+Each Block computes exactly one value:
+
+**`--block-base-font-size`**
+
+This value applies to:
+- ✅ Text Elements (base)
+- ✅ Markdown headings (H1/H2/H3 via em multipliers)
+- ✅ Chart labels
+- ✅ Chart legends
+- ✅ Table headers and cells
+- ✅ Descriptions / captions
+
+#### 4.2 Explicit Exemption
+
+- ❌ **KPI value only**
+  - (KPI label + description still participate unless later exempted)
+
+**This ensures:**
+- Visual rhythm
+- Horizontal alignment
+- No typographic "noise"
+
+---
+
+### 5. Element-Specific Enforcement (No Scroll Edition)
+
+#### 5.1 Text Element (Markdown)
+
+**Rules:**
+- Text must fully fit
+- Font size scales down only to minimum
+- If still not fitting → Block height increases
+- If Block height increase violates constraints → Block split
+
+**There is no truncation mode.**
+**There is no "summary text" shortcut.**
+**Text either fits or the structure adapts.**
+
+---
+
+#### 5.2 KPI Element
+
+- KPI value scales independently
+- KPI label participates in block typography
+- Description is optional but must still fit
+
+**If a KPI cannot fit at minimum sizes → validation failure**
+(KPIs are designed to be concise)
+
+---
+
+#### 5.3 Pie Element
+
+- Pie radius has a minimum
+- Legends must fit without scroll
+- **Allowed actions:**
+  - Reflow legend position
+  - Reduce legend count via aggregation (Top-N + Other)
+  - Increase Block height
+
+**If still not fitting → Block height increase**
+**If height cannot increase → Block split**
+
+---
+
+#### 5.4 Bar Element
+
+- Orientation may change (vertical ↔ horizontal)
+- Label density may reduce
+- Block height may increase
+
+**Bars never scroll.**
+**Bars never truncate values.**
+
+---
+
+#### 5.5 Table Element (Critical Clarification)
+
+**A Table Element is not a full data dump.**
+
+**Rules:**
+- Table must fit fully inside its Cell
+- Row count is bounded by available height
+- If required rows don't fit:
+  - Block height increases
+  - Or Block splits
+  - If neither is allowed → publish blocked
+
+**If someone wants "all rows", that is:**
+- An export
+- A modal
+- A separate page
+
+**Not a report element.**
+
+---
+
+#### 5.6 Image Element
+
+- `cover` → Cell governs
+- `setIntrinsic` → Image governs Block height
+- No cropping in `setIntrinsic`
+- No scroll in any mode
+
+---
+
+### 6. Editor Obligations (Now Mandatory)
+
+To support this policy, the editor must:
+
+#### 6.1 Prevent Invalid States
+
+- Disallow saving Blocks that cannot resolve height
+- Surface clear errors:
+  - "Text exceeds readable bounds"
+  - "Table cannot fit without split"
+  - "Conflicting intrinsic media"
+
+#### 6.2 Provide Deterministic Controls
+
+- Block aspect ratio (optional)
+- Cell image mode (cover / setIntrinsic)
+- Maximum Block height constraints (if any)
+- Preview that shows actual resolved height, not optimistic layout
+
+**If the editor allows invalid layouts, the design system is not enforced.**
+
+---
+
+### 7. Why This Is Now Rock Solid
+
+With:
+- No scroll
+- No truncation
+- Unified typography
+- Explicit height precedence
+- Structural change as the only escape hatch
+
+You now have:
+- Predictable layouts
+- Honest reports (no hidden data)
+- A system AI agents can reason about
+- Zero "but it worked on my screen" arguments
+
+**This is how newspapers, financial terminals, and serious reporting tools think — not dashboards that cheat.**
+
+---
+
+### Final CXO Statement
+
+At this point:
+- The naming is closed
+- The hierarchy is closed
+- The conflict resolution rules are closed
+
+**This is no longer a UI system.**
+**It's a layout grammar.**
+
+---
+
 ## Core Principles
 
 ### 1. Consistency First
@@ -29,14 +323,15 @@ This document outlines a comprehensive design system for the MessMass report ren
 - Spacing, alignment, and sizing must follow unified rules
 
 ### 2. Vertical Alignment
-- **CRITICAL RULE:** All chart elements must be vertically centered in their allocated space
+- **CRITICAL RULE:** All chart elements must be vertically and horizontally centered in their allocated space
 - Title, content, legends, descriptions must align to the middle vertically
-- Same-type elements (titles to titles, icons to icons) must align horizontally across charts in the same block
+- Same-type elements (titles to titles, icons to icons) must align horizontally across same charts in the same block
 
 ### 3. Responsive Scaling
 - Font sizes must scale proportionally to available space
 - Charts must maintain aspect ratios and readability at all sizes
 - Container queries are the primary mechanism for responsive scaling
+- **CRITICAL:** Scaling down has minimum limits - if content doesn't fit at minimum, Block height must increase (see Section 0)
 
 ### 4. Content-First Design
 - Content determines layout, not arbitrary rules
@@ -44,9 +339,11 @@ This document outlines a comprehensive design system for the MessMass report ren
 - Charts should adapt to content, not force content into fixed sizes
 
 ### 5. Unified Font Sizing
-- All text charts in a block must use the same font-size
+- **CRITICAL:** Each Block computes exactly one `--block-base-font-size` value
+- This applies to: Text Elements, Markdown headings, Chart labels, Chart legends, Table headers/cells, Descriptions
+- **Exemption:** KPI values scale independently (KPI labels/descriptions still participate)
 - Font-size is calculated to fit the largest content
-- One chart fits maximally, all others use the same size
+- If content doesn't fit at minimum font-size → Block height increases (see Section 0)
 
 ---
 
@@ -507,6 +804,9 @@ font-size: clamp(min, responsive-value, max);
 5. **Don't Ignore Mobile:** Always test mobile view
 6. **Don't Break Ratios:** Maintain consistent proportions
 7. **Don't Override Globally:** Use specific selectors
+8. **⚠️ NEVER USE SCROLLING:** No `overflow: auto`, `overflow: scroll`, or scrollable containers
+9. **⚠️ NEVER USE TRUNCATION:** No `text-overflow: ellipsis`, `line-clamp`, or hidden overflow
+10. **⚠️ NEVER SILENTLY FAIL:** If content doesn't fit, increase height or split Block - never hide content
 
 ---
 
@@ -523,8 +823,10 @@ font-size: clamp(min, responsive-value, max);
 - [ ] Font sizes scale correctly
 - [ ] Charts maintain aspect ratios
 - [ ] No horizontal overflow
-- [ ] Content scrolls when needed
+- [ ] **NO SCROLLING:** Content fits or Block height increases
+- [ ] **NO TRUNCATION:** All content visible, no ellipsis
 - [ ] Mobile layout works correctly
+- [ ] Block height increases when content doesn't fit at minimum font-size
 
 ### Alignment
 - [ ] All content vertically centered
