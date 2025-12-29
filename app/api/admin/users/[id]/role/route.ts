@@ -19,6 +19,7 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
   try {
     // WHAT: Check if current user is superadmin
     // WHY: Only superadmins can change roles
@@ -38,7 +39,8 @@ export async function PUT(
     }
     
     // WHAT: Await params (Next.js 15 requirement)
-    const { id } = await context.params;
+    const paramsResolved = await context.params;
+    id = paramsResolved.id;
     const body = await request.json();
     const { newRole } = body as { newRole: UserRole };
     
