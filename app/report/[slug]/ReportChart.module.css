@@ -23,6 +23,8 @@
   overflow: hidden; /* WHAT: Prevent content overflow */
   /* TEST: Intentional violation for CI test - will be removed in next commit */
   overflow: auto; /* FORBIDDEN: Testing CI guardrail - this should cause CI to fail */
+  /* TEST: Intentional violation for CI test - will be removed in next commit */
+  overflow: auto; /* FORBIDDEN: Testing CI guardrail - this should cause CI to fail */
   box-sizing: border-box !important;
   /* Enable container queries for inner scaling (width + height) */
   container-type: size;
