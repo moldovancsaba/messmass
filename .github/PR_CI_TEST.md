@@ -11,13 +11,13 @@
 - **File:** `app/report/[slug]/ReportChart.module.css`
 - **Change:** Added `overflow: auto;` (forbidden pattern)
 - **Expected:** CI should fail with layout-grammar-guardrail error
-- **Commit:** `[commit-hash-1]` - test: Add forbidden CSS violation to test CI guardrail
+- **Commit:** See git log for hash - test: Add forbidden CSS violation to test CI guardrail
 
 ### Commit 2: Remove Violation (CI Should Pass)
 - **File:** `app/report/[slug]/ReportChart.module.css`
 - **Change:** Removed `overflow: auto;`
 - **Expected:** CI should pass
-- **Commit:** `[commit-hash-2]` - test: Remove forbidden CSS violation - CI should pass
+- **Commit:** See git log for hash - test: Remove forbidden CSS violation - CI should pass
 
 ---
 
