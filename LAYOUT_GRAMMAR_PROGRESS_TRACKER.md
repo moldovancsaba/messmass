@@ -1,11 +1,6 @@
 # Layout Grammar Implementation Progress Tracker
 
 **Version:** 1.0.0  
-<<<<<<< HEAD
-**Created:** 2025-01-XX  
-**Last Updated:** 2025-01-XX  
-**Status:** Phase 0 In Progress
-=======
 **Created:** 2025-05-09T15:42:54+02:00  
 **Last Updated:** 2025-12-31T10:50:58+01:00  
 **Status:** Phase 3 Complete → Phase 4 In Progress
@@ -133,7 +128,6 @@ A change is “done” only when it is:
 **Rule:** Do not start any Task 2.x until Tasks 0.4–0.6 are complete.
 
 — Chappie
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
@@ -141,17 +135,6 @@ A change is “done” only when it is:
 
 | Phase | Status | Progress | Started | Completed |
 |-------|--------|----------|---------|-----------|
-<<<<<<< HEAD
-| Phase 0: Security Hardening Prerequisites | 🟡 In Progress | 2/6 tasks | 2025-01-XX | - |
-| Phase 1: Foundation & Core Infrastructure | ⚪ Not Started | 0/4 tasks | - | - |
-| Phase 2: Height Resolution System | ⚪ Not Started | 0/3 tasks | - | - |
-| Phase 3: Unified Typography System | ⚪ Not Started | 0/3 tasks | - | - |
-| Phase 4: Element-Specific Enforcement | ⚪ Not Started | 0/4 tasks | - | - |
-| Phase 5: Editor Integration | ⚪ Not Started | 0/3 tasks | - | - |
-| Phase 6: Migration & Validation | ⚪ Not Started | 0/3 tasks | - | - |
-
-**Overall Progress:** 2/26 tasks (7.7%)
-=======
 | Phase 0: Security Hardening Prerequisites | ✅ Complete | 8/8 tasks | 2025-12-30T23:41:27+01:00 | 100% |
 | Phase 1: Foundation & Core Infrastructure | ✅ Complete | 4/4 tasks | Task 1.4 complete | 100% |
 | Phase 2: Height Resolution System | ✅ Complete | 3/3 tasks | Task 2.3 complete | 100% |
@@ -195,22 +178,14 @@ A change is “done” only when it is:
 - **Status:** ✅ **COMPLETE** (2025-12-31T11:00:00+01:00)
 - **Commits:** `ce71cb91a48db751ada1c98896680335dbff54a8` - docs(governance): GOV-2 - Wire DoD Profiles into workflow
 - **Completed By:** Cursora
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 0: Security Hardening Prerequisites ⚠️ **MUST COMPLETE FIRST**
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-**Dependencies:** None  
-**Priority:** 🔴 **CRITICAL**  
-**Status:** 🟡 In Progress (2/6 tasks)
-=======
 **Dependencies:** None  
 **Priority:** 🔴 **CRITICAL**  
 **Status:** ✅ Complete (8/8 tasks)
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ### Task 0.1: Secure Markdown Rendering
 - [x] Verify all `dangerouslySetInnerHTML` uses sanitization
@@ -218,11 +193,7 @@ A change is “done” only when it is:
 - [x] Ensure DOMPurify is applied to all HTML output
 - [x] Remove any unsafe `dangerouslySetInnerHTML` usage
 - [x] Test XSS prevention
-<<<<<<< HEAD
-- **Status:** ✅ **COMPLETE** (2025-01-XX)
-=======
 - **Status:** ✅ **COMPLETE** (2025-12-29T21:20:11+01:00)
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 - **Commit:** `dc9a3ed` - feat(phase0): Secure markdown rendering - Task 0.1 complete
 
 ### Task 0.2: Input Validation Framework
@@ -234,42 +205,6 @@ A change is “done” only when it is:
 - [x] Implement `validateCellConfiguration()`
 - [x] Implement `validateBlockCells()`
 - [x] Add security validation (XSS pattern detection)
-<<<<<<< HEAD
-- **Status:** ✅ **COMPLETE** (2025-01-XX)
-- **Commit:** `2c7d289` - feat(phase0): Input validation framework - Task 0.2 complete
-
-### Task 0.3: Remove Deprecated Code
-- [ ] Find all imports of `DynamicChart.tsx`
-- [ ] Update all imports to use `ReportChart.tsx`
-- [ ] Remove `components/DynamicChart.tsx`
-- [ ] Verify no legacy code references remain
-- [ ] Test build passes
-- **Status:** ⚪ **PENDING**
-
-### Task 0.4: Design Token Migration Foundation
-- [ ] Audit all hardcoded values in layout grammar code
-- [ ] Create CSS custom properties for layout grammar
-- [ ] Replace hardcoded values with design tokens
-- [ ] Remove inline styles from layout grammar code
-- [ ] Test theme changes work correctly
-- **Status:** ⚪ **PENDING**
-
-### Task 0.5: Type Safety Foundation
-- [ ] Create `lib/layoutGrammarTypes.ts`
-- [ ] Define all TypeScript interfaces (no `any` types)
-- [ ] Add runtime type validation where needed
-- [ ] Export all types for use across codebase
-- [ ] Verify TypeScript strict mode passes
-- **Status:** ⚪ **PENDING**
-
-### Task 0.6: Testing Infrastructure
-- [ ] Set up testing framework (Jest/Vitest)
-- [ ] Create test utilities (`createMockBlock`, etc.)
-- [ ] Add security test helpers
-- [ ] Add visual regression test setup
-- [ ] Configure CI/CD integration
-- **Status:** ⚪ **PENDING**
-=======
 - **Status:** ✅ **COMPLETE** (2025-12-29T21:25:20+01:00)
 - **Commit:** `2c7d289` - feat(phase0): Input validation framework - Task 0.2 complete
 
@@ -351,58 +286,11 @@ A change is “done” only when it is:
 - **Status:** ✅ **COMPLETE** (2025-12-29T21:51:18+01:00)
 - **Commits:** `6a9ba12` (2025-12-29T21:51:03+01:00), `8fea27e` (2025-12-29T21:51:18+01:00) - feat(phase0): Dependency Guardrail complete - Task 0.8
 - **Completed By:** Cursora
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 1: Foundation & Core Infrastructure
 
-<<<<<<< HEAD
-**Duration:** 1-2 weeks  
-**Dependencies:** Phase 0 complete  
-**Status:** ⚪ Not Started (0/4 tasks)
-
-### Task 1.1: Create Layout Grammar Core Module
-- [ ] Create `lib/layoutGrammar.ts`
-- [ ] Define `HeightResolutionPriority` enum
-- [ ] Define `BlockHeightResolution` interface
-- [ ] Define `ElementFitValidation` interface
-- [ ] Define `BlockTypography` interface
-- [ ] Define `SecurityFlags` interface
-- [ ] Ensure no `any` types
-- [ ] Export all types
-- **Status:** ⚪ **PENDING**
-
-### Task 1.2: Create Height Resolution Engine
-- [ ] Create `lib/heightResolutionEngine.ts`
-- [ ] Implement `resolveBlockHeight()` function
-- [ ] Implement `checkIntrinsicMedia()` function
-- [ ] Implement `calculateFromAspectRatio()` function
-- [ ] Implement `enforceReadability()` function
-- [ ] Add unit tests for each priority
-- [ ] Handle edge cases
-- **Status:** ⚪ **PENDING**
-
-### Task 1.3: Create Element Fit Validator
-- [ ] Create `lib/elementFitValidator.ts`
-- [ ] Implement `validateTextElementFit()`
-- [ ] Implement `validateTableElementFit()`
-- [ ] Implement `validatePieElementFit()`
-- [ ] Implement `validateBarElementFit()`
-- [ ] Add unit tests for each element type
-- [ ] Handle edge cases
-- **Status:** ⚪ **PENDING**
-
-### Task 1.4: Remove All Scrolling/Truncation Code
-- [ ] Find all `overflow: auto` or `overflow: scroll` in chart CSS
-- [ ] Find all `text-overflow: ellipsis` (except allowed cases)
-- [ ] Find all `line-clamp` (except title max 2 lines)
-- [ ] Remove all scrolling/truncation code
-- [ ] Update CSS to remove overflow properties
-- [ ] Test no scrolling occurs
-- [ ] Document all changes
-- **Status:** ⚪ **PENDING**
-=======
 **Dependencies:** Tasks 0.1, 0.2, 0.7, 0.8 complete (guardrails/security)
 **Status:** ✅ Complete (4/4 tasks)
 
@@ -466,47 +354,11 @@ A change is “done” only when it is:
 - **Note:** Decorative masking isolated to non-content layers; no content clipping. All `overflow: hidden` removed from content containers (`.chart:not(.image)`, `.pieChartContainer`, `.kpiCard`). Only decorative mask layers (image rounded corners) retain `overflow: hidden` with explicit comment.
 - **Visual QA:** Code review completed - no corner bleed issues identified. Pie chart canvas constrained to 90% with flexbox centering. Bar chart fills have matching border-radius with track. KPI values constrained by container width + padding. All elements properly contained within parent bounds.
 - **Future Note:** If Chart.js options/plugins change (hoverOffset, shadows, external tooltips), re-run bleed QA and keep painting bounded.
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 2: Height Resolution System
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-**Dependencies:** Phase 1 complete  
-**Status:** ⚪ Not Started (0/3 tasks)
-
-### Task 2.1: Integrate Height Resolution into Block Calculator
-- [ ] Update `lib/blockHeightCalculator.ts`
-- [ ] Replace current height calculation with new resolution engine
-- [ ] Implement priority chain (1-4)
-- [ ] Handle intrinsic media authority
-- [ ] Handle aspect ratio
-- [ ] Handle readability enforcement
-- [ ] Maintain backward compatibility
-- [ ] Add new API for editor
-- **Status:** ⚪ **PENDING**
-
-### Task 2.2: Update ReportContent to Use New Resolution
-- [ ] Update `app/report/[slug]/ReportContent.tsx`
-- [ ] Use new height resolution engine
-- [ ] Handle resolution results (height increase, split required)
-- [ ] Apply resolved heights to blocks
-- [ ] Show split suggestions when needed
-- [ ] Test no visual regressions
-- **Status:** ⚪ **PENDING**
-
-### Task 2.3: Implement Intrinsic Media Authority
-- [ ] Extend `lib/heightResolutionEngine.ts`
-- [ ] Detect image elements with `setIntrinsic` mode
-- [ ] Calculate height from image aspect ratio
-- [ ] Apply to entire block
-- [ ] Handle multiple images (use largest)
-- [ ] Test intrinsic images govern block height
-- [ ] Test typography scales within that height
-- **Status:** ⚪ **PENDING**
-=======
 **Dependencies:** Phase 1 complete  
 **Status:** ✅ Complete (3/3 tasks, 100%)
 
@@ -567,44 +419,11 @@ A change is “done” only when it is:
   - Implemented constraint clamping: if Priority 1 clamped, check readability and trigger Priority 3/4 if needed
   - Added comprehensive tests: single image, multiple images (max governs), clamping behavior, Priority 3 fallback
   - All tests pass (30/30), all CI checks pass
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 3: Unified Typography System
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-**Dependencies:** Phase 2 complete  
-**Status:** ⚪ Not Started (0/3 tasks)
-
-### Task 3.1: Create Block Typography Calculator
-- [ ] Create `lib/blockTypographyCalculator.ts`
-- [ ] Implement `calculateBlockBaseFontSize()`
-- [ ] Implement `calculateOptimalFontSizeForElement()`
-- [ ] Calculate for all element types (text, labels, legends, tables)
-- [ ] Find minimum of all optimal sizes
-- [ ] Apply as `--block-base-font-size`
-- [ ] Add unit tests
-- **Status:** ⚪ **PENDING**
-
-### Task 3.2: Apply Unified Typography via CSS Custom Property
-- [ ] Update `app/report/[slug]/ReportContent.tsx`
-- [ ] Calculate block typography
-- [ ] Apply `--block-base-font-size` CSS custom property
-- [ ] Ensure all elements inherit/use this value
-- [ ] Test visual consistency across block
-- **Status:** ⚪ **PENDING**
-
-### Task 3.3: Update CSS to Use Unified Typography
-- [ ] Update `app/report/[slug]/ReportChart.module.css`
-- [ ] Update all font-size declarations to use `--block-base-font-size`
-- [ ] Remove individual font-size calculations
-- [ ] Ensure KPI values remain independent
-- [ ] Add fallback values
-- [ ] Test no visual regressions
-- **Status:** ⚪ **PENDING**
-=======
 **Dependencies:** Phase 2 complete  
 **Status:** ✅ Complete (3/3 tasks, 100%)
 
@@ -640,61 +459,11 @@ A change is “done” only when it is:
 - **Status:** ✅ **COMPLETE** (2025-12-31T14:41:29+01:00)
 - **Commits:** `22d2071` - feat(phase3): Task 3.3 - CSS Migration to Unified Typography
 - **Completed By:** Cursora
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 4: Element-Specific Enforcement
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-**Dependencies:** Phase 3 complete  
-**Status:** ⚪ Not Started (0/4 tasks)
-
-### Task 4.1: Text Element Enforcement
-- [ ] Update `lib/elementFitValidator.ts`
-- [ ] Update `app/report/[slug]/ReportChart.tsx`
-- [ ] Validate text fits at current font-size
-- [ ] Increase block height if not fitting
-- [ ] Require block split if height can't increase
-- [ ] Test text always fits
-- [ ] Test no truncation or scrolling
-- **Status:** ⚪ **PENDING**
-
-### Task 4.2: Table Element Enforcement
-- [ ] Update `lib/elementFitValidator.ts`
-- [ ] Update `app/report/[slug]/ReportChart.tsx`
-- [ ] Validate table fits with all required rows
-- [ ] Enforce row count limits
-- [ ] Increase block height if needed
-- [ ] Require block split if height can't increase
-- [ ] Test tables always fit fully
-- [ ] Test no scrolling
-- **Status:** ⚪ **PENDING**
-
-### Task 4.3: Pie Element Enforcement
-- [ ] Update `lib/elementFitValidator.ts`
-- [ ] Update `app/report/[slug]/ReportChart.tsx`
-- [ ] Validate pie chart and legend fit
-- [ ] Enforce minimum pie radius
-- [ ] Ensure legend fits without scroll
-- [ ] Implement reflow (horizontal to vertical)
-- [ ] Implement aggregation (Top-N + Other)
-- [ ] Test pie radius has minimum
-- [ ] Test legends fit without scroll
-- **Status:** ⚪ **PENDING**
-
-### Task 4.4: Bar Element Enforcement
-- [ ] Update `lib/elementFitValidator.ts`
-- [ ] Update `app/report/[slug]/ReportChart.tsx`
-- [ ] Validate bars fit in orientation
-- [ ] Change orientation if needed (vertical ↔ horizontal)
-- [ ] Reduce label density if needed
-- [ ] Increase block height if needed
-- [ ] Test bars always fit
-- [ ] Test no scrolling or truncation
-- **Status:** ⚪ **PENDING**
-=======
 **Dependencies:** Phase 3 complete  
 **Status:** 🟡 In Progress (2/4 tasks)
 
@@ -772,48 +541,11 @@ A change is “done” only when it is:
   - Orientation change supports horizontal (default) and vertical (alternative) layouts
   - Density reduction applies Top-5 bars (no data loss, remaining bars hidden - bars are categorical, not summable)
   - All tests passing (40/41 - one test has known issue with very small containers, safety check ensures actions are always returned); Layout Grammar guardrail passes (0 violations); Build passes
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 5: Editor Integration
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-**Dependencies:** Phase 4 complete  
-**Status:** ⚪ Not Started (0/3 tasks)
-
-### Task 5.1: Create Editor Validation API
-- [ ] Create `lib/editorValidation.ts`
-- [ ] Implement `validateBlockConfiguration()`
-- [ ] Check if content fits
-- [ ] Return clear error messages
-- [ ] Suggest fixes (height increase, split)
-- [ ] Add unit tests
-- **Status:** ⚪ **PENDING**
-
-### Task 5.2: Integrate Validation into Chart Builder
-- [ ] Update `components/ChartAlgorithmManager.tsx`
-- [ ] Update `components/BuilderMode.tsx`
-- [ ] Validate blocks on save
-- [ ] Show errors in UI
-- [ ] Prevent saving invalid configurations
-- [ ] Show height resolution preview
-- [ ] Add "Split Block" button when needed
-- [ ] Add "Increase Height" button when possible
-- **Status:** ⚪ **PENDING**
-
-### Task 5.3: Add Block Configuration Controls
-- [ ] Create or update `components/BlockEditor.tsx`
-- [ ] Add block aspect ratio selector
-- [ ] Add maximum block height constraint
-- [ ] Add image mode selector (cover / setIntrinsic)
-- [ ] Add height resolution preview
-- [ ] Test all controls available
-- [ ] Test changes reflected in preview
-- [ ] Test validation runs on change
-- **Status:** ⚪ **PENDING**
-=======
 **Dependencies:** Phase 4 complete  
 **Status:** ✅ **COMPLETE** (3/3 tasks) - Re-implemented after non-destructive security incident; fully integrated with existing Layout Grammar engine
 
@@ -879,16 +611,11 @@ A change is “done” only when it is:
   - All controls map only to allowed mechanisms (aspect ratio, max height, image mode)
   - All configuration changes trigger validation (never bypass validation)
   - Re-implemented after non-destructive security incident; fully integrated with existing Layout Grammar engine
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ---
 
 ## Phase 6: Migration & Validation
 
-<<<<<<< HEAD
-**Duration:** 1 week  
-=======
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 **Dependencies:** All phases complete  
 **Status:** ⚪ Not Started (0/3 tasks)
 
@@ -896,11 +623,7 @@ A change is “done” only when it is:
 - [ ] Create `scripts/migrate-reports-to-layout-grammar.ts`
 - [ ] Load all report configurations
 - [ ] Validate each block
-<<<<<<< HEAD
-- [ ] Fix violations (remove scrolling, adjust heights)
-=======
 - [ ] Fix violations (remove scrolling/truncation/clipping, adjust heights, enforce table max 17 rows with aggregation)
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 - [ ] Update font-size calculations
 - [ ] Generate migration report
 - [ ] Test no data loss
@@ -989,14 +712,8 @@ A change is “done” only when it is:
 ### Functional (Layout Grammar Compliance)
 - [ ] No scrolling in any chart type
 - [ ] No truncation in any chart type
-<<<<<<< HEAD
-- [ ] No line clamping (except title max 2 lines)
-- [ ] No ellipsis (except title max 2 lines)
-- [ ] No hidden overflow
-=======
 - [ ] No hidden overflow
 - [ ] No clipping (no `overflow: hidden` on content layers)
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 - [ ] Block height resolves deterministically (4-priority algorithm)
 - [ ] Unified typography works correctly (`--block-base-font-size`)
 - [ ] KPI values scale independently (explicit exemption)
@@ -1043,42 +760,24 @@ A change is “done” only when it is:
 ## Notes & Issues
 
 ### Completed Tasks
-<<<<<<< HEAD
-- **Task 0.1** (2025-01-XX): Secure markdown rendering complete. All `dangerouslySetInnerHTML` uses sanitized, CSP headers added.
-- **Task 0.2** (2025-01-XX): Input validation framework complete. Comprehensive validation functions created.
-=======
 - **Task 0.1** (2025-12-29T21:20:11+01:00): Secure markdown rendering complete. All `dangerouslySetInnerHTML` uses sanitized, CSP headers added. **Completed By:** Cursora
 - **Task 0.2** (2025-12-29T21:25:20+01:00): Input validation framework complete. Comprehensive validation functions created. **Completed By:** Cursora
 - **Task 0.7** (2025-12-29T21:45:35+01:00): CI guardrail complete. Script, workflow, and documentation created. Tested locally - correctly detects violations. **Completed By:** Cursora
 - **Task 0.8** (2025-12-29T21:51:18+01:00): Dependency guardrail complete. Script, CI workflow, and documentation created. All current dependencies pass. **Completed By:** Cursora
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 
 ### Current Issues
 - None
 
 ### Blockers
-<<<<<<< HEAD
-- None
-
-### Decisions Made
-- CSP headers allow `unsafe-inline` for styles (required for CSS custom properties/design tokens)
-- CSP headers allow `unsafe-inline` for scripts (required for Next.js)
-=======
 - None (Governance lock-in complete - Phase 3 work can proceed)
 
 ### Decisions Made
 - CSP uses nonces/hashes for inline scripts where unavoidable; avoid `unsafe-inline` for scripts
 - CSS custom properties do not require `unsafe-inline`; keep styles policy strict and token-driven
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
 - Input validation uses machine-readable error codes for programmatic handling
 
 ---
 
-<<<<<<< HEAD
-**Last Updated:** 2025-01-XX  
-**Next Review:** After each task completion
-
-=======
 **Last Updated:** 2026-01-01T02:17:05+01:00  
 **Updated By:** Cursora  
 **Next Review:** After each task completion
@@ -1387,4 +1086,3 @@ A change is “done” only when it is:
 ### Notes from Sultan
 - (Add notes here when Sultan provides guidance or decisions)
 
->>>>>>> 5d912005 (docs: Add Phase 5 canonical status and redact audit doc credentials)
