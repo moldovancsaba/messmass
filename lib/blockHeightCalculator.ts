@@ -2,8 +2,10 @@
 // WHAT: Deterministic block height solver per spec v2.0
 // WHY: All cells in a block share the same height H while respecting image aspect ratios
 
-import type { BlockLayoutInput, BlockLayoutResult, CellConfiguration } from './blockLayoutTypes';
+import type { BlockLayoutInput, BlockLayoutResult, CellConfiguration as BaseCellConfiguration } from './blockLayoutTypes';
 import { getAspectRatioValue } from './aspectRatioResolver';
+import type { HeightResolutionInput, BlockHeightResolution, CellConfiguration } from './layoutGrammar';
+import { HeightResolutionPriority } from './layoutGrammar';
 
 /**
  * WHAT: Solve block height (H) using deterministic formula from spec
@@ -21,7 +23,7 @@ import { getAspectRatioValue } from './aspectRatioResolver';
  * @param blockWidthPx - Total block width (e.g., 1200px)
  * @returns Calculated block height in pixels
  */
-export function solveBlockHeightWithImages(cells: CellConfiguration[], blockWidthPx: number): number {
+export function solveBlockHeightWithImages(cells: BaseCellConfiguration[], blockWidthPx: number): number {
   if (cells.length === 0) {
     console.warn('[BlockHeightCalculator] No cells in block');
     return 360;
@@ -129,5 +131,122 @@ export function calculateBlockLayout(input: BlockLayoutInput): BlockLayoutResult
     blockHeightPx: H,
     syncedFonts: { titlePx: 18, subtitlePx: 14 }, // actual sync computed elsewhere
     cells: cellSizes,
+  };
+}
+
+/**
+ * WHAT: Resolve block height with detailed resolution information
+ * WHY: Editor validation API needs priority, reason, and constraints
+ * HOW: Thin wrapper over solveBlockHeightWithImages that returns BlockHeightResolution
+ * 
+ * @param input - Height resolution input with cells, constraints, and metadata
+ * @returns Block height resolution with priority, reason, and height
+ */
+export function resolveBlockHeightWithDetails(input: HeightResolutionInput): BlockHeightResolution {
+  const { cells, blockWidth, blockAspectRatio, maxAllowedHeight } = input;
+  
+  // Convert extended CellConfiguration to base CellConfiguration for solver
+  const baseCells: BaseCellConfiguration[] = cells.map(cell => ({
+    chartId: cell.chartId,
+    cellWidth: cell.cellWidth,
+    bodyType: cell.bodyType,
+    aspectRatio: cell.aspectRatio,
+    title: cell.title,
+    subtitle: cell.subtitle
+  }));
+  
+  // Calculate base height using existing solver
+  let heightPx = solveBlockHeightWithImages(baseCells, blockWidth);
+  
+  // Check for intrinsic media (Priority 1)
+  const hasIntrinsicMedia = cells.some(cell => 
+    cell.bodyType === 'image' && cell.imageMode === 'setIntrinsic'
+  );
+  
+  if (hasIntrinsicMedia) {
+    // Calculate height from intrinsic aspect ratio
+    const intrinsicImages = cells.filter(cell => 
+      cell.bodyType === 'image' && cell.imageMode === 'setIntrinsic'
+    );
+    
+    // Use the largest required height from intrinsic images
+    let maxIntrinsicHeight = 0;
+    for (const img of intrinsicImages) {
+      const aspectRatio = getAspectRatioValue(img.aspectRatio || '16:9');
+      const intrinsicHeight = blockWidth / aspectRatio;
+      maxIntrinsicHeight = Math.max(maxIntrinsicHeight, intrinsicHeight);
+    }
+    
+    if (maxIntrinsicHeight > 0) {
+      heightPx = Math.round(maxIntrinsicHeight);
+    }
+    
+    // Apply maxAllowedHeight constraint if provided
+    if (maxAllowedHeight !== undefined && heightPx > maxAllowedHeight) {
+      heightPx = maxAllowedHeight;
+      return {
+        heightPx,
+        priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
+        reason: 'Intrinsic media height clamped by maxAllowedHeight constraint',
+        canIncrease: false,
+        requiresSplit: true
+      };
+    }
+    
+    return {
+      heightPx,
+      priority: HeightResolutionPriority.INTRINSIC_MEDIA,
+      reason: 'Height driven by intrinsic image aspect ratio',
+      canIncrease: maxAllowedHeight === undefined || heightPx < maxAllowedHeight,
+      requiresSplit: false
+    };
+  }
+  
+  // Check for block aspect ratio (Priority 2)
+  if (blockAspectRatio && !blockAspectRatio.isSoftConstraint) {
+    const aspectRatio = getAspectRatioValue(blockAspectRatio.ratio);
+    const aspectHeight = blockWidth / aspectRatio;
+    heightPx = Math.round(aspectHeight);
+    
+    // Apply maxAllowedHeight constraint if provided
+    if (maxAllowedHeight !== undefined && heightPx > maxAllowedHeight) {
+      heightPx = maxAllowedHeight;
+      return {
+        heightPx,
+        priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
+        reason: 'Block aspect ratio height clamped by maxAllowedHeight constraint',
+        canIncrease: false,
+        requiresSplit: true
+      };
+    }
+    
+    return {
+      heightPx,
+      priority: HeightResolutionPriority.BLOCK_ASPECT_RATIO,
+      reason: `Height driven by block aspect ratio ${blockAspectRatio.ratio}`,
+      canIncrease: maxAllowedHeight === undefined || heightPx < maxAllowedHeight,
+      requiresSplit: false
+    };
+  }
+  
+  // Default: Readability enforcement (Priority 3)
+  // Apply maxAllowedHeight constraint if provided
+  if (maxAllowedHeight !== undefined && heightPx > maxAllowedHeight) {
+    heightPx = maxAllowedHeight;
+    return {
+      heightPx,
+      priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
+      reason: 'Calculated height clamped by maxAllowedHeight constraint',
+      canIncrease: false,
+      requiresSplit: true
+    };
+  }
+  
+  return {
+    heightPx,
+    priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
+    reason: 'Height calculated from cell distribution',
+    canIncrease: maxAllowedHeight === undefined || heightPx < maxAllowedHeight,
+    requiresSplit: false
   };
 }
