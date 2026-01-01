@@ -1,0 +1,169 @@
+/**
+ * Editor Validation API
+ * 
+ * Provides editor-facing API for block validation and height resolution.
+ * This API is deterministic and testable (no DOM access).
+ * 
+ * @module editorValidationAPI
+ */
+
+import { resolveBlockHeightWithDetails } from './blockHeightCalculator';
+import type { BlockHeightResolution, HeightResolutionInput, CellConfiguration } from './layoutGrammar';
+import { validateElementFit } from './elementFitValidator';
+import type { ElementFitValidation } from './layoutGrammar';
+
+// Re-export types from layout grammar for editor use
+export type HeightResolutionResult = BlockHeightResolution;
+export type { ElementFitValidation } from './layoutGrammar';
+
+export interface BlockValidationResult {
+  blockId: string;
+  heightResolution: HeightResolutionResult;
+  elementValidations: ElementFitValidation[];
+  publishBlocked: boolean;
+  publishBlockReason?: string;
+  requiredActions: Array<'reflow' | 'aggregate' | 'increaseHeight' | 'splitBlock'>;
+}
+
+export interface EditorBlockInput {
+  blockId: string;
+  cells: Array<{
+    chartId: string;
+    elementType: 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image';
+    width?: number;
+    contentMetadata?: Record<string, unknown>;
+    imageMode?: 'cover' | 'setIntrinsic';
+  }>;
+  blockAspectRatio?: {
+    ratio: string; // e.g., "16:9"
+    isSoftConstraint: boolean;
+  };
+  maxAllowedHeight?: number;
+}
+
+/**
+ * Validates a single block for editor use
+ * 
+ * @param block - Block configuration from editor
+ * @param blockWidth - Width of the block in pixels
+ * @returns Validation result with height resolution and element fit checks
+ */
+export function validateBlockForEditor(
+  block: EditorBlockInput,
+  blockWidth: number
+): BlockValidationResult {
+  // Convert editor block input to HeightResolutionInput format
+  const cells: CellConfiguration[] = block.cells.map(cell => ({
+    chartId: cell.chartId,
+    bodyType: cell.elementType,
+    cellWidth: cell.width || 1,
+    aspectRatio: cell.elementType === 'image' ? (block.blockAspectRatio?.ratio || '16:9') : undefined,
+    imageMode: cell.imageMode,
+    contentMetadata: cell.contentMetadata
+  }));
+
+  const heightResolutionInput: HeightResolutionInput = {
+    blockId: block.blockId,
+    blockWidth,
+    cells,
+    blockAspectRatio: block.blockAspectRatio,
+    maxAllowedHeight: block.maxAllowedHeight,
+    contentMetadata: block.cells.reduce((acc, cell, idx) => {
+      if (cell.contentMetadata) {
+        acc[idx] = cell.contentMetadata;
+      }
+      return acc;
+    }, {} as Record<number, Record<string, unknown>>)
+  };
+
+  // Call actual height resolution engine
+  const heightResolution = resolveBlockHeightWithDetails(heightResolutionInput);
+
+  // Validate element fit for each cell
+  const elementValidations: ElementFitValidation[] = block.cells.map((cell, index) => {
+    const cellConfig: CellConfiguration = {
+      chartId: cell.chartId,
+      bodyType: cell.elementType,
+      cellWidth: cell.width || 1,
+      aspectRatio: cell.elementType === 'image' ? (block.blockAspectRatio?.ratio || '16:9') : undefined,
+      imageMode: cell.imageMode,
+      contentMetadata: cell.contentMetadata
+    };
+
+    return validateElementFit(cellConfig, heightResolution.heightPx, blockWidth);
+  });
+
+  // Determine required actions and publish blocking
+  const requiredActions: Array<'reflow' | 'aggregate' | 'increaseHeight' | 'splitBlock'> = [];
+  let publishBlocked = false;
+  let publishBlockReason: string | undefined;
+
+  // Check if any element doesn't fit
+  for (const validation of elementValidations) {
+    requiredActions.push(...validation.requiredActions);
+    
+    // If structural failure (Priority 4) or invalid aggregation, block publish
+    if (heightResolution.priority === 4) {
+      publishBlocked = true;
+      publishBlockReason = heightResolution.reason || 'Structural failure';
+    } else if (validation.requiredActions.includes('splitBlock')) {
+      publishBlocked = true;
+      publishBlockReason = 'Element requires block split';
+    }
+  }
+
+  // Remove duplicates from requiredActions
+  const uniqueActions = Array.from(new Set(requiredActions));
+
+  return {
+    blockId: block.blockId,
+    heightResolution,
+    elementValidations,
+    publishBlocked,
+    publishBlockReason,
+    requiredActions: uniqueActions
+  };
+}
+
+/**
+ * Validates multiple blocks for editor use
+ * 
+ * @param blocks - Array of block configurations from editor
+ * @param blockWidth - Width of blocks in pixels
+ * @returns Array of validation results
+ */
+export function validateBlocksForEditor(
+  blocks: EditorBlockInput[],
+  blockWidth: number
+): BlockValidationResult[] {
+  return blocks.map(block => validateBlockForEditor(block, blockWidth));
+}
+
+/**
+ * Checks if blocks can be published (no structural failures)
+ * 
+ * @param validationResults - Results from validateBlocksForEditor
+ * @returns Object indicating publish validity and any blocking reasons
+ */
+export function checkPublishValidity(
+  validationResults: BlockValidationResult[]
+): {
+  canPublish: boolean;
+  blockedBlocks: Array<{
+    blockId: string;
+    reason: string;
+  }>;
+} {
+  const blockedBlocks = validationResults
+    .filter(result => result.publishBlocked)
+    .map(result => ({
+      blockId: result.blockId,
+      reason: result.publishBlockReason || 'Structural failure'
+    }));
+  
+  return {
+    canPublish: blockedBlocks.length === 0,
+    blockedBlocks
+  };
+}
+
