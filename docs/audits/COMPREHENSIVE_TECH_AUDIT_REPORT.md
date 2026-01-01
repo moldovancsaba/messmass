@@ -60,7 +60,7 @@ async function enforcePasswordMigration() {
 ```
 
 **Step 2**: Set `ENABLE_BCRYPT_AUTH=true` immediately in production
-**Step 3**: Audit .env.local — you have `ADMIN_PASSWORD=messmass2025` committed! ⚠️ This must be rotated.
+**Step 3**: Audit .env.local — you have `ADMIN_PASSWORD=[REDACTED]` committed! ⚠️ This must be rotated.
 
 **Risk if Not Fixed**:
 - 🔴 Database breach = complete user compromise
