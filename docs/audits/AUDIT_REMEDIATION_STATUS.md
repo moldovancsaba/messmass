@@ -118,7 +118,7 @@ This tracker is the single source of truth for all **remaining** audit remediati
 - [x] **Feature flag enforcement at startup**: fail fast if required security flags are missing
   - Required: `ENABLE_BCRYPT_AUTH`, `ENABLE_JWT_SESSIONS`, `ENABLE_HTML_SANITIZATION`
   - Output: clear startup error message with remediation
-  - **Commit:** TBD (will add after commit)
+  - **Commit:** `b5ce1f70d` (2026-01-02T19:30:00+01:00)
   - **Verification:** 
     - ✅ Type check passes
     - ✅ Build passes (validation skipped during build phase)
