@@ -406,12 +406,12 @@ describe('Layout Grammar Validation Suite', () => {
             {
               fits: false,
               violations: ['Content does not fit'],
-              requiredActions: ['splitBlock']
+              requiredActions: ['splitBlock' as const]
             }
           ],
           publishBlocked: true,
           publishBlockReason: 'Structural failure',
-          requiredActions: ['splitBlock']
+          requiredActions: ['splitBlock' as const]
         }
       ];
 

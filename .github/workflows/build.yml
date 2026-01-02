@@ -34,4 +34,7 @@ jobs:
 
       - name: Build Next.js application
         run: npm run build
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/test' }}
+          DB_NAME: ${{ secrets.DB_NAME || 'messmass_test' }}
 
