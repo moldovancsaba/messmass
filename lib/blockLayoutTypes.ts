@@ -4,7 +4,7 @@
 
 import type { AspectRatio, CellWidth } from './chartConfigTypes';
 
-export type ChartBodyType = 'pie' | 'bar' | 'kpi' | 'text' | 'image';
+export type ChartBodyType = 'pie' | 'bar' | 'kpi' | 'text' | 'image' | 'table';
 
 export interface CellZones {
   // Title zone: shared font size per block, up to 2 lines

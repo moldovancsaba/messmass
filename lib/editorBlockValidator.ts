@@ -8,6 +8,7 @@
  */
 
 import { validateBlocksForEditor, checkPublishValidity, type EditorBlockInput, type BlockValidationResult } from './editorValidationAPI';
+import type { ChartBodyType } from './blockLayoutTypes';
 import type { AspectRatio } from './chartConfigTypes';
 import { isValidAspectRatio } from './aspectRatioUtils';
 
@@ -27,7 +28,7 @@ export interface EditorBlock {
 export interface EditorChart {
   _id: string;
   chartId: string;
-  type: 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image';
+  type: ChartBodyType; // Canonical type from blockLayoutTypes
   // Additional chart properties as needed
 }
 
@@ -54,9 +55,11 @@ function convertBlockToCellConfiguration(
 ): EditorBlockInput {
   const cells = block.charts.map(chartRef => {
     const chart = charts.get(chartRef.chartId);
+    // Use canonical ChartBodyType directly (EditorChart.type is already ChartBodyType)
+    const elementType: ChartBodyType = chart?.type || 'kpi';
     return {
       chartId: chartRef.chartId,
-      elementType: (chart?.type || 'kpi') as 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image',
+      elementType,
       width: chartRef.width,
       contentMetadata: {}, // TODO: Build from actual chart data
       imageMode: blockConfig?.imageModes?.[chartRef.chartId]

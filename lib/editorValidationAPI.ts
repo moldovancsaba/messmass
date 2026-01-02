@@ -12,6 +12,7 @@ import type { BlockHeightResolution, HeightResolutionInput, CellConfiguration } 
 import { validateElementFit } from './elementFitValidator';
 import type { ElementFitValidation } from './layoutGrammar';
 import type { AspectRatio, CellWidth } from './chartConfigTypes';
+import type { ChartBodyType } from './blockLayoutTypes';
 import { isValidAspectRatio } from './aspectRatioUtils';
 
 // Re-export types from layout grammar for editor use
@@ -31,7 +32,7 @@ export interface EditorBlockInput {
   blockId: string;
   cells: Array<{
     chartId: string;
-    elementType: 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image';
+    elementType: ChartBodyType; // Canonical type from blockLayoutTypes
     width?: number;
     contentMetadata?: Record<string, unknown>;
     imageMode?: 'cover' | 'setIntrinsic';
@@ -64,6 +65,19 @@ function normalizeCellWidth(width: number | undefined): CellWidth {
   return 1; // Default to 1-unit cell
 }
 
+/**
+ * Normalizes editor-facing elementType to canonical ChartBodyType
+ * Validates against canonical union and defaults to 'kpi' for invalid values
+ */
+function normalizeChartBodyType(elementType: unknown): ChartBodyType {
+  const validTypes: ChartBodyType[] = ['pie', 'bar', 'kpi', 'text', 'image', 'table'];
+  if (typeof elementType === 'string' && validTypes.includes(elementType as ChartBodyType)) {
+    return elementType as ChartBodyType;
+  }
+  // Default to 'kpi' for invalid/missing types
+  return 'kpi';
+}
+
 export function validateBlockForEditor(
   block: EditorBlockInput,
   blockWidth: number
@@ -76,14 +90,17 @@ export function validateBlockForEditor(
     ? blockAspectRatioValue
     : defaultAspectRatio;
 
-  const cells: CellConfiguration[] = block.cells.map(cell => ({
-    chartId: cell.chartId,
-    bodyType: cell.elementType,
-    cellWidth: normalizeCellWidth(cell.width),
-    aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
-    imageMode: cell.imageMode,
-    contentMetadata: cell.contentMetadata
-  }));
+  const cells: CellConfiguration[] = block.cells.map(cell => {
+    const normalizedBodyType = normalizeChartBodyType(cell.elementType);
+    return {
+      chartId: cell.chartId,
+      bodyType: normalizedBodyType,
+      cellWidth: normalizeCellWidth(cell.width),
+      aspectRatio: normalizedBodyType === 'image' ? validAspectRatio : undefined,
+      imageMode: cell.imageMode,
+      contentMetadata: cell.contentMetadata
+    };
+  });
 
   const heightResolutionInput: HeightResolutionInput = {
     blockId: block.blockId,
@@ -107,11 +124,12 @@ export function validateBlockForEditor(
 
   // Validate element fit for each cell
   const elementValidations: ElementFitValidation[] = block.cells.map((cell, index) => {
+    const normalizedBodyType = normalizeChartBodyType(cell.elementType);
     const cellConfig: CellConfiguration = {
       chartId: cell.chartId,
-      bodyType: cell.elementType,
+      bodyType: normalizedBodyType,
       cellWidth: normalizeCellWidth(cell.width),
-      aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
+      aspectRatio: normalizedBodyType === 'image' ? validAspectRatio : undefined,
       imageMode: cell.imageMode,
       contentMetadata: cell.contentMetadata
     };
