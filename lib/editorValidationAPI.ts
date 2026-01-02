@@ -11,7 +11,7 @@ import { resolveBlockHeightWithDetails } from './blockHeightCalculator';
 import type { BlockHeightResolution, HeightResolutionInput, CellConfiguration } from './layoutGrammar';
 import { validateElementFit } from './elementFitValidator';
 import type { ElementFitValidation } from './layoutGrammar';
-import type { AspectRatio } from './chartConfigTypes';
+import type { AspectRatio, CellWidth } from './chartConfigTypes';
 import { isValidAspectRatio } from './aspectRatioUtils';
 
 // Re-export types from layout grammar for editor use
@@ -50,6 +50,20 @@ export interface EditorBlockInput {
  * @param blockWidth - Width of the block in pixels
  * @returns Validation result with height resolution and element fit checks
  */
+/**
+ * Normalizes editor-facing number to Layout Grammar CellWidth (1 | 2)
+ * Clamps to valid range and defaults to 1
+ */
+function normalizeCellWidth(width: number | undefined): CellWidth {
+  if (typeof width === 'number' && Number.isFinite(width)) {
+    const rounded = Math.round(width);
+    // Clamp to valid CellWidth range (1 or 2)
+    const clamped = Math.min(2, Math.max(1, rounded));
+    return clamped as CellWidth;
+  }
+  return 1; // Default to 1-unit cell
+}
+
 export function validateBlockForEditor(
   block: EditorBlockInput,
   blockWidth: number
@@ -65,7 +79,7 @@ export function validateBlockForEditor(
   const cells: CellConfiguration[] = block.cells.map(cell => ({
     chartId: cell.chartId,
     bodyType: cell.elementType,
-    cellWidth: cell.width || 1,
+    cellWidth: normalizeCellWidth(cell.width),
     aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
     imageMode: cell.imageMode,
     contentMetadata: cell.contentMetadata
@@ -96,7 +110,7 @@ export function validateBlockForEditor(
     const cellConfig: CellConfiguration = {
       chartId: cell.chartId,
       bodyType: cell.elementType,
-      cellWidth: cell.width || 1,
+      cellWidth: normalizeCellWidth(cell.width),
       aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
       imageMode: cell.imageMode,
       contentMetadata: cell.contentMetadata
