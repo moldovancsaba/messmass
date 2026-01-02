@@ -169,7 +169,7 @@ This tracker is the single source of truth for all **remaining** audit remediati
 ### P0 — Must be resolved before production
 
 - [ ] Enable + verify all security feature flags in production
-- [ ] Enforce startup validation for required flags
+- [x] Enforce startup validation for required flags (`b5ce1f70d`)
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
