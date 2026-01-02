@@ -3,6 +3,7 @@
 // WHY: Centralized type definitions for height resolution and element validation
 
 import type { CellConfiguration as BaseCellConfiguration } from './blockLayoutTypes';
+import type { AspectRatio } from './chartConfigTypes';
 
 /**
  * Height resolution priority levels
@@ -31,7 +32,7 @@ export interface HeightResolutionInput {
   blockWidth: number;
   cells: CellConfiguration[];
   blockAspectRatio?: {
-    ratio: string; // e.g., "16:9"
+    ratio: AspectRatio; // e.g., "16:9"
     isSoftConstraint: boolean;
   };
   maxAllowedHeight?: number;

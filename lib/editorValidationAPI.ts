@@ -11,6 +11,8 @@ import { resolveBlockHeightWithDetails } from './blockHeightCalculator';
 import type { BlockHeightResolution, HeightResolutionInput, CellConfiguration } from './layoutGrammar';
 import { validateElementFit } from './elementFitValidator';
 import type { ElementFitValidation } from './layoutGrammar';
+import type { AspectRatio } from './chartConfigTypes';
+import { isValidAspectRatio } from './aspectRatioUtils';
 
 // Re-export types from layout grammar for editor use
 export type HeightResolutionResult = BlockHeightResolution;
@@ -35,7 +37,7 @@ export interface EditorBlockInput {
     imageMode?: 'cover' | 'setIntrinsic';
   }>;
   blockAspectRatio?: {
-    ratio: string; // e.g., "16:9"
+    ratio: AspectRatio; // e.g., "16:9"
     isSoftConstraint: boolean;
   };
   maxAllowedHeight?: number;
@@ -53,11 +55,18 @@ export function validateBlockForEditor(
   blockWidth: number
 ): BlockValidationResult {
   // Convert editor block input to HeightResolutionInput format
+  // Ensure aspectRatio is valid AspectRatio type
+  const defaultAspectRatio: AspectRatio = '16:9';
+  const blockAspectRatioValue = block.blockAspectRatio?.ratio;
+  const validAspectRatio: AspectRatio = blockAspectRatioValue && isValidAspectRatio(blockAspectRatioValue)
+    ? blockAspectRatioValue
+    : defaultAspectRatio;
+
   const cells: CellConfiguration[] = block.cells.map(cell => ({
     chartId: cell.chartId,
     bodyType: cell.elementType,
     cellWidth: cell.width || 1,
-    aspectRatio: cell.elementType === 'image' ? (block.blockAspectRatio?.ratio || '16:9') : undefined,
+    aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
     imageMode: cell.imageMode,
     contentMetadata: cell.contentMetadata
   }));
@@ -66,7 +75,10 @@ export function validateBlockForEditor(
     blockId: block.blockId,
     blockWidth,
     cells,
-    blockAspectRatio: block.blockAspectRatio,
+    blockAspectRatio: block.blockAspectRatio ? {
+      ratio: validAspectRatio,
+      isSoftConstraint: block.blockAspectRatio.isSoftConstraint
+    } : undefined,
     maxAllowedHeight: block.maxAllowedHeight,
     contentMetadata: block.cells.reduce((acc, cell, idx) => {
       if (cell.contentMetadata) {
@@ -85,7 +97,7 @@ export function validateBlockForEditor(
       chartId: cell.chartId,
       bodyType: cell.elementType,
       cellWidth: cell.width || 1,
-      aspectRatio: cell.elementType === 'image' ? (block.blockAspectRatio?.ratio || '16:9') : undefined,
+      aspectRatio: cell.elementType === 'image' ? validAspectRatio : undefined,
       imageMode: cell.imageMode,
       contentMetadata: cell.contentMetadata
     };
