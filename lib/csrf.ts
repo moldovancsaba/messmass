@@ -89,9 +89,28 @@ export function validateCsrfToken(request: NextRequest): boolean {
 export async function csrfProtectionMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
-  // CSRF DISABLED GLOBALLY (v6.33.0)
-  // Operational directive: Temporarily disable CSRF protection across all routes
-  // to unblock admin workflows. Re-enable once UI token flow is stabilized.
+  // WHAT: Check feature flag to allow gradual rollout of CSRF re-enablement
+  // WHY: Zero-downtime migration - allow disabling via feature flag if needed
+  // NOTE: As of v11.46.1, re-enabled by default; set ENABLE_CSRF_PROTECTION=false to disable
+  const csrfEnabled = process.env.ENABLE_CSRF_PROTECTION !== 'false';
+  if (!csrfEnabled) {
+    return null;
+  }
+  
+  if (!requiresCsrfProtection(request)) {
+    return null;
+  }
+  
+  if (!validateCsrfToken(request)) {
+    return new NextResponse(JSON.stringify({
+      error: 'CSRF token invalid or missing',
+      code: 'CSRF_TOKEN_INVALID'
+    }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
   return null;
 }
 

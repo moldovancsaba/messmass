@@ -120,6 +120,8 @@ export async function middleware(request: NextRequest) {
     "frame-ancestors 'none'", // Prevent clickjacking
     "base-uri 'self'", // Restrict base tag
     "form-action 'self'", // Restrict form submissions
+    // Note: Canvas elements don't require explicit CSP permission, but Chart.js may need script execution
+    // Chart.js v3+ doesn't use eval(), so no 'unsafe-eval' needed
   ].join('; ');
   
   response.headers.set('Content-Security-Policy', cspHeader);
