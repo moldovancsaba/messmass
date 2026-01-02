@@ -92,10 +92,20 @@ export default function ReportPage() {
 
         // Fetch chart configurations from public admin source (chart_configurations)
         // Then filter to those actually used by the template (maintain order)
-        const response = await fetch('/api/chart-config/public');
+        const response = await fetch('/api/chart-config/public', {
+          cache: 'no-store', // WHAT: Ensure fresh data on each load
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch charts: ${response.status} ${response.statusText}`);
+        }
+        
         const data = await response.json();
 
-        if (!response.ok || !data.success) {
+        if (!data.success) {
           throw new Error(data.error || 'Failed to fetch charts');
         }
 
