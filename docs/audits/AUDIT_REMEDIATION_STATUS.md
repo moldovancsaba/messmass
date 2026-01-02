@@ -275,7 +275,7 @@ Phase E — Reporting
     - ✅ Icons display as icon glyphs (not text labels) in sidebar and throughout application
 - [x] Charts visible on report pages (bar / pie / API charts)
   - **Status:** ✅ COMPLETE (code) / ⚠️ PREVIEW VERIFICATION PENDING
-  - **Commit:** `18f781283` (2026-01-02T21:10:00+01:00)
+  - **Commit:** `775f4c449` (2026-01-02T21:10:00+01:00)
   - **Root Cause:** Chart data fetch may be failing silently, insufficient error handling
   - **Fix:** Enhanced error handling in chart fetch:
     - Added `cache: 'no-store'` to ensure fresh data
