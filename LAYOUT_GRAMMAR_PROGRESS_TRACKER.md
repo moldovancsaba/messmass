@@ -15,6 +15,25 @@
 
 **Sign notes with:** Sultan / Cursora / Chappie
 
+**Delivery Rules (Effective Immediately):**
+- **No direct pushes to protected branches** (main, phase5/*, release/*). PR-only.
+- **CI is the gate:** All required status checks must pass before merge.
+- **GitHub Auto-merge must be used:** Once checks pass, the system merges automatically.
+- **Vercel:** Production deploys only from main merges; previews are PR-based.
+- **No PAT-in-URL, no GitHub Desktop reliance for delivery, no manual terminal workflows.**
+
+**Required Status Checks (ALL must pass before merge):**
+1. **Build** - Next.js build succeeds
+2. **Type Check** - TypeScript compilation passes (strict mode)
+3. **Lint** - ESLint passes (no warnings/errors)
+4. **Layout Grammar Guardrail** - No forbidden CSS patterns (`overflow`, `text-overflow`, `line-clamp`)
+5. **Dependency Guardrail** - No unapproved dependencies, no vulnerabilities
+6. **Date Placeholder Guardrail** - No placeholder dates in tracker/docs
+7. **Layout Grammar Test Suite** - All Layout Grammar unit tests pass
+8. **Phase 6 Validation Test Suite** - All validation tests pass (Phase 6+ work)
+
+**Branch Protection:** All above status checks must be required in GitHub branch protection rules for protected branches (main, phase5/*, release/*).
+
 **Continuous Audit Policy:** See `docs/design/CONTINUOUS_AUDIT_POLICY.md` for the three-layer audit system (Hard Fail guardrails, Deterministic tests, Light Human Audit).
 
 **Date Hygiene Guardrail:** CI blocks placeholder dates and non-ISO date fields. See `scripts/check-date-placeholders.ts` and `.github/workflows/date-placeholder-guardrail.yml`.
