@@ -78,8 +78,16 @@ function scanDirectory(dir: string, extensions: string[] = ['.css', '.tsx', '.ts
       if (['node_modules', '.next', 'out', '.git', 'dist', 'build'].includes(entry)) {
         continue;
       }
+      // Skip admin pages (not part of Layout Grammar scope - report rendering only)
+      if (dir.includes('app/admin')) {
+        continue;
+      }
       violations.push(...scanDirectory(fullPath, extensions));
     } else if (stat.isFile()) {
+      // Skip admin pages (not part of Layout Grammar scope)
+      if (fullPath.includes('app/admin')) {
+        continue;
+      }
       const ext = entry.substring(entry.lastIndexOf('.'));
       if (extensions.includes(ext)) {
         violations.push(...checkFile(fullPath));
