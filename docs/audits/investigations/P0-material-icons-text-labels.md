@@ -61,3 +61,44 @@
 - Must maintain backward compatibility
 - Must work in Preview + Production
 
+---
+
+## Fix Applied
+
+**Commit:** `367bf1d4c` (2026-01-02T20:15:00+01:00)
+
+**Changes:**
+- Updated CSP in `middleware.ts`:
+  - Added `https://fonts.googleapis.com` to `style-src` directive
+  - Changed `font-src` to explicitly allow `https://fonts.gstatic.com`
+
+**Rationale:**
+- Minimal fix at correct boundary (middleware, single global source)
+- CSP remains single source of truth (no per-page workarounds)
+- Explicit allowlist for Google Fonts domains (security best practice)
+
+---
+
+## Verification
+
+**Date:** 2026-01-02T20:20:00+01:00  
+**Verified By:** Sultan  
+**Status:** ✅ CONFIRMED
+
+**Evidence:**
+- Material Icons render correctly as icon glyphs (not text labels)
+- Sidebar icons ("handshake", "event", etc.) display as icons
+- All Material Icons throughout application render correctly
+- Preview deployment verified working
+
+**Verification Checklist:**
+- ✅ Build passes
+- ✅ Type check passes
+- ✅ Preview deployment: Icons render correctly
+- ✅ No CSP violations in browser console
+- ✅ Network tab: Material Icons fonts load successfully (200 status)
+
+**Future Prevention:**
+- CSP remains single source of truth in middleware (no per-page workarounds)
+- Any CSP changes must be tested with Material Icons rendering
+

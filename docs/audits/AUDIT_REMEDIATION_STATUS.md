@@ -262,8 +262,8 @@ Phase E — Reporting
     - ⚠️ **Verification pending:** Production startup verification after flags are set
 - [x] Enforce startup validation for required flags (`b5ce1f70d`)
 - [x] Material Icons render as icons (not text labels)
-  - **Status:** ✅ COMPLETE (code) / ⚠️ PREVIEW VERIFICATION PENDING
-  - **Commit:** `367bf1d4c` (2026-01-02T20:15:00+01:00)
+  - **Status:** ✅ COMPLETE (code + verified)
+  - **Commits:** `367bf1d4c` (fix), `e1c9dc361` (tracker update)
   - **Root Cause:** CSP blocked Material Icons stylesheet from `fonts.googleapis.com`
   - **Fix:** Updated CSP in `middleware.ts`:
     - Added `https://fonts.googleapis.com` to `style-src` directive
@@ -271,8 +271,8 @@ Phase E — Reporting
   - **Verification:**
     - ✅ Build passes
     - ✅ Type check passes
-    - ⚠️ **Preview verification required:** Test sidebar icons render as icons on Vercel Preview
-    - ⚠️ **Production verification required:** Confirm icons render after deployment
+    - ✅ **Sultan confirmed icons render correctly on Preview** (2026-01-02T20:20:00+01:00)
+    - ✅ Icons display as icon glyphs (not text labels) in sidebar and throughout application
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
