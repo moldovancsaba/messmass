@@ -8,6 +8,8 @@
  */
 
 import { validateBlocksForEditor, checkPublishValidity, type EditorBlockInput, type BlockValidationResult } from './editorValidationAPI';
+import type { AspectRatio } from './chartConfigTypes';
+import { isValidAspectRatio } from './aspectRatioUtils';
 
 // Types for editor data structures (these should match actual editor types)
 export interface EditorBlock {
@@ -41,6 +43,9 @@ export interface BlockConfiguration {
 
 /**
  * Converts editor block data to validation API format
+ * 
+ * Normalizes editor-facing types (string) to Layout Grammar types (AspectRatio)
+ * at the adapter boundary.
  */
 function convertBlockToCellConfiguration(
   block: EditorBlock,
@@ -58,10 +63,20 @@ function convertBlockToCellConfiguration(
     };
   });
 
+  // Normalize aspectRatio from editor-facing string to Layout Grammar AspectRatio
+  const defaultAspectRatio: AspectRatio = '16:9';
+  const editorAspectRatio = blockConfig?.aspectRatio?.ratio;
+  const normalizedAspectRatio: AspectRatio = editorAspectRatio && isValidAspectRatio(editorAspectRatio)
+    ? editorAspectRatio
+    : defaultAspectRatio;
+
   return {
     blockId: block._id,
     cells,
-    blockAspectRatio: blockConfig?.aspectRatio,
+    blockAspectRatio: blockConfig?.aspectRatio ? {
+      ratio: normalizedAspectRatio,
+      isSoftConstraint: blockConfig.aspectRatio.isSoftConstraint
+    } : undefined,
     maxAllowedHeight: blockConfig?.maxAllowedHeight
   };
 }
