@@ -1,345 +1,275 @@
-# Audit Remediation Status Summary
+# Audit Remediation Progress Tracker
 
 **Last Updated:** 2026-01-02  
-**Status:** Security fixes in progress, Layout Grammar complete
+**Overall Status:** IN PROGRESS  
+**Risk Level:** HIGH (down from EXTREME)  
+**Production Readiness:** NOT YET APPROVED
+
+This tracker is the single source of truth for all **remaining** audit remediation work.
 
 ---
 
-## Executive Summary
+## Release gates
 
-**Original Audit Findings (2025-12-29):**
-- 412+ critical vulnerabilities identified
-- Security Score: 18/100 (CATASTROPHIC)
-- System classified as NOT PRODUCTION-READY
+- **Gate A — Layout Grammar:** ✅ Approved (separate tracker)
+- **Gate B — Security P0:** ⛔ Blocker for production promotion
+- **Gate C — Security P1:** ⛔ Required for secure operation
+- **Gate D — P2 hardening:** ⏳ Follow-up after stabilization
 
-**Current Status:**
-- **Layout Grammar:** ✅ COMPLETE (28/28 tasks, 100%)
-- **Security Remediation:** 🟡 IN PROGRESS (Phases 1-3 complete, Phase 4-5 pending)
-- **Overall System Health:** Improved but still requires security hardening
+**Production promotion rule:** Allowed only when **all P0 items are ✅ COMPLETE and VERIFIED**.
 
 ---
 
-## ✅ What Has Been Fixed and Delivered
+## Phase overview
 
-### Layout Grammar System (COMPLETE - 100%)
-
-**Status:** ✅ All 28 tasks complete (Phase 0-6)
-
-**Delivered:**
-1. **Phase 0: Security Hardening Prerequisites** (8/8 tasks)
-   - Secure markdown rendering
-   - Input validation framework
-   - CI guardrails (Layout Grammar, Dependency, Date Placeholder)
-   - Design token migration
-   - Type safety foundation
-   - Testing infrastructure
-
-2. **Phase 1-5: Core Layout Grammar Engine** (20/20 tasks)
-   - Height resolution engine (4-priority algorithm)
-   - Element fit validation (all element types)
-   - Unified typography system
-   - Element-specific enforcement (Text, Table, Pie, Bar, KPI, Image)
-   - Editor integration (validation API, publish blocking, configuration controls)
-
-3. **Phase 6: Migration & Validation** (3/3 tasks)
-   - Migration script for existing reports
-   - Validation test suite (30 tests)
-   - Canonical documentation (`docs/LAYOUT_GRAMMAR.md`)
-
-**Impact:**
-- Deterministic layout system with no scrolling/truncation/clipping
-- All content fits through structural change or height increase
-- Editor prevents invalid states
-- Comprehensive test coverage
-- Full documentation for future developers
+- **Phase 0 — Credential Exposure Response (P0)**: ✅ COMPLETE
+- **Phase 1 — Password Security (P0)**: ✅ COMPLETE (requires production flag enablement + verification)
+- **Phase 2 — Session Security (P0)**: ✅ COMPLETE (requires production flag enablement + verification)
+- **Phase 3 — XSS Protection (P0)**: ✅ COMPLETE (requires production flag enablement + verification)
+- **Phase 4 — Code Injection Hardening (P1)**: 🟡 PARTIAL
+- **Phase 5 — Operational Hardening (P0/P1)**: ⏳ NOT STARTED
+- **Phase 6 — Verification & Enforcement (P1/P2)**: ⏳ NOT STARTED
 
 ---
 
-### Security Remediation (IN PROGRESS)
+## Phase 0 — Credential Exposure Response (P0)
 
-#### ✅ Phase 1: Password Security (COMPLETE)
+**Status:** ✅ COMPLETE  
+**Objective:** Remove exposed credentials, rotate secrets, and prevent recurrence.
 
-**Status:** ✅ Complete  
-**Date:** 2025-01-27  
-**Commit:** Multiple commits
+- [x] `.env.local` excluded from git (`.gitignore`)
+- [x] `.env.example` present with placeholders
+- [x] Exposed secrets rotated (GitHub, MongoDB, API keys, SMTP, admin password)
+- [x] Audit docs redacted (no literal credentials in tracked files)
 
-**Fixed:**
-- ✅ Bcrypt password hashing implemented (12 salt rounds)
-- ✅ Dual-write support for zero-downtime migration
-- ✅ Automatic password migration on login
-- ✅ Feature flag system (`USE_BCRYPT_AUTH`)
-- ✅ Structured logging with sensitive data redaction
-- ✅ Password hashing utilities (`lib/users.ts`)
-
-**Remaining Risk:**
-- ⚠️ Feature flag `ENABLE_BCRYPT_AUTH` must be set to `true` in production
-- ⚠️ Users with plaintext passwords still exist (migrate on login)
-- ⚠️ Migration script available but not enforced at startup
-
-**Action Required:**
-- Set `ENABLE_BCRYPT_AUTH=true` in production environment
-- Verify all users have `passwordHash` field
-- Consider enforcing migration at server startup
+**Verification (required):**
+- [ ] Confirm **all** environments updated (local/dev/preview/prod) with rotated secrets
 
 ---
 
-#### ✅ Phase 2: Session Security (COMPLETE)
+## Phase 1 — Password Security (P0)
 
-**Status:** ✅ Complete  
-**Date:** 2025-01-27  
-**Commit:** Multiple commits
+**Status:** ✅ COMPLETE (code) / ⛔ NOT VERIFIED (prod)  
+**Objective:** Secure password storage and migrate safely from plaintext.
 
-**Fixed:**
-- ✅ JWT session tokens with HMAC signatures
-- ✅ Dual-token support (Base64 legacy + JWT new)
-- ✅ Automatic token format detection
-- ✅ Unified validation (`lib/sessionTokens.ts`)
-- ✅ Feature flag system (`USE_JWT_SESSIONS`)
+- [x] Bcrypt hashing implemented (12 rounds)
+- [x] Dual-write + migration-on-login supported
+- [x] Sensitive logging redaction applied
 
-**Remaining Risk:**
-- ⚠️ Feature flag `ENABLE_JWT_SESSIONS` must be set to `true` in production
-- ⚠️ Legacy Base64 tokens still supported (backward compatibility)
-
-**Action Required:**
-- Set `ENABLE_JWT_SESSIONS=true` in production environment
-- Monitor token format usage
-- Plan for Base64 token deprecation
+**P0 production requirements:**
+- [ ] Enable production flag: `ENABLE_BCRYPT_AUTH=true`
+- [ ] Verify all users have `passwordHash` present
+- [ ] Add/enable startup enforcement: fail fast if plaintext passwords exist (or document explicit exception)
 
 ---
 
-#### ✅ Phase 3: XSS Protection (COMPLETE)
+## Phase 2 — Session Security (P0)
 
-**Status:** ✅ Complete  
-**Date:** 2025-01-XX  
-**Commit:** `5f9da39`
+**Status:** ✅ COMPLETE (code) / ⛔ NOT VERIFIED (prod)  
+**Objective:** Secure sessions using JWT with controlled legacy support.
 
-**Fixed:**
-- ✅ HTML sanitization with DOMPurify
-- ✅ All 6+ instances of `dangerouslySetInnerHTML` now sanitized
-- ✅ Markdown-specific sanitization
-- ✅ Client-side and server-side support
-- ✅ Feature flag system (`USE_SANITIZED_HTML`)
+- [x] JWT tokens (HMAC) implemented
+- [x] Dual-token support (legacy + JWT)
+- [x] Unified validation in `lib/sessionTokens.ts`
 
-**Remaining Risk:**
-- ⚠️ Feature flag `ENABLE_HTML_SANITIZATION` must be set to `true` in production
-- ⚠️ Default behavior is unsanitized (migration safety)
-
-**Action Required:**
-- Set `ENABLE_HTML_SANITIZATION=true` in production environment
-- Test all HTML content rendering
-- Verify XSS protection is active
+**P0 production requirements:**
+- [ ] Enable production flag: `ENABLE_JWT_SESSIONS=true`
+- [ ] Monitoring note: measure legacy token usage and define deprecation plan
 
 ---
 
-#### ✅ Phase 4: Code Injection Protection (PARTIALLY COMPLETE)
+## Phase 3 — XSS Protection (P0)
 
-**Status:** 🟡 Partially Complete  
-**Date:** 2026-01-02 (Layout Grammar phase)
+**Status:** ✅ COMPLETE (code) / ⛔ NOT VERIFIED (prod)  
+**Objective:** Prevent XSS via consistent sanitization.
 
-**Fixed:**
-- ✅ Removed `expr-eval` dependency (HIGH vulnerability)
-- ✅ Created internal safe formula evaluator
-- ✅ Supports only: numbers, whitespace, `+ - * / ^ %`, parentheses
-- ✅ Approved variables from strict allowlist
-- ✅ Hard blocks forbidden identifiers (`__proto__`, `prototype`, `constructor`, `eval`, `Function`, etc.)
-- ✅ Uses `Object.create(null)` for evaluation context
-- ✅ Tests proving security (forbidden identifiers rejected)
+- [x] HTML sanitization implemented (DOMPurify)
+- [x] Sanitization applied to all `dangerouslySetInnerHTML` paths
 
-**Remaining Risk:**
-- ⚠️ `Function()` constructor usage may still exist in other parts of codebase
-- ⚠️ Formula evaluator needs production testing
-
-**Action Required:**
-- Audit codebase for remaining `Function()` constructor usage
-- Test formula evaluator with production data
-- Update dependency guardrail whitelist (remove `expr-eval`)
+**P0 production requirements:**
+- [ ] Enable production flag: `ENABLE_HTML_SANITIZATION=true`
+- [ ] Smoke test key rendering surfaces (rich text / markdown / report rendering)
 
 ---
 
-## ❌ What Still Needs to Be Delivered
+## Phase 4 — Code Injection Hardening (P1)
 
-### Security Remediation (PENDING)
+**Status:** 🟡 PARTIAL  
+**Objective:** Remove unsafe evaluation and harden formula execution.
 
-#### 🔴 Phase 5: Additional Hardening (PENDING)
+- [x] Removed `expr-eval` dependency (high risk)
+- [x] Safe formula evaluator added (strict operators + allowlisted variables)
+- [x] Hard-block forbidden identifiers (`__proto__`, `constructor`, `Function`, `eval`, etc.)
 
-**Status:** ⚠️ NOT STARTED
-
-**Required Fixes:**
-1. **Remove console.log statements**
-   - Found: 180+ instances in production code
-   - Priority: HIGH
-   - Action: ESLint rule + automated fix
-
-2. **Fix CORS configuration**
-   - Current: Permissive configuration
-   - Required: Whitelist specific origins
-   - Priority: HIGH
-
-3. **Fix role naming inconsistencies**
-   - Found: 22 instances
-   - Priority: MEDIUM
-   - Action: Standardize role names across codebase
-
-4. **Account lockout mechanism**
-   - Current: Only 800ms delay on failed login
-   - Required: Lock after 5 failed attempts
-   - Priority: HIGH
-
-5. **Feature flag validation at startup**
-   - Current: Flags checked at runtime, no validation
-   - Required: Fail fast if critical flags missing in production
-   - Priority: HIGH
+**Remaining work (P1):**
+- [ ] Audit for any remaining dynamic evaluation (`Function()`, `eval`, similar)
+- [ ] Run formula evaluator against production-like datasets; capture failure cases
+- [ ] Update dependency allowlist/guardrail config to reflect removal of `expr-eval`
 
 ---
 
-### Critical Security Issues (PENDING)
+## Phase 5 — Operational Hardening (P0/P1)
 
-#### 🔴 P0 - CRITICAL (Must Fix Before Production)
+**Status:** ⏳ NOT STARTED  
+**Objective:** Reduce operational risk (logs, CORS, roles, lockout, startup flag validation).
 
-1. **.env.local File Committed to Repository**
-   - **Status:** ⚠️ CREDENTIALS EXPOSED
-   - **Risk:** GitHub token, MongoDB URI, API keys, SMTP password, admin password all exposed
-   - **Action Required:**
-     - Remove `.env.local` from git history (if not already done)
-     - Rotate ALL credentials immediately
-     - Add `.env.local` to `.gitignore`
-     - Create `.env.example` with placeholders
-   - **Timeline:** IMMEDIATE (within 1 hour)
+### P0 items (must complete before production)
 
-2. **Incomplete Password Migration**
-   - **Status:** ⚠️ PLAINTEXT PASSWORDS STILL IN DATABASE
-   - **Risk:** Database breach = complete user compromise
-   - **Action Required:**
-     - Run password migration script
-     - Verify all users have `passwordHash` field
-     - Enforce migration at server startup (fail if plaintext passwords exist)
-   - **Timeline:** 2-3 days
+- [x] **Feature flag enforcement at startup**: fail fast if required security flags are missing
+  - Required: `ENABLE_BCRYPT_AUTH`, `ENABLE_JWT_SESSIONS`, `ENABLE_HTML_SANITIZATION`
+  - Output: clear startup error message with remediation
+  - **Commit:** TBD (will add after commit)
+  - **Verification:** 
+    - ✅ Type check passes
+    - ✅ Build passes (validation skipped during build phase)
+    - ✅ Validation throws error in production when flags missing (tested)
+    - ✅ Validation passes in production when flags enabled (tested)
+    - ✅ Validation skipped in development mode (tested)
+    - ✅ Dev server starts successfully (smoke test)
 
-3. **Feature Flags Not Enabled in Production**
-   - **Status:** ⚠️ SECURITY FEATURES DISABLED BY DEFAULT
-   - **Risk:** Bcrypt, JWT, HTML sanitization all disabled
-   - **Action Required:**
-     - Set `ENABLE_BCRYPT_AUTH=true` in production
-     - Set `ENABLE_JWT_SESSIONS=true` in production
-     - Set `ENABLE_HTML_SANITIZATION=true` in production
-     - Add startup validation to fail if flags missing
-   - **Timeline:** IMMEDIATE
+- [ ] **Console log removal**: remove/replace 180+ `console.log` statements
+  - Add linter rule to block new occurrences
+  - Preserve structured logging where needed
 
----
+- [ ] **CORS lockdown**: replace permissive config with explicit allowlist
+  - Document allowed origins (prod + preview)
 
-#### 🟠 P1 - HIGH PRIORITY (Fix This Week)
+- [ ] **Account lockout**: after 5 failed attempts → 15 min lock
+  - Ensure responses do not leak user existence
 
-1. **Account Lockout After Failed Login**
-   - **Status:** ⚠️ BRUTEFORCE ATTACKS POSSIBLE
-   - **Current:** Only 800ms delay (4500 passwords/hour possible)
-   - **Required:** Lock after 5 failed attempts for 15 minutes
-   - **Timeline:** 3-5 days
+- [ ] **Role naming standardization** (22 inconsistencies)
+  - One canonical enum/source; migrate usage
 
-2. **Console.log Statements in Production**
-   - **Status:** ⚠️ 180+ INSTANCES
-   - **Risk:** User data exposure in logs, performance impact
-   - **Action:** ESLint rule + automated fix
-   - **Timeline:** 1-2 days
+### P1 items (same phase)
 
-3. **CORS Configuration**
-   - **Status:** ⚠️ PERMISSIVE CONFIGURATION
-   - **Required:** Whitelist specific origins
-   - **Timeline:** 1-2 days
-
-4. **Role Naming Inconsistencies**
-   - **Status:** ⚠️ 22 INSTANCES
-   - **Risk:** Access control bypass
-   - **Action:** Standardize role names
-   - **Timeline:** 2-3 days
+- [ ] Add rate limiting policy (if not already covered by lockout)
+- [ ] Add audit logging for auth-sensitive events (login fail/lock/unlock)
 
 ---
 
-#### 🟡 P2 - MEDIUM PRIORITY (Fix This Month)
+## Phase 6 — Verification & Enforcement (P1/P2)
 
-1. **Migration Script Tracking System**
-   - **Status:** ⚠️ 220+ ORPHANED SCRIPTS
-   - **Problem:** No way to know which migrations applied
-   - **Required:** Migration tracking system
-   - **Timeline:** 1 week
+**Status:** ⏳ NOT STARTED  
+**Objective:** Prove correctness over time (migrations, tests, performance).
 
-2. **Test Coverage**
-   - **Status:** ⚠️ ZERO TEST COVERAGE (except Layout Grammar)
-   - **Required:** >70% coverage for critical paths
-   - **Timeline:** 2-3 weeks
+### P1
 
-3. **Performance Optimization**
-   - **Status:** ⚠️ DATABASE QUERIES, CACHING
-   - **Timeline:** Ongoing
+- [ ] Migration tracking system for applied scripts (eliminate orphaned migrations)
+- [ ] Security regression tests for auth/session/sanitization/formula safety
+
+### P2
+
+- [ ] Increase test coverage to >70% for critical paths
+- [ ] Performance optimization plan + measurements (DB queries, caching, hot paths)
 
 ---
 
-## 📊 Remediation Progress Summary
+## Priority roll-up
 
-| Category | Status | Progress | Timeline |
-|----------|--------|----------|----------|
-| **Layout Grammar** | ✅ COMPLETE | 28/28 tasks (100%) | Complete |
-| **Password Security** | ✅ COMPLETE | Phase 1 done | Complete |
-| **Session Security** | ✅ COMPLETE | Phase 2 done | Complete |
-| **XSS Protection** | ✅ COMPLETE | Phase 3 done | Complete |
-| **Code Injection** | 🟡 PARTIAL | Phase 4 partial | Complete (Layout Grammar) |
-| **Additional Hardening** | ❌ PENDING | Phase 5 not started | 1-2 weeks |
-| **Critical Issues** | ❌ PENDING | P0 items not resolved | IMMEDIATE |
+### P0 — Must be resolved before production
 
----
+- [ ] Enable + verify all security feature flags in production
+- [ ] Enforce startup validation for required flags
+- [ ] Remove console logs + prevent reintroduction
+- [ ] Lock down CORS
+- [ ] Add account lockout policy
+- [ ] Standardize role naming
 
-## 🎯 Immediate Action Plan
+### P1 — Required for secure operation
 
-### 🔴 DO TODAY (Before Production)
+- [ ] Finish Code Injection Hardening audit + production data validation
+- [ ] Migration tracking system
+- [ ] Security regression tests
 
-1. **Rotate ALL credentials** (GitHub, MongoDB, API keys, SMTP, admin password)
-2. **Remove `.env.local` from git history** (if not already done)
-3. **Set feature flags in production:**
-   - `ENABLE_BCRYPT_AUTH=true`
-   - `ENABLE_JWT_SESSIONS=true`
-   - `ENABLE_HTML_SANITIZATION=true`
-4. **Run password migration script** and verify all users have `passwordHash`
-5. **Add startup validation** to fail if critical flags missing or plaintext passwords exist
+### P2 — Hardening and scalability
 
-### 🟠 DO THIS WEEK
-
-1. **Implement account lockout** (5 failed attempts → 15 min lock)
-2. **Remove console.log statements** (ESLint rule + fix)
-3. **Fix CORS configuration** (whitelist specific origins)
-4. **Standardize role names** (fix 22 inconsistencies)
-
-### 🟡 DO THIS MONTH
-
-1. **Migration tracking system** (track which scripts ran)
-2. **Test coverage** (>70% for critical paths)
-3. **Performance optimization** (database queries, caching)
+- [ ] Raise test coverage
+- [ ] Performance work
 
 ---
 
-## 📈 Risk Assessment
+## Communication contract
 
-**Current Risk Level:** 🟠 HIGH (down from 🔴 EXTREME)
-
-**Blockers for Production:**
-- ✅ Layout Grammar: Complete
-- ⚠️ Security: Feature flags must be enabled
-- ⚠️ Security: Credentials must be rotated
-- ⚠️ Security: Password migration must be enforced
-- ❌ Security: Account lockout not implemented
-- ❌ Security: Console.log statements remain
-
-**Estimated Time to Production-Ready:** 1-2 weeks (if P0/P1 items addressed)
+- All work items must be tracked here as checkboxes.
+- Each completed item must reference a commit hash and (if applicable) a release/PR link.
+- No destructive history rewriting as a “security fix”. Use: revoke → rotate → forward-redact → document.
 
 ---
 
-## 📝 Notes
+## Audit remediation operating rules
 
-- **Layout Grammar is production-ready** and fully documented
-- **Security fixes are implemented** but require feature flags to be enabled
-- **Critical security issues** (credentials, password migration) require immediate attention
-- **System is significantly improved** but still needs hardening before production deployment
+- `docs/audits/AUDIT_REMEDIATION_STATUS.md` is the canonical checklist tracker for audit work.
+- Every audit remediation change must:
+  - update the checklist item(s) in the same PR
+  - include verification notes (how we proved it)
+  - include the commit hash in the checklist
+- Audit P0 items are release blockers. No production promotion until P0 is ✅ COMPLETE and VERIFIED.
+- Security incident handling is non-destructive only: revoke → rotate → forward-redact → document.
 
 ---
 
-**Last Updated:** 2026-01-02  
-**Next Review:** After P0/P1 security fixes are implemented
+## Audit Remediation — Agentic Execution Playbook
 
+Mandatory execution loop (non-negotiable)
+- Investigate → Fix → Verify → Document → Report
+- No fixing without investigation notes
+- No completion without verification evidence
+- No PR without tracker update
+
+Phase A — Investigation (required before any fix)
+- Identify exact scope of the issue
+  - Files, modules, environments affected
+  - Whether it is code, config, infra, or data
+- Reproduce locally using Sultan delivery loop
+  - npm install
+  - npm run build
+  - npm run dev
+- Capture root cause in 3–5 bullets
+  - What failed
+  - Why it failed
+  - Why it wasn’t caught earlier
+- Explicitly confirm whether the issue is:
+  - Code defect
+  - Type drift
+  - Environment mismatch
+  - Missing guardrail
+  - Documentation gap
+
+Output: short investigation note (paste into PR + tracker)
+
+Phase B — Fix (implementation rules)
+- Apply minimal fix at the correct boundary
+- Prefer adapters / normalisation
+- Do NOT widen core types
+- Do NOT hardcode values
+- Ensure single source of truth
+- No duplicate enums / types / constants
+- Reuse existing components/utilities
+- No workflow / CI changes unless explicitly approved
+
+Output: commit(s) with focused scope
+
+Phase C — Verification (must be objective)
+- Local verification passed
+  - npm run build
+  - npm run dev (manual smoke test)
+- Preview verification passed
+  - Manual testing on Vercel preview
+  - Explicitly list what was tested (screens/flows/edge cases)
+
+Output: verification checklist in PR description
+
+Phase D — Documentation (same PR)
+- Update this tracker
+  - Mark checkbox [x]
+  - Add commit hash
+  - Add verification note
+- If behavior changed, update relevant docs
+- No history, no storytelling — facts only
+
+Phase E — Reporting (close the loop)
+- Send single status message with:
+  - What was fixed
+  - What was verified
+  - What is unblocked now
+  - What remains open (if anything)

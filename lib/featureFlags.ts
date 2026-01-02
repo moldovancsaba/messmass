@@ -66,3 +66,63 @@ export function getFeatureFlagStatus(): Record<string, boolean> {
   };
 }
 
+/**
+ * WHAT: Validate required security feature flags in production
+ * WHY: Fail fast if security features are disabled in production (P0 security requirement)
+ * HOW: Checks NODE_ENV and required flags, throws with clear error message if validation fails
+ * 
+ * @throws Error if production environment and required flags are not enabled
+ */
+export function validateSecurityFeatureFlags(): void {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const isProduction = nodeEnv === 'production';
+
+  // WHAT: Detect if we're in Next.js build/prerender phase
+  // WHY: Next.js tries to validate during static generation - skip gracefully
+  // HOW: Check for webpack/build indicators and lack of server runtime
+  const isBuildPhase = typeof window === 'undefined' && 
+                      (process.env.__NEXT_PRIVATE_PREBUNDLED_REACT === 'next' ||
+                       process.env.NEXT_PHASE === 'phase-production-build');
+
+  // Skip validation during build phase or non-production
+  if (!isProduction || isBuildPhase) {
+    return;
+  }
+
+  const requiredFlags = [
+    { envVar: 'ENABLE_BCRYPT_AUTH', flag: FEATURE_FLAGS.USE_BCRYPT_AUTH, name: 'Password Security (bcrypt)' },
+    { envVar: 'ENABLE_JWT_SESSIONS', flag: FEATURE_FLAGS.USE_JWT_SESSIONS, name: 'Session Security (JWT)' },
+    { envVar: 'ENABLE_HTML_SANITIZATION', flag: FEATURE_FLAGS.USE_SANITIZED_HTML, name: 'XSS Protection (HTML sanitization)' },
+  ] as const;
+
+  const missingFlags: Array<{ envVar: string; name: string }> = [];
+  for (const { envVar, flag, name } of requiredFlags) {
+    if (!flag) {
+      missingFlags.push({ envVar, name });
+    }
+  }
+
+  if (missingFlags.length > 0) {
+    const errorMessage = [
+      '❌ CRITICAL SECURITY ERROR: Required security feature flags are not enabled in production.',
+      '',
+      'Missing flags:',
+      ...missingFlags.map(({ name, envVar }) => `  - ${name} (${envVar})`),
+      '',
+      'Remediation:',
+      '1. Set the following environment variables in your production environment (Vercel/your hosting):',
+      ...missingFlags.map(({ envVar }) => `   ${envVar}=true`),
+      '',
+      '2. Redeploy the application',
+      '',
+      '3. Verify flags are enabled:',
+      '   - Check Vercel environment variables',
+      '   - Verify application starts without this error',
+      '',
+      'This is a P0 security requirement. The application will not start until all required flags are enabled.',
+    ].join('\n');
+
+    throw new Error(errorMessage);
+  }
+}
+

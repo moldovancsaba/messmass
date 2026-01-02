@@ -8,6 +8,8 @@
 // WHY: Allows scripts to load dotenv before config validation runs
 // WHEN: Config is validated on first access, not at module import time
 
+import { validateSecurityFeatureFlags } from './featureFlags';
+
 export type AppConfig = {
   mongodbUri: string;
   dbName: string;
@@ -76,6 +78,12 @@ function initializeConfig(): AppConfig {
   if (cachedConfig) {
     return cachedConfig;
   }
+
+  // WHAT: Validate security feature flags in production (P0 requirement)
+  // WHY: Fail fast if required security features are disabled
+  // WHEN: Runs on first config access (early in application lifecycle)
+  // HOW: Throws error with clear remediation steps if validation fails
+  validateSecurityFeatureFlags();
 
   // Resolve configuration with safe defaults where historically relied upon.
   // Strategic choice:
