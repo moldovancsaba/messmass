@@ -1,0 +1,37 @@
+name: Date Placeholder Guardrail
+
+on:
+  pull_request:
+    branches:
+      - main
+      - phase5/*
+      - phase6/*
+      - release/*
+  push:
+    branches:
+      - main
+      - phase5/*
+      - phase6/*
+      - release/*
+
+jobs:
+  date-placeholder-guardrail:
+    name: Date Placeholder Guardrail
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run date placeholder guardrail
+        run: npx tsx scripts/check-date-placeholders.ts
+

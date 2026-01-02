@@ -33,7 +33,9 @@
       "react",
       "react-dom",
       "html2canvas",
-      "ws"
+      "ws",
+      "jest",
+      "@types/jest"
     ]
   },
   "include": [
