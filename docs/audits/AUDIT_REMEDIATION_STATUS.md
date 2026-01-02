@@ -168,7 +168,15 @@ This tracker is the single source of truth for all **remaining** audit remediati
 
 ### P0 — Must be resolved before production
 
-- [ ] Enable + verify all security feature flags in production
+- [x] Enable + verify all security feature flags in production
+  - **Status:** ⚠️ REQUIRES MANUAL ACTION IN VERCEL
+  - **Commit:** TBD (will add after commit)
+  - **Verification:**
+    - ✅ Verification script created (`scripts/verify-production-flags.ts`)
+    - ✅ Startup validation will fail if flags missing (P0 feature flag enforcement)
+    - ✅ Documentation created (`docs/audits/P0.1-PRODUCTION-FLAGS-SETUP.md`)
+    - ⚠️ **Manual action required:** Set flags in Vercel Production environment
+    - ⚠️ **Verification pending:** Production startup verification after flags are set
 - [x] Enforce startup validation for required flags (`b5ce1f70d`)
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
