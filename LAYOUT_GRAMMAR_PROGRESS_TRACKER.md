@@ -19,8 +19,42 @@
 - **No direct pushes to protected branches** (main, phase5/*, release/*). PR-only.
 - **CI is the gate:** All required status checks must pass before merge.
 - **GitHub Auto-merge must be used:** Once checks pass, the system merges automatically.
-- **Vercel:** Production deploys only from main merges; previews are PR-based.
+- **Vercel:** Production deploys only from main merges; previews are PR-based (manual testing only, NOT required for merge).
 - **No PAT-in-URL, no GitHub Desktop reliance for delivery, no manual terminal workflows.**
+
+**Delivery Loop (Sultan's Workflow - MANDATORY):**
+1. **Dev/fix:**
+   - No local DB required
+   - No uncommitted code allowed (enforce via pre-commit/pre-push + CI)
+
+2. **Local gate is mandatory:**
+   - `npm install`
+   - `npm run build` (must pass)
+   - `npm run dev` (smoke test)
+   - If any error → fix until clean
+
+3. **Document every change:**
+   - Update tracker/docs in the same PR
+   - No code changes without documentation updates
+
+4. **Push ONLY to non-protected branches:**
+   - Allowed: `feat/*`, `fix/*`, `phase6/*`
+   - Forbidden: `main`, `phase5/*`, `release/*` (PR-only)
+
+5. **Preview deploy:**
+   - For manual testing only
+   - Vercel checks are NOT required for merge
+
+6. **Merge via PR only:**
+   - After required GitHub Actions checks pass
+   - Auto-merge enabled when all checks green
+
+7. **Promote to production:**
+   - Manual Vercel deploy after merge to main
+
+**Workflow Files Frozen:**
+- No changes to `.github/workflows/*` unless explicitly approved as "delivery-infra work"
+- Current workflow configuration is locked
 
 **Required Status Checks (ALL must pass before merge):**
 1. **Build** - Next.js build succeeds
