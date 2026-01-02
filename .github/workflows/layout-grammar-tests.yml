@@ -33,5 +33,5 @@ jobs:
         run: npm ci
 
       - name: Run Layout Grammar tests
-        run: npm test -- --testPathPattern="layout-grammar" --passWithNoTests
+        run: npm test -- __tests__/layout-grammar --passWithNoTests
 
