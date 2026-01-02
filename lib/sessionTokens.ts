@@ -33,6 +33,11 @@ function getJWTSecret(): string {
     console.warn('⚠️  JWT_SECRET not set - using insecure fallback (development only)');
     return 'dev-secret-change-in-production';
   }
+  // WHAT: Validate secret length in production (v11.46.1+)
+  // WHY: Prevent weak secrets from being accepted
+  if (process.env.NODE_ENV === 'production' && secret.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters for production security');
+  }
   return secret;
 }
 

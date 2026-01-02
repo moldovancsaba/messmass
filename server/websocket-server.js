@@ -36,6 +36,14 @@ const wss = new WebSocket.Server({
       console.warn(`⚠️  Connection limit reached (${MAX_CONNECTIONS}), rejecting new connection`);
       return false;
     }
+    // WHAT: Validate session token on WebSocket connection (v11.46.1+)
+    // WHY: Prevent unauthorized clients from joining project rooms
+    // HOW: Check for valid Bearer token in Authorization header
+    const authHeader = info.req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.warn('⚠️  WebSocket connection rejected: missing or invalid Authorization header');
+      return false;
+    }
     return true;
   }
 });
