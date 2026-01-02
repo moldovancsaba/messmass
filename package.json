@@ -118,7 +118,8 @@
     "migrate:partner-slugs": "tsx -r dotenv/config scripts/migratePartnerSlugsToUUID.ts dotenv_config_path=.env.local",
     "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local",
     "sheets:create-partner-sheets": "tsx -r dotenv/config scripts/createPartnerSheets.ts dotenv_config_path=.env.local",
-    "sheets:setup-szerencsejatok": "tsx -r dotenv/config scripts/setupSzerencsejatek.ts dotenv_config_path=.env.local"
+    "sheets:setup-szerencsejatok": "tsx -r dotenv/config scripts/setupSzerencsejatek.ts dotenv_config_path=.env.local",
+    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-reports-to-layout-grammar.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.4",
