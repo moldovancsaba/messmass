@@ -685,8 +685,8 @@ A change is “done” only when it is:
 - [x] Mark structural failures (cannot be auto-fixed without semantic changes)
 - [x] Add npm script: `npm run migrate:layout-grammar`
 - [x] Pure, deterministic script (no side effects, no network, no DB writes)
-- **Status:** ✅ **COMPLETE** (2026-01-01T18:00:00+01:00)
-- **Commits:** TBD (will commit after local gate verification)
+- **Status:** ✅ **COMPLETE** (2026-01-02T18:55:50+01:00)
+- **Commits:** `636d873ec` (2026-01-02T18:55:50+01:00)
 - **Completed By:** Cursora
 - **Note:**
   - Created `scripts/migrate-reports-to-layout-grammar.ts` as pure, deterministic migration analysis script
