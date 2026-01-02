@@ -7,7 +7,90 @@
 
 This tracker is the single source of truth for all **remaining** audit remediation work.
 
----
+
+## Communication Doctrine: Present, Future, Past
+
+```md
+### Purpose
+This doctrine defines how we communicate and how we structure status documents. It is **permanent** and applies to Sultan, Cursora, and Chappie across all workstreams.
+
+### Thinking order
+**PRESENT → FUTURE → PAST** is the required order for every action, message, and document.
+
+- **PRESENT:** act on what must be delivered now.
+- **FUTURE:** ensure what we do now is maintainable, reusable, and does not create new failure modes.
+- **PAST:** reuse proven solutions and learnings; avoid repeating earlier mistakes.
+
+### Non‑negotiables
+- **Never hardcode** values that can change (config, env, IDs, URLs, limits, roles, flags). Prefer configuration, constants, or a single canonical source.
+- **Never code before you read.** First search for existing modules, utilities, types, guardrails, and patterns; extend or reuse them.
+- **Single source of truth.** No duplicate enums/types/constants across modules.
+- **Minimal boundary fixes.** Prefer adapter/normalisation at boundaries over widening core types.
+
+### Required message format
+All status and request messages must be written in this structure:
+
+- **PRESENT:** current deliverable, status, blocker (if any), and the single next action.
+- **FUTURE:** how this affects maintainability/reuse/risk; how recurrence is prevented.
+- **PAST:** what was reused/learned; what will not be repeated.
+
+**No decision trees.** Provide one clear next action unless an explicit choice is unavoidable.
+
+### Required structure for status documents
+All status documents (roadmaps, progress trackers, task lists, release notes, audits) must use:
+
+- **PRESENT:** current status, active work, blockers, next action.
+- **FUTURE:** upcoming work, dependencies, risks, mitigation.
+- **PAST:** completed work (must reference commits/PRs) and verified outcomes.
+
+Checkboxes are the source of truth:
+- `- [ ]` = open
+- `- [x]` = complete (**must** include commit/PR reference + verification note)
+```
+
+## Audit Remediation: Agentic Execution Playbook
+
+```md
+Mandatory execution loop (non‑negotiable)
+- Investigate → Fix → Verify → Document → Report
+- No fixing without investigation notes
+- No completion without verification evidence
+- No PR without tracker update
+
+Phase A — Investigation (required before any fix)
+- Identify exact scope of the issue (files/modules/environments)
+- Classify: code defect / type drift / environment mismatch / missing guardrail / documentation gap
+- Reproduce using Sultan’s local gate:
+  - npm install
+  - npm run build
+  - npm run dev
+- Capture root cause in 3–5 bullets (what failed / why / why not caught)
+
+Output: short investigation note (paste into PR + tracker)
+
+Phase B — Fix (implementation rules)
+- Minimal fix at the correct boundary (prefer adapters/normalisation)
+- Do NOT widen core types
+- Do NOT hardcode
+- Single source of truth (no duplicate enums/types/constants)
+- Reuse existing components/utilities
+- No CI/workflow changes unless explicitly approved as delivery-infra work
+
+Output: focused commit(s)
+
+Phase C — Verification (objective)
+- Local verification: npm run build; npm run dev (smoke test)
+- Preview verification: manual test on Vercel preview (list screens/flows tested)
+
+Output: verification checklist in PR description
+
+Phase D — Documentation (same PR)
+- Update the canonical tracker (checkbox + commit/PR + verification note)
+- Update docs only when behaviour changes; no storytelling
+
+Phase E — Reporting
+- Single status message: what fixed / what verified / what unblocked / what remains
+```
 
 ## Release gates
 
@@ -178,6 +261,18 @@ This tracker is the single source of truth for all **remaining** audit remediati
     - ⚠️ **Manual action required:** Set flags in Vercel Production environment
     - ⚠️ **Verification pending:** Production startup verification after flags are set
 - [x] Enforce startup validation for required flags (`b5ce1f70d`)
+- [x] Material Icons render as icons (not text labels)
+  - **Status:** ✅ COMPLETE (code) / ⚠️ PREVIEW VERIFICATION PENDING
+  - **Commit:** `367bf1d4c` (2026-01-02T20:15:00+01:00)
+  - **Root Cause:** CSP blocked Material Icons stylesheet from `fonts.googleapis.com`
+  - **Fix:** Updated CSP in `middleware.ts`:
+    - Added `https://fonts.googleapis.com` to `style-src` directive
+    - Changed `font-src` to explicitly allow `https://fonts.gstatic.com`
+  - **Verification:**
+    - ✅ Build passes
+    - ✅ Type check passes
+    - ⚠️ **Preview verification required:** Test sidebar icons render as icons on Vercel Preview
+    - ⚠️ **Production verification required:** Confirm icons render after deployment
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
