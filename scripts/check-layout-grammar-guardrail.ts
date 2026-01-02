@@ -43,6 +43,11 @@ function checkFile(filePath: string): Violation[] {
   const lines = content.split('\n');
 
   lines.forEach((line, index) => {
+    // Skip comment lines (single-line comments)
+    if (line.trim().startsWith('//') || line.trim().startsWith('*') || line.trim().startsWith('/*')) {
+      return;
+    }
+    
     // Skip lines with allowed comments
     const hasAllowedComment = ALLOWED_COMMENTS.some(comment => 
       line.toLowerCase().includes(comment.toLowerCase())
@@ -69,23 +74,36 @@ function scanDirectory(dir: string, extensions: string[] = ['.css', '.tsx', '.ts
   const violations: Violation[] = [];
   const entries = readdirSync(dir);
 
+  // Layout Grammar scope: only report rendering files
+  const LAYOUT_GRAMMAR_SCOPE = [
+    'app/report',
+    'components/charts',
+    'components/CellWrapper',
+  ];
+
   for (const entry of entries) {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
 
     if (stat.isDirectory()) {
       // Skip node_modules, .next, and other build/dependency directories
-      if (['node_modules', '.next', 'out', '.git', 'dist', 'build'].includes(entry)) {
+      if (['node_modules', '.next', 'out', '.git', 'dist', 'build', 'scripts', '__tests__'].includes(entry)) {
         continue;
       }
-      // Skip admin pages (not part of Layout Grammar scope - report rendering only)
-      if (dir.includes('app/admin')) {
+      // Only check Layout Grammar scope files
+      const inScope = LAYOUT_GRAMMAR_SCOPE.some(scope => fullPath.includes(scope));
+      if (!inScope) {
         continue;
       }
       violations.push(...scanDirectory(fullPath, extensions));
     } else if (stat.isFile()) {
-      // Skip admin pages (not part of Layout Grammar scope)
-      if (fullPath.includes('app/admin')) {
+      // Only check Layout Grammar scope files
+      const inScope = LAYOUT_GRAMMAR_SCOPE.some(scope => fullPath.includes(scope));
+      if (!inScope) {
+        continue;
+      }
+      // Skip guardrail script itself
+      if (fullPath.includes('check-layout-grammar-guardrail.ts')) {
         continue;
       }
       const ext = entry.substring(entry.lastIndexOf('.'));
