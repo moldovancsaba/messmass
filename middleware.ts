@@ -113,9 +113,9 @@ export async function middleware(request: NextRequest) {
   const cspHeader = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for Next.js scripts
-    "style-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for CSS custom properties (design tokens)
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow Material Icons stylesheet from Google Fonts
     "img-src 'self' data: https:", // Allow images from same origin, data URIs, and HTTPS
-    "font-src 'self' data: https:", // Allow fonts from same origin, data URIs, and HTTPS (Google Fonts)
+    "font-src 'self' data: https://fonts.gstatic.com", // Allow Material Icons fonts from Google Fonts CDN
     "connect-src 'self'", // API calls to same origin only
     "frame-ancestors 'none'", // Prevent clickjacking
     "base-uri 'self'", // Restrict base tag
