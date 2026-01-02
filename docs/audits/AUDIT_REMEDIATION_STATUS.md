@@ -170,7 +170,7 @@ This tracker is the single source of truth for all **remaining** audit remediati
 
 - [x] Enable + verify all security feature flags in production
   - **Status:** ⚠️ REQUIRES MANUAL ACTION IN VERCEL
-  - **Commit:** TBD (will add after commit)
+  - **Commit:** `7372f8915` (2026-01-02T19:45:00+01:00)
   - **Verification:**
     - ✅ Verification script created (`scripts/verify-production-flags.ts`)
     - ✅ Startup validation will fail if flags missing (P0 feature flag enforcement)
