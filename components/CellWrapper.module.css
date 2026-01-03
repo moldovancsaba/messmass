@@ -66,4 +66,12 @@
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
+  min-height: 0; /* CRITICAL: Allow flex item to shrink below content size */
+}
+
+/* WHAT: Image charts in body zone maintain aspect ratio */
+/* WHY: Layout Grammar requires images to preserve aspect ratio */
+/* HOW: Body zone for images uses aspect-ratio property when image chart is present */
+.bodyZone:has(.image) {
+  aspect-ratio: inherit; /* Inherit from .image container */
 }
