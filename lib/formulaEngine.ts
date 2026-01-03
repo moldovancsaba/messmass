@@ -746,8 +746,36 @@ export function evaluateFormula(
   contentAssets?: ContentAsset[]
 ): number | 'NA' {
   try {
+    // WHAT: Handle simple single-variable formulas directly
+    // WHY: Formulas like [fieldName] should return the value directly without evaluation
+    // HOW: Check if formula is just [fieldName] pattern
+    const singleVarMatch = formula.trim().match(/^\[([a-zA-Z0-9_]+)\]$/);
+    if (singleVarMatch) {
+      const fieldName = singleVarMatch[1];
+      const value = (stats as any)[fieldName];
+      if (value !== undefined && value !== null) {
+        const numValue = typeof value === 'number' ? value : parseFloat(String(value));
+        if (!isNaN(numValue) && isFinite(numValue)) {
+          return numValue;
+        }
+      }
+      // Field missing or invalid → return 0, not 'NA'
+      return 0;
+    }
+    
     // Step 1: Substitute variables with actual values (including parameters, manual data, and content assets)
     const formulaWithValues = substituteVariables(formula, stats, parameters, manualData, contentAssets);
+    
+    // WHAT: Check if result is just a number string (no operators)
+    // WHY: After substitution, simple formulas become just numbers
+    // HOW: If it's a valid number, return it directly
+    const numMatch = formulaWithValues.trim().match(/^-?\d+\.?\d*$/);
+    if (numMatch) {
+      const numValue = parseFloat(formulaWithValues);
+      if (!isNaN(numValue) && isFinite(numValue)) {
+        return numValue;
+      }
+    }
     
     // Step 2: Process mathematical functions
     const formulaWithFunctions = processMathFunctions(formulaWithValues);
