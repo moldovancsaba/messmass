@@ -11,6 +11,7 @@ import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib
 import { calculateChart, formatChartValue } from '@/lib/chartCalculator';
 import PredictiveFormattingInput from './PredictiveFormattingInput';
 import SaveStatusIndicator, { SaveStatus } from './SaveStatusIndicator';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import styles from './ChartAlgorithmManager.module.css';
 
 /**
@@ -265,8 +266,6 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
   // WHY: Allow rapid iterative editing with immediate feedback
   const updateConfiguration = async (configData: ChartConfigFormData): Promise<ChartConfigFormData> => {
     const isUpdate = !!configData._id;
-    const url = '/api/chart-config';
-    const method = isUpdate ? 'PUT' : 'POST';
     
     // Normalize order before sending
     const safeOrder = Number.isFinite(configData.order as any) && (configData.order as any) >= 1
@@ -289,13 +288,11 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     console.log('🔍 AFTER clean - elements[0].formatting:', cleanedBody.elements?.[0]?.formatting);
     console.log('🔍 AFTER clean - elements[0] keys:', Object.keys(cleanedBody.elements?.[0] || {}));
     
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cleanedBody)
-    });
-
-    const result = await response.json();
+    // WHAT: Use apiPut/apiPost for automatic CSRF token handling
+    // WHY: Production middleware requires X-CSRF-Token header for all PUT/POST requests
+    const result = isUpdate
+      ? await apiPut('/api/chart-config', cleanedBody)
+      : await apiPost('/api/chart-config', cleanedBody);
     
     if (result.success) {
       console.log(`✅ Chart configuration updated successfully (modal open)`);
@@ -318,8 +315,6 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
   // WHY: Traditional workflow - save then close
   const saveConfiguration = async (configData: ChartConfigFormData): Promise<void> => {
     const isUpdate = !!configData._id;
-    const url = '/api/chart-config';
-    const method = isUpdate ? 'PUT' : 'POST';
     
     // Normalize order before sending
     const safeOrder = Number.isFinite(configData.order as any) && (configData.order as any) >= 1
@@ -344,13 +339,11 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     console.log('🔍 AFTER clean - elements[0]:', JSON.stringify(cleanedBody.elements?.[0], null, 2));
     console.log('🔍 AFTER clean - has formatting key?:', 'formatting' in (cleanedBody.elements?.[0] || {}));
     
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cleanedBody)
-    });
-
-    const result = await response.json();
+    // WHAT: Use apiPut/apiPost for automatic CSRF token handling
+    // WHY: Production middleware requires X-CSRF-Token header for all PUT/POST requests
+    const result = isUpdate
+      ? await apiPut('/api/chart-config', cleanedBody)
+      : await apiPost('/api/chart-config', cleanedBody);
     
     if (result.success) {
       console.log(`✅ Chart configuration ${isUpdate ? 'updated' : 'created'} successfully`);
@@ -375,11 +368,9 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     try {
       console.log('🗑️ Deleting chart configuration:', configId);
       
-      const response = await fetch(`/api/chart-config?configurationId=${configId}`, {
-        method: 'DELETE'
-      });
-
-      const result = await response.json();
+      // WHAT: Use apiDelete for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for all DELETE requests
+      const result = await apiDelete(`/api/chart-config?configurationId=${configId}`);
       
       if (result.success) {
         console.log('✅ Chart configuration deleted successfully');
@@ -394,22 +385,19 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
       }
     } catch (error) {
       console.error('❌ Error deleting configuration:', error);
-      alert('Failed to delete configuration. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to delete configuration: ${errorMessage}`);
     }
   };
 
   const toggleConfigurationActive = async (config: ChartConfiguration) => {
     try {
-      const response = await fetch('/api/chart-config', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          configurationId: config._id,
-          isActive: !config.isActive
-        })
+      // WHAT: Use apiPut for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
+      const result = await apiPut('/api/chart-config', {
+        configurationId: config._id,
+        isActive: !config.isActive
       });
-
-      const result = await response.json();
       
       if (result.success) {
         // Reload current view
@@ -436,22 +424,16 @@ export default function ChartAlgorithmManager({ user }: ChartAlgorithmManagerPro
     const targetConfig = configurations[targetIndex];
     
     try {
+      // WHAT: Use apiPut for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
       await Promise.all([
-        fetch('/api/chart-config', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            configurationId: currentConfig._id,
-            order: targetConfig.order
-          })
+        apiPut('/api/chart-config', {
+          configurationId: currentConfig._id,
+          order: targetConfig.order
         }),
-        fetch('/api/chart-config', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            configurationId: targetConfig._id,
-            order: currentConfig.order
-          })
+        apiPut('/api/chart-config', {
+          configurationId: targetConfig._id,
+          order: currentConfig.order
         })
       ]);
       
@@ -607,7 +589,9 @@ ${errors.length > 0 ? '\n\nErrors:\n' + errors.join('\n') : '\n✅ All formulas 
         actionButtons={[
           { label: 'New Chart', onClick: () => startEditing(), variant: 'primary', icon: '➕' },
           { label: 'Refresh Variables', onClick: async () => { 
-            await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+            // WHAT: Use apiPut for automatic CSRF token handling
+            // WHY: Production middleware requires X-CSRF-Token header for all PUT requests
+            await apiPut('/api/variables-config?action=invalidateCache');
             await loadVariablesFromKYC();
           }, variant: 'info', icon: '🔄', disabled: variablesLoading },
           { label: 'Validate All', onClick: () => validateAllFormulas(), variant: 'secondary' },
