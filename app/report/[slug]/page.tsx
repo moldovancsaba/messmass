@@ -14,6 +14,7 @@ import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
+import { ensureDerivedMetrics } from '@/lib/dataValidator';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -163,13 +164,42 @@ export default function ReportPage() {
         hasStats: !!stats,
         hasCharts: !!charts,
         chartsCount: charts?.length || 0,
-        statsKeys: stats ? Object.keys(stats).length : 0
+        statsKeys: stats ? Object.keys(stats).length : 0,
+        statsSample: stats ? Object.keys(stats).slice(0, 10) : []
       });
       return new Map();
     }
 
-    // Create calculator with charts and stats
-    const calculator = new ReportCalculator(charts, stats);
+    // WHAT: Log stats availability for debugging
+    // WHY: Need to see if required stats fields are present
+    console.log(`[ReportPage] Stats available:`, {
+      totalKeys: Object.keys(stats).length,
+      sampleKeys: Object.keys(stats).slice(0, 20),
+      hasTotalFans: 'totalFans' in stats,
+      hasAllImages: 'allImages' in stats,
+      hasRemoteFans: 'remoteFans' in stats
+    });
+
+    // WHAT: Enrich stats with derived metrics before calculation
+    // WHY: Formulas may depend on derived fields (totalFans, allImages, remoteFans) that need to be computed
+    // HOW: ensureDerivedMetrics adds missing derived fields based on base metrics
+    const enrichedStats = ensureDerivedMetrics(stats);
+    
+    console.log(`[ReportPage] Stats after enrichment:`, {
+      totalKeys: Object.keys(enrichedStats).length,
+      hasTotalFans: 'totalFans' in enrichedStats,
+      hasAllImages: 'allImages' in enrichedStats,
+      hasRemoteFans: 'remoteFans' in enrichedStats,
+      totalFansValue: enrichedStats.totalFans,
+      allImagesValue: enrichedStats.allImages,
+      remoteFansValue: enrichedStats.remoteFans
+    });
+
+    // Create calculator with enriched stats
+    // WHAT: Type cast needed - ensureDerivedMetrics returns ProjectStats from dataValidator
+    // WHY: ReportCalculator expects ProjectStats from report-calculator (narrower index signature)
+    // HOW: Cast to compatible type (both allow string | number, enrichedStats may have boolean/object)
+    const calculator = new ReportCalculator(charts, enrichedStats as any);
     const results = new Map();
 
     console.log(`[ReportPage] Calculating ${charts.length} charts...`);
@@ -185,10 +215,36 @@ export default function ReportPage() {
           console.error(`[ReportPage] Chart calculation error for ${chart.chartId}:`, result.error);
         } else if (result.type === 'kpi' && (result.kpiValue === undefined || result.kpiValue === 'NA')) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId} (value: ${result.kpiValue})`);
+          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId}`, {
+            value: result.kpiValue,
+            formula: chart.formula,
+            hasError: !!result.error,
+            error: result.error
+          });
         } else if ((result.type === 'pie' || result.type === 'bar') && (!result.elements || result.elements.length === 0)) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId} (no elements)`);
+          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId}`, {
+            elementsCount: result.elements?.length || 0,
+            formula: chart.formula,
+            elementsFormulas: chart.elements?.map((e: any) => e.formula) || []
+          });
+        } else if ((result.type === 'pie' || result.type === 'bar') && result.elements) {
+          const total = result.elements.reduce((sum: number, el: any) => 
+            sum + (typeof el.value === 'number' ? el.value : 0), 0
+          );
+          if (total === 0) {
+            emptyCount++;
+            console.warn(`[ReportPage] Empty ${result.type} chart (total=0): ${chart.chartId}`, {
+              elements: result.elements.map((el: any) => ({
+                label: el.label,
+                value: el.value,
+                valueType: typeof el.value
+              })),
+              formula: chart.formula
+            });
+          } else {
+            calculatedCount++;
+          }
         } else {
           calculatedCount++;
         }

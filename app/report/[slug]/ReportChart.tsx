@@ -366,14 +366,15 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
             const color = pieColors[idx % pieColors.length];
             const protectedLabel = preventPhraseBreaks(element.label);
             return (
-              <div key={idx} className={styles.pieLegendItem}>
-                <div 
-                  className={styles.pieLegendDot} 
-                  style={{ 
-                    backgroundColor: color,
-                    border: `2px solid ${pieColors[0]}`
-                  }} 
-                />
+              <div 
+                key={idx} 
+                className={styles.pieLegendItem}
+                style={{
+                  '--dot-color': color,
+                  '--dot-border-color': pieColors[0]
+                } as React.CSSProperties}
+              >
+                <div className={styles.pieLegendDot} />
                 <div className={styles.pieLegendText}>
                   {showPercentages ? `${protectedLabel}: ${percentage}%` : protectedLabel}
                 </div>
@@ -439,19 +440,14 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
           return (
             <div key={idx} className={styles.barRow}>
               <div className={styles.barLabel}>{protectedLabel}</div>
-              <div className={styles.barTrack}>
-                {/* WHAT: Dynamic bar fill width and color from calculated data + theme
-                    WHY: Width is computed percentage, color from CSS variables
-                    eslint-disable-next-line react/forbid-dom-props */}
-                <div 
-                  className={styles.barFill}
-                  style={{ 
-                    width: `${widthPercent}%`,
-                    // WHAT: Use individual bar color from CSS variables
-                    // WHY: Allow custom color for each bar element
-                    backgroundColor: barColors[idx % barColors.length]
-                  }}
-                />
+              <div 
+                className={styles.barTrack}
+                style={{
+                  '--bar-width': `${widthPercent}%`,
+                  '--bar-color': barColors[idx % barColors.length]
+                } as React.CSSProperties}
+              >
+                <div className={styles.barFill} />
               </div>
               <div className={styles.barValue}>{formatValue(element.value, result.formatting)}</div>
             </div>
@@ -480,9 +476,8 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
   return (
     <div 
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
       data-chart-id={result.chartId}
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      data-block-height={blockHeight || undefined}
     >
       {showTitle && (
         <div className={styles.textTitleWrapper}>

@@ -499,10 +499,17 @@ function substituteVariables(
   // WHY: Formula references must match database structure exactly
   // HOW: Handle BOTH [stats.field] (bracketed) AND stats.field (non-bracketed) formats
   
-  // First, handle bracketed format: [stats.fieldName]
+  // First, handle bracketed format: [stats.fieldName] (REQUIRED FORMAT)
   processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
-    // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages"
-    // Parse the path and access nested values
+    // ABSOLUTE PATH: fullPath must be "stats.fieldName" format (e.g., "stats.female", "stats.remoteImages")
+    
+    // WHAT: Validate format - must start with "stats."
+    // WHY: Enforce consistent variable naming across all charts
+    // HOW: Reject old [fieldName] format, require [stats.fieldName]
+    if (!fullPath.startsWith('stats.')) {
+      console.warn(`[formulaEngine] Invalid variable format: [${fullPath}]. Use [stats.${fullPath}] instead.`);
+      return '0'; // Return 0 for invalid format
+    }
     
     // Handle special derived/computed fields
     if (fullPath === 'stats.totalFans') {
@@ -674,7 +681,7 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
       try {
         // Dynamic import to avoid bundling in client if not needed
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        // Note: require() is acceptable here for conditional loading
         const { Parser } = require('expr-eval');
         
         // WHAT: Create parser with only safe mathematical operators

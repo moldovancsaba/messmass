@@ -45,7 +45,7 @@ export function sanitizeHTML(
   // WHY: DOMPurify works natively in browser environment
   if (typeof window !== 'undefined') {
     // Dynamic import for client-side only
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // Note: require() is acceptable here for conditional loading
     const DOMPurify = require('dompurify');
     
     return DOMPurify.sanitize(dirty, {

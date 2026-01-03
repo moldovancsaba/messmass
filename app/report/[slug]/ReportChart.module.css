@@ -334,9 +334,11 @@
   border-radius: 0; /* SQUARE, not circle */
   flex-shrink: 0;
   box-sizing: border-box;
-  /* WHAT: Border matching pie chart slices for visibility */
-  /* WHY: Ensures legend indicators are visible when colors are close to background */
-  /* HOW: Border color and width match pie chart border (2px solid first pie color) */
+  /* WHAT: Dynamic colors from CSS custom properties set on parent */
+  /* WHY: Colors come from chart data, cannot use static CSS classes */
+  background-color: var(--dot-color, var(--pieColor1, #3b82f6));
+  /* WHAT: Border color and width match pie chart border (2px solid first pie color) */
+  border: 2px solid var(--dot-border-color, var(--pieColor1, #3b82f6));
 }
 
 .pieLegendText {
@@ -433,8 +435,10 @@
 .barFill {
   /* WHAT: Fills track based on percentage of max value */
   /* WHY: Visual representation of bar data */
-  /* HOW: Dynamic width from percentage calculation */
+  /* HOW: Width and color set via CSS custom properties from parent */
   height: 100%;
+  width: var(--bar-width, 0%);
+  background-color: var(--bar-color, var(--barColor1, #3b82f6));
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   transition: width var(--transition-normal);
 }
@@ -462,8 +466,8 @@
   /* CRITICAL: Override base .chart flex display */
   display: block !important;
   flex-direction: unset !important;
-  height: 100% !important;
   width: 100% !important;
+  height: 100% !important; /* WHAT: Fill parent row height from layout grammar */
   /* CRITICAL: Ensure children stack vertically */
   position: relative !important;
 }
