@@ -369,6 +369,9 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
               <div 
                 key={idx} 
                 className={styles.pieLegendItem}
+                // WHAT: Dynamic pie legend dot color from chart data
+                // WHY: Colors come from chart calculation, cannot use static CSS classes
+                // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
                 style={{
                   '--dot-color': color,
                   '--dot-border-color': pieColors[0]
@@ -442,6 +445,9 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
               <div className={styles.barLabel}>{protectedLabel}</div>
               <div 
                 className={styles.barTrack}
+                // WHAT: Dynamic bar fill width and color from chart calculation
+                // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
+                // HOW: Set CSS custom properties on parent, consumed by .barFill
                 style={{
                   '--bar-width': `${widthPercent}%`,
                   '--bar-color': barColors[idx % barColors.length]

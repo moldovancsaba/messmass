@@ -24,7 +24,7 @@ interface VariableFlags {
 
 interface VariableMetadata {
   _id: any; // MongoDB ObjectId
-  name: string; // Database field name: "female", "remoteImages" (no stats. prefix)
+  name: string; // Field name: "female", "remoteImages" (no "stats." prefix)
   label: string; // Display name: "Female", "Remote Images"
   type: VariableType;
   category: string; // "Images", "Demographics", etc.
@@ -107,6 +107,8 @@ export async function GET() {
       // WHY: Some records only set `alias` (display label) or have missing/empty `label`
       // HOW: label = v.label || v.alias || Humanize(name)
       const rawName: string = typeof v?.name === 'string' ? v.name : '';
+      // WHAT: Variable names are stored without "stats." prefix
+      // WHY: No prefix needed - stats object is already passed to formula engine
       const stripped = rawName.startsWith('stats.') ? rawName.slice(6) : rawName;
       const humanized = stripped
         .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
@@ -175,7 +177,7 @@ export async function GET() {
 //   - $set: { updatedAt, ...explicitlyProvidedFields }
 //   - For missing required fields: Add defaults to $setOnInsert (NOT $set)
 // • Example:
-//   User provides: { name: 'stats.vipGuests', label: 'VIP', type: 'count' }
+//   User provides: { name: 'vipGuests', label: 'VIP', type: 'count' }
 //   Result:
 //     $setOnInsert: { name, isSystem: false, createdAt, category: 'Custom' }
 //     $set: { updatedAt, label: 'VIP', type: 'count' }
@@ -186,7 +188,7 @@ export async function GET() {
 //   - $set ONLY: { updatedAt, ...explicitlyProvidedFields }
 //   - NO $setOnInsert (ignored anyway since doc exists)
 // • Example:
-//   User updates: { name: 'stats.female', label: 'Women' }
+//   User updates: { name: 'female', label: 'Women' }
 //   Result:
 //     $set: { updatedAt, label: 'Women' }
 // 
@@ -198,15 +200,15 @@ export async function GET() {
 // ❌ DON'T: Use $setOnInsert when updating existing docs
 // 
 // NAMING CONVENTION:
-// • Variable names MUST use format: stats.variableName
-// • Examples: stats.female, stats.vipGuests, stats.remoteImages
+// • Variable names use format: variableName (no "stats." prefix)
+// • Examples: female, vipGuests, remoteImages
 // • See: VARIABLES_DATABASE_SCHEMA.md (line 21)
 // 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 
 // Body examples:
-// 1) Create new: { name: 'stats.vipGuests', label: 'VIP Guests', type: 'count', category: 'Event' }
-// 2) Update existing: { name: 'stats.female', label: 'Women', flags: { visibleInClicker: true } }
+// 1) Create new: { name: 'vipGuests', label: 'VIP Guests', type: 'count', category: 'Event' }
+// 2) Update existing: { name: 'female', label: 'Women', flags: { visibleInClicker: true } }
 export async function POST(request: NextRequest) {
   try {
     const db = await getDb();
@@ -228,6 +230,8 @@ export async function POST(request: NextRequest) {
     // WHY: User wants to use exact same variable name everywhere (KYC, MongoDB, Algorithms)
     // RULE: Variable names MUST follow camelCase format (e.g., fanCount, vipGuests, female)
     // NOTE: System accepts both formats for backward compatibility, but stores as plain camelCase
+    // WHAT: Remove "stats." prefix if present (backward compatibility)
+    // WHY: Variable names should not have "stats." prefix
     const normalizedName = name.startsWith('stats.') ? name.substring(6) : name;
     if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(normalizedName)) {
       return NextResponse.json({ 
@@ -238,7 +242,7 @@ export async function POST(request: NextRequest) {
 
     const col = db.collection<VariableMetadata>(COLLECTION);
     
-    // WHAT: Normalize variable name (remove stats. prefix if present)
+    // WHAT: Ensure variable name has no "stats." prefix
     // WHY: Store variables as plain camelCase for consistency across KYC, MongoDB, and Algorithms
     const finalName = normalizedName;
     
@@ -247,13 +251,14 @@ export async function POST(request: NextRequest) {
     const existing = await col.findOne({ 
       $or: [
         { name: finalName },
-        { name: `stats.${finalName}` }
+        { name: finalName } // No "stats." prefix
       ]
     });
 
     // WHAT: Block name changes for system variables
     // WHY: System variables map to database schema fields
     const existingName = existing?.name || '';
+    // WHAT: Remove "stats." prefix if present (backward compatibility)
     const existingNameNormalized = existingName.startsWith('stats.') ? existingName.substring(6) : existingName;
     if (existing?.isSystem && label && existingNameNormalized !== finalName) {
       return NextResponse.json({ 
@@ -353,7 +358,7 @@ export async function POST(request: NextRequest) {
     }
 
     // WHAT: Use normalized name for query (handle both formats for backward compatibility)
-    // WHY: Support existing variables with stats. prefix while storing new ones as plain camelCase
+    // WHY: Support existing variables without "stats." prefix (new standard)
     const queryName = existing?.name || finalName;
     
     const result = await col.updateOne(
@@ -362,7 +367,7 @@ export async function POST(request: NextRequest) {
       { upsert: true }
     );
 
-    // WHAT: If existing variable had stats. prefix, migrate it to plain camelCase
+    // WHAT: Ensure variable name has no "stats." prefix
     // WHY: Normalize all variables to plain camelCase format
     if (existing && existing.name.startsWith('stats.') && existing.name !== finalName) {
       await col.updateOne(

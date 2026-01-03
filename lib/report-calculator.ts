@@ -171,7 +171,7 @@ export class ReportCalculator {
     let value: number | 'NA' = 'NA';
     
     if (isPercentage) {
-      // WHAT: Try to detect if formula is a sum of variables (e.g., [stats.var1] + [stats.var2] OR stats.var1 + stats.var2)
+      // WHAT: Try to detect if formula is a sum of variables (e.g., [var1] + [var2] OR var1 + var2)
       // WHY: For percentage KPIs, we want the average of the percentages, not the sum
       // HOW: Check if formula contains only variable references and addition operators
       const trimmedFormula = chart.formula.trim();
@@ -186,31 +186,26 @@ export class ReportCalculator {
       if (hasOnlyAdditions) {
         // WHAT: Extract all variable references from the formula
         // WHY: Need to evaluate each variable separately to calculate average
-        // HOW: Handle both bracketed format [stats.var1] and non-bracketed format stats.var1
+        // HOW: Handle both bracketed format [var1] and non-bracketed format var1
         const variables: string[] = [];
         
-        // First, try to extract from bracketed format: [stats.var1] or [var1]
+        // First, try to extract from bracketed format: [var1]
         const bracketRegex = /\[([^\]]+)\]/g;
         let match;
         while ((match = bracketRegex.exec(trimmedFormula)) !== null) {
           variables.push(match[1]);
         }
         
-        // If no bracketed variables found, try non-bracketed format: stats.var1 or var1
+        // If no bracketed variables found, try non-bracketed format: var1
         if (variables.length === 0) {
           // Split by + and extract variable names
           const parts = trimmedFormula.split('+').map(p => p.trim()).filter(p => p.length > 0);
           for (const part of parts) {
             // Remove any leading/trailing whitespace and extract variable name
-            // Handle both stats.varName and varName formats
-            const varMatch = part.match(/^(?:stats\.)?([a-zA-Z][a-zA-Z0-9_]*)$/);
+            // Handle varName format (no prefix)
+            const varMatch = part.match(/^([a-zA-Z][a-zA-Z0-9_]*)$/);
             if (varMatch) {
-              // If it doesn't start with stats., add it for consistency
-              const varName = part.startsWith('stats.') ? part : `stats.${part}`;
-              variables.push(varName);
-            } else if (part.match(/^stats\.[a-zA-Z][a-zA-Z0-9_]*$/)) {
-              // Already in stats.varName format
-              variables.push(part);
+              variables.push(varMatch[1]);
             }
           }
         }
@@ -226,7 +221,7 @@ export class ReportCalculator {
             // HOW: Try bracketed format first, fallback to direct variable access
             let varValue: number | 'NA' = 'NA';
             
-            // Try bracketed format: [stats.varName]
+            // Try bracketed format: [varName]
             const bracketFormula = `[${variable}]`;
             const evalResult = this.evaluateFormula(bracketFormula);
             
@@ -235,8 +230,8 @@ export class ReportCalculator {
               varValue = evalResult;
             } else {
               // If that fails, try direct variable access from stats
-              // Extract field name (remove stats. prefix if present)
-              const fieldName = variable.startsWith('stats.') ? variable.substring(6) : variable;
+              // Extract field name (no prefix)
+              const fieldName = variable;
               // Try direct access
               const directValue = (this.stats as any)[fieldName];
               if (typeof directValue === 'number' && !isNaN(directValue)) {

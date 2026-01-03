@@ -983,15 +983,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         return false; // Valid - don't mark as invalid
       }
       
-      // WHAT: Handle stats.fieldName format for numeric variables
-      // WHY: Numeric formulas use [stats.female] but KYC stores as "female"
-      const variableNameShort = variable.startsWith('stats.') ? variable.substring(6) : variable;
+      // WHAT: Handle fieldName format (no prefix)
+      // WHY: Formulas use [female] and KYC stores as "female"
+      const variableNameShort = variable;
       
       // Check if variable exists in KYC (dynamic from database)
       // Accept both bare and prefixed names in availableVariables (DB may store either)
       const matches = availableVariables.some(v => {
         const vName = String(v.name || '');
-        return vName === variableNameShort || vName === `stats.${variableNameShort}`;
+        return vName === variableNameShort;
       });
       return !matches;
     });
@@ -1003,15 +1003,15 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     // Simple test calculation with sample data
     try {
       let testFormula = formula;
-      // WHAT: Sample data using full database paths (stats.fieldName)
+      // WHAT: Sample data using field names (no prefix)
       // WHY: Match Single Reference System format
       const sampleData: Record<string, any> = {
-        'stats.female': 120, 'stats.male': 160, 'stats.remoteFans': 80, 'stats.stadium': 200,
-        'stats.genAlpha': 20, 'stats.genYZ': 100, 'stats.genX': 80, 'stats.boomer': 80,
-        'stats.jersey': 15, 'stats.scarf': 8, 'stats.flags': 12, 'stats.baseballCap': 5, 'stats.other': 3,
-        'stats.remoteImages': 10, 'stats.hostessImages': 25, 'stats.selfies': 15,
-        'stats.approvedImages': 45, 'stats.rejectedImages': 5, 'stats.merched': 43,
-        'stats.eventAttendees': 280, 'stats.allImages': 50, 'stats.totalFans': 280
+        'female': 120, 'male': 160, 'remoteFans': 80, 'stadium': 200,
+        'genAlpha': 20, 'genYZ': 100, 'genX': 80, 'boomer': 80,
+        'jersey': 15, 'scarf': 8, 'flags': 12, 'baseballCap': 5, 'other': 3,
+        'remoteImages': 10, 'hostessImages': 25, 'selfies': 15,
+        'approvedImages': 45, 'rejectedImages': 5, 'merched': 43,
+        'eventAttendees': 280, 'allImages': 50, 'totalFans': 280
       };
       
       // WHAT: Add report image and text sample data (simple format)

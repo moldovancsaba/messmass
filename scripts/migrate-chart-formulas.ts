@@ -14,24 +14,38 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB || 'messmass';
 
 /**
- * WHAT: Convert old format [fieldName] to new format [stats.fieldName]
- * WHY: Enforce consistent variable naming
- * HOW: Regex replacement for bracketed variables
+ * WHAT: Convert all formula formats to proper [stats.fieldName] format
+ * WHY: Enforce consistent variable naming aligned with MongoDB Atlas field names
+ * HOW: Handle multiple formats: [fieldName], stats.fieldName, [stats.fieldName]
  */
 function migrateFormula(formula: string): string {
   if (!formula || typeof formula !== 'string') {
     return formula;
   }
 
-  // WHAT: Match [fieldName] pattern where fieldName doesn't start with stats.
-  // WHY: Only update old format, preserve [stats.fieldName] and special tokens
+  let migrated = formula;
+
+  // STEP 1: Convert [fieldName] to [stats.fieldName] (old bracketed format without stats. prefix)
+  // WHAT: Match [fieldName] where fieldName doesn't start with stats. or special tokens
+  // WHY: Old charts used [female] instead of [stats.female]
   // HOW: Negative lookahead to exclude stats., PARAM:, MANUAL:, MEDIA:, TEXT:
-  const oldFormatRegex = /\[(?!(?:stats\.|PARAM:|MANUAL:|MEDIA:|TEXT:))([a-zA-Z0-9_]+)\]/g;
-  
-  return formula.replace(oldFormatRegex, (match, fieldName) => {
+  const oldBracketedRegex = /\[(?!(?:stats\.|PARAM:|MANUAL:|MEDIA:|TEXT:))([a-zA-Z0-9_]+)\]/g;
+  migrated = migrated.replace(oldBracketedRegex, (match, fieldName) => {
     // Convert [fieldName] to [stats.fieldName]
     return `[stats.${fieldName}]`;
   });
+
+  // STEP 2: Convert stats.fieldName (without brackets) to [stats.fieldName]
+  // WHAT: Match stats.fieldName pattern that is NOT already inside brackets
+  // WHY: Some charts use "stats.female" without brackets
+  // HOW: Use negative lookbehind and lookahead to avoid double-substitution
+  const nonBracketedRegex = /(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g;
+  migrated = migrated.replace(nonBracketedRegex, (match, fieldName) => {
+    // Convert stats.fieldName to [stats.fieldName]
+    return `[stats.${fieldName}]`;
+  });
+
+  return migrated;
 }
 
 /**
@@ -116,4 +130,5 @@ async function migrateChartFormulas() {
 
 // Run migration
 migrateChartFormulas();
+
 
