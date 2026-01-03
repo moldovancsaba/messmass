@@ -128,7 +128,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
       
       case 'kpi':
-        return result.kpiValue !== undefined && result.kpiValue !== 'NA';
+        return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
       
       case 'pie':
       case 'bar':

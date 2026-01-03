@@ -167,14 +167,33 @@ export class ReportCalculator {
     // WHAT: Check if this is a percentage KPI that should use average calculation
     // WHY: Summing percentages gives incorrect results (e.g., 50% + 50% = 100% should be 50%)
     // HOW: Detect if suffix is "%" and formula is a simple sum of variables
+    // NOTE: Some KPI charts use elements[0].formula instead of chart.formula
     const isPercentage = chart.formatting?.suffix === '%';
     let value: number | 'NA' = 'NA';
+    
+    // WHAT: Get formula from chart.formula or elements[0].formula
+    // WHY: Some KPI charts store formula in elements array
+    // HOW: Prefer chart.formula, fallback to first element's formula
+    const formula = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : null);
+    
+    if (!formula) {
+      return {
+        chartId: chart.chartId,
+        type: 'kpi',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: 'NA',
+        formatting: chart.formatting,
+        showTitle: chart.showTitle
+      };
+    }
     
     if (isPercentage) {
       // WHAT: Try to detect if formula is a sum of variables (e.g., [var1] + [var2] OR var1 + var2)
       // WHY: For percentage KPIs, we want the average of the percentages, not the sum
       // HOW: Check if formula contains only variable references and addition operators
-      const trimmedFormula = chart.formula.trim();
+      const trimmedFormula = formula.trim();
       
       // WHAT: Check if formula contains only additions (no -, *, /, etc.)
       // WHY: Only simple sums should use average calculation, complex formulas should work as-is
@@ -254,25 +273,25 @@ export class ReportCalculator {
           } else {
             // WHAT: Fallback to normal evaluation if no valid values
             // WHY: Graceful degradation if variable extraction fails
-            const evalResult = this.evaluateFormula(chart.formula);
+            const evalResult = this.evaluateFormula(formula);
             value = typeof evalResult === 'number' ? evalResult : 'NA';
           }
         } else {
           // WHAT: Fallback to normal evaluation if no variables found
           // WHY: Formula might be more complex than simple sum
-          const evalResult = this.evaluateFormula(chart.formula);
+          const evalResult = this.evaluateFormula(formula);
           value = typeof evalResult === 'number' ? evalResult : 'NA';
         }
       } else {
         // WHAT: Formula is not a simple sum, use normal evaluation
         // WHY: Complex formulas (with division, multiplication, etc.) should work as-is
-        const evalResult = this.evaluateFormula(chart.formula);
+        const evalResult = this.evaluateFormula(formula);
         value = typeof evalResult === 'number' ? evalResult : 'NA';
       }
     } else {
       // WHAT: Not a percentage KPI, use normal evaluation
       // WHY: Sum calculation is correct for non-percentage values
-      const evalResult = this.evaluateFormula(chart.formula);
+      const evalResult = this.evaluateFormula(formula);
       value = typeof evalResult === 'number' ? evalResult : 'NA';
     }
     
@@ -324,18 +343,24 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateText(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "stats.reportText1" OR "reportText1")
+    // WHAT: Detect simple variable reference (e.g., "[reportText1]", "stats.reportText1", or "reportText1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
+    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
     const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
-    if (simpleVarMatch) {
-      // Direct access for simple variable references
+    if (bracketMatch) {
+      // Direct access for [fieldName] format
+      const fieldName = bracketMatch[1];
+      const fieldValue = this.stats[fieldName];
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
+    } else if (simpleVarMatch) {
+      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
       const fieldValue = this.stats[fieldName];
-      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : 'NA';
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
       // Complex formula evaluation
       value = this.evaluateFormula(chart.formula);
@@ -358,18 +383,24 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateTable(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "stats.reportTable1" OR "reportTable1")
+    // WHAT: Detect simple variable reference (e.g., "[reportTable1]", "stats.reportTable1", or "reportTable1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
+    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
     const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
-    if (simpleVarMatch) {
-      // Direct access for simple variable references
+    if (bracketMatch) {
+      // Direct access for [fieldName] format
+      const fieldName = bracketMatch[1];
+      const fieldValue = this.stats[fieldName];
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
+    } else if (simpleVarMatch) {
+      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
       const fieldValue = this.stats[fieldName];
-      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : 'NA';
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
       // Complex formula evaluation
       value = this.evaluateFormula(chart.formula);
@@ -392,18 +423,24 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateImage(chart: Chart): ChartResult {
-    // WHAT: Detect simple variable reference (e.g., "stats.reportImage1" OR "reportImage1")
+    // WHAT: Detect simple variable reference (e.g., "[reportImage1]", "stats.reportImage1", or "reportImage1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
-    // HOW: Check if formula is stats.fieldName OR just fieldName pattern without operators
+    // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
+    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
     const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
-    if (simpleVarMatch) {
-      // Direct access for simple variable references
+    if (bracketMatch) {
+      // Direct access for [fieldName] format
+      const fieldName = bracketMatch[1];
+      const fieldValue = this.stats[fieldName];
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
+    } else if (simpleVarMatch) {
+      // Direct access for simple variable references (stats.fieldName or fieldName)
       const fieldName = simpleVarMatch[1];
       const fieldValue = this.stats[fieldName];
-      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : 'NA';
+      value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
       // Complex formula evaluation
       value = this.evaluateFormula(chart.formula);
@@ -502,8 +539,8 @@ export class ReportCalculator {
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
 
       case 'kpi':
-        // KPI valid if not NA
-        return result.kpiValue !== 'NA' && result.kpiValue !== undefined;
+        // KPI valid if not NA (0 is valid)
+        return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
 
       case 'pie':
       case 'bar':
