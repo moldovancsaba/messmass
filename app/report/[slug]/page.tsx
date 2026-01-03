@@ -14,6 +14,7 @@ import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import type { Chart } from '@/lib/report-calculator';
+import { ensureDerivedMetrics } from '@/lib/dataValidator';
 import styles from '@/app/styles/report-page.module.css'; // WHAT: Shared stylesheet (Phase 3)
 
 /**
@@ -163,13 +164,39 @@ export default function ReportPage() {
         hasStats: !!stats,
         hasCharts: !!charts,
         chartsCount: charts?.length || 0,
-        statsKeys: stats ? Object.keys(stats).length : 0
+        statsKeys: stats ? Object.keys(stats).length : 0,
+        statsSample: stats ? Object.keys(stats).slice(0, 10) : []
       });
       return new Map();
     }
 
-    // Create calculator with charts and stats
-    const calculator = new ReportCalculator(charts, stats);
+    // WHAT: Log stats availability for debugging
+    // WHY: Need to see if required stats fields are present
+    console.log(`[ReportPage] Stats available:`, {
+      totalKeys: Object.keys(stats).length,
+      sampleKeys: Object.keys(stats).slice(0, 20),
+      hasTotalFans: 'totalFans' in stats,
+      hasAllImages: 'allImages' in stats,
+      hasRemoteFans: 'remoteFans' in stats
+    });
+
+    // WHAT: Enrich stats with derived metrics before calculation
+    // WHY: Formulas may depend on derived fields (totalFans, allImages, remoteFans) that need to be computed
+    // HOW: ensureDerivedMetrics adds missing derived fields based on base metrics
+    const enrichedStats = ensureDerivedMetrics(stats);
+    
+    console.log(`[ReportPage] Stats after enrichment:`, {
+      totalKeys: Object.keys(enrichedStats).length,
+      hasTotalFans: 'totalFans' in enrichedStats,
+      hasAllImages: 'allImages' in enrichedStats,
+      hasRemoteFans: 'remoteFans' in enrichedStats,
+      totalFansValue: enrichedStats.totalFans,
+      allImagesValue: enrichedStats.allImages,
+      remoteFansValue: enrichedStats.remoteFans
+    });
+
+    // Create calculator with enriched stats
+    const calculator = new ReportCalculator(charts, enrichedStats);
     const results = new Map();
 
     console.log(`[ReportPage] Calculating ${charts.length} charts...`);
