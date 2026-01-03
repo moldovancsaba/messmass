@@ -78,8 +78,8 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
             label=""
             value={currentText}
             onSave={(text) => onSave(statsKey, text)}
-            rows={6}
-            placeholder="Enter text... (markdown supported: **bold**, *italic*, # heading, - lists)"
+            rows={8}
+            placeholder="Enter text... (markdown supported: # H1, ## H2, **bold**, *italic*, - lists, > quotes, ```code```, `inline code`, ~~strikethrough~~, ---)"
           />
           
           {/* WHAT: Markdown syntax hint */}

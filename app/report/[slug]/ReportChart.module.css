@@ -536,36 +536,103 @@
   /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
   /* WHY: All text charts in a block should use the same font-size */
   /* HOW: Check for CSS custom property first, fallback to container query scaling */
-  /* INCREASED: Max font-size from 1.5rem to 2.5rem for larger text */
-  font-size: var(--unified-text-font-size, clamp(0.75rem, min(12cqh, 10cqw), 2.5rem)) !important;
+  /* INCREASED: Max font-size to 4rem for optimal text sizing (fill space) */
+  font-size: var(--unified-text-font-size, clamp(0.75rem, min(12cqh, 10cqw), 4rem)) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
   box-sizing: border-box;
   /* CRITICAL: Center the entire block of content */
   text-align: center !important;
-  /* CRITICAL: Allow vertical scrolling if content overflows */
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  /* CRITICAL: No scrolling - Layout Grammar compliance (content must fit) */
+  overflow: hidden !important; /* WHAT: No scrolling allowed per Layout Grammar */
   /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
 
 /* WHAT: Markdown element styles inside text content
- * WHY: Support limited markdown features: title, bold, italic, lists, links
+ * WHY: Support full markdown features with center alignment
  * HOW: Use relative font sizes (em) so they inherit container scaling
- * CRITICAL: All block elements must be display: block to stack vertically
+ * CRITICAL: All block elements must be display: block to stack vertically, center-aligned
  */
+
+/* WHAT: Heading levels with relative sizes (h1-h6) */
+/* WHY: Preserve heading hierarchy while maintaining center alignment */
+/* HOW: Use relative font sizes (em) that inherit from .textContent base size */
 .textMarkdown h1 {
-  display: block !important; /* CRITICAL: Force block display */
-  margin: 0.5em 0 !important; /* Space before and after heading */
+  display: block !important;
+  margin: 0.5em 0 !important;
   padding: 0 !important;
-  font-weight: 700 !important; /* Bold for emphasis */
+  font-weight: 700 !important;
   line-height: 1.2 !important;
-  font-size: 1em !important; /* CRITICAL: Same size as content (inherit from .textContent) */
+  font-size: 1.5em !important; /* WHAT: Largest heading - 1.5x base size */
   width: 100% !important;
   box-sizing: border-box !important;
-  /* CRITICAL: Ensure heading is visible and styled */
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h2 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1.3em !important; /* WHAT: Second level - 1.3x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h3 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1.1em !important; /* WHAT: Third level - 1.1x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h4 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 1.05em !important; /* WHAT: Fourth level - 1.05x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h5 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 1em !important; /* WHAT: Fifth level - same as base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h6 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 0.95em !important; /* WHAT: Smallest heading - 0.95x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
   color: inherit !important;
   text-align: center !important;
 }
@@ -642,24 +709,88 @@
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
 }
 
-/* CRITICAL: Ensure h1 headings are properly styled and visible */
-.textMarkdown h1 {
+/* WHAT: Remove duplicate h1 definition - already defined above with proper sizing */
+
+/* WHAT: Blockquote styling with center alignment */
+/* WHY: Support blockquotes with visual distinction */
+.textMarkdown blockquote {
   display: block !important;
   margin: 0.5em 0 !important;
-  padding: 0 !important;
-  font-weight: 700 !important;
-  line-height: 1.2 !important;
-  font-size: 1em !important;
+  padding: 0.5em 1em !important;
+  border-left: 3px solid var(--mm-gray-300) !important;
+  background: var(--mm-gray-50) !important;
+  border-radius: var(--mm-radius-sm) !important;
+  font-style: italic !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  color: inherit !important;
   text-align: center !important;
+  font-size: 1em !important;
+  color: inherit !important;
+}
+
+/* WHAT: Code block styling with center alignment */
+/* WHY: Support code blocks with monospace font */
+.textMarkdown pre {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0.5em !important;
+  background: var(--mm-gray-100) !important;
+  border-radius: var(--mm-radius-sm) !important;
+  overflow-x: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  text-align: left !important; /* WHAT: Code blocks left-aligned for readability */
+  font-size: 0.9em !important;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* WHAT: Inline code styling */
+/* WHY: Support inline code with monospace font */
+.textMarkdown code {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 0.9em !important;
+  background: var(--mm-gray-100) !important;
+  padding: 0.15em 0.3em !important;
+  border-radius: var(--mm-radius-xs) !important;
+  display: inline !important;
+}
+
+/* WHAT: Code block code (nested in pre) */
+/* WHY: Code blocks use pre>code structure */
+.textMarkdown pre code {
+  display: block !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 1em !important;
+}
+
+/* WHAT: Strikethrough styling */
+/* WHY: Support strikethrough text decoration */
+.textMarkdown del,
+.textMarkdown s {
+  text-decoration: line-through !important;
+  display: inline !important;
+  color: var(--mm-gray-500) !important;
+}
+
+/* WHAT: Horizontal rule styling */
+/* WHY: Support horizontal rules for visual separation */
+.textMarkdown hr {
+  display: block !important;
+  border: none !important;
+  border-top: 1px solid var(--mm-gray-300) !important;
+  margin: 1em 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Override for inline elements (they stay inline within their block parent) */
 .textMarkdown strong,
 .textMarkdown em,
-.textMarkdown a {
+.textMarkdown a,
+.textMarkdown code:not(pre code),
+.textMarkdown del,
+.textMarkdown s {
   display: inline !important;
   width: auto !important;
   text-align: inherit !important;
