@@ -11,7 +11,7 @@
   flex-direction: column;
   width: 100% !important; /* WHAT: Fill parent gridItem horizontally (CRITICAL FIX) */
   max-width: none !important; /* CRITICAL: Remove any max-width constraints */
-  height: 100% !important; /* CRITICAL: Fill parent row height (deterministic) */
+  height: var(--block-height, var(--row-height, 100%)); /* WHAT: Use centrally managed block-height from row, fallback to row-height, then 100% */
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
   /* REMOVED: min-height - row height is deterministic from block calculator */
   
@@ -94,7 +94,7 @@
   /* WHAT: Full height cell with internal 3-row grid (4fr:3fr:3fr = 40%:30%:30%) */
   /* WHY: Larger icon section for visual impact */
   /* HOW: Direct grid layout with vertical centering for all content */
-  height: 100%;
+  height: var(--block-height, var(--row-height, 100%)); /* WHAT: Use centrally managed block-height from row */
   display: grid;
   grid-template-rows: 4fr 3fr 3fr; /* Icon (top 40%) : Value (middle 30%) : Title (bottom 30%) */
   gap: 0;

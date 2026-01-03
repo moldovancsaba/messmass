@@ -180,10 +180,25 @@ interface ResponsiveRowProps {
 
 function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
-  const [rowWidth, setRowWidth] = useState(1200); // Default fallback
-  const [rowHeight, setRowHeight] = useState(400); // Default fallback
-  const [titleFontSize, setTitleFontSize] = useState(18); // Default
-  const [subtitleFontSize, setSubtitleFontSize] = useState(14); // Default
+  // WHAT: Initialize state with design tokens instead of hardcoded values
+  // WHY: No hardcoded sizes - all values must come from design system
+  // HOW: Read from CSS custom properties on mount
+  const getDefaultValue = (cssVar: string, fallback: number): number => {
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      const cs = getComputedStyle(root);
+      const value = cs.getPropertyValue(cssVar).trim();
+      if (value) {
+        return parseInt(value, 10);
+      }
+    }
+    return fallback; // WHAT: Server-side fallback (only used during SSR)
+  };
+  
+  const [rowWidth, setRowWidth] = useState(() => getDefaultValue('--mm-row-width-default', 1200));
+  const [rowHeight, setRowHeight] = useState(() => getDefaultValue('--mm-row-height-default', 400));
+  const [titleFontSize, setTitleFontSize] = useState(() => getDefaultValue('--mm-title-font-size-default', 18));
+  const [subtitleFontSize, setSubtitleFontSize] = useState(() => getDefaultValue('--mm-subtitle-font-size-default', 14));
   
   // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
@@ -259,9 +274,13 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
-      style={{ 
+      // WHAT: Set CSS custom properties for dynamic values (centrally managed)
+      // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
+      // HOW: CSS modules reference these custom properties - block-height is centrally managed at row level
+      style={{
         '--row-height': `${rowHeight}px`,
-        gridTemplateColumns: gridColumns
+        '--block-height': `${rowHeight}px`, // WHAT: Centrally managed block height for all charts in row
+        '--grid-columns': gridColumns
       } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
@@ -291,7 +310,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
             <ReportChart 
               result={result} 
               width={chart.width}
-              blockHeight={rowHeight}
+              // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+              // WHY: Eliminates per-chart inline styles, better maintainability
               titleFontSize={titleFontSize}
               subtitleFontSize={subtitleFontSize}
               unifiedTextFontSize={unifiedTextFontSize}
@@ -403,12 +423,10 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       data-pdf-block="true"
       // WHAT: Apply unified font-size as CSS custom property
       // WHY: Text charts can read this value via CSS
-      // HOW: Use inline style to set CSS custom property
-      // eslint-disable-next-line react/forbid-dom-props
+      // HOW: CSS custom properties are acceptable inline styles (standard pattern)
       style={unifiedTextFontSize ? {
-        ['--unified-text-font-size' as string]: `${unifiedTextFontSize}rem`
+        '--unified-text-font-size': `${unifiedTextFontSize}rem`
       } as React.CSSProperties : undefined}
-      data-unified-font-size={unifiedTextFontSize || undefined}
     >
       {block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>

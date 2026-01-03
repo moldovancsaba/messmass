@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: var(--block-height, var(--row-height, 100%)); /* WHAT: Use centrally managed block-height from row, fallback to row-height */
   box-sizing: border-box;
 }
 
@@ -18,6 +18,8 @@
   text-align: center;
   overflow: hidden;
   flex-shrink: 0;
+  font-size: var(--title-font-size); /* WHAT: Use CSS custom property for dynamic font size */
+  height: var(--title-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
 .title {
@@ -42,6 +44,8 @@
   overflow: hidden;
   flex-shrink: 0;
   margin-top: 0.25rem;
+  font-size: var(--subtitle-font-size); /* WHAT: Use CSS custom property for dynamic font size */
+  height: var(--subtitle-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
 .subtitle {

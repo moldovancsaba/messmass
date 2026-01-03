@@ -152,31 +152,33 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
   }
 
   // Render based on chart type
+  // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+  // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <PieChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'text':
-      return <TextChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+      return <TextChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <ImageChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'table':
-      return <TableChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <TableChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
-          <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
+          <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
+          <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
         </div>
       );
     
@@ -195,7 +197,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function KPIChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const protectedTitle = preventPhraseBreaks(result.title);
   
@@ -214,8 +216,8 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   return (
     <div 
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
+      // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
       <div className={styles.kpiIconRow}>
         {result.icon && (
@@ -242,7 +244,7 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Pie Chart - Circular visualization using Chart.js
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function PieChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -261,15 +263,29 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   
   // WHAT: Read individual pie slice colors from CSS variables
   // WHY: Use custom style colors for each pie slice (granular control)
-  // HOW: getComputedStyle reads --pie-color-N variables injected by useReportStyle
+  // HOW: getComputedStyle reads --pieColor1/--pieColor2 from Style editor, fallback to design tokens only
   const getPieColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
-    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
-    const c1 = cs.getPropertyValue('--pieColor1').trim() || primary;
-    const c2 = cs.getPropertyValue('--pieColor2').trim() || secondary;
-    return [c1, c2, c1, c2, c1];
+    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
+    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
+    const primary = cs.getPropertyValue('--pieColor1').trim() || 
+                    cs.getPropertyValue('--primary').trim() || 
+                    cs.getPropertyValue('--mm-color-primary-500').trim() || 
+                    ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
+    const secondary = cs.getPropertyValue('--pieColor2').trim() || 
+                      cs.getPropertyValue('--secondary').trim() || 
+                      cs.getPropertyValue('--mm-color-secondary-500').trim() || 
+                      ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
+    // WHAT: Return design token fallback if colors are empty
+    // WHY: Ensure we always have valid colors from design system
+    return [
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
+      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
+      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim()
+    ];
   };
   
   const pieColors = getPieColors();
@@ -344,8 +360,8 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   return (
     <div 
       className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
+      // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
       <div className={styles.pieGrid}>
         {showTitle && (
@@ -394,7 +410,7 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Bar Chart - Five-element horizontal bars
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function BarChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
@@ -404,15 +420,17 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   
   // WHAT: Read individual bar colors from CSS variables
   // WHY: Use custom style colors for each bar (granular control)
-  // HOW: getComputedStyle reads --bar-color-N variables injected by useReportStyle
+  // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
   const getBarColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
-    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
-    const success = cs.getPropertyValue('--success').trim() || '#10b981';
-    const warning = cs.getPropertyValue('--warning').trim() || '#f59e0b';
-    const error = cs.getPropertyValue('--error').trim() || '#ef4444';
+    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
+    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
+    const primary = cs.getPropertyValue('--mm-color-primary-500').trim();
+    const secondary = cs.getPropertyValue('--mm-color-secondary-500').trim();
+    const success = cs.getPropertyValue('--mm-success').trim() || cs.getPropertyValue('--mm-color-secondary-500').trim();
+    const warning = cs.getPropertyValue('--mm-warning').trim();
+    const error = cs.getPropertyValue('--mm-error').trim();
     return [
       cs.getPropertyValue('--barColor1').trim() || primary,
       cs.getPropertyValue('--barColor2').trim() || secondary,
@@ -430,7 +448,6 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
     >
       <div className={styles.chartBody}>
@@ -469,7 +486,7 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Text Chart - Formatted text display
  * REBUILT: Simple table structure to guarantee title above content
  */
-function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
+function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -483,7 +500,7 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
     <div 
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
       data-chart-id={result.chartId}
-      data-block-height={blockHeight || undefined}
+      // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
     >
       {showTitle && (
         <div className={styles.textTitleWrapper}>
@@ -510,7 +527,7 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
  * Table Chart - Markdown table display with styling
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function TableChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   // WHAT: Render markdown table content on report pages
   // WHY: User requirement: table charts render markdown tables with styling
   // HOW: Use parseTableMarkdown to convert markdown table to HTML
@@ -525,7 +542,6 @@ function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, clas
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.table} report-chart ${className || ''}`}
     >
       {html ? (
@@ -545,7 +561,7 @@ function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, clas
  * Image Chart - Aspect ratio-aware image display
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function ImageChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const aspectRatio = result.aspectRatio || '16:9';
   
@@ -573,7 +589,6 @@ function ImageChart({ result, blockHeight, titleFontSize, subtitleFontSize, clas
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`}
     >
       {/* WHAT: Use actual <img> tag for reliable aspect ratio */}

@@ -73,10 +73,10 @@
 /* Row Container - Layout Grammar Grid System */
 /* WHAT: Dynamic grid based on sum of chart units (e.g., [1,2,1] → "1fr 2fr 1fr") */
 /* WHY: Layout Grammar - block grid = sum of all chart width units */
-/* HOW: grid-template-columns set dynamically via inline style from calculateGridColumns() */
+/* HOW: grid-template-columns and height set via CSS custom properties (set via inline style) */
 .row {
   display: grid !important;
-  /* grid-template-columns set dynamically via inline style */
+  grid-template-columns: var(--grid-columns, 1fr); /* WHAT: Dynamic grid from CSS custom property */
   gap: var(--mm-space-4);
   width: 100% !important;
   min-width: 100% !important;
