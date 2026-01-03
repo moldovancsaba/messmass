@@ -348,10 +348,10 @@ interface ProjectStats {
  * @returns Array of variable names found in the formula
  */
 export function extractVariablesFromFormula(formula: string): string[] {
-  // WHAT: Match [stats.fieldName], [PARAM:key], [MANUAL:key], [MEDIA:slug], [TEXT:slug] with full database paths
-  // WHY: Database paths include dots (e.g., stats.female, stats.remoteImages) AND content asset tokens use colons
-  // REGEX: Allow letters, numbers, underscores, colons, dots, AND hyphens (for content asset slugs)
-  // EXAMPLES: [stats.female], [PARAM:multiplier], [MANUAL:benchmark], [MEDIA:logo-abc], [TEXT:summary-text]
+  // WHAT: Match [fieldName], [PARAM:key], [MANUAL:key], [MEDIA:slug], [TEXT:slug]
+  // WHY: Field names are direct (no "stats." prefix) AND content asset tokens use colons
+  // REGEX: Allow letters, numbers, underscores, colons, AND hyphens (for content asset slugs)
+  // EXAMPLES: [female], [PARAM:multiplier], [MANUAL:benchmark], [MEDIA:logo-abc], [TEXT:summary-text]
   const variableRegex = /\[([a-zA-Z0-9_:.\-]+)\]/g;
   const variables: string[] = [];
   let match;
@@ -442,13 +442,13 @@ export function validateFormula(formula: string): FormulaValidationResult {
 /**
  * ABSOLUTE DATABASE PATH SYSTEM - Full MongoDB Path Resolution
  * 
- * WHAT: Use FULL database paths in formulas: [stats.female] not [female]
- * WHY: Single source of truth = database structure. No aliases, no translation.
- * HOW: Token [stats.female] resolves to stats.female via JavaScript object access
+ * WHAT: Use direct field names in formulas: [female] not [stats.female]
+ * WHY: stats parameter is already the stats object, so we access stats[fieldName] directly
+ * HOW: Token [female] resolves to stats.female via JavaScript object access
  * 
- * RULE: Database path = Chart token = Code reference = Everything
+ * RULE: Field name = Chart token = Direct access = No prefix needed
  * 
- * @param formula - Formula with [stats.fieldName] tokens
+ * @param formula - Formula with [fieldName] tokens
  * @param stats - Project statistics object
  * @param parameters - Optional [PARAM:key] tokens
  * @param manualData - Optional [MANUAL:key] tokens
@@ -494,65 +494,53 @@ function substituteVariables(
     });
   }
 
-  // ABSOLUTE DATABASE PATH SYSTEM: [stats.fieldName] OR stats.fieldName → value from stats.fieldName
-  // WHAT: Parse stats.fieldName path and access the nested value
-  // WHY: Formula references must match database structure exactly
-  // HOW: Handle BOTH [stats.field] (bracketed) AND stats.field (non-bracketed) formats
+  // CORRECT FORMAT: [fieldName] - stats parameter is already the stats object
+  // WHAT: Access field directly from stats object (stats is already project.stats)
+  // WHY: stats parameter passed to evaluateFormula is already the stats object, not project
+  // HOW: Handle [fieldName] format only (no "stats." prefix)
   
-  // First, handle bracketed format: [stats.fieldName] (REQUIRED FORMAT)
-  processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
-    // ABSOLUTE PATH: fullPath must be "stats.fieldName" format (e.g., "stats.female", "stats.remoteImages")
-    
-    // WHAT: Validate format - must start with "stats."
-    // WHY: Enforce consistent variable naming across all charts
-    // HOW: Reject old [fieldName] format, require [stats.fieldName]
-    if (!fullPath.startsWith('stats.')) {
-      console.warn(`[formulaEngine] Invalid variable format: [${fullPath}]. Use [stats.${fullPath}] instead.`);
-      return '0'; // Return 0 for invalid format
-    }
+  // Handle variable format: [fieldName] (stats object is already passed in)
+  processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_]+)\]/g, (_match, fieldName) => {
+    // WHAT: Direct field access from stats object
+    // WHY: stats parameter is already project.stats, so we access stats[fieldName] directly
+    // HOW: No prefix needed - fieldName is the actual field name
     
     // Handle special derived/computed fields
-    if (fullPath === 'stats.totalFans') {
+    if (fieldName === 'totalFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       const stadium = (stats as any).stadium || 0;
       return String(remoteFans + stadium);
     }
     
-    if (fullPath === 'stats.remoteFans') {
+    if (fieldName === 'remoteFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       return String(remoteFans);
     }
     
-    if (fullPath === 'stats.allImages') {
+    if (fieldName === 'allImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
       return String(remoteImages + hostessImages + selfies);
     }
     
-    if (fullPath === 'stats.totalUnder40') {
+    if (fieldName === 'totalUnder40') {
       const genAlpha = (stats as any).genAlpha || 0;
       const genYZ = (stats as any).genYZ || 0;
       return String(genAlpha + genYZ);
     }
     
-    if (fullPath === 'stats.totalOver40') {
+    if (fieldName === 'totalOver40') {
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
     }
     
-    // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
-    const pathParts = fullPath.split('.');
-    
-    // Navigate through the object path
-    let value: any = stats as any;
-    for (const part of pathParts) {
-      if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
-      value = value?.[part];
-    }
+    // WHAT: Direct field access from stats object
+    // WHY: stats parameter is already project.stats, so access stats[fieldName] directly
+    const value = (stats as any)[fieldName];
     
     if (value !== undefined && value !== null) {
       return String(value);
@@ -562,49 +550,54 @@ function substituteVariables(
     return '0';
   });
   
-  // Second, handle non-bracketed format: stats.fieldName (for backward compatibility)
-  // WHAT: Support formulas stored as "stats.female" without brackets
-  // WHY: Some charts in database have formulas without brackets
-  // HOW: Match stats.fieldName pattern that is NOT already inside brackets
-  // NOTE: Use negative lookbehind and lookahead to avoid double-substitution
-  processedFormula = processedFormula.replace(/(?<!\[)\bstats\.([a-zA-Z0-9_]+)\b(?!\])/g, (_match, fieldName) => {
-    // Reconstruct full path
-    const fullPath = `stats.${fieldName}`;
+  // WHAT: Handle non-bracketed format: fieldName (no prefix)
+  // WHY: Some formulas may use fieldName directly without brackets
+  // HOW: Match fieldName pattern that is NOT already inside brackets and not a number
+  processedFormula = processedFormula.replace(/(?<!\[)\b([a-zA-Z][a-zA-Z0-9_]+)\b(?!\])/g, (_match, fieldName) => {
+    // WHAT: Direct field access from stats object
+    // WHY: stats parameter is already project.stats, so access stats[fieldName] directly
+    // HOW: Only process if it looks like a variable (not a number, not an operator)
+    
+    // Skip if it's a mathematical operator or function
+    if (['MAX', 'MIN', 'SUM', 'AVG', 'ROUND', 'FLOOR', 'CEIL'].includes(fieldName.toUpperCase())) {
+      return _match; // Keep as-is
+    }
     
     // Handle special derived/computed fields
-    if (fullPath === 'stats.totalFans') {
+    if (fieldName === 'totalFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       const stadium = (stats as any).stadium || 0;
       return String(remoteFans + stadium);
     }
     
-    if (fullPath === 'stats.remoteFans') {
+    if (fieldName === 'remoteFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       return String(remoteFans);
     }
     
-    if (fullPath === 'stats.allImages') {
+    if (fieldName === 'allImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
       return String(remoteImages + hostessImages + selfies);
     }
     
-    if (fullPath === 'stats.totalUnder40') {
+    if (fieldName === 'totalUnder40') {
       const genAlpha = (stats as any).genAlpha || 0;
       const genYZ = (stats as any).genYZ || 0;
       return String(genAlpha + genYZ);
     }
     
-    if (fullPath === 'stats.totalOver40') {
+    if (fieldName === 'totalOver40') {
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
     }
     
-    // Access the field directly from stats object
+    // WHAT: Direct field access from stats object
+    // WHY: stats parameter is already project.stats, so access stats[fieldName] directly
     const value = (stats as any)[fieldName];
     
     if (value !== undefined && value !== null) {
@@ -710,16 +703,16 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
         return result;
       } catch (parseError) {
         // WHAT: Fallback to legacy evaluation if parser fails
-        // WHY: Graceful degradation during migration
+        // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
         console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', parseError);
         // Fall through to legacy Function() evaluation
       }
     }
     
     // WHAT: Legacy Function constructor evaluation (fallback)
-    // WHY: Maintain backward compatibility during migration
+    // WHY: Maintain backward compatibility during migration, some formulas need this
     // SECURITY: This is less secure but needed for gradual rollout
-    // TODO: Remove after migration complete
+    // TODO: Remove after migration complete and all formulas validated
     const safeEval = new Function('return ' + cleanExpression);
     const result = safeEval();
     
@@ -803,7 +796,7 @@ export function getAvailableVariables(): AvailableVariable[] {
  * WHY: Dynamic validation against 92 variables, not hardcoded 37 + content asset tokens
  * HOW: Look up variable name in cached KYC variables OR validate content asset token format
  * 
- * @param variableName - Full database path (e.g., "stats.female", "stats.bitlyTotalClicks") or content asset token (e.g., "MEDIA:logo-abc", "TEXT:summary")
+ * @param variableName - Field name (e.g., "female", "bitlyTotalClicks") or content asset token (e.g., "MEDIA:logo-abc", "TEXT:summary")
  * @returns Boolean indicating if variable exists in KYC or is a valid content asset token
  */
 export function isValidVariable(variableName: string): boolean {
@@ -832,8 +825,8 @@ export function isValidVariable(variableName: string): boolean {
     return true;
   }
 
-  // WHAT: Lookup variable by name (full database path)
-  // WHY: Database path like "stats.female" must match exactly
+  // WHAT: Lookup variable by name (field name without prefix)
+  // WHY: Variable name like "female" must match exactly
   return variables.some(v => v.name === variableName);
 }
 
@@ -842,7 +835,7 @@ export function isValidVariable(variableName: string): boolean {
  * WHY: Provide contextual help in formula editor
  * HOW: Look up variable in cached data
  * 
- * @param variableName - Full database path (e.g., "stats.female")
+ * @param variableName - Field name (e.g., "female")
  * @returns Example formula using the variable, or null if not found
  */
 export function getVariableExample(variableName: string): string | null {
