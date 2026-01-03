@@ -85,6 +85,20 @@ export default function ReportContent({
   className 
 }: ReportContentProps) {
   
+  // WHAT: Debug logging for chartResults
+  // WHY: Need to verify chartResults Map has data when component renders
+  console.log('[ReportContent] Rendering with:', {
+    blocksCount: blocks.length,
+    chartResultsSize: chartResults.size,
+    chartResultIds: Array.from(chartResults.keys()).slice(0, 10),
+    sampleResult: chartResults.size > 0 ? {
+      chartId: Array.from(chartResults.keys())[0],
+      type: chartResults.get(Array.from(chartResults.keys())[0])?.type,
+      kpiValue: chartResults.get(Array.from(chartResults.keys())[0])?.kpiValue,
+      hasElements: !!chartResults.get(Array.from(chartResults.keys())[0])?.elements
+    } : null
+  });
+  
   if (blocks.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -236,12 +250,22 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
+      style={{ '--row-height': `${rowHeight}px` } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
         // WHAT: Skip charts with no valid data (v11.48.0)
         // WHY: ReportChart returns null for empty data, don't render container
-        if (!hasValidChartData(result) || !result) return null;
+        if (!hasValidChartData(result) || !result) {
+          console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
+            hasResult: !!result,
+            isValid: result ? hasValidChartData(result) : false,
+            type: result?.type,
+            kpiValue: result?.kpiValue,
+            elementsCount: result?.elements?.length
+          });
+          return null;
+        }
         
         // WHAT: Force remount when dimensions change significantly
         // WHY: Container queries cache container size, need remount for single full-width charts

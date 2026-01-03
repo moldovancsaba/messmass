@@ -86,6 +86,8 @@
   align-items: start;
   justify-items: stretch;
   background: transparent !important; /* WHAT: Force transparent row background */
+  height: var(--row-height, auto); /* WHAT: Use calculated row height from Layout Grammar */
+  min-height: var(--row-height, auto); /* WHAT: Ensure minimum height for charts to render */
 }
 
 .row:last-child {

@@ -345,11 +345,26 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateText(chart: Chart): ChartResult {
+    // WHAT: Use chart.formula or elements[0].formula for text calculation
+    // WHY: Some text charts store their formula in the first element
+    const formulaToEvaluate = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : '');
+    if (!formulaToEvaluate) {
+      return {
+        chartId: chart.chartId,
+        type: 'text',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: '',
+        showTitle: chart.showTitle
+      };
+    }
+    
     // WHAT: Detect simple variable reference (e.g., "[reportText1]", "stats.reportText1", or "reportText1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
     // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
-    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
-    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_]+)\]$/);
+    const simpleVarMatch = formulaToEvaluate.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
@@ -365,7 +380,7 @@ export class ReportCalculator {
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
       // Complex formula evaluation
-      value = this.evaluateFormula(chart.formula);
+      value = this.evaluateFormula(formulaToEvaluate);
     }
     
     return {
@@ -385,11 +400,26 @@ export class ReportCalculator {
    * HOW: For simple variable references, access directly; otherwise evaluate formula
    */
   private calculateTable(chart: Chart): ChartResult {
+    // WHAT: Use chart.formula or elements[0].formula for table calculation
+    // WHY: Some table charts store their formula in the first element
+    const formulaToEvaluate = chart.formula || (chart.elements && chart.elements.length > 0 ? chart.elements[0].formula : '');
+    if (!formulaToEvaluate) {
+      return {
+        chartId: chart.chartId,
+        type: 'table',
+        title: chart.title,
+        icon: chart.icon,
+        iconVariant: chart.iconVariant,
+        kpiValue: '',
+        showTitle: chart.showTitle
+      };
+    }
+    
     // WHAT: Detect simple variable reference (e.g., "[reportTable1]", "stats.reportTable1", or "reportTable1")
     // WHY: Direct access preserves string values, bypasses numeric evaluation
     // HOW: Check if formula is [fieldName], stats.fieldName, or just fieldName pattern without operators
-    const bracketMatch = chart.formula?.match(/^\[([a-zA-Z0-9_]+)\]$/);
-    const simpleVarMatch = chart.formula?.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
+    const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_]+)\]$/);
+    const simpleVarMatch = formulaToEvaluate.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
     let value: string | number | 'NA';
     
@@ -405,7 +435,7 @@ export class ReportCalculator {
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
     } else {
       // Complex formula evaluation
-      value = this.evaluateFormula(chart.formula);
+      value = this.evaluateFormula(formulaToEvaluate);
     }
     
     return {
