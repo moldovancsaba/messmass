@@ -273,19 +273,20 @@ Phase E — Reporting
     - ✅ Type check passes
     - ✅ **Sultan confirmed icons render correctly on Preview** (2026-01-02T20:20:00+01:00)
     - ✅ Icons display as icon glyphs (not text labels) in sidebar and throughout application
-- [x] Charts visible on report pages (bar / pie / API charts)
-  - **Status:** ✅ COMPLETE (code) / ⚠️ PREVIEW VERIFICATION PENDING
+- [ ] Charts visible on report pages (bar / pie / API charts)
+  - **Status:** ⚠️ HYPOTHESIS (not proven fix) / 🔴 AWAITING DIAGNOSTIC SIGNAL
   - **Commit:** `775f4c449` (2026-01-02T21:10:00+01:00)
-  - **Root Cause:** Chart data fetch may be failing silently, insufficient error handling
-  - **Fix:** Enhanced error handling in chart fetch:
+  - **Root Cause Hypothesis:** Chart data fetch may be failing silently, insufficient error handling
+  - **Hypothesis Applied:** Enhanced error handling in chart fetch:
     - Added `cache: 'no-store'` to ensure fresh data
     - Enhanced error messages with HTTP status codes
     - Better error handling for failed API responses
-  - **Verification:**
-    - ✅ Build passes
-    - ✅ Type check passes
-    - ⚠️ **Preview verification required:** Test chart rendering on Vercel Preview
-    - ⚠️ **Browser console check:** Verify no CSP violations or fetch errors
+  - **Status:** This is a hypothesis, not a proven fix. Need diagnostic signal from Preview:
+    - Status code from chart fetch request
+    - Request URL host
+    - First line of response body (or error)
+  - **Next Action:** Awaiting Sultan's diagnostic signal (DevTools → Network → chart fetch request)
+  - **After Signal:** Tribeca will root-cause, apply minimal boundary fix, verify on Preview (screenshots), and close this item
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
