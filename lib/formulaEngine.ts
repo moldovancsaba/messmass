@@ -499,52 +499,63 @@ function substituteVariables(
   // WHY: Formula references must match database structure exactly
   // HOW: Handle BOTH [stats.field] (bracketed) AND stats.field (non-bracketed) formats
   
-  // First, handle bracketed format: [stats.fieldName]
+  // First, handle bracketed format: [stats.fieldName] OR [fieldName] for backward compatibility
   processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
-    // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages"
-    // Parse the path and access nested values
+    // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages" OR "female" (backward compat)
     
-    // Handle special derived/computed fields
-    if (fullPath === 'stats.totalFans') {
+    // Handle special derived/computed fields (both formats)
+    if (fullPath === 'stats.totalFans' || fullPath === 'totalFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       const stadium = (stats as any).stadium || 0;
       return String(remoteFans + stadium);
     }
     
-    if (fullPath === 'stats.remoteFans') {
+    if (fullPath === 'stats.remoteFans' || fullPath === 'remoteFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       return String(remoteFans);
     }
     
-    if (fullPath === 'stats.allImages') {
+    if (fullPath === 'stats.allImages' || fullPath === 'allImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
       return String(remoteImages + hostessImages + selfies);
     }
     
-    if (fullPath === 'stats.totalUnder40') {
+    if (fullPath === 'stats.totalUnder40' || fullPath === 'totalUnder40') {
       const genAlpha = (stats as any).genAlpha || 0;
       const genYZ = (stats as any).genYZ || 0;
       return String(genAlpha + genYZ);
     }
     
-    if (fullPath === 'stats.totalOver40') {
+    if (fullPath === 'stats.totalOver40' || fullPath === 'totalOver40') {
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
     }
     
-    // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
-    const pathParts = fullPath.split('.');
+    // WHAT: Handle both [stats.fieldName] and [fieldName] formats for backward compatibility
+    // WHY: Old chart configurations may use [female] instead of [stats.female]
+    // HOW: If path doesn't start with "stats.", treat it as direct field access
+    let value: any;
     
-    // Navigate through the object path
-    let value: any = stats as any;
-    for (const part of pathParts) {
-      if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
-      value = value?.[part];
+    if (fullPath.startsWith('stats.')) {
+      // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
+      const pathParts = fullPath.split('.');
+      
+      // Navigate through the object path
+      value = stats as any;
+      for (const part of pathParts) {
+        if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
+        value = value?.[part];
+      }
+    } else {
+      // WHAT: Direct field access for backward compatibility (e.g., [female] → stats.female)
+      // WHY: Old chart formulas may use [fieldName] format without stats. prefix
+      // HOW: Access field directly from stats object
+      value = (stats as any)[fullPath];
     }
     
     if (value !== undefined && value !== null) {
