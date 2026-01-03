@@ -93,8 +93,16 @@ npm run build
 npm run dev  # Visual smoke test
 ```
 
-### Preview Verification
+### Preview Verification (MANDATORY FOR P0 USER-FACING REGRESSIONS)
 
+**Rule:** No Preview verification = not fixed.
+
+**For P0 user-facing regressions:**
+- Must include Preview evidence (screenshot + request status) in PR description and tracker entry
+- Sultan provides ONE diagnostic signal (status code, request URL host, first line of response)
+- Execution agent root-causes based on signal, applies fix, verifies on Preview (screenshots), and closes tracker
+
+**Standard Preview Verification:**
 - Manual verification on Vercel preview
 - Explicitly list:
   - Pages tested
@@ -107,7 +115,8 @@ npm run dev  # Visual smoke test
 - ✅ Build passes
 - ✅ Type check passes
 - ✅ Dev server starts
-- ✅ Preview tested (list pages/flows)
+- ✅ Preview tested (list pages/flows) - **MANDATORY for P0 user-facing regressions**
+- ✅ Preview evidence included (screenshot + request status) - **MANDATORY for P0 user-facing regressions**
 - ✅ Edge cases handled
 
 ---
