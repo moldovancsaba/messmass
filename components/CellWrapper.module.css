@@ -73,9 +73,11 @@
   min-height: 0; /* CRITICAL: Allow flex item to shrink below content size */
 }
 
-/* WHAT: Image charts in body zone maintain aspect ratio */
-/* WHY: Layout Grammar requires images to preserve aspect ratio */
-/* HOW: Body zone for images uses aspect-ratio property when image chart is present */
+/* WHAT: Image charts in body zone - body zone provides available space */
+/* WHY: Layout Grammar requires images to fit within available space while maintaining aspect ratio */
+/* HOW: Body zone is flex container, image container fits within it respecting aspect ratio */
 .bodyZone:has(.image) {
-  aspect-ratio: inherit; /* Inherit from .image container */
+  /* WHAT: Body zone provides available space, image container fits within it */
+  /* WHY: Image container uses max-width/max-height to fit, aspect-ratio to constrain */
+  /* HOW: No special styling needed - image container handles aspect ratio */
 }

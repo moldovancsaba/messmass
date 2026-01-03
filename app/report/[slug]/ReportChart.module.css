@@ -734,55 +734,54 @@
 .tableMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
 .tableMarkdown a:hover { color: var(--mm-blue-700); }
 
-/* Image Chart - SIMPLIFIED */
+/* Image Chart - Aspect Ratio Constrained Container */
+/* WHAT: Image container fits within body zone while respecting aspect ratio constraint */
+/* WHY: Layout Grammar requires images to maintain aspect ratio while fitting available space */
+/* HOW: Container uses width: 100% with aspect-ratio to fill width and constrain height, max-height to fit body zone */
 .image {
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
   overflow: hidden !important; /* Clip image to rounded corners */
-  width: 100%;
-  height: 100%; /* Fill CellWrapper body zone */
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 100%;
-  max-height: 100%;
+  /* WHAT: Container fills width, height constrained by aspect ratio */
+  /* WHY: Body zone is flex container with center alignment, image should fill available width */
+  width: 100%; /* Fill available width in body zone */
+  max-width: 100%; /* Don't exceed body zone width */
+  max-height: 100%; /* Don't exceed body zone height */
+  height: auto; /* Height calculated from aspect ratio */
 }
 
-/* WHAT: Aspect ratio classes for image containers */
+/* WHAT: Aspect ratio classes constrain container height based on width */
 /* WHY: Layout Grammar requires images to maintain aspect ratio - container must respect it */
-/* HOW: Use aspect-ratio CSS property to enforce container aspect ratio, but allow it to shrink */
+/* HOW: aspect-ratio property calculates height from width, max-height ensures it fits body zone */
 .image.aspect169 {
   aspect-ratio: 16 / 9;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto; /* Allow width to adjust based on height and aspect ratio */
-  height: auto; /* Allow height to adjust based on width and aspect ratio */
+  /* WHAT: Height = width × (9/16), constrained by max-height: 100% */
+  /* WHY: Container fills width, height calculated from aspect ratio, fits within body zone */
 }
 
 .image.aspect916 {
   aspect-ratio: 9 / 16;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  /* WHAT: Height = width × (16/9), constrained by max-height: 100% */
+  /* WHY: Portrait images may be height-constrained, will fit within body zone */
 }
 
 .image.aspect11 {
   aspect-ratio: 1 / 1;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  /* WHAT: Height = width (square), constrained by max-height: 100% */
+  /* WHY: Square images fill width, height matches width, fits within body zone */
 }
 
-/* WHAT: <img> element maintains aspect ratio within body zone */
-/* WHY: Layout Grammar requires images to preserve aspect ratio without cropping */
-/* HOW: Use object-fit: contain to show full image, or calculate body zone height from aspect ratio */
+/* WHAT: <img> element fills container completely */
+/* WHY: Image should fill the aspect-ratio-constrained container */
+/* HOW: Use object-fit: contain to show full image without cropping, maintaining aspect ratio */
 .imageContent {
   display: block;
-  width: 100%;
-  height: 100%; /* Fill the body zone container */
+  width: 100%; /* Fill container width */
+  height: 100%; /* Fill container height */
   object-fit: contain; /* Show full image without cropping, maintaining aspect ratio */
   object-position: center; /* Center the image */
   border-radius: var(--mm-radius-lg); /* Match container rounded corners */
@@ -943,11 +942,11 @@
   
   .imageContent {
     /* WHAT: Image fills container maintaining aspect ratio
-     * WHY: object-fit: cover ensures image fills space without distortion
+     * WHY: object-fit: contain shows full image without cropping
      * HOW: Same behavior as desktop - consistent across breakpoints */
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important; /* Fill container, crop to maintain ratio */
+    object-fit: contain !important; /* Show full image without cropping, maintaining aspect ratio */
     object-position: center !important;
     display: block !important;
   }
