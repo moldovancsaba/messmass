@@ -313,11 +313,13 @@ export class ReportCalculator {
    * HOW: Evaluate each element formula, build elements array
    */
   private calculateMultiElement(chart: Chart): ChartResult {
-    const elements = (chart.elements || []).map(el => ({
-      label: el.label,
-      value: this.evaluateFormula(el.formula),
-      color: el.color
-    }));
+    const elements = (chart.elements || [])
+      .filter(el => el.formula) // WHAT: Skip elements without formulas
+      .map(el => ({
+        label: el.label,
+        value: this.evaluateFormula(el.formula!),
+        color: el.color
+      }));
 
     // Filter out invalid elements (non-numeric or negative)
     const validElements = elements.filter(el => 
