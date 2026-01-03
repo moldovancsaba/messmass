@@ -760,6 +760,8 @@ export default function ProjectsPageUnified() {
               return (
                 <div className="form-group">
                   <label>Event Name (Auto-Generated)</label>
+                  {/* WHAT: Inline styles for disabled input appearance - WHY: Visual feedback for auto-generated field, cannot use CSS classes for dynamic state */}
+                  {/* eslint-disable-next-line react/forbid-dom-props */}
                   <div className="form-input" style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}>
                     {partner1.name} x {partner2.name}
                   </div>

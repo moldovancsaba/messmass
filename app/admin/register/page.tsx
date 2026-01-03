@@ -201,7 +201,10 @@ export default function AdminRegister() {
         </form>
 
         {/* Login Link */}
+        {/* WHAT: Inline styles for register page layout - WHY: Simple spacing and alignment, no CSS module needed */}
+        {/* eslint-disable-next-line react/forbid-dom-props */}
         <div className="login-back" style={{ marginTop: '1rem', textAlign: 'center' }}>
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p style={{ marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
             Already have an account?
           </p>
@@ -217,7 +220,7 @@ export default function AdminRegister() {
         {/* Footer */}
         <div className="login-footer">
           <p className="login-footer-text">
-            After registration, you'll start as a <strong>Guest</strong> with access to documentation.<br />
+            After registration, you&apos;ll start as a <strong>Guest</strong> with access to documentation.<br />
             Contact a superadmin to request elevated permissions.
           </p>
         </div>

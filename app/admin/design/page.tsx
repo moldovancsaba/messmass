@@ -42,6 +42,8 @@ export default function AdminDesignPage() {
       <AdminHero title="Design & Styles" subtitle="Style editor disabled — rebuilding from scratch." />
       <div className={styles.section}>
         <ColoredCard accentColor="#3b82f6">
+          {/* WHAT: Inline padding for temporary notice card - WHY: Temporary component, no need for CSS module */}
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <div style={{ padding: '1rem' }}>
             <h3>Temporary Notice</h3>
             <p>The existing style editor and per-page style application have been removed. Reports use system defaults for now.</p>

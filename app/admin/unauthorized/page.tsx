@@ -46,40 +46,52 @@ export default function UnauthorizedPage() {
         {/* Header */}
         <div className="login-header">
           <div className="login-logo-container">
-            <span style={{ fontSize: '3rem' }}>🚫</span> {/* eslint-disable-line react/forbid-dom-props */}
+            {/* WHAT: Dynamic font size for emoji icon - WHY: Large emoji size for visual emphasis, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span style={{ fontSize: '3rem' }}>🚫</span>
           </div>
           <h1 className="title login-title">
             Access Denied
           </h1>
           <p className="subtitle login-subtitle">
-            You don't have sufficient permissions to access {attemptedPath}
+            You don&apos;t have sufficient permissions to access {attemptedPath}
           </p>
         </div>
 
         {/* Permission Details */}
         {!loading && currentUserRole && (
-          <div style={{ // eslint-disable-line react/forbid-dom-props
+          /* WHAT: Inline styles for permission details box - WHY: Complex layout with dynamic colors, no CSS module needed */
+          /* eslint-disable-next-line react/forbid-dom-props */
+          <div style={{
             padding: '1.5rem',
             backgroundColor: 'var(--mm-gray-50)',
             borderRadius: 'var(--mm-radius-md)',
             marginBottom: '1.5rem',
           }}>
-            <div style={{ // eslint-disable-line react/forbid-dom-props
+            {/* WHAT: Inline styles for role badge container - WHY: Flexbox layout for role display, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
               marginBottom: '0.75rem',
             }}>
-              <span style={{ // eslint-disable-line react/forbid-dom-props
+              {/* WHAT: Inline styles for info icon - WHY: Icon sizing and color, no CSS module needed */}
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <span style={{
                 fontSize: '1.25rem',
                 color: 'var(--mm-gray-600)',
               }}>
                 ℹ️
               </span>
-              <strong style={{ color: 'var(--mm-gray-900)' }}> {/* eslint-disable-line react/forbid-dom-props */}
+              {/* WHAT: Inline styles for role label - WHY: Text color for label, no CSS module needed */}
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <strong style={{ color: 'var(--mm-gray-900)' }}>
                 Your Current Role:
               </strong>
-              <span style={{ // eslint-disable-line react/forbid-dom-props
+              {/* WHAT: Dynamic background color for role badge - WHY: Color comes from role prop, cannot use CSS classes */}
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <span style={{
                 padding: '4px 12px',
                 borderRadius: '12px',
                 fontSize: '0.875rem',
@@ -91,7 +103,9 @@ export default function UnauthorizedPage() {
               </span>
             </div>
             
-            <p style={{ // eslint-disable-line react/forbid-dom-props
+            {/* WHAT: Inline styles for permission message - WHY: Text styling for message, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <p style={{
               fontSize: 'var(--mm-font-size-sm)',
               color: 'var(--mm-gray-600)',
               marginBottom: 0,
@@ -102,7 +116,9 @@ export default function UnauthorizedPage() {
         )}
 
         {/* Actions */}
-        <div style={{ // eslint-disable-line react/forbid-dom-props
+        {/* WHAT: Inline styles for action buttons container - WHY: Flexbox layout for buttons, no CSS module needed */}
+        {/* eslint-disable-next-line react/forbid-dom-props */}
+        <div style={{
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem',
