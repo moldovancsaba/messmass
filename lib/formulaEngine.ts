@@ -699,8 +699,27 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
         const expr = parser.parse(cleanExpression);
         const result = expr.evaluate({});
         
+        // WHAT: Debug logging for safe parser results
+        // WHY: Help diagnose why valid expressions return 'NA'
+        if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
+          console.log('[formulaEngine] Safe parser result:', {
+            expression: cleanExpression,
+            result,
+            resultType: typeof result,
+            isNaN: isNaN(result),
+            isFinite: isFinite(result)
+          });
+        }
+        
         // Check for invalid results
         if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+          console.warn('[formulaEngine] Safe parser returned invalid result:', {
+            expression: cleanExpression,
+            result,
+            resultType: typeof result,
+            isNaN: isNaN(result),
+            isFinite: isFinite(result)
+          });
           return 'NA';
         }
         
@@ -708,7 +727,11 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       } catch (parseError) {
         // WHAT: Fallback to legacy evaluation if parser fails
         // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
-        console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', parseError);
+        console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', {
+          expression: cleanExpression,
+          error: parseError instanceof Error ? parseError.message : String(parseError),
+          stack: parseError instanceof Error ? parseError.stack : undefined
+        });
         // Fall through to legacy Function() evaluation
       }
     }
@@ -717,17 +740,48 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     // WHY: Maintain backward compatibility during migration, some formulas need this
     // SECURITY: This is less secure but needed for gradual rollout
     // TODO: Remove after migration complete and all formulas validated
-    const safeEval = new Function('return ' + cleanExpression);
-    const result = safeEval();
-    
-    // Check for invalid results
-    if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+    try {
+      const safeEval = new Function('return ' + cleanExpression);
+      const result = safeEval();
+      
+      // WHAT: Debug logging for evaluation results
+      // WHY: Help diagnose why valid expressions return 'NA'
+      if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
+        console.log('[formulaEngine] Evaluation result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result),
+          valueOf: result?.valueOf ? result.valueOf() : result
+        });
+      }
+      
+      // Check for invalid results
+      if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+        console.warn('[formulaEngine] Invalid result from evaluation:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result),
+          valueOf: result?.valueOf ? result.valueOf() : result
+        });
+        return 'NA';
+      }
+      
+      return result;
+    } catch (evalError) {
+      console.error('[formulaEngine] Evaluation error:', {
+        expression: cleanExpression,
+        error: evalError instanceof Error ? evalError.message : String(evalError),
+        stack: evalError instanceof Error ? evalError.stack : undefined
+      });
       return 'NA';
     }
     
-    return result;
-    
   } catch (error) {
+    console.error('[formulaEngine] Unexpected error in evaluateSimpleExpression:', error);
     return 'NA';
   }
 }
