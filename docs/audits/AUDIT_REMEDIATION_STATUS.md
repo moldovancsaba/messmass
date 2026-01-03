@@ -282,10 +282,12 @@ Phase E — Reporting
     - Enhanced error messages with HTTP status codes
     - Better error handling for failed API responses
   - **Verification:**
-    - ✅ Build passes
+    - ✅ Build passes (2026-01-02T22:00:00+01:00)
     - ✅ Type check passes
-    - ⚠️ **Preview verification required:** Test chart rendering on Vercel Preview
+    - ✅ Local verification: Code changes verified in `app/report/[slug]/page.tsx`, `hooks/useReportData.ts`, and related files
+    - ⚠️ **Preview verification required:** Test chart rendering on Vercel Preview (see `docs/audits/investigations/P0-charts-verification-checklist.md`)
     - ⚠️ **Browser console check:** Verify no CSP violations or fetch errors
+  - **Verification Checklist:** `docs/audits/investigations/P0-charts-verification-checklist.md` created for Sultan
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
