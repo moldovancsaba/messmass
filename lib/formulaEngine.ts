@@ -499,63 +499,59 @@ function substituteVariables(
   // WHY: Formula references must match database structure exactly
   // HOW: Handle BOTH [stats.field] (bracketed) AND stats.field (non-bracketed) formats
   
-  // First, handle bracketed format: [stats.fieldName] OR [fieldName] for backward compatibility
+  // First, handle bracketed format: [stats.fieldName] (REQUIRED FORMAT)
   processedFormula = processedFormula.replace(/\[([a-zA-Z0-9_.]+)\]/g, (_match, fullPath) => {
-    // ABSOLUTE PATH: fullPath is like "stats.female" or "stats.remoteImages" OR "female" (backward compat)
+    // ABSOLUTE PATH: fullPath must be "stats.fieldName" format (e.g., "stats.female", "stats.remoteImages")
     
-    // Handle special derived/computed fields (both formats)
-    if (fullPath === 'stats.totalFans' || fullPath === 'totalFans') {
+    // WHAT: Validate format - must start with "stats."
+    // WHY: Enforce consistent variable naming across all charts
+    // HOW: Reject old [fieldName] format, require [stats.fieldName]
+    if (!fullPath.startsWith('stats.')) {
+      console.warn(`[formulaEngine] Invalid variable format: [${fullPath}]. Use [stats.${fullPath}] instead.`);
+      return '0'; // Return 0 for invalid format
+    }
+    
+    // Handle special derived/computed fields
+    if (fullPath === 'stats.totalFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       const stadium = (stats as any).stadium || 0;
       return String(remoteFans + stadium);
     }
     
-    if (fullPath === 'stats.remoteFans' || fullPath === 'remoteFans') {
+    if (fullPath === 'stats.remoteFans') {
       const remoteFans = (stats as any).remoteFans ?? 
                         ((stats as any).indoor || 0) + ((stats as any).outdoor || 0);
       return String(remoteFans);
     }
     
-    if (fullPath === 'stats.allImages' || fullPath === 'allImages') {
+    if (fullPath === 'stats.allImages') {
       const remoteImages = (stats as any).remoteImages || 0;
       const hostessImages = (stats as any).hostessImages || 0;
       const selfies = (stats as any).selfies || 0;
       return String(remoteImages + hostessImages + selfies);
     }
     
-    if (fullPath === 'stats.totalUnder40' || fullPath === 'totalUnder40') {
+    if (fullPath === 'stats.totalUnder40') {
       const genAlpha = (stats as any).genAlpha || 0;
       const genYZ = (stats as any).genYZ || 0;
       return String(genAlpha + genYZ);
     }
     
-    if (fullPath === 'stats.totalOver40' || fullPath === 'totalOver40') {
+    if (fullPath === 'stats.totalOver40') {
       const genX = (stats as any).genX || 0;
       const boomer = (stats as any).boomer || 0;
       return String(genX + boomer);
     }
     
-    // WHAT: Handle both [stats.fieldName] and [fieldName] formats for backward compatibility
-    // WHY: Old chart configurations may use [female] instead of [stats.female]
-    // HOW: If path doesn't start with "stats.", treat it as direct field access
-    let value: any;
+    // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
+    const pathParts = fullPath.split('.');
     
-    if (fullPath.startsWith('stats.')) {
-      // Parse the dot-notation path (e.g., "stats.female" → ["stats", "female"])
-      const pathParts = fullPath.split('.');
-      
-      // Navigate through the object path
-      value = stats as any;
-      for (const part of pathParts) {
-        if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
-        value = value?.[part];
-      }
-    } else {
-      // WHAT: Direct field access for backward compatibility (e.g., [female] → stats.female)
-      // WHY: Old chart formulas may use [fieldName] format without stats. prefix
-      // HOW: Access field directly from stats object
-      value = (stats as any)[fullPath];
+    // Navigate through the object path
+    let value: any = stats as any;
+    for (const part of pathParts) {
+      if (part === 'stats') continue; // Skip the "stats" prefix since we're already in stats object
+      value = value?.[part];
     }
     
     if (value !== undefined && value !== null) {

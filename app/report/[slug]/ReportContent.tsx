@@ -230,21 +230,14 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
-  const gridColumns = calculateGridColumns(rowCharts);
-  
   return (
-    <>
-      {/* WHAT: Dynamic grid layout - WHY: Grid columns and height calculated from chart dimensions, cannot use CSS classes */}
-      {/* eslint-disable-next-line react/forbid-dom-props */}
-      <div 
+    <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
-      style={{
-        gridTemplateColumns: gridColumns,
-        height: `${rowHeight}px` // WHAT: Apply calculated height based on measured width
-      } as React.CSSProperties}
+      data-total-columns={totalColumns}
+      data-row-height={rowHeight}
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
@@ -260,6 +253,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
           <div 
             key={dimensionKey}
             className={styles.rowItem}
+            data-column-span={chart.width || 1}
           >
             <ReportChart 
               result={result} 

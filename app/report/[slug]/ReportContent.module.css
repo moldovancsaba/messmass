@@ -70,10 +70,13 @@
  * HOW: Each row is independent grid with columns calculated from chart widths
  */
 
-/* Row Container - Dynamic Columns */
+/* Row Container - Layout Grammar Grid System */
+/* WHAT: Fixed 12-column grid, cells span 1 or 2 columns based on cellWidth */
+/* WHY: Layout grammar system uses cellWidth (1 or 2) to determine column span */
+/* HOW: Each cell uses grid-column: span X where X = cellWidth */
 .row {
   display: grid !important;
-  /* grid-template-columns set via inline style (e.g., "1fr 2fr 1fr") */
+  grid-template-columns: repeat(12, 1fr);
   gap: var(--mm-space-4);
   width: 100% !important;
   min-width: 100% !important;
@@ -89,7 +92,10 @@
   margin-bottom: 0;
 }
 
-/* Row Item - Fills Allocated Column Width */
+/* Row Item - Layout Grammar Column Span */
+/* WHAT: Cells span 1 or 2 columns based on cellWidth from layout grammar */
+/* WHY: Layout grammar system uses cellWidth (1 or 2) to determine span */
+/* HOW: Use CSS classes for span-1 and span-2, set via data attribute in JS */
 .rowItem {
   width: 100% !important; /* CRITICAL: Fill column width */
   min-width: 0; /* CRITICAL: Prevent grid blowout from canvas/SVG */
@@ -101,6 +107,16 @@
   /* Enable container queries so inner content can scale to box width */
   container-type: inline-size;
   background: transparent !important; /* WHAT: Force transparent cell background */
+}
+
+/* WHAT: Column span classes based on layout grammar cellWidth */
+/* WHY: Layout grammar system uses cellWidth (1 or 2) */
+.rowItem[data-column-span="1"] {
+  grid-column: span 1;
+}
+
+.rowItem[data-column-span="2"] {
+  grid-column: span 2;
 }
 
 /* Responsive Adjustments */

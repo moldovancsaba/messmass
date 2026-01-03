@@ -196,7 +196,10 @@ export default function ReportPage() {
     });
 
     // Create calculator with enriched stats
-    const calculator = new ReportCalculator(charts, enrichedStats);
+    // WHAT: Type cast needed - ensureDerivedMetrics returns ProjectStats from dataValidator
+    // WHY: ReportCalculator expects ProjectStats from report-calculator (narrower index signature)
+    // HOW: Cast to compatible type (both allow string | number, enrichedStats may have boolean/object)
+    const calculator = new ReportCalculator(charts, enrichedStats as any);
     const results = new Map();
 
     console.log(`[ReportPage] Calculating ${charts.length} charts...`);

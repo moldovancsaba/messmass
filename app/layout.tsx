@@ -82,8 +82,8 @@ export default async function RootLayout({
   return (
     // WHAT: CSS variable --active-font set from cookie for server-side font selection
     // WHY: Enables instant font switching without client-side flash
-    {/* WHAT: Dynamic CSS variable for active font - WHY: Font selection must be injected as CSS variable, cannot use CSS classes */}
-    {/* eslint-disable-next-line react/forbid-dom-props */}
+    // WHAT: Dynamic CSS variable for active font - WHY: Font selection must be injected as CSS variable, cannot use CSS classes
+    // eslint-disable-next-line react/forbid-dom-props
     <html 
       lang="en" 
       className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable} ${pacifico.variable}`}

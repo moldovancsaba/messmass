@@ -80,7 +80,7 @@ Output: focused commit(s)
 
 Phase C — Verification (objective)
 - Local verification: npm run build; npm run dev (smoke test)
-- Preview verification: manual test on Vercel preview (list screens/flows tested)
+- Preview verification: **owner executes** manual test on Vercel Preview (list screens/flows tested); do not offload verification to Sultan
 
 Output: verification checklist in PR description
 
@@ -274,19 +274,23 @@ Phase E — Reporting
     - ✅ **Sultan confirmed icons render correctly on Preview** (2026-01-02T20:20:00+01:00)
     - ✅ Icons display as icon glyphs (not text labels) in sidebar and throughout application
 - [ ] Charts visible on report pages (bar / pie / API charts)
-  - **Status:** ⚠️ HYPOTHESIS (not proven fix) / 🔴 AWAITING DIAGNOSTIC SIGNAL
+  - **Status:** ⚠️ HYPOTHESIS ONLY (not a proven fix)
   - **Commit:** `775f4c449` (2026-01-02T21:10:00+01:00)
-  - **Root Cause Hypothesis:** Chart data fetch may be failing silently, insufficient error handling
-  - **Hypothesis Applied:** Enhanced error handling in chart fetch:
-    - Added `cache: 'no-store'` to ensure fresh data
-    - Enhanced error messages with HTTP status codes
-    - Better error handling for failed API responses
-  - **Status:** This is a hypothesis, not a proven fix. Need diagnostic signal from Preview:
-    - Status code from chart fetch request
-    - Request URL host
-    - First line of response body (or error)
-  - **Next Action:** Awaiting Sultan's diagnostic signal (DevTools → Network → chart fetch request)
-  - **After Signal:** Tribeca will root-cause, apply minimal boundary fix, verify on Preview (screenshots), and close this item
+  - **Owner:** Tribeca (investigate → fix → **preview verify** → close)
+
+  - **What we know (PRESENT):** Charts are not visible on report pages in Preview.
+  - **What changed (HYPOTHESIS APPLIED):** Enhanced chart fetch error handling:
+    - `cache: 'no-store'`
+    - include HTTP status in errors
+    - handle non-OK responses explicitly
+  - **Why this is not closed:** No Preview evidence yet. **Rule: no Preview verification = not fixed.**
+
+  - **Single next action (Sultan → Tribeca signal):** From Vercel Preview, capture ONE failing chart request in DevTools → Network and send:
+    - HTTP status (e.g., 401/403/404/500)
+    - Request URL host (domain)
+    - First line of response body (or error message)
+
+  - **After the signal:** Tribeca will root-cause (auth/CORS/env/data-shape/render/CSP), apply a minimal boundary fix, verify on Preview (screenshots), then mark this checkbox ✅ with commit + verification note.
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy
@@ -370,9 +374,7 @@ Phase C — Verification (must be objective)
 - Local verification passed
   - npm run build
   - npm run dev (manual smoke test)
-- Preview verification passed
-  - Manual testing on Vercel preview
-  - Explicitly list what was tested (screens/flows/edge cases)
+- Preview verification: **owner executes** manual test on Vercel Preview (list screens/flows tested); do not offload verification to Sultan
 
 Output: verification checklist in PR description
 
