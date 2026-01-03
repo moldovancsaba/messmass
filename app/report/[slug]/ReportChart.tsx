@@ -558,48 +558,92 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
 }
 
 /**
- * Image Chart - Aspect ratio-aware image display
- * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * Image Chart - Uses actual image aspect ratio
+ * UPDATED: Detects real image dimensions and uses them for aspect ratio
  */
 function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
-  const aspectRatio = result.aspectRatio || '16:9';
+  const [actualAspectRatio, setActualAspectRatio] = React.useState<string | null>(null);
+  const imgRef = React.useRef<HTMLImageElement>(null);
+  
+  // WHAT: Detect actual image aspect ratio when image loads
+  // WHY: Use real image dimensions instead of configured aspect ratio
+  // HOW: Calculate from naturalWidth/naturalHeight and apply dynamically
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (img.naturalWidth && img.naturalHeight) {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      setActualAspectRatio(`${img.naturalWidth}:${img.naturalHeight}`);
+      console.log('[ImageChart] Actual aspect ratio detected:', {
+        title: result.title,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight,
+        ratio: ratio.toFixed(4),
+        aspectRatio: `${img.naturalWidth}:${img.naturalHeight}`
+      });
+    }
+  };
   
   // DEBUG: Log image rendering
   console.log('[ImageChart] Rendering:', {
     title: result.title,
     kpiValue: result.kpiValue,
     formattedValue,
-    aspectRatio,
+    configuredAspectRatio: result.aspectRatio || '16:9',
+    actualAspectRatio,
     hasValue: !!formattedValue
   });
   
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
-  // Map aspect ratio to CSS class
-  const aspectClass = {
-    '16:9': styles.aspect169,
-    '9:16': styles.aspect916,
-    '1:1': styles.aspect11
-  }[aspectRatio] || styles.aspect169;
+  // WHAT: Use actual aspect ratio if available, otherwise fallback to configured
+  // WHY: Prefer real image dimensions, but have fallback for initial render
+  const aspectRatio = actualAspectRatio || result.aspectRatio || '16:9';
+  
+  // WHAT: Calculate aspect ratio value for CSS
+  // WHY: CSS aspect-ratio property needs numeric ratio (width/height)
+  const aspectRatioValue = React.useMemo(() => {
+    if (actualAspectRatio) {
+      const [w, h] = actualAspectRatio.split(':').map(Number);
+      if (w && h) return w / h;
+    }
+    // Fallback to configured aspect ratio
+    const configured = result.aspectRatio || '16:9';
+    const map: Record<string, number> = {
+      '16:9': 16 / 9,
+      '9:16': 9 / 16,
+      '1:1': 1
+    };
+    return map[configured] || 16 / 9;
+  }, [actualAspectRatio, result.aspectRatio]);
 
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`}
+      className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
     >
-      {/* WHAT: Use actual <img> tag for reliable aspect ratio */}
-      {/* WHY: Browser automatically maintains aspect ratio, no CSS tricks needed */}
-      <img 
-        className={styles.imageContent}
-        src={formattedValue}
-        alt={result.title}
-        onLoad={() => console.log('[ImageChart] Image loaded:', result.title)}
-        onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
-      />
+      {/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */}
+      {/* WHY: Use real image dimensions instead of configured aspect ratio */}
+      <div 
+        className={styles.imageContainer}
+        style={{
+          '--image-aspect-ratio': aspectRatioValue.toString()
+        } as React.CSSProperties}
+      >
+        {/* WHAT: Use actual <img> tag and detect real dimensions */}
+        {/* WHY: Browser provides naturalWidth/naturalHeight for actual aspect ratio */}
+        <img 
+          ref={imgRef}
+          className={styles.imageContent}
+          src={formattedValue}
+          alt={result.title}
+          onLoad={handleImageLoad}
+          onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
+        />
+      </div>
     </CellWrapper>
   );
 }

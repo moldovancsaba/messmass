@@ -734,11 +734,17 @@
 .tableMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
 .tableMarkdown a:hover { color: var(--mm-blue-700); }
 
-/* Image Chart - Aspect Ratio Constrained Container */
-/* WHAT: Image container fits within body zone while respecting aspect ratio constraint */
-/* WHY: Layout Grammar requires images to maintain aspect ratio while fitting available space */
-/* HOW: Container uses width: 100% with aspect-ratio to fill width and constrain height, max-height to fit body zone */
+/* Image Chart - Container */
+/* WHAT: Chart container for image charts */
 .image {
+  background: transparent !important; /* WHAT: No background on chart container, image container has background */
+  padding: 0; /* WHAT: No padding, image container handles spacing */
+}
+
+/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */
+/* WHY: Use real image dimensions instead of configured aspect ratio for accurate display */
+/* HOW: Container uses CSS custom property --image-aspect-ratio set dynamically from image naturalWidth/naturalHeight */
+.imageContainer {
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
@@ -746,33 +752,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* WHAT: Container fills width, height constrained by aspect ratio */
+  /* WHAT: Container fills width, height constrained by actual image aspect ratio */
   /* WHY: Body zone is flex container with center alignment, image should fill available width */
   width: 100%; /* Fill available width in body zone */
   max-width: 100%; /* Don't exceed body zone width */
   max-height: 100%; /* Don't exceed body zone height */
   height: auto; /* Height calculated from aspect ratio */
-}
-
-/* WHAT: Aspect ratio classes constrain container height based on width */
-/* WHY: Layout Grammar requires images to maintain aspect ratio - container must respect it */
-/* HOW: aspect-ratio property calculates height from width, max-height ensures it fits body zone */
-.image.aspect169 {
-  aspect-ratio: 16 / 9;
-  /* WHAT: Height = width × (9/16), constrained by max-height: 100% */
-  /* WHY: Container fills width, height calculated from aspect ratio, fits within body zone */
-}
-
-.image.aspect916 {
-  aspect-ratio: 9 / 16;
-  /* WHAT: Height = width × (16/9), constrained by max-height: 100% */
-  /* WHY: Portrait images may be height-constrained, will fit within body zone */
-}
-
-.image.aspect11 {
-  aspect-ratio: 1 / 1;
-  /* WHAT: Height = width (square), constrained by max-height: 100% */
-  /* WHY: Square images fill width, height matches width, fits within body zone */
+  /* WHAT: Use CSS custom property for dynamic aspect ratio */
+  /* WHY: Aspect ratio is detected from actual image dimensions, not configured value */
+  aspect-ratio: var(--image-aspect-ratio, 16 / 9); /* Fallback to 16:9 if not set */
 }
 
 /* WHAT: <img> element fills container completely */
@@ -785,6 +773,19 @@
   object-fit: contain; /* Show full image without cropping, maintaining aspect ratio */
   object-position: center; /* Center the image */
   border-radius: var(--mm-radius-lg); /* Match container rounded corners */
+}
+
+/* WHAT: Image container on mobile - same dynamic aspect ratio approach */
+/* WHY: Consistent behavior across breakpoints */
+@media (max-width: 768px) {
+  .imageContainer {
+    width: 100% !important;
+    height: auto !important; /* Let aspect-ratio determine height */
+    min-height: 0 !important; /* Remove min-height constraint */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: var(--image-aspect-ratio, 16 / 9) !important; /* Use actual image aspect ratio */
+  }
 }
 
 /* VALUE Composite Chart */
