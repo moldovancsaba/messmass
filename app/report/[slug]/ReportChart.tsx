@@ -367,6 +367,8 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
             const protectedLabel = preventPhraseBreaks(element.label);
             return (
               <div key={idx} className={styles.pieLegendItem}>
+                {/* WHAT: Dynamic pie legend dot color - WHY: Color comes from chart data, cannot use CSS classes */}
+                {/* eslint-disable-next-line react/forbid-dom-props */}
                 <div 
                   className={styles.pieLegendDot} 
                   style={{ 
@@ -440,9 +442,8 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
             <div key={idx} className={styles.barRow}>
               <div className={styles.barLabel}>{protectedLabel}</div>
               <div className={styles.barTrack}>
-                {/* WHAT: Dynamic bar fill width and color from calculated data + theme
-                    WHY: Width is computed percentage, color from CSS variables
-                    eslint-disable-next-line react/forbid-dom-props */}
+                {/* WHAT: Dynamic bar fill width and color from calculated data + theme - WHY: Width is computed percentage, color from CSS variables */}
+                {/* eslint-disable-next-line react/forbid-dom-props */}
                 <div 
                   className={styles.barFill}
                   style={{ 
@@ -478,9 +479,10 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
   const showTitle = result.showTitle !== false;
   
   return (
+    // WHAT: Dynamic text chart height - WHY: Height calculated from block dimensions, cannot use CSS classes
+    // eslint-disable-next-line react/forbid-dom-props
     <div 
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
       data-chart-id={result.chartId}
       style={blockHeight ? { height: `${blockHeight}px` } : undefined}
     >

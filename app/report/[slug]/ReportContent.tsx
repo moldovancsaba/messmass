@@ -233,11 +233,10 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
   const gridColumns = calculateGridColumns(rowCharts);
   
   return (
-    // WHAT: Dynamic grid layout with calculated columns and row height
-    // WHY: Grid columns from chart widths, height from blockHeightCalculator
-    // HOW: Responsive calculation based on actual container width measurement
-    // eslint-disable-next-line react/forbid-dom-props
-    <div 
+    <>
+      {/* WHAT: Dynamic grid layout - WHY: Grid columns and height calculated from chart dimensions, cannot use CSS classes */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
+      <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
@@ -278,6 +277,12 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
 }
 
 function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
+  // WHAT: Calculate unified font-size for all text charts in this block
+  // WHY: All text charts should use the same font-size, fitting the largest content
+  // HOW: Use hook to measure containers and calculate optimal size
+  // IMPORTANT: Hooks must be called before any early returns (React Rules of Hooks)
+  const blockRef = useRef<HTMLDivElement>(null);
+  
   // Sort charts by order
   const sortedCharts = [...block.charts].sort((a, b) => a.order - b.order);
   
@@ -288,19 +293,38 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
     const result = chartResults.get(chart.chartId);
     const isValid = hasValidChartData(result);
     if (!isValid && result) {
-      console.warn(`[ReportBlock] Invalid chart data for ${chart.chartId}:`, {
+      // WHAT: Detailed logging for invalid chart data
+      // WHY: Need to see full chart result to diagnose why charts are filtered
+      const details: any = {
+        chartId: chart.chartId,
         type: result.type,
         hasError: !!result.error,
         error: result.error,
         kpiValue: result.kpiValue,
         elementsCount: result.elements?.length || 0,
         elementsTotal: result.elements?.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0) || 0
-      });
+      };
+      
+      // Add element details for pie/bar charts
+      if (result.elements && result.elements.length > 0) {
+        details.elements = result.elements.map((el: any) => ({
+          label: el.label,
+          value: el.value,
+          valueType: typeof el.value,
+          isNA: el.value === 'NA' || el.value === undefined
+        }));
+      }
+      
+      console.warn(`[ReportBlock] Invalid chart data for ${chart.chartId}:`, details);
     } else if (!result) {
       console.warn(`[ReportBlock] Missing chart result for ${chart.chartId} in block "${block.title || 'Untitled'}"`);
     }
     return isValid;
   });
+  
+  // Calculate chartIds for hook (before early return)
+  const chartIds = validCharts.map(c => c.chartId);
+  const unifiedTextFontSize = useUnifiedTextFontSize(chartResults, chartIds, blockRef);
   
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
@@ -344,13 +368,6 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       gridColumns: rows.map(r => calculateGridColumns(r))
     });
   }
-
-  // WHAT: Calculate unified font-size for all text charts in this block
-  // WHY: All text charts should use the same font-size, fitting the largest content
-  // HOW: Use hook to measure containers and calculate optimal size
-  const blockRef = useRef<HTMLDivElement>(null);
-  const chartIds = validCharts.map(c => c.chartId);
-  const unifiedTextFontSize = useUnifiedTextFontSize(chartResults, chartIds, blockRef);
 
   return (
     <div 

@@ -161,7 +161,7 @@ export default function GoogleSheetsConnectModal({
             disabled={isSubmitting || isLoading}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Name of the sheet tab to sync (default: "Events")
+            Name of the sheet tab to sync (default: &quot;Events&quot;)
           </p>
         </div>
 

@@ -140,9 +140,8 @@ export default function PartnerReportPage() {
           <span className={styles.errorIcon}>⚠️</span>
           <h2 className={styles.errorTitle}>Failed to Load Partner Report</h2>
           <p className={styles.errorText}>{error}</p>
-          {/* WHAT: Additional debug info styling for error state
-              WHY: Smaller, muted text for technical slug info (legitimate styling)
-              eslint-disable-next-line react/forbid-dom-props */}
+          {/* WHAT: Additional debug info styling for error state - WHY: Smaller, muted text for technical slug info (legitimate styling) */}
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p className={styles.errorText} style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
             Partner slug: {slug}
           </p>

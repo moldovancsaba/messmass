@@ -185,10 +185,36 @@ export default function ReportPage() {
           console.error(`[ReportPage] Chart calculation error for ${chart.chartId}:`, result.error);
         } else if (result.type === 'kpi' && (result.kpiValue === undefined || result.kpiValue === 'NA')) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId} (value: ${result.kpiValue})`);
+          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId}`, {
+            value: result.kpiValue,
+            formula: chart.formula,
+            hasError: !!result.error,
+            error: result.error
+          });
         } else if ((result.type === 'pie' || result.type === 'bar') && (!result.elements || result.elements.length === 0)) {
           emptyCount++;
-          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId} (no elements)`);
+          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId}`, {
+            elementsCount: result.elements?.length || 0,
+            formula: chart.formula,
+            elementsFormulas: chart.elements?.map((e: any) => e.formula) || []
+          });
+        } else if ((result.type === 'pie' || result.type === 'bar') && result.elements) {
+          const total = result.elements.reduce((sum: number, el: any) => 
+            sum + (typeof el.value === 'number' ? el.value : 0), 0
+          );
+          if (total === 0) {
+            emptyCount++;
+            console.warn(`[ReportPage] Empty ${result.type} chart (total=0): ${chart.chartId}`, {
+              elements: result.elements.map((el: any) => ({
+                label: el.label,
+                value: el.value,
+                valueType: typeof el.value
+              })),
+              formula: chart.formula
+            });
+          } else {
+            calculatedCount++;
+          }
         } else {
           calculatedCount++;
         }

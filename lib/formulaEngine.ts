@@ -674,7 +674,7 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
       try {
         // Dynamic import to avoid bundling in client if not needed
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        // Note: require() is acceptable here for conditional loading
         const { Parser } = require('expr-eval');
         
         // WHAT: Create parser with only safe mathematical operators

@@ -294,7 +294,7 @@ export default function BitlyLinksSelector({
         {isDropdownOpen && !searchQuery && !isSearching && (
           <div className={styles.dropdown}>
             <div className={styles.noResults}>
-              💡 Type at least 2 characters to search (e.g., "fanselfie")
+              💡 Type at least 2 characters to search (e.g., &quot;fanselfie&quot;)
             </div>
           </div>
         )}
@@ -304,7 +304,7 @@ export default function BitlyLinksSelector({
         {isDropdownOpen && searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
           <div className={styles.dropdown}>
             <div className={styles.noResults}>
-              No matching links found for "{searchQuery}"
+              No matching links found for &quot;{searchQuery}&quot;
             </div>
           </div>
         )}

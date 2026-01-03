@@ -1051,7 +1051,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
         // WHAT: Use evaluateFormula with empty stats (formula already has values substituted)
         // WHY: Reuse safe evaluation logic from formulaEngine
         // HOW: Create a minimal stats object, formula should already have numeric values
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        // Note: require() is acceptable here for conditional loading
         const { evaluateFormula } = require('@/lib/formulaEngine');
         const result = evaluateFormula(testFormula, {});
         
