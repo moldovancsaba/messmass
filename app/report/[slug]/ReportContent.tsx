@@ -135,17 +135,22 @@ interface ReportBlockProps {
 }
 
 /**
- * WHAT: Group charts into rows - unlimited width per row
- * WHY: Allow any number of charts per row without breaking
- * HOW: Put all charts in a single row (no width-based splitting)
+ * WHAT: Group charts into rows - blocks NEVER break into multiple lines
+ * WHY: Layout Grammar rule - a block is a single horizontal container
+ * HOW: Put ALL charts in a single row, grid is based on sum of units
+ * 
+ * Layout Grammar Rules:
+ * - Charts have width: 1 or 2 units
+ * - Block grid = sum of all chart units (e.g., [1,2,1] → "1fr 2fr 1fr")
+ * - Block NEVER breaks into multiple rows
  */
 function groupChartsIntoRows(
   charts: Array<{ chartId: string; width: number; order: number }>,
   maxColumns: number // WHAT: Unused parameter kept for backward compatibility
 ): Array<Array<{ chartId: string; width: number; order: number }>> {
   // WHAT: Return all charts as a single row
-  // WHY: User wants unlimited items per row
-  // HOW: No splitting logic - just wrap all charts in array
+  // WHY: Blocks never break - all charts in one horizontal row
+  // HOW: Grid columns are calculated from sum of units
   return charts.length > 0 ? [charts] : [];
 }
 
@@ -244,13 +249,20 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
+  // WHAT: Calculate grid columns from chart widths (sum of units)
+  // WHY: Layout Grammar - grid = sum of units (e.g., [1,2,1] → "1fr 2fr 1fr")
+  const gridColumns = calculateGridColumns(rowCharts);
+  
   return (
     <div 
       ref={rowRef}
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
-      style={{ '--row-height': `${rowHeight}px` } as React.CSSProperties}
+      style={{ 
+        '--row-height': `${rowHeight}px`,
+        gridTemplateColumns: gridColumns
+      } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
@@ -275,7 +287,6 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
           <div 
             key={dimensionKey}
             className={styles.rowItem}
-            data-column-span={chart.width || 1}
           >
             <ReportChart 
               result={result} 

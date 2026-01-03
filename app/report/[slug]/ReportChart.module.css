@@ -743,15 +743,15 @@
   /* Inherits height: 100% from base .chart - fills row */
 }
 
-/* WHAT: <img> element fills container and crops to fit */
-/* WHY: object-fit: cover fills container completely while maintaining aspect ratio */
-/* HOW: Image covers entire container, cropped to fit with centered position */
+/* WHAT: <img> element maintains aspect ratio within body zone */
+/* WHY: Layout Grammar requires images to preserve aspect ratio without cropping */
+/* HOW: Use object-fit: contain to show full image, or calculate body zone height from aspect ratio */
 .imageContent {
   display: block;
   width: 100%;
-  height: 100%; /* Fill the .image container */
-  object-fit: cover; /* Fill container, crop as needed to maintain aspect ratio */
-  object-position: center; /* Center the cropped image */
+  height: 100%; /* Fill the body zone container */
+  object-fit: contain; /* Show full image without cropping, maintaining aspect ratio */
+  object-position: center; /* Center the image */
   border-radius: var(--mm-radius-lg); /* Match container rounded corners */
 }
 

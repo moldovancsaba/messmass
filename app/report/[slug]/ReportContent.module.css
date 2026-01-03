@@ -71,12 +71,12 @@
  */
 
 /* Row Container - Layout Grammar Grid System */
-/* WHAT: Fixed 12-column grid, cells span 1 or 2 columns based on cellWidth */
-/* WHY: Layout grammar system uses cellWidth (1 or 2) to determine column span */
-/* HOW: Each cell uses grid-column: span X where X = cellWidth */
+/* WHAT: Dynamic grid based on sum of chart units (e.g., [1,2,1] → "1fr 2fr 1fr") */
+/* WHY: Layout Grammar - block grid = sum of all chart width units */
+/* HOW: grid-template-columns set dynamically via inline style from calculateGridColumns() */
 .row {
   display: grid !important;
-  grid-template-columns: repeat(12, 1fr);
+  /* grid-template-columns set dynamically via inline style */
   gap: var(--mm-space-4);
   width: 100% !important;
   min-width: 100% !important;
@@ -94,12 +94,12 @@
   margin-bottom: 0;
 }
 
-/* Row Item - Layout Grammar Column Span */
-/* WHAT: Cells span 1 or 2 columns based on cellWidth from layout grammar */
-/* WHY: Layout grammar system uses cellWidth (1 or 2) to determine span */
-/* HOW: Use CSS classes for span-1 and span-2, set via data attribute in JS */
+/* Row Item - Layout Grammar Proportional Width */
+/* WHAT: Each cell takes proportional width based on its unit (1 or 2) */
+/* WHY: Grid columns are fr units matching chart widths (1fr, 2fr, etc.) */
+/* HOW: No span needed - grid-template-columns already defines proportional widths */
 .rowItem {
-  width: 100% !important; /* CRITICAL: Fill column width */
+  width: 100% !important; /* CRITICAL: Fill grid column width */
   min-width: 0; /* CRITICAL: Prevent grid blowout from canvas/SVG */
   height: 100%;
   display: flex;
@@ -109,16 +109,6 @@
   /* Enable container queries so inner content can scale to box width */
   container-type: inline-size;
   background: transparent !important; /* WHAT: Force transparent cell background */
-}
-
-/* WHAT: Column span classes based on layout grammar cellWidth */
-/* WHY: Layout grammar system uses cellWidth (1 or 2) where 1 = half-width (6 cols), 2 = full-width (12 cols) */
-.rowItem[data-column-span="1"] {
-  grid-column: span 6; /* 1 unit = 6/12 columns (half-width) */
-}
-
-.rowItem[data-column-span="2"] {
-  grid-column: span 12; /* 2 units = 12/12 columns (full-width) */
 }
 
 /* Responsive Adjustments */
