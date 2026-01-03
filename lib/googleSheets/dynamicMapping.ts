@@ -139,7 +139,7 @@ export const FIELD_DEFINITIONS: Record<string, SheetColumnDefinition> = {
   'reportText7': { field: 'stats.reportText7', type: 'string' },
   'reportText8': { field: 'stats.reportText8', type: 'string' },
   'reportText9': { field: 'stats.reportText9', type: 'string' },
-  'reportText10': { field: 'stats.reportText10', type: 'string' },
+  'reportText10': { field: 'reportText10', type: 'string' },
   'reportText11': { field: 'stats.reportText11', type: 'string' },
   'reportText12': { field: 'stats.reportText12', type: 'string' },
   'reportText13': { field: 'stats.reportText13', type: 'string' },
