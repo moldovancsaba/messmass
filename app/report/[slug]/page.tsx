@@ -92,6 +92,7 @@ export default function ReportPage() {
 
         // Fetch chart configurations from public admin source (chart_configurations)
         // Then filter to those actually used by the template (maintain order)
+        console.log(`[ReportPage] Fetching ${chartIds.length} chart configurations...`);
         const response = await fetch('/api/chart-config/public', {
           cache: 'no-store', // WHAT: Ensure fresh data on each load
           headers: {
@@ -99,11 +100,30 @@ export default function ReportPage() {
           },
         });
         
+        console.log(`[ReportPage] Chart fetch response:`, {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          url: response.url
+        });
+        
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`[ReportPage] Chart fetch failed:`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText.substring(0, 200)
+          });
           throw new Error(`Failed to fetch charts: ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
+
+        console.log(`[ReportPage] Chart fetch data:`, {
+          success: data.success,
+          configurationsCount: data.configurations?.length || 0,
+          requestedCount: chartIds.length
+        });
 
         if (!data.success) {
           throw new Error(data.error || 'Failed to fetch charts');
@@ -117,6 +137,12 @@ export default function ReportPage() {
         const ordered = chartIds
           .map(id => byId[id])
           .filter(Boolean);
+
+        console.log(`[ReportPage] Chart matching:`, {
+          requested: chartIds.length,
+          found: ordered.length,
+          missing: chartIds.filter(id => !byId[id])
+        });
 
         setCharts(ordered as any);
       } catch (err) {
@@ -133,6 +159,12 @@ export default function ReportPage() {
   // Calculate chart results using ReportCalculator
   const chartResults = useMemo(() => {
     if (!stats || !charts || charts.length === 0) {
+      console.warn('[ReportPage] Missing data for chart calculation:', {
+        hasStats: !!stats,
+        hasCharts: !!charts,
+        chartsCount: charts?.length || 0,
+        statsKeys: stats ? Object.keys(stats).length : 0
+      });
       return new Map();
     }
 
@@ -140,12 +172,39 @@ export default function ReportPage() {
     const calculator = new ReportCalculator(charts, stats);
     const results = new Map();
 
+    console.log(`[ReportPage] Calculating ${charts.length} charts...`);
+    let calculatedCount = 0;
+    let errorCount = 0;
+    let emptyCount = 0;
+
     for (const chart of charts) {
       const result = calculator.calculateChart(chart.chartId);
       if (result) {
+        if (result.error) {
+          errorCount++;
+          console.error(`[ReportPage] Chart calculation error for ${chart.chartId}:`, result.error);
+        } else if (result.type === 'kpi' && (result.kpiValue === undefined || result.kpiValue === 'NA')) {
+          emptyCount++;
+          console.warn(`[ReportPage] Empty KPI chart: ${chart.chartId} (value: ${result.kpiValue})`);
+        } else if ((result.type === 'pie' || result.type === 'bar') && (!result.elements || result.elements.length === 0)) {
+          emptyCount++;
+          console.warn(`[ReportPage] Empty ${result.type} chart: ${chart.chartId} (no elements)`);
+        } else {
+          calculatedCount++;
+        }
         results.set(chart.chartId, result);
+      } else {
+        console.warn(`[ReportPage] Chart calculation returned null for: ${chart.chartId}`);
       }
     }
+
+    console.log(`[ReportPage] Chart calculation complete:`, {
+      total: charts.length,
+      calculated: calculatedCount,
+      errors: errorCount,
+      empty: emptyCount,
+      resultsSize: results.size
+    });
 
     return results;
   }, [stats, charts]);

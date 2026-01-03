@@ -286,7 +286,20 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
   // HOW: Check both existence and valid data using hasValidChartData
   const validCharts = sortedCharts.filter(chart => {
     const result = chartResults.get(chart.chartId);
-    return hasValidChartData(result);
+    const isValid = hasValidChartData(result);
+    if (!isValid && result) {
+      console.warn(`[ReportBlock] Invalid chart data for ${chart.chartId}:`, {
+        type: result.type,
+        hasError: !!result.error,
+        error: result.error,
+        kpiValue: result.kpiValue,
+        elementsCount: result.elements?.length || 0,
+        elementsTotal: result.elements?.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0) || 0
+      });
+    } else if (!result) {
+      console.warn(`[ReportBlock] Missing chart result for ${chart.chartId} in block "${block.title || 'Untitled'}"`);
+    }
+    return isValid;
   });
   
   // DEBUG: Log filtering
@@ -296,7 +309,21 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       validCharts: validCharts.length,
       missingCharts: sortedCharts
         .filter(c => !chartResults.has(c.chartId))
-        .map(c => c.chartId)
+        .map(c => c.chartId),
+      invalidCharts: sortedCharts
+        .filter(c => {
+          const result = chartResults.get(c.chartId);
+          return result && !hasValidChartData(result);
+        })
+        .map(c => {
+          const result = chartResults.get(c.chartId);
+          return {
+            chartId: c.chartId,
+            type: result?.type,
+            error: result?.error,
+            hasData: result ? hasValidChartData(result) : false
+          };
+        })
     });
   }
 
