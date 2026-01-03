@@ -748,7 +748,7 @@ export default function PartnersAdminPageUnified() {
             }
           />
           <p className="form-hint">
-            💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
+            💡 Type to search Bitly links (e.g., &quot;fanselfie.me/swisshockey&quot;)
           </p>
         </div>
         
@@ -864,14 +864,14 @@ export default function PartnersAdminPageUnified() {
               onClick={() => setShowManualEntry(true)}
               className="btn btn-sm btn-secondary mb-2"
             >
-              🖊️ Can't find it? Enter manually
+              🖊️ Can&apos;t find it? Enter manually
             </button>
           </div>
           
           <p className="form-hint">
             💡 Link to sports team for auto-populated data (logo, colors, stadium, hashtags)
             <br />
-            <strong>Note:</strong> TheSportsDB FREE API has limitations. If you can't find your team, use manual entry.
+            <strong>Note:</strong> TheSportsDB FREE API has limitations. If you can&apos;t find your team, use manual entry.
           </p>
         </div>
         
@@ -899,7 +899,7 @@ export default function PartnersAdminPageUnified() {
             }
           />
           <p className="form-hint">
-            💡 Type to search Bitly links (e.g., "fanselfie.me/swisshockey")
+            💡 Type to search Bitly links (e.g., &quot;fanselfie.me/swisshockey&quot;)
           </p>
         </div>
         

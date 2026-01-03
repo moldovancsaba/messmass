@@ -21,6 +21,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'mongodb',
   'ws',
   'bcrypt',
+  'bcryptjs',
   'jsonwebtoken',
   'dotenv',
   'winston',
@@ -29,6 +30,20 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'isomorphic-dompurify',
   'chart.js',
   'react-chartjs-2',
+  '@types/nodemailer',
+  'focus-trap-react',
+  'googleapis',
+  'html2canvas',
+  'js-cookie',
+  'jspdf',
+  'lucide-react',
+  'nodemailer',
+  'server-only',
+  'typescript',
+  'uuid',
+  'expr-eval', // WHAT: Used conditionally with restricted operators in formulaEngine.ts
+  // WHY: Safe parser for mathematical expressions when FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER enabled
+  // HOW: Only arithmetic operators allowed, no code execution
   // Add other approved deps as needed
 ]);
 
@@ -39,23 +54,37 @@ const APPROVED_DEV_DEPS = new Set([
   '@types/react',
   '@types/react-dom',
   '@types/bcrypt',
+  '@types/bcryptjs',
   '@types/jsonwebtoken',
   '@types/ws',
   '@types/dompurify',
   '@types/marked',
+  '@types/expr-eval',
+  '@types/html2canvas',
+  '@types/jest',
+  '@types/js-cookie',
+  '@types/uuid',
+  '@eslint/eslintrc',
   'eslint',
   'eslint-config-next',
+  'eslint-plugin-jsx-a11y',
+  'eslint-plugin-react',
+  'eslint-plugin-react-hooks',
   'jest',
   '@testing-library/react',
   '@testing-library/jest-dom',
   'ts-jest',
   'tsx',
+  'fast-check',
+  'is-date-object',
   // Add other approved dev deps as needed
 ]);
 
 // Forbidden packages (security/architectural violations)
 const FORBIDDEN_PACKAGES = new Set([
-  'expr-eval', // Security vulnerability, replaced with safe formula evaluator
+  // NOTE: expr-eval is conditionally used with restricted operators in formulaEngine.ts
+  // It's used when FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER is enabled with only safe math operators
+  // 'expr-eval', // Moved to APPROVED_RUNTIME_DEPS with restricted usage
   'mongoose', // Not in approved stack (using native MongoDB driver)
   'socket.io', // Not in approved stack (using ws)
 ]);

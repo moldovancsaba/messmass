@@ -207,6 +207,8 @@ export default function StylesListPage() {
 function ColorSwatch({ color, label }: { color: string; label: string }) {
   return (
     <div className={styles.swatch}>
+      {/* WHAT: Dynamic background color for color swatch - WHY: Color value comes from props, cannot use CSS classes */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
       <div className={styles.swatchColor} style={{ backgroundColor: color }} />
       <span className={styles.swatchLabel}>{label}</span>
     </div>

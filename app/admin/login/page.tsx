@@ -138,14 +138,18 @@ export default function AdminLogin() {
         </form>
 
         {/* Registration Link */}
+        {/* WHAT: Inline styles for login page layout - WHY: Simple spacing and alignment, no CSS module needed */}
+        {/* eslint-disable-next-line react/forbid-dom-props */}
         <div className="login-back" style={{ marginTop: '1rem', textAlign: 'center' }}>
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p style={{ marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)' }}>
-            Don't have an account?
+            Don&apos;t have an account?
           </p>
           <button
             type="button"
             onClick={() => router.push('/admin/register')}
             className="btn btn-small btn-primary"
+            // eslint-disable-next-line react/forbid-dom-props
             style={{ marginBottom: '1rem' }}
           >
             Create Account

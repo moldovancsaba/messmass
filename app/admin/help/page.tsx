@@ -48,14 +48,19 @@ export default function HelpPage() {
         {/* WHAT: Welcome message for guest users
             WHY: Explain limited permissions and how to request elevation */}
         {!loading && userRole === 'guest' && (
-          <div style={{ // eslint-disable-line react/forbid-dom-props
+          <>
+            {/* WHAT: Inline styles for guest welcome box - WHY: Temporary styling for help content, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <div style={{
             padding: '1.5rem',
             marginBottom: '2rem',
             backgroundColor: '#dbeafe',
             border: '2px solid #3b82f6',
             borderRadius: 'var(--mm-radius-lg)',
           }}>
-            <h2 style={{ // eslint-disable-line react/forbid-dom-props
+            {/* WHAT: Inline styles for welcome heading - WHY: Temporary styling for help content, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <h2 style={{
               marginTop: 0,
               marginBottom: '0.75rem',
               color: '#1e40af',
@@ -63,22 +68,31 @@ export default function HelpPage() {
             }}>
               👋 Welcome, {userName}!
             </h2>
-            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}> {/* eslint-disable-line react/forbid-dom-props */}
-              You're currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
+            {/* WHAT: Inline styles for help page text formatting - WHY: Temporary styling for help content, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}>
+              You&apos;re currently logged in as a <strong>Guest</strong>. This gives you access to documentation and help resources.
             </p>
-            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}> {/* eslint-disable-line react/forbid-dom-props */}
-              <strong>🔒 Limited Access:</strong> As a guest, you can only view this User Guide page. To access other features like Events, Partners, and Filters, you'll need elevated permissions.
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}>
+              <strong>🔒 Limited Access:</strong> As a guest, you can only view this User Guide page. To access other features like Events, Partners, and Filters, you&apos;ll need elevated permissions.
             </p>
-            <div style={{ // eslint-disable-line react/forbid-dom-props
+            {/* WHAT: Inline styles for help content box - WHY: Temporary styling for help content, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <div style={{
               padding: '1rem',
               backgroundColor: '#ffffff',
               borderRadius: 'var(--mm-radius-md)',
               border: '1px solid #93c5fd',
             }}>
-              <p style={{ marginBottom: '0.5rem', fontWeight: 600, color: '#1e40af' }}> {/* eslint-disable-line react/forbid-dom-props */}
+              {/* WHAT: Inline styles for permission request heading - WHY: Temporary styling for help content, no CSS module needed */}
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <p style={{ marginBottom: '0.5rem', fontWeight: 600, color: '#1e40af' }}>
                 ⬆️ How to Request Elevated Permissions:
               </p>
-              <ol style={{ // eslint-disable-line react/forbid-dom-props
+              {/* WHAT: Inline styles for ordered list - WHY: Temporary styling for help content, no CSS module needed */}
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <ol style={{
                 marginBottom: 0,
                 paddingLeft: '1.5rem',
                 color: '#1e3a8a',
@@ -86,7 +100,9 @@ export default function HelpPage() {
                 <li>Contact a <strong>Superadmin</strong> in your organization</li>
                 <li>Provide your email: <strong>{userName.includes('@') ? userName : 'Check with admin'}</strong></li>
                 <li>Explain which role you need:
-                  <ul style={{ marginTop: '0.25rem' }}> {/* eslint-disable-line react/forbid-dom-props */}
+                  {/* WHAT: Inline styles for nested list - WHY: Temporary styling for help content, no CSS module needed */}
+                  {/* eslint-disable-next-line react/forbid-dom-props */}
+                  <ul style={{ marginTop: '0.25rem' }}>
                     <li><strong>User:</strong> View and edit Events, Partners, Filters</li>
                     <li><strong>Admin:</strong> User access + KYC, Algorithms, Reporting, Styles</li>
                     <li><strong>Superadmin:</strong> Full system access including user management</li>
@@ -95,6 +111,7 @@ export default function HelpPage() {
               </ol>
             </div>
           </div>
+          </>
         )}
 
         <nav className={styles.toc}>
