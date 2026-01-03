@@ -535,7 +535,20 @@ export class ReportCalculator {
     }
     
     try {
-      return evaluateFormula(formula, this.stats as any);
+      const result = evaluateFormula(formula, this.stats as any);
+      // WHAT: Debug logging for complex formulas with division
+      // WHY: Help diagnose why formulas like ([marketingOptin]+1)/([uniqueUsers]+1)*100 fail
+      if (formula.includes('/') && formula.includes('(') && (result === 'NA' || result === null || result === undefined)) {
+        console.warn(`[ReportCalculator] Complex formula returned NA: "${formula}"`, {
+          result,
+          resultType: typeof result,
+          statsSample: {
+            marketingOptin: (this.stats as any).marketingOptin,
+            uniqueUsers: (this.stats as any).uniqueUsers
+          }
+        });
+      }
+      return result;
     } catch (error) {
       console.error(`[ReportCalculator] Formula evaluation failed: ${formula}`, error);
       return 'NA';

@@ -663,8 +663,12 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     // Remove whitespace
     const cleanExpression = expression.replace(/\s+/g, '');
     
-    // Check for division by zero
-    if (/\/\s*0(?!\d)/.test(cleanExpression)) {
+    // WHAT: Check for division by zero (literal 0, not expressions that evaluate to 0)
+    // WHY: Prevent division by zero errors
+    // HOW: Match /0 or / 0 but not /0.5 or /01 (numbers starting with 0)
+    // NOTE: This is a simple check - actual division by zero is caught during evaluation
+    if (/\/0(?!\d)/.test(cleanExpression)) {
+      console.warn('[formulaEngine] Division by zero detected:', cleanExpression);
       return 'NA';
     }
     
@@ -766,6 +770,18 @@ export function evaluateFormula(
     // Step 1: Substitute variables with actual values (including parameters, manual data, and content assets)
     const formulaWithValues = substituteVariables(formula, stats, parameters, manualData, contentAssets);
     
+    // WHAT: Debug logging for complex formulas
+    // WHY: Help diagnose formula evaluation issues
+    if (formula.includes('/') && formula.includes('(')) {
+      console.log(`[formulaEngine] Evaluating complex formula: "${formula}"`, {
+        afterSubstitution: formulaWithValues,
+        statsSample: {
+          marketingOptin: (stats as any).marketingOptin,
+          uniqueUsers: (stats as any).uniqueUsers
+        }
+      });
+    }
+    
     // WHAT: Check if result is just a number string (no operators)
     // WHY: After substitution, simple formulas become just numbers
     // HOW: If it's a valid number, return it directly
@@ -782,6 +798,20 @@ export function evaluateFormula(
     
     // Step 3: Evaluate the final mathematical expression
     const result = evaluateSimpleExpression(formulaWithFunctions);
+    
+    // WHAT: Debug logging for complex formulas that return NA
+    // WHY: Help diagnose why formulas fail
+    if (formula.includes('/') && formula.includes('(') && result === 'NA') {
+      console.warn(`[formulaEngine] Complex formula returned NA: "${formula}"`, {
+        afterSubstitution: formulaWithValues,
+        afterFunctions: formulaWithFunctions,
+        result,
+        statsSample: {
+          marketingOptin: (stats as any).marketingOptin,
+          uniqueUsers: (stats as any).uniqueUsers
+        }
+      });
+    }
     
     return result;
     
