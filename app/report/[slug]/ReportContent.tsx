@@ -236,8 +236,6 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
-      data-total-columns={totalColumns}
-      data-row-height={rowHeight}
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
