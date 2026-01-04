@@ -1,7 +1,8 @@
 # Report Layout System (Spec v2.0)
 
-**Version:** 11.54.5  
-**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25)
+**Version:** 11.46.1  
+**Last Updated:** 2026-01-02  
+**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02)
 
 ## Overview
 
@@ -47,7 +48,12 @@ Each cell is divided vertically:
 ## Chart Types
 
 ### PIE
-- Body: Chart + legends below chart
+- **Layout Structure:** 3 vertical sections (30:40:30 ratio)
+  - **Top (30%):** Title zone (centered, max 2 lines)
+  - **Middle (40%):** Pie chart (Chart.js Doughnut)
+  - **Bottom (30%):** Legends (centered horizontally, vertically centered in space)
+- **Legend Alignment:** Centered horizontally (not left-aligned)
+- **Legend Items:** Centered within legend container, auto-width (not full-width)
 
 ### BAR
 - Body: Legends and chart side-by-side (horizontal)
@@ -56,10 +62,19 @@ Each cell is divided vertically:
 - Body: Icon + value + description (stacked vertically)
 
 ### TEXT
-- Body: Text content (scales to fill available space)
+- **Body:** Text content with full markdown support
+- **Markdown Support:** All CommonMark features (headings h1-h6, lists, bold, italic, links, blockquotes, code blocks, strikethrough, horizontal rules, GFM)
+- **Dynamic Font Sizing:** Largest possible font size (max 4rem) that fills available space without overflow
+- **Algorithm:** "Fill space" algorithm maximizes vertical fill, allows 5% overflow tolerance for better fill, then clamps
+- **Alignment:** Center-aligned by design (except code blocks for readability)
+- **Overflow:** `overflow: hidden` (no scrolling per Layout Grammar)
 
 ### IMAGE
-- Body: Image content with preserved aspect ratio
+- **Body:** Image content with preserved aspect ratio
+- **Aspect Ratio Detection:** Uses actual image dimensions (`naturalWidth`/`naturalHeight`) detected on load
+- **Dynamic Aspect Ratio:** CSS custom property `--image-aspect-ratio` set from actual image dimensions
+- **Fallback:** If image not loaded, uses configured aspect ratio (16:9, 9:16, or 1:1)
+- **Rendering:** `object-fit: contain` ensures full image visible without cropping
 
 ## Alignment Rules (Within Block)
 
@@ -161,21 +176,25 @@ H ≈ 384.57px
 
 **Calculators:**
 - `lib/aspectRatioResolver.ts` - Aspect ratio → numeric conversion
-- `lib/blockHeightCalculator.ts` - Solves height H from image constraints
+- `lib/blockHeightCalculator.ts` - Solves height H from image constraints (uses design tokens)
 - `lib/fontSyncCalculator.ts` - Binary search for optimal font sizes
+- `lib/textFontSizeCalculator.ts` - Calculates optimal font size for text charts (max 4rem)
 
 **Renderer:**
-- `components/UnifiedDataVisualization.tsx` - Main grid renderer with deterministic sizing
-- `components/CellWrapper.tsx` - 3-zone cell wrapper (optional explicit control)
+- `app/report/[slug]/ReportContent.tsx` - Main grid renderer with deterministic sizing
+- `app/report/[slug]/ReportChart.tsx` - Individual chart renderer (KPI, PIE, BAR, TEXT, IMAGE, TABLE)
+- `components/CellWrapper.tsx` - 3-zone cell wrapper (title, subtitle, body)
 
 ### How It Works
 
-1. **Grid reads block configuration** (charts, widths, aspect ratios)
-2. **Height solver calculates H** from image aspect ratios
-3. **Font calculator finds optimal sizes** for titles/subtitles/KPIs
-4. **CSS variables injected** (`--mm-title-size`, `--mm-subtitle-size`, `--mm-kpi-size`)
-5. **Cells rendered** at calculated height with synchronized fonts
-6. **Result:** Deterministic, overflow-free layout
+1. **Block Configuration:** `groupChartsIntoRows()` ensures all charts in a block are in one row (blocks never break)
+2. **Grid Calculation:** `calculateGridColumns()` creates dynamic `grid-template-columns` from sum of chart widths (e.g., `1fr 2fr 1fr`)
+3. **Height Solver:** `solveBlockHeightWithImages()` calculates H from image aspect ratios and cell distribution (uses design tokens: `--mm-block-height-min`, `--mm-block-height-max`, `--mm-block-height-default`)
+4. **Font Calculator:** `calculateSyncedFontSizes()` finds optimal sizes for titles/subtitles using binary search
+5. **Font Application:** Font sizes passed as props (`titleFontSize`, `subtitleFontSize`) to chart components → `CellWrapper` (inline styles, not CSS variables)
+6. **Image Aspect Ratio:** Images detect actual dimensions on load, set `--image-aspect-ratio` CSS custom property
+7. **Text Sizing:** `calculateOptimalFontSize()` maximizes font size to fill available space (max 4rem)
+8. **Result:** Deterministic, overflow-free layout with no scrolling, no truncation, no clipping (Layout Grammar compliant)
 
 ### Admin UI
 
@@ -324,6 +343,78 @@ PDF export automatically matches screen layout:
 - **Future Use**: Can conditionally render based on flag if legacy issues arise
 - **Migration Path**: All new templates default to 'deterministic' mode
 
+## Phase 4 Completion (v11.46.1 - 2026-01-02)
+
+### Blocks Never Break ✅
+**WHAT**: All charts in a block are rendered in a single horizontal row  
+**WHY**: Layout Grammar requirement - blocks are horizontal containers that never break into multiple lines  
+**HOW**: `groupChartsIntoRows()` returns all charts as a single row array
+
+**Implementation**:
+- **ReportContent.tsx**: `groupChartsIntoRows()` always returns `[charts]` (single row)
+- **Grid System**: Dynamic `grid-template-columns` based on sum of chart widths (e.g., `1fr 2fr 1fr`)
+- **No 12-Column Grid**: Removed fixed 12-column grid system, uses dynamic fr units
+
+### PIE Chart Layout Reordering ✅
+**WHAT**: PIE chart sections reordered: Title (top) → Pie (middle) → Legends (bottom, centered)  
+**WHY**: User requirement for better visual hierarchy  
+**HOW**: 3-zone vertical layout (30:40:30 ratio) with centered legends
+
+**Implementation**:
+- **ReportChart.tsx**: PIE chart uses `pieGrid` with 3 sections:
+  - `pieTitleRow` (30%): Title at top
+  - `pieChartContainer` (40%): Pie chart in middle
+  - `pieLegend` (30%): Legends at bottom, centered horizontally
+- **Legend Alignment**: Changed from `justify-content: flex-start` to `justify-content: center`
+- **Legend Width**: Changed from `width: 100%` to `width: auto` for proper centering
+
+### Image Aspect Ratio Detection ✅
+**WHAT**: Images detect actual dimensions on load and use real aspect ratio  
+**WHY**: Use actual image aspect ratio instead of configured one  
+**HOW**: `onLoad` handler reads `naturalWidth`/`naturalHeight`, sets `--image-aspect-ratio` CSS custom property
+
+**Implementation**:
+- **ReportChart.tsx**: `ImageChart` component detects image dimensions on load
+- **CSS Custom Property**: `--image-aspect-ratio` set from actual dimensions
+- **Fallback**: Uses configured aspect ratio if image not loaded yet
+- **Rendering**: `object-fit: contain` ensures full image visible without cropping
+
+### Text Chart Markdown Support ✅
+**WHAT**: Full CommonMark markdown support for text charts  
+**WHY**: Allow rich text formatting in report texts  
+**HOW**: `marked` library with GFM support, sanitized HTML output
+
+**Implementation**:
+- **lib/markdownUtils.ts**: Full CommonMark support (h1-h6, lists, bold, italic, links, blockquotes, code blocks, strikethrough, horizontal rules)
+- **lib/sanitize.ts**: HTML sanitization with all markdown tags allowed
+- **ReportChart.module.css**: Styles for all markdown elements, center-aligned (except code blocks)
+- **Dynamic Font Sizing**: `calculateOptimalFontSize()` maximizes font size (max 4rem) to fill available space
+- **Layout Grammar**: `overflow: hidden` (no scrolling), no truncation
+
+### Design Token Integration ✅
+**WHAT**: Block height calculation uses design tokens instead of hardcoded values  
+**WHY**: No hardcoded sizes - all values must come from design system  
+**HOW**: `getCSSVariableValue()` reads from `theme.css` CSS custom properties
+
+**Implementation**:
+- **lib/blockHeightCalculator.ts**: Uses `--mm-block-height-min`, `--mm-block-height-max`, `--mm-block-height-default`
+- **app/report/[slug]/ReportContent.tsx**: Uses `--mm-row-width-default`, `--mm-row-height-default`, `--mm-title-font-size-default`, `--mm-subtitle-font-size-default`
+- **app/styles/theme.css**: Design tokens defined for all default values
+- **Fallbacks**: Server-side fallbacks only (SSR), client-side always uses design tokens
+
+### Layout Grammar Compliance ✅
+**WHAT**: All recent changes comply with Layout Grammar requirements  
+**WHY**: Ensure no scrolling, no truncation, no clipping  
+**HOW**: Verified against Layout Grammar specification
+
+**Compliance Checklist**:
+- ✅ **No Scrolling**: `overflow: hidden` on text charts, no `overflow: auto/scroll` on content layers
+- ✅ **No Truncation**: No `text-overflow: ellipsis` or `line-clamp` on content (only on titles/subtitles with 2-line max)
+- ✅ **No Clipping**: No `overflow: hidden` on content layers (only on decorative containers)
+- ✅ **Deterministic Height**: `solveBlockHeightWithImages()` calculates height from image constraints
+- ✅ **Unified Typography**: `calculateSyncedFontSizes()` ensures all titles/subtitles share same font size
+- ✅ **Blocks Never Break**: All charts in block rendered in single row
+
 ## Future Enhancements
 
 - Conditional CellWrapper rendering based on `blockLayoutMode` flag
@@ -335,4 +426,4 @@ PDF export automatically matches screen layout:
 ---
 
 *MessMass Layout System Documentation*  
-*Version 11.36.2 | 2025-12-19 | Spec v2.0*
+*Version 11.46.1 | 2026-01-02 | Spec v2.0*
