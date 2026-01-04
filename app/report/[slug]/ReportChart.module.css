@@ -315,13 +315,13 @@
 
 .pieLegendItem {
   /* WHAT: Flex container for legend item with colored square */
-  /* WHY: Display indicator + label in horizontal layout */
-  /* HOW: Flex with center alignment for vertical centering */
+  /* WHY: Display indicator + label in horizontal layout, centered */
+  /* HOW: Flex with center alignment for both vertical and horizontal centering */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center; /* WHAT: Center legend items horizontally */
   gap: var(--mm-space-2);
-  width: 100%;
+  width: auto; /* WHAT: Auto width to allow centering as a group */
   /* Remove fixed height so items don't stretch; rely on content and legend container */
 }
 
@@ -352,7 +352,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
+  flex: 0 1 auto; /* WHAT: Don't grow, allow shrink, auto width for centering */
 }
 
 /* Bar Chart - Uses base .chart structure */

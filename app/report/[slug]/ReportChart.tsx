@@ -364,14 +364,20 @@ function PieChart({ result, titleFontSize, subtitleFontSize, className }: { resu
       // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
       <div className={styles.pieGrid}>
+        {/* WHAT: Title at top */}
+        {/* WHY: User requirement - title should be first section */}
         {showTitle && (
           <div className={styles.pieTitleRow}>
             <h3 className={styles.pieTitleText}>{result.title}</h3>
           </div>
         )}
+        {/* WHAT: Pie chart in middle */}
+        {/* WHY: User requirement - pie chart should be middle section */}
         <div className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
         </div>
+        {/* WHAT: Legends at bottom center */}
+        {/* WHY: User requirement - legends should be bottom section, centered */}
         <div className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
