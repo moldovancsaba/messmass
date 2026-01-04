@@ -342,14 +342,14 @@
 }
 
 .pieLegendText {
-  /* WHAT: Legend text scaled to fit available space with increased base size */
-  /* WHY: Make legend text more readable and proportional to other text elements */
-  /* HOW: Use design tokens for min/max, container query for responsive scaling */
+  /* WHAT: Legend text scaled to fit available space with responsive sizing */
+  /* WHY: Make legend text readable in both large and small blocks, prevent overflow */
+  /* HOW: Use container queries for both width and height, design tokens for bounds */
   /* Layout Grammar: No overflow, no truncation - text scales to fit */
   font-size: clamp(
-    var(--mm-font-size-sm, 0.875rem),  /* WHAT: Min 14px (design token) */
-    10cqh,                              /* WHAT: Responsive scaling based on container height */
-    var(--mm-font-size-lg, 1.125rem)   /* WHAT: Max 18px (design token) */
+    var(--mm-font-size-xs, 0.75rem),   /* WHAT: Min 12px for small containers (prevents overflow) */
+    min(12cqh, 8cqw),                  /* WHAT: Responsive scaling - use smaller of height or width constraint */
+    var(--mm-font-size-xl, 1.25rem)   /* WHAT: Max 20px for large containers (better readability) */
   );
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
