@@ -663,6 +663,17 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     // Remove whitespace
     const cleanExpression = expression.replace(/\s+/g, '');
     
+    // WHAT: Debug logging for complex expressions
+    // WHY: Help diagnose evaluation failures
+    const isComplex = cleanExpression.includes('/') && cleanExpression.includes('(');
+    if (isComplex) {
+      console.log('[formulaEngine] evaluateSimpleExpression called:', {
+        original: expression,
+        cleaned: cleanExpression,
+        useSafeParser: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER
+      });
+    }
+    
     // WHAT: Check for division by zero (literal 0, not expressions that evaluate to 0)
     // WHY: Prevent division by zero errors
     // HOW: Match /0 or / 0 but not /0.5 or /01 (numbers starting with 0)
@@ -672,68 +683,77 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
       return 'NA';
     }
     
-    // WHAT: Use safe parser when feature flag enabled
-    // WHY: Prevent RCE attacks via formula injection
+    // WHAT: Always use safe parser first (CSP blocks Function() constructor)
+    // WHY: CSP blocks unsafe-eval, so Function() fails in production
     // HOW: expr-eval parser only evaluates mathematical expressions, no code execution
-    if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
-      try {
-        // Dynamic import to avoid bundling in client if not needed
-        // Note: require() is acceptable here for conditional loading
-        const { Parser } = require('expr-eval');
-        
-        // WHAT: Create parser with only safe mathematical operators
-        // WHY: Restrict to arithmetic operations only, prevent code injection
-        const parser = new Parser({
-          operators: {
-            add: true,
-            subtract: true,
-            multiply: true,
-            divide: true,
-            power: true,
-            mod: false, // Disable modulo if not needed
-          }
-        });
-        
-        // WHAT: Parse and evaluate expression safely
-        // WHY: expr-eval only evaluates math, cannot execute arbitrary code
-        const expr = parser.parse(cleanExpression);
-        const result = expr.evaluate({});
-        
-        // WHAT: Debug logging for safe parser results
-        // WHY: Help diagnose why valid expressions return 'NA'
-        if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
-          console.log('[formulaEngine] Safe parser result:', {
-            expression: cleanExpression,
-            result,
-            resultType: typeof result,
-            isNaN: isNaN(result),
-            isFinite: isFinite(result)
-          });
-        }
-        
-        // Check for invalid results
-        if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
-          console.warn('[formulaEngine] Safe parser returned invalid result:', {
-            expression: cleanExpression,
-            result,
-            resultType: typeof result,
-            isNaN: isNaN(result),
-            isFinite: isFinite(result)
-          });
-          return 'NA';
-        }
-        
-        return result;
-      } catch (parseError) {
-        // WHAT: Fallback to legacy evaluation if parser fails
-        // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
-        console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', {
-          expression: cleanExpression,
-          error: parseError instanceof Error ? parseError.message : String(parseError),
-          stack: parseError instanceof Error ? parseError.stack : undefined
-        });
-        // Fall through to legacy Function() evaluation
+    // CRITICAL: Safe parser is now the primary method, Function() is fallback only (and will fail due to CSP)
+    try {
+      // WHAT: Import expr-eval parser (safe, no eval required)
+      // WHY: CSP blocks Function() constructor, so safe parser is required
+      // HOW: Use require() for conditional loading (works in both server and client)
+      // NOTE: If this fails, check that expr-eval is properly installed and bundled
+      const exprEval = require('expr-eval');
+      const Parser = exprEval.Parser || exprEval.default?.Parser || exprEval;
+      
+      if (!Parser) {
+        throw new Error('expr-eval Parser not found. Check that expr-eval is properly installed.');
       }
+      
+      // WHAT: Create parser with only safe mathematical operators
+      // WHY: Restrict to arithmetic operations only, prevent code injection
+      const parser = new Parser({
+        operators: {
+          add: true,
+          subtract: true,
+          multiply: true,
+          divide: true,
+          power: true,
+          mod: false, // Disable modulo if not needed
+        }
+      });
+      
+      // WHAT: Parse and evaluate expression safely
+      // WHY: expr-eval only evaluates math, cannot execute arbitrary code
+      const expr = parser.parse(cleanExpression);
+      const result = expr.evaluate({});
+      
+      // WHAT: Debug logging for safe parser results
+      // WHY: Help diagnose why valid expressions return 'NA'
+      if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
+        console.log('[formulaEngine] Safe parser result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result)
+        });
+      }
+      
+      // Check for invalid results
+      if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+        console.warn('[formulaEngine] Safe parser returned invalid result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result)
+        });
+        return 'NA';
+      }
+      
+      return result;
+    } catch (parseError) {
+      // WHAT: Fallback to legacy evaluation if safe parser fails
+      // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
+      // NOTE: This fallback will fail due to CSP blocking Function() constructor
+      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+      console.error('[formulaEngine] Safe parser failed - this is critical as Function() will also fail due to CSP:', {
+        expression: cleanExpression,
+        error: errorMessage,
+        stack: parseError instanceof Error ? parseError.stack : undefined,
+        suggestion: 'Check if expr-eval is properly bundled for client-side use'
+      });
+      // Fall through to legacy Function() evaluation (will fail if CSP blocks it)
     }
     
     // WHAT: Legacy Function constructor evaluation (fallback)
