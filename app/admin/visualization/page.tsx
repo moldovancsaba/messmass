@@ -8,6 +8,8 @@ import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
+import BaseModal from '@/components/modals/BaseModal';
+import ConfirmDialog from '@/components/modals/ConfirmDialog';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
@@ -76,6 +78,12 @@ export default function VisualizationPage() {
     type: 'event' as 'event' | 'partner' | 'global',
     isDefault: false
   });
+  
+  // WHAT: Template management modal state (rename, copy, delete)
+  // WHY: Allow managing existing templates
+  const [showTemplateEditModal, setShowTemplateEditModal] = useState(false);
+  const [templateEditName, setTemplateEditName] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
@@ -712,6 +720,110 @@ export default function VisualizationPage() {
       showMessage('error', 'Failed to create template');
     }
   };
+  
+  // WHAT: Handle template rename
+  // WHY: Allow updating template name
+  const handleRenameTemplate = async () => {
+    if (!selectedTemplateId || !templateEditName.trim()) {
+      showMessage('error', 'Template name is required');
+      return;
+    }
+    
+    try {
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        name: templateEditName.trim()
+      });
+      
+      if (data.success) {
+        await loadTemplates();
+        showMessage('success', 'Template renamed successfully!');
+      } else {
+        showMessage('error', data.error || 'Failed to rename template');
+      }
+    } catch (error) {
+      console.error('Failed to rename template:', error);
+      showMessage('error', 'Failed to rename template');
+    }
+  };
+  
+  // WHAT: Handle template copy
+  // WHY: Allow duplicating templates
+  const handleCopyTemplate = async () => {
+    if (!selectedTemplateId) return;
+    
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+    if (!selectedTemplate) return;
+    
+    try {
+      // WHAT: Create copy with "Copy of [Name]" suffix
+      // WHY: Clear naming convention for duplicated templates
+      const copyData: any = {
+        name: `Copy of ${selectedTemplate.name}`,
+        type: selectedTemplate.type,
+        isDefault: false, // WHAT: Never mark copy as default
+        dataBlocks: selectedTemplate.dataBlocks || [],
+        gridSettings: selectedTemplate.gridSettings || {
+          desktopUnits: 4,
+          tabletUnits: 2,
+          mobileUnits: 1
+        },
+        heroSettings: selectedTemplate.heroSettings,
+        alignmentSettings: selectedTemplate.alignmentSettings
+      };
+      
+      // WHAT: Include description if it exists (optional field)
+      // WHY: Some templates may have description, preserve it in copy
+      if ((selectedTemplate as any).description) {
+        copyData.description = (selectedTemplate as any).description;
+      }
+      
+      const data = await apiPost('/api/report-templates', copyData);
+      
+      if (data.success && data.template) {
+        await loadTemplates();
+        // WHAT: Auto-select newly copied template
+        // WHY: User expects to edit the copy immediately
+        setSelectedTemplateId(data.template._id);
+        setShowTemplateEditModal(false);
+        showMessage('success', 'Template copied successfully!');
+      } else {
+        showMessage('error', data.error || 'Failed to copy template');
+      }
+    } catch (error) {
+      console.error('Failed to copy template:', error);
+      showMessage('error', 'Failed to copy template');
+    }
+  };
+  
+  // WHAT: Handle template delete
+  // WHY: Allow removing unused templates
+  const handleDeleteTemplate = async () => {
+    if (!selectedTemplateId) return;
+    
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+    if (!selectedTemplate) return;
+    
+    try {
+      const data = await apiDelete(`/api/report-templates?templateId=${selectedTemplateId}`);
+      
+      if (data.success) {
+        await loadTemplates();
+        // WHAT: Clear selection if deleted template was selected
+        // WHY: Prevent editing non-existent template
+        setSelectedTemplateId(null);
+        setShowTemplateEditModal(false);
+        setShowDeleteConfirm(false);
+        showMessage('success', 'Template deleted successfully!');
+      } else {
+        showMessage('error', data.error || 'Failed to delete template');
+        setShowDeleteConfirm(false);
+      }
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+      showMessage('error', 'Failed to delete template');
+      setShowDeleteConfirm(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -815,6 +927,26 @@ export default function VisualizationPage() {
               >
                 ➕ New Template
               </button>
+              
+              {selectedTemplateId && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+                    if (selectedTemplate) {
+                      setTemplateEditName(selectedTemplate.name);
+                      setShowTemplateEditModal(true);
+                    }
+                  }}
+                  type="button"
+                  className="btn btn-small btn-secondary"
+                  title="Edit template (rename, copy, delete)"
+                >
+                  <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                  Edit Template
+                </button>
+              )}
             </div>
             
             {selectedTemplateId && (
@@ -914,6 +1046,131 @@ export default function VisualizationPage() {
           </div>
         </div>
       </FormModal>
+      
+      {/* WHAT: Template Management Modal (Rename, Copy, Delete)
+          WHY: Allow managing existing templates */}
+      {selectedTemplateId && (() => {
+        const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+        if (!selectedTemplate) return null;
+        
+        return (
+          <BaseModal
+            isOpen={showTemplateEditModal}
+            onClose={() => {
+              setShowTemplateEditModal(false);
+              setTemplateEditName(selectedTemplate.name);
+            }}
+            size="md"
+            ariaLabel="Manage Report Template"
+          >
+            <div className={vizStyles.templateEditModal}>
+              <h2 className={vizStyles.templateEditModalTitle}>
+                📝 Manage Report Template: {selectedTemplate.name}
+              </h2>
+              
+              {/* Rename Section */}
+              <div className={vizStyles.templateEditSection}>
+                <h3 className={vizStyles.templateEditSectionTitle}>
+                  Rename Template
+                </h3>
+                <div className={vizStyles.templateRenameRow}>
+                  <div className={vizStyles.templateRenameInput}>
+                    <label className="form-label-block">Template Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={templateEditName}
+                      onChange={(e) => setTemplateEditName(e.target.value)}
+                      placeholder="Enter template name..."
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleRenameTemplate}
+                    disabled={!templateEditName.trim() || templateEditName.trim() === selectedTemplate.name}
+                  >
+                    Save Name
+                  </button>
+                </div>
+              </div>
+              
+              {/* Copy Section */}
+              <div className={vizStyles.templateEditSection}>
+                <h3 className={vizStyles.templateEditSectionTitle}>
+                  Copy Template
+                </h3>
+                <p className={vizStyles.templateEditSectionText}>
+                  Create a duplicate of this template with all its blocks and settings.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCopyTemplate}
+                >
+                  <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                  Copy Template
+                </button>
+              </div>
+              
+              {/* Delete Section */}
+              <div className={vizStyles.templateEditDeleteSection}>
+                <h3 className={vizStyles.templateEditSectionTitle}>
+                  Delete Template
+                </h3>
+                <p className={vizStyles.templateEditSectionText}>
+                  {selectedTemplate.isDefault 
+                    ? '⚠️ Cannot delete default template. Mark another template as default first.'
+                    : 'Permanently delete this template. This action cannot be undone.'}
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={selectedTemplate.isDefault}
+                >
+                  <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                  Delete Template
+                </button>
+              </div>
+              
+              {/* Cancel Button */}
+              <div className={vizStyles.templateEditFooter}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowTemplateEditModal(false);
+                    setTemplateEditName(selectedTemplate.name);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </BaseModal>
+        );
+      })()}
+      
+      {/* WHAT: Delete Confirmation Dialog
+          WHY: Confirm destructive action before deleting template */}
+      {selectedTemplateId && (() => {
+        const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+        if (!selectedTemplate) return null;
+        
+        return (
+          <ConfirmDialog
+            isOpen={showDeleteConfirm}
+            onClose={() => setShowDeleteConfirm(false)}
+            onConfirm={handleDeleteTemplate}
+            title="Delete Report Template?"
+            message={`Are you sure you want to delete "${selectedTemplate.name}"? This action cannot be undone.`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            variant="danger"
+          />
+        );
+      })()}
       
       {!selectedTemplateId && (
         <ColoredCard accentColor="#f59e0b">
