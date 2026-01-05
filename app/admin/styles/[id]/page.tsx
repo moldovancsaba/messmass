@@ -19,6 +19,7 @@ import {
   injectStyleAsCSS,
   removeStyleCSS
 } from '@/lib/reportStyleTypes';
+import { useAvailableFonts } from '@/hooks/useAvailableFonts';
 import styles from './editor.module.css';
 
 export default function StyleEditorPage() {
@@ -32,6 +33,10 @@ export default function StyleEditorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<string>('');
+  
+  // WHAT: Fetch available fonts from MongoDB (dynamic, no hardcoding)
+  // WHY: Font list is managed in database, not hardcoded
+  const { fonts: availableFonts, loading: fontsLoading } = useAvailableFonts();
 
   // Fetch existing style
   useEffect(() => {
@@ -230,16 +235,25 @@ export default function StyleEditorPage() {
                 value={style.fontFamily || 'Inter'}
                 onChange={(e) => handleChange('fontFamily', e.target.value)}
                 className={styles.selectInput}
+                disabled={fontsLoading}
               >
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Montserrat">Montserrat</option>
-                <option value="AS Roma">AS Roma</option>
-                <option value="Aquatic">Aquatic</option>
-                <option value="system-ui">System Default</option>
+                {fontsLoading ? (
+                  <option>Loading fonts...</option>
+                ) : availableFonts.length > 0 ? (
+                  availableFonts.map(font => (
+                    <option key={font._id || font.name} value={font.name}>
+                      {font.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="Inter">Inter (default)</option>
+                )}
               </select>
-              <small className={styles.hint}>Font used for all text in reports</small>
+              <small className={styles.hint}>
+                {fontsLoading 
+                  ? 'Loading available fonts...' 
+                  : `Font used for all text in reports (${availableFonts.length} available)`}
+              </small>
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import './globals.css';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import { HashtagDataProvider } from '../contexts/HashtagDataProvider';
 import { cookies } from 'next/headers';
+import clientPromise from '@/lib/mongodb';
 
 /* What: Load multiple Google Fonts for admin selection
    Why: Allows runtime font switching without full reload via CSS variables */
@@ -64,21 +65,50 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  /* What: Read selected font from cookie for server-side rendering
-     Why: Minimizes FOUT by applying correct font immediately on page load */
+  /* WHAT: Read selected font from cookie for server-side rendering
+     WHY: Minimizes FOUT by applying correct font immediately on page load */
   const cookieStore = await cookies();
   const selectedFont = cookieStore.get('mm_font')?.value || 'inter';
   
-  /* What: Map font selection to CSS variable name
-     Why: Allow runtime switching by changing data-font attribute */
-  const fontMap: Record<string, string> = {
-    'inter': 'var(--font-inter)',
-    'roboto': 'var(--font-roboto)',
-    'poppins': 'var(--font-poppins)',
-    'montserrat': 'var(--font-montserrat)',
-    'asroma': '"AS Roma", sans-serif',
-    'aquatic': '"Aquatic", sans-serif',
+  /* WHAT: Fetch available fonts from database for dynamic font mapping
+     WHY: Font list is managed in MongoDB, not hardcoded */
+  let fontMap: Record<string, string> = {
+    'inter': 'var(--font-inter)', // Default fallback
   };
+  
+  try {
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DB || 'messmass');
+    const fonts = await db.collection('available_fonts')
+      .find({ isActive: true })
+      .sort({ displayOrder: 1 })
+      .toArray();
+    
+    // Build font map from database
+    if (fonts.length > 0) {
+      fontMap = {};
+      fonts.forEach((font: any) => {
+        const key = font.name.toLowerCase().replace(/\s+/g, '');
+        fontMap[key] = font.fontFamily;
+      });
+    } else {
+      // Use default fonts if database is empty
+      const { DEFAULT_FONTS } = await import('@/lib/fontTypes');
+      DEFAULT_FONTS.forEach(font => {
+        const key = font.name.toLowerCase().replace(/\s+/g, '');
+        fontMap[key] = font.fontFamily;
+      });
+    }
+  } catch (error) {
+    // WHAT: Fallback to default font map on error
+    // WHY: Ensure page still renders even if database is unavailable
+    console.error('Failed to load fonts from database, using defaults:', error);
+    const { DEFAULT_FONTS } = await import('@/lib/fontTypes');
+    DEFAULT_FONTS.forEach(font => {
+      const key = font.name.toLowerCase().replace(/\s+/g, '');
+      fontMap[key] = font.fontFamily;
+    });
+  }
   
   // WHAT: CSS variable --active-font set from cookie for server-side font selection
   // WHY: Enables instant font switching without client-side flash

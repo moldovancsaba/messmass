@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { isAuthenticated } from '@/lib/auth';
 import config from '@/lib/config';
+import { AvailableFont, DEFAULT_FONTS } from '@/lib/fontTypes';
 
 /* What: Admin UI Settings API for font selection and other UI preferences
    Why: Persist admin-selected design choices (font family, etc.) to database
@@ -71,18 +72,42 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { fontFamily } = body;
 
-    /* What: Validate font family input
-       Why: Prevent invalid font selections from being stored */
-    const validFonts = ['inter', 'roboto', 'poppins', 'montserrat', 'asroma', 'aquatic'];
-    if (!fontFamily || !validFonts.includes(fontFamily)) {
+    /* WHAT: Validate font family input against available fonts in database
+       WHY: Prevent invalid font selections, use dynamic font list */
+    if (!fontFamily || typeof fontFamily !== 'string') {
       return NextResponse.json(
-        { error: `Invalid fontFamily. Must be one of: ${validFonts.join(', ')}` },
+        { error: 'fontFamily is required and must be a string' },
         { status: 400 }
       );
     }
 
+    // Fetch available fonts from database
     const client = await clientPromise;
-const db = client.db(config.dbName);
+    const db = client.db(config.dbName);
+    const fonts = await db.collection<AvailableFont>('available_fonts')
+      .find({ isActive: true })
+      .toArray();
+    
+    // Use default fonts if database is empty
+    const availableFonts = fonts.length > 0 
+      ? fonts 
+      : DEFAULT_FONTS.map((f, idx) => ({ ...f, _id: `default-${idx}` } as AvailableFont));
+    
+    // Create map of valid font keys (lowercase name)
+    const validFontKeys = new Set(
+      availableFonts.map(f => f.name.toLowerCase().replace(/\s+/g, ''))
+    );
+    
+    const fontKey = fontFamily.toLowerCase().replace(/\s+/g, '');
+    if (!validFontKeys.has(fontKey)) {
+      return NextResponse.json(
+        { 
+          error: `Invalid fontFamily. Must be one of: ${availableFonts.map(f => f.name).join(', ')}`,
+          availableFonts: availableFonts.map(f => f.name)
+        },
+        { status: 400 }
+      );
+    }
     
     /* What: ISO 8601 timestamp with milliseconds (mandatory format per rules)
        Why: Consistent timestamp format across all database records */
