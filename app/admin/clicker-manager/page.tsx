@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
-import { apiPost, apiDelete } from '@/lib/apiClient';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './page.module.css';
 
@@ -98,7 +98,7 @@ export default function ClickerManagerPage() {
     if (!confirm('Delete ALL variable groups? This will reset the clicker layout.')) return;
     try {
       setSaving(true);
-      await fetch('/api/variables-groups', { method: 'DELETE' });
+      await apiDelete('/api/variables-groups');
       await loadData();
     } finally {
       setSaving(false);
@@ -110,7 +110,7 @@ export default function ClickerManagerPage() {
       setSaving(true);
       // WHAT: Force invalidate cache and reload
       // WHY: User added variable in KYC but it's not showing due to cache
-      await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+      await apiPut('/api/variables-config?action=invalidateCache', {});
       await loadData();
     } finally {
       setSaving(false);

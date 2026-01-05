@@ -10,6 +10,7 @@ import AdminHero from '@/components/AdminHero';
 import ColorPickerField from '@/components/ColorPickerField';
 import ReportStylePreview from '@/components/ReportStylePreview';
 import MaterialIcon from '@/components/MaterialIcon';
+import { apiPost, apiPut } from '@/lib/apiClient';
 import { 
   ReportStyle, 
   DEFAULT_STYLE, 
@@ -85,19 +86,11 @@ export default function StyleEditorPage() {
     setSaveStatus('💾 Saving...');
     
     try {
-      const url = isNew 
-        ? '/api/report-styles'
-        : `/api/report-styles?id=${id}`;
-      
-      const method = isNew ? 'POST' : 'PUT';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(style)
-      });
-      
-      const data = await response.json();
+      // WHAT: Use apiPost/apiPut for CSRF protection
+      // WHY: Raw fetch() doesn't include CSRF token, causing 403 errors
+      const data = isNew
+        ? await apiPost('/api/report-styles', style)
+        : await apiPut(`/api/report-styles?id=${id}`, style);
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to save style');

@@ -1050,10 +1050,13 @@ export default function PartnersAdminPageUnified() {
             type="button"
             className="btn btn-ghost"
             onClick={async () => {
-              const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/rename`, { method: 'POST' });
-              const data = await res.json();
-              if (!data.success) alert(data.error || 'Rename failed');
-              else alert(`Renamed to: ${data.name}`);
+              try {
+                const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/rename`, {});
+                if (!data.success) alert(data.error || 'Rename failed');
+                else alert(`Renamed to: ${data.name}`);
+              } catch (err: any) {
+                alert(err.message || 'Rename failed');
+              }
             }}
           >
             🏷️ Prefix UUID in Sheet Title

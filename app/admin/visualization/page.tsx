@@ -8,7 +8,6 @@ import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
-import BaseModal from '@/components/modals/BaseModal';
 import ConfirmDialog from '@/components/modals/ConfirmDialog';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
@@ -747,7 +746,7 @@ export default function VisualizationPage() {
   };
   
   // WHAT: Handle template copy
-  // WHY: Allow duplicating templates
+  // WHY: Allow duplicating templates with independent blocks
   const handleCopyTemplate = async () => {
     if (!selectedTemplateId) return;
     
@@ -755,43 +754,127 @@ export default function VisualizationPage() {
     if (!selectedTemplate) return;
     
     try {
-      // WHAT: Create copy with "Copy of [Name]" suffix
-      // WHY: Clear naming convention for duplicated templates
-      const copyData: any = {
-        name: `Copy of ${selectedTemplate.name}`,
-        type: selectedTemplate.type,
-        isDefault: false, // WHAT: Never mark copy as default
-        dataBlocks: selectedTemplate.dataBlocks || [],
-        gridSettings: selectedTemplate.gridSettings || {
-          desktopUnits: 4,
-          tabletUnits: 2,
-          mobileUnits: 1
-        },
-        heroSettings: selectedTemplate.heroSettings,
-        alignmentSettings: selectedTemplate.alignmentSettings
-      };
+      // WHAT: Fetch all blocks referenced by the original template
+      // WHY: Need to create copies of blocks, not just reference the same ones
+      const blockIds = (selectedTemplate.dataBlocks || []).map((ref: any) => ref.blockId);
       
-      // WHAT: Include description if it exists (optional field)
-      // WHY: Some templates may have description, preserve it in copy
-      if ((selectedTemplate as any).description) {
-        copyData.description = (selectedTemplate as any).description;
-      }
-      
-      const data = await apiPost('/api/report-templates', copyData);
-      
-      if (data.success && data.template) {
-        await loadTemplates();
-        // WHAT: Auto-select newly copied template
-        // WHY: User expects to edit the copy immediately
-        setSelectedTemplateId(data.template._id);
-        setShowTemplateEditModal(false);
-        showMessage('success', 'Template copied successfully!');
+      if (blockIds.length > 0) {
+        // WHAT: Fetch full block data from database
+        // WHY: Need block content (name, charts, etc.) to create copies
+        const blocksResponse = await fetch('/api/data-blocks');
+        const blocksData = await blocksResponse.json();
+        
+        if (!blocksData.success) {
+          throw new Error('Failed to fetch blocks');
+        }
+        
+        // WHAT: Find blocks that belong to this template
+        // WHY: Only copy blocks that are actually used by this template
+        const originalBlocks = blocksData.blocks.filter((block: any) => 
+          blockIds.includes(block._id)
+        );
+        
+        // WHAT: Create new copies of each block
+        // WHY: New template needs independent blocks, not references to original blocks
+        const newBlockRefs = [];
+        for (const originalBlock of originalBlocks) {
+          // WHAT: Create new block with same content but new ID
+          // WHY: Each template copy must have its own independent blocks
+          const newBlockResponse = await apiPost('/api/data-blocks', {
+            name: originalBlock.name,
+            charts: originalBlock.charts || [],
+            order: originalBlock.order || 0,
+            isActive: originalBlock.isActive !== false,
+            showTitle: originalBlock.showTitle !== false
+          });
+          
+          if (newBlockResponse.success && newBlockResponse.blockId) {
+            // WHAT: Find original order in template
+            // WHY: Preserve block order from original template
+            const originalRef = selectedTemplate.dataBlocks.find((ref: any) => 
+              ref.blockId === originalBlock._id || ref.blockId === originalBlock._id.toString()
+            );
+            
+            newBlockRefs.push({
+              blockId: newBlockResponse.blockId,
+              order: originalRef?.order ?? newBlockRefs.length
+            });
+          }
+        }
+        
+        // WHAT: Sort by original order to maintain template structure
+        // WHY: Preserve the visual layout of the original template
+        newBlockRefs.sort((a, b) => a.order - b.order);
+        
+        // WHAT: Create template with new block references
+        // WHY: New template points to new blocks, completely independent
+        const copyData: any = {
+          name: `Copy of ${selectedTemplate.name}`,
+          type: selectedTemplate.type,
+          isDefault: false, // WHAT: Never mark copy as default
+          dataBlocks: newBlockRefs,
+          gridSettings: selectedTemplate.gridSettings || {
+            desktopUnits: 4,
+            tabletUnits: 2,
+            mobileUnits: 1
+          },
+          heroSettings: selectedTemplate.heroSettings,
+          alignmentSettings: selectedTemplate.alignmentSettings
+        };
+        
+        // WHAT: Include description if it exists (optional field)
+        // WHY: Some templates may have description, preserve it in copy
+        if ((selectedTemplate as any).description) {
+          copyData.description = (selectedTemplate as any).description;
+        }
+        
+        const data = await apiPost('/api/report-templates', copyData);
+        
+        if (data.success && data.template) {
+          await loadTemplates();
+          // WHAT: Auto-select newly copied template
+          // WHY: User expects to edit the copy immediately
+          setSelectedTemplateId(data.template._id);
+          setShowTemplateEditModal(false);
+          showMessage('success', 'Template copied successfully with independent blocks!');
+        } else {
+          showMessage('error', data.error || 'Failed to copy template');
+        }
       } else {
-        showMessage('error', data.error || 'Failed to copy template');
+        // WHAT: Template has no blocks, just copy template structure
+        // WHY: Some templates might be empty
+        const copyData: any = {
+          name: `Copy of ${selectedTemplate.name}`,
+          type: selectedTemplate.type,
+          isDefault: false,
+          dataBlocks: [],
+          gridSettings: selectedTemplate.gridSettings || {
+            desktopUnits: 4,
+            tabletUnits: 2,
+            mobileUnits: 1
+          },
+          heroSettings: selectedTemplate.heroSettings,
+          alignmentSettings: selectedTemplate.alignmentSettings
+        };
+        
+        if ((selectedTemplate as any).description) {
+          copyData.description = (selectedTemplate as any).description;
+        }
+        
+        const data = await apiPost('/api/report-templates', copyData);
+        
+        if (data.success && data.template) {
+          await loadTemplates();
+          setSelectedTemplateId(data.template._id);
+          setShowTemplateEditModal(false);
+          showMessage('success', 'Template copied successfully!');
+        } else {
+          showMessage('error', data.error || 'Failed to copy template');
+        }
       }
     } catch (error) {
       console.error('Failed to copy template:', error);
-      showMessage('error', 'Failed to copy template');
+      showMessage('error', 'Failed to copy template: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
   
@@ -1054,88 +1137,21 @@ export default function VisualizationPage() {
         if (!selectedTemplate) return null;
         
         return (
-          <BaseModal
+          <FormModal
             isOpen={showTemplateEditModal}
             onClose={() => {
               setShowTemplateEditModal(false);
               setTemplateEditName(selectedTemplate.name);
             }}
+            onSubmit={async () => {
+              // WHAT: FormModal requires onSubmit, but we handle actions via buttons
+              // WHY: FormModal provides proper design system styling
+              // HOW: onSubmit is a no-op, actions handled by individual buttons
+            }}
+            title={`📝 Manage Report Template: ${selectedTemplate.name}`}
             size="md"
-            ariaLabel="Manage Report Template"
-          >
-            <div className={vizStyles.templateEditModal}>
-              <h2 className={vizStyles.templateEditModalTitle}>
-                📝 Manage Report Template: {selectedTemplate.name}
-              </h2>
-              
-              {/* Rename Section */}
-              <div className={vizStyles.templateEditSection}>
-                <h3 className={vizStyles.templateEditSectionTitle}>
-                  Rename Template
-                </h3>
-                <div className={vizStyles.templateRenameRow}>
-                  <div className={vizStyles.templateRenameInput}>
-                    <label className="form-label-block">Template Name</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={templateEditName}
-                      onChange={(e) => setTemplateEditName(e.target.value)}
-                      placeholder="Enter template name..."
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleRenameTemplate}
-                    disabled={!templateEditName.trim() || templateEditName.trim() === selectedTemplate.name}
-                  >
-                    Save Name
-                  </button>
-                </div>
-              </div>
-              
-              {/* Copy Section */}
-              <div className={vizStyles.templateEditSection}>
-                <h3 className={vizStyles.templateEditSectionTitle}>
-                  Copy Template
-                </h3>
-                <p className={vizStyles.templateEditSectionText}>
-                  Create a duplicate of this template with all its blocks and settings.
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleCopyTemplate}
-                >
-                  <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
-                  Copy Template
-                </button>
-              </div>
-              
-              {/* Delete Section */}
-              <div className={vizStyles.templateEditDeleteSection}>
-                <h3 className={vizStyles.templateEditSectionTitle}>
-                  Delete Template
-                </h3>
-                <p className={vizStyles.templateEditSectionText}>
-                  {selectedTemplate.isDefault 
-                    ? '⚠️ Cannot delete default template. Mark another template as default first.'
-                    : 'Permanently delete this template. This action cannot be undone.'}
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  disabled={selectedTemplate.isDefault}
-                >
-                  <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
-                  Delete Template
-                </button>
-              </div>
-              
-              {/* Cancel Button */}
-              <div className={vizStyles.templateEditFooter}>
+            customFooter={
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--mm-space-3)' }}>
                 <button
                   type="button"
                   className="btn btn-secondary"
@@ -1147,8 +1163,67 @@ export default function VisualizationPage() {
                   Close
                 </button>
               </div>
+            }
+          >
+            {/* Rename Section */}
+            <div className="form-group mb-6">
+              <label className="form-label-block">Rename Template</label>
+              <div style={{ display: 'flex', gap: 'var(--mm-space-3)', alignItems: 'flex-end' }}>
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={templateEditName}
+                    onChange={(e) => setTemplateEditName(e.target.value)}
+                    placeholder="Enter template name..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleRenameTemplate}
+                  disabled={!templateEditName.trim() || templateEditName.trim() === selectedTemplate.name}
+                >
+                  Save Name
+                </button>
+              </div>
             </div>
-          </BaseModal>
+            
+            {/* Copy Section */}
+            <div className="form-group mb-6" style={{ paddingBottom: 'var(--mm-space-6)', borderBottom: '1px solid var(--mm-gray-200)' }}>
+              <label className="form-label-block">Copy Template</label>
+              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
+                Create a duplicate of this template with all its blocks and settings.
+              </p>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCopyTemplate}
+              >
+                <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                Copy Template
+              </button>
+            </div>
+            
+            {/* Delete Section */}
+            <div className="form-group mb-4">
+              <label className="form-label-block">Delete Template</label>
+              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
+                {selectedTemplate.isDefault 
+                  ? '⚠️ Cannot delete default template. Mark another template as default first.'
+                  : 'Permanently delete this template. This action cannot be undone.'}
+              </p>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={selectedTemplate.isDefault}
+              >
+                <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                Delete Template
+              </button>
+            </div>
+          </FormModal>
         );
       })()}
       
