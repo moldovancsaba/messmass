@@ -7,6 +7,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import ColoredCard from '@/components/ColoredCard'
+import { apiPost } from '@/lib/apiClient'
 
 export default function ClearSession() {
   const router = useRouter()
@@ -16,8 +17,9 @@ export default function ClearSession() {
   const clearCookies = async () => {
     setLoading(true)
     try {
-      // Call API to clear server-side cookie
-      await fetch('/api/admin/clear-cookies', { method: 'POST' })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      await apiPost('/api/admin/clear-cookies', {})
       
       // Also clear any client-accessible cookies (shouldn't be any since httpOnly, but just in case)
       document.cookie.split(";").forEach((c) => {

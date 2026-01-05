@@ -15,6 +15,7 @@ import ProjectSelector from '@/components/ProjectSelector';
 import PartnerSelector from '@/components/PartnerSelector';
 import FormModal from '@/components/modals/FormModal';
 import styles from './page.module.css';
+import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 
 // WHAT: Type definitions for links, projects, and partners
 // WHY: Maintains type safety for Bitly integration with MessMass events
@@ -365,17 +366,13 @@ export default function BitlyAdminPage() {
     }
 
     try {
-      const res = await fetch('/api/bitly/links', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: selectedProjectId || null,
-          bitlinkOrLongUrl: newBitlink.trim(),
-          title: customTitle.trim() || undefined,
-        }),
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/links', {
+        projectId: selectedProjectId || null,
+        bitlinkOrLongUrl: newBitlink.trim(),
+        title: customTitle.trim() || undefined,
       });
-
-      const data = await res.json();
 
       if (data.success) {
         setSuccessMessage(`✓ ${data.message} - You can add this link to more projects or close the form.`);
@@ -405,11 +402,9 @@ export default function BitlyAdminPage() {
     setSuccessMessage('');
 
     try {
-      const res = await fetch(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
+      const data = await apiDelete(`/api/bitly/associations?bitlyLinkId=${linkId}&projectId=${projectId}`);
 
       if (data.success) {
         setSuccessMessage(`✓ Removed ${bitlink} from ${projectName}`);
@@ -452,15 +447,11 @@ export default function BitlyAdminPage() {
       };
       console.log('[handleAddLinkToProject] Sending request:', requestBody);
       
-      const res = await fetch('/api/bitly/links', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      });
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/links', requestBody);
       
-      console.log('[handleAddLinkToProject] Response status:', res.status);
-
-      const data = await res.json();
+      console.log('[handleAddLinkToProject] Response data:', data);
       console.log('[handleAddLinkToProject] Response data:', data);
 
       if (data.success) {
@@ -513,11 +504,9 @@ export default function BitlyAdminPage() {
     setSuccessMessage('');
 
     try {
-      const res = await fetch(`/api/bitly/links/${linkId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
+      const data = await apiDelete(`/api/bitly/links/${linkId}`);
 
       if (data.success) {
         setSuccessMessage('✓ Link archived');
@@ -569,12 +558,9 @@ export default function BitlyAdminPage() {
     setSuccessMessage('Syncing... This may take a minute.');
 
     try {
-      const res = await fetch('/api/bitly/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await res.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/sync', {});
 
       if (data.success) {
         setSuccessMessage(`✓ Sync complete! Updated ${data.summary.linksUpdated} links.`);
@@ -599,13 +585,9 @@ export default function BitlyAdminPage() {
     setSuccessMessage('Refreshing cached metrics... This may take a minute.');
 
     try {
-      const res = await fetch('/api/bitly/recalculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'all' }),
-      });
-
-      const data = await res.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/recalculate', { mode: 'all' });
 
       if (data.success) {
         setSuccessMessage(`✓ Refreshed ${data.associationsUpdated} event-link associations!`);
@@ -630,13 +612,9 @@ export default function BitlyAdminPage() {
     setSuccessMessage('Pulling data from Bitly... Fetching 100 links...');
 
     try {
-      const res = await fetch('/api/bitly/pull', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: 100 }),
-      });
-
-      const data = await res.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/pull', { limit: 100 });
 
       if (data.success) {
         const summary = data.summary;
@@ -707,15 +685,9 @@ export default function BitlyAdminPage() {
         link._id === linkId ? { ...link, favorite: newFavoriteStatus } : link
       ));
       
-      const response = await fetch(`/api/bitly/links/${linkId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ favorite: newFavoriteStatus })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update favorite status');
-      }
+      // WHAT: Use apiPut() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for PUT requests
+      await apiPut(`/api/bitly/links/${linkId}`, { favorite: newFavoriteStatus });
     } catch (error) {
       // Revert optimistic update on error
       setLinks(prev => prev.map(link => 
@@ -748,15 +720,9 @@ export default function BitlyAdminPage() {
         return link;
       }));
       
-      const response = await fetch('/api/bitly/partners/associate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bitlyLinkId, partnerId })
-      });
-      
-      if (!response.ok) throw new Error('Failed to add partner association');
-      
-      const data = await response.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/bitly/partners/associate', { bitlyLinkId, partnerId });
       if (data.success) {
         setSuccessMessage(data.message);
       }
@@ -783,14 +749,9 @@ export default function BitlyAdminPage() {
         return link;
       }));
       
-      const response = await fetch(
-        `/api/bitly/partners/associate?bitlyLinkId=${bitlyLinkId}&partnerId=${partnerId}`,
-        { method: 'DELETE' }
-      );
-      
-      if (!response.ok) throw new Error('Failed to remove partner association');
-      
-      const data = await response.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
+      const data = await apiDelete(`/api/bitly/partners/associate?bitlyLinkId=${bitlyLinkId}&partnerId=${partnerId}`);
       if (data.success) {
         setSuccessMessage(data.message);
       }

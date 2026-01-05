@@ -7,7 +7,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { apiRequest } from '@/lib/apiClient';
+import { apiRequest, apiPost } from '@/lib/apiClient';
 import styles from './ReportContentManager.module.css';
 
 interface ReportContentManagerProps {
@@ -67,14 +67,12 @@ async function autoGenerateChartBlocks(newStats: Record<string, any>, oldStats: 
     console.log(`🎨 Auto-generating ${changes.length} chart blocks...`);
     
     for (const change of changes) {
-      await fetch('/api/auto-generate-chart-block', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: change.type,
-          index: change.index,
-          value: change.value
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      await apiPost('/api/auto-generate-chart-block', {
+        type: change.type,
+        index: change.index,
+        value: change.value
       });
     }
     

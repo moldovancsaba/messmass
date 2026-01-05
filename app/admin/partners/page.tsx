@@ -977,12 +977,9 @@ export default function PartnersAdminPageUnified() {
                 try {
                   // Step 1: Auto-setup the sheet (rename Sheet1, add columns, populate data, prefix UUID)
                   console.log('🔧 Setting up Google Sheet for partner:', (editingPartner as any)?._id);
-                  const setupRes = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/setup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sheetId })
-                  });
-                  const setupData = await setupRes.json();
+                  // WHAT: Use apiPost() for automatic CSRF token handling
+                  // WHY: Production middleware requires X-CSRF-Token header for POST requests
+                  const setupData = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/setup`, { sheetId });
                   
                   if (!setupData.success) {
                     alert(`Setup failed: ${setupData.error || 'Unknown error'}`);
@@ -990,12 +987,13 @@ export default function PartnersAdminPageUnified() {
                   }
                   
                   // Step 2: Connect the sheet (save config to partner document)
-                  const connectRes = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/connect`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sheetId, sheetName: 'Events', syncMode: 'manual' })
+                  // WHAT: Use apiPost() for automatic CSRF token handling
+                  // WHY: Production middleware requires X-CSRF-Token header for POST requests
+                  const connectData = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/connect`, {
+                    sheetId,
+                    sheetName: 'Events',
+                    syncMode: 'manual'
                   });
-                  const connectData = await connectRes.json();
                   
                   if (!connectData.success) {
                     alert(`Connection failed: ${connectData.error || 'Unknown error'}`);
@@ -1022,10 +1020,9 @@ export default function PartnersAdminPageUnified() {
                 type="button"
                 className="btn btn-primary"
                 onClick={async () => {
-                  const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/pull`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
-                  });
-                  const data = await res.json();
+                  // WHAT: Use apiPost() for automatic CSRF token handling
+                  // WHY: Production middleware requires X-CSRF-Token header for POST requests
+                  const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/pull`, { dryRun: false });
                   if (!data.success) alert(data.error || 'Pull failed'); else alert(`Sheet → Mess: created ${data.summary.eventsCreated}, updated ${data.summary.eventsUpdated}`);
                 }}
               >📥 Sheet → Mess</button>
@@ -1033,10 +1030,9 @@ export default function PartnersAdminPageUnified() {
                 type="button"
                 className="btn btn-primary"
                 onClick={async () => {
-                  const res = await fetch(`/api/partners/${(editingPartner as any)?._id}/google-sheet/push`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: false })
-                  });
-                  const data = await res.json();
+                  // WHAT: Use apiPost() for automatic CSRF token handling
+                  // WHY: Production middleware requires X-CSRF-Token header for POST requests
+                  const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/push`, { dryRun: false });
                   if (!data.success) alert(data.error || 'Push failed'); else alert(`Mess → Sheet: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
                 }}
               >📤 Mess → Sheet</button>

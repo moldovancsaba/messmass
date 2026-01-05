@@ -746,8 +746,9 @@ export default function VisualizationPage() {
     });
   };
   
-  // WHAT: Create new template
+  // WHAT: Create new template with CSRF protection
   // WHY: Allow creating templates with empty config, then auto-select
+  // HOW: Use apiPost() for automatic CSRF token handling
   const handleCreateTemplate = async () => {
     if (!templateForm.name.trim()) {
       showMessage('error', 'Template name is required');
@@ -755,24 +756,21 @@ export default function VisualizationPage() {
     }
     
     try {
-      const response = await fetch('/api/report-templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: templateForm.name.trim(),
-          description: templateForm.description.trim(),
-          type: templateForm.type,
-          isDefault: templateForm.isDefault,
-          dataBlocks: [],
-          gridSettings: {
-            desktopUnits: 4,
-            tabletUnits: 2,
-            mobileUnits: 1
-          }
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/report-templates', {
+        name: templateForm.name.trim(),
+        description: templateForm.description.trim(),
+        type: templateForm.type,
+        isDefault: templateForm.isDefault,
+        dataBlocks: [],
+        gridSettings: {
+          desktopUnits: 4,
+          tabletUnits: 2,
+          mobileUnits: 1
+        }
       });
       
-      const data = await response.json();
       if (data.success && data.template) {
         // Reload templates list
         await loadTemplates();
@@ -792,7 +790,8 @@ export default function VisualizationPage() {
       }
     } catch (error) {
       console.error('Failed to create template:', error);
-      showMessage('error', 'Failed to create template');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create template';
+      showMessage('error', errorMessage);
     }
   };
   

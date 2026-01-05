@@ -15,6 +15,7 @@ import type { HashtagCategory } from '@/lib/hashtagCategoryTypes';
 import type { HashtagSuggestion, HashtagWithCount } from '@/lib/types/hashtags';
 import { normalizeHashtagResponse } from '@/lib/types/hashtags';
 import ColoredHashtagBubble from './ColoredHashtagBubble';
+import { apiPost } from '@/lib/apiClient';
 
 interface UnifiedHashtagInputProps {
   // Traditional hashtags (General section)
@@ -177,14 +178,9 @@ export default function UnifiedHashtagInput({
   
   const addHashtag = async (hashtag: string) => {
     try {
-      // Validate hashtag with API
-      const response = await fetch('/api/hashtags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hashtag })
-      });
-      
-      const data = await response.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/hashtags', { hashtag });
       
       if (data.success) {
         const cleanedHashtag = data.hashtag;
