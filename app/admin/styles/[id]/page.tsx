@@ -236,6 +236,7 @@ export default function StyleEditorPage() {
                 <option value="Poppins">Poppins</option>
                 <option value="Montserrat">Montserrat</option>
                 <option value="AS Roma">AS Roma</option>
+                <option value="Aquatic">Aquatic</option>
                 <option value="system-ui">System Default</option>
               </select>
               <small className={styles.hint}>Font used for all text in reports</small>

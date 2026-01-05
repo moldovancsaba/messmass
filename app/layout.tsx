@@ -77,6 +77,7 @@ export default async function RootLayout({
     'poppins': 'var(--font-poppins)',
     'montserrat': 'var(--font-montserrat)',
     'asroma': '"AS Roma", sans-serif',
+    'aquatic': '"Aquatic", sans-serif',
   };
   
   // WHAT: CSS variable --active-font set from cookie for server-side font selection
