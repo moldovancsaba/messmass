@@ -466,15 +466,16 @@
   white-space: nowrap;
 }
 
-/* Text Chart - Simple block structure with explicit vertical stacking */
+/* Text Chart - Flexbox structure with title and content zones */
 .text {
-  /* CRITICAL: Override base .chart flex display */
-  display: block !important;
-  flex-direction: unset !important;
+  /* CRITICAL: Use flexbox column to stack title and content */
+  display: flex !important;
+  flex-direction: column !important;
   width: 100% !important;
   height: 100% !important; /* WHAT: Fill parent row height from layout grammar */
   /* CRITICAL: Ensure children stack vertically */
   position: relative !important;
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
 }
 
 .textTitleWrapper {
@@ -510,14 +511,14 @@
 }
 
 .textContentWrapper {
-  /* WHAT: Content container - bottom of chart, fills remaining space */
-  /* WHY: Separate block-level div that cannot be inline */
+  /* WHAT: Content container - fills remaining space after title, centers content vertically and horizontally */
+  /* WHY: Separate block-level div that cannot be inline, must fill available space and center content */
   display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
   align-items: center !important; /* CRITICAL: Center content vertically */
   justify-content: center !important; /* CRITICAL: Center content horizontally */
   width: 100% !important;
-  height: calc(100% - var(--mm-space-4)) !important; /* Fill remaining space minus title padding */
-  min-height: 0 !important;
+  flex: 1 !important; /* CRITICAL: Fill all remaining space after title */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
   /* CRITICAL: Force block display - cannot be inline */
@@ -530,13 +531,17 @@
 }
 
 .textContent {
-  /* WHAT: Container for markdown content - allows children to stack vertically */
-  /* WHY: Markdown elements (p, h1, etc.) must stack vertically, not inline */
-  /* HOW: Use block display with vertical stacking, centered content, scales to fit */
-  display: block !important; /* CRITICAL: Block display allows children to stack */
+  /* WHAT: Container for markdown content - fills available space and centers content */
+  /* WHY: Markdown elements (p, h1, etc.) must stack vertically, fill space, and be centered */
+  /* HOW: Use flexbox to fill space and center content, block display for children to stack */
+  display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
+  flex-direction: column !important; /* CRITICAL: Stack children vertically */
+  align-items: center !important; /* CRITICAL: Center content horizontally */
+  justify-content: center !important; /* CRITICAL: Center content vertically */
   width: 100% !important;
   max-width: 100% !important;
-  height: auto !important; /* CRITICAL: Auto height to fit content, parent flexbox centers it */
+  height: 100% !important; /* CRITICAL: Fill parent height completely */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
   /* WHY: All text charts in a block should use the same font-size */
@@ -694,9 +699,13 @@
 
 /* CRITICAL: Ensure all markdown content is block-level by default */
 .textMarkdown {
-  display: block !important; /* CRITICAL: Markdown container is block */
+  display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
+  flex-direction: column !important; /* CRITICAL: Stack children vertically */
+  align-items: center !important; /* CRITICAL: Center content horizontally */
+  justify-content: center !important; /* CRITICAL: Center content vertically */
   width: 100% !important;
-  height: 100% !important;
+  height: 100% !important; /* CRITICAL: Fill parent height */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
   box-sizing: border-box !important;
   /* CRITICAL: Allow children to stack vertically */
   text-align: center !important;
@@ -709,6 +718,7 @@
 .textMarkdown > * {
   display: block !important; /* CRITICAL: All direct children are blocks */
   width: 100% !important;
+  flex-shrink: 0 !important; /* CRITICAL: Don't shrink markdown elements */
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
