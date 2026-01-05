@@ -315,7 +315,8 @@ function getFontFamily(font: string): string {
     roboto: '"Roboto", sans-serif',
     poppins: '"Poppins", sans-serif',
     montserrat: '"Montserrat", sans-serif',
-    'AS Roma': '"AS Roma", sans-serif'  // WHAT: Custom AS Roma font
+    'AS Roma': '"AS Roma", sans-serif',  // WHAT: Custom AS Roma font
+    'Aquatic': '"Aquatic", sans-serif'   // WHAT: Custom Aquatic font
   };
   return fontMap[font] || fontMap[font.toLowerCase()] || `"${font}", sans-serif`;
 }
