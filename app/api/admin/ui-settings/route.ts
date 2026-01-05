@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
 
     /* What: Validate font family input
        Why: Prevent invalid font selections from being stored */
-    const validFonts = ['inter', 'roboto', 'poppins', 'montserrat', 'asroma'];
+    const validFonts = ['inter', 'roboto', 'poppins', 'montserrat', 'asroma', 'aquatic'];
     if (!fontFamily || !validFonts.includes(fontFamily)) {
       return NextResponse.json(
         { error: `Invalid fontFamily. Must be one of: ${validFonts.join(', ')}` },

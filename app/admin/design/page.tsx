@@ -24,7 +24,7 @@ export default function AdminDesignPage() {
     })();
   }, []);
 
-  const saveFont = async (font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma') => {
+  const saveFont = async (font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma' | 'aquatic') => {
     setFontLoading(true);
     try {
       const data = await apiPut('/api/admin/ui-settings', { fontFamily: font });
@@ -54,7 +54,7 @@ export default function AdminDesignPage() {
       <div className={styles.section}>
         <h3>Typography (Global)</h3>
         <div className={adminStyles.row}>
-          {[ 'inter','roboto','poppins','montserrat','asroma' ].map((f) => (
+          {[ 'inter','roboto','poppins','montserrat','asroma','aquatic' ].map((f) => (
             <button key={f} className={adminStyles.button} disabled={fontLoading} onClick={() => saveFont(f as any)}>
               <MaterialIcon name={selectedFont === f ? 'check' : 'text_fields'} /> {f}
             </button>
