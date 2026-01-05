@@ -59,8 +59,9 @@ export async function apiRequest<T = any>(
   // WHAT: Prepare headers
   const headers = new Headers(fetchOptions.headers);
   
-  // WHAT: Set Content-Type if not already set
-  if (!headers.has('Content-Type') && fetchOptions.body) {
+  // WHAT: Set Content-Type if not already set and body is not FormData
+  // WHY: FormData needs browser to set Content-Type with boundary for multipart/form-data
+  if (!headers.has('Content-Type') && fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
   
