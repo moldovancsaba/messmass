@@ -273,12 +273,16 @@ export default function VisualizationPage() {
     console.log('Setting template to:', templateId);
     setSelectedTemplateId(templateId);
     
-    // Save to preferences (fire and forget, ignore auth errors)
-    fetch('/api/user-preferences', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lastSelectedTemplateId: templateId })
-    }).catch(() => {}); // Ignore errors silently
+    // WHAT: Save to preferences using apiPut for CSRF protection
+    // WHY: Persist selection so it's remembered on next visit
+    // HOW: Fire and forget - ignore errors silently to not block UI
+    try {
+      await apiPut('/api/user-preferences', { lastSelectedTemplateId: templateId });
+    } catch (error) {
+      // WHAT: Silently ignore errors (auth, network, etc.)
+      // WHY: Preference saving shouldn't block template selection
+      console.warn('Failed to save template preference:', error);
+    }
   };
 
   // WHAT: Load templates and select default on mount
