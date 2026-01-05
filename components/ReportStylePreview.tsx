@@ -39,7 +39,16 @@ function PieChartPreview() {
     return [c1, c2];
   };
   
+  // WHAT: Read pie border color from CSS variables
+  const getPieBorderColor = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const pieColors = getPieColors();
+    return cs.getPropertyValue('--pieBorderColor').trim() || pieColors[0];
+  };
+  
   const pieColors = getPieColors();
+  const pieBorderColor = getPieBorderColor();
   const sampleData = [
     { label: 'Remote', value: 1274 },
     { label: 'Stadium', value: 1273 }
@@ -53,7 +62,7 @@ function PieChartPreview() {
       label: 'Fan Distribution',
       data: sampleData.map(d => d.value),
       backgroundColor: pieColors,
-      borderColor: pieColors[0],
+      borderColor: pieBorderColor,
       borderWidth: 2,
       hoverOffset: 6
     }]

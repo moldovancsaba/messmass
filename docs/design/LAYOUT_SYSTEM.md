@@ -1,8 +1,8 @@
 # Report Layout System (Spec v2.0)
 
-**Version:** 11.46.1  
+**Version:** 11.47.0  
 **Last Updated:** 2026-01-02  
-**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02)
+**Status:** Complete (Phase 1: 2025-12-19, Phase 2: 2025-12-25, Phase 3: 2025-12-25, Phase 4: 2026-01-02, Phase 5: 2026-01-02)
 
 ## Overview
 
@@ -66,8 +66,16 @@ Each cell is divided vertically:
 - **Markdown Support:** All CommonMark features (headings h1-h6, lists, bold, italic, links, blockquotes, code blocks, strikethrough, horizontal rules, GFM)
 - **Dynamic Font Sizing:** Largest possible font size (max 4rem) that fills available space without overflow
 - **Algorithm:** "Fill space" algorithm maximizes vertical fill, allows 5% overflow tolerance for better fill, then clamps
-- **Alignment:** Center-aligned by design (except code blocks for readability)
+- **Alignment:** 
+  - **Horizontal:** Center-aligned by design (except code blocks for readability)
+  - **Vertical:** Content is vertically centered in its container using flexbox (`align-items: center`, `justify-content: center`)
+  - **Container:** `.textContentWrapper` uses `flex: 1` to fill remaining space after title
+  - **Content:** `.textContent` and `.textMarkdown` use `display: flex` with `height: 100%` to fill and center content
 - **Overflow:** `overflow: hidden` (no scrolling per Layout Grammar)
+- **Structure:** 
+  - `.text` container uses `display: flex` with `flex-direction: column` to stack title and content
+  - `.textContentWrapper` fills remaining space with `flex: 1`
+  - `.textContent` and `.textMarkdown` fill 100% height and center content vertically and horizontally
 
 ### IMAGE
 - **Body:** Image content with preserved aspect ratio
@@ -415,6 +423,24 @@ PDF export automatically matches screen layout:
 - ✅ **Unified Typography**: `calculateSyncedFontSizes()` ensures all titles/subtitles share same font size
 - ✅ **Blocks Never Break**: All charts in block rendered in single row
 
+## Phase 5 Completion (v11.47.0 - 2026-01-02)
+
+### Text Chart Vertical Alignment and Space Filling ✅
+**WHAT**: Text content vertically centered and fills available space  
+**WHY**: User requirement - text should be centered vertically and fill space  
+**HOW**: Flexbox layout with proper height filling
+
+**Implementation**:
+- **`.text` container**: Uses `display: flex` with `flex-direction: column` to stack title and content
+- **`.textContentWrapper`**: Uses `flex: 1` to fill remaining space after title, centers content with `align-items: center` and `justify-content: center`
+- **`.textContent` and `.textMarkdown`**: Use `display: flex` with `height: 100%` to fill container, center content vertically and horizontally
+- **Markdown elements**: Use `flex-shrink: 0` to prevent shrinking
+
+**Result**:
+- ✅ Text content vertically centered in its container
+- ✅ Text fills and fits available space properly
+- ✅ Proper flexbox layout throughout text chart structure
+
 ## Future Enhancements
 
 - Conditional CellWrapper rendering based on `blockLayoutMode` flag
@@ -426,4 +452,4 @@ PDF export automatically matches screen layout:
 ---
 
 *MessMass Layout System Documentation*  
-*Version 11.46.1 | 2026-01-02 | Spec v2.0*
+*Version 11.47.0 | 2026-01-02 | Spec v2.0*

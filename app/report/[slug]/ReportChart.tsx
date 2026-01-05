@@ -290,6 +290,15 @@ function PieChart({ result, titleFontSize, subtitleFontSize, className }: { resu
   
   const pieColors = getPieColors();
   
+  // WHAT: Read pie border color from Style Editor
+  // WHY: Border color should be editable in Style Editor
+  const getPieBorderColor = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    return cs.getPropertyValue('--pieBorderColor').trim() || pieColors[0];
+  };
+  const pieBorderColor = getPieBorderColor();
+  
   // Prepare Chart.js data
   // WHAT: Force theme colors to override any element.color
   // WHY: Style must overwrite each and every color (user requirement)
@@ -301,9 +310,9 @@ function PieChart({ result, titleFontSize, subtitleFontSize, className }: { resu
       backgroundColor: result.elements.map((el, idx) => 
         pieColors[idx % pieColors.length]
       ),
-      // WHAT: Use first pie color as border for all slices
-      // WHY: Creates visual separation with consistent branding
-      borderColor: pieColors[0],
+      // WHAT: Use pieBorderColor from Style Editor, fallback to first pie color
+      // WHY: Border color should be editable in Style Editor
+      borderColor: pieBorderColor,
       borderWidth: 2,
       hoverOffset: 6 // WHAT: Reduced from 8 to prevent overflow
     }]
