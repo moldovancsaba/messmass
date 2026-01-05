@@ -9,7 +9,7 @@ import MaterialIcon from '@/components/MaterialIcon';
 import adminStyles from '@/app/styles/admin-pages.module.css';
 
 export default function AdminDesignPage() {
-  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma'>('inter');
+  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma' | 'aquatic'>('inter');
   const [fontLoading, setFontLoading] = useState(false);
 
   useEffect(() => {
