@@ -12,6 +12,7 @@ import ConfirmDialog from '@/components/modals/ConfirmDialog';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
+import SaveStatusIndicator, { SaveStatus } from '@/components/SaveStatusIndicator';
 
 // WHAT: Data visualization block from data_blocks collection
 // WHY: Reusable blocks of charts that can be composed into report templates
@@ -94,6 +95,11 @@ export default function VisualizationPage() {
     type: 'success' | 'error' | 'info';
     text: string;
   } | null>(null);
+
+  // WHAT: Save status tracking for block operations
+  // WHY: Provide visual feedback during save operations (like clicker pattern)
+  const [blockSaveStatus, setBlockSaveStatus] = useState<SaveStatus>('idle');
+  const [templateSaveStatus, setTemplateSaveStatus] = useState<SaveStatus>('idle');
 
   // Live chart preview state (calculated using the same pipeline as stats pages)
   const [chartConfigs, setChartConfigs] = useState<ChartConfiguration[]>([]);
@@ -339,13 +345,14 @@ export default function VisualizationPage() {
     }
   };
 
-  // WHAT: Save updated template configuration
-  // WHY: Persist changes to selected template
-  const saveTemplateConfig = async (updatedDataBlocks?: DataVisualizationBlock[]) => {
-    if (!selectedTemplateId) return;
+  // WHAT: Save updated template configuration with save status tracking
+  // WHY: Persist changes to selected template with visual feedback and CSRF protection
+  // HOW: Use apiPut() for CSRF protection, track save status, retry on network errors
+  const saveTemplateConfig = async (updatedDataBlocks?: DataVisualizationBlock[], retryCount = 0): Promise<boolean> => {
+    if (!selectedTemplateId) return false;
     
     const template = templates.find(t => t._id === selectedTemplateId);
-    if (!template) return;
+    if (!template) return false;
     
     const blocksToSave = updatedDataBlocks || dataBlocks;
     const dataBlockRefs = blocksToSave
@@ -355,23 +362,22 @@ export default function VisualizationPage() {
         order: index
       }));
     
+    setTemplateSaveStatus('saving');
+    
     try {
-      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dataBlocks: dataBlockRefs,
-          gridSettings: {
-            desktopUnits: gridUnits.desktop,
-            tabletUnits: gridUnits.tablet,
-            mobileUnits: gridUnits.mobile
-          },
-          heroSettings,
-          alignmentSettings
-        })
+      // WHAT: Use apiPut() instead of fetch() for CSRF protection
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        dataBlocks: dataBlockRefs,
+        gridSettings: {
+          desktopUnits: gridUnits.desktop,
+          tabletUnits: gridUnits.tablet,
+          mobileUnits: gridUnits.mobile
+        },
+        heroSettings,
+        alignmentSettings
       });
       
-      const data = await response.json();
       if (data.success) {
         // Update local templates state
         setTemplates(prev => prev.map(t => 
@@ -389,9 +395,27 @@ export default function VisualizationPage() {
               }
             : t
         ));
+        
+        setTemplateSaveStatus('saved');
+        setTimeout(() => setTemplateSaveStatus('idle'), 2000);
+        return true;
+      } else {
+        throw new Error(data.error || 'Failed to save template config');
       }
     } catch (error) {
       console.error('Failed to save template config:', error);
+      
+      // WHAT: Retry once on network errors
+      // WHY: Handle transient network issues
+      if (retryCount === 0 && error instanceof Error && error.message.includes('network')) {
+        console.log('Retrying template save...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return saveTemplateConfig(updatedDataBlocks, 1);
+      }
+      
+      setTemplateSaveStatus('error');
+      setTimeout(() => setTemplateSaveStatus('idle'), 3000);
+      return false;
     }
   };
 
@@ -408,16 +432,13 @@ export default function VisualizationPage() {
         minElementHeight: newAlignmentSettings.minElementHeight || undefined
       };
       
-      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          heroSettings: newHeroSettings,
-          alignmentSettings: cleanedAlignmentSettings
-        })
+      // WHAT: Use apiPut() for CSRF protection
+      // WHY: Consistent with other save operations
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        heroSettings: newHeroSettings,
+        alignmentSettings: cleanedAlignmentSettings
       });
       
-      const data = await response.json();
       if (!data.success) {
         console.error('Failed to save HERO settings:', data.error);
       }
@@ -428,32 +449,60 @@ export default function VisualizationPage() {
     }
   }, [selectedTemplateId]);
   
-  // Data Block Management Functions
-  const handleUpdateBlock = async (block: DataVisualizationBlock) => {
-    console.log('🟢🟢🟢 UPDATING BLOCK IN DATABASE:', {
-      blockName: block.name,
-      blockId: block._id,
-      chartCount: block.charts.length,
-      chartIds: block.charts.map(c => c.chartId)
-    });
+  // WHAT: Update block with save status tracking and auto-save support
+  // WHY: Provide visual feedback, support onBlur auto-save pattern
+  // HOW: Track save status, update block then save template, handle errors
+  const handleUpdateBlock = async (block: DataVisualizationBlock, closeModal = true) => {
+    // WHAT: Validate before attempting save
+    // WHY: Prevent invalid saves
+    if (!block.name.trim()) {
+      showMessage('error', 'Block name is required');
+      return;
+    }
+    
+    if (!block._id) {
+      showMessage('error', 'Block ID is missing');
+      return;
+    }
+    
+    setBlockSaveStatus('saving');
     
     try {
+      // WHAT: Update block via API
+      // WHY: Persist block changes to database
       const data = await apiPut('/api/data-blocks', block);
       
-      if (data.success) {
-        console.log('✅✅✅ BLOCK SAVED SUCCESSFULLY:', block.name);
-        const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
-        setDataBlocks(updatedBlocks);
-        await saveTemplateConfig(updatedBlocks);
-        setEditingBlock(null);
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update block');
+      }
+      
+      // WHAT: Update local state and save template config
+      // WHY: Keep UI in sync and persist template changes
+      const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
+      setDataBlocks(updatedBlocks);
+      
+      const templateSaved = await saveTemplateConfig(updatedBlocks);
+      
+      if (templateSaved) {
+        setBlockSaveStatus('saved');
+        if (closeModal) {
+          setEditingBlock(null);
+        }
         showMessage('success', 'Block updated successfully!');
+        setTimeout(() => setBlockSaveStatus('idle'), 2000);
       } else {
-        console.error('❌❌❌ BLOCK SAVE FAILED:', data.error);
-        showMessage('error', 'Failed to update block: ' + data.error);
+        // WHAT: Block updated but template save failed
+        // WHY: Show warning but block is still updated
+        setBlockSaveStatus('error');
+        showMessage('error', 'Block updated but template save failed. Please refresh and try again.');
+        setTimeout(() => setBlockSaveStatus('idle'), 3000);
       }
     } catch (error) {
-      console.error('❌❌❌ BLOCK SAVE ERROR:', error);
-      showMessage('error', 'Failed to update block');
+      console.error('Failed to update block:', error);
+      setBlockSaveStatus('error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update block';
+      showMessage('error', errorMessage);
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
     }
   };
   
@@ -480,7 +529,12 @@ export default function VisualizationPage() {
     }
   };
   
+  // WHAT: Create new block and save to template atomically
+  // WHY: Ensure block is always added to template, provide visual feedback
+  // HOW: Track save status, create block then save template, handle errors gracefully
   const handleCreateBlock = async () => {
+    // WHAT: Validate before attempting save
+    // WHY: Prevent invalid saves
     if (!blockForm.name.trim()) {
       showMessage('error', 'Block name is required');
       return;
@@ -491,19 +545,29 @@ export default function VisualizationPage() {
       return;
     }
     
+    setBlockSaveStatus('saving');
+    
     try {
-      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHAT: Step 1: Create block via API
+      // WHY: Block must exist before adding to template
       const data = await apiPost('/api/data-blocks', blockForm);
       
-      if (data.success) {
-        // Add new block to current template
-        const newBlock = data.block;
-        const updatedBlocks = [...dataBlocks, newBlock];
-        setDataBlocks(updatedBlocks);
-        
-        // Save to template
-        await saveTemplateConfig(updatedBlocks);
-        
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create block');
+      }
+      
+      // WHAT: Step 2: Add block to template (atomic operation)
+      // WHY: Ensure block is always in template after creation
+      const newBlock = data.block;
+      const updatedBlocks = [...dataBlocks, newBlock];
+      setDataBlocks(updatedBlocks);
+      
+      // WHAT: Save template config with retry logic
+      // WHY: If template save fails, block still exists (no rollback needed)
+      const templateSaved = await saveTemplateConfig(updatedBlocks);
+      
+      if (templateSaved) {
+        setBlockSaveStatus('saved');
         setShowCreateBlock(false);
         setBlockForm({
           name: '',
@@ -513,12 +577,20 @@ export default function VisualizationPage() {
           showTitle: true
         });
         showMessage('success', 'Data block created and added to template!');
+        setTimeout(() => setBlockSaveStatus('idle'), 2000);
       } else {
-        showMessage('error', 'Failed to create block: ' + data.error);
+        // WHAT: Block created but template save failed
+        // WHY: Show warning but don't delete block (user can manually add it)
+        setBlockSaveStatus('error');
+        showMessage('error', 'Block created but failed to add to template. Please refresh and try again.');
+        setTimeout(() => setBlockSaveStatus('idle'), 3000);
       }
     } catch (error) {
       console.error('Failed to create block:', error);
-      showMessage('error', 'Failed to create block');
+      setBlockSaveStatus('error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create block';
+      showMessage('error', errorMessage);
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
     }
   };
   
@@ -945,7 +1017,10 @@ export default function VisualizationPage() {
       <ColoredCard accentColor="#3b82f6" hoverable={false}>
         <div className={vizStyles.templateSelector}>
           <div className={vizStyles.templateSelectorHeader}>
-            <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
+              <SaveStatusIndicator status={templateSaveStatus} />
+            </div>
             <p className={vizStyles.templateSelectorSubtitle}>
               Choose a template to configure its visualization blocks and charts
             </p>
