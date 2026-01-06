@@ -42,6 +42,13 @@ export function getFontFamilyCSS(fontName: string, availableFonts: AvailableFont
     return '"Aquatics", sans-serif';
   }
   
+  // WHAT: Industry Light font from SCB partner
+  // WHY: Partner font requirement - matches scb.ch CSS usage
+  // HOW: Use exact font-family as defined in scb.ch CSS (includes Verdana fallback)
+  if (fontName === 'Industry Light' || fontName === 'IndustryLight') {
+    return '"Industry Light", Verdana, sans-serif';
+  }
+  
   // System default
   if (fontName.toLowerCase().includes('system')) {
     return 'system-ui';

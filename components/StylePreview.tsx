@@ -330,6 +330,11 @@ function getFontFamily(font: string): string {
   if (normalizedFont === 'aquatic' || normalizedFont === 'aquatics' || font === 'Aquatic' || font === 'Aquatics') {
     return '"Aquatics", sans-serif';
   }
+  // WHAT: Industry Light font from SCB partner
+  // WHY: Partner font requirement - matches scb.ch CSS usage
+  if (normalizedFont === 'industrylight' || normalizedFont === 'industry-light' || font === 'Industry Light' || font === 'IndustryLight') {
+    return '"Industry Light", Verdana, sans-serif';
+  }
   
   // System
   if (normalizedFont.includes('system')) return 'system-ui';

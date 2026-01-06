@@ -94,11 +94,23 @@ export const DEFAULT_FONTS: Omit<AvailableFont, '_id' | 'createdAt' | 'updatedAt
     fontFile: '/fonts/Aquatics-Medium.woff'
   },
   {
+    // WHAT: Industry Light font from SCB partner
+    // WHY: Partner font requirement - matches scb.ch CSS usage
+    // HOW: Local font file in /public/fonts/ directory
+    name: 'Industry Light',
+    fontFamily: '"Industry Light", Verdana, sans-serif',
+    category: 'custom',
+    isActive: true,
+    displayOrder: 7,
+    description: 'Partner font - SCB Industry Light',
+    fontFile: '/fonts/Industry-Light.woff'
+  },
+  {
     name: 'System Default',
     fontFamily: 'system-ui',
     category: 'system',
     isActive: true,
-    displayOrder: 7,
+    displayOrder: 8,
     description: 'System default font stack'
   }
 ];

@@ -42,6 +42,18 @@
   font-display: swap;
 }
 
+/* Industry Light Custom Font */
+@font-face {
+  /* WHAT: Industry Light font from SCB partner
+     WHY: Partner font requirement - matches scb.ch CSS usage
+     HOW: Local font file in /public/fonts/ directory */
+  font-family: 'Industry Light';
+  src: url('/fonts/Industry-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ========================================
    CSS RESET & BASE STYLES
 ======================================== */
