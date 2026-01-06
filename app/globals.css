@@ -30,10 +30,13 @@
   font-display: swap;
 }
 
-/* Aquatic Custom Font */
+/* Aquatics Custom Font */
 @font-face {
-  font-family: 'Aquatic';
-  src: url('/fonts/Aquatic-Regular.woff') format('woff');
+  /* WHAT: Aquatics custom font (matches partner font demo)
+     WHY: Ensure naming and file path match source at partnerfonts.vercel.app
+     HOW: Use Aquatics-Medium.woff as primary weight */
+  font-family: 'Aquatics';
+  src: url('/fonts/Aquatics-Medium.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

@@ -325,7 +325,11 @@ function getFontFamily(font: string): string {
   
   // Custom fonts
   if (normalizedFont === 'asroma' || font === 'AS Roma') return '"AS Roma", sans-serif';
-  if (normalizedFont === 'aquatic' || font === 'Aquatic') return '"Aquatic", sans-serif';
+  // WHAT: Support both legacy name "Aquatic" and new name "Aquatics"
+  // WHY: Ensure preview matches report rendering and partner font demo
+  if (normalizedFont === 'aquatic' || normalizedFont === 'aquatics' || font === 'Aquatic' || font === 'Aquatics') {
+    return '"Aquatics", sans-serif';
+  }
   
   // System
   if (normalizedFont.includes('system')) return 'system-ui';

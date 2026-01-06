@@ -82,13 +82,16 @@ export const DEFAULT_FONTS: Omit<AvailableFont, '_id' | 'createdAt' | 'updatedAt
     fontFile: '/fonts/ASRoma-Regular.woff'
   },
   {
-    name: 'Aquatic',
-    fontFamily: '"Aquatic", sans-serif',
+    // WHAT: Aquatics custom font
+    // WHY: Match naming and file path from partner font demo (Aquatics-Medium.woff)
+    // NOTE: Display name is "Aquatics" but we keep backward-compatible mapping for "Aquatic" in fontUtils
+    name: 'Aquatics',
+    fontFamily: '"Aquatics", sans-serif',
     category: 'custom',
     isActive: true,
     displayOrder: 6,
-    description: 'Custom font - Aquatic branding',
-    fontFile: '/fonts/Aquatic-Regular.woff'
+    description: 'Custom font - Aquatics branding',
+    fontFile: '/fonts/Aquatics-Medium.woff'
   },
   {
     name: 'System Default',

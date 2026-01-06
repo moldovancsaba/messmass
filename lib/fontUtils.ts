@@ -31,8 +31,15 @@ export function getFontFamilyCSS(fontName: string, availableFonts: AvailableFont
   }
   
   // For custom fonts, wrap in quotes
-  if (fontName === 'AS Roma' || fontName === 'Aquatic') {
-    return `"${fontName}", sans-serif`;
+  if (fontName === 'AS Roma') {
+    return '"AS Roma", sans-serif';
+  }
+
+  // WHAT: Support both legacy name "Aquatic" and new name "Aquatics"
+  // WHY: Some existing styles may still store "Aquatic" while new config uses "Aquatics"
+  // HOW: Normalize both to the same CSS font-family
+  if (fontName === 'Aquatic' || fontName === 'Aquatics') {
+    return '"Aquatics", sans-serif';
   }
   
   // System default
