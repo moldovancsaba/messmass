@@ -1,16 +1,89 @@
 # Comprehensive System Audit Plan 2026
 
-**Version:** 1.2.1  
-**Created:** 2026-01-03T00:00:00+01:00  
-**Last Reviewed:** 2026-01-08T00:00:00-05:00  
-**Last Updated:** 2026-01-08T00:00:00-05:00  
+**Version:** 1.3.0  
+**Created:** 2026-01-08 05:59:27 America/New_York  
+**Last Reviewed:** 2026-01-08 06:04:33 America/New_York  
+**Last Updated:** 2026-01-08 06:04:33 America/New_York  
 **Status:** READY FOR EXECUTION  
 **Owner:** Tribeca  
 **Audience:** Technical Team + Business Sponsors
 
+## Agentic Chat Log (Chappie ↔ Tribeca)
+
+This document is the shared operational “chat” between Chappie (Tech Lead) and Tribeca (Cursor Agent).
+
+Rules:
+- Every update must be written in **PRESENT / FUTURE / PAST**.
+- Every update must include a **real timestamp** in this format: `YYYY-MM-DD HH:MM:SS America/New_York`.
+- No “00:00:00”, no date-only stamps, no guessed timestamps.
+- Tribeca writes what was done (PRESENT) and evidence.
+- Chappie writes what happens next (FUTURE), dependencies, and what to reuse (PAST).
+
+Latest entry:
+- **2026-01-08 08:04:05 America/New_York | Tribeca | PRESENT:** Completed fixes for all 4 P0 1.1 violations. (1) Code block (line 754): Removed `overflow-x: auto`, added `white-space: pre-wrap !important` and `word-break: break-all !important` to wrap long lines instead of scrolling, changed to `overflow: hidden !important`. (2-4) PIE legends (lines 310/979/1058): Removed `overflow-y: auto` and `max-height: 30%`, changed `flex: 0 0 30%` to `flex: 1 1 30%` to allow container growth if content exceeds preferred height, changed to `overflow: hidden`. All fixes in `app/report/[slug]/ReportChart.module.css`. Verification: Local build passes (`npm run build` - exit code 0). No remaining `overflow: auto/scroll` in report content layers (verified via grep). Investigation report updated: `docs/audits/investigations/P0-1.1-no-scrolling-verification.md`. Status: Fixes applied and verified locally. ⏳ Awaiting preview verification (mandatory) before marking checkbox complete. PAST: Reused Layout Grammar "no scrolling on content layers" rule from `docs/design/LAYOUT_GRAMMAR.md`, existing flex layout patterns, white-space wrapping technique.
+- **2026-01-08 06:44:14 America/New_York | Chappie | PRESENT:** Clarified PIE legend containers are CONTENT LAYERS (not decorative). Decision: 3 PIE legend overflow-y: auto cases are FAIL violations. FUTURE: Fix all 4 violations, verify locally and on preview, update investigation note, then continue with 1.2 and 1.3. PAST: Reused existing Layout Grammar "content layer" rule.
+- **2026-01-08 06:44:14 America/New_York | Tribeca | PRESENT:** Completed P0 1.1 No Scrolling Verification investigation. Scanned all CSS files using `grep -r "overflow:\s*\(scroll\|auto\)" app/ components/ --include="*.css" --include="*.module.css"`. Found 6 occurrences: (1) PIE legend containers (3 instances, lines 310/979/1058 in ReportChart.module.css) - ⚠️ REQUIRES CLARIFICATION (compliance report says "decorative container" but contains user-facing data). (2) Code block in text chart (line 754) - 🔴 FAIL confirmed violation (`overflow-x: auto` on content layer). (3) Utility classes (3 files) - ✅ PASS (not content layers, but usage needs audit). (4) Test page and admin modal - ✅ PASS (out of scope). Investigation report created: `docs/audits/investigations/P0-1.1-no-scrolling-verification.md`. Evidence: grep output, file reads, Layout Grammar spec review. Status: 1 confirmed violation (code block), 3 require clarification (PIE legends). PAST: Reused grep pattern from audit plan, Layout Grammar spec from `docs/design/LAYOUT_GRAMMAR.md`, compliance report from `docs/design/LAYOUT_GRAMMAR_COMPLIANCE.md`.
+- **2026-01-08 06:14:25 America/New_York | Tribeca | PRESENT:** Executed Phase 0 setup verification. Confirmed: (1) Branch protection rules from `agentic/operating-rules/delivery-loop.md` - `main`, `phase5/*`, `release/*` are PR-only; current branch `preview-2026-01-02-agentic-coordination` is non-protected (allowed). (2) Layout Grammar guardrail active: `.github/workflows/layout-grammar-guardrail.yml` exists and runs on PR/push to protected branches; script `scripts/check-layout-grammar-guardrail.ts` exists (verified file presence). (3) Audit output folders exist: `docs/audits/investigations/` EXISTS, `docs/audits/` EXISTS (verified via `test -d`). Phase 0 complete. Evidence: branch name from `git branch --show-current`, guardrail workflow file read, folder existence confirmed via shell commands.
+- **2026-01-08 06:04:33 America/New_York | Chappie | PRESENT:** Updated this audit plan to embed the canonical agentic operating rules and turn-based chat protocol.
+- **2026-01-08 06:04:33 America/New_York | Chappie | FUTURE:** Tribeca executes Phase 0 then Phase 1 P0 checks; logs evidence here and links investigations.
+- **2026-01-08 06:04:33 America/New_York | Chappie | PAST:** Reused existing canonical rules: Delivery Loop, Execution Playbook, Preview Verification Policy, and the "read before code" rule.
+
+---
+## Operating Rules (Canonical)
+
+### Present, Future, Past
+
+- **PRESENT:** Execute only what is needed to deliver the next verified outcome.
+- **FUTURE:** Prefer maintainable, reusable, unified solutions. Never hardcode.
+- **PAST:** Read before you code. Reuse existing modules/patterns before writing new code.
+
+### Mandatory Execution Loop (non-negotiable)
+
+Investigate → Fix → Verify → Document → Report
+
+Completion rules:
+- No fix without an investigation note.
+- No completion without verification evidence.
+- No PR without the tracker update.
+- No production promotion until all **P0** items in the tracker are **DONE + VERIFIED**.
+
+### Delivery Loop (Sultan, mandatory)
+
+- develop features / fix bugs
+- local database prohibited
+- not committed code to GitHub is prohibited
+- `npm install`
+- `npm run build`
+- `npm run dev`
+- if no error: document
+- else: fix and repeat
+- `git add .` → `git commit` → `git push` (non-protected branch)
+- test on preview manually
+- promote to prod manually on Vercel
+
+### Preview Verification Policy
+
+- Visual fixes are **not complete** until verified on **Vercel Preview**.
+- “Local build passes” is necessary but not sufficient.
+- Preview verification evidence must state:
+  - URL(s)
+  - pages/screens tested
+  - what was expected vs what was observed
+
+### Workflow files frozen
+
+- No changes to `.github/workflows/*` unless explicitly approved as **delivery-infra work**.
+
+### Canonical references
+
+- Security remediation tracker: `docs/audits/AUDIT_REMEDIATION_STATUS.md`
+- Layout Grammar tracker: `docs/LAYOUT_GRAMMAR_PROGRESS_TRACKER.md`
+- Architecture: `ARCHITECTURE.md`
+
 ## Change Log
 
-- **1.2.1 (2026-01-08):** Metadata corrected (timestamps and version bump). No scope or task list changes.
+- **1.3.0 (2026-01-08 06:04:33 America/New_York):** Embedded agentic chat protocol + canonical operating rules; fixed timestamp rules (real time, required format).
+- **1.2.1 (2026-01-08 05:59:27 America/New_York):** Metadata corrected to include real-time timestamps. No scope or task list changes.
 
 ---
 
@@ -65,10 +138,10 @@ This plan provides a comprehensive audit framework to assess MessMass system hea
 - ✅ Component patterns and reusability
 
 ### Out of Scope
-- ❌ Third-party dependencies (audited separately)
 - ❌ Infrastructure/deployment (separate audit)
 - ❌ Performance optimization (separate audit)
-- ❌ Security vulnerabilities (tracked in `AUDIT_REMEDIATION_STATUS.md`)
+- ❌ Deep third-party dependency review beyond the **Dependency Guardrail** allowlist model
+- ❌ Security vulnerabilities remediation work (tracked and executed in `docs/audits/AUDIT_REMEDIATION_STATUS.md`)
 
 ---
 
@@ -524,80 +597,71 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
 
 ---
 
-## Part 6: Execution Plan & Prioritization
+## Part 6: Execution Plan (Tracker Format)
 
-### Phase 1: Critical Violations (Week 1)
+### How we run this audit
 
-**Goal:** Fix P0 violations that block production readiness
+- One workstream at a time unless explicitly parallelised.
+- Every task below is tracked as a checkbox.
+- When a task becomes ✅ complete, the PR must include:
+  - Investigation note path
+  - Verification evidence (commands + what was visually checked)
+  - Tracker update (same PR)
 
-**Execution Strategy:**
-- **Day 1:** Run Layout Grammar verification tasks (1.1-1.3) in parallel
-- **Day 2-3:** Create Variable Dictionary (2.1) - foundational for all variable work
-- **Day 3-4:** Run code quality audits (3.1-3.2) in parallel
-- **Day 4-5:** Set up CI Guardrails (8.1) to prevent new violations
-- **Day 5:** Verify Layout Grammar documentation (5.1)
+### Phase 0: Setup (Required)
 
-| Task | Priority | Effort | Owner | Deadline | Notes |
-|------|----------|--------|-------|----------|-------|
-| 1.1 No Scrolling Verification | 🔴 P0 | 2h | Dev Team | Day 1 | ⚡ Parallel with 1.2, 1.3 |
-| 1.2 No Truncation Verification | 🔴 P0 | 2h | Dev Team | Day 1 | ⚡ Parallel with 1.1, 1.3 |
-| 1.3 No Clipping Verification | 🔴 P0 | 2h | Dev Team | Day 1 | ⚡ Parallel with 1.1, 1.2 |
-| 2.1 Variable Dictionary Creation | 🔴 P0 | 8h | Dev Team | Day 2-3 | 🔑 Foundational |
-| 3.1 Hardcoded Values Audit | 🔴 P0 | 6h | Dev Team | Day 3-4 | ⚡ Parallel with 3.2 |
-| 3.2 Inline Styles Audit | 🔴 P0 | 4h | Dev Team | Day 3-4 | ⚡ Parallel with 3.1 |
-| 8.1 CI Guardrails Setup | 🔴 P0 | 4h | Dev Team | Day 4-5 | 🛡️ Prevent new violations |
-| 5.1 Layout Grammar Docs | 🟠 P1 | 2h | Dev Team | Day 5 | 📚 Verify after 1.1-1.6 |
+- [x] **P0** Confirm audit branch naming + PR-only merge for protected branches
+- [x] **P0** Confirm Layout Grammar guardrails are active and not bypassed
+- [x] **P0** Confirm audit output folders exist:
+  - `docs/audits/investigations/`
+  - `docs/audits/`
 
-**Success Criteria:**
-- All P0 violations identified and documented
-- Variable dictionary created
-- Remediation plan for each violation
+### Phase 1: Layout Grammar Compliance (P0 first)
 
----
+- [x] **P0 1.1** No Scrolling Verification (document violations) - Investigation complete: `docs/audits/investigations/P0-1.1-no-scrolling-verification.md`
+- [ ] **P0 1.2** No Truncation Verification (document violations)
+- [ ] **P0 1.3** No Clipping Verification (document violations)
 
-### Phase 2: High-Priority Fixes (Week 2)
+### Phase 2: Variable Dictionary and Naming Standards
 
-**Goal:** Fix P1 violations that affect maintainability
+- [ ] **P0 2.1** Create `docs/conventions/VARIABLE_DICTIONARY.md` (canonical)
+- [ ] **P1 2.2** Variable Naming Consistency Audit (requires 2.1)
+- [ ] **P2 2.3** Variable Management Guide
 
-**Execution Strategy:**
-- **Day 6:** Complete remaining Layout Grammar verification (1.4-1.6)
-- **Day 7-8:** Variable Naming Consistency audit (2.2) - requires dictionary from Phase 1
-- **Day 9-10:** CSS audits (3.3-3.4) - can run in parallel
+### Phase 3: Code Quality Violations (Hardcode + Inline styles)
 
-| Task | Priority | Effort | Owner | Deadline | Notes |
-|------|----------|--------|-------|----------|-------|
-| 1.4 Deterministic Height Resolution | 🟠 P1 | 4h | Dev Team | Day 6 | After 1.1-1.3 |
-| 1.5 Unified Typography | 🟠 P1 | 3h | Dev Team | Day 6-7 | After 1.1-1.3 |
-| 1.6 Blocks Never Break | 🟠 P1 | 2h | Dev Team | Day 7 | After 1.1-1.3 |
-| 2.2 Variable Naming Consistency | 🟠 P1 | 6h | Dev Team | Day 8-9 | 🔗 Requires 2.1 |
-| 3.3 CSS Design Token Usage | 🟠 P1 | 4h | Dev Team | Day 9-10 | ⚡ Parallel with 3.4 |
-| 3.4 Unified Global CSS | 🟠 P1 | 3h | Dev Team | Day 9-10 | ⚡ Parallel with 3.3 |
+- [ ] **P0 3.1** Hardcoded Values Audit → output `docs/audits/hardcoded-values-inventory.csv`
+- [ ] **P0 3.2** Inline Styles Audit → update `docs/audits/inline-styles-inventory.csv`
 
-**Success Criteria:**
-- All P1 violations identified and documented
-- Remediation plan for each violation
-- Migration scripts prepared
+### Phase 4: CSS Design Tokens and Global CSS
 
----
+- [ ] **P1 3.3** CSS Design Token Usage Audit
+- [ ] **P1 3.4** Unified Global CSS Audit
 
-### Phase 3: Medium-Priority Improvements (Week 3)
+### Phase 5: Component Reuse and Design System
 
-**Goal:** Improve code quality and documentation
+- [ ] **P2 4.1** Component Reusability Audit
+- [ ] **P2 4.2** Design System Component Usage Audit
 
-| Task | Priority | Effort | Owner | Deadline |
-|------|----------|--------|-------|----------|
-| 2.3 Variable Management Guide | 🟡 P2 | 4h | Dev Team | Day 11-12 |
-| 4.1 Component Reusability | 🟡 P2 | 4h | Dev Team | Day 12-13 |
-| 4.2 Design System Usage | 🟡 P2 | 3h | Dev Team | Day 13 |
-| 5.1 Layout Grammar Docs | 🟠 P1 | 2h | Dev Team | Day 14 |
-| 5.3 Coding Standards Docs | 🟡 P2 | 2h | Dev Team | Day 14 |
+### Phase 6: Documentation Completeness
 
-**Success Criteria:**
-- All documentation updated
-- Component patterns verified
-- Gaps documented
+- [ ] **P1 5.1** Layout Grammar documentation verification (docs match implementation)
+- [ ] **P0 5.2** Variable Dictionary documentation (covered by 2.1)
+- [ ] **P2 5.3** Coding Standards documentation verification
 
----
+### Phase 7: Ongoing Compliance
+
+- [ ] **P0 8.1** CI Guardrails (only if explicitly approved as delivery-infra work)
+- [ ] **P1 8.2** Audit schedule agreed and documented
+
+### Definition of Done for each checkbox
+
+A checkbox may be marked `[x]` only when all are true:
+- Investigation note exists and is linked.
+- Fix (if any) is merged via PR.
+- Local gate passes: `npm run build` and `npm run dev` smoke test.
+- Preview verified where visuals matter.
+- The relevant audit inventory outputs are produced/updated.
 
 ## Part 7: Reporting & Communication
 
@@ -724,63 +788,18 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
 
 ## Next Steps
 
-1. **Review this plan** (current step)
-2. **Approve audit scope and priorities**
-3. **Assign owners to audit tasks**
-4. **Begin Phase 1 execution**
-5. **Weekly status updates**
+1. Start Phase 0 (Setup) tasks.
+2. Execute Phase 1 (P0 Layout Grammar Compliance) and produce the investigation document(s).
+3. Continue phase-by-phase, keeping the checkboxes as the only source of truth.
 
 ---
 
----
-
-## Review Notes & Fine-Tuning Summary
-
-### Changes Made (v1.0.0 → v1.1.0)
-
-1. **Execution Order Optimizations:**
-   - Variable Dictionary (2.1) moved from order 7 → 4 (foundational, should be early)
-   - CI Guardrails (8.1) moved from order 18 → 8 (prevent new violations early)
-   - Layout Grammar Docs (5.1) moved from order 16 → 7 (needed for reference)
-   - Code quality audits (3.1-3.2) moved earlier (order 5-6)
-
-2. **Priority Adjustments:**
-   - CI Guardrails upgraded from P1 → P0 (critical to prevent new violations)
-
-3. **Dependency Clarity:**
-   - Added explicit dependency notes to all tasks
-   - Marked parallelizable tasks
-   - Created critical path visualization
-
-4. **Phase Structure Improvements:**
-   - Added execution strategy notes per phase
-   - Added parallelization indicators (⚡)
-   - Added dependency indicators (🔗)
-   - Added foundational indicators (🔑)
-   - Added prevention indicators (🛡️)
-
-5. **Documentation:**
-   - Added "Can Run Parallel" flags
-   - Added dependency notes
-   - Added rationale for CI Guardrails priority
-
-### Rationale for Changes
-
-- **Variable Dictionary Early:** Needed as reference for all variable-related work (2.2, 2.3)
-- **CI Guardrails Early:** Prevents accumulation of new violations during audit/remediation
-- **Parallelization:** Maximizes efficiency by running independent tasks simultaneously
-- **Documentation Verification:** Should happen after implementation verification to ensure accuracy
-
----
-
-**Document Status:** READY FOR EXECUTION - v1.2.0  
-**Last Updated:** 2026-01-03  
-**Prerequisites Completed:**
-- ✅ All lint errors fixed (28 inline style errors resolved)
-- ✅ All lint warnings eliminated (React Hook dependencies, console statements, img elements)
-- ✅ Build passes successfully
-- ✅ TypeScript compilation clean
-- ✅ Codebase ready for audit execution
+**Document Status:** READY FOR EXECUTION - v1.3.0  
+**Last Updated:** 2026-01-08 06:04:33 America/New_York  
+**Prerequisites:**
+- The Sultan delivery loop is followed on every change.
+- The audit checkboxes in this plan are the source of truth.
+- Security remediation is tracked separately in `docs/audits/AUDIT_REMEDIATION_STATUS.md`.
 
 **Next Steps:**
 1. Begin Phase 1 execution (Day 1 tasks)

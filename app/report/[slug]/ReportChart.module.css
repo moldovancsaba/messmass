@@ -296,8 +296,8 @@
 .pieLegend {
   /* WHAT: 30% of body height for legend items */
   /* WHY: Bottom section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion, vertically centered, scrollable when content exceeds */
-  flex: 0 0 30%; /* 3:4:3 → legend 30% - don't grow or shrink */
+  /* HOW: Flex basis for preferred height, can grow if content exceeds - Layout Grammar: no scrolling */
+  flex: 1 1 30%; /* 3:4:3 → legend prefers 30%, but can grow if needed (no scrolling) */
   display: flex;
   flex-direction: column;
   justify-content: center; /* CRITICAL: Center content vertically in its space */
@@ -306,9 +306,9 @@
   width: 100%;
   container-type: size;
   min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
-  max-height: 30%; /* CRITICAL: Never exceed 30% of parent - this enables scrolling */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
-  overflow-x: hidden;
+  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
+  /* WHY: If legend items exceed preferred 30%, container grows to fit (no scrolling) */
+  overflow: hidden; /* No scrolling allowed - Layout Grammar compliance */
   padding: var(--mm-space-1);
   box-sizing: border-box;
 }
@@ -745,13 +745,18 @@
 
 /* WHAT: Code block styling with center alignment */
 /* WHY: Support code blocks with monospace font */
+/* Layout Grammar: No scrolling - wrap long lines instead */
 .textMarkdown pre {
   display: block !important;
   margin: 0.5em 0 !important;
   padding: 0.5em !important;
   background: var(--mm-gray-100) !important;
   border-radius: var(--mm-radius-sm) !important;
-  overflow-x: auto !important;
+  /* WHAT: Wrap long lines instead of scrolling - Layout Grammar compliance */
+  /* WHY: Content must fit without scrolling */
+  white-space: pre-wrap !important; /* Wrap long lines */
+  word-break: break-all !important; /* Break long words if needed */
+  overflow: hidden !important; /* No scrolling allowed */
   width: 100% !important;
   box-sizing: border-box !important;
   text-align: left !important; /* WHAT: Code blocks left-aligned for readability */
@@ -969,14 +974,14 @@
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Fixed 30% height regardless of wrapper */
-  /* WHY: Maintain consistent legend size when inside CellWrapper (3:4:3 ratio) */
-  flex: 0 0 30% !important; /* Override any conflicting flex values */
-  max-height: 30% !important; /* CRITICAL: Never exceed 30% - enables scrolling */
+  /* WHAT: Preferred 30% height, can grow if needed - Layout Grammar: no scrolling */
+  /* WHY: Maintain preferred legend size when inside CellWrapper (3:4:3 ratio), but allow growth */
+  flex: 1 1 30% !important; /* Prefer 30%, but can grow if content exceeds (no scrolling) */
+  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
   display: flex;
   flex-direction: column;
   justify-content: center; /* CRITICAL: Center content vertically in its space */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
+  overflow: hidden !important; /* No scrolling allowed - Layout Grammar compliance */
   box-sizing: border-box;
 }
 
@@ -1046,16 +1051,16 @@
     object-fit: contain !important; /* Ensure it fits within constraints */
   }
   
-  /* WHAT: Pie legend - same behavior as desktop on mobile
-   * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with minimum height */
+  /* WHAT: Pie legend - same behavior as desktop on mobile - Layout Grammar: no scrolling */
+  /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
+  /* HOW: Maintain flex basis with minimum height, allow growth if needed */
   .pieLegend {
-    flex: 0 0 20% !important; /* Same as desktop - 20% of pieGrid */
+    flex: 1 1 20% !important; /* Prefer 20%, but can grow if content exceeds (no scrolling) */
     width: 100% !important;
     min-height: 60px !important; /* CRITICAL: Prevent collapse */
     max-width: 100% !important;
-    max-height: 100% !important;
-    overflow-y: auto !important;
+    /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
+    overflow: hidden !important; /* No scrolling allowed - Layout Grammar compliance */
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
