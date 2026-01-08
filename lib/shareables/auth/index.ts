@@ -303,13 +303,19 @@ export const devUtils = {
   logAuthState: (user: AuthUser | null, context = 'Auth State') => {
     if (process.env.NODE_ENV !== 'development') return
     
+    // eslint-disable-next-line no-console
     console.group(`🔐 ${context}`)
+    // eslint-disable-next-line no-console
     console.log('Authenticated:', !!user)
+    // eslint-disable-next-line no-console
     console.log('User:', user)
     if (user) {
+      // eslint-disable-next-line no-console
       console.log('Role:', user.role)
+      // eslint-disable-next-line no-console
       console.log('Permissions:', user.permissions)
     }
+    // eslint-disable-next-line no-console
     console.groupEnd()
   }
 }

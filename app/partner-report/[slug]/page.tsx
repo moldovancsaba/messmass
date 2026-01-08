@@ -49,13 +49,16 @@ export default function PartnerReportPage() {
   const charts = partnerData?.charts || [];
   const stats = partnerData?.aggregatedStats || null;
   
-  // Debug logging
-  console.log('[PartnerReport] Partner data:', { 
-    hasData: !!partnerData, 
-    partner: partner?._id,
-    eventsCount: events.length,
-    statsKeys: stats ? Object.keys(stats) : []
-  });
+  // Debug logging (development only)
+  // eslint-disable-next-line no-console
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[PartnerReport] Partner data:', { 
+      hasData: !!partnerData, 
+      partner: partner?._id,
+      eventsCount: events.length,
+      statsKeys: stats ? Object.keys(stats) : []
+    });
+  }
 
   // Fetch report layout for partner (only after we have partner ID)
   // WHAT: useReportLayoutForPartner requires a valid MongoDB ObjectId
@@ -80,15 +83,17 @@ export default function PartnerReportPage() {
   // Calculate chart results using ReportCalculator
   // SAME calculator as event reports - works with aggregated stats
   const chartResults = useMemo(() => {
-    if (!stats || !charts || charts.length === 0) {
+    // Move charts check inside useMemo to avoid dependency warning
+    const chartsArray = partnerData?.charts || [];
+    if (!stats || !chartsArray || chartsArray.length === 0) {
       return new Map();
     }
 
     // Create calculator with charts and aggregated partner stats
-    const calculator = new ReportCalculator(charts, stats);
+    const calculator = new ReportCalculator(chartsArray, stats);
     const results = new Map();
 
-    for (const chart of charts) {
+    for (const chart of chartsArray) {
       const result = calculator.calculateChart(chart.chartId);
       if (result) {
         results.set(chart.chartId, result);
@@ -96,7 +101,7 @@ export default function PartnerReportPage() {
     }
 
     return results;
-  }, [stats, charts]);
+  }, [stats, partnerData?.charts]);
 
   // WHAT: Unified export handlers using useReportExport hook
   // WHY: Centralized export logic eliminates duplication across report types
@@ -168,8 +173,11 @@ export default function PartnerReportPage() {
   // Get hero settings from report
   const { heroSettings } = report;
 
-  // Debug: Log partner logo
-  console.log('🖼️ [PartnerReport] Partner logo URL:', (partner as any).logoUrl);
+  // Debug: Log partner logo (development only)
+  // eslint-disable-next-line no-console
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🖼️ [PartnerReport] Partner logo URL:', (partner as any).logoUrl);
+  }
 
   // Format partner data as project-like object for ReportHero
   // WHAT: ReportHero expects project shape, adapt partner data to match

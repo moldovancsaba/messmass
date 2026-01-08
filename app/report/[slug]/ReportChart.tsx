@@ -653,6 +653,7 @@ function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { re
       >
         {/* WHAT: Use actual <img> tag and detect real dimensions */}
         {/* WHY: Browser provides naturalWidth/naturalHeight for actual aspect ratio */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           ref={imgRef}
           className={styles.imageContent}

@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import ColorPickerField from '@/components/ColorPickerField';
@@ -39,19 +39,7 @@ export default function StyleEditorPage() {
   const { fonts: availableFonts, loading: fontsLoading } = useAvailableFonts();
 
   // Fetch existing style
-  useEffect(() => {
-    if (!isNew) {
-      fetchStyle();
-    }
-  }, [id, isNew]);
-
-  // Inject CSS for live preview
-  useEffect(() => {
-    injectStyleAsCSS(style);
-    return () => removeStyleCSS();
-  }, [style]);
-
-  const fetchStyle = async () => {
+  const fetchStyle = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -72,7 +60,14 @@ export default function StyleEditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  // Fetch existing style on mount
+  useEffect(() => {
+    if (!isNew) {
+      fetchStyle();
+    }
+  }, [isNew, fetchStyle]);
 
   const handleChange = (field: keyof ReportStyle, value: string) => {
     setStyle(prev => ({ ...prev, [field]: value }));

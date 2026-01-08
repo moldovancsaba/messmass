@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
@@ -67,27 +67,8 @@ export default function FilterReportPage() {
   });
   
   // Check authentication on mount
-  useEffect(() => {
-    if (filterSlug) {
-      const authenticated = isAuthenticated(filterSlug, 'filter');
-      setIsAuthorized(authenticated);
-      setCheckingAuth(false);
-      
-      if (authenticated) {
-        fetchFilterData();
-      }
-    }
-  }, [filterSlug]);
-  
-  // Handle successful login
-  const handleLoginSuccess = (isAdmin: boolean) => {
-    setIsAuthorized(true);
-    setCheckingAuth(false);
-    fetchFilterData();
-  };
-  
   // Fetch filter aggregated stats
-  const fetchFilterData = async () => {
+  const fetchFilterData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -139,6 +120,25 @@ export default function FilterReportPage() {
     } finally {
       setLoading(false);
     }
+  }, [filterSlug]);
+
+  useEffect(() => {
+    if (filterSlug) {
+      const authenticated = isAuthenticated(filterSlug, 'filter');
+      setIsAuthorized(authenticated);
+      setCheckingAuth(false);
+      
+      if (authenticated) {
+        fetchFilterData();
+      }
+    }
+  }, [filterSlug, fetchFilterData]);
+  
+  // Handle successful login
+  const handleLoginSuccess = (isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    fetchFilterData();
   };
   
   
