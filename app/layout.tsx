@@ -115,11 +115,11 @@ export default async function RootLayout({
   // WHAT: Dynamic CSS variable for active font - WHY: Font selection must be injected as CSS variable, cannot use CSS classes
   
   return (
-    // eslint-disable-next-line react/forbid-dom-props
     <html 
       lang="en" 
       className={`${inter.variable} ${roboto.variable} ${poppins.variable} ${montserrat.variable} ${pacifico.variable}`}
       data-font={selectedFont}
+      // eslint-disable-next-line react/forbid-dom-props
       style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties}
     >
       <head>

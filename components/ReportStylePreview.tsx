@@ -127,9 +127,9 @@ function PieChartPreview() {
               
               return (
                 <div key={idx} className={styles.pieLegendItem}>
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
                   <div 
-                    className={styles.pieLegendDot} 
+                    className={styles.pieLegendDot}
+                    // eslint-disable-next-line react/forbid-dom-props
                     style={{ 
                       backgroundColor: color,
                       border: `2px solid ${pieColors[0]}` // WHAT: Use first pie color as border (matches real chart)
@@ -203,7 +203,8 @@ export default function ReportStylePreview({ style }: ReportStylePreviewProps) {
                   <div className={styles.barLabel}>{item.label}</div>
                   <div className={styles.barTrack}>
                     <div 
-                      className={styles.barFill} 
+                      className={styles.barFill}
+                      // eslint-disable-next-line react/forbid-dom-props
                       style={{ 
                         width: `${item.value}%`,
                         backgroundColor: item.color 

@@ -39,6 +39,7 @@ export default function CellWrapper({
       // WHAT: Set CSS custom properties for dynamic values (blockHeight now centrally managed at row level)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
       // HOW: CSS modules reference these custom properties - block-height inherited from parent row
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         '--title-font-size': titleFontSize ? `${titleFontSize}px` : undefined,
         '--title-height': titleHeight ? `${titleHeight}px` : undefined,

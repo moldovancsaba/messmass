@@ -107,6 +107,7 @@ export default function ColorPickerField({ label, description, value, onChange }
           {/* Color preview with transparency checkerboard */}
           <div className={styles.preview}>
             <div className={styles.checkerboard} />
+            {/* eslint-disable-next-line react/forbid-dom-props */}
             <div className={styles.previewColor} style={{ backgroundColor: hexInput }} />
           </div>
         </div>

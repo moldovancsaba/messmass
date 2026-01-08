@@ -277,6 +277,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       // WHAT: Set CSS custom properties for dynamic values (centrally managed)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
       // HOW: CSS modules reference these custom properties - block-height is centrally managed at row level
+      // eslint-disable-next-line react/forbid-dom-props
       style={{
         '--row-height': `${rowHeight}px`,
         '--block-height': `${rowHeight}px`, // WHAT: Centrally managed block height for all charts in row
@@ -424,6 +425,7 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       // WHAT: Apply unified font-size as CSS custom property
       // WHY: Text charts can read this value via CSS
       // HOW: CSS custom properties are acceptable inline styles (standard pattern)
+      // eslint-disable-next-line react/forbid-dom-props
       style={unifiedTextFontSize ? {
         '--unified-text-font-size': `${unifiedTextFontSize}rem`
       } as React.CSSProperties : undefined}

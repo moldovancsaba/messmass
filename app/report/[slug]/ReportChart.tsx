@@ -403,6 +403,7 @@ function PieChart({ result, titleFontSize, subtitleFontSize, className }: { resu
                 // WHAT: Dynamic pie legend dot color from chart data
                 // WHY: Colors come from chart calculation, cannot use static CSS classes
                 // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   '--dot-color': color,
                   '--dot-border-color': pieColors[0]
@@ -480,6 +481,7 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
                 // WHAT: Dynamic bar fill width and color from chart calculation
                 // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
                 // HOW: Set CSS custom properties on parent, consumed by .barFill
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   '--bar-width': `${widthPercent}%`,
                   '--bar-color': barColors[idx % barColors.length]
@@ -644,6 +646,7 @@ function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { re
       {/* WHY: Use real image dimensions instead of configured aspect ratio */}
       <div 
         className={styles.imageContainer}
+        // eslint-disable-next-line react/forbid-dom-props
         style={{
           '--image-aspect-ratio': aspectRatioValue.toString()
         } as React.CSSProperties}
