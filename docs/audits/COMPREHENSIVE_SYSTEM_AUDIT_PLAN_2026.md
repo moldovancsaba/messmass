@@ -2,8 +2,8 @@
 
 **Version:** 1.3.0  
 **Created:** 2026-01-08 05:59:27 America/New_York  
-**Last Reviewed:** 2026-01-08 06:04:33 America/New_York  
-**Last Updated:** 2026-01-08 06:04:33 America/New_York  
+**Last Reviewed:** 2026-01-09T18:39:16.000Z  
+**Last Updated:** 2026-01-09T18:39:16.000Z  
 **Status:** READY FOR EXECUTION  
 **Owner:** Tribeca  
 **Audience:** Technical Team + Business Sponsors
@@ -58,9 +58,15 @@ Rules:
 
 - The timestamp line must follow the Timestamp Format Standard above (ISO 8601 UTC with milliseconds).
 
+### Operational Delegation Rules (MANDATORY)
+- Sultan handles commits/pushes to GitHub when authentication is required on HTTPS remotes.
+- Tribeca focuses on investigation, implementation, documentation, and verification checklists.
+- Chappie can receive simple operational tasks (push, preview URL retrieval, quick manual checks) and will coordinate with Sultan to execute if Tribeca cannot.
+- Preview URL for branch preview-2026-01-02-agentic-coordination is canonical and stable: https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/
+
 Latest entry:
-- **2026-01-09T18:38:41.300Z | Tribeca | PRESENT:** Push confirmed by Sultan (commit `75051a753`). Proceeding with Phase C (Preview Verification) for P1 2.5.1. Preview URL: `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`. Verification checklist prepared: Pie legend text (no overflow, wraps, fills container), KPI value (visually dominant), KPI title (readable, scales proportionally), no regression in P0 1.x (no scrolling, truncation, clipping). Investigation report updated with push confirmation. Status: ⏳ Awaiting visual verification evidence (automated context cannot browse preview). Once visual verification confirms all points, will update investigation report with evidence, add Agentic Chat Log entry, mark P1 2.5.1 checkbox [x], and declare DONE + VERIFIED. PAST: Reused preview verification pattern from P0 1.x and P1 2.2 (push confirmation → verification checklist → visual evidence → closure).
-- **2026-01-09T14:48:30.000Z | Tribeca | PRESENT:** Acknowledged P1 2.5.1 implementation approval. Implementation complete: Pie legend text `min(12cqh, 8cqw)` → `min(20cqh, 12cqw)`, max 20px → 24px. KPI value `min(18cqh, 20cqw)` → `min(30cqh, 25cqw)`, max 5rem → 6rem. KPI title `8cqh` → `15cqh`, max 1.125rem → 1.5rem. All changes in `app/report/[slug]/ReportChart.module.css`. Local gate: Build pass ✅. Commits ready: `39389aba2` (fix), `b420107e0`, `c73ffe39f`, `377f1dfcc` (docs). Preview URL: `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`. Push instructions prepared for Sultan. Verification checklist prepared: Pie legend (no overflow, wraps, fills container), KPI value (visually dominant), KPI title (readable, scales), no regression in P0 1.x. Status: ⏳ Awaiting push confirmation from Sultan, then proceeding with Phase C (Preview Verification). PAST: Reused preview verification pattern from P0 1.x and P1 2.2 (wait for push → locate Preview URL → verify → document → mark checkbox).
+- **2026-01-09T18:56:34.300Z | Tribeca | PRESENT:** Executing Phase C (Preview Verification) for P1 2.5.1b. Preview URL: `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`. Push confirmed by Sultan (commit `75051a753`). Verification structure prepared in investigation report. Requesting visual verification evidence from Sultan/user for: Pie legend text (no overflow, wraps, fills container), KPI value (visually dominant), KPI title (readable, scales), regression checks (no scrolling, truncation, clipping). Once visual evidence is confirmed, will update investigation report with actual observed results, add Agentic Chat Log entry declaring preview verified, mark P1 2.5.1b checkbox [x], and declare P1 2.5.1 DONE + VERIFIED. PAST: Reused preview verification pattern from P0 1.x and P1 2.2 (push confirmation → verification checklist → visual evidence → closure).
+- **2026-01-09T18:39:16.000Z | Chappie | PRESENT:** Reviewed tracker consistency. Identified Phase 2.5 mismatch: P1 2.5.1 is labeled as Investigation-only but implementation commits exist and preview verification is pending. Action: split P1 2.5.1 into two checkboxes (Investigation, Implementation+Preview Verification) to match the execution loop. FUTURE: After Sultan push confirmation, Tribeca executes Phase C preview verification on the canonical preview URL, logs evidence (pages tested, expected vs observed), then marks Implementation+Preview Verification checkbox [x]. PAST: Reused the established closure standard from P0 1.x and P1 2.2 (evidence → checkbox).
 - **2026-01-09T14:46:20.300Z | Tribeca | PRESENT:** Completed P1 2.5.1 Chart Content Density & Typography Optimization implementation. Applied approved changes: Pie legend text scaling increased `min(12cqh, 8cqw)` → `min(20cqh, 12cqw)`, max `20px` → `24px`. KPI value scaling increased `min(18cqh, 20cqw)` → `min(30cqh, 25cqw)`, max `5rem` → `6rem`. KPI title scaling increased `8cqh` → `15cqh`, max `1.125rem` → `1.5rem`. Grid ratio maintained at 4fr:3fr:3fr (sufficient for text growth). All changes in `app/report/[slug]/ReportChart.module.css`. Local gate: Build pass ✅. Commit: `39389aba2`. Push blocked by authentication (HTTPS remote). Push instructions prepared for Sultan delegation. Investigation report updated with implementation details. Status: Implementation complete, local gate passed, awaiting push and preview verification. PAST: Reused implementation pattern from P1 2.2 (approved scope → minimal fixes → local gate → preview verification), container-driven typography approach, Layout Grammar compliance preservation.
 - **2026-01-09T14:32:43.300Z | Tribeca | PRESENT:** Completed P1 2.5.1 Chart Content Density & Typography Optimization investigation. Scanned `app/report/[slug]/ReportChart.module.css` (1116 lines), pie chart and KPI components. Found 5 findings: 4 NEEDS OPTIMIZATION (pie legend text conservative scaling `min(12cqh, 8cqw)` max 20px, KPI value conservative `min(18cqh, 20cqw)`, KPI title very conservative `8cqh`, pie legend container growth vs. text scaling mismatch), 1 PASS with minor optimization opportunity (KPI icon max clamp). All findings are content layers. Constraint types: conservative container query scaling (8cqh, 12cqh, 18cqh too low), max clamp limits (20px for legend, 112px for icon), container growth vs. text scaling mismatch. Proposed 5 solutions: increase pie legend scaling (12cqh→20cqh, max 20px→24px), increase KPI value scaling (18cqh→30cqh, max 5rem→6rem), increase KPI title scaling (8cqh→15cqh, max 1.125rem→1.5rem), optional KPI grid ratio rebalance (40:30:30 → 30:40:30), match pie legend text to container growth. All solutions maintain Layout Grammar compliance. Investigation report: `docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md`. Status: ✅ Investigation complete, ready for solution approval. PAST: Reused investigation methodology from P0 1.x and P1 2.2 (grep-driven discovery, explicit classification, problem statements, proposed solutions documentation).
 - **2026-01-09T14:02:10.000Z | Tribeca | PRESENT:** Completed P1 2.2 Variable Naming Consistency Audit - DONE + VERIFIED. Phase A (Migration): Fixed all 10 violations (KYC variable `Caps` → `caps`, 9 chart formulas `stats.reportImageX` → `[reportImageX]`, `stats.reportTextX` → `[reportTextX]`). Phase B (Local Gate): Build pass, 0 violations remaining. Phase C (Preview Verification): Visually verified by Sultan via preview screenshots. Preview URL: `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`. Result: All formulas render correctly using `[reportImageX]` and `[reportTextX]` format, no `stats.` prefix strings visible. Phase D (Closure): Investigation report updated, Agentic Chat Log entry added, checkbox marked [x]. Status: ✅ P1 2.2 COMPLETE + VERIFIED. Unblocks: Variable-related work, formula standardization. Next: New audit item opened for Chart Content Density & Typography Optimization (pie chart legend overflow, KPI value sizing, typography underutilization). PAST: Reused execution pattern from P0 phases (investigation → migration → local gate → preview verification → closure), Variable Dictionary standards, audit script verification approach.
@@ -722,16 +728,21 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
 
 ### Phase 2.5: Chart Content Density & Typography Optimization
 
-- [ ] **P1 2.5.1** Chart Content Density & Typography Optimization Investigation
+- [x] **P1 2.5.1a** Chart Content Density & Typography Optimization Investigation
   - **Scope:**
     - Pie chart legend text must never overflow and must scale to fill available space
     - KPI numeric values and labels must scale to better use available vertical space
     - Prefer container-driven typography (clamp / responsive scaling)
     - No truncation, clipping, or fixed-size underutilization
-  - **Status:** Implementation complete, awaiting preview verification
-  - **Deliverable:** `docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md`
-  - **Commit:** `39389aba2`
-  - **Changes:** Pie legend `min(12cqh, 8cqw)` → `min(20cqh, 12cqw)`, max 20px → 24px. KPI value `min(18cqh, 20cqw)` → `min(30cqh, 25cqw)`, max 5rem → 6rem. KPI title `8cqh` → `15cqh`, max 1.125rem → 1.5rem.
+  - **Deliverable:** docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md
+  - **Status:** ✅ COMPLETE - Investigation documented and committed
+
+- [ ] **P1 2.5.1b** Chart Content Density & Typography Optimization Implementation + Preview Verification
+  - **Status:** ⏳ Implementation complete, awaiting push + preview verification evidence
+  - **Commits Ready:** 39389aba2, b420107e0, c73ffe39f, 377f1dfcc, 75051a753
+  - **Preview URL:** https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/
+  - **Changes:** Pie legend min(12cqh, 8cqw) → min(20cqh, 12cqw), max 20px → 24px. KPI value min(18cqh, 20cqw) → min(30cqh, 25cqw), max 5rem → 6rem. KPI title 8cqh → 15cqh, max 1.125rem → 1.5rem.
+  - **Acceptance Criteria:** Verified on preview that (1) Pie legend text does not overflow, wraps, and uses available space, (2) KPI value and title are visibly larger and fill available real estate, (3) No regression of P0 1.1-1.3 (no scrolling, truncation, clipping). Evidence logged in the investigation report and Agentic Chat Log before marking [x].
 
 ### Phase 3: Code Quality Violations (Hardcode + Inline styles)
 
