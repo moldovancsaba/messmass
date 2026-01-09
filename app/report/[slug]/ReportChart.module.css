@@ -134,12 +134,13 @@
   /* WHAT: Grid row 2 (30%) for value */
   /* WHY: Middle row of 4fr-3fr-3fr grid */
   /* HOW: Flex centering for responsive value scaling, fully vertically centered */
+  /* P1 2.5.1: Increased scaling from min(18cqh, 20cqw) to min(30cqh, 25cqw), max from 5rem to 6rem */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.25rem, min(18cqh, 20cqw), 5rem);
+  font-size: clamp(1.25rem, min(30cqh, 25cqw), 6rem); /* INCREASED: 18cqh→30cqh, 20cqw→25cqw, 5rem→6rem */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;
@@ -156,6 +157,7 @@
   /* WHAT: 3rd grid row (30%) - title at bottom of KPI */
   /* WHY: Grid row 3 = bottom 30% of cell */
   /* HOW: Flex with center alignment - fully vertically centered */
+  /* P1 2.5.1: Increased scaling from 8cqh to 15cqh, max from 1.125rem to 1.5rem */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +166,7 @@
   height: 100%;
   padding: var(--mm-space-2);
   /* Font scales based on container height (3fr row) */
-  font-size: clamp(0.75rem, 8cqh, 1.125rem);
+  font-size: clamp(0.75rem, 15cqh, 1.5rem); /* INCREASED: 8cqh→15cqh, 1.125rem→1.5rem */
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
@@ -344,13 +346,14 @@
 
 .pieLegendText {
   /* WHAT: Legend text scaled to fit available space with responsive sizing */
-  /* WHY: Make legend text readable in both large and small blocks, prevent overflow */
+  /* WHY: Make legend text readable in both large and small blocks, prevent overflow, fill available space */
   /* HOW: Use container queries for both width and height, design tokens for bounds */
   /* Layout Grammar: No overflow, no truncation - text scales to fit */
+  /* P1 2.5.1: Increased scaling from min(12cqh, 8cqw) to min(20cqh, 12cqw), max from 20px to 24px */
   font-size: clamp(
     var(--mm-font-size-xs, 0.75rem),   /* WHAT: Min 12px for small containers (prevents overflow) */
-    min(12cqh, 8cqw),                  /* WHAT: Responsive scaling - use smaller of height or width constraint */
-    var(--mm-font-size-xl, 1.25rem)   /* WHAT: Max 20px for large containers (better readability) */
+    min(20cqh, 12cqw),                  /* WHAT: Responsive scaling - INCREASED from 12cqh/8cqw to 20cqh/12cqw for better space utilization */
+    var(--mm-font-size-2xl, 1.5rem)   /* WHAT: Max 24px for large containers - INCREASED from 20px for better readability */
   );
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
