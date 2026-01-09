@@ -759,11 +759,18 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Output:** `docs/audits/inline-styles-inventory.csv` (146 entries)
   - **Script:** `scripts/generate-p0-3-audit-inventories.ts`
 
-- [ ] **P0 3.3** Design Tokens & Style Ownership Definition
-  - **Status:** ⏳ INVESTIGATION
+- [x] **P0 3.3** Design Tokens & Style Ownership Definition
+  - **Status:** ✅ DONE (Investigation + Definition approved)
   - **Scope:** Define token strategy, ownership rules, inline style rules, migration boundaries
   - **Deliverable:** `docs/audits/investigations/P0-3.3-design-tokens-style-ownership.md`
-  - **Acceptance Criteria:** Token categories defined, ownership rules documented, inline style rules explicit, migration rules clear, acceptance criteria established
+  - **Approval:** 2026-01-09T20:20:30.000Z by Chappie
+  - **Acceptance Criteria:** ✅ Token categories defined, ownership rules documented, inline style rules explicit, migration rules clear, acceptance criteria established
+
+- [ ] **P0 3.4** Hardcoded Values & Inline Styles Remediation (Phase 1)
+  - **Status:** ⏳ IN PROGRESS
+  - **Scope:** Apply P0 3.3 rules to `app/globals.css` and `app/charts.css` only
+  - **Governing Rule:** P0 3.3 Design Tokens & Style Ownership Definition
+  - **Acceptance Criteria:** All hardcoded values replaced with tokens, no new tokens without workflow, local gate pass, preview verification, no regression
 
 ### Phase 4: CSS Design Tokens and Global CSS
 
