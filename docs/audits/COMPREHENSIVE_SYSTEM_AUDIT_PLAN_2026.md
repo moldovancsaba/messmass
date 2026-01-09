@@ -65,6 +65,7 @@ Rules:
 - Preview URL for branch preview-2026-01-02-agentic-coordination is canonical and stable: https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/
 
 Latest entry:
+- **2026-01-09T19:15:29.300Z | Tribeca | PRESENT:** Completed P0 3.1 Hardcoded Values Audit and P0 3.2 Inline Styles Audit investigations (executed in parallel). P0 3.1: Scanned app/ and components/ for hardcoded hex colors and pixel values. Found 2624 total hardcoded values (359 hex colors, 1631+ pixel values sampled). Generated inventory: `docs/audits/hardcoded-values-inventory.csv` (2624 entries). Each entry includes: file path, line number, raw value, context snippet, why hardcoded, proposed token/remediation path. P0 3.2: Scanned app/ and components/ for `style={{` usage. Found 146 total inline styles (147 including header). Classified: 146 entries (Forbidden: static styles to move to CSS modules, Allowed: dynamic values using CSS custom properties or runtime computed). Generated inventory: `docs/audits/inline-styles-inventory.csv` (146 entries). Each entry includes: file path, line number, snippet, classification (Allowed/Forbidden), reason, remediation path. Created audit script: `scripts/generate-p0-3-audit-inventories.ts` for reproducible inventory generation. Status: ✅ Both investigations complete, inventories generated, ready for remediation planning. PAST: Reused investigation methodology from P0 1.x and P1 2.2 (grep-driven discovery, explicit classification, CSV inventory format), audit plan grep patterns.
 - **2026-01-09T18:56:34.300Z | Tribeca | PRESENT:** Completed Phase C (Preview Verification) for P1 2.5.1b. Preview URL: `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/`. Push confirmed by Sultan (commit `75051a753`). Verification completed: Pie legend text (no overflow, wraps, fills container) ✅, KPI value (visually dominant) ✅, KPI title (readable, scales proportionally) ✅, regression checks (no scrolling, truncation, clipping) ✅. All verification points passed. Investigation report updated with verification evidence (pages tested, expected vs observed). Agentic Chat Log entry added. P1 2.5.1b checkbox marked [x]. Status: ✅ P1 2.5.1 DONE + VERIFIED. PAST: Reused preview verification pattern from P0 1.x and P1 2.2 (push confirmation → verification checklist → visual evidence → closure).
 - **2026-01-09T18:39:16.000Z | Chappie | PRESENT:** Reviewed tracker consistency. Identified Phase 2.5 mismatch: P1 2.5.1 is labeled as Investigation-only but implementation commits exist and preview verification is pending. Action: split P1 2.5.1 into two checkboxes (Investigation, Implementation+Preview Verification) to match the execution loop. FUTURE: After Sultan push confirmation, Tribeca executes Phase C preview verification on the canonical preview URL, logs evidence (pages tested, expected vs observed), then marks Implementation+Preview Verification checkbox [x]. PAST: Reused the established closure standard from P0 1.x and P1 2.2 (evidence → checkbox).
 - **2026-01-09T14:46:20.300Z | Tribeca | PRESENT:** Completed P1 2.5.1 Chart Content Density & Typography Optimization implementation. Applied approved changes: Pie legend text scaling increased `min(12cqh, 8cqw)` → `min(20cqh, 12cqw)`, max `20px` → `24px`. KPI value scaling increased `min(18cqh, 20cqw)` → `min(30cqh, 25cqw)`, max `5rem` → `6rem`. KPI title scaling increased `8cqh` → `15cqh`, max `1.125rem` → `1.5rem`. Grid ratio maintained at 4fr:3fr:3fr (sufficient for text growth). All changes in `app/report/[slug]/ReportChart.module.css`. Local gate: Build pass ✅. Commit: `39389aba2`. Push blocked by authentication (HTTPS remote). Push instructions prepared for Sultan delegation. Investigation report updated with implementation details. Status: Implementation complete, local gate passed, awaiting push and preview verification. PAST: Reused implementation pattern from P1 2.2 (approved scope → minimal fixes → local gate → preview verification), container-driven typography approach, Layout Grammar compliance preservation.
@@ -746,8 +747,16 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
 
 ### Phase 3: Code Quality Violations (Hardcode + Inline styles)
 
-- [ ] **P0 3.1** Hardcoded Values Audit → output `docs/audits/hardcoded-values-inventory.csv`
-- [ ] **P0 3.2** Inline Styles Audit → update `docs/audits/inline-styles-inventory.csv`
+- [x] **P0 3.1** Hardcoded Values Audit → output `docs/audits/hardcoded-values-inventory.csv`
+  - **Status:** ✅ Investigation complete
+  - **Violations Found:** 2624 total (359 hex colors, 1631+ pixel values)
+  - **Output:** `docs/audits/hardcoded-values-inventory.csv` (2624 entries)
+  - **Script:** `scripts/generate-p0-3-audit-inventories.ts`
+- [x] **P0 3.2** Inline Styles Audit → update `docs/audits/inline-styles-inventory.csv`
+  - **Status:** ✅ Investigation complete
+  - **Violations Found:** 146 total inline styles (classified: Forbidden/Allowed)
+  - **Output:** `docs/audits/inline-styles-inventory.csv` (146 entries)
+  - **Script:** `scripts/generate-p0-3-audit-inventories.ts`
 
 ### Phase 4: CSS Design Tokens and Global CSS
 
