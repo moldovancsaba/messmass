@@ -716,6 +716,17 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Result:** All 10 violations fixed, formulas render correctly, visually verified by Sultan
 - [ ] **P2 2.3** Variable Management Guide
 
+### Phase 2.5: Chart Content Density & Typography Optimization
+
+- [ ] **P1 2.5.1** Chart Content Density & Typography Optimization Investigation
+  - **Scope:**
+    - Pie chart legend text must never overflow and must scale to fill available space
+    - KPI numeric values and labels must scale to better use available vertical space
+    - Prefer container-driven typography (clamp / responsive scaling)
+    - No truncation, clipping, or fixed-size underutilization
+  - **Status:** Investigation in progress
+  - **Deliverable:** `docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md`
+
 ### Phase 3: Code Quality Violations (Hardcode + Inline styles)
 
 - [ ] **P0 3.1** Hardcoded Values Audit → output `docs/audits/hardcoded-values-inventory.csv`
