@@ -145,9 +145,10 @@
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   container-type: size;
 }
 
@@ -354,9 +355,10 @@
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.3; /* WHAT: Increased from 1.2 for better readability */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   flex: 0 1 auto; /* WHAT: Don't grow, allow shrink, auto width for centering */
 }
 
@@ -418,8 +420,10 @@
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
   line-height: 1.1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   padding-right: var(--mm-space-1);
   display: flex;
   align-items: center;
@@ -461,9 +465,10 @@
   color: var(--chartValueColor);
   text-align: left;
   line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Text Chart - Flexbox structure with title and content zones */
@@ -554,8 +559,11 @@
   box-sizing: border-box;
   /* CRITICAL: Center the entire block of content */
   text-align: center !important;
-  /* CRITICAL: No scrolling - Layout Grammar compliance (content must fit) */
-  overflow: hidden !important; /* WHAT: No scrolling allowed per Layout Grammar */
+  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow) */
+  /* WHAT: Content must fit through structural change (wrapping, reflow), not clipping */
+  /* WHY: Layout Grammar: no clipping on content layers */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
   /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
@@ -825,7 +833,8 @@
 .tableContent {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
+  /* WHY: Layout Grammar: no clipping on content layers */
   padding: var(--mm-space-4);
   display: flex;
   flex-direction: column;
@@ -834,7 +843,8 @@
 .tableMarkdown {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
+  /* WHY: Layout Grammar: no clipping on content layers */
   display: flex;
   flex-direction: column;
 }
