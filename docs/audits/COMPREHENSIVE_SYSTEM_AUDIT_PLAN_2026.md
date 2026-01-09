@@ -758,6 +758,12 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Output:** `docs/audits/inline-styles-inventory.csv` (146 entries)
   - **Script:** `scripts/generate-p0-3-audit-inventories.ts`
 
+- [ ] **P0 3.3** Design Tokens & Style Ownership Definition
+  - **Status:** ⏳ INVESTIGATION
+  - **Scope:** Define token strategy, ownership rules, inline style rules, migration boundaries
+  - **Deliverable:** `docs/audits/investigations/P0-3.3-design-tokens-style-ownership.md`
+  - **Acceptance Criteria:** Token categories defined, ownership rules documented, inline style rules explicit, migration rules clear, acceptance criteria established
+
 ### Phase 4: CSS Design Tokens and Global CSS
 
 - [ ] **P1 3.3** CSS Design Token Usage Audit
