@@ -769,10 +769,11 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Acceptance Criteria:** ✅ Token categories defined, ownership rules documented, inline style rules explicit, migration rules clear, acceptance criteria established
 
 - [ ] **P0 3.4** Hardcoded Values & Inline Styles Remediation (Phase 1)
-  - **Status:** ⏳ IN PROGRESS
+  - **Status:** ⏳ IN PROGRESS (Ready for Preview Verification)
   - **Scope:** Apply P0 3.3 rules to `app/globals.css` and `app/charts.css` only
   - **Governing Rule:** P0 3.3 Design Tokens & Style Ownership Definition
-  - **Acceptance Criteria:** All hardcoded values replaced with tokens, no new tokens without workflow, local gate pass, preview verification, no regression
+  - **Progress:** Replaced design language values (hex colors, spacing, typography, border radius) with tokens. Contextual layout constraints (min-width, max-width, transforms) preserved per P0 3.3 decision. Local gate: Build pass ✅. Commits: `f919fd859`, `e21dc89c8`, `d7c7abd7d`
+  - **Acceptance Criteria:** Design language values replaced with tokens ✅, contextual constraints preserved ✅, no new tokens without workflow ✅, local gate pass ✅, preview verification ⏳, no regression ⏳
 
 ### Phase 4: CSS Design Tokens and Global CSS
 
