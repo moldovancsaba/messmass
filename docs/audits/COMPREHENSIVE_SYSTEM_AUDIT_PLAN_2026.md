@@ -726,8 +726,10 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
     - KPI numeric values and labels must scale to better use available vertical space
     - Prefer container-driven typography (clamp / responsive scaling)
     - No truncation, clipping, or fixed-size underutilization
-  - **Status:** Investigation in progress
+  - **Status:** Implementation complete, awaiting preview verification
   - **Deliverable:** `docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md`
+  - **Commit:** `39389aba2`
+  - **Changes:** Pie legend `min(12cqh, 8cqw)` → `min(20cqh, 12cqw)`, max 20px → 24px. KPI value `min(18cqh, 20cqw)` → `min(30cqh, 25cqw)`, max 5rem → 6rem. KPI title `8cqh` → `15cqh`, max 1.125rem → 1.5rem.
 
 ### Phase 3: Code Quality Violations (Hardcode + Inline styles)
 
