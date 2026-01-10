@@ -247,6 +247,33 @@
   --mm-report-text-max: 1.5rem;        /* 24px - 1.5x ratio */
 
   /* ========================================
+     LAYOUT GRAMMAR - BLOCK HEIGHT CONSTRAINTS
+  ======================================== */
+  
+  /* WHAT: Minimum and maximum block heights (fail-safe constraints)
+     WHY: Prevent extreme values from edge cases while allowing Layout Grammar to calculate
+     HOW: Used in blockHeightCalculator as bounds for calculated heights */
+  --mm-block-height-min: 150px;  /* Minimum block height (fail-safe) */
+  --mm-block-height-max: 800px;  /* Maximum block height (fail-safe) */
+  
+  /* WHAT: Default block height when calculation fails
+     WHY: Fallback when no cells in block or calculation error
+     HOW: Used as return value when blockHeightCalculator cannot calculate */
+  --mm-block-height-default: 360px;  /* Default block height (fail-safe) */
+  
+  /* WHAT: Default row dimensions for initial state
+     WHY: Prevent layout shift during initial render
+     HOW: Used in ResponsiveRow component initial state */
+  --mm-row-width-default: 1200px;   /* Default row width (fail-safe) */
+  --mm-row-height-default: 400px;  /* Default row height (fail-safe) */
+  
+  /* WHAT: Default font sizes for initial state
+     WHY: Prevent layout shift during font size calculation
+     HOW: Used in ResponsiveRow component initial state */
+  --mm-title-font-size-default: 18px;    /* Default title font size (fail-safe) */
+  --mm-subtitle-font-size-default: 14px; /* Default subtitle font size (fail-safe) */
+
+  /* ========================================
      SPACING - Modern 8px Grid System
   ======================================== */
   

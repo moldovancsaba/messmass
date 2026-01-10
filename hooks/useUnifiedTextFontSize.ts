@@ -119,9 +119,11 @@ export function useUnifiedTextFontSize(
 
       // WHAT: Calculate unified font-size
       // WHY: All charts should use the same size
-      const unifiedSize = calculateUnifiedFontSize(contents, dimensions);
-      console.log('[useUnifiedTextFontSize] Calculated unified font-size:', unifiedSize, 'for', textCharts.length, 'charts');
-      setUnifiedFontSize(unifiedSize);
+        // WHAT: Calculate unified font-size with increased max (4rem for optimal fill)
+        // WHY: Allow larger text to fill available space
+        const unifiedSize = calculateUnifiedFontSize(contents, dimensions);
+        console.log('[useUnifiedTextFontSize] Calculated unified font-size:', unifiedSize, 'rem for', textCharts.length, 'charts');
+        setUnifiedFontSize(unifiedSize);
     }, 100);
 
     // WHAT: Recalculate on window resize

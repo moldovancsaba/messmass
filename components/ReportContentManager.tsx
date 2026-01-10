@@ -7,6 +7,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import { apiRequest, apiPost } from '@/lib/apiClient';
 import styles from './ReportContentManager.module.css';
 
 interface ReportContentManagerProps {
@@ -66,14 +67,12 @@ async function autoGenerateChartBlocks(newStats: Record<string, any>, oldStats: 
     console.log(`🎨 Auto-generating ${changes.length} chart blocks...`);
     
     for (const change of changes) {
-      await fetch('/api/auto-generate-chart-block', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: change.type,
-          index: change.index,
-          value: change.value
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      await apiPost('/api/auto-generate-chart-block', {
+        type: change.type,
+        index: change.index,
+        value: change.value
       });
     }
     
@@ -124,8 +123,15 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
         console.log(`📤 Uploading to slot reportImage${next}`);
         const fd = new FormData();
         fd.append('image', file);
-        const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
-        const data = await res.json();
+        // WHAT: Use apiRequest for FormData uploads with CSRF protection
+        // WHY: apiPost uses JSON.stringify which doesn't work with FormData
+        // HOW: apiRequest handles FormData and automatically includes CSRF token
+        const data = await apiRequest('/api/upload-image', {
+          method: 'POST',
+          body: fd,
+          // WHAT: Don't set Content-Type header for FormData
+          // WHY: Browser needs to set it with boundary for multipart/form-data
+        });
         
         console.log('📥 Upload response:', data);
         
@@ -151,8 +157,15 @@ export default function ReportContentManager({ stats, onCommit, maxSlots = 500 }
     try {
       const fd = new FormData();
       fd.append('image', file);
-      const res = await fetch('/api/upload-image', { method: 'POST', body: fd });
-      const data = await res.json();
+      // WHAT: Use apiRequest for FormData uploads with CSRF protection
+      // WHY: apiPost uses JSON.stringify which doesn't work with FormData
+      // HOW: apiRequest handles FormData and automatically includes CSRF token
+      const data = await apiRequest('/api/upload-image', {
+        method: 'POST',
+        body: fd,
+        // WHAT: Don't set Content-Type header for FormData
+        // WHY: Browser needs to set it with boundary for multipart/form-data
+      });
       if (!data?.success || !data?.url) throw new Error(data?.error || 'Upload failed');
       const newStats = { ...stats, [`reportImage${slotIndex}`]: String(data.url) };
       onCommit(newStats);

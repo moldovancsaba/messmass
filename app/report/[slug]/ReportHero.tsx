@@ -106,6 +106,7 @@ export default function ReportHero({
       <div className={styles.heroContent}>
         <div className={styles.heroInfo}>
           {partnerLogo && (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img 
               src={partnerLogo} 
               alt="Partner Logo" 
@@ -124,6 +125,7 @@ export default function ReportHero({
             )}
           </div>
           {partner2Logo && (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img 
               src={partner2Logo} 
               alt="Partner 2 Logo" 

@@ -7,9 +7,15 @@ import styles from './Design.module.css';
 import { apiPut } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
 import adminStyles from '@/app/styles/admin-pages.module.css';
+import { useAvailableFonts } from '@/hooks/useAvailableFonts';
+import { AvailableFont } from '@/lib/fontTypes';
+import { getFontKey } from '@/lib/fontUtils';
 
 export default function AdminDesignPage() {
-  const [selectedFont, setSelectedFont] = useState<'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma'>('inter');
+  // WHAT: Fetch available fonts from MongoDB (dynamic, no hardcoding)
+  // WHY: Font list is managed in database, not hardcoded
+  const { fonts: availableFonts, loading: fontsLoading } = useAvailableFonts();
+  const [selectedFont, setSelectedFont] = useState<string>('inter');
   const [fontLoading, setFontLoading] = useState(false);
 
   useEffect(() => {
@@ -17,19 +23,29 @@ export default function AdminDesignPage() {
       try {
         const response = await fetch('/api/admin/ui-settings');
         const data = await response.json();
-        if (data.fontFamily) setSelectedFont(data.fontFamily);
+        if (data.fontFamily) {
+          // WHAT: Map font name to lowercase for compatibility
+          // WHY: API stores lowercase, but we display proper names
+          setSelectedFont(data.fontFamily.toLowerCase());
+        }
       } catch (e) {
         console.error('Failed to load typography settings:', e);
       }
     })();
   }, []);
 
-  const saveFont = async (font: 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'asroma') => {
+  // WHAT: Get font key from font name (for API compatibility)
+  // WHY: API expects lowercase keys, but fonts have display names
+  const getFontKeyFromFont = (font: AvailableFont): string => {
+    return getFontKey(font.name);
+  };
+
+  const saveFont = async (fontKey: string) => {
     setFontLoading(true);
     try {
-      const data = await apiPut('/api/admin/ui-settings', { fontFamily: font });
+      const data = await apiPut('/api/admin/ui-settings', { fontFamily: fontKey });
       if (!data.success) throw new Error(data.error || 'Failed to save font');
-      setSelectedFont(font);
+      setSelectedFont(fontKey);
     } catch (e) {
       console.error('Failed to save font:', e);
     } finally {
@@ -53,13 +69,28 @@ export default function AdminDesignPage() {
 
       <div className={styles.section}>
         <h3>Typography (Global)</h3>
-        <div className={adminStyles.row}>
-          {[ 'inter','roboto','poppins','montserrat','asroma' ].map((f) => (
-            <button key={f} className={adminStyles.button} disabled={fontLoading} onClick={() => saveFont(f as any)}>
-              <MaterialIcon name={selectedFont === f ? 'check' : 'text_fields'} /> {f}
-            </button>
-          ))}
-        </div>
+        {fontsLoading ? (
+          <p>Loading available fonts...</p>
+        ) : availableFonts.length > 0 ? (
+          <div className={adminStyles.row}>
+            {availableFonts.map((font) => {
+              const fontKey = getFontKeyFromFont(font);
+              const isSelected = selectedFont === fontKey;
+              return (
+                <button 
+                  key={font._id || font.name} 
+                  className={adminStyles.button} 
+                  disabled={fontLoading} 
+                  onClick={() => saveFont(fontKey)}
+                >
+                  <MaterialIcon name={isSelected ? 'check' : 'text_fields'} /> {font.name}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p>No fonts available. Please add fonts in the database.</p>
+        )}
       </div>
     </div>
   );

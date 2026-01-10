@@ -4,12 +4,13 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AdminHero from '@/components/AdminHero';
 import ColorPickerField from '@/components/ColorPickerField';
 import ReportStylePreview from '@/components/ReportStylePreview';
 import MaterialIcon from '@/components/MaterialIcon';
+import { apiPost, apiPut } from '@/lib/apiClient';
 import { 
   ReportStyle, 
   DEFAULT_STYLE, 
@@ -18,6 +19,7 @@ import {
   injectStyleAsCSS,
   removeStyleCSS
 } from '@/lib/reportStyleTypes';
+import { useAvailableFonts } from '@/hooks/useAvailableFonts';
 import styles from './editor.module.css';
 
 export default function StyleEditorPage() {
@@ -31,21 +33,13 @@ export default function StyleEditorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<string>('');
+  
+  // WHAT: Fetch available fonts from MongoDB (dynamic, no hardcoding)
+  // WHY: Font list is managed in database, not hardcoded
+  const { fonts: availableFonts, loading: fontsLoading } = useAvailableFonts();
 
   // Fetch existing style
-  useEffect(() => {
-    if (!isNew) {
-      fetchStyle();
-    }
-  }, [id, isNew]);
-
-  // Inject CSS for live preview
-  useEffect(() => {
-    injectStyleAsCSS(style);
-    return () => removeStyleCSS();
-  }, [style]);
-
-  const fetchStyle = async () => {
+  const fetchStyle = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -66,7 +60,14 @@ export default function StyleEditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  // Fetch existing style on mount
+  useEffect(() => {
+    if (!isNew) {
+      fetchStyle();
+    }
+  }, [isNew, fetchStyle]);
 
   const handleChange = (field: keyof ReportStyle, value: string) => {
     setStyle(prev => ({ ...prev, [field]: value }));
@@ -85,19 +86,11 @@ export default function StyleEditorPage() {
     setSaveStatus('💾 Saving...');
     
     try {
-      const url = isNew 
-        ? '/api/report-styles'
-        : `/api/report-styles?id=${id}`;
-      
-      const method = isNew ? 'POST' : 'PUT';
-      
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(style)
-      });
-      
-      const data = await response.json();
+      // WHAT: Use apiPost/apiPut for CSRF protection
+      // WHY: Raw fetch() doesn't include CSRF token, causing 403 errors
+      const data = isNew
+        ? await apiPost('/api/report-styles', style)
+        : await apiPut(`/api/report-styles?id=${id}`, style);
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to save style');
@@ -237,15 +230,25 @@ export default function StyleEditorPage() {
                 value={style.fontFamily || 'Inter'}
                 onChange={(e) => handleChange('fontFamily', e.target.value)}
                 className={styles.selectInput}
+                disabled={fontsLoading}
               >
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Montserrat">Montserrat</option>
-                <option value="AS Roma">AS Roma</option>
-                <option value="system-ui">System Default</option>
+                {fontsLoading ? (
+                  <option>Loading fonts...</option>
+                ) : availableFonts.length > 0 ? (
+                  availableFonts.map(font => (
+                    <option key={font._id || font.name} value={font.name}>
+                      {font.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="Inter">Inter (default)</option>
+                )}
               </select>
-              <small className={styles.hint}>Font used for all text in reports</small>
+              <small className={styles.hint}>
+                {fontsLoading 
+                  ? 'Loading available fonts...' 
+                  : `Font used for all text in reports (${availableFonts.length} available)`}
+              </small>
             </div>
           </div>
 

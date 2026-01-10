@@ -119,6 +119,7 @@ export default function UnifiedPageHero({
           <div className={styles.centerContent}>
             <h1 
               className="admin-title"
+              // eslint-disable-next-line react/forbid-dom-props
               style={(typeof pageStyle?.typography?.headingColor === 'string' && pageStyle.typography.headingColor.trim()) ? {
                 color: pageStyle.typography.headingColor.trim()
               } : undefined}
@@ -282,6 +283,7 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportCSV}
                 className={`btn btn-primary btn-small ${styles.exportButton}`}
+                // eslint-disable-next-line react/forbid-dom-props
                 style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                   backgroundColor: pageStyle.colorScheme.primary.trim(),
                   borderColor: pageStyle.colorScheme.primary.trim()
@@ -294,6 +296,7 @@ export default function UnifiedPageHero({
               <button 
                 onClick={onExportPDF}
                 className={`btn btn-secondary btn-small ${styles.exportButton}`}
+                // eslint-disable-next-line react/forbid-dom-props
                 style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
                   backgroundColor: pageStyle.colorScheme.primary.trim(),
                   borderColor: pageStyle.colorScheme.primary.trim()

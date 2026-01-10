@@ -16,6 +16,7 @@
 
 import { useState } from 'react';
 import FormModal from '@/components/modals/FormModal';
+import { apiPost } from '@/lib/apiClient';
 
 interface GoogleSheetsConnectModalProps {
   isOpen: boolean;
@@ -71,23 +72,18 @@ export default function GoogleSheetsConnectModal({
         return;
       }
 
-      // Call API to connect sheet
-      const response = await fetch(
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost(
         `/api/partners/${partnerId}/google-sheet/connect`,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sheetId,
-            sheetName: sheetName.trim(),
-            syncMode
-          })
+          sheetId,
+          sheetName: sheetName.trim(),
+          syncMode
         }
       );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         setError(data.error || 'Failed to connect to Google Sheet');
         setIsSubmitting(false);
         return;

@@ -53,6 +53,7 @@ export function sanitizeHTML(
         'p', 'br', 'strong', 'em', 'u', 'b', 'i',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ul', 'ol', 'li', 'blockquote',
+        'pre', 'code', 'del', 's', 'hr',
         'a'
       ],
       ALLOWED_ATTR: options?.allowAttributes || ['href', 'title', 'target'],
@@ -102,9 +103,10 @@ export function sanitizeMarkdownHTML(dirty: string): string {
       'p', 'br', 'strong', 'em', 'u',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'ul', 'ol', 'li',
+      'blockquote', 'pre', 'code', 'del', 's', 'hr',
       'a'
     ],
-    allowAttributes: ['href', 'title']
+    allowAttributes: ['href', 'title', 'class'] // class for code blocks (future syntax highlighting)
   });
 }
 

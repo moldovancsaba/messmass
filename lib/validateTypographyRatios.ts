@@ -153,23 +153,30 @@ export function constrainClampFormula(
 
 /**
  * Console logger for validation results (development use)
+ * WHAT: Logs typography validation results to console
+ * WHY: Intended for development/debugging - helps identify ratio violations
  */
 export function logValidationResults(results: ValidationResult[]): void {
+  // eslint-disable-next-line no-console
   console.group('🎨 Typography Ratio Validation');
   
   const violations = results.filter(r => !r.valid && r.ratio !== null);
   const valid = results.filter(r => r.valid && r.ratio !== null);
   
   if (violations.length > 0) {
+    // eslint-disable-next-line no-console
     console.warn(`❌ ${violations.length} violation(s) found:`);
     violations.forEach(r => {
+      // eslint-disable-next-line no-console
       console.log(`   ${r.message} (${r.min} → ${r.max})`);
     });
   }
   
   if (valid.length > 0) {
+    // eslint-disable-next-line no-console
     console.log(`✅ ${valid.length} valid clamp() formula(s)`);
   }
   
+  // eslint-disable-next-line no-console
   console.groupEnd();
 }

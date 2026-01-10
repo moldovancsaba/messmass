@@ -8,6 +8,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import MaterialIcon from '@/components/MaterialIcon';
+import { apiRequest } from '@/lib/apiClient';
 
 interface ImageUploaderProps {
   value?: string;              // Current image URL (if any)
@@ -61,12 +62,15 @@ export default function ImageUploader({
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('/api/upload-image', {
+      // WHAT: Use apiRequest for FormData uploads with CSRF protection
+      // WHY: apiPost uses JSON.stringify which doesn't work with FormData
+      // HOW: apiRequest handles FormData and automatically includes CSRF token
+      const data = await apiRequest('/api/upload-image', {
         method: 'POST',
         body: formData,
+        // WHAT: Don't set Content-Type header for FormData
+        // WHY: Browser needs to set it with boundary for multipart/form-data
       });
-
-      const data = await response.json();
 
       if (!data.success) {
         throw new Error(data.error || 'Upload failed');

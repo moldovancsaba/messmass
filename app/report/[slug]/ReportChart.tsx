@@ -128,7 +128,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
       
       case 'kpi':
-        return result.kpiValue !== undefined && result.kpiValue !== 'NA';
+        return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
       
       case 'pie':
       case 'bar':
@@ -152,31 +152,33 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
   }
 
   // Render based on chart type
+  // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+  // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <PieChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'text':
-      return <TextChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+      return <TextChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <ImageChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'table':
-      return <TableChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <TableChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
-          <BarChart result={result} blockHeight={blockHeight} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
+          <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
+          <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
         </div>
       );
     
@@ -195,7 +197,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function KPIChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const protectedTitle = preventPhraseBreaks(result.title);
   
@@ -214,8 +216,8 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   return (
     <div 
       className={`${styles.chart} ${styles.kpi} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
+      // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
       <div className={styles.kpiIconRow}>
         {result.icon && (
@@ -242,7 +244,7 @@ function KPIChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Pie Chart - Circular visualization using Chart.js
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function PieChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -261,18 +263,41 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   
   // WHAT: Read individual pie slice colors from CSS variables
   // WHY: Use custom style colors for each pie slice (granular control)
-  // HOW: getComputedStyle reads --pie-color-N variables injected by useReportStyle
+  // HOW: getComputedStyle reads --pieColor1/--pieColor2 from Style editor, fallback to design tokens only
   const getPieColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
-    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
-    const c1 = cs.getPropertyValue('--pieColor1').trim() || primary;
-    const c2 = cs.getPropertyValue('--pieColor2').trim() || secondary;
-    return [c1, c2, c1, c2, c1];
+    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
+    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
+    const primary = cs.getPropertyValue('--pieColor1').trim() || 
+                    cs.getPropertyValue('--primary').trim() || 
+                    cs.getPropertyValue('--mm-color-primary-500').trim() || 
+                    ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
+    const secondary = cs.getPropertyValue('--pieColor2').trim() || 
+                      cs.getPropertyValue('--secondary').trim() || 
+                      cs.getPropertyValue('--mm-color-secondary-500').trim() || 
+                      ''; // WHAT: Empty string if no color available - will be handled by CSS fallback
+    // WHAT: Return design token fallback if colors are empty
+    // WHY: Ensure we always have valid colors from design system
+    return [
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
+      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim(),
+      secondary || cs.getPropertyValue('--mm-color-secondary-500').trim(),
+      primary || cs.getPropertyValue('--mm-color-primary-500').trim()
+    ];
   };
   
   const pieColors = getPieColors();
+  
+  // WHAT: Read pie border color from Style Editor
+  // WHY: Border color should be editable in Style Editor
+  const getPieBorderColor = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    return cs.getPropertyValue('--pieBorderColor').trim() || pieColors[0];
+  };
+  const pieBorderColor = getPieBorderColor();
   
   // Prepare Chart.js data
   // WHAT: Force theme colors to override any element.color
@@ -285,9 +310,9 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
       backgroundColor: result.elements.map((el, idx) => 
         pieColors[idx % pieColors.length]
       ),
-      // WHAT: Use first pie color as border for all slices
-      // WHY: Creates visual separation with consistent branding
-      borderColor: pieColors[0],
+      // WHAT: Use pieBorderColor from Style Editor, fallback to first pie color
+      // WHY: Border color should be editable in Style Editor
+      borderColor: pieBorderColor,
       borderWidth: 2,
       hoverOffset: 6 // WHAT: Reduced from 8 to prevent overflow
     }]
@@ -344,18 +369,24 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   return (
     <div 
       className={`${styles.chart} ${styles.pie} report-chart ${className || ''}`}
-      // eslint-disable-next-line react/forbid-dom-props
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      // WHAT: blockHeight now centrally managed at row level via --block-height CSS custom property
+      // WHY: Eliminated per-chart inline style - height comes from parent row container
     >
       <div className={styles.pieGrid}>
+        {/* WHAT: Title at top */}
+        {/* WHY: User requirement - title should be first section */}
         {showTitle && (
           <div className={styles.pieTitleRow}>
             <h3 className={styles.pieTitleText}>{result.title}</h3>
           </div>
         )}
+        {/* WHAT: Pie chart in middle */}
+        {/* WHY: User requirement - pie chart should be middle section */}
         <div className={styles.pieChartContainer}>
           <Doughnut ref={chartRef} data={chartData} options={options} />
         </div>
+        {/* WHAT: Legends at bottom center */}
+        {/* WHY: User requirement - legends should be bottom section, centered */}
         <div className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
@@ -372,6 +403,7 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
                 // WHAT: Dynamic pie legend dot color from chart data
                 // WHY: Colors come from chart calculation, cannot use static CSS classes
                 // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   '--dot-color': color,
                   '--dot-border-color': pieColors[0]
@@ -394,7 +426,7 @@ function PieChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
  * Bar Chart - Five-element horizontal bars
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function BarChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
@@ -402,17 +434,121 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Ref for chart body to calculate body zone height (P1 1.4 Phase 2)
+  // WHY: Calculate body zone height explicitly: containerHeight - titleHeight - subtitleHeight
+  // HOW: Measure actual heights and set CSS custom property on chart container
+  const chartBodyRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set body zone height explicitly (P1 1.4 Phase 2)
+  // WHY: Replace flex: 1 with explicit height for deterministic behavior
+  // HOW: Measure container and header heights, calculate body height, set CSS custom property
+  useEffect(() => {
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      // WHAT: Find parent CellWrapper container (chart container)
+      // WHY: CSS variable must be set on chart container per solution document
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndSetHeight = () => {
+        // WHAT: Get container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = chartContainer.offsetHeight;
+        
+        // WHAT: Find title and subtitle zones within CellWrapper
+        // WHY: Subtract header heights from container to get body height
+        const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+        const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        let subtitleHeight = 0;
+        
+        if (titleZone) {
+          titleHeight = titleZone.offsetHeight;
+        }
+        if (subtitleZone) {
+          subtitleHeight = subtitleZone.offsetHeight;
+        }
+        
+        // WHAT: Calculate body zone height: container - title - subtitle
+        // WHY: Explicit height calculation instead of flex growth
+        const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+        
+        // WHAT: Set CSS custom property for body zone height on chart container
+        // WHY: P1 1.4 Phase 2 - explicit height cascade
+        if (bodyHeight > 0) {
+          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(chartContainer);
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!bodyHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
+            chartId: result.chartId,
+            blockHeight: blockHeightValue || 'missing',
+            containerHeight: chartContainer.offsetHeight
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
+  
   // WHAT: Read individual bar colors from CSS variables
   // WHY: Use custom style colors for each bar (granular control)
-  // HOW: getComputedStyle reads --bar-color-N variables injected by useReportStyle
+  // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
   const getBarColors = () => {
     const root = document.documentElement;
     const cs = getComputedStyle(root);
-    const primary = cs.getPropertyValue('--primary').trim() || '#3b82f6';
-    const secondary = cs.getPropertyValue('--secondary').trim() || '#10b981';
-    const success = cs.getPropertyValue('--success').trim() || '#10b981';
-    const warning = cs.getPropertyValue('--warning').trim() || '#f59e0b';
-    const error = cs.getPropertyValue('--error').trim() || '#ef4444';
+    // WHAT: No hardcoded colors - only CSS variables from Style editor or design tokens
+    // WHY: All colors must come from Style editor or design system, no hardcoded fallbacks
+    const primary = cs.getPropertyValue('--mm-color-primary-500').trim();
+    const secondary = cs.getPropertyValue('--mm-color-secondary-500').trim();
+    const success = cs.getPropertyValue('--mm-success').trim() || cs.getPropertyValue('--mm-color-secondary-500').trim();
+    const warning = cs.getPropertyValue('--mm-warning').trim();
+    const error = cs.getPropertyValue('--mm-error').trim();
     return [
       cs.getPropertyValue('--barColor1').trim() || primary,
       cs.getPropertyValue('--barColor2').trim() || secondary,
@@ -430,10 +566,10 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
     >
-      <div className={styles.chartBody}>
+      {/* WHAT: Chart body ref for height calculation (P1 1.4 Phase 2) */}
+      <div ref={chartBodyRef} className={styles.chartBody}>
         <div className={styles.barElements}>
         {result.elements.map((element, idx) => {
           const numValue = typeof element.value === 'number' ? element.value : 0;
@@ -448,6 +584,7 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
                 // WHAT: Dynamic bar fill width and color from chart calculation
                 // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
                 // HOW: Set CSS custom properties on parent, consumed by .barFill
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   '--bar-width': `${widthPercent}%`,
                   '--bar-color': barColors[idx % barColors.length]
@@ -468,8 +605,9 @@ function BarChart({ result, blockHeight, titleFontSize, subtitleFontSize, classN
 /**
  * Text Chart - Formatted text display
  * REBUILT: Simple table structure to guarantee title above content
+ * P1 1.4 Phase 4: Explicit text content height calculation
  */
-function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
+function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -479,18 +617,113 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Refs for height calculation (P1 1.4 Phase 4)
+  // WHY: Calculate text content height explicitly: containerHeight - titleHeight
+  // HOW: Measure actual heights and set CSS custom property
+  const textChartRef = useRef<HTMLDivElement>(null);
+  const textContentWrapperRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set text content height explicitly (P1 1.4 Phase 4)
+  // WHY: Replace implicit height behavior with explicit height for deterministic behavior
+  // HOW: Measure container and title heights, calculate content height, set CSS custom property
+  useEffect(() => {
+    if (textChartRef.current && textContentWrapperRef.current && typeof window !== 'undefined') {
+      const measureAndSetHeight = () => {
+        // WHAT: Get chart container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = textChartRef.current?.offsetHeight || 0;
+        
+        // WHAT: Find title wrapper within chart container
+        // WHY: Subtract title height from container to get content height
+        const titleWrapper = textChartRef.current?.querySelector('[class*="textTitleWrapper"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        if (titleWrapper) {
+          titleHeight = titleWrapper.offsetHeight;
+        }
+        
+        // WHAT: Calculate text content height: container - title
+        // WHY: Explicit height calculation instead of flex growth
+        const contentHeight = containerHeight - titleHeight;
+        
+        // WHAT: Set CSS custom property for text content height on chart container
+        // WHY: P1 1.4 Phase 4 - explicit height cascade
+        if (contentHeight > 0 && textChartRef.current) {
+          textChartRef.current.style.setProperty('--text-content-height', `${contentHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      if (textChartRef.current) {
+        resizeObserver.observe(textChartRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (textChartRef.current && typeof window !== 'undefined') {
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(textChartRef.current!);
+        const textContentHeightValue = computedStyle.getPropertyValue('--text-content-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!textContentHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            blockHeight: blockHeightValue || 'missing',
+            containerHeight: textChartRef.current?.offsetHeight || 0
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            textContentHeight: textContentHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      if (textChartRef.current) {
+        resizeObserver.observe(textChartRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
+  
   return (
     <div 
+      ref={textChartRef}
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
       data-chart-id={result.chartId}
-      data-block-height={blockHeight || undefined}
+      // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
     >
       {showTitle && (
         <div className={styles.textTitleWrapper}>
           <h3 className={styles.textTitleText}>{result.title}</h3>
         </div>
       )}
-      <div className={styles.textContentWrapper}>
+      {/* WHAT: Text content wrapper ref for height calculation (P1 1.4 Phase 4) */}
+      <div ref={textContentWrapperRef} className={styles.textContentWrapper}>
         {html ? (
           <div
             className={`${styles.textContent} ${styles.textMarkdown}`}
@@ -509,8 +742,9 @@ function TextChart({ result, blockHeight, titleFontSize, subtitleFontSize, unifi
 /**
  * Table Chart - Markdown table display with styling
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * P1 1.4 Phase 4: Explicit table content height calculation
  */
-function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function TableChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   // WHAT: Render markdown table content on report pages
   // WHY: User requirement: table charts render markdown tables with styling
   // HOW: Use parseTableMarkdown to convert markdown table to HTML
@@ -520,71 +754,217 @@ function TableChart({ result, blockHeight, titleFontSize, subtitleFontSize, clas
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 4)
+  // WHY: Table content is inside CellWrapper body zone, which has --chart-body-height from Phase 2
+  // HOW: Use --chart-body-height directly or calculate from it
+  const tableContentRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set table content height explicitly (P1 1.4 Phase 4)
+  // WHY: Replace implicit height behavior with explicit height for deterministic behavior
+  // HOW: Use --chart-body-height from CellWrapper body zone (already set in Phase 2)
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const measureAndSetHeight = () => {
+        // WHAT: Find parent CellWrapper container (chart container)
+        // WHY: CSS variable --chart-body-height is set on CellWrapper from Phase 2
+        const chartContainer = tableContentRef.current?.closest('[class*="cellWrapper"]') as HTMLElement;
+        if (!chartContainer) return;
+        
+        // WHAT: Get body zone height from CSS custom property (set in Phase 2)
+        // WHY: Table content is inside body zone, so use body zone height directly
+        const computedStyle = getComputedStyle(chartContainer);
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        
+        // WHAT: If --chart-body-height is set, use it for table content height
+        // WHY: Table content fills the body zone, so height should match body zone height
+        if (bodyHeightValue && tableContentRef.current) {
+          tableContentRef.current.style.setProperty('--text-content-height', bodyHeightValue);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(chartContainer);
+        const textContentHeightValue = getComputedStyle(tableContentRef.current!).getPropertyValue('--text-content-height').trim();
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!textContentHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing',
+            blockHeight: blockHeightValue || 'missing'
+          });
+        }
+        if (!bodyHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
+            chartId: result.chartId,
+            textContentHeight: textContentHeightValue || 'missing',
+            blockHeight: blockHeightValue || 'missing'
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing',
+            textContentHeight: textContentHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      if (chartContainer) {
+        resizeObserver.observe(chartContainer);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
+  
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
       className={`${styles.chart} ${styles.table} report-chart ${className || ''}`}
     >
+      {/* WHAT: Table content ref for height calculation (P1 1.4 Phase 4) */}
       {html ? (
         <div
+          ref={tableContentRef}
           className={`${styles.tableContent} ${styles.tableMarkdown}`}
           // eslint-disable-next-line react/forbid-dom-props
           dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
         />
       ) : (
-        <div className={styles.tableContent} />
+        <div ref={tableContentRef} className={styles.tableContent} />
       )}
     </CellWrapper>
   );
 }
 
 /**
- * Image Chart - Aspect ratio-aware image display
- * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * Image Chart - Uses actual image aspect ratio
+ * UPDATED: Detects real image dimensions and uses them for aspect ratio
  */
-function ImageChart({ result, blockHeight, titleFontSize, subtitleFontSize, className }: { result: ChartResult; blockHeight?: number; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
-  const aspectRatio = result.aspectRatio || '16:9';
+  const [actualAspectRatio, setActualAspectRatio] = React.useState<string | null>(null);
+  const imgRef = React.useRef<HTMLImageElement>(null);
+  
+  // WHAT: Detect actual image aspect ratio when image loads
+  // WHY: Use real image dimensions instead of configured aspect ratio
+  // HOW: Calculate from naturalWidth/naturalHeight and apply dynamically
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (img.naturalWidth && img.naturalHeight) {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      setActualAspectRatio(`${img.naturalWidth}:${img.naturalHeight}`);
+      console.log('[ImageChart] Actual aspect ratio detected:', {
+        title: result.title,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight,
+        ratio: ratio.toFixed(4),
+        aspectRatio: `${img.naturalWidth}:${img.naturalHeight}`
+      });
+    }
+  };
   
   // DEBUG: Log image rendering
   console.log('[ImageChart] Rendering:', {
     title: result.title,
     kpiValue: result.kpiValue,
     formattedValue,
-    aspectRatio,
+    configuredAspectRatio: result.aspectRatio || '16:9',
+    actualAspectRatio,
     hasValue: !!formattedValue
   });
   
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
-  // Map aspect ratio to CSS class
-  const aspectClass = {
-    '16:9': styles.aspect169,
-    '9:16': styles.aspect916,
-    '1:1': styles.aspect11
-  }[aspectRatio] || styles.aspect169;
+  // WHAT: Use actual aspect ratio if available, otherwise fallback to configured
+  // WHY: Prefer real image dimensions, but have fallback for initial render
+  const aspectRatio = actualAspectRatio || result.aspectRatio || '16:9';
+  
+  // WHAT: Calculate aspect ratio value for CSS
+  // WHY: CSS aspect-ratio property needs numeric ratio (width/height)
+  const aspectRatioValue = React.useMemo(() => {
+    if (actualAspectRatio) {
+      const [w, h] = actualAspectRatio.split(':').map(Number);
+      if (w && h) return w / h;
+    }
+    // Fallback to configured aspect ratio
+    const configured = result.aspectRatio || '16:9';
+    const map: Record<string, number> = {
+      '16:9': 16 / 9,
+      '9:16': 9 / 16,
+      '1:1': 1
+    };
+    return map[configured] || 16 / 9;
+  }, [actualAspectRatio, result.aspectRatio]);
 
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
       titleFontSize={titleFontSize}
       subtitleFontSize={subtitleFontSize}
-      blockHeight={blockHeight}
-      className={`${styles.chart} ${styles.image} ${aspectClass} report-chart ${className || ''}`}
+      className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
     >
-      {/* WHAT: Use actual <img> tag for reliable aspect ratio */}
-      {/* WHY: Browser automatically maintains aspect ratio, no CSS tricks needed */}
-      <img 
-        className={styles.imageContent}
-        src={formattedValue}
-        alt={result.title}
-        onLoad={() => console.log('[ImageChart] Image loaded:', result.title)}
-        onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
-      />
+      {/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */}
+      {/* WHY: Use real image dimensions instead of configured aspect ratio */}
+      <div 
+        className={styles.imageContainer}
+        // eslint-disable-next-line react/forbid-dom-props
+        style={{
+          '--image-aspect-ratio': aspectRatioValue.toString()
+        } as React.CSSProperties}
+      >
+        {/* WHAT: Use actual <img> tag and detect real dimensions */}
+        {/* WHY: Browser provides naturalWidth/naturalHeight for actual aspect ratio */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img 
+          ref={imgRef}
+          className={styles.imageContent}
+          src={formattedValue}
+          alt={result.title}
+          onLoad={handleImageLoad}
+          onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
+        />
+      </div>
     </CellWrapper>
   );
 }

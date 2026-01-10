@@ -229,6 +229,7 @@ export default function CodeViewer({
   return (
     <div 
       className={`${styles.container} code-viewer ${className}`}
+      // eslint-disable-next-line react/forbid-dom-props
       style={getThemeVars()}
     >
       {/* Header */}
@@ -291,11 +292,11 @@ export default function CodeViewer({
                   const isHighlighted = highlightLines.includes(index + 1);
                   // WHAT: CSS variables for line highlight colors based on theme
                   // WHY: Highlight colors computed from dark/light theme prop
-                  // eslint-disable-next-line react/forbid-dom-props
                   return (
                     <div 
                       key={index}
                       className={styles.lineNumber}
+                      // eslint-disable-next-line react/forbid-dom-props
                       style={{
                         ['--line-bg' as string]: isHighlighted 
                           ? (theme === 'dark' ? 'rgba(66, 153, 225, 0.2)' : 'rgba(66, 153, 225, 0.1)')

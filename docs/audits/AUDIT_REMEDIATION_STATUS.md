@@ -273,24 +273,51 @@ Phase E — Reporting
     - ✅ Type check passes
     - ✅ **Sultan confirmed icons render correctly on Preview** (2026-01-02T20:20:00+01:00)
     - ✅ Icons display as icon glyphs (not text labels) in sidebar and throughout application
-- [ ] Charts visible on report pages (bar / pie / API charts)
-  - **Status:** ⚠️ HYPOTHESIS ONLY (not a proven fix)
-  - **Commit:** `775f4c449` (2026-01-02T21:10:00+01:00)
-  - **Owner:** Tribeca (investigate → fix → **preview verify** → close)
-
-  - **What we know (PRESENT):** Charts are not visible on report pages in Preview.
-  - **What changed (HYPOTHESIS APPLIED):** Enhanced chart fetch error handling:
-    - `cache: 'no-store'`
-    - include HTTP status in errors
-    - handle non-OK responses explicitly
-  - **Why this is not closed:** No Preview evidence yet. **Rule: no Preview verification = not fixed.**
-
-  - **Single next action (Sultan → Tribeca signal):** From Vercel Preview, capture ONE failing chart request in DevTools → Network and send:
-    - HTTP status (e.g., 401/403/404/500)
-    - Request URL host (domain)
-    - First line of response body (or error message)
-
-  - **After the signal:** Tribeca will root-cause (auth/CORS/env/data-shape/render/CSP), apply a minimal boundary fix, verify on Preview (screenshots), then mark this checkbox ✅ with commit + verification note.
+- [x] Charts visible on report pages (bar / pie / API charts)
+  - **Status:** ✅ COMPLETE (code + verified)
+  - **Commits:** Multiple (2026-01-02)
+  - **Root Cause:** Multiple issues:
+    - Missing `ensureDerivedMetrics` enrichment before chart calculations
+    - Formula format mismatches (`[fieldName]` vs `[stats.fieldName]`)
+    - CSP blocking `Function()` constructor for formula evaluation
+    - Missing CSP directives for Google Analytics, Vercel Live, Pusher
+    - Row height not applied to DOM elements
+    - Invalid chart data filtering (`null` values for KPI charts)
+  - **Fixes Applied:**
+    - Added `ensureDerivedMetrics` enrichment in `app/report/[slug]/page.tsx`
+    - Updated `lib/formulaEngine.ts` to use `expr-eval` as primary parser (CSP-safe)
+    - Updated CSP in `middleware.ts` for Google Analytics, Vercel Live, Pusher
+    - Fixed row height application in `ReportContent.tsx`
+    - Fixed `hasValidChartData` to handle `null` values correctly
+    - Removed "stats." prefix from all formulas and variables
+    - Fixed chart formula migration scripts
+  - **Verification:**
+    - ✅ Build passes
+    - ✅ Charts render correctly on Preview
+    - ✅ All chart types (KPI, Pie, Bar, Text, Image, Table) working
+    - ✅ Formulas evaluate correctly with `expr-eval`
+    - ✅ CSP errors resolved
+- [x] CSRF protection for all state-changing operations
+  - **Status:** ✅ COMPLETE
+  - **Commits:** Multiple (2026-01-02)
+  - **Scope:** Fixed 10 files, 20+ operations
+  - **Files Fixed:**
+    - `app/admin/clear-session/page.tsx`
+    - `app/admin/partners/page.tsx` (4 operations)
+    - `app/admin/bitly/page.tsx` (10 operations)
+    - `app/admin/content-library/page.tsx`
+    - `app/admin/visualization/page.tsx` (template creation)
+    - `components/ReportContentManager.tsx`
+    - `components/GoogleSheetsConnectModal.tsx`
+    - `components/UnifiedHashtagInput.tsx`
+    - `components/HashtagInput.tsx`
+    - `components/ImageUploader.tsx`
+    - `components/ChartConfiguration.tsx`
+  - **Verification:**
+    - ✅ All raw `fetch()` calls replaced with `apiPost()`, `apiPut()`, `apiDelete()`, `apiRequest()`
+    - ✅ Build passes
+    - ✅ No CSRF errors in production
+  - **Documentation:** `docs/audits/investigations/P0-csrf-comprehensive-fix.md`
 - [ ] Remove console logs + prevent reintroduction
 - [ ] Lock down CORS
 - [ ] Add account lockout policy

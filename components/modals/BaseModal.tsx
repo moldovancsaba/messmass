@@ -141,6 +141,7 @@ export default function BaseModal({
     <div 
       className={styles.overlay}
       onClick={handleOverlayClick}
+      // eslint-disable-next-line react/forbid-dom-props
       style={overlayStyle}
       aria-modal="true"
       role="dialog"

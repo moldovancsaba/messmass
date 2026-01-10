@@ -56,9 +56,9 @@ export const chartsAdapter: AdminPageAdapter<ChartDTO> = {
         render: (chart) => {
           // WHAT: Dynamic status badge color based on enabled state
           // WHY: Background/text color computed from chart.enabled boolean
-          // eslint-disable-next-line react/forbid-dom-props
           return (
             <span
+              // eslint-disable-next-line react/forbid-dom-props
               style={{
                 padding: '4px 12px',
                 borderRadius: '12px',

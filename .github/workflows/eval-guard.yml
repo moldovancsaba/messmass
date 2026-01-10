@@ -1,0 +1,17 @@
+name: Eval Guard
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  eval-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run eval guard
+        run: |
+          chmod +x ./scripts/eval-guard.sh
+          ./scripts/eval-guard.sh

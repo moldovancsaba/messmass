@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
@@ -66,27 +66,8 @@ export default function HashtagReportPage() {
   });
   
   // Check authentication on mount
-  useEffect(() => {
-    if (hashtagParam) {
-      const authenticated = isAuthenticated(hashtagParam, 'hashtag');
-      setIsAuthorized(authenticated);
-      setCheckingAuth(false);
-      
-      if (authenticated) {
-        fetchHashtagData();
-      }
-    }
-  }, [hashtagParam]);
-  
-  // Handle successful login
-  const handleLoginSuccess = (isAdmin: boolean) => {
-    setIsAuthorized(true);
-    setCheckingAuth(false);
-    fetchHashtagData();
-  };
-  
   // Fetch hashtag aggregated stats
-  const fetchHashtagData = async () => {
+  const fetchHashtagData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -138,7 +119,26 @@ export default function HashtagReportPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [hashtagParam]);
+
+  useEffect(() => {
+    if (hashtagParam) {
+      const authenticated = isAuthenticated(hashtagParam, 'hashtag');
+      setIsAuthorized(authenticated);
+      setCheckingAuth(false);
+      
+      if (authenticated) {
+        fetchHashtagData();
+      }
+    }
+  }, [hashtagParam, fetchHashtagData]);
+  
+  // Handle successful login
+  const handleLoginSuccess = useCallback((isAdmin: boolean) => {
+    setIsAuthorized(true);
+    setCheckingAuth(false);
+    fetchHashtagData();
+  }, [fetchHashtagData]);
   
   
   // Calculate chart results using ReportCalculator (v12 system)

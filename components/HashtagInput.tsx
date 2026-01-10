@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, KeyboardEvent } from 'react';
+import { apiPost } from '@/lib/apiClient';
 
 interface HashtagInputProps {
   value: string[];
@@ -127,14 +128,9 @@ export default function HashtagInput({
     // Remove the hashtag limit check
     
     try {
-      // Validate hashtag with API
-      const response = await fetch('/api/hashtags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hashtag })
-      });
-      
-      const data = await response.json();
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/hashtags', { hashtag });
       
       if (data.success) {
         const cleanedHashtag = data.hashtag;

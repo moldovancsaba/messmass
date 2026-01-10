@@ -79,9 +79,11 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
           
           {/* WHAT: Markdown table syntax hint */}
           {/* WHY: Guide users on table formatting */}
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p className="chart-builder-hint" style={{ marginTop: '0.5rem' }}>
             💡 Markdown table syntax: Use pipes (|) to separate columns, dashes (---) for header separator
           </p>
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p className="chart-builder-hint" style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>
             Alignment: Use :--- for left, ---: for right, :---: for center alignment
           </p>
@@ -89,6 +91,7 @@ export default function ChartBuilderTable({ chart, stats, onSave }: ChartBuilder
       )}
       
       {/* Variable hint */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
       <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
         Variable: {statsKey}
       </p>

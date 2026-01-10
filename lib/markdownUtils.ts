@@ -7,18 +7,16 @@ import { marked } from 'marked';
 import { sanitizeMarkdownHTML } from './sanitize';
 
 /**
- * WHAT: Configure marked with limited features for text boxes
- * WHY: Support only specific markdown features: title, bold, italic, lists, links
- * HOW: Custom renderer that normalizes all headings to h1 and removes unsupported features
+ * WHAT: Configure marked with full markdown support (universal but simple)
+ * WHY: Enable all standard CommonMark features for rich text formatting
+ * HOW: Use default renderer with GFM enabled, preserve all heading levels
  */
 const renderer = new marked.Renderer();
 
-// WHAT: Convert all heading levels to h1
-// WHY: User wants only ONE heading type that's slightly larger than normal text
-// HOW: Override heading renderer to always output h1
-renderer.heading = ({ text }) => {
-  return `<h1>${text}</h1>`;
-};
+// WHAT: Preserve all heading levels (h1-h6) with proper HTML output
+// WHY: Support full heading hierarchy for better text structure
+// HOW: Use default heading renderer (preserves h1, h2, h3, h4, h5, h6)
+// NOTE: Heading levels are preserved, CSS will style them with relative sizes
 
 // WHAT: Override paragraph renderer to preserve line breaks
 // WHY: Ensure single line breaks create <br> tags, not just paragraph breaks
@@ -34,34 +32,14 @@ renderer.paragraph = ({ tokens }: any) => {
   return '<p>' + (tokens.map((t: any) => t.raw || '').join('') || '') + '</p>';
 };
 
-// WHAT: Remove blockquote support
-// WHY: Not in user's required feature list
-renderer.blockquote = ({ text }) => {
-  return text; // Strip blockquote, return plain text
-};
-
-// WHAT: Remove code block support
-// WHY: Not in user's required feature list
-renderer.code = ({ text }) => {
-  return text; // Strip code formatting, return plain text
-};
-
-// WHAT: Remove inline code support
-// WHY: Not in user's required feature list
-renderer.codespan = ({ text }) => {
-  return text; // Strip code formatting, return plain text
-};
-
-// WHAT: Remove strikethrough support
-// WHY: Not in user's required feature list
-renderer.del = ({ text }) => {
-  return text; // Strip strikethrough, return plain text
-};
+// WHAT: Enable all markdown features (blockquotes, code, strikethrough, etc.)
+// WHY: Full markdown support for universal text decoration
+// HOW: Use default renderers for all features (no overrides that strip features)
 
 marked.setOptions({
   breaks: true,        // Convert \n to <br> (natural line breaks)
-  gfm: false,          // Disable GitHub Flavored Markdown (no strikethrough, tables)
-  renderer: renderer   // Use custom renderer
+  gfm: true,           // Enable GitHub Flavored Markdown (strikethrough, task lists, etc.)
+  renderer: renderer   // Use custom renderer (with paragraph override only)
 });
 
 /**
@@ -71,8 +49,8 @@ marked.setOptions({
  * HOW: Use marked.parse() with HTML disabled by default
  * 
  * SECURITY: Admin-controlled content only (authenticated users)
- * - No inline HTML allowed (marked.use({ renderer: {} }) removes script tags)
- * - Standard markdown features only: bold, italic, lists, links, headings
+ * - No inline HTML allowed (marked default removes script tags)
+ * - Full CommonMark + GFM features: headings, bold, italic, lists, links, blockquotes, code, strikethrough, horizontal rules
  * 
  * @param markdown - Raw markdown string from database
  * @returns Safe HTML string ready for dangerouslySetInnerHTML
@@ -185,15 +163,21 @@ export function isMarkdown(text: string): boolean {
     return false;
   }
   
-  // WHAT: Regex patterns for SUPPORTED markdown syntax only
-  // WHY: Only detect features user wants: title, bold, italic, lists, links
+  // WHAT: Regex patterns for all markdown syntax (full support)
+  // WHY: Detect all CommonMark + GFM features
   const markdownPatterns = [
-    /^#\s/m,                // Heading: # Title (only single #)
+    /^#{1,6}\s/m,           // Headings: # H1, ## H2, ### H3, etc.
     /\*\*[^*]+\*\*/,        // Bold: **text**
     /(?<!\*)\*(?!\*)[^*]+\*(?!\*)/,  // Italic: *text* (but not **)
     /^\s*-\s/m,             // Unordered lists: - item
     /^\s*\d+\.\s/m,         // Ordered lists: 1. item
     /\[.+\]\(.+\)/,         // Links: [text](url)
+    /^>\s/m,                // Blockquotes: > quote
+    /```[\s\S]*?```/,       // Code blocks: ```code```
+    /`[^`]+`/,              // Inline code: `code`
+    /~~.+~~/,               // Strikethrough: ~~text~~
+    /^---+$/m,              // Horizontal rules: ---
+    /^\*\*\*+$/m,           // Horizontal rules: ***
   ];
   
   return markdownPatterns.some(pattern => pattern.test(text));
@@ -208,5 +192,5 @@ export function isMarkdown(text: string): boolean {
  * @returns Markdown syntax guide string
  */
 export function getMarkdownHint(): string {
-  return '💡 Supported: # title, **bold**, *italic*, - list, 1. numbered, [link](url)';
+  return '💡 Supported: # H1, ## H2, **bold**, *italic*, - list, 1. numbered, [link](url), > quote, ```code```, `inline code`, ~~strikethrough~~, ---';
 }

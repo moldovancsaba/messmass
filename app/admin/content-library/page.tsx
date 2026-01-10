@@ -13,6 +13,7 @@ import ImageUploadField from '@/components/ImageUploadField';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './page.module.css';
 import Image from 'next/image';
+import { apiDelete } from '@/lib/apiClient';
 import {
   type ContentAsset,
   type ContentAssetFormData,
@@ -145,12 +146,10 @@ export default function ContentLibraryPage() {
     if (!deletingAsset) return;
     
     try {
-      const forceParam = force ? '?force=true' : '';
-      const response = await fetch(`/api/content-assets?slug=${deletingAsset.slug}${forceParam}`, {
-        method: 'DELETE'
-      });
-      
-      const data = await response.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
+      const endpoint = `/api/content-assets?slug=${deletingAsset.slug}${force ? '&force=true' : ''}`;
+      const data = await apiDelete(endpoint);
       
       if (data.success) {
         alert(`✅ ${data.message}`);

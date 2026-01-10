@@ -663,67 +663,145 @@ function evaluateSimpleExpression(expression: string): number | 'NA' {
     // Remove whitespace
     const cleanExpression = expression.replace(/\s+/g, '');
     
-    // Check for division by zero
-    if (/\/\s*0(?!\d)/.test(cleanExpression)) {
+    // WHAT: Debug logging for complex expressions
+    // WHY: Help diagnose evaluation failures
+    const isComplex = cleanExpression.includes('/') && cleanExpression.includes('(');
+    if (isComplex) {
+      console.log('[formulaEngine] evaluateSimpleExpression called:', {
+        original: expression,
+        cleaned: cleanExpression,
+        useSafeParser: FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER
+      });
+    }
+    
+    // WHAT: Check for division by zero (literal 0, not expressions that evaluate to 0)
+    // WHY: Prevent division by zero errors
+    // HOW: Match /0 or / 0 but not /0.5 or /01 (numbers starting with 0)
+    // NOTE: This is a simple check - actual division by zero is caught during evaluation
+    if (/\/0(?!\d)/.test(cleanExpression)) {
+      console.warn('[formulaEngine] Division by zero detected:', cleanExpression);
       return 'NA';
     }
     
-    // WHAT: Use safe parser when feature flag enabled
-    // WHY: Prevent RCE attacks via formula injection
+    // WHAT: Always use safe parser first (CSP blocks Function() constructor)
+    // WHY: CSP blocks unsafe-eval, so Function() fails in production
     // HOW: expr-eval parser only evaluates mathematical expressions, no code execution
-    if (FEATURE_FLAGS.USE_SAFE_FORMULA_PARSER) {
-      try {
-        // Dynamic import to avoid bundling in client if not needed
-        // Note: require() is acceptable here for conditional loading
-        const { Parser } = require('expr-eval');
-        
-        // WHAT: Create parser with only safe mathematical operators
-        // WHY: Restrict to arithmetic operations only, prevent code injection
-        const parser = new Parser({
-          operators: {
-            add: true,
-            subtract: true,
-            multiply: true,
-            divide: true,
-            power: true,
-            mod: false, // Disable modulo if not needed
-          }
-        });
-        
-        // WHAT: Parse and evaluate expression safely
-        // WHY: expr-eval only evaluates math, cannot execute arbitrary code
-        const expr = parser.parse(cleanExpression);
-        const result = expr.evaluate({});
-        
-        // Check for invalid results
-        if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
-          return 'NA';
-        }
-        
-        return result;
-      } catch (parseError) {
-        // WHAT: Fallback to legacy evaluation if parser fails
-        // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
-        console.warn('[formulaEngine] Safe parser failed, using legacy evaluation:', parseError);
-        // Fall through to legacy Function() evaluation
+    // CRITICAL: Safe parser is now the primary method, Function() is fallback only (and will fail due to CSP)
+    try {
+      // WHAT: Import expr-eval parser (safe, no eval required)
+      // WHY: CSP blocks Function() constructor, so safe parser is required
+      // HOW: Use require() for conditional loading (works in both server and client)
+      // NOTE: If this fails, check that expr-eval is properly installed and bundled
+      const exprEval = require('expr-eval');
+      const Parser = exprEval.Parser || exprEval.default?.Parser || exprEval;
+      
+      if (!Parser) {
+        throw new Error('expr-eval Parser not found. Check that expr-eval is properly installed.');
       }
+      
+      // WHAT: Create parser with only safe mathematical operators
+      // WHY: Restrict to arithmetic operations only, prevent code injection
+      const parser = new Parser({
+        operators: {
+          add: true,
+          subtract: true,
+          multiply: true,
+          divide: true,
+          power: true,
+          mod: false, // Disable modulo if not needed
+        }
+      });
+      
+      // WHAT: Parse and evaluate expression safely
+      // WHY: expr-eval only evaluates math, cannot execute arbitrary code
+      const expr = parser.parse(cleanExpression);
+      const result = expr.evaluate({});
+      
+      // WHAT: Debug logging for safe parser results
+      // WHY: Help diagnose why valid expressions return 'NA'
+      if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
+        console.log('[formulaEngine] Safe parser result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result)
+        });
+      }
+      
+      // Check for invalid results
+      if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+        console.warn('[formulaEngine] Safe parser returned invalid result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result)
+        });
+        return 'NA';
+      }
+      
+      return result;
+    } catch (parseError) {
+      // WHAT: Fallback to legacy evaluation if safe parser fails
+      // WHY: Some formulas may not parse correctly with expr-eval, need graceful degradation
+      // NOTE: This fallback will fail due to CSP blocking Function() constructor
+      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+      console.error('[formulaEngine] Safe parser failed - this is critical as Function() will also fail due to CSP:', {
+        expression: cleanExpression,
+        error: errorMessage,
+        stack: parseError instanceof Error ? parseError.stack : undefined,
+        suggestion: 'Check if expr-eval is properly bundled for client-side use'
+      });
+      // Fall through to legacy Function() evaluation (will fail if CSP blocks it)
     }
     
     // WHAT: Legacy Function constructor evaluation (fallback)
     // WHY: Maintain backward compatibility during migration, some formulas need this
     // SECURITY: This is less secure but needed for gradual rollout
     // TODO: Remove after migration complete and all formulas validated
-    const safeEval = new Function('return ' + cleanExpression);
-    const result = safeEval();
-    
-    // Check for invalid results
-    if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+    try {
+      const safeEval = new Function('return ' + cleanExpression);
+      const result = safeEval();
+      
+      // WHAT: Debug logging for evaluation results
+      // WHY: Help diagnose why valid expressions return 'NA'
+      if (cleanExpression.includes('/') && cleanExpression.includes('(')) {
+        console.log('[formulaEngine] Evaluation result:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result),
+          valueOf: result?.valueOf ? result.valueOf() : result
+        });
+      }
+      
+      // Check for invalid results
+      if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+        console.warn('[formulaEngine] Invalid result from evaluation:', {
+          expression: cleanExpression,
+          result,
+          resultType: typeof result,
+          isNaN: isNaN(result),
+          isFinite: isFinite(result),
+          valueOf: result?.valueOf ? result.valueOf() : result
+        });
+        return 'NA';
+      }
+      
+      return result;
+    } catch (evalError) {
+      console.error('[formulaEngine] Evaluation error:', {
+        expression: cleanExpression,
+        error: evalError instanceof Error ? evalError.message : String(evalError),
+        stack: evalError instanceof Error ? evalError.stack : undefined
+      });
       return 'NA';
     }
     
-    return result;
-    
   } catch (error) {
+    console.error('[formulaEngine] Unexpected error in evaluateSimpleExpression:', error);
     return 'NA';
   }
 }
@@ -746,14 +824,68 @@ export function evaluateFormula(
   contentAssets?: ContentAsset[]
 ): number | 'NA' {
   try {
+    // WHAT: Handle simple single-variable formulas directly
+    // WHY: Formulas like [fieldName] should return the value directly without evaluation
+    // HOW: Check if formula is just [fieldName] pattern
+    const singleVarMatch = formula.trim().match(/^\[([a-zA-Z0-9_]+)\]$/);
+    if (singleVarMatch) {
+      const fieldName = singleVarMatch[1];
+      const value = (stats as any)[fieldName];
+      if (value !== undefined && value !== null) {
+        const numValue = typeof value === 'number' ? value : parseFloat(String(value));
+        if (!isNaN(numValue) && isFinite(numValue)) {
+          return numValue;
+        }
+      }
+      // Field missing or invalid → return 0, not 'NA'
+      return 0;
+    }
+    
     // Step 1: Substitute variables with actual values (including parameters, manual data, and content assets)
     const formulaWithValues = substituteVariables(formula, stats, parameters, manualData, contentAssets);
+    
+    // WHAT: Debug logging for complex formulas
+    // WHY: Help diagnose formula evaluation issues
+    if (formula.includes('/') && formula.includes('(')) {
+      console.log(`[formulaEngine] Evaluating complex formula: "${formula}"`, {
+        afterSubstitution: formulaWithValues,
+        statsSample: {
+          marketingOptin: (stats as any).marketingOptin,
+          uniqueUsers: (stats as any).uniqueUsers
+        }
+      });
+    }
+    
+    // WHAT: Check if result is just a number string (no operators)
+    // WHY: After substitution, simple formulas become just numbers
+    // HOW: If it's a valid number, return it directly
+    const numMatch = formulaWithValues.trim().match(/^-?\d+\.?\d*$/);
+    if (numMatch) {
+      const numValue = parseFloat(formulaWithValues);
+      if (!isNaN(numValue) && isFinite(numValue)) {
+        return numValue;
+      }
+    }
     
     // Step 2: Process mathematical functions
     const formulaWithFunctions = processMathFunctions(formulaWithValues);
     
     // Step 3: Evaluate the final mathematical expression
     const result = evaluateSimpleExpression(formulaWithFunctions);
+    
+    // WHAT: Debug logging for complex formulas that return NA
+    // WHY: Help diagnose why formulas fail
+    if (formula.includes('/') && formula.includes('(') && result === 'NA') {
+      console.warn(`[formulaEngine] Complex formula returned NA: "${formula}"`, {
+        afterSubstitution: formulaWithValues,
+        afterFunctions: formulaWithFunctions,
+        result,
+        statsSample: {
+          marketingOptin: (stats as any).marketingOptin,
+          uniqueUsers: (stats as any).uniqueUsers
+        }
+      });
+    }
     
     return result;
     

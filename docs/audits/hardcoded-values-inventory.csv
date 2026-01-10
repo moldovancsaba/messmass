@@ -1,0 +1,2626 @@
+file_path,line_number,raw_value,context_snippet,why_hardcoded,proposed_token_or_remediation_path
+app/charts.css,46,#1a202c,"  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+  text-align: left;",Color value hardcoded instead of using design token,var(--mm-gray-900)
+app/charts.css,139,#1a202c,"  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  fill: #1a202c;
+  font-size: 20px;
+}",Color value hardcoded instead of using design token,var(--mm-gray-900)
+app/charts.css,146,#6b7280,"  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  fill: #6b7280;
+  font-size: 12px;
+  text-transform: uppercase;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+app/charts.css,176,#374151,"  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  text-align: center;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+app/charts.css,231,#3b82f6,"   Why: TailAdmin V2 - removed all gradients */
+.indoor-segment { 
+  background: #3b82f6;
+}
+.outdoor-segment { ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/charts.css,234,#10b981,"}
+.outdoor-segment { 
+  background: #10b981;
+}
+.stadium-segment { ",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/charts.css,237,#f59e0b,"}
+.stadium-segment { 
+  background: #f59e0b;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/charts.css,242,#8b5cf6,"/* Bar Segment Colors - Age Distribution - Flat Design */
+.gen-alpha-segment { 
+  background: #8b5cf6;
+}
+.gen-yz-segment { ",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/charts.css,245,#06b6d4,"}
+.gen-yz-segment { 
+  background: #06b6d4;
+}
+.gen-x-segment { ",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,248,#f97316,"}
+.gen-x-segment { 
+  background: #f97316;
+}
+.boomer-segment { ",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,251,#ef4444,"}
+.boomer-segment { 
+  background: #ef4444;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+app/charts.css,278,#1e40af,".legend-small.indoor { 
+  background: rgba(59, 130, 246, 0.1); 
+  color: #1e40af; 
+  border-color: rgba(59, 130, 246, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,283,#047857,".legend-small.outdoor { 
+  background: rgba(16, 185, 129, 0.1); 
+  color: #047857; 
+  border-color: rgba(16, 185, 129, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,288,#d97706,".legend-small.stadium { 
+  background: rgba(245, 158, 11, 0.1); 
+  color: #d97706; 
+  border-color: rgba(245, 158, 11, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,293,#7c3aed,".legend-small.gen-alpha { 
+  background: rgba(139, 92, 246, 0.1); 
+  color: #7c3aed; 
+  border-color: rgba(139, 92, 246, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,298,#0891b2,".legend-small.gen-yz { 
+  background: rgba(6, 182, 212, 0.1); 
+  color: #0891b2; 
+  border-color: rgba(6, 182, 212, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,303,#ea580c,".legend-small.gen-x { 
+  background: rgba(249, 115, 22, 0.1); 
+  color: #ea580c; 
+  border-color: rgba(249, 115, 22, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,308,#dc2626,".legend-small.boomer { 
+  background: rgba(239, 68, 68, 0.1); 
+  color: #dc2626; 
+  border-color: rgba(239, 68, 68, 0.3);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/charts.css,335,#374151,"  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: right;
+  line-height: 1.2;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+app/charts.css,500,#ccc,"  .chart-container {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    background: white;
+  }",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/partner-report/[slug]/page.tsx,150,#666,"          {/* WHAT: Additional debug info styling for error state - WHY: Smaller, muted text for technical slug info (legitimate styling) */}
+          {/* eslint-disable-next-line react/forbid-dom-pr",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/visualization/page.tsx,989,#6366f1,"    return (
+      <div className=""page-container"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""p-8 text-center"">
+          <div className=""loading-spinner-viz""></div>
+    ",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/visualization/page.tsx,1016,#3b82f6,"      {/* WHAT: Template Selector Card
+          WHY: Allow selecting which template to edit */}
+      <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+        <div className={vizStyles.templateS",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/visualization/page.tsx,1337,#f59e0b,"      
+      {!selectedTemplateId && (
+        <ColoredCard accentColor=""#f59e0b"">
+          <div className=""info-box"">
+            <h4 className=""info-box-title"">⚠️ No Template Selected</h4>",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/visualization/page.tsx,1348,#f59e0b,"          WHY: Allow configuring report header elements at template level */}
+      {selectedTemplateId && (
+        <ColoredCard accentColor=""#f59e0b"" hoverable={false}>
+          <h2 className=""sect",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/visualization/page.tsx,1470,#6366f1,"          WHY: Only show when template is selected */}
+      {selectedTemplateId && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <h2 className=""section-title mb-6"">Data Vi",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/insights/page.tsx,251,#3b82f6,"      {/* WHAT: Filters section with prominent card design */}
+      {/* WHY: Make filters highly visible and easy to understand */}
+      <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+       ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/insights/page.tsx,319,#10b981,"      {/* WHY: Quick overview of insights distribution */}
+      {metadata && (
+        <ColoredCard accentColor=""#10b981"" hoverable={false}>
+          <h3 className={styles.summaryTitle}>📈 Insights ",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/design/page.tsx,60,#3b82f6,"      <AdminHero title=""Design & Styles"" subtitle=""Style editor disabled — rebuilding from scratch."" />
+      <div className={styles.section}>
+        <ColoredCard accentColor=""#3b82f6"">
+          {/*",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/clear-session/page.tsx,46,#6366f1,"    <div className=""login-container"">
+      <div className=""max-w-md mx-auto"">
+      <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+        <div className=""text-6xl mb-6",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/kyc/page.tsx,129,#6366f1,"
+      {loading && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div className=""text-4xl mb-4"">📊</div>
+          <div>Loading KYC variables...</di",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/kyc/page.tsx,139,#10b981,"          {/* WHAT: Filters row (sources, flags, tags) */}
+          {/* WHY: Quick narrowing by data origin and usage */}
+          <ColoredCard accentColor=""#10b981"" hoverable={false}>
+            <",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/kyc/page.tsx,200,#3b82f6,"            const tags = Array.from(new Set(tagsRaw));
+            return (
+              <ColoredCard key={v.name} accentColor=""#3b82f6"" hoverable={false}>
+                {/* WHAT: KYC variable row ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/cache/page.tsx,21,#6366f1,"    return (
+      <div className=""page-container flex items-center justify-center min-h-screen"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div c",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/cache/page.tsx,113,#3b82f6,"      <div className=""grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"">
+        {/* Server Build Cache */}
+        <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+          <div className=""text-4xl m",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/cache/page.tsx,134,#10b981,"
+        {/* Server Routes Cache */}
+        <ColoredCard accentColor=""#10b981"" hoverable={false}>
+          <div className=""text-4xl mb-4"">🔄</div>
+          <h3 className=""text-xl font-bold text-gra",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/cache/page.tsx,152,#8b5cf6,"
+        {/* Browser Cache */}
+        <ColoredCard accentColor=""#8b5cf6"" hoverable={false}>
+          <div className=""text-4xl mb-4"">🌐</div>
+          <h3 className=""text-xl font-bold text-gray-900 ",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/cache/page.tsx,259,#6366f1,"
+      {/* Manual Instructions */}
+      <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+        <h3 className=""text-xl font-bold text-gray-900 mb-4"">📚 Manual Cache Clearing</h3>
+        <div c",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/content-library/page.tsx,207,#10b981,"      
+      {/* Filters */}
+      <ColoredCard accentColor=""#10b981"" hoverable={false}>
+        <div className=""grid gap-3 grid-1fr-1fr-1fr-1fr"">
+          {/* Type Filter */}",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/content-library/page.tsx,270,#6366f1,"      {/* Assets Grid */}
+      {loading && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div className=""text-4xl mb-4"">📚</div>
+          <div>Loa",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/content-library/page.tsx,277,#f59e0b,"      
+      {!loading && filteredAssets.length === 0 && (
+        <ColoredCard accentColor=""#f59e0b"" hoverable={false} className=""text-center"">
+          <div className=""text-4xl mb-4"">🔍</div>
+     ",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/content-library/page.tsx,286,#3b82f6,"        <div className=""grid gap-3 mt-3"">
+          {filteredAssets.map(asset => (
+            <ColoredCard key={asset._id?.toString()} accentColor=""#3b82f6"" hoverable={false}>
+              <AssetCar",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/charts/page.tsx,47,#6366f1,"    return (
+      <div className=""page-container flex items-center justify-center min-h-screen"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div c",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/clicker-manager/page.tsx,151,#6366f1,"
+      {loading && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div className=""text-4xl mb-4"">↔️</div>
+          <div>Loading clicker groups...</d",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/clicker-manager/page.tsx,158,#f59e0b,"
+      {!loading && groups.length === 0 && (
+        <ColoredCard accentColor=""#f59e0b"" hoverable={false} className=""text-center"">
+          <div className=""text-4xl mb-4"">📋</div>
+          <h3 class",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/clicker-manager/page.tsx,178,#3b82f6,"
+            return (
+              <ColoredCard key={group.groupOrder} accentColor=""#3b82f6"" hoverable={false}>
+                <div className=""flex items-start justify-between gap-4"">
+              ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/unauthorized/page.tsx,45,#ef4444,"  return (
+    <div className=""app-container"">
+      <ColoredCard accentColor=""#ef4444"" hoverable={false} className=""login-card"">
+        {/* Header */}
+        <div className=""login-header"">",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+app/admin/unauthorized/page.tsx,161,#9ca3af,"function getRoleBadgeColor(role: UserRole): string {
+  const colors: Record<UserRole, string> = {
+    guest: '#9ca3af',      // Gray
+    user: '#3b82f6',       // Blue
+    admin: '#10b981',      // Gr",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/unauthorized/page.tsx,162,#3b82f6,"  const colors: Record<UserRole, string> = {
+    guest: '#9ca3af',      // Gray
+    user: '#3b82f6',       // Blue
+    admin: '#10b981',      // Green
+    superadmin: '#8b5cf6', // Purple",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/unauthorized/page.tsx,163,#10b981,"    guest: '#9ca3af',      // Gray
+    user: '#3b82f6',       // Blue
+    admin: '#10b981',      // Green
+    superadmin: '#8b5cf6', // Purple
+  };",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/unauthorized/page.tsx,164,#8b5cf6,"    user: '#3b82f6',       // Blue
+    admin: '#10b981',      // Green
+    superadmin: '#8b5cf6', // Purple
+  };
+  return colors[role] || '#6b7280';",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/unauthorized/page.tsx,166,#6b7280,"    superadmin: '#8b5cf6', // Purple
+  };
+  return colors[role] || '#6b7280';
+}
+",Color value hardcoded instead of using design token,var(--mm-gray-500)
+app/admin/dashboard/page.tsx,189,#6366f1,"    return (
+      <div className=""page-container"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <div className=""loading-spinner"">Loading dashboard...</div>
+        </Colore",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/dashboard/page.tsx,208,#6366f1,"
+      {/* Tab Navigation */}
+      <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""mb-8"">
+        <div className=""tab-container"">
+          {[",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/dashboard/page.tsx,229,#6366f1,"      {/* Dashboard Overview Tab */}
+      {activeTab === 'overview' && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <h2 className=""mb-8 text-gray-800"">📊 Dashboard Overvi",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/dashboard/page.tsx,236,#8b5cf6,"           *      Single source of truth for all colored card styling */}
+          <div className=""metrics-grid"">
+            <ColoredCard accentColor=""#8b5cf6"" hoverable={false}>
+              <div ",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/dashboard/page.tsx,243,#f5576c,"            </ColoredCard>
+
+            <ColoredCard accentColor=""#f5576c"" hoverable={false}>
+              <div className=""metric-value"">
+                {aggregatedStats.totalImages.toLocaleString()",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/dashboard/page.tsx,250,#3b82f6,"            </ColoredCard>
+
+            <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+              <div className=""metric-value"">
+                {aggregatedStats.totalFans.toLocaleString()}",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/dashboard/page.tsx,257,#10b981,"            </ColoredCard>
+
+            <ColoredCard accentColor=""#10b981"" hoverable={false}>
+              <div className=""metric-value"">
+                {aggregatedStats.totalAttendees.toLocaleStrin",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/dashboard/page.tsx,295,#6366f1,"      {/* Success Manager Overview Tab */}
+      {activeTab === 'success' && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <h2 className=""mb-8 text-gray-800"">🎯 Success Man",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/dashboard/page.tsx,302,#10b981,"           *      All three pages now use identical card implementation */}
+          <div className=""success-metrics-grid"">
+            <ColoredCard accentColor=""#10b981"" hoverable={false}>
+         ",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/dashboard/page.tsx,320,#3b82f6,"            </ColoredCard>
+
+            <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+              <h4 className=""success-metric-title success-metric-title-blue"">👕 Merchandise Distribution</",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/dashboard/page.tsx,342,#8b5cf6,"            </ColoredCard>
+
+            <ColoredCard accentColor=""#8b5cf6"" hoverable={false}>
+              <h4 className=""success-metric-title success-metric-title-purple"">🎯 Success Indicators</h4>
+",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/dashboard/page.tsx,365,#6366f1,"      {/* Aggregated Statistics Tab */}
+      {activeTab === 'stats' && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <h2 className=""mb-8 text-gray-800"">📈 Aggregated Stati",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/dashboard/page.tsx,427,#6366f1,"      {/* Multi-Hashtag Filter Tab */}
+      {activeTab === 'filter' && (
+        <ColoredCard accentColor=""#6366f1"" hoverable={false}>
+          <h2 className=""mb-8 text-gray-800"">🔍 Multi-Hashtag Fi",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/styles/styles.module.css,171,#dc2626,"
+.deleteButton:hover {
+  background: #dc2626;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/styles/[id]/page.tsx,266,#000000,"                      label={field.label}
+                      description={field.description}
+                      value={style[field.key] || '#000000ff'}
+                      onChange={(value) =>",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/styles/page.tsx,99,#ef4444,"      <div className={styles.container}>
+        <AdminHero title=""Report Styles"" subtitle=""Error loading styles"" />
+        <ColoredCard accentColor=""#ef4444"">
+          <div className={styles.error}",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+app/admin/styles/page.tsx,135,#3b82f6,"
+      {stylesList.length === 0 ? (
+        <ColoredCard accentColor=""#3b82f6"">
+          <div className={styles.empty}>
+            <MaterialIcon name=""palette"" variant=""outlined"" className={styles.e",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/styles/page.tsx,149,#3b82f6,"        <div className={styles.grid}>
+          {stylesList.map((style) => (
+            <ColoredCard key={style._id} accentColor={style.chartTitleColor || '#3b82f6'} hoverable>
+              <div cla",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/register/page.tsx,94,#10b981,"  return (
+    <div className=""app-container"">
+      <ColoredCard accentColor=""#10b981"" hoverable={false} className=""login-card"">
+        {/* Logo/Icon Section */}
+        <div className=""login-header",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/quick-add/page.tsx,616,#10b981,"        <>
+          {/* Instructions */}
+          <ColoredCard accentColor=""#10b981"" hoverable={false} className=""mb-6 border-left-accent"">
+            <h3 className=""section-subtitle mb-4"">
+       ",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/quick-add/page.tsx,631,#6366f1,"          
+          {/* Partner Selection Form */}
+          <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""mb-6"">
+            <div className=""form-group mb-4"">
+              <label ",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/quick-add/page.tsx,692,#10b981,"          {/* Match Preview */}
+          {matchPreview && (
+            <ColoredCard accentColor=""#10b981"" hoverable={false} className=""mb-6 border-left-accent"">
+              <h3 className=""section-",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/quick-add/page.tsx,830,#f59e0b,"        <>
+          {/* Instructions */}
+          <ColoredCard accentColor=""#f59e0b"" hoverable={false} className=""mb-6 border-left-accent"">
+            <h3 className=""section-subtitle mb-4"">
+       ",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/quick-add/page.tsx,845,#6366f1,"          
+          {/* Partner Event Form */}
+          <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""mb-6"">
+            <div className=""form-group mb-4"">
+              <label html",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/quick-add/page.tsx,907,#10b981,"          {/* Partner Event Preview */}
+          {partnerEventPreview && (
+            <ColoredCard accentColor=""#10b981"" hoverable={false} className=""mb-6 border-left-accent"">
+              <h3 clas",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/quick-add/page.tsx,1026,#f59e0b,"      {activeTab === 'suggested' && (
+        <>
+          <ColoredCard accentColor=""#f59e0b"" hoverable={false} className=""mb-6 border-left-accent"">
+            <h3 className=""section-subtitle mb-4"">⚽",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/admin/quick-add/page.tsx,1036,#6366f1,"          </ColoredCard>
+
+          <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""mb-6"">
+            <div className=""form-group mb-4"">
+              <label className=""form-label"">Hom",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/quick-add/page.tsx,1080,#3b82f6,"
+          {loadingFixtures && (
+            <ColoredCard accentColor=""#3b82f6"" hoverable={false} className=""mb-6"">
+              <p className=""m-0 text-sm text-gray-600"">Loading fixtures…</p>
+       ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/quick-add/page.tsx,1086,#10b981,"
+          {suggestFixtures.length > 0 && (
+            <ColoredCard accentColor=""#10b981"" hoverable={false} className=""mb-6 border-left-accent"">
+              <h3 className=""section-subtitle mb-4"">Up",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/cookie-test/page.tsx,39,#6366f1,"  if (loading) return (
+    <div className=""page-container"">
+      <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">Loading...</ColoredCard>
+    </div>
+  )",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/cookie-test/page.tsx,45,#6366f1,"  return (
+    <div className=""page-container font-mono"">
+      <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""mb-8"">
+        <h1 className=""text-3xl font-bold mb-4"">🍪 Cookie Test Pa",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/cookie-test/page.tsx,50,#10b981,"      </ColoredCard>
+      
+      <ColoredCard accentColor=""#10b981"" hoverable={false} className=""mb-4"">
+        <h2 className=""text-xl font-bold mb-2"">Auth API Response:</h2>
+        <pre className=""",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/admin/cookie-test/page.tsx,55,#3b82f6,"      </ColoredCard>
+
+      <ColoredCard accentColor=""#3b82f6"" hoverable={false} className=""mb-4"">
+        <h2 className=""text-xl font-bold mb-2"">Browser Cookies:</h2>
+        <pre className=""bg-gray-",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/cookie-test/page.tsx,60,#8b5cf6,"      </ColoredCard>
+
+      <ColoredCard accentColor=""#8b5cf6"" hoverable={false}>
+        <a href=""/admin/login"" className=""btn btn-small btn-primary"">
+          ← Back to Login",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/filter/page.tsx,395,#6366f1,"           Why: Groups all filter actions together for better discoverability and consistent UX.
+                Apply button visible when hashtags selected; Share/Export appear after applying filter.",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/filter/page.tsx,498,#8b5cf6,"
+      {/* Hashtag Selection and Load More */}
+      <ColoredCard accentColor=""#8b5cf6"" hoverable={false} className=""p-4"">
+        <HashtagMultiSelect
+          hashtags={availableHashtags}",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/filter/page.tsx,529,#3b82f6,"      {/* Loading State */}
+      {statsLoading && (
+        <ColoredCard accentColor=""#3b82f6"" hoverable={false} className=""p-8 text-center"">
+          <div className=""curve-spinner m-auto mt-4""></di",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/filter/page.tsx,712,#8b5cf6,"          {/* Projects List Section */}
+          {projects.length > 0 && (
+            <ColoredCard accentColor=""#8b5cf6"" hoverable={false} className=""mt-12"">
+              <h2 className=""flex items-",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+app/admin/filter/page.tsx,721,#6366f1,"              <div className=""projects-list-grid"">
+                {projects.map((projectItem) => (
+                  <ColoredCard key={projectItem._id} accentColor=""#6366f1"" hoverable={false}>
+      ",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/events/ProjectsPageClient.tsx,452,#6366f1,"    return (
+      <div className=""page-container"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div className=""curve-spinner""></div>
+          <p c",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/events/page.tsx,765,#f3f4f6,"                  {/* WHAT: Inline styles for disabled input appearance - WHY: Visual feedback for auto-generated field, cannot use CSS classes for dynamic state */}
+                  {/* eslint-disab",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/hashtags/page.tsx,58,#6366f1,"    return (
+      <div className=""page-container flex items-center justify-center min-h-screen"">
+        <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""text-center"">
+          <div c",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/categories/page.tsx,51,#3b82f6,"  const [formData, setFormData] = useState({
+    name: '',
+    color: '#3b82f6',
+    order: 0
+  });",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/categories/page.tsx,183,#3b82f6,"  // Form helpers
+  const resetForm = () => {
+    setFormData({ name: '', color: '#3b82f6', order: 0 });
+    setEditingCategory(null);
+  };",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/categories/page.tsx,447,#3b82f6,"              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+              placeholder=""#3b82f6""
+            />
+          </div>",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/categories/page.tsx,518,#3b82f6,"              value={formData.color}
+              onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+              placeholder=""#3b82f6""
+            />
+          </div>",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/login/page.tsx,63,#6366f1,"  return (
+    <div className=""app-container"">
+      <ColoredCard accentColor=""#6366f1"" hoverable={false} className=""login-card"">
+        {/* Logo/Icon Section */}
+        <div className=""login-header",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+app/admin/help/page.tsx,57,#dbeafe,"            padding: '1.5rem',
+            marginBottom: '2rem',
+            backgroundColor: '#dbeafe',
+            border: '2px solid #3b82f6',
+            borderRadius: 'var(--mm-radius-lg)',",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,58,#3b82f6,"            marginBottom: '2rem',
+            backgroundColor: '#dbeafe',
+            border: '2px solid #3b82f6',
+            borderRadius: 'var(--mm-radius-lg)',
+          }}>",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/help/page.tsx,66,#1e40af,"              marginTop: 0,
+              marginBottom: '0.75rem',
+              color: '#1e40af',
+              fontSize: '1.25rem',
+            }}>",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,73,#1e3a8a,"            {/* WHAT: Inline styles for help page text formatting - WHY: Temporary styling for help content, no CSS module needed */}
+            {/* eslint-disable-next-line react/forbid-dom-props */",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,77,#1e3a8a,"            </p>
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <p style={{ marginBottom: '0.75rem', color: '#1e3a8a' }}>
+              <strong>🔒 Limited Access:</str",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,84,#ffffff,"            <div style={{
+              padding: '1rem',
+              backgroundColor: '#ffffff',
+              borderRadius: 'var(--mm-radius-md)',
+              border: '1px solid #93c5fd',",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,86,#93c5fd,"              backgroundColor: '#ffffff',
+              borderRadius: 'var(--mm-radius-md)',
+              border: '1px solid #93c5fd',
+            }}>
+              {/* WHAT: Inline styles for permis",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,90,#1e40af,"              {/* WHAT: Inline styles for permission request heading - WHY: Temporary styling for help content, no CSS module needed */}
+              {/* eslint-disable-next-line react/forbid-dom-pro",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/help/page.tsx,98,#1e3a8a,"                marginBottom: 0,
+                paddingLeft: '1.5rem',
+                color: '#1e3a8a',
+              }}>
+                <li>Contact a <strong>Superadmin</strong> in your organizati",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/admin/analytics/executive/page.tsx,130,#3b82f6,"            value: trends.fans[i] ?? 0,
+          })),
+          color: '#3b82f6',
+          fill: true,
+        },",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/admin/analytics/executive/page.tsx,144,#10b981,"            value: trends.revenue[i] ?? 0,
+          })),
+          color: '#10b981',
+          fill: true,
+        },",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+app/styles/admin-pages.module.css,39,#fef3c7,".warningBox {
+  padding: 12px;
+  background-color: var(--mm-warning-light, #fef3c7);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-warning, #fbbf24);",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin-pages.module.css,41,#fbbf24,"  background-color: var(--mm-warning-light, #fef3c7);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-warning, #fbbf24);
+}
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin-pages.module.css,48,#92400e,".warningText {
+  font-size: var(--mm-font-size-sm);
+  color: #92400e;
+  margin: 0;
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin.css,264,#2563eb,"
+.admin-btn-export:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin.css,277,#dc2626,"
+.admin-btn-delete:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-sm);",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin.css,450,#dc2626,"
+.sm-btn-minus:hover:not(:disabled) {
+  background: #dc2626;
+  transform: scale(1.05);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/admin.css,465,#059669,"
+.sm-btn-plus:hover {
+  background: #059669;
+  transform: scale(1.05);
+}",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/components.css,548,#ef4444,"   WHY: Red color for auth failures */
+.auth-error-critical {
+  color: #ef4444;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+app/styles/components.css,554,#f59e0b,"   WHY: Orange color for permission issues */
+.auth-error-permission {
+  color: #f59e0b;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+app/styles/components.css,573,#e5e7eb,"  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/components.css,582,#e5e7eb,"  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/components.css,612,#6b7280,".adapter-meta-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+",Color value hardcoded instead of using design token,var(--mm-gray-500)
+app/styles/components.css,631,#6b7280,"   WHY: Gray background for cancel/dismiss actions */
+.btn-modal-cancel {
+  background: #6b7280;
+  color: white;
+  padding: 0.75rem 1.5rem;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+app/styles/components.css,644,#3b82f6,"   WHY: Blue background for safe confirmation actions */
+.btn-modal-confirm {
+  background: #3b82f6;
+  color: white;
+  padding: 0.75rem 1.5rem;",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/styles/components.css,657,#ef4444,"   WHY: Red background for destructive confirmations */
+.btn-modal-danger {
+  background: #ef4444;
+  color: white;
+  padding: 0.75rem 1.5rem;",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+app/styles/components.css,676,#b00020,"
+/* WHAT: Error message text color
+   WHY: Red error text (#b00020) for form validation */
+.text-error-red {
+  color: #b00020;",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/styles/components.css,678,#b00020,"   WHY: Red error text (#b00020) for form validation */
+.text-error-red {
+  color: #b00020;
+}
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/api/auto-generate-chart-block/route.ts,72,#3b82f6,"        label: chartTitle,
+        formula: `stats.${variableName}`, // WHAT: Reference the stats variable
+        color: '#3b82f6', // Blue accent color (not visible for image/text charts)
+        ty",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/report/[slug]/ReportChart.tsx,328,#ffffff,"    return {
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
+      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
+    };
+  };",Color value hardcoded instead of using design token,var(--mm-color-*)
+app/debug/hashtag-categories/page.tsx,110,#f59e0b,"              {/* WHAT: Fixed warning color for traditional hashtags metric - WHY: Semantic color (not CSS variable) for warning state */}
+              {/* eslint-disable-next-line react/forbid-dom-p",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/ColoredHashtagBubble.tsx,134,#3b82f6,"  // WHAT: Validate backgroundColor before using in style
+  // WHY: React calls .trim() on style values, will crash if undefined
+  const safeBackgroundColor = (backgroundColor && typeof backgroundColo",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/ColorPickerField.module.css,73,#ccc,"  inset: 0;
+  background-image: 
+    linear-gradient(45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ccc 75%),",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ColorPickerField.module.css,74,#ccc,"  background-image: 
+    linear-gradient(45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ccc 75%), 
+    linear",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ColorPickerField.module.css,75,#ccc,"    linear-gradient(45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ccc 75%), 
+    linear-gradient(-45deg, tra",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ColorPickerField.module.css,76,#ccc,"    linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ccc 75%), 
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 8px 8px;
+  b",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SaveStatusIndicator.tsx,48,#3b82f6,"          icon: '💾',
+          text: 'Saving...',
+          color: '#3b82f6', // Blue
+          bgColor: 'rgba(59, 130, 246, 0.1)'
+        };",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/SaveStatusIndicator.tsx,55,#10b981,"          icon: '✅',
+          text: 'Saved',
+          color: '#10b981', // Green
+          bgColor: 'rgba(16, 185, 129, 0.1)'
+        };",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/SaveStatusIndicator.tsx,62,#ef4444,"          icon: '❌',
+          text: 'Save Error',
+          color: '#ef4444', // Red
+          bgColor: 'rgba(239, 68, 68, 0.1)'
+        };",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/SaveStatusIndicator.tsx,70,#6b7280,"          icon: '📝',
+          text: 'Ready',
+          color: '#6b7280', // Gray
+          bgColor: 'rgba(107, 114, 128, 0.1)'
+        };",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/UnifiedPageHero.tsx,59,#1f2937,"  // WHY: Prevent undefined/null from appearing in CSS which causes React .trim() errors
+  // HOW: Check each color value is string and non-empty before using
+  const safePrimaryTextColor = (typeof pa",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedPageHero.tsx,60,#1f2937,"  // HOW: Check each color value is string and non-empty before using
+  const safePrimaryTextColor = (typeof pageStyle?.typography?.primaryTextColor === 'string' && pageStyle.typography.primaryTextCol",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedPageHero.tsx,151,#ffffff,"                        ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                          backgroundColor: pageStyle.colorScheme.primary.t",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedPageHero.tsx,180,#ffffff,"                            ...((typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+                              backgroundColor: pageStyle.colorScheme.p",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedStatsHero.tsx,79,#ffffff,"            style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+              backgroundColor: pageStyle.colorScheme.primary.trim(),
+              ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedStatsHero.tsx,93,#ffffff,"            style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
+              backgroundColor: pageStyle.colorScheme.primary.trim(),
+              ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagCategoryDebug.tsx,72,#6b7280,"                      : 'rgba(59, 130, 246, 0.1)',
+                    '--badge-color': category === 'general' 
+                      ? '#6b7280' 
+                      : '#2563eb',
+                  ",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/HashtagCategoryDebug.tsx,73,#2563eb,"                    '--badge-color': category === 'general' 
+                      ? '#6b7280' 
+                      : '#2563eb',
+                    '--badge-border': category === 'general' 
+       ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/DataQualityInsights.tsx,28,#f59e0b,"        // WHY: Each star's color depends on its position vs rating (legitimate dynamic style)
+        // eslint-disable-next-line react/forbid-dom-props
+        <span key={i} style={{ color: i < rati",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/DataQualityInsights.tsx,102,#ef4444,"      {/* Insight #2: Missing Critical Metrics Alert */}
+      {showInsight([2]) && insights.missingCritical.blocking && (
+        <ColoredCard accentColor=""#ef4444"" hoverable={false}>
+          <div ",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/DataQualityInsights.tsx,110,#ef4444,"                WHY: Fixed critical color for missing metrics (legitimate semantic style) */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span className={styles.qu",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/DataQualityInsights.tsx,136,#8b5cf6,"      {/* Insight #3: Derived Metrics Status */}
+      {showInsight([3]) && (
+        <ColoredCard accentColor=""#8b5cf6"" hoverable={false}>
+          <div className={styles.insightHeader}>
+           ",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+components/DataQualityInsights.tsx,144,#8b5cf6,"                WHY: Fixed purple color for auto-computed metrics (legitimate semantic style) */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span className={style",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+components/DataQualityInsights.tsx,171,#3b82f6,"      {/* Insight #4: Optional Fields Coverage */}
+      {showInsight([4]) && (
+        <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+          <div className={styles.insightHeader}>
+         ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/DataQualityInsights.tsx,179,#3b82f6,"                WHY: Fixed blue color for optional fields (legitimate semantic style) */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span className={styles.qualit",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/DataQualityInsights.tsx,203,#10b981,"        <ColoredCard 
+          accentColor={
+            insights.bitlyStatus.status === 'synced' ? '#10b981' :
+            insights.bitlyStatus.status === 'stale' ? '#f59e0b' :
+            '#ef4444'",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/DataQualityInsights.tsx,204,#f59e0b,"          accentColor={
+            insights.bitlyStatus.status === 'synced' ? '#10b981' :
+            insights.bitlyStatus.status === 'stale' ? '#f59e0b' :
+            '#ef4444'
+          } ",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/DataQualityInsights.tsx,205,#ef4444,"            insights.bitlyStatus.status === 'synced' ? '#10b981' :
+            insights.bitlyStatus.status === 'stale' ? '#f59e0b' :
+            '#ef4444'
+          } 
+          hoverable={false}",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/DataQualityInsights.tsx,237,#f59e0b,"      {/* Insight #6: Data Consistency Warnings */}
+      {showInsight([6]) && insights.consistencyWarnings.length > 0 && (
+        <ColoredCard accentColor=""#f59e0b"" hoverable={false}>
+          <div",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/DataQualityInsights.tsx,245,#f59e0b,"                WHY: Fixed warning color for consistency issues (legitimate semantic style) */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span className={styles.",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/DataQualityInsights.tsx,273,#3b82f6,"      {/* Insight #9: Enrichment Opportunities */}
+      {showInsight([9]) && insights.enrichmentOpportunities.length > 0 && (
+        <ColoredCard accentColor=""#3b82f6"" hoverable={false}>
+          <",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/DataQualityInsights.tsx,281,#3b82f6,"                WHY: Fixed blue color for opportunities (legitimate semantic style) */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <span className={styles.qualityB",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/DataQualityInsights.tsx,322,#10b981,"      {showInsight([10]) && (
+        <ColoredCard 
+          accentColor={insights.benchmarkingEligibility.eligible ? '#10b981' : '#ef4444'} 
+          hoverable={false}
+        >",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/StylePreview.tsx,26,#ffffff,"  const getBackgroundStyle = (bg: typeof style.pageBackground) => {
+    if (bg.type === 'solid') {
+      return { background: bg.solidColor || '#ffffff' };
+    } else if (bg.type === 'gradient' && bg.",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,36,#ffffff,"  const heroBackgroundStyle = getBackgroundStyle(style.heroBackground);
+  const contentBoxStyle = {
+    background: style.contentBoxBackground.solidColor || '#ffffff',
+    opacity: style.contentBoxBac",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,147,#f3f4f6,"              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,158,#111827,"              <div 
+                className={styles.mockKpiValue}
+                style={{ color: style.chartColors?.chartValueColor || '#111827' }}
+              >
+                2,531",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,164,#6b7280,"              <div 
+                className={styles.mockKpiLabel}
+                style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}
+              >
+                Total Fans",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/StylePreview.tsx,175,#f3f4f6,"              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,201,#6b7280,"                    style={{ background: style.colorScheme.primary }}
+                  />
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Male 60%</span>
+  ",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/StylePreview.tsx,208,#6b7280,"                    style={{ background: style.colorScheme.secondary }}
+                  />
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Female 40%</span",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/StylePreview.tsx,218,#f3f4f6,"              style={{
+                ...contentBoxStyle,
+                border: `1px solid ${style.chartColors?.chartBorder || '#f3f4f6'}`
+              }}
+            >",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,229,#6b7280,"              <div className={styles.mockBarRows}>
+                <div className={styles.mockBarRow}>
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Jersey",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/StylePreview.tsx,239,#111827,"                    />
+                  </div>
+                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>450</span>
+                </div>
+                <div classN",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StylePreview.tsx,242,#6b7280,"                </div>
+                <div className={styles.mockBarRow}>
+                  <span style={{ color: style.chartColors?.chartLabelColor || '#6b7280' }}>Scarf</span>
+                  <di",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/StylePreview.tsx,252,#111827,"                    />
+                  </div>
+                  <span style={{ color: style.chartColors?.chartValueColor || '#111827' }}>320</span>
+                </div>
+              </div>",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,482,#10b981,"        isActive: true,
+        elements: [
+          { id: 'element1', label: '', formula: '', color: '#10b981', description: '' }
+        ],
+        icon: '', // v10.4.0: Material Icon name (default",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/ChartAlgorithmManager.tsx,1131,#3b82f6,"                  // Always adjust to exact required element count
+                  if (formData.elements.length !== requiredCount) {
+                    const elementColors = ['#3b82f6', '#10b981', ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/ChartAlgorithmManager.tsx,1140,#6b7280,"                        label: i < formData.elements.length ? formData.elements[i].label : '',
+                        formula: i < formData.elements.length ? formData.elements[i].formula : '',
+      ",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1627,#374151,"
+        .form-label {
+          color: #374151;
+          font-weight: 500;
+          margin-bottom: 0.5rem;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartAlgorithmManager.tsx,1635,#d1d5db,"        .form-input {
+          padding: 0.75rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          background: white;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1638,#1f2937,"          border-radius: 0.5rem;
+          background: white;
+          color: #1f2937;
+          font-size: 0.875rem;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1644,#667eea,"        .form-input:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1649,#e5e7eb,"
+        .element-editor {
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 1rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1664,#374151,"
+        .element-header strong {
+          color: #374151;
+          font-weight: 600;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartAlgorithmManager.tsx,1677,#f8fafc,"        .formula-input {
+          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          color: #1e293b;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1678,#cbd5e1,"          font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          color: #1e293b;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1679,#1e293b,"          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          color: #1e293b;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1684,#667eea,"        .formula-input:focus {
+          background: white;
+          border-color: #667eea;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1690,#d1d5db,"          width: 50px;
+          height: 38px;
+          border: 1px solid #d1d5db;
+          border-radius: 0.25rem;
+          cursor: pointer;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1706,#667eea,"        .chart-type-info {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1725,#6b7280,"        
+        .field-label {
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 500;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1748,#ef4444,"        
+        .formula-error {
+          border-color: #ef4444 !important;
+          background: rgba(239, 68, 68, 0.05) !important;
+        }",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/ChartAlgorithmManager.tsx,1753,#10b981,"        
+        .formula-valid {
+          border-color: #10b981 !important;
+          background: rgba(16, 185, 129, 0.05) !important;
+        }",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/ChartAlgorithmManager.tsx,1758,#ef4444,"        
+        .formula-error-message {
+          color: #ef4444;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/ChartAlgorithmManager.tsx,1764,#10b981,"        
+        .formula-success-message {
+          color: #10b981;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/ChartAlgorithmManager.tsx,1773,#e5e7eb,"        .formatting-section {
+          background: rgba(249, 250, 251, 0.8);
+          border: 1px solid #e5e7eb;
+          border-radius: 0.75rem;
+          padding: 1.5rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1780,#374151,"        
+        .formatting-section-title {
+          color: #374151;
+          font-size: 1.125rem;
+          font-weight: 600;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartAlgorithmManager.tsx,1788,#e5e7eb,"        .formatting-group {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 1rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1799,#6b7280,"        
+        .formatting-group-title {
+          color: #6b7280;
+          font-size: 0.875rem;
+          font-weight: 600;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1827,#374151,"        
+        .formatting-checkbox span {
+          color: #374151;
+          font-size: 0.875rem;
+          font-weight: 500;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartAlgorithmManager.tsx,1853,#6b7280,"        
+        .formatting-input-group label {
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 500;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1882,#1e40af,"        
+        .constraint-badge {
+          color: #1e40af;
+          font-weight: 600;
+          margin-bottom: 0.5rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1888,#6b7280,"        
+        .constraint-note {
+          color: #6b7280;
+          font-size: 0.875rem;
+          font-style: italic;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1907,#e5e7eb,"          gap: 1rem;
+          padding: 0 0 1rem 0;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1925,#e5e7eb,"        .variable-picker-item {
+          padding: 0.75rem;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          cursor: pointer;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1932,#667eea,"        
+        .variable-picker-item:hover {
+          border-color: #667eea;
+          background: rgba(102, 126, 234, 0.05);
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartAlgorithmManager.tsx,1945,#6b7280,"        .variable-picker-category {
+          background: rgba(107, 114, 128, 0.1);
+          color: #6b7280;
+          padding: 0.125rem 0.375rem;
+          border-radius: 0.25rem;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartAlgorithmManager.tsx,1955,#374151,"        .variable-picker-item-name {
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.25rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartAlgorithmManager.tsx,1961,#6b7280,"        .variable-picker-item-description {
+          font-size: 0.875rem;
+          color: #6b7280;
+          line-height: 1.4;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ReportStylePreview.tsx,37,#3b82f6,"    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const c1 = cs.getPropertyValue('--pieColor1').trim() || '#3b82f6';
+    const c2 = cs.getPropertyValue('--pieColor2",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/ReportStylePreview.tsx,38,#10b981,"    const cs = getComputedStyle(root);
+    const c1 = cs.getPropertyValue('--pieColor1').trim() || '#3b82f6';
+    const c2 = cs.getPropertyValue('--pieColor2').trim() || '#10b981';
+    return [c1, c2]",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/ReportStylePreview.tsx,77,#ffffff,"    return {
+      bg: cs.getPropertyValue('--chartTooltipBackground').trim() || 'rgba(31, 41, 55, 0.95)',
+      text: cs.getPropertyValue('--chartTooltipText').trim() || '#ffffff'
+    };
+  };",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/RoleDropdown.tsx,203,#f3f4f6,"function getRoleConfig(role: UserRole): { bg: string; color: string; icon: string; label: string } {
+  const configs: Record<UserRole, { bg: string; color: string; icon: string; label: string }> = {
+ ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/RoleDropdown.tsx,204,#dbeafe,"  const configs: Record<UserRole, { bg: string; color: string; icon: string; label: string }> = {
+    guest: { bg: '#f3f4f6', color: '#6b7280', icon: '👤', label: 'Guest' },
+    user: { bg: '#dbeafe',",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/RoleDropdown.tsx,205,#d1fae5,"    guest: { bg: '#f3f4f6', color: '#6b7280', icon: '👤', label: 'Guest' },
+    user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
+    admin: { bg: '#d1fae5', color: '#065f46', icon",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/RoleDropdown.tsx,206,#ede9fe,"    user: { bg: '#dbeafe', color: '#1e40af', icon: '👥', label: 'User' },
+    admin: { bg: '#d1fae5', color: '#065f46', icon: '🔧', label: 'Admin' },
+    superadmin: { bg: '#ede9fe', color: '#5b21b6',",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,150,#667eea,"              // WHY: Each category has unique color stored in database
+              // eslint-disable-next-line react/forbid-dom-props
+              style={{ backgroundColor: (typeof category.color ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,330,#374151,"          font-size: 1rem;
+          font-weight: 600;
+          color: #374151;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/CategorizedHashtagInput.tsx,336,#6b7280,"        .category-count {
+          font-size: 0.875rem;
+          color: #6b7280;
+          font-weight: 500;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/CategorizedHashtagInput.tsx,349,#374151,"        
+        .section-note small {
+          color: #374151;
+          font-size: 0.8125rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/CategorizedHashtagInput.tsx,365,#1f2937,"          font-size: 1.25rem;
+          font-weight: 600;
+          color: #1f2937;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,369,#6b7280,"        
+        .section-description {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/CategorizedHashtagInput.tsx,413,#d1d5db,"          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 1rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,416,#374151,"          border-radius: 8px;
+          font-size: 1rem;
+          color: #374151;
+          background: white;
+          transition: all 0.2s ease;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/CategorizedHashtagInput.tsx,423,#6366f1,"        .general-input-field:focus {
+          outline: none;
+          border-color: #6366f1;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+components/CategorizedHashtagInput.tsx,428,#f9fafb,"        
+        .general-input-field:disabled {
+          background: #f9fafb;
+          border-color: #e5e7eb;
+          color: #9ca3af;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,429,#e5e7eb,"        .general-input-field:disabled {
+          background: #f9fafb;
+          border-color: #e5e7eb;
+          color: #9ca3af;
+          cursor: not-allowed;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,430,#9ca3af,"          background: #f9fafb;
+          border-color: #e5e7eb;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,435,#9ca3af,"        
+        .general-input-field::placeholder {
+          color: #9ca3af;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/CategorizedHashtagInput.tsx,445,#6b7280,"        
+        .loading-spinner {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/CategorizedHashtagInput.tsx,450,#6b7280,"        
+        .empty-state {
+          color: #6b7280;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/CategorizedHashtagInput.tsx,461,#374151,"          font-size: 1.125rem;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 0.5rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/CategorizedHashtagInput.tsx,470,#6366f1,"        
+        .empty-subtitle a {
+          color: #6366f1;
+          text-decoration: none;
+          font-weight: 500;",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+components/ColorPickerField.tsx,33,#000000,"  
+  // Extract RGB portion for color picker (HTML5 color input only supports 6-char hex)
+  const rgbValue = value.length >= 7 ? value.slice(0, 7) : '#000000';
+  
+  // Extract alpha as percentage (las",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,37,#667eea,"  // Fixed categories - no API calls to avoid complexity
+  const categories = [
+    { name: 'city', color: '#667eea' },
+    { name: 'event', color: '#764ba2' },
+    { name: 'year', color: '#f093fb' },",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,38,#764ba2,"  const categories = [
+    { name: 'city', color: '#667eea' },
+    { name: 'event', color: '#764ba2' },
+    { name: 'year', color: '#f093fb' },
+    { name: 'status', color: '#43e97b' }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,39,#f093fb,"    { name: 'city', color: '#667eea' },
+    { name: 'event', color: '#764ba2' },
+    { name: 'year', color: '#f093fb' },
+    { name: 'status', color: '#43e97b' }
+  ];",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,40,#43e97b,"    { name: 'event', color: '#764ba2' },
+    { name: 'year', color: '#f093fb' },
+    { name: 'status', color: '#43e97b' }
+  ];
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,98,#667eea,"
+  const getCurrentCategoryColor = () => {
+    if (selectedCategory === 'general') return '#667eea';
+    return categories.find(c => c.name === selectedCategory)?.color || '#667eea';
+  };",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,99,#667eea,"  const getCurrentCategoryColor = () => {
+    if (selectedCategory === 'general') return '#667eea';
+    return categories.find(c => c.name === selectedCategory)?.color || '#667eea';
+  };
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,200,#667eea,"                      width: '12px',
+                      height: '12px',
+                      backgroundColor: category?.color || '#667eea',
+                      borderRadius: '50%'
+              ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,232,#e5e7eb,"          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+          display: grid;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/SimpleHashtagInput.tsx,245,#374151,"        .category-selector label {
+          font-weight: 600;
+          color: #374151;
+          font-size: 0.875rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/SimpleHashtagInput.tsx,313,#374151,"          margin: 0;
+          font-size: 0.875rem;
+          color: #374151;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/FormattingControls.tsx,127,#e5e7eb,"        .formatting-group {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 1rem;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/FormattingControls.tsx,138,#6b7280,"        
+        .formatting-group-title {
+          color: #6b7280;
+          font-size: 0.875rem;
+          font-weight: 600;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/FormattingControls.tsx,180,#374151,"        
+        .formatting-checkbox span {
+          color: #374151;
+          font-size: 0.875rem;
+          font-weight: 500;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/UnifiedHashtagInput.tsx,284,#667eea,"  
+  const getCurrentCategoryColor = () => {
+    if (selectedCategory === 'general') return '#667eea'; // Default color
+    const category = loadedCategories.find(cat => cat.name === selectedCategory)",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,286,#667eea,"    if (selectedCategory === 'general') return '#667eea'; // Default color
+    const category = loadedCategories.find(cat => cat.name === selectedCategory);
+    return category?.color || '#667eea';
+  ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,306,#667eea,"                // WHY: Each category has a unique color stored in MongoDB
+                // eslint-disable-next-line react/forbid-dom-props
+                style={{ backgroundColor: (typeof category",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,470,#374151,"          font-size: 0.875rem;
+          font-weight: 600;
+          color: #374151;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/UnifiedHashtagInput.tsx,479,#1a202c,"          border-radius: 8px;
+          background: white;
+          color: #1a202c;
+          font-weight: 500;
+          cursor: pointer;",Color value hardcoded instead of using design token,var(--mm-gray-900)
+components/UnifiedHashtagInput.tsx,512,#1a202c,"          border-radius: 8px;
+          background: white;
+          color: #1a202c;
+          transition: all 0.2s ease;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-900)
+components/UnifiedHashtagInput.tsx,522,#9ca3af,"        
+        .hashtag-input::placeholder {
+          color: #9ca3af;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,564,#1a202c,"        .hashtag-suggestion-text {
+          font-weight: 500;
+          color: #1a202c;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-900)
+components/UnifiedHashtagInput.tsx,569,#6b7280,"        .hashtag-suggestion-label {
+          font-size: 0.75rem;
+          color: #6b7280;
+          background: rgba(107, 114, 128, 0.1);
+          padding: 0.25rem 0.5rem;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/UnifiedHashtagInput.tsx,580,#059669,"        .hashtag-suggestion.new .hashtag-suggestion-label {
+          background: rgba(34, 197, 94, 0.1);
+          color: #059669;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,585,#2563eb,"        .hashtag-suggestion.existing .hashtag-suggestion-label {
+          background: rgba(59, 130, 246, 0.1);
+          color: #2563eb;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/UnifiedHashtagInput.tsx,590,#6b7280,"        .target-category {
+          font-size: 0.75rem;
+          color: #6b7280;
+          font-weight: 500;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/UnifiedHashtagInput.tsx,627,#374151,"          font-size: 0.875rem;
+          font-weight: 600;
+          color: #374151;
+        }
+        ",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/UnifiedHashtagInput.tsx,632,#6b7280,"        .group-count {
+          font-size: 0.75rem;
+          color: #6b7280;
+          font-weight: 500;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/CategorizedHashtagBubble.tsx,30,#6b7280,"  
+  const categoryColor = category ? getCategoryColor(category) : undefined;
+  const defaultColor = '#6b7280'; // Default gray for general/unknown
+  
+  return (",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ImageLightbox.tsx,21,#ffffff,"export default function ImageLightbox({ imageUrl, alt, isOpen, onClose }: ImageLightboxProps) {
+  // WHAT: Default to white with 85% opacity (matches DEFAULT_PAGE_STYLE_ENHANCED)
+  // WHY: System defa",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StandardState.tsx,19,#6366f1,"  // Map variant to accent color for ColoredCard
+  const accentColor = {
+    loading: '#6366f1', // Indigo
+    empty: '#94a3b8',   // Slate
+    error: '#ef4444',   // Red",Color value hardcoded instead of using design token,var(--mm-color-primary-600)
+components/StandardState.tsx,20,#94a3b8,"  const accentColor = {
+    loading: '#6366f1', // Indigo
+    empty: '#94a3b8',   // Slate
+    error: '#ef4444',   // Red
+  }[variant];",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StandardState.tsx,21,#ef4444,"    loading: '#6366f1', // Indigo
+    empty: '#94a3b8',   // Slate
+    error: '#ef4444',   // Red
+  }[variant];
+",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/UnifiedCardView.tsx,50,#3b82f6,"  emptyIcon = '📋',
+  className = '',
+  accentColor = '#3b82f6',
+}: UnifiedCardViewProps<T>) {
+  ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/PageStyleEditor.tsx,112,#ffffff,"      updateField(`${bgKey}.gradientAngle`, 135);
+      updateField(`${bgKey}.gradientStops`, [
+        { color: current.solidColor || '#ffffff', position: 0 },
+        { color: '#000000', position: 1",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,113,#000000,"      updateField(`${bgKey}.gradientStops`, [
+        { color: current.solidColor || '#ffffff', position: 0 },
+        { color: '#000000', position: 100 }
+      ]);
+    } else {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,117,#ffffff,"    } else {
+      updateField(`${bgKey}.type`, 'solid');
+      updateField(`${bgKey}.solidColor`, current.gradientStops?.[0]?.color || '#ffffff');
+    }
+  };",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,233,#ffffff,"                          type=""color""
+                          className={styles.colorPicker}
+                          value={formData.pageBackground.solidColor || '#ffffff'}
+                      ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,240,#ffffff,"                          type=""text""
+                          className={styles.colorText}
+                          value={formData.pageBackground.solidColor || '#ffffff'}
+                         ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,242,#ffffff,"                          value={formData.pageBackground.solidColor || '#ffffff'}
+                          onChange={(e) => updateField('pageBackground.solidColor', e.target.value)}
+                 ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,310,#ffffff,"                          type=""color""
+                          className={styles.colorPicker}
+                          value={formData.heroBackground.solidColor || '#ffffff'}
+                      ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,317,#ffffff,"                          type=""text""
+                          className={styles.colorText}
+                          value={formData.heroBackground.solidColor || '#ffffff'}
+                         ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,319,#ffffff,"                          value={formData.heroBackground.solidColor || '#ffffff'}
+                          onChange={(e) => updateField('heroBackground.solidColor', e.target.value)}
+                 ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,336,#ffffff,"                        type=""color""
+                        className={styles.colorPicker}
+                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
+                      ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,343,#ffffff,"                        type=""text""
+                        className={styles.colorText}
+                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
+                        o",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/PageStyleEditor.tsx,345,#ffffff,"                        value={formData.contentBoxBackground.solidColor || '#ffffff'}
+                        onChange={(e) => updateField('contentBoxBackground.solidColor', e.target.value)}
+         ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminPageHero.tsx,109,#3b82f6,"                  const getBadgeColor = (variant: string) => {
+                    switch (variant) {
+                      case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
+                 ",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/AdminPageHero.tsx,110,#6b7280,"                    switch (variant) {
+                      case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
+                      case 'secondary': return { bg: '#6b7280', text: '#ffffff' ",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/AdminPageHero.tsx,111,#10b981,"                      case 'primary': return { bg: '#3b82f6', text: '#ffffff' };
+                      case 'secondary': return { bg: '#6b7280', text: '#ffffff' };
+                      case 'success'",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/AdminPageHero.tsx,112,#f59e0b,"                      case 'secondary': return { bg: '#6b7280', text: '#ffffff' };
+                      case 'success': return { bg: '#10b981', text: '#ffffff' };
+                      case 'warning'",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/AdminPageHero.tsx,113,#ef4444,"                      case 'success': return { bg: '#10b981', text: '#ffffff' };
+                      case 'warning': return { bg: '#f59e0b', text: '#ffffff' };
+                      case 'danger': r",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/AdminPageHero.tsx,114,#6b7280,"                      case 'warning': return { bg: '#f59e0b', text: '#ffffff' };
+                      case 'danger': return { bg: '#ef4444', text: '#ffffff' };
+                      default: return {",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,338,#1f2937,"        .config-title h3 {
+          margin: 0 0 0.5rem 0;
+          color: #1f2937;
+          font-size: 1.5rem;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,344,#6b7280,"        .config-title p {
+          margin: 0;
+          color: #6b7280;
+          font-size: 0.9rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,353,#6b7280,"          gap: 0.25rem;
+          font-size: 0.8rem;
+          color: #6b7280;
+        }
+",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,367,#dc2626,"          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #dc2626;
+          padding: 1rem;
+          border-radius: 8px;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,394,#6b7280,"          cursor: pointer;
+          font-weight: 500;
+          color: #6b7280;
+          transition: all 0.2s;
+          display: flex;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,402,#667eea,"
+        .tab-button.active {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,408,#667eea,"        .tab-button:hover:not(.active) {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,420,#1f2937,"        .algorithms-section h4 {
+          margin: 0 0 1.5rem 0;
+          color: #1f2937;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,451,#1f2937,"        .algorithm-title h4 {
+          margin: 0 0 0.25rem 0;
+          color: #1f2937;
+          font-size: 1rem;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,457,#6b7280,"        .algorithm-description {
+          margin: 0;
+          color: #6b7280;
+          font-size: 0.9rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,487,#ccc,"          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .4s;
+          border-radius: 24px;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,505,#667eea,"
+        input:checked + .toggle-slider {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,523,#6b7280,"          justify-content: center;
+          font-size: 0.8rem;
+          color: #6b7280;
+          transition: all 0.2s;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,530,#667eea,"          background: rgba(102, 126, 234, 0.1);
+          border-color: rgba(102, 126, 234, 0.3);
+          color: #667eea;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,545,#1f2937,"        .formula-section h5 {
+          margin: 0 0 0.5rem 0;
+          color: #1f2937;
+          font-size: 0.9rem;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,555,#374151,"          font-family: 'Monaco', 'Menlo', monospace;
+          font-size: 0.85rem;
+          color: #374151;
+          display: block;
+          border-left: 3px solid #667eea;",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartConfiguration.tsx,557,#667eea,"          color: #374151;
+          display: block;
+          border-left: 3px solid #667eea;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,562,#1f2937,"        .parameters-section h5 {
+          margin: 0 0 1rem 0;
+          color: #1f2937;
+          font-size: 0.9rem;
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,580,#374151,"        .parameter-label {
+          font-weight: 500;
+          color: #374151;
+          font-size: 0.9rem;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-700)
+components/ChartConfiguration.tsx,587,#6b7280,"          display: block;
+          font-weight: normal;
+          color: #6b7280;
+          font-size: 0.8rem;
+          margin-top: 0.25rem;",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,608,#667eea,"        .parameter-input:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,614,#6b7280,"        .parameter-unit {
+          font-weight: 500;
+          color: #6b7280;
+          min-width: 20px;
+        }",Color value hardcoded instead of using design token,var(--mm-gray-500)
+components/ChartConfiguration.tsx,620,#9ca3af,"        .parameter-range {
+          font-size: 0.75rem;
+          color: #9ca3af;
+        }
+",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,635,#f3f4f6,"          width: 40px;
+          height: 40px;
+          border: 4px solid #f3f4f6;
+          border-top: 4px solid #667eea;
+          border-radius: 50%;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/ChartConfiguration.tsx,636,#667eea,"          height: 40px;
+          border: 4px solid #f3f4f6;
+          border-top: 4px solid #667eea;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,121,#ff6b9d,"     Why: Transform stats into PieChartData format with original colors */
+  const genderData: PieChartData[] = [
+    { label: 'Female', value: stats.female, color: '#ff6b9d' },
+    { label: 'Male', v",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,122,#4a90e2,"  const genderData: PieChartData[] = [
+    { label: 'Female', value: stats.female, color: '#ff6b9d' },
+    { label: 'Male', value: stats.male, color: '#4a90e2' }
+  ];
+  ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,151,#3b82f6,"  const remoteFans = getRemoteFans(stats);
+  const locationData: PieChartData[] = [
+    { label: 'Remote Fans', value: remoteFans, color: '#3b82f6' },
+    { label: 'Stadium Fans', value: stats.stadium",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/StatsCharts.tsx,152,#f59e0b,"  const locationData: PieChartData[] = [
+    { label: 'Remote Fans', value: remoteFans, color: '#3b82f6' },
+    { label: 'Stadium Fans', value: stats.stadium, color: '#f59e0b' }
+  ];
+  ",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/StatsCharts.tsx,183,#06b6d4,"  
+  const ageData: PieChartData[] = [
+    { label: 'Under 40', value: under40Total, color: '#06b6d4' },
+    { label: 'Over 40', value: over40Total, color: '#f97316' }
+  ];",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,184,#f97316,"  const ageData: PieChartData[] = [
+    { label: 'Under 40', value: under40Total, color: '#06b6d4' },
+    { label: 'Over 40', value: over40Total, color: '#f97316' }
+  ];
+  ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,216,#7b68ee,"  
+  const merchData: VerticalBarChartData[] = [
+    { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
+    { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
+    { label: 'Flags', val",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,217,#ff6b9d,"  const merchData: VerticalBarChartData[] = [
+    { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
+    { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
+    { label: 'Flags', value:",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,218,#ffa726,"    { label: 'Jersey', value: stats.jersey, color: '#7b68ee' },
+    { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
+    { label: 'Flags', value: stats.flags, color: '#ffa726' },
+    { label:",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,219,#66bb6a,"    { label: 'Scarf', value: stats.scarf, color: '#ff6b9d' },
+    { label: 'Flags', value: stats.flags, color: '#ffa726' },
+    { label: 'Baseball Cap', value: stats.baseballCap, color: '#66bb6a' },
+ ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,220,#ef5350,"    { label: 'Flags', value: stats.flags, color: '#ffa726' },
+    { label: 'Baseball Cap', value: stats.baseballCap, color: '#66bb6a' },
+    { label: 'Other', value: stats.other, color: '#ef5350' }
+  ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,258,#3b82f6,"  
+  const visitorData: PieChartData[] = [
+    { label: 'QR + Short URL', value: qrAndShortUrl, color: '#3b82f6' },
+    { label: 'Other', value: otherVisits, color: '#f59e0b' }
+  ];",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/StatsCharts.tsx,259,#f59e0b,"  const visitorData: PieChartData[] = [
+    { label: 'QR + Short URL', value: qrAndShortUrl, color: '#3b82f6' },
+    { label: 'Other', value: otherVisits, color: '#f59e0b' }
+  ];
+  ",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/StatsCharts.tsx,309,#3b82f6,"  
+  const valueData: VerticalBarChartData[] = [
+    { label: 'CPM', value: valuePropValue, color: '#3b82f6' },
+    { label: 'eDM', value: directValue, color: '#10b981' },
+    { label: 'Ads', value: d",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/StatsCharts.tsx,310,#10b981,"  const valueData: VerticalBarChartData[] = [
+    { label: 'CPM', value: valuePropValue, color: '#3b82f6' },
+    { label: 'eDM', value: directValue, color: '#10b981' },
+    { label: 'Ads', value: dire",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/StatsCharts.tsx,311,#f59e0b,"    { label: 'CPM', value: valuePropValue, color: '#3b82f6' },
+    { label: 'eDM', value: directValue, color: '#10b981' },
+    { label: 'Ads', value: directAdsValue, color: '#f59e0b' },
+    { label: '",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/StatsCharts.tsx,312,#8b5cf6,"    { label: 'eDM', value: directValue, color: '#10b981' },
+    { label: 'Ads', value: directAdsValue, color: '#f59e0b' },
+    { label: 'U40 Eng.', value: under40EngagedValue, color: '#8b5cf6' },
+    ",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+components/StatsCharts.tsx,313,#ef4444,"    { label: 'Ads', value: directAdsValue, color: '#f59e0b' },
+    { label: 'U40 Eng.', value: under40EngagedValue, color: '#8b5cf6' },
+    { label: 'Branding', value: brandAwarenessValue, color: '#ef",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/StatsCharts.tsx,356,#3b82f6,"  
+  const valueData: VerticalBarChartData[] = [
+    { label: 'Viewed', value: valuePropViewed, color: '#3b82f6' },
+    { label: 'Visited', value: valuePropPurchases, color: '#10b981' }
+  ];",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/StatsCharts.tsx,357,#10b981,"  const valueData: VerticalBarChartData[] = [
+    { label: 'Viewed', value: valuePropViewed, color: '#3b82f6' },
+    { label: 'Visited', value: valuePropPurchases, color: '#10b981' }
+  ];
+  ",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/StatsCharts.tsx,419,#8b5cf6,"  
+  const engagementData: VerticalBarChartData[] = [
+    { label: 'Engaged', value: fanEngagement, color: '#8b5cf6' },
+    { label: 'Interactive', value: fanInteraction, color: '#f59e0b' },
+    { lab",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+components/StatsCharts.tsx,420,#f59e0b,"  const engagementData: VerticalBarChartData[] = [
+    { label: 'Engaged', value: fanEngagement, color: '#8b5cf6' },
+    { label: 'Interactive', value: fanInteraction, color: '#f59e0b' },
+    { label:",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/StatsCharts.tsx,421,#10b981,"    { label: 'Engaged', value: fanEngagement, color: '#8b5cf6' },
+    { label: 'Interactive', value: fanInteraction, color: '#f59e0b' },
+    { label: 'Front-runners', value: frontRunners, color: '#10b",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/StatsCharts.tsx,422,#ef4444,"    { label: 'Interactive', value: fanInteraction, color: '#f59e0b' },
+    { label: 'Front-runners', value: frontRunners, color: '#10b981' },
+    { label: 'Fanaticals', value: fanaticals, color: '#ef4",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/StatsCharts.tsx,423,#06b6d4,"    { label: 'Front-runners', value: frontRunners, color: '#10b981' },
+    { label: 'Fanaticals', value: fanaticals, color: '#ef4444' },
+    { label: 'Casuals', value: casuals, color: '#06b6d4' }
+  ];",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/StatsCharts.tsx,479,#3b82f6,"  
+  const adData: VerticalBarChartData[] = [
+    { label: `Direct (${totalImages} × €9)`, value: directValue, color: '#3b82f6' },
+    { label: `Ads (${totalFans} × €7)`, value: directAdsValue, color:",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/StatsCharts.tsx,480,#10b981,"  const adData: VerticalBarChartData[] = [
+    { label: `Direct (${totalImages} × €9)`, value: directValue, color: '#3b82f6' },
+    { label: `Ads (${totalFans} × €7)`, value: directAdsValue, color: '#",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/StatsCharts.tsx,481,#f59e0b,"    { label: `Direct (${totalImages} × €9)`, value: directValue, color: '#3b82f6' },
+    { label: `Ads (${totalFans} × €7)`, value: directAdsValue, color: '#10b981' },
+    { label: `Awareness (${total",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/HashtagEditor.tsx,49,#667eea,"  const [formData, setFormData] = useState({
+    name: '',
+    color: '#667eea'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,180,#667eea,"    setEditingHashtag({
+      name: hashtagName,
+      color: colorRecord?.color || '#667eea',
+      hasColorRecord: !!colorRecord
+    });",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,186,#667eea,"    setFormData({
+      name: hashtagName,
+      color: colorRecord?.color || '#667eea'
+    });
+    ",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,255,#667eea,"
+  const resetForm = () => {
+    setFormData({ name: '', color: '#667eea' });
+    setEditingHashtag(null);
+    setShowForm(false);",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,262,#667eea,"  const generateRandomColor = () => {
+    const colors = [
+      '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+      '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,263,#43e97b,"    const colors = [
+      '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+      '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3',
+      '#d299c2', '#fef9d7', '#ebc0f",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,264,#d299c2,"      '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+      '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3',
+      '#d299c2', '#fef9d7', '#ebc0fd', '#d9a7c7', '#96c9",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/HashtagEditor.tsx,387,#667eea,"              {projectHashtags.map((projectHashtag) => {
+                const colorRecord = hashtagColors.find(hc => hc.name.toLowerCase() === projectHashtag.hashtag.toLowerCase());
+                c",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,46,#10b981,"    title: 'Manage Events',
+    description: 'Create, edit, delete, and organize all your events',
+    accentColor: '#10b981', // var(--mm-color-secondary-500) - Green
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-success-500)
+components/AdminDashboard.tsx,53,#06b6d4,"    title: 'Partner Management',
+    description: 'Manage clubs, federations, venues, and brands',
+    accentColor: '#06b6d4', // var(--mm-chart-cyan)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,60,#0ea5e9,"    title: 'Bitly Link Management',
+    description: 'Track and manage Bitly short links and analytics',
+    accentColor: '#0ea5e9', // Sky Blue
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,67,#f59e0b,"    title: 'Analytics Insights',
+    description: 'AI-powered insights with anomaly detection, trends, and predictions',
+    accentColor: '#f59e0b', // var(--mm-chart-yellow) - Golden/amber for insigh",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/AdminDashboard.tsx,74,#8b5cf6,"    title: 'Hashtag Filter',
+    description: 'Advanced multi-hashtag filtering and search',
+    accentColor: '#8b5cf6', // var(--mm-chart-purple)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-secondary-500)
+components/AdminDashboard.tsx,81,#a855f7,"    title: 'Hashtag Manager',
+    description: 'Manage hashtag categories and colors',
+    accentColor: '#a855f7', // Purple
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,88,#f97316,"    title: 'Category Manager',
+    description: 'Organize and group hashtag categories',
+    accentColor: '#f97316', // var(--mm-chart-orange)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,95,#ec4899,"    title: 'Design Manager',
+    description: 'Customize styles and visualization layouts',
+    accentColor: '#ec4899', // var(--mm-chart-pink)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,102,#f59e0b,"    title: 'Chart Algorithm Manager',
+    description: 'Configure chart algorithms and calculations',
+    accentColor: '#f59e0b', // var(--mm-chart-yellow)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-warning-500)
+components/AdminDashboard.tsx,109,#3b82f6,"    title: 'KYC Variables',
+    description: 'Manage variables, aliases, and data collection fields',
+    accentColor: '#3b82f6', // var(--mm-color-primary-500) - Blue
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+components/AdminDashboard.tsx,116,#14b8a6,"    title: 'Visualization Manager',
+    description: 'Control chart display and ordering',
+    accentColor: '#14b8a6', // var(--mm-chart-teal)
+  },
+  {",Color value hardcoded instead of using design token,var(--mm-color-*)
+components/AdminDashboard.tsx,123,#ef4444,"    title: 'Cache Management',
+    description: 'Clear server and browser caches for fresh content',
+    accentColor: '#ef4444', // var(--mm-error) - Red
+  },
+];",Color value hardcoded instead of using design token,var(--mm-color-error-500)
+components/analytics/LineChart.tsx,135,#3b82f6,"    labels,
+    datasets: datasets.map((dataset, index) => {
+      const defaultColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+      const color = dataset.color || defaultColors[ind",Color value hardcoded instead of using design token,var(--mm-color-primary-500)
+app/charts.css,15,1px,"  border-radius: 0.75rem;
+  padding: 2rem;
+  border: 1px solid var(--mm-border-color-default);
+  box-shadow: var(--mm-shadow-md);
+  transition: all 0.3s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,19,400px,"  transition: all 0.3s ease;
+  width: 100%;
+  min-width: 400px;
+  max-width: 550px;
+  overflow: visible;",Pixel value hardcoded instead of using design token,var(--mm-space-100)
+app/charts.css,20,550px,"  width: 100%;
+  min-width: 400px;
+  max-width: 550px;
+  overflow: visible;
+  display: flex;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,28,2px,"
+.chart-container:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-lg);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,93,400px,"  gap: var(--space-3);
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-100)
+app/charts.css,110,2px,"
+.legend-item:hover {
+  transform: translateX(2px);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,114,16px,"
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);",Pixel value hardcoded instead of using design token,var(--mm-space-4)
+app/charts.css,115,16px,".legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;",Pixel value hardcoded instead of using design token,var(--mm-space-4)
+app/charts.css,131,2px,"  border-radius: var(--mm-radius-md);
+  margin: var(--mm-space-4) 0;
+  border: 2px dashed var(--mm-gray-300);
+  font-size: var(--mm-font-size-base);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,140,20px,"  font-weight: 700;
+  fill: #1a202c;
+  font-size: 20px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-5)
+app/charts.css,147,12px,"  font-weight: 500;
+  fill: #6b7280;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/charts.css,149,5px,"  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,170,120px,"  flex-direction: column;
+  align-items: center;
+  max-width: 120px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-30)
+app/charts.css,185,60px,"  /* What: Flat bar container for stacked column charts
+     Why: TailAdmin V2 - replaced inset shadow with flat border */
+  width: 60px;
+  height: 180px;
+  background: var(--mm-gray-100);",Pixel value hardcoded instead of using design token,var(--mm-space-15)
+app/charts.css,186,180px,"     Why: TailAdmin V2 - replaced inset shadow with flat border */
+  width: 60px;
+  height: 180px;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-sm);",Pixel value hardcoded instead of using design token,var(--mm-space-45)
+app/charts.css,194,1px,"  overflow: hidden;
+  margin-bottom: var(--mm-space-4);
+  border: 1px solid var(--mm-border-color-default);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,209,1px,"  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,272,1px,"  border-radius: var(--mm-radius-sm);
+  text-align: center;
+  border: 1px solid var(--mm-border-color-default);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,332,110px,"
+.horizontal-bar-label {
+  flex: 0 0 110px;
+  font-size: 0.875rem;
+  font-weight: 600;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,344,28px,"     Why: Removed inset shadow, using flat border */
+  flex: 1;
+  height: 28px;
+  background: var(--mm-gray-100);
+  border-radius: var(--mm-radius-lg);",Pixel value hardcoded instead of using design token,var(--mm-space-7)
+app/charts.css,349,1px,"  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--mm-border-color-default);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,364,2px,"  position: relative;
+  overflow: hidden;
+  min-width: 2px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,381,20px,"  z-index: 1;
+  position: relative;
+  min-width: 20px;
+  text-align: center;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-5)
+app/charts.css,390,1024px,"
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+  .chart-container {
+    min-width: 350px;",Pixel value hardcoded instead of using design token,var(--mm-space-256)
+app/charts.css,392,350px,"@media (max-width: 1024px) {
+  .chart-container {
+    min-width: 350px;
+    padding: 1.5rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,401,90px,"  
+  .horizontal-bar-label {
+    flex: 0 0 90px;
+    font-size: 0.8rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,407,768px,"
+/* Mobile devices */
+@media (max-width: 768px) {
+  .chart-container {
+    min-width: 280px;",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/charts.css,409,280px,"@media (max-width: 768px) {
+  .chart-container {
+    min-width: 280px;
+    padding: 1rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-70)
+app/charts.css,444,150px,"  .stacked-bar-group {
+    width: 100%;
+    max-width: 150px;
+  }
+  ",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,448,140px,"  
+  .stacked-bar {
+    height: 140px;
+  }
+  ",Pixel value hardcoded instead of using design token,var(--mm-space-35)
+app/charts.css,452,70px,"  
+  .horizontal-bar-label {
+    flex: 0 0 70px;
+    font-size: 0.75rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,457,24px,"  
+  .horizontal-bar-container {
+    height: 24px;
+  }
+  ",Pixel value hardcoded instead of using design token,var(--mm-space-6)
+app/charts.css,466,480px,"
+/* Extra small devices */
+@media (max-width: 480px) {
+  .chart-container {
+    min-width: 250px;",Pixel value hardcoded instead of using design token,var(--mm-space-120)
+app/charts.css,468,250px,"@media (max-width: 480px) {
+  .chart-container {
+    min-width: 250px;
+    padding: 0.75rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/charts.css,482,12px,"  
+  .legend-color {
+    width: 12px;
+    height: 12px;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/charts.css,483,12px,"  .legend-color {
+    width: 12px;
+    height: 12px;
+  }
+  ",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/charts.css,487,60px,"  
+  .horizontal-bar-label {
+    flex: 0 0 60px;
+    font-size: 0.7rem;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-15)
+app/charts.css,500,1px,"  .chart-container {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    background: white;
+  }",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerReport.module.css,13,1200px,".contentWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-300)
+app/partner-report/[slug]/PartnerReport.module.css,19,150px,"/* WHAT: Totals summary grid layout
+ * WHY: Display key metrics in responsive grid
+ * HOW: Auto-fit columns, minimum 150px width */
+.totalsGrid {
+  display: grid;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerReport.module.css,22,150px,".totalsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerReport.module.css,69,300px,"/* WHAT: Events grid layout
+ * WHY: Display event cards in responsive grid
+ * HOW: Auto-fit columns, minimum 300px width */
+.eventsGrid {
+  display: grid;",Pixel value hardcoded instead of using design token,var(--mm-space-75)
+app/partner-report/[slug]/PartnerReport.module.css,72,300px,".eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--mm-space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-75)
+app/partner-report/[slug]/PartnerReport.module.css,79,1px,".eventCard {
+  padding: var(--mm-space-4);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerReport.module.css,157,768px,"
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: var(--mm-space-3);",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/partner-report/[slug]/page.module.OLD.css,21,1200px,"
+.heroContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-300)
+app/partner-report/[slug]/page.module.OLD.css,41,80px,"
+.partnerLogo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;",Pixel value hardcoded instead of using design token,var(--mm-space-20)
+app/partner-report/[slug]/page.module.OLD.css,42,80px,".partnerLogo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: var(--mm-radius-lg);",Pixel value hardcoded instead of using design token,var(--mm-space-20)
+app/partner-report/[slug]/page.module.OLD.css,89,2px,".exportButton:hover {
+  background: var(--mm-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,126,200px,".totalsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-4);
+  margin-top: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/partner-report/[slug]/page.module.OLD.css,141,2px,".totalCard:hover {
+  background: var(--mm-gray-100);
+  transform: translateY(-2px);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,159,1200px,"/* Events Section */
+.eventsSection {
+  max-width: 1200px;
+  margin: 0 auto;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-300)
+app/partner-report/[slug]/page.module.OLD.css,172,320px,".eventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--mm-space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-80)
+app/partner-report/[slug]/page.module.OLD.css,183,1px,"  padding: var(--mm-space-5);
+  transition: all var(--transition-fast);
+  border: 1px solid var(--mm-gray-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,188,4px,".eventCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: var(--mm-primary);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/partner-report/[slug]/page.module.OLD.css,220,1px,"  gap: var(--mm-space-4);
+  padding: var(--mm-space-4) 0;
+  border-top: 1px solid var(--mm-gray-200);
+  border-bottom: 1px solid var(--mm-gray-200);
+  margin-bottom: var(--mm-space-4);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,221,1px,"  padding: var(--mm-space-4) 0;
+  border-top: 1px solid var(--mm-gray-200);
+  border-bottom: 1px solid var(--mm-gray-200);
+  margin-bottom: var(--mm-space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,242,5px,"  color: var(--mm-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/page.module.OLD.css,299,768px,"
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--mm-space-4) var(--mm-space-3);",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/partner-report/[slug]/PartnerEventsList.module.css,10,2px,"  margin-top: var(--mm-space-12);
+  padding-top: var(--mm-space-8);
+  border-top: 2px solid var(--mm-gray-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerEventsList.module.css,23,300px,".eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--mm-space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-75)
+app/partner-report/[slug]/PartnerEventsList.module.css,32,2px,"  flex-direction: column;
+  background: var(--mm-white);
+  border: 2px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-5);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerEventsList.module.css,43,2px,".eventCard:hover {
+  border-color: var(--mm-blue-500);
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-lg);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerEventsList.module.css,72,1px,"  margin-bottom: var(--mm-space-4);
+  padding: var(--mm-space-3) 0;
+  border-top: 1px solid var(--mm-gray-100);
+  border-bottom: 1px solid var(--mm-gray-100);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerEventsList.module.css,73,1px,"  padding: var(--mm-space-3) 0;
+  border-top: 1px solid var(--mm-gray-100);
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/partner-report/[slug]/PartnerEventsList.module.css,122,4px,"
+.eventCard:hover .actionArrow {
+  transform: translateX(4px);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/partner-report/[slug]/PartnerEventsList.module.css,126,768px,"
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .eventsSection {
+    margin-top: var(--mm-space-8);",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/partner-edit/[slug]/page.module.css,24,12px,".stateCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/partner-edit/[slug]/page.module.css,26,4px,"  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/partner-edit/[slug]/page.module.css,28,400px,"  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-100)
+app/partner-edit/[slug]/page.module.css,40,12px,".errorCard {
+  background: var(--mm-white);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/partner-edit/[slug]/page.module.css,42,4px,"  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/partner-edit/[slug]/page.module.css,44,500px,"  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  border-left: 4px solid var(--mm-error);",Pixel value hardcoded instead of using design token,var(--mm-space-125)
+app/partner-edit/[slug]/page.module.css,46,4px,"  max-width: 500px;
+  width: 100%;
+  border-left: 4px solid var(--mm-error);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/partner-edit/[slug]/page.module.css,74,8px,"  color: var(--mm-white);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/visualization/Visualization.module.css,20,1px,"  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all var(--mm-transition-base);
+  height: 100%;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,27,2px,"
+.unifiedChartItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,28,8px,".unifiedChartItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/visualization/Visualization.module.css,39,350px,"  max-width: none;
+  height: 100%;
+  min-height: 350px;
+  justify-self: stretch;
+  min-width: 0;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,86,1px,".toggleButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,87,4px,"  background: var(--mm-color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/visualization/Visualization.module.css,98,5000px,".editorSection {
+  overflow: hidden;
+  max-height: 5000px; /* Large enough for any content */
+  opacity: 1;
+  transition: max-height 0.4s ease, opacity 0.3s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-1250)
+app/admin/visualization/Visualization.module.css,149,300px,".templateDropdown {
+  flex: 1;
+  min-width: 300px;
+  padding: var(--mm-space-3) var(--mm-space-4);
+  font-size: var(--mm-font-size-base);",Pixel value hardcoded instead of using design token,var(--mm-space-75)
+app/admin/visualization/Visualization.module.css,152,2px,"  padding: var(--mm-space-3) var(--mm-space-4);
+  font-size: var(--mm-font-size-base);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-white);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,170,3px,"  outline: none;
+  border-color: var(--mm-color-primary-600);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,188,768px,"}
+
+@media (max-width: 768px) {
+  .templateSelectorRow {
+    flex-direction: column;",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/admin/visualization/Visualization.module.css,208,80px,".statusMessage {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: var(--mm-space-4) var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-20)
+app/admin/visualization/Visualization.module.css,209,20px,"  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: var(--mm-space-4) var(--mm-space-6);
+  border-radius: var(--mm-radius-lg);",Pixel value hardcoded instead of using design token,var(--mm-space-5)
+app/admin/visualization/Visualization.module.css,212,4px,"  padding: var(--mm-space-4) var(--mm-space-6);
+  border-radius: var(--mm-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/visualization/Visualization.module.css,222,1px,"  background: var(--mm-green-50);
+  color: var(--mm-green-900);
+  border: 1px solid var(--mm-green-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,228,1px,"  background: var(--mm-red-50);
+  color: var(--mm-red-900);
+  border: 1px solid var(--mm-red-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,234,100px,"  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {",Pixel value hardcoded instead of using design token,var(--mm-space-25)
+app/admin/visualization/Visualization.module.css,262,250px,".heroCheckboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,270,200px,".alignmentCheckboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/visualization/Visualization.module.css,284,200px,"/* Width constraint for number inputs */
+.numberInputNarrow {
+  width: 200px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/visualization/Visualization.module.css,303,120px,".reportImageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;",Pixel value hardcoded instead of using design token,var(--mm-space-30)
+app/admin/visualization/Visualization.module.css,311,200px,".reportTextGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/visualization/Visualization.module.css,318,2px,"/* Report image card button */
+.reportImageCard {
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: 0.5rem;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,332,2px,".reportImageCard:hover {
+  border-color: var(--mm-blue-500);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,338,80px,".reportImagePlaceholder {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;",Pixel value hardcoded instead of using design token,var(--mm-space-20)
+app/admin/visualization/Visualization.module.css,356,2px,"/* Report text card button */
+.reportTextCard {
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: 0.75rem;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/visualization/Visualization.module.css,367,100px,"  transition: all var(--transition-fast);
+  text-align: left;
+  min-height: 100px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-25)
+app/admin/visualization/Visualization.module.css,372,2px,".reportTextCard:hover {
+  border-color: var(--mm-blue-500);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,10,1400px,".container {
+  padding: var(--mm-space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-350)
+app/admin/insights/page.module.css,37,200px,".filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--mm-space-4);
+  margin-bottom: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/insights/page.module.css,74,140px,".summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--mm-space-4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-35)
+app/admin/insights/page.module.css,84,2px,"  padding: var(--mm-space-4);
+  background: var(--mm-gray-50);
+  border: 2px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-xl);
+  transition: all var(--mm-transition-base);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,90,2px,"
+.stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-md);
+  border-color: var(--mm-chart-blue);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,126,50px,"
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--mm-gray-200);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,127,50px,".spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--mm-gray-200);
+  border-top-color: var(--mm-chart-blue);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,128,4px,"  width: 50px;
+  height: 50px;
+  border: 4px solid var(--mm-gray-200);
+  border-top-color: var(--mm-chart-blue);
+  border-radius: 50%;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/insights/page.module.css,155,2px,"  padding: var(--mm-space-6);
+  background: var(--mm-error-light);
+  border: 2px solid var(--mm-error);
+  border-radius: var(--mm-radius-xl);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,180,1px,".retryButton:hover {
+  background: var(--mm-color-error-600);
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-md);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,196,1px,".helpSection {
+  margin: var(--spacing-lg) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-secondary);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,215,260px,".insightTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-md);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-65)
+app/admin/insights/page.module.css,222,1px,"  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,258,2px,"  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--font-sm);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,259,999px,"  gap: var(--spacing-xs);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--font-sm);
+  font-weight: 600;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,262,1px,"  font-size: var(--font-sm);
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,293,2px,"  text-align: center;
+  background: var(--mm-gray-50);
+  border: 2px dashed var(--mm-gray-300);
+  border-radius: var(--mm-radius-xl);
+  min-height: 300px;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/insights/page.module.css,295,300px,"  border: 2px dashed var(--mm-gray-300);
+  border-radius: var(--mm-radius-xl);
+  min-height: 300px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-75)
+app/admin/insights/page.module.css,306,768px,"/* WHAT: Responsive design */
+/* WHY: Mobile-friendly layout */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--mm-space-4);",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/admin/insights/page.module.css,328,480px,"}
+
+@media (max-width: 480px) {
+  .summary {
+    grid-template-columns: 1fr;",Pixel value hardcoded instead of using design token,var(--mm-space-120)
+app/admin/design/Design.module.css,35,1px,".tabButton:hover {
+  background: var(--mm-gray-200);
+  transform: translateY(-1px);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,79,1px,".fontPreview {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,92,280px,"  display: grid;
+  gap: var(--mm-space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-70)
+app/admin/design/Design.module.css,102,1px,"  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-md);
+  border: 1px solid var(--mm-gray-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,106,48px,"
+.colorSwatch {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mm-radius-md);",Pixel value hardcoded instead of using design token,var(--mm-space-12)
+app/admin/design/Design.module.css,107,48px,".colorSwatch {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);",Pixel value hardcoded instead of using design token,var(--mm-space-12)
+app/admin/design/Design.module.css,109,2px,"  height: 48px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);
+  flex-shrink: 0;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,188,2px,".warningBox {
+  background: var(--mm-error-light);
+  border: 2px solid var(--mm-error);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,211,4px,"  margin-bottom: var(--mm-space-2);
+  background: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid var(--mm-error);
+  border-radius: var(--mm-radius-sm);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/design/Design.module.css,228,2px,".approvedList code {
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--mm-radius-sm);
+  font-family: var(--font-mono);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,270,32px," * WHY: Compact visual preview of color schemes in the styles list */
+.miniColorSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--mm-radius-md);",Pixel value hardcoded instead of using design token,var(--mm-space-8)
+app/admin/design/Design.module.css,271,32px,".miniColorSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);",Pixel value hardcoded instead of using design token,var(--mm-space-8)
+app/admin/design/Design.module.css,273,2px,"  height: 32px;
+  border-radius: var(--mm-radius-md);
+  border: 2px solid var(--mm-gray-300);
+  flex-shrink: 0;
+  cursor: help;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/design/Design.module.css,288,768px,"======================================== */
+
+@media (max-width: 768px) {
+  .tabNav {
+    flex-direction: column;",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/admin/api-football-enrich/page.module.css,5,900px,"
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-225)
+app/admin/api-football-enrich/page.module.css,30,1px,".statusCard {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,34,1px,"  padding: var(--mm-space-6);
+  margin-bottom: var(--mm-space-6);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,42,1px,"  align-items: center;
+  padding: var(--mm-space-3) 0;
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,77,4px,"  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/api-football-enrich/page.module.css,81,2px,"
+.enrichButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -2px rgba(59, 130, 246, 0.4);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,82,8px,".enrichButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -2px rgba(59, 130, 246, 0.4);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/api-football-enrich/page.module.css,103,1px,"  background: var(--mm-success-light);
+  color: var(--mm-color-secondary-700);
+  border: 1px solid var(--mm-color-secondary-500);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,109,1px,"  background: var(--mm-error-light);
+  color: var(--mm-color-error-700);
+  border: 1px solid var(--mm-error);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,115,1px,"  background: var(--mm-info-light);
+  color: var(--mm-color-primary-800);
+  border: 1px solid var(--mm-color-primary-500);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,120,1px,".info {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-6);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/api-football-enrich/page.module.css,158,640px,"}
+
+@media (max-width: 640px) {
+  .container {
+    padding: var(--mm-space-4);",Pixel value hardcoded instead of using design token,var(--mm-space-160)
+app/admin/bitly/bitly.module.css,6,1400px,"
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;",Pixel value hardcoded instead of using design token,var(--mm-space-350)
+app/admin/bitly/bitly.module.css,17,2px,"  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--mm-gray-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,37,8px,"  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/bitly.module.css,49,2px,".syncButton:hover {
+  background: var(--mm-color-secondary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,50,4px,"  background: var(--mm-color-secondary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,60,2px,".addButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,61,4px,"  background: var(--mm-color-primary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,75,8px,"  color: var(--mm-error);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--mm-error);",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/bitly.module.css,77,4px,"  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--mm-error);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,84,8px,"  color: var(--mm-color-secondary-700);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--mm-success);",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/bitly.module.css,86,4px,"  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--mm-success);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,92,12px,"  background: var(--mm-gray-100);
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/admin/bitly/bitly.module.css,94,2px,"  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,119,2px,"  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid var(--mm-gray-300);
+  border-radius: 6px;
+  transition: border-color 0.2s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,120,6px,"  font-size: 1rem;
+  border: 2px solid var(--mm-gray-300);
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,137,8px,"  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/bitly.module.css,144,2px,".submitButton:hover {
+  background: var(--mm-color-primary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,145,4px,"  background: var(--mm-color-primary-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,151,12px,"  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/admin/bitly/bitly.module.css,152,2px,"  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,183,2px,"  font-weight: 600;
+  color: var(--mm-gray-700);
+  border-bottom: 2px solid var(--mm-gray-300);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,188,1px,".linksTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--mm-gray-200);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,207,1px,".projectSelect {
+  padding: 0.5rem;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: 4px;
+  font-size: 0.9rem;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/bitly.module.css,208,4px,"  padding: 0.5rem;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,211,200px,"  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 200px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/bitly/bitly.module.css,245,8px,"  background: var(--mm-color-primary-100);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--mm-color-primary-500);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/bitly.module.css,246,4px,"  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--mm-color-primary-500);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/bitly.module.css,259,768px,"
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;",Pixel value hardcoded instead of using design token,var(--mm-space-192)
+app/admin/bitly/bitly.module.css,285,800px,"
+  .linksTable table {
+    min-width: 800px;
+  }
+}",Pixel value hardcoded instead of using design token,var(--mm-space-200)
+app/admin/bitly/page.module.css,30,1px,"  background: var(--surface, var(--mm-white));
+  border-radius: 0.375rem;
+  border: 1px solid var(--border, var(--mm-gray-200));
+  font-size: 0.875rem;
+  color: var(--text-secondary, var(--mm-gray-500",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,73,120px,".colBitlink {
+  width: 15%;
+  min-width: 120px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-30)
+app/admin/bitly/page.module.css,78,130px,".colTitle {
+  width: 18%;
+  min-width: 130px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,83,160px,".colProjects {
+  width: 18%;
+  min-width: 160px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-40)
+app/admin/bitly/page.module.css,88,160px,".colPartners {
+  width: 18%;
+  min-width: 160px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-40)
+app/admin/bitly/page.module.css,93,70px,".colClicks {
+  width: 8%;
+  min-width: 70px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,98,110px,".colSynced {
+  width: 13%;
+  min-width: 110px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,103,140px,".colActions {
+  width: 10%;
+  min-width: 140px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-35)
+app/admin/bitly/page.module.css,110,200px,".cellBreakAll {
+  word-break: break-all;
+  max-width: 200px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-50)
+app/admin/bitly/page.module.css,115,250px,".cellBreakWord {
+  word-break: break-word;
+  max-width: 250px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,119,280px,"
+.cellProjects {
+  max-width: 280px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-70)
+app/admin/bitly/page.module.css,124,8px,"/* WHAT: Associated projects wrapper */
+.associationsWrapper {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;",Pixel value hardcoded instead of using design token,var(--mm-space-2)
+app/admin/bitly/page.module.css,127,4px,"  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/page.module.css,135,4px,"  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;",Pixel value hardcoded instead of using design token,var(--mm-space-1)
+app/admin/bitly/page.module.css,136,2px,"  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: var(--mm-color-primary-100);",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,137,12px,"  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/admin/bitly/page.module.css,140,12px,"  background-color: var(--mm-color-primary-100);
+  color: var(--mm-color-primary-700);
+  border-radius: 12px;
+  border: 1px solid var(--mm-color-cyan-300);
+}",Pixel value hardcoded instead of using design token,var(--mm-space-3)
+app/admin/bitly/page.module.css,141,1px,"  color: var(--mm-color-primary-700);
+  border-radius: 12px;
+  border: 1px solid var(--mm-color-cyan-300);
+}
+",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/bitly/page.module.css,151,14px,"  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: bold;",Pixel value hardcoded instead of using design token,var(--mm-space-*)
+app/admin/content-library/page.module.css,4,120px,"   WHY: Replaces inline styles with design tokens and consistent sizing */
+.thumb {
+  width: 7.5rem; /* 120px */
+  height: 5rem;  /* 80px */
+  border-radius: var(--mm-radius-lg);",Pixel value hardcoded instead of using design token,var(--mm-space-30)
+app/admin/content-library/page.module.css,5,80px,".thumb {
+  width: 7.5rem; /* 120px */
+  height: 5rem;  /* 80px */
+  border-radius: var(--mm-radius-lg);
+  overflow: hidden;",Pixel value hardcoded instead of using design token,var(--mm-space-20)
+app/admin/content-library/page.module.css,19,120px,"/* WHAT: Text preview box for text assets */
+.textThumb {
+  width: 7.5rem; /* 120px */
+  height: 5rem;  /* 80px */
+  border-radius: var(--mm-radius-lg);",Pixel value hardcoded instead of using design token,var(--mm-space-30)

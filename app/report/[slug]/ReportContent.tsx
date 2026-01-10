@@ -33,7 +33,7 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
       return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
     
     case 'kpi':
-      return result.kpiValue !== undefined && result.kpiValue !== 'NA';
+      return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
     
     case 'pie':
     case 'bar':
@@ -85,6 +85,20 @@ export default function ReportContent({
   className 
 }: ReportContentProps) {
   
+  // WHAT: Debug logging for chartResults
+  // WHY: Need to verify chartResults Map has data when component renders
+  console.log('[ReportContent] Rendering with:', {
+    blocksCount: blocks.length,
+    chartResultsSize: chartResults.size,
+    chartResultIds: Array.from(chartResults.keys()).slice(0, 10),
+    sampleResult: chartResults.size > 0 ? {
+      chartId: Array.from(chartResults.keys())[0],
+      type: chartResults.get(Array.from(chartResults.keys())[0])?.type,
+      kpiValue: chartResults.get(Array.from(chartResults.keys())[0])?.kpiValue,
+      hasElements: !!chartResults.get(Array.from(chartResults.keys())[0])?.elements
+    } : null
+  });
+  
   if (blocks.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -121,17 +135,22 @@ interface ReportBlockProps {
 }
 
 /**
- * WHAT: Group charts into rows - unlimited width per row
- * WHY: Allow any number of charts per row without breaking
- * HOW: Put all charts in a single row (no width-based splitting)
+ * WHAT: Group charts into rows - blocks NEVER break into multiple lines
+ * WHY: Layout Grammar rule - a block is a single horizontal container
+ * HOW: Put ALL charts in a single row, grid is based on sum of units
+ * 
+ * Layout Grammar Rules:
+ * - Charts have width: 1 or 2 units
+ * - Block grid = sum of all chart units (e.g., [1,2,1] → "1fr 2fr 1fr")
+ * - Block NEVER breaks into multiple rows
  */
 function groupChartsIntoRows(
   charts: Array<{ chartId: string; width: number; order: number }>,
   maxColumns: number // WHAT: Unused parameter kept for backward compatibility
 ): Array<Array<{ chartId: string; width: number; order: number }>> {
   // WHAT: Return all charts as a single row
-  // WHY: User wants unlimited items per row
-  // HOW: No splitting logic - just wrap all charts in array
+  // WHY: Blocks never break - all charts in one horizontal row
+  // HOW: Grid columns are calculated from sum of units
   return charts.length > 0 ? [charts] : [];
 }
 
@@ -157,14 +176,37 @@ interface ResponsiveRowProps {
   chartResults: Map<string, ChartResult>;
   rowIndex: number;
   unifiedTextFontSize?: number | null;
+  // WHAT: Block-level font sizes (P1 1.5 Phase 1)
+  // WHY: Typography calculation moved from row-level to block-level
+  // HOW: Pass block-level calculated values to rows
+  blockTitleFontSize?: number | null;
+  blockSubtitleFontSize?: number | null;
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize, blockTitleFontSize, blockSubtitleFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
-  const [rowWidth, setRowWidth] = useState(1200); // Default fallback
-  const [rowHeight, setRowHeight] = useState(400); // Default fallback
-  const [titleFontSize, setTitleFontSize] = useState(18); // Default
-  const [subtitleFontSize, setSubtitleFontSize] = useState(14); // Default
+  // WHAT: Initialize state with design tokens instead of hardcoded values
+  // WHY: No hardcoded sizes - all values must come from design system
+  // HOW: Read from CSS custom properties on mount
+  const getDefaultValue = (cssVar: string, fallback: number): number => {
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      const cs = getComputedStyle(root);
+      const value = cs.getPropertyValue(cssVar).trim();
+      if (value) {
+        return parseInt(value, 10);
+      }
+    }
+    return fallback; // WHAT: Server-side fallback (only used during SSR)
+  };
+  
+  const [rowWidth, setRowWidth] = useState(() => getDefaultValue('--mm-row-width-default', 1200));
+  const [rowHeight, setRowHeight] = useState(() => getDefaultValue('--mm-row-height-default', 400));
+  // WHAT: Use block-level font sizes if provided, otherwise fallback to defaults (P1 1.5 Phase 1)
+  // WHY: Typography calculation moved to block-level, rows receive values from block
+  // HOW: Use block-level values when available, fallback to design tokens
+  const [titleFontSize, setTitleFontSize] = useState(() => blockTitleFontSize || getDefaultValue('--mm-title-font-size-default', 18));
+  const [subtitleFontSize, setSubtitleFontSize] = useState(() => blockSubtitleFontSize || getDefaultValue('--mm-subtitle-font-size-default', 14));
   
   // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
@@ -198,17 +240,15 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         setRowHeight(height);
         
-        // WHAT: Calculate synchronized font sizes for titles/subtitles (Spec v2.0 Phase 3)
-        // WHY: All titles in block should have same font size, same for subtitles
-        // HOW: Use fontSyncCalculator with binary search to find optimal sizes
-        const syncedFonts = calculateSyncedFontSizes(cells, width, {
-          maxTitleLines: 2,
-          maxSubtitleLines: 2,
-          enableKPISync: false // KPI sync not used yet
-        });
-        console.log(`[ResponsiveRow ${rowIndex}] Font sizes:`, syncedFonts);
-        setTitleFontSize(syncedFonts.titlePx);
-        setSubtitleFontSize(syncedFonts.subtitlePx);
+        // WHAT: Use block-level font sizes if provided (P1 1.5 Phase 1)
+        // WHY: Typography calculation moved to block-level, rows receive values from block
+        // HOW: Update row state when block-level values change
+        if (blockTitleFontSize !== null && blockTitleFontSize !== undefined) {
+          setTitleFontSize(blockTitleFontSize);
+        }
+        if (blockSubtitleFontSize !== null && blockSubtitleFontSize !== undefined) {
+          setSubtitleFontSize(blockSubtitleFontSize);
+        }
       }
     };
     
@@ -228,7 +268,32 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
+  }, [rowCharts, chartResults, rowIndex, blockTitleFontSize, blockSubtitleFontSize]); // Re-run if charts change or block font sizes change
+  
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1)
+  // WHY: Warn if height CSS variables are not set, indicating implicit height behavior
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (rowRef.current && typeof window !== 'undefined') {
+      const computedStyle = getComputedStyle(rowRef.current);
+      const rowHeightValue = computedStyle.getPropertyValue('--row-height').trim();
+      const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+      
+      // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+      // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+      if (!rowHeightValue || !blockHeightValue) {
+        console.warn(`[P1 1.4] Row ${rowIndex}: CSS variables --row-height or --block-height not set. Height will fallback to design token.`, {
+          rowHeight: rowHeightValue || 'missing',
+          blockHeight: blockHeightValue || 'missing',
+          calculatedHeight: rowHeight
+        });
+      }
+    }
+  }, [rowHeight, rowIndex]);
+  
+  // WHAT: Calculate grid columns from chart widths (sum of units)
+  // WHY: Layout Grammar - grid = sum of units (e.g., [1,2,1] → "1fr 2fr 1fr")
+  const gridColumns = calculateGridColumns(rowCharts);
   
   return (
     <div 
@@ -236,12 +301,31 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       key={`row-${rowIndex}`}
       className={`${styles.row} report-content`}
       data-report-section="content"
+      // WHAT: Set CSS custom properties for dynamic values (centrally managed)
+      // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
+      // HOW: CSS modules reference these custom properties - block-height is centrally managed at row level
+      // P1 1.4 Phase 1: Explicit height cascade - CSS variables must be set, no implicit fallbacks
+      // eslint-disable-next-line react/forbid-dom-props
+      style={{
+        '--row-height': `${rowHeight}px`,
+        '--block-height': `${rowHeight}px`, // WHAT: Centrally managed block height for all charts in row
+        '--grid-columns': gridColumns
+      } as React.CSSProperties}
     >
       {rowCharts.map(chart => {
         const result = chartResults.get(chart.chartId);
         // WHAT: Skip charts with no valid data (v11.48.0)
         // WHY: ReportChart returns null for empty data, don't render container
-        if (!hasValidChartData(result) || !result) return null;
+        if (!hasValidChartData(result) || !result) {
+          console.log(`[ResponsiveRow ${rowIndex}] Filtering out chart ${chart.chartId}:`, {
+            hasResult: !!result,
+            isValid: result ? hasValidChartData(result) : false,
+            type: result?.type,
+            kpiValue: result?.kpiValue,
+            elementsCount: result?.elements?.length
+          });
+          return null;
+        }
         
         // WHAT: Force remount when dimensions change significantly
         // WHY: Container queries cache container size, need remount for single full-width charts
@@ -251,12 +335,12 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
           <div 
             key={dimensionKey}
             className={styles.rowItem}
-            data-column-span={chart.width || 1}
           >
             <ReportChart 
               result={result} 
               width={chart.width}
-              blockHeight={rowHeight}
+              // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+              // WHY: Eliminates per-chart inline styles, better maintainability
               titleFontSize={titleFontSize}
               subtitleFontSize={subtitleFontSize}
               unifiedTextFontSize={unifiedTextFontSize}
@@ -318,6 +402,83 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
   const chartIds = validCharts.map(c => c.chartId);
   const unifiedTextFontSize = useUnifiedTextFontSize(chartResults, chartIds, blockRef);
   
+  // WHAT: Block-level typography calculation (P1 1.5 Phase 1)
+  // WHY: All typography elements in a block should use unified font size
+  // HOW: Collect all cells from all rows, calculate once per block, set CSS custom property
+  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(null);
+  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(null);
+  
+  // WHAT: Calculate block-level typography when block width is known
+  // WHY: Font size calculation needs block width (not row width)
+  // HOW: Use ResizeObserver to measure block width, then calculate unified font sizes
+  useEffect(() => {
+    if (!blockRef.current || typeof window === 'undefined') return;
+    
+    const measureAndCalculate = () => {
+      if (!blockRef.current) return;
+      
+      const blockWidth = blockRef.current.offsetWidth;
+      if (blockWidth === 0) return; // Not yet rendered
+      
+      // WHAT: Collect all cells from all rows in the block
+      // WHY: Need all titles and subtitles to calculate unified font size
+      // HOW: Iterate through validCharts and create CellConfiguration for each
+      const allCells: CellConfiguration[] = validCharts
+        .map(chart => {
+          const result = chartResults.get(chart.chartId);
+          if (!result || !hasValidChartData(result)) return null;
+          
+          return {
+            chartId: chart.chartId,
+            cellWidth: (chart.width || 1) as 1 | 2,
+            bodyType: result.type as any,
+            aspectRatio: result.aspectRatio,
+            title: result.title,
+            subtitle: undefined // WHAT: ChartResult doesn't have subtitle property, use undefined
+          } as CellConfiguration;
+        })
+        .filter((cell): cell is CellConfiguration => cell !== null);
+      
+      if (allCells.length === 0) return;
+      
+      // WHAT: Calculate unified font sizes for entire block
+      // WHY: P1 1.5 Phase 1 - block-level typography unification
+      // HOW: Use fontSyncCalculator with block width (not row width)
+      const syncedFonts = calculateSyncedFontSizes(allCells, blockWidth, {
+        maxTitleLines: 2,
+        maxSubtitleLines: 2,
+        enableKPISync: false // KPI values are exempt
+      });
+      
+      console.log(`[ReportBlock] Block-level typography calculated:`, {
+        blockTitle: block.title || 'Untitled',
+        blockWidth,
+        titlePx: syncedFonts.titlePx,
+        subtitlePx: syncedFonts.subtitlePx,
+        cellsCount: allCells.length
+      });
+      
+      setBlockBaseFontSize(syncedFonts.titlePx);
+      setBlockSubtitleFontSize(syncedFonts.subtitlePx);
+    };
+    
+    measureAndCalculate(); // Initial calculation
+    
+    const resizeObserver = new ResizeObserver(measureAndCalculate);
+    if (blockRef.current) {
+      resizeObserver.observe(blockRef.current);
+    }
+    
+    // WHAT: Also listen to window resize as fallback
+    // WHY: Block width may change on window resize
+    window.addEventListener('resize', measureAndCalculate);
+    
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', measureAndCalculate);
+    };
+  }, [validCharts, chartResults, block.title]);
+  
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
     console.log(`⚠️ [ReportBlock] Block "${block.title || 'Untitled'}":`, {
@@ -366,20 +527,24 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       ref={blockRef}
       className={styles.block} 
       data-pdf-block="true"
-      // WHAT: Apply unified font-size as CSS custom property
-      // WHY: Text charts can read this value via CSS
-      // HOW: Use inline style to set CSS custom property
+      // WHAT: Apply unified typography as CSS custom properties (P1 1.5 Phase 1)
+      // WHY: Block-level typography unification - all elements inherit from block
+      // HOW: CSS custom properties are acceptable inline styles (standard pattern)
       // eslint-disable-next-line react/forbid-dom-props
-      style={unifiedTextFontSize ? {
-        ['--unified-text-font-size' as string]: `${unifiedTextFontSize}rem`
-      } as React.CSSProperties : undefined}
-      data-unified-font-size={unifiedTextFontSize || undefined}
+      style={{
+        ...(unifiedTextFontSize ? { '--unified-text-font-size': `${unifiedTextFontSize}rem` } : {}),
+        ...(blockBaseFontSize ? { '--block-base-font-size': `${blockBaseFontSize}px` } : {}),
+        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
+      } as React.CSSProperties}
     >
       {block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
       {/* Render each row with responsive height calculation */}
+      {/* WHAT: Pass block-level font sizes to rows (P1 1.5 Phase 1) */}
+      {/* WHY: Rows need font sizes for CellWrapper, but calculation is now block-level */}
+      {/* HOW: Pass block-level calculated values instead of row-level calculation */}
       {rows.map((rowCharts, rowIndex) => (
         <ResponsiveRow
           key={`row-${rowIndex}`}
@@ -387,6 +552,8 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           chartResults={chartResults}
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
+          blockTitleFontSize={blockBaseFontSize}
+          blockSubtitleFontSize={blockSubtitleFontSize}
         />
       ))}
     </div>

@@ -8,9 +8,11 @@ import { calculateActiveCharts } from '@/lib/chartCalculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import ColoredCard from '@/components/ColoredCard';
 import FormModal from '@/components/modals/FormModal';
+import ConfirmDialog from '@/components/modals/ConfirmDialog';
 import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
+import SaveStatusIndicator, { SaveStatus } from '@/components/SaveStatusIndicator';
 
 // WHAT: Data visualization block from data_blocks collection
 // WHY: Reusable blocks of charts that can be composed into report templates
@@ -77,6 +79,12 @@ export default function VisualizationPage() {
     isDefault: false
   });
   
+  // WHAT: Template management modal state (rename, copy, delete)
+  // WHY: Allow managing existing templates
+  const [showTemplateEditModal, setShowTemplateEditModal] = useState(false);
+  const [templateEditName, setTemplateEditName] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
   // WHAT: Track which block editors are expanded (default: all collapsed)
   // WHY: Cleaner UX on page load - focus on chart previews, not implementation details
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
@@ -87,6 +95,11 @@ export default function VisualizationPage() {
     type: 'success' | 'error' | 'info';
     text: string;
   } | null>(null);
+
+  // WHAT: Save status tracking for block operations
+  // WHY: Provide visual feedback during save operations (like clicker pattern)
+  const [blockSaveStatus, setBlockSaveStatus] = useState<SaveStatus>('idle');
+  const [templateSaveStatus, setTemplateSaveStatus] = useState<SaveStatus>('idle');
 
   // Live chart preview state (calculated using the same pipeline as stats pages)
   const [chartConfigs, setChartConfigs] = useState<ChartConfiguration[]>([]);
@@ -266,12 +279,16 @@ export default function VisualizationPage() {
     console.log('Setting template to:', templateId);
     setSelectedTemplateId(templateId);
     
-    // Save to preferences (fire and forget, ignore auth errors)
-    fetch('/api/user-preferences', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lastSelectedTemplateId: templateId })
-    }).catch(() => {}); // Ignore errors silently
+    // WHAT: Save to preferences using apiPut for CSRF protection
+    // WHY: Persist selection so it's remembered on next visit
+    // HOW: Fire and forget - ignore errors silently to not block UI
+    try {
+      await apiPut('/api/user-preferences', { lastSelectedTemplateId: templateId });
+    } catch (error) {
+      // WHAT: Silently ignore errors (auth, network, etc.)
+      // WHY: Preference saving shouldn't block template selection
+      console.warn('Failed to save template preference:', error);
+    }
   };
 
   // WHAT: Load templates and select default on mount
@@ -328,13 +345,14 @@ export default function VisualizationPage() {
     }
   };
 
-  // WHAT: Save updated template configuration
-  // WHY: Persist changes to selected template
-  const saveTemplateConfig = async (updatedDataBlocks?: DataVisualizationBlock[]) => {
-    if (!selectedTemplateId) return;
+  // WHAT: Save updated template configuration with save status tracking
+  // WHY: Persist changes to selected template with visual feedback and CSRF protection
+  // HOW: Use apiPut() for CSRF protection, track save status, retry on network errors
+  const saveTemplateConfig = async (updatedDataBlocks?: DataVisualizationBlock[], retryCount = 0): Promise<boolean> => {
+    if (!selectedTemplateId) return false;
     
     const template = templates.find(t => t._id === selectedTemplateId);
-    if (!template) return;
+    if (!template) return false;
     
     const blocksToSave = updatedDataBlocks || dataBlocks;
     const dataBlockRefs = blocksToSave
@@ -344,23 +362,22 @@ export default function VisualizationPage() {
         order: index
       }));
     
+    setTemplateSaveStatus('saving');
+    
     try {
-      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dataBlocks: dataBlockRefs,
-          gridSettings: {
-            desktopUnits: gridUnits.desktop,
-            tabletUnits: gridUnits.tablet,
-            mobileUnits: gridUnits.mobile
-          },
-          heroSettings,
-          alignmentSettings
-        })
+      // WHAT: Use apiPut() instead of fetch() for CSRF protection
+      // WHY: Production middleware requires X-CSRF-Token header
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        dataBlocks: dataBlockRefs,
+        gridSettings: {
+          desktopUnits: gridUnits.desktop,
+          tabletUnits: gridUnits.tablet,
+          mobileUnits: gridUnits.mobile
+        },
+        heroSettings,
+        alignmentSettings
       });
       
-      const data = await response.json();
       if (data.success) {
         // Update local templates state
         setTemplates(prev => prev.map(t => 
@@ -378,9 +395,27 @@ export default function VisualizationPage() {
               }
             : t
         ));
+        
+        setTemplateSaveStatus('saved');
+        setTimeout(() => setTemplateSaveStatus('idle'), 2000);
+        return true;
+      } else {
+        throw new Error(data.error || 'Failed to save template config');
       }
     } catch (error) {
       console.error('Failed to save template config:', error);
+      
+      // WHAT: Retry once on network errors
+      // WHY: Handle transient network issues
+      if (retryCount === 0 && error instanceof Error && error.message.includes('network')) {
+        console.log('Retrying template save...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return saveTemplateConfig(updatedDataBlocks, 1);
+      }
+      
+      setTemplateSaveStatus('error');
+      setTimeout(() => setTemplateSaveStatus('idle'), 3000);
+      return false;
     }
   };
 
@@ -397,16 +432,13 @@ export default function VisualizationPage() {
         minElementHeight: newAlignmentSettings.minElementHeight || undefined
       };
       
-      const response = await fetch(`/api/report-templates?templateId=${selectedTemplateId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          heroSettings: newHeroSettings,
-          alignmentSettings: cleanedAlignmentSettings
-        })
+      // WHAT: Use apiPut() for CSRF protection
+      // WHY: Consistent with other save operations
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        heroSettings: newHeroSettings,
+        alignmentSettings: cleanedAlignmentSettings
       });
       
-      const data = await response.json();
       if (!data.success) {
         console.error('Failed to save HERO settings:', data.error);
       }
@@ -417,32 +449,60 @@ export default function VisualizationPage() {
     }
   }, [selectedTemplateId]);
   
-  // Data Block Management Functions
-  const handleUpdateBlock = async (block: DataVisualizationBlock) => {
-    console.log('🟢🟢🟢 UPDATING BLOCK IN DATABASE:', {
-      blockName: block.name,
-      blockId: block._id,
-      chartCount: block.charts.length,
-      chartIds: block.charts.map(c => c.chartId)
-    });
+  // WHAT: Update block with save status tracking and auto-save support
+  // WHY: Provide visual feedback, support onBlur auto-save pattern
+  // HOW: Track save status, update block then save template, handle errors
+  const handleUpdateBlock = async (block: DataVisualizationBlock, closeModal = true) => {
+    // WHAT: Validate before attempting save
+    // WHY: Prevent invalid saves
+    if (!block.name.trim()) {
+      showMessage('error', 'Block name is required');
+      return;
+    }
+    
+    if (!block._id) {
+      showMessage('error', 'Block ID is missing');
+      return;
+    }
+    
+    setBlockSaveStatus('saving');
     
     try {
+      // WHAT: Update block via API
+      // WHY: Persist block changes to database
       const data = await apiPut('/api/data-blocks', block);
       
-      if (data.success) {
-        console.log('✅✅✅ BLOCK SAVED SUCCESSFULLY:', block.name);
-        const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
-        setDataBlocks(updatedBlocks);
-        await saveTemplateConfig(updatedBlocks);
-        setEditingBlock(null);
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update block');
+      }
+      
+      // WHAT: Update local state and save template config
+      // WHY: Keep UI in sync and persist template changes
+      const updatedBlocks = dataBlocks.map(b => b._id === block._id ? block : b);
+      setDataBlocks(updatedBlocks);
+      
+      const templateSaved = await saveTemplateConfig(updatedBlocks);
+      
+      if (templateSaved) {
+        setBlockSaveStatus('saved');
+        if (closeModal) {
+          setEditingBlock(null);
+        }
         showMessage('success', 'Block updated successfully!');
+        setTimeout(() => setBlockSaveStatus('idle'), 2000);
       } else {
-        console.error('❌❌❌ BLOCK SAVE FAILED:', data.error);
-        showMessage('error', 'Failed to update block: ' + data.error);
+        // WHAT: Block updated but template save failed
+        // WHY: Show warning but block is still updated
+        setBlockSaveStatus('error');
+        showMessage('error', 'Block updated but template save failed. Please refresh and try again.');
+        setTimeout(() => setBlockSaveStatus('idle'), 3000);
       }
     } catch (error) {
-      console.error('❌❌❌ BLOCK SAVE ERROR:', error);
-      showMessage('error', 'Failed to update block');
+      console.error('Failed to update block:', error);
+      setBlockSaveStatus('error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update block';
+      showMessage('error', errorMessage);
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
     }
   };
   
@@ -469,7 +529,12 @@ export default function VisualizationPage() {
     }
   };
   
+  // WHAT: Create new block and save to template atomically
+  // WHY: Ensure block is always added to template, provide visual feedback
+  // HOW: Track save status, create block then save template, handle errors gracefully
   const handleCreateBlock = async () => {
+    // WHAT: Validate before attempting save
+    // WHY: Prevent invalid saves
     if (!blockForm.name.trim()) {
       showMessage('error', 'Block name is required');
       return;
@@ -480,19 +545,29 @@ export default function VisualizationPage() {
       return;
     }
     
+    setBlockSaveStatus('saving');
+    
     try {
-      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHAT: Step 1: Create block via API
+      // WHY: Block must exist before adding to template
       const data = await apiPost('/api/data-blocks', blockForm);
       
-      if (data.success) {
-        // Add new block to current template
-        const newBlock = data.block;
-        const updatedBlocks = [...dataBlocks, newBlock];
-        setDataBlocks(updatedBlocks);
-        
-        // Save to template
-        await saveTemplateConfig(updatedBlocks);
-        
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create block');
+      }
+      
+      // WHAT: Step 2: Add block to template (atomic operation)
+      // WHY: Ensure block is always in template after creation
+      const newBlock = data.block;
+      const updatedBlocks = [...dataBlocks, newBlock];
+      setDataBlocks(updatedBlocks);
+      
+      // WHAT: Save template config with retry logic
+      // WHY: If template save fails, block still exists (no rollback needed)
+      const templateSaved = await saveTemplateConfig(updatedBlocks);
+      
+      if (templateSaved) {
+        setBlockSaveStatus('saved');
         setShowCreateBlock(false);
         setBlockForm({
           name: '',
@@ -502,12 +577,20 @@ export default function VisualizationPage() {
           showTitle: true
         });
         showMessage('success', 'Data block created and added to template!');
+        setTimeout(() => setBlockSaveStatus('idle'), 2000);
       } else {
-        showMessage('error', 'Failed to create block: ' + data.error);
+        // WHAT: Block created but template save failed
+        // WHY: Show warning but don't delete block (user can manually add it)
+        setBlockSaveStatus('error');
+        showMessage('error', 'Block created but failed to add to template. Please refresh and try again.');
+        setTimeout(() => setBlockSaveStatus('idle'), 3000);
       }
     } catch (error) {
       console.error('Failed to create block:', error);
-      showMessage('error', 'Failed to create block');
+      setBlockSaveStatus('error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create block';
+      showMessage('error', errorMessage);
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
     }
   };
   
@@ -663,8 +746,9 @@ export default function VisualizationPage() {
     });
   };
   
-  // WHAT: Create new template
+  // WHAT: Create new template with CSRF protection
   // WHY: Allow creating templates with empty config, then auto-select
+  // HOW: Use apiPost() for automatic CSRF token handling
   const handleCreateTemplate = async () => {
     if (!templateForm.name.trim()) {
       showMessage('error', 'Template name is required');
@@ -672,24 +756,21 @@ export default function VisualizationPage() {
     }
     
     try {
-      const response = await fetch('/api/report-templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: templateForm.name.trim(),
-          description: templateForm.description.trim(),
-          type: templateForm.type,
-          isDefault: templateForm.isDefault,
-          dataBlocks: [],
-          gridSettings: {
-            desktopUnits: 4,
-            tabletUnits: 2,
-            mobileUnits: 1
-          }
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/report-templates', {
+        name: templateForm.name.trim(),
+        description: templateForm.description.trim(),
+        type: templateForm.type,
+        isDefault: templateForm.isDefault,
+        dataBlocks: [],
+        gridSettings: {
+          desktopUnits: 4,
+          tabletUnits: 2,
+          mobileUnits: 1
+        }
       });
       
-      const data = await response.json();
       if (data.success && data.template) {
         // Reload templates list
         await loadTemplates();
@@ -709,7 +790,196 @@ export default function VisualizationPage() {
       }
     } catch (error) {
       console.error('Failed to create template:', error);
-      showMessage('error', 'Failed to create template');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create template';
+      showMessage('error', errorMessage);
+    }
+  };
+  
+  // WHAT: Handle template rename
+  // WHY: Allow updating template name
+  const handleRenameTemplate = async () => {
+    if (!selectedTemplateId || !templateEditName.trim()) {
+      showMessage('error', 'Template name is required');
+      return;
+    }
+    
+    try {
+      const data = await apiPut(`/api/report-templates?templateId=${selectedTemplateId}`, {
+        name: templateEditName.trim()
+      });
+      
+      if (data.success) {
+        await loadTemplates();
+        showMessage('success', 'Template renamed successfully!');
+      } else {
+        showMessage('error', data.error || 'Failed to rename template');
+      }
+    } catch (error) {
+      console.error('Failed to rename template:', error);
+      showMessage('error', 'Failed to rename template');
+    }
+  };
+  
+  // WHAT: Handle template copy
+  // WHY: Allow duplicating templates with independent blocks
+  const handleCopyTemplate = async () => {
+    if (!selectedTemplateId) return;
+    
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+    if (!selectedTemplate) return;
+    
+    try {
+      // WHAT: Fetch all blocks referenced by the original template
+      // WHY: Need to create copies of blocks, not just reference the same ones
+      const blockIds = (selectedTemplate.dataBlocks || []).map((ref: any) => ref.blockId);
+      
+      if (blockIds.length > 0) {
+        // WHAT: Fetch full block data from database
+        // WHY: Need block content (name, charts, etc.) to create copies
+        const blocksResponse = await fetch('/api/data-blocks');
+        const blocksData = await blocksResponse.json();
+        
+        if (!blocksData.success) {
+          throw new Error('Failed to fetch blocks');
+        }
+        
+        // WHAT: Find blocks that belong to this template
+        // WHY: Only copy blocks that are actually used by this template
+        const originalBlocks = blocksData.blocks.filter((block: any) => 
+          blockIds.includes(block._id)
+        );
+        
+        // WHAT: Create new copies of each block
+        // WHY: New template needs independent blocks, not references to original blocks
+        const newBlockRefs = [];
+        for (const originalBlock of originalBlocks) {
+          // WHAT: Create new block with same content but new ID
+          // WHY: Each template copy must have its own independent blocks
+          const newBlockResponse = await apiPost('/api/data-blocks', {
+            name: originalBlock.name,
+            charts: originalBlock.charts || [],
+            order: originalBlock.order || 0,
+            isActive: originalBlock.isActive !== false,
+            showTitle: originalBlock.showTitle !== false
+          });
+          
+          if (newBlockResponse.success && newBlockResponse.blockId) {
+            // WHAT: Find original order in template
+            // WHY: Preserve block order from original template
+            const originalRef = selectedTemplate.dataBlocks.find((ref: any) => 
+              ref.blockId === originalBlock._id || ref.blockId === originalBlock._id.toString()
+            );
+            
+            newBlockRefs.push({
+              blockId: newBlockResponse.blockId,
+              order: originalRef?.order ?? newBlockRefs.length
+            });
+          }
+        }
+        
+        // WHAT: Sort by original order to maintain template structure
+        // WHY: Preserve the visual layout of the original template
+        newBlockRefs.sort((a, b) => a.order - b.order);
+        
+        // WHAT: Create template with new block references
+        // WHY: New template points to new blocks, completely independent
+        const copyData: any = {
+          name: `Copy of ${selectedTemplate.name}`,
+          type: selectedTemplate.type,
+          isDefault: false, // WHAT: Never mark copy as default
+          dataBlocks: newBlockRefs,
+          gridSettings: selectedTemplate.gridSettings || {
+            desktopUnits: 4,
+            tabletUnits: 2,
+            mobileUnits: 1
+          },
+          heroSettings: selectedTemplate.heroSettings,
+          alignmentSettings: selectedTemplate.alignmentSettings
+        };
+        
+        // WHAT: Include description if it exists (optional field)
+        // WHY: Some templates may have description, preserve it in copy
+        if ((selectedTemplate as any).description) {
+          copyData.description = (selectedTemplate as any).description;
+        }
+        
+        const data = await apiPost('/api/report-templates', copyData);
+        
+        if (data.success && data.template) {
+          await loadTemplates();
+          // WHAT: Auto-select newly copied template
+          // WHY: User expects to edit the copy immediately
+          setSelectedTemplateId(data.template._id);
+          setShowTemplateEditModal(false);
+          showMessage('success', 'Template copied successfully with independent blocks!');
+        } else {
+          showMessage('error', data.error || 'Failed to copy template');
+        }
+      } else {
+        // WHAT: Template has no blocks, just copy template structure
+        // WHY: Some templates might be empty
+        const copyData: any = {
+          name: `Copy of ${selectedTemplate.name}`,
+          type: selectedTemplate.type,
+          isDefault: false,
+          dataBlocks: [],
+          gridSettings: selectedTemplate.gridSettings || {
+            desktopUnits: 4,
+            tabletUnits: 2,
+            mobileUnits: 1
+          },
+          heroSettings: selectedTemplate.heroSettings,
+          alignmentSettings: selectedTemplate.alignmentSettings
+        };
+        
+        if ((selectedTemplate as any).description) {
+          copyData.description = (selectedTemplate as any).description;
+        }
+        
+        const data = await apiPost('/api/report-templates', copyData);
+        
+        if (data.success && data.template) {
+          await loadTemplates();
+          setSelectedTemplateId(data.template._id);
+          setShowTemplateEditModal(false);
+          showMessage('success', 'Template copied successfully!');
+        } else {
+          showMessage('error', data.error || 'Failed to copy template');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to copy template:', error);
+      showMessage('error', 'Failed to copy template: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+  
+  // WHAT: Handle template delete
+  // WHY: Allow removing unused templates
+  const handleDeleteTemplate = async () => {
+    if (!selectedTemplateId) return;
+    
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+    if (!selectedTemplate) return;
+    
+    try {
+      const data = await apiDelete(`/api/report-templates?templateId=${selectedTemplateId}`);
+      
+      if (data.success) {
+        await loadTemplates();
+        // WHAT: Clear selection if deleted template was selected
+        // WHY: Prevent editing non-existent template
+        setSelectedTemplateId(null);
+        setShowTemplateEditModal(false);
+        setShowDeleteConfirm(false);
+        showMessage('success', 'Template deleted successfully!');
+      } else {
+        showMessage('error', data.error || 'Failed to delete template');
+        setShowDeleteConfirm(false);
+      }
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+      showMessage('error', 'Failed to delete template');
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -746,7 +1016,11 @@ export default function VisualizationPage() {
       <ColoredCard accentColor="#3b82f6" hoverable={false}>
         <div className={vizStyles.templateSelector}>
           <div className={vizStyles.templateSelectorHeader}>
-            <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <h3 className={vizStyles.templateSelectorTitle}>📊 Select Report Template</h3>
+              <SaveStatusIndicator status={templateSaveStatus} />
+            </div>
             <p className={vizStyles.templateSelectorSubtitle}>
               Choose a template to configure its visualization blocks and charts
             </p>
@@ -815,6 +1089,26 @@ export default function VisualizationPage() {
               >
                 ➕ New Template
               </button>
+              
+              {selectedTemplateId && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+                    if (selectedTemplate) {
+                      setTemplateEditName(selectedTemplate.name);
+                      setShowTemplateEditModal(true);
+                    }
+                  }}
+                  type="button"
+                  className="btn btn-small btn-secondary"
+                  title="Edit template (rename, copy, delete)"
+                >
+                  <MaterialIcon name="edit" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.25rem' }} />
+                  Edit Template
+                </button>
+              )}
             </div>
             
             {selectedTemplateId && (
@@ -914,6 +1208,130 @@ export default function VisualizationPage() {
           </div>
         </div>
       </FormModal>
+      
+      {/* WHAT: Template Management Modal (Rename, Copy, Delete)
+          WHY: Allow managing existing templates */}
+      {selectedTemplateId && (() => {
+        const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+        if (!selectedTemplate) return null;
+        
+        return (
+          <FormModal
+            isOpen={showTemplateEditModal}
+            onClose={() => {
+              setShowTemplateEditModal(false);
+              setTemplateEditName(selectedTemplate.name);
+            }}
+            onSubmit={async () => {
+              // WHAT: FormModal requires onSubmit, but we handle actions via buttons
+              // WHY: FormModal provides proper design system styling
+              // HOW: onSubmit is a no-op, actions handled by individual buttons
+            }}
+            title={`📝 Manage Report Template: ${selectedTemplate.name}`}
+            size="md"
+            customFooter={
+              <div 
+                // eslint-disable-next-line react/forbid-dom-props
+                style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--mm-space-3)' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowTemplateEditModal(false);
+                    setTemplateEditName(selectedTemplate.name);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            }
+          >
+            {/* Rename Section */}
+            <div className="form-group mb-6">
+              <label className="form-label-block">Rename Template</label>
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <div style={{ display: 'flex', gap: 'var(--mm-space-3)', alignItems: 'flex-end' }}>
+                {/* eslint-disable-next-line react/forbid-dom-props */}
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={templateEditName}
+                    onChange={(e) => setTemplateEditName(e.target.value)}
+                    placeholder="Enter template name..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleRenameTemplate}
+                  disabled={!templateEditName.trim() || templateEditName.trim() === selectedTemplate.name}
+                >
+                  Save Name
+                </button>
+              </div>
+            </div>
+            
+            {/* Copy Section */}
+            {/* eslint-disable-next-line react/forbid-dom-props */}
+            <div className="form-group mb-6" style={{ paddingBottom: 'var(--mm-space-6)', borderBottom: '1px solid var(--mm-gray-200)' }}>
+              <label className="form-label-block">Copy Template</label>
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
+                Create a duplicate of this template with all its blocks and settings.
+              </p>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCopyTemplate}
+              >
+                <MaterialIcon name="content_copy" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                Copy Template
+              </button>
+            </div>
+            
+            {/* Delete Section */}
+            <div className="form-group mb-4">
+              <label className="form-label-block">Delete Template</label>
+              {/* eslint-disable-next-line react/forbid-dom-props */}
+              <p className="form-hint" style={{ marginBottom: 'var(--mm-space-4)' }}>
+                {selectedTemplate.isDefault 
+                  ? '⚠️ Cannot delete default template. Mark another template as default first.'
+                  : 'Permanently delete this template. This action cannot be undone.'}
+              </p>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={selectedTemplate.isDefault}
+              >
+                <MaterialIcon name="delete" variant="outlined" style={{ fontSize: '1rem', marginRight: '0.5rem' }} />
+                Delete Template
+              </button>
+            </div>
+          </FormModal>
+        );
+      })()}
+      
+      {/* WHAT: Delete Confirmation Dialog
+          WHY: Confirm destructive action before deleting template */}
+      {selectedTemplateId && (() => {
+        const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+        if (!selectedTemplate) return null;
+        
+        return (
+          <ConfirmDialog
+            isOpen={showDeleteConfirm}
+            onClose={() => setShowDeleteConfirm(false)}
+            onConfirm={handleDeleteTemplate}
+            title="Delete Report Template?"
+            message={`Are you sure you want to delete "${selectedTemplate.name}"? This action cannot be undone.`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            variant="danger"
+          />
+        );
+      })()}
       
       {!selectedTemplateId && (
         <ColoredCard accentColor="#f59e0b">

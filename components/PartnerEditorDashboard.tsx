@@ -174,6 +174,7 @@ export default function PartnerEditorDashboard({ partner: initialPartner }: Part
             {partner.logoUrl && (
               <div>
                 <p className="text-sm font-medium text-gray-700 mb-2">Partner Logo:</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={partner.logoUrl} 
                   alt={`${partner.name} logo`}
