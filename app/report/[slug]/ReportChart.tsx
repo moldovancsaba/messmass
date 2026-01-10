@@ -493,6 +493,49 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
     }
   }, [showTitle, result.title]);
   
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(chartContainer);
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!bodyHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
+            chartId: result.chartId,
+            blockHeight: blockHeightValue || 'missing',
+            containerHeight: chartContainer.offsetHeight
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
+  
   // WHAT: Read individual bar colors from CSS variables
   // WHY: Use custom style colors for each bar (granular control)
   // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
@@ -625,6 +668,48 @@ function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSiz
     }
   }, [showTitle, result.title]);
   
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (textChartRef.current && typeof window !== 'undefined') {
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(textChartRef.current!);
+        const textContentHeightValue = computedStyle.getPropertyValue('--text-content-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!textContentHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            blockHeight: blockHeightValue || 'missing',
+            containerHeight: textChartRef.current?.offsetHeight || 0
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            textContentHeight: textContentHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      if (textChartRef.current) {
+        resizeObserver.observe(textChartRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
+  
   return (
     <div 
       ref={textChartRef}
@@ -711,6 +796,63 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
       };
     }
   }, [showTitle, result.title]);
+  
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
+  // WHY: Ensure all height values are explicit and traceable
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const validateHeight = () => {
+        const computedStyle = getComputedStyle(chartContainer);
+        const textContentHeightValue = getComputedStyle(tableContentRef.current!).getPropertyValue('--text-content-height').trim();
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+        
+        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+        if (!textContentHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing',
+            blockHeight: blockHeightValue || 'missing'
+          });
+        }
+        if (!bodyHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
+            chartId: result.chartId,
+            textContentHeight: textContentHeightValue || 'missing',
+            blockHeight: blockHeightValue || 'missing'
+          });
+        }
+        if (!blockHeightValue) {
+          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
+            chartId: result.chartId,
+            bodyHeight: bodyHeightValue || 'missing',
+            textContentHeight: textContentHeightValue || 'missing'
+          });
+        }
+      };
+      
+      // WHAT: Validate after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      validateHeight();
+      
+      const resizeObserver = new ResizeObserver(validateHeight);
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      if (chartContainer) {
+        resizeObserver.observe(chartContainer);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [result.chartId, showTitle, result.title]);
   
   return (
     <CellWrapper
