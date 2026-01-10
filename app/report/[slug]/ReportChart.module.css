@@ -524,12 +524,12 @@
 .textContentWrapper {
   /* WHAT: Content container - fills remaining space after title, centers content vertically and horizontally */
   /* WHY: Separate block-level div that cannot be inline, must fill available space and center content */
+  /* P1 1.4 Phase 4: Explicit height instead of flex: 1 */
   display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
   align-items: center !important; /* CRITICAL: Center content vertically */
   justify-content: center !important; /* CRITICAL: Center content horizontally */
   width: 100% !important;
-  flex: 1 !important; /* CRITICAL: Fill all remaining space after title */
-  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
+  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation, fallback to design token */
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
   /* CRITICAL: Force block display - cannot be inline */
@@ -545,14 +545,14 @@
   /* WHAT: Container for markdown content - fills available space and centers content */
   /* WHY: Markdown elements (p, h1, etc.) must stack vertically, fill space, and be centered */
   /* HOW: Use flexbox to fill space and center content, block display for children to stack */
+  /* P1 1.4 Phase 4: Explicit height instead of min-height: 0 */
   display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
   flex-direction: column !important; /* CRITICAL: Stack children vertically */
   align-items: center !important; /* CRITICAL: Center content horizontally */
   justify-content: center !important; /* CRITICAL: Center content vertically */
   width: 100% !important;
   max-width: 100% !important;
-  height: 100% !important; /* CRITICAL: Fill parent height completely */
-  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
+  height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
   /* WHY: All text charts in a block should use the same font-size */
@@ -838,7 +838,7 @@
 
 .tableContent {
   width: 100%;
-  height: 100%;
+  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation (uses --chart-body-height from Phase 2), fallback to design token */
   /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
   /* WHY: Layout Grammar: no clipping on content layers */
   padding: var(--mm-space-4);
@@ -848,7 +848,7 @@
 
 .tableMarkdown {
   width: 100%;
-  height: 100%;
+  height: 100%; /* WHAT: Fill parent tableContent height (explicit height from Phase 4) */
   /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
   /* WHY: Layout Grammar: no clipping on content layers */
   display: flex;

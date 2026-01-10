@@ -562,6 +562,7 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
 /**
  * Text Chart - Formatted text display
  * REBUILT: Simple table structure to guarantee title above content
+ * P1 1.4 Phase 4: Explicit text content height calculation
  */
 function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
   // WHAT: Render markdown content on report pages only
@@ -573,8 +574,60 @@ function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSiz
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Refs for height calculation (P1 1.4 Phase 4)
+  // WHY: Calculate text content height explicitly: containerHeight - titleHeight
+  // HOW: Measure actual heights and set CSS custom property
+  const textChartRef = useRef<HTMLDivElement>(null);
+  const textContentWrapperRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set text content height explicitly (P1 1.4 Phase 4)
+  // WHY: Replace implicit height behavior with explicit height for deterministic behavior
+  // HOW: Measure container and title heights, calculate content height, set CSS custom property
+  useEffect(() => {
+    if (textChartRef.current && textContentWrapperRef.current && typeof window !== 'undefined') {
+      const measureAndSetHeight = () => {
+        // WHAT: Get chart container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = textChartRef.current?.offsetHeight || 0;
+        
+        // WHAT: Find title wrapper within chart container
+        // WHY: Subtract title height from container to get content height
+        const titleWrapper = textChartRef.current?.querySelector('[class*="textTitleWrapper"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        if (titleWrapper) {
+          titleHeight = titleWrapper.offsetHeight;
+        }
+        
+        // WHAT: Calculate text content height: container - title
+        // WHY: Explicit height calculation instead of flex growth
+        const contentHeight = containerHeight - titleHeight;
+        
+        // WHAT: Set CSS custom property for text content height on chart container
+        // WHY: P1 1.4 Phase 4 - explicit height cascade
+        if (contentHeight > 0 && textChartRef.current) {
+          textChartRef.current.style.setProperty('--text-content-height', `${contentHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      if (textChartRef.current) {
+        resizeObserver.observe(textChartRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
   return (
     <div 
+      ref={textChartRef}
       className={`${styles.chart} ${styles.text} report-chart ${className || ''}`}
       data-chart-id={result.chartId}
       // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
@@ -584,7 +637,8 @@ function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSiz
           <h3 className={styles.textTitleText}>{result.title}</h3>
         </div>
       )}
-      <div className={styles.textContentWrapper}>
+      {/* WHAT: Text content wrapper ref for height calculation (P1 1.4 Phase 4) */}
+      <div ref={textContentWrapperRef} className={styles.textContentWrapper}>
         {html ? (
           <div
             className={`${styles.textContent} ${styles.textMarkdown}`}
@@ -603,6 +657,7 @@ function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSiz
 /**
  * Table Chart - Markdown table display with styling
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
+ * P1 1.4 Phase 4: Explicit table content height calculation
  */
 function TableChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
   // WHAT: Render markdown table content on report pages
@@ -614,6 +669,49 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 4)
+  // WHY: Table content is inside CellWrapper body zone, which has --chart-body-height from Phase 2
+  // HOW: Use --chart-body-height directly or calculate from it
+  const tableContentRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set table content height explicitly (P1 1.4 Phase 4)
+  // WHY: Replace implicit height behavior with explicit height for deterministic behavior
+  // HOW: Use --chart-body-height from CellWrapper body zone (already set in Phase 2)
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const measureAndSetHeight = () => {
+        // WHAT: Find parent CellWrapper container (chart container)
+        // WHY: CSS variable --chart-body-height is set on CellWrapper from Phase 2
+        const chartContainer = tableContentRef.current?.closest('[class*="cellWrapper"]') as HTMLElement;
+        if (!chartContainer) return;
+        
+        // WHAT: Get body zone height from CSS custom property (set in Phase 2)
+        // WHY: Table content is inside body zone, so use body zone height directly
+        const computedStyle = getComputedStyle(chartContainer);
+        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
+        
+        // WHAT: If --chart-body-height is set, use it for table content height
+        // WHY: Table content fills the body zone, so height should match body zone height
+        if (bodyHeightValue && tableContentRef.current) {
+          tableContentRef.current.style.setProperty('--text-content-height', bodyHeightValue);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
@@ -621,14 +719,16 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
       subtitleFontSize={subtitleFontSize}
       className={`${styles.chart} ${styles.table} report-chart ${className || ''}`}
     >
+      {/* WHAT: Table content ref for height calculation (P1 1.4 Phase 4) */}
       {html ? (
         <div
+          ref={tableContentRef}
           className={`${styles.tableContent} ${styles.tableMarkdown}`}
           // eslint-disable-next-line react/forbid-dom-props
           dangerouslySetInnerHTML={{ __html: sanitizeHTML(html) }}
         />
       ) : (
-        <div className={styles.tableContent} />
+        <div ref={tableContentRef} className={styles.tableContent} />
       )}
     </CellWrapper>
   );
