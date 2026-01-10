@@ -343,16 +343,23 @@ grep -r "line-clamp" app/ components/ --include="*.css"
 **Execution Order:** 5
 
 **Checklist:**
-- [ ] Verify all titles in block share same font size
-- [ ] Verify all subtitles in block share same font size
-- [ ] Verify KPI values scale independently (exemption)
-- [ ] Verify text charts use dynamic sizing (max 4rem)
-- [ ] Document violations
+- [x] Verify all titles in block share same font size
+- [x] Verify all subtitles in block share same font size
+- [x] Verify KPI values scale independently (exemption)
+- [x] Verify text charts use dynamic sizing (max 4rem)
+- [x] Document violations
+
+**Investigation:** `docs/audits/investigations/P1-1.5-unified-typography.md` ✅ Complete
+
+**Findings:**
+- ✅ PASS: KPI values scale independently (exemption), text charts use unified typography
+- ❌ FAIL: Titles/subtitles calculated per-row (not per-block), chart titles independent scaling, KPI labels independent scaling, chart labels/legends independent scaling
+- ⚠️ PARTIAL: Chart subtitles per-row, table typography needs verification
 
 **Acceptance Criteria:**
 - Unified typography within blocks
 - KPI values exempt (per spec)
-- Violations documented
+- Violations documented ✅
 
 ---
 
