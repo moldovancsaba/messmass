@@ -308,7 +308,7 @@
   gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
   container-type: size;
-  min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
+  max-height: 50%; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
   /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
   /* WHY: If legend items exceed preferred 30%, container grows to fit (no scrolling) */
   overflow: visible; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
