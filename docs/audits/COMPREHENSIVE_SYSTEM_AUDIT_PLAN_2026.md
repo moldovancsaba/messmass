@@ -742,7 +742,7 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Phase 1 Changes:** Replaced `100%` fallback with `var(--mm-block-height-default)` in chart containers, replaced `auto` fallback with `var(--mm-row-height-default)` in row, added runtime validation. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED.
   - **Phase 2 Changes:** Added explicit height calculation for BAR charts (container - title - subtitle), updated `.bodyZone` and `.bar .chartBody` to use explicit height instead of `flex: 1`. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED (2026-01-10T12:24:41.812Z).
   - **Phase 3 Changes:** Removed `min-height: 100px` from `.pieChartContainer` and `min-height: 60px` from `.pieLegend` (desktop and mobile). Added `max-height: 40%` to `.pieChartContainer` and `max-height: 50%` to `.pieLegend` to prevent unbounded growth. Local gate: Build pass ✅.
-  - **Commits:** Phase 1: `257fed9ac`, `15d76b326`, `df3ef2df0` | Phase 2: `942a4e642`, `fb75d13c3`, `2b0d7f50e` | Phase 3: (to be added)
+  - **Commits:** Phase 1: `257fed9ac`, `15d76b326`, `df3ef2df0` | Phase 2: `942a4e642`, `fb75d13c3`, `2b0d7f50e` | Phase 3: `c5a39f725`, `c8050e2e8`
   - **Next Steps:** Await approval before proceeding to Phase 4 (Text Content Height Explicit)
 
 ### Phase 2: Variable Dictionary and Naming Standards
