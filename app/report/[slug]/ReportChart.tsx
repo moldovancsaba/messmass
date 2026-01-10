@@ -434,6 +434,65 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
+  // WHAT: Ref for chart body to calculate body zone height (P1 1.4 Phase 2)
+  // WHY: Calculate body zone height explicitly: containerHeight - titleHeight - subtitleHeight
+  // HOW: Measure actual heights and set CSS custom property on chart container
+  const chartBodyRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set body zone height explicitly (P1 1.4 Phase 2)
+  // WHY: Replace flex: 1 with explicit height for deterministic behavior
+  // HOW: Measure container and header heights, calculate body height, set CSS custom property
+  useEffect(() => {
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      // WHAT: Find parent CellWrapper container (chart container)
+      // WHY: CSS variable must be set on chart container per solution document
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndSetHeight = () => {
+        // WHAT: Get container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = chartContainer.offsetHeight;
+        
+        // WHAT: Find title and subtitle zones within CellWrapper
+        // WHY: Subtract header heights from container to get body height
+        const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+        const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        let subtitleHeight = 0;
+        
+        if (titleZone) {
+          titleHeight = titleZone.offsetHeight;
+        }
+        if (subtitleZone) {
+          subtitleHeight = subtitleZone.offsetHeight;
+        }
+        
+        // WHAT: Calculate body zone height: container - title - subtitle
+        // WHY: Explicit height calculation instead of flex growth
+        const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+        
+        // WHAT: Set CSS custom property for body zone height on chart container
+        // WHY: P1 1.4 Phase 2 - explicit height cascade
+        if (bodyHeight > 0) {
+          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
+  
   // WHAT: Read individual bar colors from CSS variables
   // WHY: Use custom style colors for each bar (granular control)
   // HOW: getComputedStyle reads --barColor1-5 from Style editor, fallback to design tokens only
@@ -466,7 +525,8 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
       subtitleFontSize={subtitleFontSize}
       className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
     >
-      <div className={styles.chartBody}>
+      {/* WHAT: Chart body ref for height calculation (P1 1.4 Phase 2) */}
+      <div ref={chartBodyRef} className={styles.chartBody}>
         <div className={styles.barElements}>
         {result.elements.map((element, idx) => {
           const numValue = typeof element.value === 'number' ? element.value : 0;

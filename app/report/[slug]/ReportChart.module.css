@@ -371,10 +371,12 @@
   /* WHAT: Remove restrictive width constraints - let chart fill parent */
   /* WHY: chartBody was limiting width to ~40px, breaking bar visibility */
   /* HOW: Use flex with no width limitations */
+  /* WHAT: P1 1.4 Phase 2 - explicit height instead of flex: 1 */
+  /* WHY: Deterministic height behavior, no implicit flex growth */
+  height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
-  flex: 1;
   min-height: 0;
   width: 100% !important; /* CRITICAL: No width restrictions */
   max-width: none !important; /* CRITICAL: Remove max-width */

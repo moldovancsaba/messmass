@@ -64,7 +64,9 @@
 
 /* Body Zone - fills remaining space, centered content */
 .bodyZone {
-  flex: 1;
+  /* WHAT: P1 1.4 Phase 2 - explicit height instead of flex: 1 */
+  /* WHY: Deterministic height behavior, no implicit flex growth */
+  height: var(--chart-body-height, auto); /* WHAT: Use calculated body height, fallback to auto for backward compatibility */
   display: flex;
   flex-direction: column;
   align-items: center;
