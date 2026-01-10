@@ -176,6 +176,11 @@ interface ResponsiveRowProps {
   chartResults: Map<string, ChartResult>;
   rowIndex: number;
   unifiedTextFontSize?: number | null;
+  // WHAT: Block-level font sizes (P1 1.5 Phase 1)
+  // WHY: Typography calculation moved from row-level to block-level
+  // HOW: Pass block-level calculated values to rows
+  blockTitleFontSize?: number | null;
+  blockSubtitleFontSize?: number | null;
 }
 
 function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize, blockTitleFontSize, blockSubtitleFontSize }: ResponsiveRowProps) {
@@ -197,8 +202,11 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
   
   const [rowWidth, setRowWidth] = useState(() => getDefaultValue('--mm-row-width-default', 1200));
   const [rowHeight, setRowHeight] = useState(() => getDefaultValue('--mm-row-height-default', 400));
-  const [titleFontSize, setTitleFontSize] = useState(() => getDefaultValue('--mm-title-font-size-default', 18));
-  const [subtitleFontSize, setSubtitleFontSize] = useState(() => getDefaultValue('--mm-subtitle-font-size-default', 14));
+  // WHAT: Use block-level font sizes if provided, otherwise fallback to defaults (P1 1.5 Phase 1)
+  // WHY: Typography calculation moved to block-level, rows receive values from block
+  // HOW: Use block-level values when available, fallback to design tokens
+  const [titleFontSize, setTitleFontSize] = useState(() => blockTitleFontSize || getDefaultValue('--mm-title-font-size-default', 18));
+  const [subtitleFontSize, setSubtitleFontSize] = useState(() => blockSubtitleFontSize || getDefaultValue('--mm-subtitle-font-size-default', 14));
   
   // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
@@ -232,17 +240,15 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         setRowHeight(height);
         
-        // WHAT: Calculate synchronized font sizes for titles/subtitles (Spec v2.0 Phase 3)
-        // WHY: All titles in block should have same font size, same for subtitles
-        // HOW: Use fontSyncCalculator with binary search to find optimal sizes
-        const syncedFonts = calculateSyncedFontSizes(cells, width, {
-          maxTitleLines: 2,
-          maxSubtitleLines: 2,
-          enableKPISync: false // KPI sync not used yet
-        });
-        console.log(`[ResponsiveRow ${rowIndex}] Font sizes:`, syncedFonts);
-        setTitleFontSize(syncedFonts.titlePx);
-        setSubtitleFontSize(syncedFonts.subtitlePx);
+        // WHAT: Use block-level font sizes if provided (P1 1.5 Phase 1)
+        // WHY: Typography calculation moved to block-level, rows receive values from block
+        // HOW: Update row state when block-level values change
+        if (blockTitleFontSize !== null && blockTitleFontSize !== undefined) {
+          setTitleFontSize(blockTitleFontSize);
+        }
+        if (blockSubtitleFontSize !== null && blockSubtitleFontSize !== undefined) {
+          setSubtitleFontSize(blockSubtitleFontSize);
+        }
       }
     };
     
@@ -262,7 +268,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
+  }, [rowCharts, chartResults, rowIndex, blockTitleFontSize, blockSubtitleFontSize]); // Re-run if charts change or block font sizes change
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1)
   // WHY: Warn if height CSS variables are not set, indicating implicit height behavior
@@ -428,8 +434,8 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
             bodyType: result.type as any,
             aspectRatio: result.aspectRatio,
             title: result.title,
-            subtitle: result.subtitle
-          };
+            subtitle: undefined // WHAT: ChartResult doesn't have subtitle property, use undefined
+          } as CellConfiguration;
         })
         .filter((cell): cell is CellConfiguration => cell !== null);
       
