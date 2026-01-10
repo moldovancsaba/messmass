@@ -733,8 +733,8 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Commit:** `da4645f75` (included in `5dd8e1b1`)
   - **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app`
   - **Preview Verification:** ✅ Complete - All 2 fixes verified, content visible through reflow without clipping
-- [ ] **P1 1.4** Deterministic Height Resolution
-  - **Status:** ⏳ PHASE 5 COMPLETE - Awaiting preview verification
+- [x] **P1 1.4** Deterministic Height Resolution
+  - **Status:** ✅ DONE + VERIFIED
   - **Investigation:** `docs/audits/investigations/P1-1.4-deterministic-height-resolution.md` ✅ Complete
   - **Solution Design:** `docs/audits/investigations/P1-1.4-deterministic-height-resolution-solutions.md` ✅ Complete
   - **Phase 1 Implementation:** `docs/audits/investigations/P1-1.4-phase1-implementation.md` ✅ Complete + Approved
