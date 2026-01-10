@@ -735,7 +735,7 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Scope:** Eliminate implicit height behavior, establish height ownership precedence, handle 11 FRAGILE components
   - **Strategy:** Explicit Height Cascade (block/row calculation → CSS custom property → chart container → chart body → chart content)
   - **Phase 1 Changes:** Replaced `100%` fallback with `var(--mm-block-height-default)` in chart containers, replaced `auto` fallback with `var(--mm-row-height-default)` in row, added runtime validation. Local gate: Build pass ✅.
-  - **Commits:** (to be added)
+  - **Commits:** `257fed9ac`, `15d76b326`
   - **Next Steps:** Await approval before proceeding to Phase 2 (Chart Body Height Calculation)
 
 ### Phase 2: Variable Dictionary and Naming Standards
