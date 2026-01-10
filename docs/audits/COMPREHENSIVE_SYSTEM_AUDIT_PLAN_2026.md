@@ -2,8 +2,8 @@
 
 **Version:** 1.3.1  
 **Created:** 2026-01-08 05:59:27 America/New_York  
-**Last Reviewed:** 2026-01-10T11:22:22.000Z  
-**Last Updated:** 2026-01-10T11:22:22.000Z  
+**Last Reviewed:** 2026-01-10T12:02:13.000Z  
+**Last Updated:** 2026-01-10T12:02:13.000Z  
 **Status:** READY FOR EXECUTION  
 **Owner:** Tribeca  
 **Audience:** Technical Team + Business Sponsors
@@ -64,7 +64,8 @@ Rules:
 - Chappie can receive simple operational tasks (push, preview URL retrieval, quick manual checks) and will coordinate with Sultan to execute if Tribeca cannot.
 - Preview URL for branch preview-2026-01-02-agentic-coordination is canonical and stable: https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/
 
-Latest entry:
+- **2026-01-10T12:05:29.300Z | Tribeca | PRESENT:** P0 3.4 Phase 1 DONE + VERIFIED. Final verification completed by Sultan (2026-01-10T12:02:13.000Z) on canonical preview URL. All checks passed: chart colors, spacing, typography use design tokens correctly; global styles render correctly; PIE chart legend regression fixed and verified (P0 1.3 No Clipping compliance restored); no visual regressions detected. Investigation report updated with re-verification evidence (Preview URL, pages tested, expected vs observed). Acceptance criteria all met. Commits: `f919fd859`, `e21dc89c8`, `d7c7abd7d`, `4243c364d`, `7b69f4504`, `856428af3`, `d4eb3edc7`. Phase 1 closed. Next task: P1 1.4 Deterministic Height Resolution investigation (investigate first, no fixes until investigation note is committed). PAST: Followed established recovery loop from P0 1.1-1.3: detect regression, fix within scope, local gate, re-verify, then close.
+- **2026-01-10T12:02:13.000Z | Chappie | PRESENT:** Sultan re-verified the PIE legend regression fix and confirmed P0 1.3 compliance is restored (no clipping, no disappeared legend items) on the canonical preview URL. This completes Preview Verification for P0 3.4 Phase 1. Proceed to Phase D closure now: update the P0 3.4 Phase 1 investigation report with re-verification evidence (URL, pages tested, expected vs observed), add a PRESENT Agentic Chat Log entry for closure, mark the P0 3.4 Phase 1 tracker checkbox [x], and declare P0 3.4 Phase 1 DONE + VERIFIED. Stop Phase 1 after closure. Next work item after closure is P1 1.4 Deterministic Height Resolution investigation.
 - **2026-01-10T12:00:00.000Z | Chappie | PRESENT:** Acknowledged PIE chart legend overflow fix as valid regression and correctly handled. Authoritative clarification: Issue is P0 1.3 violation (No Clipping), not new scope, not Phase 2, but a blocking regression fix inside P0 3.4 Phase 1 (allowed and required). Fix strategy confirmed correct: overflow: visible, justify-content: flex-start, responsive clamp() for gap/padding, adjusted legend font bounds, applied consistently across variants. Did the right thing: fixed immediately, ran local gate, updated investigation report, waiting for re-verification. FUTURE: Wait only for Sultan's re-verification confirmation. Once confirmed: update investigation report with evidence, add PRESENT Agentic Chat Log entry stating "Regression resolved, P0 1.3 compliance restored", mark P0 3.4 Phase 1 checkbox [x], declare DONE + VERIFIED, then stop. No Phase 2, no further refactors, no additional layout tuning without explicit instruction. PAST: Follows exact same recovery pattern used successfully in P0 1.1-1.3 earlier. System behaved correctly by catching, fixing, and re-verifying.
 - **2026-01-10T11:52:59.300Z | Tribeca | PRESENT:** Fixed PIE chart legend overflow issue found during Sultan's visual verification. Issue: In 4-element blocks, PIE chart legend text was overflowing and disappearing (Layout Grammar P0 1.3 violation). Fix applied: Changed `overflow: hidden` to `overflow: visible`, changed `justify-content: center` to `flex-start`, made gap/padding responsive with clamp(), adjusted legend text font sizing for constrained spaces. Applied to base, CellWrapper, and mobile variants. Local gate: Build pass ✅. Commit: `d4eb3edc7`. Status: ⏳ Awaiting Sultan's re-verification to confirm fix resolves the issue. FUTURE: Once Sultan confirms fix, update investigation report with evidence, add Agentic Chat Log entry, then proceed with P0 3.4 Phase 1 closure. PAST: Reused Layout Grammar compliance patterns from P0 1.1-1.3 (no clipping, content must be visible, container grows to fit).
 - **2026-01-10T11:37:36.300Z | Chappie | PRESENT:** Acknowledged P0 3.4 Phase 1 preparation and verification structure as correct and complete. Clarification: Visual verification will be performed by Sultan (expected and compliant with operating rules when agent cannot browse). Agent is not blocked; waiting on evidence, not instructions. FUTURE: Once Sultan provides visual verification confirmation, treat it as authoritative preview verification. Immediately update investigation report with Preview URL, pages tested, expected vs observed. Add PRESENT entry to Agentic Chat Log stating preview verified, no visual regressions. Mark P0 3.4 Phase 1 checkbox [x], declare DONE + VERIFIED, then stop. Do not start Phase 2 or any new remediation without explicit instruction. PAST: Execution matches established pattern from P0 1.1-1.3 and P1 2.5.1b. System audit plan is single source of truth and up to date.
@@ -775,13 +776,14 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Approval:** 2026-01-09T20:20:30.000Z by Chappie
   - **Acceptance Criteria:** ✅ Token categories defined, ownership rules documented, inline style rules explicit, migration rules clear, acceptance criteria established
 
-- [ ] **P0 3.4** Hardcoded Values & Inline Styles Remediation (Phase 1)
-  - **Status:** ⏳ PUSH CONFIRMED - Preview Verification pending
+- [x] **P0 3.4** Hardcoded Values & Inline Styles Remediation (Phase 1)
+  - **Status:** ✅ DONE + VERIFIED
   - **Scope:** Apply P0 3.3 rules to `app/globals.css` and `app/charts.css` only
   - **Governing Rule:** P0 3.3 Design Tokens & Style Ownership Definition
-  - **Progress:** Replaced design language values (hex colors, spacing, typography, border radius) with tokens. Contextual layout constraints (min-width, max-width, transforms) preserved per P0 3.3 decision. Local gate: Build pass ✅. Commits: `f919fd859`, `e21dc89c8`, `d7c7abd7d`, `4243c364d`, `7b69f4504`, `856428af3`
+  - **Progress:** Tokenized design language values (colors, spacing, typography, radius) in `app/globals.css` and `app/charts.css` per P0 3.3. Preserved contextual layout constraints per decision. Preview verification completed on canonical preview URL. Regression found (PIE legend clipping in 4-element blocks) and fixed as a P0 1.3 compliance requirement. Final state verified by Sultan: PIE legend does not clip or disappear.
+  - **Commits:** `f919fd859`, `e21dc89c8`, `d7c7abd7d`, `4243c364d`, `7b69f4504`, `856428af3`, `d4eb3edc7`
   - **Preview URL:** https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app/
-  - **Acceptance Criteria:** Design language values replaced with tokens ✅, contextual constraints preserved ✅, no new tokens without workflow ✅, local gate pass ✅, preview verification evidence ⏳, no visual regression confirmed ⏳
+  - **Acceptance Criteria:** Design language values replaced with tokens ✅, contextual constraints preserved ✅, no new tokens without workflow ✅, local gate pass ✅, preview verification evidence ✅, no visual regression confirmed ✅, P0 1.3 no clipping compliance preserved ✅
 
 ### Phase 4: CSS Design Tokens and Global CSS
 
