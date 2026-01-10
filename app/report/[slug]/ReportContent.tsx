@@ -178,7 +178,7 @@ interface ResponsiveRowProps {
   unifiedTextFontSize?: number | null;
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize, blockTitleFontSize, blockSubtitleFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -396,6 +396,83 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
   const chartIds = validCharts.map(c => c.chartId);
   const unifiedTextFontSize = useUnifiedTextFontSize(chartResults, chartIds, blockRef);
   
+  // WHAT: Block-level typography calculation (P1 1.5 Phase 1)
+  // WHY: All typography elements in a block should use unified font size
+  // HOW: Collect all cells from all rows, calculate once per block, set CSS custom property
+  const [blockBaseFontSize, setBlockBaseFontSize] = useState<number | null>(null);
+  const [blockSubtitleFontSize, setBlockSubtitleFontSize] = useState<number | null>(null);
+  
+  // WHAT: Calculate block-level typography when block width is known
+  // WHY: Font size calculation needs block width (not row width)
+  // HOW: Use ResizeObserver to measure block width, then calculate unified font sizes
+  useEffect(() => {
+    if (!blockRef.current || typeof window === 'undefined') return;
+    
+    const measureAndCalculate = () => {
+      if (!blockRef.current) return;
+      
+      const blockWidth = blockRef.current.offsetWidth;
+      if (blockWidth === 0) return; // Not yet rendered
+      
+      // WHAT: Collect all cells from all rows in the block
+      // WHY: Need all titles and subtitles to calculate unified font size
+      // HOW: Iterate through validCharts and create CellConfiguration for each
+      const allCells: CellConfiguration[] = validCharts
+        .map(chart => {
+          const result = chartResults.get(chart.chartId);
+          if (!result || !hasValidChartData(result)) return null;
+          
+          return {
+            chartId: chart.chartId,
+            cellWidth: (chart.width || 1) as 1 | 2,
+            bodyType: result.type as any,
+            aspectRatio: result.aspectRatio,
+            title: result.title,
+            subtitle: result.subtitle
+          };
+        })
+        .filter((cell): cell is CellConfiguration => cell !== null);
+      
+      if (allCells.length === 0) return;
+      
+      // WHAT: Calculate unified font sizes for entire block
+      // WHY: P1 1.5 Phase 1 - block-level typography unification
+      // HOW: Use fontSyncCalculator with block width (not row width)
+      const syncedFonts = calculateSyncedFontSizes(allCells, blockWidth, {
+        maxTitleLines: 2,
+        maxSubtitleLines: 2,
+        enableKPISync: false // KPI values are exempt
+      });
+      
+      console.log(`[ReportBlock] Block-level typography calculated:`, {
+        blockTitle: block.title || 'Untitled',
+        blockWidth,
+        titlePx: syncedFonts.titlePx,
+        subtitlePx: syncedFonts.subtitlePx,
+        cellsCount: allCells.length
+      });
+      
+      setBlockBaseFontSize(syncedFonts.titlePx);
+      setBlockSubtitleFontSize(syncedFonts.subtitlePx);
+    };
+    
+    measureAndCalculate(); // Initial calculation
+    
+    const resizeObserver = new ResizeObserver(measureAndCalculate);
+    if (blockRef.current) {
+      resizeObserver.observe(blockRef.current);
+    }
+    
+    // WHAT: Also listen to window resize as fallback
+    // WHY: Block width may change on window resize
+    window.addEventListener('resize', measureAndCalculate);
+    
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', measureAndCalculate);
+    };
+  }, [validCharts, chartResults, block.title]);
+  
   // DEBUG: Log filtering
   if (sortedCharts.length !== validCharts.length) {
     console.log(`⚠️ [ReportBlock] Block "${block.title || 'Untitled'}":`, {
@@ -444,19 +521,24 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       ref={blockRef}
       className={styles.block} 
       data-pdf-block="true"
-      // WHAT: Apply unified font-size as CSS custom property
-      // WHY: Text charts can read this value via CSS
+      // WHAT: Apply unified typography as CSS custom properties (P1 1.5 Phase 1)
+      // WHY: Block-level typography unification - all elements inherit from block
       // HOW: CSS custom properties are acceptable inline styles (standard pattern)
       // eslint-disable-next-line react/forbid-dom-props
-      style={unifiedTextFontSize ? {
-        '--unified-text-font-size': `${unifiedTextFontSize}rem`
-      } as React.CSSProperties : undefined}
+      style={{
+        ...(unifiedTextFontSize ? { '--unified-text-font-size': `${unifiedTextFontSize}rem` } : {}),
+        ...(blockBaseFontSize ? { '--block-base-font-size': `${blockBaseFontSize}px` } : {}),
+        ...(blockSubtitleFontSize ? { '--block-subtitle-font-size': `${blockSubtitleFontSize}px` } : {})
+      } as React.CSSProperties}
     >
       {block.showTitle && block.title && (
         <h2 className={styles.blockTitle}>{block.title}</h2>
       )}
       
       {/* Render each row with responsive height calculation */}
+      {/* WHAT: Pass block-level font sizes to rows (P1 1.5 Phase 1) */}
+      {/* WHY: Rows need font sizes for CellWrapper, but calculation is now block-level */}
+      {/* HOW: Pass block-level calculated values instead of row-level calculation */}
       {rows.map((rowCharts, rowIndex) => (
         <ResponsiveRow
           key={`row-${rowIndex}`}
@@ -464,6 +546,8 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           chartResults={chartResults}
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
+          blockTitleFontSize={blockBaseFontSize}
+          blockSubtitleFontSize={blockSubtitleFontSize}
         />
       ))}
     </div>
