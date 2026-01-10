@@ -734,21 +734,23 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Preview URL:** `https://messmass-git-preview-2026-01-02-agentic-coordination-narimato.vercel.app`
   - **Preview Verification:** ✅ Complete - All 2 fixes verified, content visible through reflow without clipping
 - [ ] **P1 1.4** Deterministic Height Resolution
-  - **Status:** ⏳ PHASE 4 COMPLETE - Awaiting approval before Phase 5
+  - **Status:** ⏳ PHASE 5 COMPLETE - Awaiting preview verification
   - **Investigation:** `docs/audits/investigations/P1-1.4-deterministic-height-resolution.md` ✅ Complete
   - **Solution Design:** `docs/audits/investigations/P1-1.4-deterministic-height-resolution-solutions.md` ✅ Complete
   - **Phase 1 Implementation:** `docs/audits/investigations/P1-1.4-phase1-implementation.md` ✅ Complete + Approved
   - **Phase 2 Implementation:** `docs/audits/investigations/P1-1.4-phase2-implementation.md` ✅ Complete + Approved
   - **Phase 3 Implementation:** `docs/audits/investigations/P1-1.4-phase3-implementation.md` ✅ Complete + Approved
-  - **Phase 4 Implementation:** `docs/audits/investigations/P1-1.4-phase4-implementation.md` ✅ Complete
+  - **Phase 4 Implementation:** `docs/audits/investigations/P1-1.4-phase4-implementation.md` ✅ Complete + Approved
+  - **Phase 5 Implementation:** `docs/audits/investigations/P1-1.4-phase5-implementation.md` ✅ Complete
   - **Scope:** Eliminate implicit height behavior, establish height ownership precedence, handle 11 FRAGILE components
   - **Strategy:** Explicit Height Cascade (block/row calculation → CSS custom property → chart container → chart body → chart content)
   - **Phase 1 Changes:** Replaced `100%` fallback with `var(--mm-block-height-default)` in chart containers, replaced `auto` fallback with `var(--mm-row-height-default)` in row, added runtime validation. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED.
   - **Phase 2 Changes:** Added explicit height calculation for BAR charts (container - title - subtitle), updated `.bodyZone` and `.bar .chartBody` to use explicit height instead of `flex: 1`. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED (2026-01-10T12:24:41.812Z).
   - **Phase 3 Changes:** Removed `min-height: 100px` from `.pieChartContainer` and `min-height: 60px` from `.pieLegend` (desktop and mobile). Added `max-height: 40%` to `.pieChartContainer` and `max-height: 50%` to `.pieLegend` to prevent unbounded growth. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED (2026-01-10T12:36:18.947Z).
-  - **Phase 4 Changes:** Added explicit height calculation for text charts (container - title) and table charts (uses --chart-body-height from Phase 2). Updated `.textContentWrapper` and `.tableContent` to use explicit height instead of flex: 1. Removed `min-height: 0` from `.textContent` and `.textContentWrapper`. Local gate: Build pass ✅.
-  - **Commits:** Phase 1: `257fed9ac`, `15d76b326`, `df3ef2df0` | Phase 2: `942a4e642`, `fb75d13c3`, `2b0d7f50e` | Phase 3: `c5a39f725`, `c8050e2e8`, `16b819b54` | Phase 4: `2c312f57f`, `0b234300d`
-  - **Next Steps:** Await approval before proceeding to Phase 5 (Validation and Testing)
+  - **Phase 4 Changes:** Added explicit height calculation for text charts (container - title) and table charts (uses --chart-body-height from Phase 2). Updated `.textContentWrapper` and `.tableContent` to use explicit height instead of flex: 1. Removed `min-height: 0` from `.textContent` and `.textContentWrapper`. Local gate: Build pass ✅. Status: ✅ DONE + APPROVED (2026-01-10T13:02:01.300Z).
+  - **Phase 5 Changes:** Added runtime validation for all height CSS variables (BAR, TEXT, TABLE charts). Validation runs on initial render and resize, console warnings if variables are missing. Local gate: Build pass ✅.
+  - **Commits:** Phase 1: `257fed9ac`, `15d76b326`, `df3ef2df0` | Phase 2: `942a4e642`, `fb75d13c3`, `2b0d7f50e` | Phase 3: `c5a39f725`, `c8050e2e8`, `16b819b54` | Phase 4: `2c312f57f`, `0b234300d`, `02ed61f57` | Phase 5: (to be added after commit)
+  - **Next Steps:** Await approval before proceeding to preview verification
 
 ### Phase 2: Variable Dictionary and Naming Standards
 
