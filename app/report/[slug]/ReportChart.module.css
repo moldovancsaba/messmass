@@ -47,8 +47,8 @@
 
 /* Chart Title - Standardized across all types */
 .chartTitle {
-  /* Scale title to container width: min 0.9rem, grows with box, caps at 1.25rem */
-  font-size: clamp(0.9rem, 2.8cqw, 1.25rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin: 0;
@@ -165,8 +165,8 @@
   width: 100%;
   height: 100%;
   padding: var(--mm-space-2);
-  /* Font scales based on container height (3fr row) */
-  font-size: clamp(0.75rem, 15cqh, 1.5rem); /* INCREASED: 8cqh→15cqh, 1.125rem→1.5rem */
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
@@ -213,8 +213,8 @@
   text-align: center;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
-  /* Doubled title font vs. previous */
-  font-size: clamp(1rem, 9cqh, 1.5rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   line-height: 1.2;
 }
 
@@ -235,7 +235,8 @@
 }
 
 .pieTitle {
-  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
@@ -263,7 +264,8 @@
 }
 
 .pieLabel {
-  font-size: clamp(0.7rem, 2cqw, 0.9rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
 }
@@ -348,14 +350,8 @@
   /* WHAT: Legend text scaled to fit available space with responsive sizing */
   /* WHY: Make legend text readable in both large and small blocks, prevent overflow, fill available space */
   /* HOW: Use container queries for both width and height, design tokens for bounds */
-  /* Layout Grammar: No overflow, no truncation - text scales to fit */
-  /* P1 2.5.1: Increased scaling from min(12cqh, 8cqw) to min(20cqh, 12cqw), max from 20px to 24px */
-  /* P0 3.4 Phase 1 Fix: More aggressive scaling in constrained spaces to prevent clipping */
-  font-size: clamp(
-    var(--mm-font-size-xxs, 0.625rem), /* WHAT: Reduced min from 0.75rem to 0.625rem for constrained blocks */
-    min(20cqh, 12cqw),                  /* WHAT: Responsive scaling - INCREASED from 12cqh/8cqw to 20cqh/12cqw for better space utilization */
-    var(--mm-font-size-xl, 1.25rem)     /* WHAT: Reduced max from 1.5rem to 1.25rem for constrained blocks */
-  );
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.2; /* WHAT: Reduced from 1.3 to 1.2 for tighter spacing in constrained blocks */
@@ -383,7 +379,8 @@
 }
 
 .barTitle {
-  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
@@ -421,7 +418,8 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: clamp(0.85rem, 9cqh, 1.1rem); /* DOUBLED: 4.5cqh → 9cqh */
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
@@ -510,7 +508,8 @@
   text-align: center !important;
   font-weight: var(--mm-font-weight-semibold) !important;
   color: var(--chartTitleColor) !important;
-  font-size: clamp(0.95rem, 2.6cqw, 1.25rem) !important;
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size) !important;
   line-height: 1.25 !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
@@ -554,11 +553,9 @@
   max-width: 100% !important;
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
-  /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
-  /* WHY: All text charts in a block should use the same font-size */
-  /* HOW: Check for CSS custom property first, fallback to container query scaling */
-  /* INCREASED: Max font-size to 4rem for optimal text sizing (fill space) */
-  font-size: var(--unified-text-font-size, clamp(0.75rem, min(12cqh, 10cqw), 4rem)) !important;
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
+  /* WHY: Align text chart typography with block typography for true unification */
+  font-size: var(--block-base-font-size) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
@@ -860,7 +857,8 @@
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
-  font-size: clamp(0.75rem, 1.5cqw, 0.875rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   table-layout: auto;
 }
 

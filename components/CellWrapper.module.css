@@ -18,7 +18,7 @@
   text-align: center;
   overflow: hidden;
   flex-shrink: 0;
-  font-size: var(--title-font-size); /* WHAT: Use CSS custom property for dynamic font size */
+  font-size: var(--block-base-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
   height: var(--title-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
@@ -46,7 +46,7 @@
   overflow: hidden;
   flex-shrink: 0;
   margin-top: 0.25rem;
-  font-size: var(--subtitle-font-size); /* WHAT: Use CSS custom property for dynamic font size */
+  font-size: var(--block-subtitle-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
   height: var(--subtitle-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
