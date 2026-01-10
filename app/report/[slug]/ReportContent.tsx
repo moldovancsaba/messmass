@@ -264,6 +264,27 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1)
+  // WHY: Warn if height CSS variables are not set, indicating implicit height behavior
+  // HOW: Check computed styles after CSS variables are applied
+  useEffect(() => {
+    if (rowRef.current && typeof window !== 'undefined') {
+      const computedStyle = getComputedStyle(rowRef.current);
+      const rowHeightValue = computedStyle.getPropertyValue('--row-height').trim();
+      const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
+      
+      // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
+      // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
+      if (!rowHeightValue || !blockHeightValue) {
+        console.warn(`[P1 1.4] Row ${rowIndex}: CSS variables --row-height or --block-height not set. Height will fallback to design token.`, {
+          rowHeight: rowHeightValue || 'missing',
+          blockHeight: blockHeightValue || 'missing',
+          calculatedHeight: rowHeight
+        });
+      }
+    }
+  }, [rowHeight, rowIndex]);
+  
   // WHAT: Calculate grid columns from chart widths (sum of units)
   // WHY: Layout Grammar - grid = sum of units (e.g., [1,2,1] → "1fr 2fr 1fr")
   const gridColumns = calculateGridColumns(rowCharts);
@@ -277,6 +298,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
       // WHAT: Set CSS custom properties for dynamic values (centrally managed)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
       // HOW: CSS modules reference these custom properties - block-height is centrally managed at row level
+      // P1 1.4 Phase 1: Explicit height cascade - CSS variables must be set, no implicit fallbacks
       // eslint-disable-next-line react/forbid-dom-props
       style={{
         '--row-height': `${rowHeight}px`,
