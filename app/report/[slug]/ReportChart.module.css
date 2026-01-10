@@ -283,10 +283,10 @@
 .pieChartContainer {
   /* WHAT: 40% of pieGrid height for pie chart */
   /* WHY: Middle section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion with minimum size guarantee */
+  /* HOW: Flex basis for fixed height proportion (P1 1.4 Phase 3: removed min-height, added max-height for deterministic behavior) */
   flex: 0 0 40%; /* 3:4:3 → pie 40% */
   width: 100%;
-  min-height: 100px; /* CRITICAL: Reduced from 150px to prevent overflow in small containers (1 unit in 5-unit block) */
+  max-height: 40%; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
   position: relative;
   display: flex;
   align-items: center;
@@ -1041,13 +1041,12 @@
   
   /* WHAT: Pie chart container - same behavior as desktop on mobile
    * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with minimum height, let canvas fill container */
+   * HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
   .pieChartContainer {
     flex: 0 0 40% !important; /* Same as desktop - 40% of pieGrid (3:4:3 ratio) */
     width: 100% !important;
-    min-height: 100px !important; /* CRITICAL: Reduced from 150px to prevent overflow in small containers */
+    max-height: 40% !important; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
     max-width: 100% !important;
-    max-height: 100% !important;
     position: relative !important;
     overflow: hidden !important;
     display: flex !important;
@@ -1069,19 +1068,17 @@
   
   /* WHAT: Pie legend - same behavior as desktop on mobile - Layout Grammar: no scrolling */
   /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
-  /* HOW: Maintain flex basis with minimum height, allow growth if needed */
+  /* HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
   .pieLegend {
     flex: 1 1 20% !important; /* Prefer 20%, but can grow if content exceeds (no scrolling) */
     width: 100% !important;
-    min-height: 60px !important; /* CRITICAL: Prevent collapse */
+    max-height: 50% !important; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
     max-width: 100% !important;
     justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
     overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
     /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
-    overflow: hidden !important; /* No scrolling allowed - Layout Grammar compliance */
     display: flex !important;
     flex-direction: column !important;
-    justify-content: center !important;
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
