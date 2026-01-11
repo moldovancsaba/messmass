@@ -367,18 +367,17 @@
   /* WHAT: Chart body container - fills available space, respects height constraints */
   /* WHY: Must use full width and respect available height without overflow */
   /* HOW: Flex container with width/height constraints, table fills available space and is centered */
+  /* CRITICAL: Layout Grammar - no scrolling, no truncation, no clipping on content layers */
   height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
-  max-height: 100%; /* WHAT: Never exceed container height */
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
-  justify-content: flex-start; /* WHAT: Align table to top to prevent bottom clipping */
+  justify-content: flex-start; /* WHAT: Align table to top */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
-  overflow-y: auto; /* WHAT: Allow scrolling if table is taller than container - prevents overflow */
-  overflow-x: hidden; /* WHAT: Prevent horizontal overflow */
+  overflow: visible; /* WHAT: Layout Grammar - no clipping on content layers, content must be visible, container grows to fit */
   box-sizing: border-box;
 }
 
@@ -395,15 +394,16 @@
   /* WHAT: BAR chart table - semantic HTML table for natural row expansion */
   /* WHY: Tables naturally expand rows to fit content, preventing overlap (Layout Grammar: no clipping) */
   /* HOW: Standard HTML table with proper column widths, rows expand automatically, centered in container */
+  /* CRITICAL: Layout Grammar - no scrolling, no clipping, content must fit through structural changes (reflow/aggregation/height increase) */
   width: 100%; /* WHAT: Use full width of available space (accounts for parent padding via box-sizing) */
   max-width: 100%; /* WHAT: Never exceed container width */
   border-collapse: separate;
   border-spacing: 0 var(--mm-space-2); /* WHAT: Consistent row gap using border-spacing - increased for better visual separation */
   table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
-  height: auto; /* WHAT: Auto height to fit content, constrained by parent scrolling */
+  height: auto; /* WHAT: Auto height to fit all rows - Layout Grammar: content must fit through structural changes, not clipping */
   margin: 0 auto; /* WHAT: Center table horizontally in flex container */
   box-sizing: border-box;
-  /* WHAT: Removed max-height - let table grow naturally, parent container handles scrolling */
+  /* WHAT: Removed max-height constraint - Layout Grammar: if content doesn't fit, apply reflow/aggregation/height increase, not clipping */
 }
 
 .barElements {
