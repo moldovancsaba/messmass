@@ -397,6 +397,8 @@
   align-content: start; /* WHAT: Stack rows from top */
   width: 100%; /* CRITICAL: Fill full chart width */
   max-width: none !important; /* CRITICAL: Remove max-width */
+  min-height: 0; /* WHAT: Allow grid to shrink if needed */
+  overflow: visible; /* WHAT: Allow content to expand beyond container if needed */
   /* WHAT: No flex: 1, no justify-content, no distribution logic - grid fills space naturally */
 }
 
@@ -410,13 +412,15 @@
   align-items: start; /* WHAT: Align labels at top to prevent overlap */
   padding-inline: var(--mm-space-1);
   container-type: size;
+  min-height: 0; /* WHAT: Allow row to shrink if needed */
+  overflow: visible; /* WHAT: Allow content to expand row height */
   /* WHAT: Grid model ensures strict row ownership - row height determined by content */
 }
 
 .barLabel {
   /* WHAT: Bar label - wraps safely to multiple lines without overlap */
   /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
-  /* HOW: Normal wrapping with proper line-height, no line clamp, right-aligned */
+  /* HOW: Block-level wrapping with proper line-height, no line clamp, right-aligned */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
@@ -427,10 +431,10 @@
   word-break: break-word; /* WHAT: Break long words if needed */
   line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
   padding-right: var(--mm-space-1);
-  display: flex;
-  flex-direction: column; /* WHAT: Stack lines vertically */
-  align-items: flex-end; /* WHAT: Right-align text */
-  justify-content: flex-start; /* WHAT: Align to top */
+  display: block; /* WHAT: Block display allows natural wrapping and row expansion */
+  min-height: 0; /* WHAT: Allow label to shrink if needed */
+  overflow: visible; /* WHAT: Allow text to wrap and expand row height */
+  /* WHAT: Removed flex display - block allows natural text wrapping and row height expansion */
 }
 
 .barTrack {
