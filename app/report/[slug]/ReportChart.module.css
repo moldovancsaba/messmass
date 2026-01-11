@@ -388,14 +388,18 @@
 }
 
 .barElements {
+  /* WHAT: BAR elements container - allows rows to grow naturally with multi-line labels */
+  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
+  /* HOW: Natural stacking with gap, no space-evenly distribution */
   display: flex;
   flex-direction: column;
-  gap: 0;
-  flex: 1; /* CRITICAL: Fill ALL remaining vertical space */
-  justify-content: space-evenly; /* WHAT: Distribute bars evenly across full height */
+  gap: var(--mm-space-1); /* WHAT: Spacing between rows to prevent overlap */
+  flex: 1; /* WHAT: Fill remaining vertical space, but allow natural stacking */
+  justify-content: flex-start; /* WHAT: Stack rows naturally, don't force even distribution */
   width: 100%; /* CRITICAL: Fill full chart width */
   max-width: none !important; /* CRITICAL: Remove max-width */
   min-height: 0; /* CRITICAL: Allow flex shrinking */
+  align-items: stretch; /* WHAT: Stretch rows to full width */
 }
 
 .barRow {
@@ -405,12 +409,11 @@
   display: grid;
   grid-template-columns: minmax(0, 25%) minmax(0, 1fr) auto; /* Label 25% | Track fills | Value auto */
   column-gap: var(--mm-space-3);
-  row-gap: var(--mm-space-1);
   align-items: start; /* WHAT: Align labels at top to prevent overlap */
-  padding-block: var(--mm-space-1); /* WHAT: Vertical spacing between rows */
   padding-inline: var(--mm-space-1);
   container-type: size;
   /* WHAT: Removed flex: 1 - allow rows to grow with multi-line content */
+  /* WHAT: Removed padding-block - gap is now handled by parent .barElements */
 }
 
 .barLabel {
