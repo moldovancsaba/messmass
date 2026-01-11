@@ -4,16 +4,19 @@
 // HOW: Calculate max font size where 2-line labels fit in available row height
 
 /**
- * WHAT: Calculate maximum font size for BAR chart labels considering 2-line wrapping
- * WHY: Labels can wrap to 2 lines - font size must ensure they fit in available height
- * HOW: Binary search for maximum font size where 2-line labels fit in row height
+ * WHAT: Calculate maximum font size for BAR chart labels with smart wrapping strategy
+ * WHY: Layout Grammar requires maximizing font size while ensuring content fits
+ * HOW: 
+ *   1. First, try to fit in 1 line by reducing font size (down to minimum)
+ *   2. Only if minimum font size doesn't fit in 1 line, allow 2-line wrapping
+ *   3. Find maximum font size where 2-line label fits
  * 
  * @param labelText - The label text that may wrap
  * @param labelWidthPx - Available width for label (40% of table width)
  * @param availableRowHeightPx - Available height per row (after padding, spacing, bar track)
  * @param minFontSize - Minimum acceptable font size (default: 10px)
  * @param maxFontSize - Maximum acceptable font size (default: 24px)
- * @returns Maximum font size in pixels where 2-line label fits
+ * @returns Maximum font size in pixels (1-line if possible, 2-line if necessary)
  */
 export function calculateMaxBarLabelFontSize(
   labelText: string,
@@ -27,19 +30,27 @@ export function calculateMaxBarLabelFontSize(
   }
   
   // WHAT: Estimate characters per line at a given font size
-  // WHY: Need to know if text fits in 2 lines at a given font size
+  // WHY: Need to know if text fits in 1 or 2 lines at a given font size
   // HOW: Rough estimate: ~0.6em per character (accounts for spacing)
   const estimateLines = (fontSize: number): number => {
     const charsPerLine = Math.max(1, Math.floor(labelWidthPx / (fontSize * 0.6)));
     return Math.ceil(labelText.length / charsPerLine);
   };
   
-  // WHAT: Check if 2-line label fits in available height at given font size
-  // WHY: Need to verify actual height requirement, not just line count
-  // HOW: 2 lines × font-size × line-height (1.2) must fit in available height
-  const fitsInHeight = (fontSize: number): boolean => {
+  // WHAT: Check if label fits in 1 line at given font size
+  // WHY: First priority is to keep label on 1 line by reducing font size
+  // HOW: Check if estimated lines <= 1
+  const fitsInOneLine = (fontSize: number): boolean => {
+    return estimateLines(fontSize) <= 1;
+  };
+  
+  // WHAT: Check if label fits in available height at given font size (1 or 2 lines)
+  // WHY: Need to verify actual height requirement
+  // HOW: lineCount × fontSize × lineHeight must fit in available height
+  const fitsInHeight = (fontSize: number, allowTwoLines: boolean = true): boolean => {
     const lineCount = estimateLines(fontSize);
     if (lineCount > 2) return false; // More than 2 lines not allowed
+    if (!allowTwoLines && lineCount > 1) return false; // Only 1 line allowed
     
     // WHAT: Calculate actual height needed for label
     // WHY: Need to account for line-height (1.2) and ensure it fits
@@ -55,24 +66,50 @@ export function calculateMaxBarLabelFontSize(
     return requiredRowHeight <= availableRowHeightPx;
   };
   
-  // WHAT: Binary search for maximum font size where 2-line label fits
-  // WHY: Maximize font size while ensuring content fits (Layout Grammar: no clipping)
-  // HOW: Binary search between minFontSize and maxFontSize
-  let best = minFontSize;
+  // WHAT: Step 1: Try to fit in 1 line by reducing font size
+  // WHY: First priority is to keep label on 1 line, maximize font size within that constraint
+  // HOW: Binary search for maximum font size where label fits in 1 line
+  let bestOneLine = minFontSize;
   let lo = minFontSize;
   let hi = maxFontSize;
   
   while (lo <= hi) {
     const mid = Math.floor((lo + hi) / 2);
-    if (fitsInHeight(mid)) {
-      best = mid;
+    if (fitsInOneLine(mid) && fitsInHeight(mid, false)) {
+      bestOneLine = mid;
       lo = mid + 1; // Try larger font size
     } else {
       hi = mid - 1; // Too large, try smaller
     }
   }
   
-  return best;
+  // WHAT: Step 2: Check if minimum font size fits in 1 line
+  // WHY: Only allow 2-line wrapping if minimum font size doesn't fit in 1 line
+  // HOW: If bestOneLine >= minFontSize, we can fit in 1 line
+  if (bestOneLine >= minFontSize && fitsInOneLine(bestOneLine)) {
+    // WHAT: Can fit in 1 line - return maximum font size that fits in 1 line
+    return bestOneLine;
+  }
+  
+  // WHAT: Step 3: Minimum font size doesn't fit in 1 line - allow 2-line wrapping
+  // WHY: Only break to 2 lines when 1 line is impossible at minimum font size
+  // HOW: Binary search for maximum font size where 2-line label fits
+  let bestTwoLine = minFontSize;
+  lo = minFontSize;
+  hi = maxFontSize;
+  
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (fitsInHeight(mid, true)) {
+      bestTwoLine = mid;
+      lo = mid + 1; // Try larger font size
+    } else {
+      hi = mid - 1; // Too large, try smaller
+    }
+  }
+  
+  // WHAT: Return maximum font size (will be 2-line if 1-line wasn't possible)
+  return bestTwoLine;
 }
 
 /**
