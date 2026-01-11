@@ -373,7 +373,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
-  justify-content: center; /* WHAT: Center table vertically in container */
+  justify-content: flex-start; /* WHAT: Align table to top to prevent overflow */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
@@ -400,18 +400,19 @@
   border-spacing: 0 var(--mm-space-1); /* WHAT: Row gap using border-spacing */
   table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
   height: auto; /* WHAT: Auto height to fit content, constrained by parent max-height */
-  max-height: 100%; /* WHAT: Never exceed container height */
-  margin: 0 auto; /* WHAT: Center table horizontally in container */
+  max-height: 100%; /* WHAT: Never exceed container height - prevents overflow */
+  margin: 0; /* WHAT: No margin - table fills container width */
   box-sizing: border-box;
+  overflow: hidden; /* WHAT: Prevent table from overflowing container */
 }
 
 .barElements {
   /* WHAT: Table body - contains all bar rows */
   /* WHY: Standard table structure */
   width: 100%;
-  max-height: 100%; /* WHAT: Respect container height */
+  max-height: 100%; /* WHAT: Respect container height - prevent overflow */
   display: table-row-group; /* WHAT: Ensure proper table structure */
-  overflow: visible; /* WHAT: Allow rows to expand, but table container handles overflow */
+  overflow: hidden; /* WHAT: Prevent rows from overflowing - table must fit */
 }
 
 .barRow {
@@ -422,21 +423,25 @@
 }
 
 .barLabel {
-  /* WHAT: Bar label table cell - wraps safely to multiple lines, row expands automatically */
-  /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
-  /* HOW: Standard table cell with text wrapping, right-aligned */
+  /* WHAT: Bar label table cell - wraps to maximum 2 lines, row expands automatically */
+  /* WHY: Table cells naturally expand row height when content wraps, but limit to 2 lines for readability */
+  /* HOW: Standard table cell with text wrapping limited to 2 lines, right-aligned */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  white-space: normal; /* WHAT: Allow wrapping */
+  display: -webkit-box; /* WHAT: Enable line clamping */
+  -webkit-line-clamp: 2; /* WHAT: Maximum 2 lines */
+  -webkit-box-orient: vertical; /* WHAT: Vertical box orientation for line clamp */
+  overflow: hidden; /* WHAT: Hide overflow beyond 2 lines */
+  text-overflow: ellipsis; /* WHAT: Show ellipsis if text is truncated */
   overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
   word-break: break-word; /* WHAT: Break long words if needed */
   line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
-  width: 25%; /* WHAT: Label column width (fixed layout ensures this is respected) */
+  width: 35%; /* WHAT: Increased label column width - 35% of table width for better readability */
   vertical-align: top; /* WHAT: Align to top of row */
   box-sizing: border-box;
 }
@@ -478,16 +483,16 @@
 .barValue {
   /* WHAT: Bar value table cell - displays formatted number */
   /* WHY: Table cell provides natural column structure */
-  /* HOW: Standard table cell, left-aligned text */
+  /* HOW: Standard table cell, left-aligned text - same font size as label */
   padding-left: var(--mm-space-2);
   padding-right: var(--mm-space-1);
   width: auto; /* WHAT: Value column auto-width based on content, remaining space goes to track */
   min-width: fit-content; /* WHAT: Ensure value text is never clipped */
-  font-size: clamp(1rem, 10cqh, 1.4rem); /* DOUBLED: 5cqh → 10cqh */
+  font-size: var(--block-base-font-size); /* WHAT: Same font size as label for consistency */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   text-align: left;
-  line-height: 1;
+  line-height: 1.15; /* WHAT: Match label line-height */
   white-space: nowrap; /* WHAT: Values should not wrap (single line) */
   vertical-align: middle; /* WHAT: Center value vertically in row */
   box-sizing: border-box;
