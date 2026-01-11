@@ -401,7 +401,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
                 // WHY: Colors come from chart calculation, cannot use static CSS classes
                 // HOW: Set CSS custom properties on parent, consumed by .pieLegendDot
                 // eslint-disable-next-line react/forbid-dom-props
-                style={{
+                  style={{ 
                   '--dot-color': color,
                   '--dot-border-color': pieColors[0]
                 } as React.CSSProperties}
@@ -424,10 +424,6 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
 function BarChart({ result, className }: { result: ChartResult; className?: string }) {
-  if (!result.elements || result.elements.length === 0) {
-    return <div className={styles.chart}>No bar data</div>;
-  }
-
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
@@ -440,6 +436,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
   // WHY: Replace flex: 1 with explicit height for deterministic behavior
   // HOW: Measure container and header heights, calculate body height, set CSS custom property
   useEffect(() => {
+    if (!result.elements || result.elements.length === 0) return;
     if (chartBodyRef.current && typeof window !== 'undefined') {
       // WHAT: Find parent CellWrapper container (chart container)
       // WHY: CSS variable must be set on chart container per solution document
@@ -488,12 +485,13 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
       };
     }
-  }, [showTitle, result.title]);
+  }, [showTitle, result.title, result.elements]);
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
   // WHY: Ensure all height values are explicit and traceable
   // HOW: Check computed styles after CSS variables are applied
   useEffect(() => {
+    if (!result.elements || result.elements.length === 0) return;
     if (chartBodyRef.current && typeof window !== 'undefined') {
       const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
       if (!chartContainer) return;
@@ -531,7 +529,12 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
         resizeObserver.disconnect();
       };
     }
-  }, [result.chartId, showTitle, result.title]);
+  }, [result.chartId, showTitle, result.title, result.elements]);
+  
+  // WHAT: Early return if no data (after hooks)
+  if (!result.elements || result.elements.length === 0) {
+    return <div className={styles.chart}>No bar data</div>;
+  }
   
   // WHAT: Read individual bar colors from CSS variables
   // WHY: Use custom style colors for each bar (granular control)
@@ -582,7 +585,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                 // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
                 // HOW: Set CSS custom properties on parent, consumed by .barFill
                 // eslint-disable-next-line react/forbid-dom-props
-                style={{
+                  style={{ 
                   '--bar-width': `${widthPercent}%`,
                   '--bar-color': barColors[idx % barColors.length]
                 } as React.CSSProperties}
@@ -955,12 +958,12 @@ function ImageChart({ result, className }: { result: ChartResult; className?: st
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           ref={imgRef}
-          className={styles.imageContent}
-          src={formattedValue}
-          alt={result.title}
+        className={styles.imageContent}
+        src={formattedValue}
+        alt={result.title}
           onLoad={handleImageLoad}
-          onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
-        />
+        onError={(e) => console.error('[ImageChart] Image failed to load:', result.title, e)}
+      />
       </div>
     </CellWrapper>
   );

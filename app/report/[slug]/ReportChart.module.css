@@ -1011,15 +1011,28 @@
     gap: var(--mm-space-4);
   }
   
+  .barElements {
+    /* WHAT: Mobile - maintain grid model with strict row ownership */
+    /* WHY: Same architectural model as desktop - rows own their height */
+    /* HOW: Grid with max-content rows, no distribution logic */
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: var(--mm-space-1);
+    align-content: start;
+  }
+  
   .barRow {
-    /* WHAT: Same rem-based columns as desktop - fully responsive
-     * WHY: No hardcoded pixels, consistent design token system */
-    grid-template-columns: minmax(5rem, 22cqw) 1fr minmax(3.75rem, 16cqw);
-    gap: var(--mm-space-2);
+    /* WHAT: Mobile - responsive grid columns, maintain strict row ownership */
+    /* WHY: Same grid model as desktop, adjusted column sizes for mobile */
+    /* HOW: Grid with responsive column sizing, max-content for value */
+    grid-template-columns: minmax(5rem, 22cqw) 1fr max-content;
+    column-gap: var(--mm-space-2);
   }
   
   .barLabel {
-    font-size: var(--mm-font-size-xs);
+    /* WHAT: Mobile - use block-level typography for consistency (P1 1.5) */
+    /* WHY: Unified typography system applies to all viewports */
+    font-size: var(--block-base-font-size);
   }
   
   /* WHAT: Charts must scale to fit their container on mobile
