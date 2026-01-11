@@ -423,21 +423,25 @@
 }
 
 .barLabel {
-  /* WHAT: Bar label table cell - wraps safely to multiple lines, row expands automatically */
-  /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
-  /* HOW: Standard table cell with text wrapping, right-aligned */
+  /* WHAT: Bar label table cell - wraps to maximum 2 lines, row expands automatically */
+  /* WHY: Table cells naturally expand row height when content wraps, but limit to 2 lines for readability */
+  /* HOW: Standard table cell with text wrapping limited to 2 lines, right-aligned */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  white-space: normal; /* WHAT: Allow wrapping */
+  display: -webkit-box; /* WHAT: Enable line clamping */
+  -webkit-line-clamp: 2; /* WHAT: Maximum 2 lines */
+  -webkit-box-orient: vertical; /* WHAT: Vertical box orientation for line clamp */
+  overflow: hidden; /* WHAT: Hide overflow beyond 2 lines */
+  text-overflow: ellipsis; /* WHAT: Show ellipsis if text is truncated */
   overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
   word-break: break-word; /* WHAT: Break long words if needed */
   line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
-  width: 25%; /* WHAT: Label column width (fixed layout ensures this is respected) */
+  width: 35%; /* WHAT: Increased label column width - 35% of table width for better readability */
   vertical-align: top; /* WHAT: Align to top of row */
   box-sizing: border-box;
 }
