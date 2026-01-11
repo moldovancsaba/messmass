@@ -1,10 +1,10 @@
 # MessMass Architecture Documentation
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.2
+Version: 11.55.3
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -840,7 +840,7 @@ curl "http://localhost:3000/api/report-config/PROJECT_SLUG?type=project"
 - `<AdminLayout>`: Admin page wrapper with Sidebar + TopHeader (see ADMIN_LAYOUT_SYSTEM.md)
 
 ### Design System
-- All design tokens documented in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
+- All design tokens documented in [DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md)
 - TailAdmin V2 flat design (no glass-morphism)
 - **ALL CSS card classes REMOVED**: `.glass-card`, `.content-surface`, `.section-card`, `.admin-card`
 - **ONLY USE**: `<ColoredCard>` component for all card UI
@@ -1191,7 +1191,7 @@ The system supports sophisticated filtering with both traditional and categorize
 
 ## 📊 Reporting System v12 Architecture (v11.37.0+)
 
-**Last Updated: 2026-01-11T22:28:38.000Z
+**Last Updated: 2026-01-11T22:45:21.000Z
 **Status:** Production (v12.0.0 migration in progress)  
 **Technical Audit:** See `TECH_AUDIT_REPORTING_SYSTEM.md` for comprehensive analysis
 
@@ -1875,7 +1875,7 @@ The Admin Layout & Navigation System provides a comprehensive, responsive layout
 
 **Status**: Stable, Production-Ready  
 **Documentation**: See [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
-**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
+**Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
 
 ### Key Components
 
@@ -2488,7 +2488,7 @@ await fetch('/api/page-styles-enhanced/set-global', {
 The Security Enhancements system provides comprehensive API protection through rate limiting, CSRF protection, and centralized logging. These layers work together to protect against abuse, ensure request authenticity, and provide operational visibility.
 
 **Status**: Production-Ready  
-**Documentation**: See [SECURITY_ENHANCEMENTS.md](./docs/SECURITY_ENHANCEMENTS.md) and [SECURITY_MIGRATION_GUIDE.md](./docs/SECURITY_MIGRATION_GUIDE.md)
+**Documentation**: See SECURITY_ENHANCEMENTS.md (TODO: unresolved target) and SECURITY_MIGRATION_GUIDE.md (TODO: unresolved target)
 
 ### Key Components
 
@@ -2643,7 +2643,7 @@ export async function apiRequest<T>(url: string, options: RequestInit): Promise<
 
 ### Migration Guide
 
-See [SECURITY_MIGRATION_GUIDE.md](./docs/SECURITY_MIGRATION_GUIDE.md) for step-by-step migration instructions, including:
+See SECURITY_MIGRATION_GUIDE.md (TODO: unresolved target) for step-by-step migration instructions, including:
 - Replacing `fetch()` calls with `apiClient`
 - Adding logging to API routes
 - Testing security features

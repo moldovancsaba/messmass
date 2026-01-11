@@ -1,10 +1,10 @@
 # Markdown Text Feature Documentation
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.45.1  
+**Version:** 11.45.2  
 **Status:** Production-Ready  
 **Date:** 2025-12-22T18:31:10.000Z
 
@@ -48,7 +48,7 @@ Visit [our website](https://example.com) for details.
 - *Italic*: `*text*` → *text*
 - Headings: `# H1`, `## H2`, `### H3`
 - Lists: `- item` or `1. item`
-- Links: `[text](url)`
+- Links: `text (TODO: unresolved target)`
 - Blockquotes: `> quote`
 - Code: `` `code` ``
 - Strikethrough: `~~text~~`
@@ -437,7 +437,7 @@ app/
 - Italic: `*text*`
 - Heading: `# text`
 - List: `- text`
-- Link: `[text](url)`
+- Link: `text (TODO: unresolved target)`
 
 ---
 

@@ -1,11 +1,11 @@
 # 🎯 Unified Admin Page - Responsive Design Guide
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Last Updated**: 2026-01-11T22:28:38.000Z  
-**Version**: 10.6.2  
+**Last Updated**: 2026-01-11T22:45:21.000Z  
+**Version**: 10.6.3  
 **Status**: Production-Ready
 
 ---
@@ -476,9 +476,9 @@ export default function EventsPage() {
 
 - **[UNIFIED_ADMIN_VIEW_STATUS.md](./UNIFIED_ADMIN_VIEW_STATUS.md)** - Implementation status
 - **[ADMIN_VIEW_QUICK_START.md](./ADMIN_VIEW_QUICK_START.md)** - Quick start guide
-- **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** - Design tokens reference
-- **[CODING_STANDARDS.md](./CODING_STANDARDS.md)** - CSS best practices
-- **[WARP.md](./WARP.md)** - Development environment setup
+- **[DESIGN_SYSTEM.md](../../../../docs/design/DESIGN_SYSTEM.md)** - Design tokens reference
+- **[CODING_STANDARDS.md](../../../../CODING_STANDARDS.md)** - CSS best practices
+- **[WARP.md](../../../../WARP.md)** - Development environment setup
 
 ---
 

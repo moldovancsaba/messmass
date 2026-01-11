@@ -1,10 +1,10 @@
 # Report Text Sizing & Markdown Enhancement Plan
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 1.0.1  
+**Version:** 1.0.2  
 **Status:** Planning  
 **Date:** 2025-01-02  
 **Owner:** Tribeca
@@ -45,7 +45,7 @@ This plan addresses two requirements for report text charts:
 - Headings: `# H1`, `## H2`, `### H3` (all normalized to `<h1>`)
 - Unordered lists: `- item`
 - Ordered lists: `1. item`
-- Links: `[text](url)`
+- Links: `text (TODO: unresolved target)`
 
 **❌ Currently Disabled:**
 - Blockquotes: `> quote` (stripped)

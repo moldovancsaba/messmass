@@ -1,11 +1,11 @@
 # Card System — ColoredCard Component
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version**: 8.24.2  
-**Last Updated**: 2026-01-11T22:28:38.000Z  
+**Version**: 8.24.3  
+**Last Updated**: 2026-01-11T22:45:21.000Z  
 **Component**: `components/ColoredCard.tsx`
 
 ---
@@ -269,10 +269,10 @@ import ColoredCard from '@/components/ColoredCard';
 
 ## 📖 Related Docs
 
-- **[/admin/design](./app/admin/design/page.tsx)** — Interactive Design System Manager with live ColoredCard showcase
-- [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Complete design system
+- **[/admin/design](../../../../app/admin/design/page.tsx)** — Interactive Design System Manager with live ColoredCard showcase
+- [DESIGN_SYSTEM.md](../../../../docs/design/DESIGN_SYSTEM.md) — Complete design system
 - [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) — Admin layout
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — System architecture
+- [ARCHITECTURE.md](../../../../ARCHITECTURE.md) — System architecture
 
 ---
 

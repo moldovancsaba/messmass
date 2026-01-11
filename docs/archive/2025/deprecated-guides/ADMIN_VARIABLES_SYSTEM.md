@@ -1,11 +1,11 @@
 # Database-First Variables & Metrics Management System
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 8.24.1  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 8.24.2  
+**Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
 **Status:** Production  
 **Breaking Change:** Migrated from code-based registry to database-first system
 
@@ -820,8 +820,8 @@ If migration fails:
 - [SINGLE_REFERENCE_SYSTEM.md](./SINGLE_REFERENCE_SYSTEM.md) — Single source of truth with `stats.` prefix
 - [VARIABLES_DATABASE_SCHEMA.md](./VARIABLES_DATABASE_SCHEMA.md) — MongoDB schema for `variables_metadata`
 - [DATABASE_FIELD_NAMING.md](./DATABASE_FIELD_NAMING.md) — Naming conventions
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — System-wide architecture overview
-- [WARP.md](./WARP.md) — Development quick reference
+- [ARCHITECTURE.md](../../../../ARCHITECTURE.md) — System-wide architecture overview
+- [WARP.md](../../../../WARP.md) — Development quick reference
 
 ---
 
