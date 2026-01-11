@@ -9,9 +9,9 @@ import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
 import type { ChartResult } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
-import { solveBlockHeightWithImages } from '@/lib/blockHeightCalculator';
+import { resolveBlockHeightWithDetails } from '@/lib/blockHeightCalculator';
 import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
-import type { CellConfiguration } from '@/lib/blockLayoutTypes';
+import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 
 /**
@@ -213,6 +213,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
         
         // WHAT: Immediately recalculate height based on new width
         // WHY: Only include cells with valid data (v11.48.0)
+        // WHAT: Include contentMetadata for BAR charts to ensure accurate height calculation
         const cells: CellConfiguration[] = rowCharts
           .flatMap(chart => {
             const result = chartResults.get(chart.chartId);
@@ -220,17 +221,35 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
             // WHY: Empty cells should not affect row height
             if (!hasValidChartData(result) || !result) return [];
             
+            // WHAT: Build contentMetadata for BAR charts (row count)
+            // WHY: Layout Grammar requires accurate height calculation based on actual row count
+            const contentMetadata: Record<string, unknown> = {};
+            if (result.type === 'bar' && result.elements) {
+              contentMetadata.barCount = result.elements.length;
+            }
+            
             return [{
               chartId: chart.chartId,
               cellWidth: (chart.width || 1) as 1 | 2,
               bodyType: result.type as any,
               aspectRatio: result.aspectRatio,
               title: result.title,
-              subtitle: undefined
+              subtitle: undefined,
+              contentMetadata: Object.keys(contentMetadata).length > 0 ? contentMetadata : undefined
             }];
           });
         
-        const height = solveBlockHeightWithImages(cells, width);
+        // WHAT: Use resolveBlockHeightWithDetails to account for BAR chart row requirements
+        // WHY: Layout Grammar requires accurate height calculation that accounts for actual content
+        // HOW: Pass cells with contentMetadata to enhanced height resolver
+        const heightResolution = resolveBlockHeightWithDetails({
+          blockId: `row-${rowIndex}`,
+          cells,
+          blockWidth: width,
+          blockAspectRatio: undefined,
+          maxAllowedHeight: undefined
+        });
+        const height = heightResolution.heightPx;
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         setRowHeight(height);
         
