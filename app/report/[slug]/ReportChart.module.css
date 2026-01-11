@@ -399,50 +399,50 @@
 }
 
 .barRow {
-  /* WHAT: 5 bars distributed evenly with label, track, and value */
-  /* WHY: Each bar gets equal vertical space in barElements container */
-  /* HOW: Grid layout: 25% label | 50% track | 25% value */
+  /* WHAT: BAR row with label, track, and value - allows multi-line labels to expand row height */
+  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
+  /* HOW: Grid layout with auto height, labels at start, bar/value aligned with first line */
   display: grid;
-  grid-template-columns: 25% 1fr 25%; /* Label 25% | Track fills (50%) | Value 25% */
-  gap: 0 var(--mm-space-2);
-  align-items: center;
-  flex: 1;
-  padding: 0 var(--mm-space-1);
+  grid-template-columns: minmax(0, 25%) minmax(0, 1fr) auto; /* Label 25% | Track fills | Value auto */
+  column-gap: var(--mm-space-3);
+  row-gap: var(--mm-space-1);
+  align-items: start; /* WHAT: Align labels at top to prevent overlap */
+  padding-block: var(--mm-space-1); /* WHAT: Vertical spacing between rows */
+  padding-inline: var(--mm-space-1);
   container-type: size;
+  /* WHAT: Removed flex: 1 - allow rows to grow with multi-line content */
 }
 
 .barLabel {
-  /* WHAT: Bar label - flexible, wraps to 2 lines if needed */
-  /* WHY: Left column (25%) - readable labels, doubled font */
-  /* HOW: Text truncation with 2-line max */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  /* WHAT: Bar label - wraps safely to multiple lines without overlap */
+  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
+  /* HOW: Normal wrapping with proper line-height, no line clamp, right-aligned */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  line-height: 1.1;
-  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
-  /* WHY: Content must fit through wrapping/reflow, not truncation */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  white-space: normal; /* WHAT: Allow wrapping */
+  overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
+  word-break: break-word; /* WHAT: Break long words if needed */
+  line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
   padding-right: var(--mm-space-1);
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column; /* WHAT: Stack lines vertically */
+  align-items: flex-end; /* WHAT: Right-align text */
+  justify-content: flex-start; /* WHAT: Align to top */
 }
 
 .barTrack {
-  /* WHAT: Full-width bar track (50% of grid - middle column) */
+  /* WHAT: Full-width bar track (middle column) */
   /* WHY: Track fills available space between label and value */
-  /* HOW: 100% width of grid column, 22% of cell height (doubled from 11%) */
+  /* HOW: 100% width of grid column, aligned with first line of label */
   background: var(--chartNoDataBackground);
   height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
-  width: 100%; /* CRITICAL: Fills entire middle grid column (50%) */
+  width: 100%; /* CRITICAL: Fills entire middle grid column */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   overflow: hidden;
+  align-self: center; /* WHAT: Align bar with first line of label (or center within row) */
 }
 
 .barFill {
@@ -457,9 +457,9 @@
 }
 
 .barValue {
-  /* WHAT: Bar value - right column (25%), displays formatted number */
-  /* WHY: Right alignment for easy reading */
-  /* HOW: Flex container for alignment, doubled font size */
+  /* WHAT: Bar value - right column, displays formatted number */
+  /* WHY: Right alignment for easy reading, aligned with first line of label */
+  /* HOW: Flex container for alignment, aligned with bar track */
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -469,10 +469,8 @@
   color: var(--chartValueColor);
   text-align: left;
   line-height: 1;
-  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
-  /* WHY: Content must fit through wrapping/reflow, not truncation */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  white-space: nowrap; /* WHAT: Values should not wrap (single line) */
+  align-self: center; /* WHAT: Align value with first line of label (or center within row) */
 }
 
 /* Text Chart - Flexbox structure with title and content zones */
