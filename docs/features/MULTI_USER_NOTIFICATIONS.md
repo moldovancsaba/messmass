@@ -1,6 +1,6 @@
 # Multi-User Notifications
 Status: Active
-Last Updated: 2026-01-11T23:27:27.000Z
+Last Updated: 2026-01-11T23:51:17.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -38,5 +38,5 @@ Owner: Architecture
 - Screen readers not announcing updates: no `aria-live` region is defined for the badge.
 
 ## Related Documents
-- [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- [ADMIN_LAYOUT_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md)
+- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
+- [IMPLEMENTATION_COMPLETE.md](../../IMPLEMENTATION_COMPLETE.md)
