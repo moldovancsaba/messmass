@@ -123,6 +123,11 @@ function validatePieElementFit(
 
 /**
  * Validates bar element fit
+ * 
+ * Layout Grammar Rule: Minimum bar height 20px per bar
+ * Actual calculation accounts for:
+ * - Chart body padding (top + bottom)
+ * - Per row: label height (2-line max), bar track height (20px min), row spacing
  */
 function validateBarElementFit(
   cellConfig: CellConfiguration,
@@ -131,12 +136,46 @@ function validateBarElementFit(
 ): ElementFitValidation {
   const contentMetadata = cellConfig.contentMetadata || {};
   const barCount = (contentMetadata.barCount as number) || 0;
-  const minBarHeight = 20; // Minimum height per bar
   
-  // Estimate required height based on bar count
-  const estimatedRequiredHeight = barCount * minBarHeight + 100; // 100px for labels/spacing
+  if (barCount === 0) {
+    return {
+      fits: true,
+      violations: [],
+      requiredActions: []
+    };
+  }
   
-  if (containerHeight >= estimatedRequiredHeight) {
+  // WHAT: Calculate actual required height for BAR chart
+  // WHY: Layout Grammar requires accurate height calculation to prevent clipping
+  // HOW: Sum all components: padding + (rows × rowHeight) + (spacing × gaps)
+  
+  // Base padding: chart body has var(--mm-space-2) top and bottom = 8px × 2 = 16px
+  const chartBodyPadding = 16; // 2 × 8px (--mm-space-2)
+  
+  // Per-row components:
+  // - Label: Can wrap to 2 lines max
+  //   Font size: var(--block-base-font-size) - typically 1rem (16px) at base
+  //   Line height: 1.2
+  //   Max label height: 16px × 1.2 × 2 lines = 38.4px ≈ 40px (rounded up for safety)
+  const maxLabelHeight = 40; // 2-line label with line-height 1.2
+  
+  // - Bar track: Layout Grammar minimum 20px per bar
+  //   Actual CSS: clamp(1.2rem, 22cqh, 1.44rem) ≈ 19.2-23px, use 20px minimum
+  const minBarTrackHeight = 20; // Layout Grammar requirement
+  
+  // - Row spacing: border-spacing: 0 var(--mm-space-2) = 8px between rows
+  const rowSpacing = 8; // --mm-space-2
+  
+  // Per-row height: label + bar track (labels and bars are in same row)
+  // Row height = max(labelHeight, barHeight) since they're in table cells that align
+  // In practice, label can be taller (2 lines), so row height = label height
+  const perRowHeight = Math.max(maxLabelHeight, minBarTrackHeight); // Use label height (40px)
+  
+  // Total required height = padding + (rows × rowHeight) + (gaps × spacing)
+  // Gaps = barCount - 1 (no spacing after last row)
+  const totalRequiredHeight = chartBodyPadding + (barCount * perRowHeight) + ((barCount - 1) * rowSpacing);
+  
+  if (containerHeight >= totalRequiredHeight) {
     return {
       fits: true,
       violations: [],
@@ -144,12 +183,15 @@ function validateBarElementFit(
     };
   }
 
-  // Bars don't fit - requires reflow or density reduction
+  // Bars don't fit - requires reflow, aggregation, or height increase
   return {
     fits: false,
-    requiredHeight: estimatedRequiredHeight,
-    violations: [`Bar chart requires minimum height of ${estimatedRequiredHeight}px for ${barCount} bars`],
-    requiredActions: ['reflow', 'increaseHeight']
+    requiredHeight: totalRequiredHeight,
+    violations: [
+      `Bar chart requires minimum height of ${totalRequiredHeight}px for ${barCount} bars ` +
+      `(calculated: ${chartBodyPadding}px padding + ${barCount} rows × ${perRowHeight}px + ${barCount - 1} gaps × ${rowSpacing}px)`
+    ],
+    requiredActions: ['reflow', 'increaseHeight', 'aggregate']
   };
 }
 

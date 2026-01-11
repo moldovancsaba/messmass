@@ -1,7 +1,7 @@
 # MessMass Design System
 
-**Version**: 11.40.0  
-**Last Updated**: 2025-12-21T09:02:35.000Z (UTC)  
+**Version**: 11.40.1  
+**Last Updated**: 2026-01-11T22:11:21.154Z (UTC)  
 **Status**: Production-Ready — TailAdmin V2 Flat Design
 
 ---
@@ -306,7 +306,7 @@ Sizes: `.btn-{small,large}`
 
 ### Cards
 
-**ONLY USE ColoredCard Component** (see [CARD_SYSTEM.md](./CARD_SYSTEM.md)):
+**ONLY USE ColoredCard Component** (see [CARD_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/CARD_SYSTEM.md)):
 ```tsx
 <ColoredCard>Content</ColoredCard>
 ```
@@ -327,7 +327,7 @@ Sizes: `.btn-{small,large}`
 - Tablet: 80px icon rail
 - Mobile: Overlay drawer
 
-See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md)
+See [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md)
 
 ---
 
@@ -419,11 +419,11 @@ Navigate to `/admin/design` for a complete, interactive design system reference 
 
 ## 📖 Related Docs
 
-- **[/admin/design](./app/admin/design/page.tsx)** — Interactive Design System Manager (NEW)
-- [CARD_SYSTEM.md](./CARD_SYSTEM.md) — ColoredCard component
-- [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) — Admin layout
-- [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md) — Variables system
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — System architecture
+- **[/admin/design](../../app/admin/design/page.tsx)** — Interactive Design System Manager (NEW)
+- [CARD_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/CARD_SYSTEM.md) — ColoredCard component
+- [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) — Admin layout
+- [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md) — Variables system
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) — System architecture
 
 ---
 

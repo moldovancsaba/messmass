@@ -1,7 +1,7 @@
 # 📡 API Reference
 
-**Version:** 11.25.0  
-**Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
+**Version:** 11.25.1  
+**Last Updated:** 2026-01-11T22:11:21.154Z (UTC)  
 **Status:** Production
 
 Quick API reference for MessMass v6.0.0. See detailed guides for complete schemas and examples.
@@ -21,7 +21,7 @@ All admin endpoints require session authentication via HTTP-only cookie.
 **Login**: `POST /api/admin/login`  
 **Logout**: `DELETE /api/admin/login`
 
-**See**: [AUTHENTICATION_AND_ACCESS.md](AUTHENTICATION_AND_ACCESS.md) for details
+**See**: [AUTHENTICATION_AND_ACCESS.md](../features/AUTHENTICATION.md) for details
 
 ---
 
@@ -47,7 +47,7 @@ Delete project.
 
 **Query**: `projectId`
 
-**See**: [USER_GUIDE.md](USER_GUIDE.md#project-management) for usage examples
+**See**: [USER_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/USER_GUIDE.md#project-management) for usage examples
 
 ---
 
@@ -65,7 +65,7 @@ Update partner.
 ### DELETE /api/partners
 Delete partner.
 
-**See**: [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md#api-reference) for complete details
+**See**: [PARTNERS_SYSTEM_GUIDE.md](../features/PARTNERS_SYSTEM_GUIDE.md#api-reference) for complete details
 
 ---
 
@@ -89,7 +89,7 @@ Remove link-project association.
 ### POST /api/bitly/recalculate
 Trigger date range and cache refresh.
 
-**See**: [BITLY_INTEGRATION_GUIDE.md](BITLY_INTEGRATION_GUIDE.md#api-endpoints) for schemas
+**See**: [BITLY_INTEGRATION_GUIDE.md](../features/BITLY_INTEGRATION_GUIDE.md#api-endpoints) for schemas
 
 ---
 
@@ -107,7 +107,7 @@ Filter projects by hashtags (admin).
 ### GET /api/hashtags/filter-by-slug/[slug]
 Public hashtag filtering.
 
-**See**: [HASHTAG_SYSTEM.md](HASHTAG_SYSTEM.md) for usage
+**See**: [HASHTAG_SYSTEM.md](../features/HASHTAG_SYSTEM.md) for usage
 
 ---
 
@@ -128,7 +128,7 @@ Fetch variable groups for Editor layout.
 ### POST /api/variables-groups
 Create/update groups.
 
-**See**: [ADMIN_VARIABLES_SYSTEM.md](ADMIN_VARIABLES_SYSTEM.md#api-reference) for details
+**See**: [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md#api-reference) for details
 
 ---
 
@@ -207,7 +207,7 @@ All API endpoints return JSON with consistent structure:
 - `project-update`: Metadata changed
 - `heartbeat`: Keep-alive
 
-**See**: [ARCHITECTURE.md](ARCHITECTURE.md) for WebSocket details
+**See**: [ARCHITECTURE.md](../../ARCHITECTURE.md) for WebSocket details
 
 ---
 
@@ -233,13 +233,13 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ## For Complete Documentation
 
-- **Projects**: [USER_GUIDE.md](USER_GUIDE.md)
-- **Partners**: [PARTNERS_SYSTEM_GUIDE.md](PARTNERS_SYSTEM_GUIDE.md)
-- **Bitly**: [BITLY_INTEGRATION_GUIDE.md](BITLY_INTEGRATION_GUIDE.md)
-- **Quick Add**: [QUICK_ADD_GUIDE.md](QUICK_ADD_GUIDE.md)
-- **Hashtags**: [HASHTAG_SYSTEM.md](HASHTAG_SYSTEM.md)
-- **Variables**: [ADMIN_VARIABLES_SYSTEM.md](ADMIN_VARIABLES_SYSTEM.md)
-- **Auth**: [AUTHENTICATION_AND_ACCESS.md](AUTHENTICATION_AND_ACCESS.md)
+- **Projects**: [USER_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/USER_GUIDE.md)
+- **Partners**: [PARTNERS_SYSTEM_GUIDE.md](../features/PARTNERS_SYSTEM_GUIDE.md)
+- **Bitly**: [BITLY_INTEGRATION_GUIDE.md](../features/BITLY_INTEGRATION_GUIDE.md)
+- **Quick Add**: [QUICK_ADD_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/QUICK_ADD_GUIDE.md)
+- **Hashtags**: [HASHTAG_SYSTEM.md](../features/HASHTAG_SYSTEM.md)
+- **Variables**: [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
+- **Auth**: [AUTHENTICATION_AND_ACCESS.md](../features/AUTHENTICATION.md)
 
 ---
 
