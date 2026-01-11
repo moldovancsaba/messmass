@@ -1,6 +1,6 @@
 # Admin Layout Code Review Findings
 Status: Active
-Last Updated: 2026-01-11T23:20:04.000Z
+Last Updated: 2026-01-11T23:27:27.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -70,3 +70,7 @@ Owner: Architecture
 ## Verification Evidence and Known Limitations
 - Evidence: Findings are derived from `docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md` and code-level inspection of the listed files.
 - Known limitations: This document does not include runtime testing or cross-browser validation results.
+
+## Related Documents
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md)
