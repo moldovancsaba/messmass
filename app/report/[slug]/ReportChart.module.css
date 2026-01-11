@@ -444,9 +444,9 @@
 .barTrackCell {
   /* WHAT: Bar track table cell - contains the bar visualization */
   /* WHY: Table cell provides natural column structure */
-  /* HOW: Standard table cell, contains barTrack div */
+  /* HOW: Standard table cell, contains barTrack div - fills remaining space after label and value */
   padding: 0 var(--mm-space-2);
-  width: auto; /* WHAT: Track column fills remaining space (fixed layout calculates this) */
+  width: 1fr; /* WHAT: Track column fills remaining space (with fixed layout, auto width fills remaining) */
   vertical-align: middle; /* WHAT: Center bar vertically in row */
   box-sizing: border-box;
 }
