@@ -1,6 +1,6 @@
 # Security Enhancements
 Status: Active
-Last Updated: 2026-01-11T23:27:27.000Z
+Last Updated: 2026-01-11T23:51:17.000Z
 Canonical: Yes
 Owner: Security
 
@@ -59,5 +59,5 @@ Owner: Security
 - This document does not include independent runtime testing results.
 
 ## Related Documents
-- [ARCHITECTURE.md](../ARCHITECTURE.md)
+- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
 - [SECURITY_MIGRATION_GUIDE.md](SECURITY_MIGRATION_GUIDE.md)
