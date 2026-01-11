@@ -1,10 +1,10 @@
 # MessMass Architecture Documentation
 Status: Active
-Last Updated: 2026-01-11T22:45:21.000Z
+Last Updated: 2026-01-11T23:27:27.000Z
 Canonical: No
 Owner: Architecture
 
-Version: 11.55.3
+Version: 11.55.4
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -1672,7 +1672,7 @@ For production issues:
 2. Check authentication status
 3. Verify MongoDB connection
 4. Review notification counts and recent entries
-5. See detailed troubleshooting guide in `MULTI_USER_NOTIFICATIONS.md`
+5. See detailed troubleshooting guide in [MULTI_USER_NOTIFICATIONS.md](docs/features/MULTI_USER_NOTIFICATIONS.md)
 
 ---
 
@@ -1875,7 +1875,7 @@ The Admin Layout & Navigation System provides a comprehensive, responsive layout
 
 **Status**: Stable, Production-Ready  
 **Documentation**: See [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
-**Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
+**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
 
 ### Key Components
 
@@ -2488,7 +2488,7 @@ await fetch('/api/page-styles-enhanced/set-global', {
 The Security Enhancements system provides comprehensive API protection through rate limiting, CSRF protection, and centralized logging. These layers work together to protect against abuse, ensure request authenticity, and provide operational visibility.
 
 **Status**: Production-Ready  
-**Documentation**: See SECURITY_ENHANCEMENTS.md (TODO: unresolved target) and SECURITY_MIGRATION_GUIDE.md (TODO: unresolved target)
+**Documentation**: See [SECURITY_ENHANCEMENTS.md](docs/SECURITY_ENHANCEMENTS.md) and [SECURITY_MIGRATION_GUIDE.md](docs/SECURITY_MIGRATION_GUIDE.md)
 
 ### Key Components
 
@@ -2643,7 +2643,7 @@ export async function apiRequest<T>(url: string, options: RequestInit): Promise<
 
 ### Migration Guide
 
-See SECURITY_MIGRATION_GUIDE.md (TODO: unresolved target) for step-by-step migration instructions, including:
+See [SECURITY_MIGRATION_GUIDE.md](docs/SECURITY_MIGRATION_GUIDE.md) for step-by-step migration instructions, including:
 - Replacing `fetch()` calls with `apiClient`
 - Adding logging to API routes
 - Testing security features
