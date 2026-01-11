@@ -366,14 +366,14 @@
 .bar .chartBody {
   /* WHAT: Chart body container - fills available space, respects height constraints */
   /* WHY: Must use full width and respect available height without overflow */
-  /* HOW: Flex container with width/height constraints, table fills available space */
+  /* HOW: Flex container with width/height constraints, table fills available space and is centered */
   height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
   max-height: 100%; /* WHAT: Never exceed container height */
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
-  justify-content: flex-start; /* WHAT: Align table to top to prevent overflow */
+  justify-content: center; /* WHAT: Center table vertically in container */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
@@ -393,7 +393,7 @@
 .barTable {
   /* WHAT: BAR chart table - semantic HTML table for natural row expansion */
   /* WHY: Tables naturally expand rows to fit content, preventing overlap (Layout Grammar: no clipping) */
-  /* HOW: Standard HTML table with proper column widths, rows expand automatically */
+  /* HOW: Standard HTML table with proper column widths, rows expand automatically, centered in container */
   width: 100%; /* WHAT: Use full width of available space (accounts for parent padding via box-sizing) */
   max-width: 100%; /* WHAT: Never exceed container width */
   border-collapse: separate;
@@ -401,18 +401,16 @@
   table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
   height: auto; /* WHAT: Auto height to fit content, constrained by parent max-height */
   max-height: 100%; /* WHAT: Never exceed container height - prevents overflow */
-  margin: 0; /* WHAT: No margin - table fills container width */
+  margin: 0 auto; /* WHAT: Center table horizontally in flex container */
   box-sizing: border-box;
-  overflow: hidden; /* WHAT: Prevent table from overflowing container */
 }
 
 .barElements {
   /* WHAT: Table body - contains all bar rows */
   /* WHY: Standard table structure */
   width: 100%;
-  max-height: 100%; /* WHAT: Respect container height - prevent overflow */
   display: table-row-group; /* WHAT: Ensure proper table structure */
-  overflow: hidden; /* WHAT: Prevent rows from overflowing - table must fit */
+  /* WHAT: Table body naturally fits within table height constraints */
 }
 
 .barRow {
@@ -423,27 +421,24 @@
 }
 
 .barLabel {
-  /* WHAT: Bar label table cell - wraps to maximum 2 lines, row expands automatically */
-  /* WHY: Table cells naturally expand row height when content wraps, but limit to 2 lines for readability */
-  /* HOW: Standard table cell with text wrapping limited to 2 lines, right-aligned */
+  /* WHAT: Bar label table cell - wraps naturally, row expands automatically */
+  /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
+  /* HOW: Standard table cell with natural text wrapping, right-aligned, no forced line limits */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  display: -webkit-box; /* WHAT: Enable line clamping */
-  -webkit-line-clamp: 2; /* WHAT: Maximum 2 lines */
-  -webkit-box-orient: vertical; /* WHAT: Vertical box orientation for line clamp */
-  overflow: hidden; /* WHAT: Hide overflow beyond 2 lines */
-  text-overflow: ellipsis; /* WHAT: Show ellipsis if text is truncated */
+  white-space: normal; /* WHAT: Allow natural wrapping */
   overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
   word-break: break-word; /* WHAT: Break long words if needed */
-  line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
+  line-height: 1.2; /* WHAT: Comfortable line-height for readability */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
-  width: 35%; /* WHAT: Increased label column width - 35% of table width for better readability */
+  width: 40%; /* WHAT: Generous label column width - 40% of table width for full label visibility */
   vertical-align: top; /* WHAT: Align to top of row */
   box-sizing: border-box;
+  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space */
 }
 
 .barTrackCell {
@@ -492,7 +487,7 @@
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   text-align: left;
-  line-height: 1.15; /* WHAT: Match label line-height */
+  line-height: 1.2; /* WHAT: Match label line-height */
   white-space: nowrap; /* WHAT: Values should not wrap (single line) */
   vertical-align: middle; /* WHAT: Center value vertically in row */
   box-sizing: border-box;
