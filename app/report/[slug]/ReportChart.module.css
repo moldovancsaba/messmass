@@ -373,7 +373,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
-  justify-content: flex-start; /* WHAT: Align table to top */
+  justify-content: center; /* WHAT: Center table vertically in container */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
