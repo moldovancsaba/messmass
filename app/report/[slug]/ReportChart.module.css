@@ -364,20 +364,20 @@
 
 /* Bar Chart - Uses base .chart structure */
 .bar .chartBody {
-  /* WHAT: Remove restrictive width constraints - let chart fill parent */
-  /* WHY: chartBody was limiting width to ~40px, breaking bar visibility */
-  /* HOW: Use flex with no width limitations */
-  /* WHAT: P1 1.4 Phase 2 - explicit height instead of flex: 1 */
-  /* WHY: Deterministic height behavior, no implicit flex growth */
+  /* WHAT: Chart body container - fills available space, respects height constraints */
+  /* WHY: Must use full width and respect available height without overflow */
+  /* HOW: Flex container with width/height constraints, table fills available space */
   height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
+  max-height: 100%; /* WHAT: Never exceed container height */
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
   min-height: 0;
-  width: 100% !important; /* CRITICAL: No width restrictions */
-  max-width: none !important; /* CRITICAL: Remove max-width */
-  overflow: visible; /* WHAT: Allow content to expand beyond container if needed */
+  width: 100% !important; /* CRITICAL: Use full width */
+  max-width: 100% !important; /* CRITICAL: Never exceed container width */
+  overflow: hidden; /* WHAT: Prevent overflow - table must fit within available space */
   align-items: stretch; /* WHAT: Stretch children to full width */
+  box-sizing: border-box;
 }
 
 .barTitle {
@@ -393,16 +393,23 @@
   /* WHAT: BAR chart table - semantic HTML table for natural row expansion */
   /* WHY: Tables naturally expand rows to fit content, preventing overlap (Layout Grammar: no clipping) */
   /* HOW: Standard HTML table with proper column widths, rows expand automatically */
-  width: 100%;
+  width: 100%; /* WHAT: Use full width of available space */
+  max-width: 100%; /* WHAT: Never exceed container width */
   border-collapse: separate;
   border-spacing: 0 var(--mm-space-1); /* WHAT: Row gap using border-spacing */
-  table-layout: auto; /* WHAT: Allow table to size based on content */
+  table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
+  height: 100%; /* WHAT: Respect available height */
+  max-height: 100%; /* WHAT: Never exceed container height */
+  box-sizing: border-box;
 }
 
 .barElements {
   /* WHAT: Table body - contains all bar rows */
   /* WHY: Standard table structure */
   width: 100%;
+  max-height: 100%; /* WHAT: Respect container height */
+  display: table-row-group; /* WHAT: Ensure proper table structure */
+  overflow: visible; /* WHAT: Allow rows to expand, but table container handles overflow */
 }
 
 .barRow {
@@ -427,8 +434,9 @@
   line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
-  width: 25%; /* WHAT: Label column width */
+  width: 25%; /* WHAT: Label column width (fixed layout ensures this is respected) */
   vertical-align: top; /* WHAT: Align to top of row */
+  box-sizing: border-box;
 }
 
 .barTrackCell {
@@ -436,8 +444,9 @@
   /* WHY: Table cell provides natural column structure */
   /* HOW: Standard table cell, contains barTrack div */
   padding: 0 var(--mm-space-2);
-  width: auto; /* WHAT: Track column fills remaining space */
+  width: auto; /* WHAT: Track column fills remaining space (fixed layout calculates this) */
   vertical-align: middle; /* WHAT: Center bar vertically in row */
+  box-sizing: border-box;
 }
 
 .barTrack {
