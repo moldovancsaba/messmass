@@ -1,0 +1,148 @@
+file_path,line_number,snippet,classification,reason,remediation_path
+app/partner-report/[slug]/page.tsx,150,"marginTop: '1rem', fontSize: '0.875rem', color: '#666'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/visualization/page.tsx,1020,"display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/visualization/page.tsx,1108,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/visualization/page.tsx,1235,"display: 'flex', justifyContent: 'flex-end', gap: 'var(--mm-space-3)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/visualization/page.tsx,1253,"display: 'flex', gap: 'var(--mm-space-3)', alignItems: 'flex-end'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/visualization/page.tsx,1255,flex: 1,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/visualization/page.tsx,1277,"paddingBottom: 'var(--mm-space-6)', borderBottom: '1px solid var(--mm-gray-200)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/visualization/page.tsx,1280,marginBottom: 'var(--mm-space-4)',Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/visualization/page.tsx,1288,"fontSize: '1rem', marginRight: '0.5rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/visualization/page.tsx,1297,marginBottom: 'var(--mm-space-4)',Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/visualization/page.tsx,1308,"fontSize: '1rem', marginRight: '0.5rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/design/page.tsx,63,padding: '1rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/kyc/page.tsx,230,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/kyc/page.tsx,252,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,51,fontSize: '3rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,65,<div style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,73,<div style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,81,<span style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,89,color: 'var(--mm-gray-900)',Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/unauthorized/page.tsx,94,<span style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,108,<p style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/unauthorized/page.tsx,121,<div style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/dashboard/page.tsx,382,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/dashboard/page.tsx,390,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/styles/page.tsx,212,backgroundColor: color,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/register/page.tsx,206,"marginTop: '1rem', textAlign: 'center'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/register/page.tsx,208,"marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/partners/page_old_backup.tsx,1228,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/partners/page_old_backup.tsx,1239,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/partners/[id]/analytics/page.tsx,704,"fontSize: 'var(--mm-font-size-xs)', color: isNeutral ? 'var(--mm-gray-500)' : isPositive ? 'var(--mm-color-secondary-600)' : 'var(--mm-error)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/events/ProjectsPageClient.tsx,861,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/events/ProjectsPageClient.tsx,876,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/events/ProjectsPageClient.tsx,890,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/events/ProjectsPageClient.tsx,899,"fontSize: '1rem', marginRight: '0.25rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/events/page.tsx,765,"backgroundColor: '#f3f4f6', cursor: 'not-allowed'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/login/page.tsx,143,"marginTop: '1rem', textAlign: 'center'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/login/page.tsx,145,"marginBottom: '0.5rem', color: 'var(--mm-gray-600)', fontSize: 'var(--mm-font-size-sm)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/admin/login/page.tsx,153,marginBottom: '1rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,54,<div style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,63,<h2 style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,73,"marginBottom: '0.75rem', color: '#1e3a8a'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,77,"marginBottom: '0.75rem', color: '#1e3a8a'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,82,<div style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,90,"marginBottom: '0.5rem', fontWeight: 600, color: '#1e40af'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,95,<ol style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/admin/help/page.tsx,105,marginTop: '0.25rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/layout.tsx,123,style={{ ['--active-font' as string]: fontMap[selectedFont] || fontMap.inter } as React.CSSProperties},Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+app/error.tsx,38,lineHeight: '1.6',Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/error.tsx,47,"borderRadius: 'var(--mm-radius-md)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+app/report/[slug]/ReportChart.tsx,407,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/report/[slug]/ReportChart.tsx,485,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/report/[slug]/ReportChart.tsx,650,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/report/[slug]/ReportContent.tsx,281,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+app/debug/hashtag-categories/page.tsx,110,color: '#f59e0b',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ColoredHashtagBubble.tsx,144,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/InsightCard.tsx,154,style={{ ['--confidence-width' as string]: `${insight.confidence}%` } as React.CSSProperties},Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/SaveStatusIndicator.tsx,84,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/SaveStatusIndicator.tsx,100,fontSize: '1rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/HashtagCategoryDebug.tsx,67,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,28,color: i < rating ? '#f59e0b' : '#d1d5db',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,72,background: insights.completeness.color,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,83,style={{ // eslint-disable-line react/forbid-dom-props,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,110,background: '#ef4444',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,144,background: '#8b5cf6',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,179,background: '#3b82f6',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,245,background: '#f59e0b',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/DataQualityInsights.tsx,281,background: '#3b82f6',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,64,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,73,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,86,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,93,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,102,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,113,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,120,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,129,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,145,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,152,color: style.chartColors?.kpiIconColor || style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,158,color: style.chartColors?.chartValueColor || '#111827',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,164,color: style.chartColors?.chartLabelColor || '#6b7280',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,173,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,180,color: style.chartColors?.chartTitleColor || style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,188,background: style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,192,background: style.colorScheme.secondary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,199,background: style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,201,color: style.chartColors?.chartLabelColor || '#6b7280',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,206,background: style.colorScheme.secondary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,208,color: style.chartColors?.chartLabelColor || '#6b7280',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,216,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,223,color: style.chartColors?.chartTitleColor || style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,229,color: style.chartColors?.chartLabelColor || '#6b7280',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,233,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,239,color: style.chartColors?.chartValueColor || '#111827',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,242,color: style.chartColors?.chartLabelColor || '#6b7280',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,246,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/StylePreview.tsx,252,color: style.chartColors?.chartValueColor || '#111827',Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,263,background: style.colorScheme.primary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,268,background: style.colorScheme.secondary,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,273,background: style.colorScheme.success,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,278,background: style.colorScheme.warning,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/StylePreview.tsx,283,background: style.colorScheme.error,Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/ReportStylePreview.tsx,133,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ReportStylePreview.tsx,208,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,87,style={{ // eslint-disable-line react/forbid-dom-props,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,106,"position: 'relative', display: 'inline-block'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,112,style={{ // eslint-disable-line react/forbid-dom-props,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,129,marginLeft: '4px',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,130,marginLeft: '4px',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,136,style={{ // eslint-disable-line react/forbid-dom-props,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,161,style={{ // eslint-disable-line react/forbid-dom-props,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/RoleDropdown.tsx,187,marginLeft: '8px',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/CategorizedHashtagInput.tsx,150,backgroundColor: (typeof category.color === 'string' && category.color.trim()) ? category.color.trim() : '#667eea',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderText.tsx,88,marginTop: '0.5rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderText.tsx,96,"marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+components/ColorPickerField.tsx,111,backgroundColor: hexInput,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/KPICard.tsx,239,style={{ ['--trend-color' as string]: getTrendColor() } as React.CSSProperties},Allowed,Runtime dynamic value (computed from props/state),Keep as-is (dynamic value) or add eslint-disable comment
+components/charts/PieChart.tsx,266,style={{ height: `${height}px` }},Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/TextChart.tsx,146,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/TextChart.tsx,176,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/ImageChart.tsx,59,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/ImageChart.tsx,75,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/charts/VerticalBarChart.tsx,279,style={{ height: `${height}px` }},Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/BuilderMode.tsx,247,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/BuilderMode.tsx,342,style={{ gridColumn: `span ${width}` }},Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/SimpleHashtagInput.tsx,115,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/SimpleHashtagInput.tsx,140,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/SimpleHashtagInput.tsx,151,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/SimpleHashtagInput.tsx,197,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/UnifiedHashtagInput.tsx,306,backgroundColor: (typeof categoryColor === 'string' && categoryColor.trim()) ? categoryColor.trim() : '#667eea',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/UnifiedHashtagInput.tsx,352,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/UnifiedHashtagInput.tsx,383,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/UnifiedHashtagInput.tsx,402,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderTable.tsx,83,marginTop: '0.5rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderTable.tsx,87,"marginTop: '0.25rem', fontSize: '0.75rem'",Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderTable.tsx,95,"marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)'",Allowed,Uses CSS custom properties (design tokens),Keep as-is (dynamic value) or add eslint-disable comment
+components/ImageUploadField.tsx,159,display: 'none',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/CategorizedHashtagBubble.tsx,37,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/CategorizedHashtagBubble.tsx,51,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ImageLightbox.tsx,96,background: overlayBg,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/AdminPageHero.tsx,127,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/Sidebar.tsx,253,fontSize: '1.25rem',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/CellWrapper.tsx,43,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderBar.tsx,78,backgroundColor: el.color,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/ChartBuilderPie.tsx,85,backgroundColor: el.color,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/AdminDashboard.tsx,184,textDecoration: 'none',Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/UnifiedListView.tsx,102,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/analytics/LineChart.tsx,240,<div style={{ height: `${height}px` }}> {/* eslint-disable-line react/forbid-dom-props */},Forbidden,Static style should be moved to CSS module,Move to CSS module
+components/MaterialIcon.tsx,103,style={{,Forbidden,Static style should be moved to CSS module,Move to CSS module

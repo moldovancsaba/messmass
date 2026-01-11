@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import UnifiedAdminHeroWithSearch from "@/components/UnifiedAdminHeroWithSearch";
 import ColoredCard from "@/components/ColoredCard";
-import { apiPost } from "@/lib/apiClient";
+import { apiPost, apiPut, apiDelete } from "@/lib/apiClient";
 import { FormModal } from "@/components/modals";
 import MaterialIcon from "@/components/MaterialIcon";
 
@@ -236,13 +236,12 @@ export default function KycVariablesPage() {
                         onClick={async () => {
                           if (!confirm(`Delete variable "${v.label}" (${v.name})?`)) return;
                           try {
-                          const res = await fetch(`/api/variables-config?name=${encodeURIComponent(v.name)}`, { method: 'DELETE' });
-                          const data = await res.json();
+                          const data = await apiDelete(`/api/variables-config?name=${encodeURIComponent(v.name)}`);
                           if (!data.success) throw new Error(data.error);
                           
                           // WHAT: Force cache invalidation so deletion reflects immediately
                           // WHY: 5-minute cache would still show deleted variable
-                          await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+                          await apiPut('/api/variables-config?action=invalidateCache', {});
                           
                           await load();
                           } catch (e: any) {
@@ -465,7 +464,7 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
             
             // WHAT: Force cache invalidation so Clicker Manager sees new variable immediately
             // WHY: 5-minute cache prevents new variables from appearing
-            await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+                          await apiPut('/api/variables-config?action=invalidateCache', {});
             
             onCreated();
           } catch (e: any) {
@@ -545,7 +544,7 @@ function EditVariableMeta({ variable, onClose }: { variable: Variable; onClose: 
               
               // WHAT: Force cache invalidation so changes appear immediately in Clicker Manager
               // WHY: 5-minute cache prevents updated variables from appearing
-              await fetch('/api/variables-config?action=invalidateCache', { method: 'PUT' });
+                          await apiPut('/api/variables-config?action=invalidateCache', {});
               
               onClose();
             } catch (e: any) {

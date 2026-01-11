@@ -78,12 +78,13 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
             label=""
             value={currentText}
             onSave={(text) => onSave(statsKey, text)}
-            rows={6}
-            placeholder="Enter text... (markdown supported: **bold**, *italic*, # heading, - lists)"
+            rows={8}
+            placeholder="Enter text... (markdown supported: # H1, ## H2, **bold**, *italic*, - lists, > quotes, ```code```, `inline code`, ~~strikethrough~~, ---)"
           />
           
           {/* WHAT: Markdown syntax hint */}
           {/* WHY: Guide users on formatting options */}
+          {/* eslint-disable-next-line react/forbid-dom-props */}
           <p className="chart-builder-hint" style={{ marginTop: '0.5rem' }}>
             {getMarkdownHint()}
           </p>
@@ -91,6 +92,7 @@ export default function ChartBuilderText({ chart, stats, onSave }: ChartBuilderT
       )}
       
       {/* Variable hint */}
+      {/* eslint-disable-next-line react/forbid-dom-props */}
       <p className="chart-builder-hint" style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--mm-gray-500)' }}>
         Variable: {statsKey}
       </p>

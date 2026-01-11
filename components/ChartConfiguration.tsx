@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChartConfiguration, ChartAlgorithm, ChartParameter } from '@/lib/chart-config';
+import { apiPost, apiDelete } from '@/lib/apiClient';
 
 interface ChartConfigurationProps {
   onConfigUpdate?: (config: ChartConfiguration) => void;
@@ -46,16 +47,12 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
       setSaving(true);
       setError(null);
 
-      const response = await fetch('/api/chart-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          config,
-          updatedBy: 'admin'
-        })
+      // WHAT: Use apiPost() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for POST requests
+      const data = await apiPost('/api/chart-config', {
+        config,
+        updatedBy: 'admin'
       });
-
-      const data = await response.json();
 
       if (data.success) {
         setConfig(data.config);
@@ -81,11 +78,9 @@ export const ChartConfigurationComponent: React.FC<ChartConfigurationProps> = ({
       setSaving(true);
       setError(null);
 
-      const response = await fetch('/api/chart-config', {
-        method: 'DELETE'
-      });
-
-      const data = await response.json();
+      // WHAT: Use apiDelete() for automatic CSRF token handling
+      // WHY: Production middleware requires X-CSRF-Token header for DELETE requests
+      const data = await apiDelete('/api/chart-config');
 
       if (data.success) {
         setConfig(data.config);

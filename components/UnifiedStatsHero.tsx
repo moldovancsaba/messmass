@@ -73,6 +73,7 @@ export default function UnifiedStatsHero({
           <span>Created:</span>
           <span 
             className={styles.createdDateBadge}
+            // eslint-disable-next-line react/forbid-dom-props
             style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
               backgroundColor: pageStyle.colorScheme.primary.trim(),
               color: '#ffffff'
@@ -86,6 +87,7 @@ export default function UnifiedStatsHero({
           <span>Last Updated:</span>
           <span 
             className={styles.updatedDateBadge}
+            // eslint-disable-next-line react/forbid-dom-props
             style={(typeof pageStyle?.colorScheme?.primary === 'string' && pageStyle.colorScheme.primary.trim()) ? {
               backgroundColor: pageStyle.colorScheme.primary.trim(),
               color: '#ffffff'

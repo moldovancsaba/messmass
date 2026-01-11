@@ -36,39 +36,27 @@ export default function CellWrapper({
   return (
     <div 
       className={`${styles.cellWrapper} ${className}`}
-      // WHAT: Explicit blockHeight for deterministic sizing (Phase 3)
-      // WHY: Enforces exact cell height calculated from image aspect ratios
+      // WHAT: Set CSS custom properties for dynamic values (blockHeight now centrally managed at row level)
+      // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
+      // HOW: CSS modules reference these custom properties - block-height inherited from parent row
       // eslint-disable-next-line react/forbid-dom-props
-      style={blockHeight ? { height: `${blockHeight}px` } : undefined}
+      style={{
+        '--title-font-size': titleFontSize ? `${titleFontSize}px` : undefined,
+        '--title-height': titleHeight ? `${titleHeight}px` : undefined,
+        '--subtitle-font-size': subtitleFontSize ? `${subtitleFontSize}px` : undefined,
+        '--subtitle-height': subtitleHeight ? `${subtitleHeight}px` : undefined
+      } as React.CSSProperties}
     >
       {/* Title Zone - max 2 lines, synced font size */}
       {title && (
-        <div 
-          className={styles.titleZone}
-          // WHAT: Dynamic fontSize and height from block-level props
-          // WHY: Report Layout Spec v2.0 requires synchronized title sizing across cells
-          // eslint-disable-next-line react/forbid-dom-props
-          style={{
-            fontSize: titleFontSize ? `${titleFontSize}px` : undefined,
-            height: titleHeight ? `${titleHeight}px` : undefined
-          }}
-        >
+        <div className={styles.titleZone}>
           <h3 className={styles.title}>{title}</h3>
         </div>
       )}
 
       {/* Subtitle Zone - max 2 lines, synced font size */}
       {subtitle && (
-        <div 
-          className={styles.subtitleZone}
-          // WHAT: Dynamic fontSize and height from block-level props
-          // WHY: Report Layout Spec v2.0 requires synchronized subtitle sizing across cells
-          // eslint-disable-next-line react/forbid-dom-props
-          style={{
-            fontSize: subtitleFontSize ? `${subtitleFontSize}px` : undefined,
-            height: subtitleHeight ? `${subtitleHeight}px` : undefined
-          }}
-        >
+        <div className={styles.subtitleZone}>
           <p className={styles.subtitle}>{subtitle}</p>
         </div>
       )}

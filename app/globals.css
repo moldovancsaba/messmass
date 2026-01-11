@@ -30,6 +30,30 @@
   font-display: swap;
 }
 
+/* Aquatics Custom Font */
+@font-face {
+  /* WHAT: Aquatics custom font (matches partner font demo)
+     WHY: Ensure naming and file path match source at partnerfonts.vercel.app
+     HOW: Use Aquatics-Medium.woff as primary weight */
+  font-family: 'Aquatics';
+  src: url('/fonts/Aquatics-Medium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Industry Light Custom Font */
+@font-face {
+  /* WHAT: Industry Light font from SCB partner
+     WHY: Partner font requirement - matches scb.ch CSS usage
+     HOW: Local font file in /public/fonts/ directory */
+  font-family: 'Industry Light';
+  src: url('/fonts/Industry-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ========================================
    CSS RESET & BASE STYLES
 ======================================== */
@@ -104,7 +128,7 @@ img {
 /* Focus Styles */
 :focus-visible {
   outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
+  outline-offset: var(--mm-space-1);
 }
 
 /* Selection Styles */
@@ -115,7 +139,7 @@ img {
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: var(--mm-space-2);
 }
 
 ::-webkit-scrollbar-track {
@@ -168,7 +192,7 @@ img {
    USE INSTEAD: Standard layout utilities from admin.css */
 
 /* Simple badge styles mapped to variants */
-.badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
+.badge { padding: var(--mm-space-1) var(--mm-space-3); border-radius: var(--mm-radius-lg); font-size: var(--mm-font-size-sm); font-weight: 600; white-space: nowrap; }
 .badge-primary { background: var(--mm-color-primary-500); color: var(--mm-white); }
 .badge-secondary { background: var(--mm-gray-500); color: var(--mm-white); }
 .badge-success { background: var(--mm-color-success-500); color: var(--mm-white); }
@@ -186,7 +210,7 @@ img {
 /* Enforce a single configurable height for all chart tiles */
 :root { --chart-tile-height: 360px; }
 .chart-item-min { min-height: var(--chart-tile-height); }
-.chart-config-item { padding: 0.75rem; border: 1px dashed rgba(99,102,241,0.25); border-radius: 8px; }
+.chart-config-item { padding: var(--mm-space-3); border: 1px dashed rgba(99,102,241,0.25); border-radius: var(--mm-radius-md); }
 
 .admin-dashboard {
   /* What: Flat background for admin pages

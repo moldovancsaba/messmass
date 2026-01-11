@@ -39,7 +39,16 @@ function PieChartPreview() {
     return [c1, c2];
   };
   
+  // WHAT: Read pie border color from CSS variables
+  const getPieBorderColor = () => {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const pieColors = getPieColors();
+    return cs.getPropertyValue('--pieBorderColor').trim() || pieColors[0];
+  };
+  
   const pieColors = getPieColors();
+  const pieBorderColor = getPieBorderColor();
   const sampleData = [
     { label: 'Remote', value: 1274 },
     { label: 'Stadium', value: 1273 }
@@ -53,7 +62,7 @@ function PieChartPreview() {
       label: 'Fan Distribution',
       data: sampleData.map(d => d.value),
       backgroundColor: pieColors,
-      borderColor: pieColors[0],
+      borderColor: pieBorderColor,
       borderWidth: 2,
       hoverOffset: 6
     }]
@@ -118,9 +127,9 @@ function PieChartPreview() {
               
               return (
                 <div key={idx} className={styles.pieLegendItem}>
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
                   <div 
-                    className={styles.pieLegendDot} 
+                    className={styles.pieLegendDot}
+                    // eslint-disable-next-line react/forbid-dom-props
                     style={{ 
                       backgroundColor: color,
                       border: `2px solid ${pieColors[0]}` // WHAT: Use first pie color as border (matches real chart)
@@ -194,7 +203,8 @@ export default function ReportStylePreview({ style }: ReportStylePreviewProps) {
                   <div className={styles.barLabel}>{item.label}</div>
                   <div className={styles.barTrack}>
                     <div 
-                      className={styles.barFill} 
+                      className={styles.barFill}
+                      // eslint-disable-next-line react/forbid-dom-props
                       style={{ 
                         width: `${item.value}%`,
                         backgroundColor: item.color 

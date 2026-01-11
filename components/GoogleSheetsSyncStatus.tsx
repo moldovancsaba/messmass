@@ -14,7 +14,7 @@
  * - Error messages and troubleshooting info
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface GoogleSheetStatus {
   connected: boolean;
@@ -60,12 +60,7 @@ export default function GoogleSheetsSyncStatus({
   const [error, setError] = useState('');
   const [checkHealth, setCheckHealth] = useState(false);
 
-  // Fetch status on mount and when partner changes
-  useEffect(() => {
-    fetchStatus();
-  }, [partnerId, checkHealth]);
-
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     setIsLoading(true);
     setError('');
 
@@ -95,7 +90,12 @@ export default function GoogleSheetsSyncStatus({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [partnerId, checkHealth]);
+
+  // Fetch status on mount and when partner changes
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
 
   if (isLoading) {
     return (

@@ -2,6 +2,8 @@
  * WHY: Simple, effective style management with 26 color properties
  * HOW: MongoDB-compatible schema with hex color validation */
 
+import { getFontFamilyCSS } from './fontUtils';
+
 /**
  * Report Style - Complete color configuration for report pages
  * 
@@ -262,9 +264,15 @@ export function validateStyle(style: Partial<ReportStyle>): { valid: boolean; er
 export function injectStyleAsCSS(style: ReportStyle): void {
   const root = document.documentElement;
   
-  // Inject font family if specified
+  // WHAT: Inject font family if specified, converting name to CSS font-family value
+  // WHY: Report styles store font name (e.g., "Aquatic"), but CSS needs full value (e.g., '"Aquatic", sans-serif')
+  // HOW: Use getFontFamilyCSS to convert font name to proper CSS value
   if (style.fontFamily) {
-    root.style.setProperty('--reportFontFamily', style.fontFamily);
+    // WHAT: Convert font name to CSS font-family value
+    // WHY: Font names in database are display names, but CSS needs full font-family declaration
+    // HOW: Use fontUtils to map name to CSS value, with fallback to name as-is
+    const fontFamilyCSS = getFontFamilyCSS(style.fontFamily);
+    root.style.setProperty('--reportFontFamily', fontFamilyCSS);
   }
   
   // Inject all color fields as CSS variables

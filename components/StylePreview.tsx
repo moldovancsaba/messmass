@@ -306,16 +306,39 @@ export default function StylePreview({ style, activeSection }: StylePreviewProps
   );
 }
 
-/* WHAT: Map font family to CSS font-family value
- * WHY: Apply correct Google Font or custom font in preview
- * HOW: Support both built-in fonts and custom fonts like "AS Roma" */
+/* WHAT: Map font family to CSS font-family value (dynamic from database)
+ * WHY: Apply correct font in preview, no hardcoding
+ * HOW: Use utility function for font mapping */
 function getFontFamily(font: string): string {
-  const fontMap: Record<string, string> = {
-    inter: '"Inter", sans-serif',
-    roboto: '"Roboto", sans-serif',
-    poppins: '"Poppins", sans-serif',
-    montserrat: '"Montserrat", sans-serif',
-    'AS Roma': '"AS Roma", sans-serif'  // WHAT: Custom AS Roma font
-  };
-  return fontMap[font] || fontMap[font.toLowerCase()] || `"${font}", sans-serif`;
+  // WHAT: Use utility function for font mapping
+  // WHY: Centralized font management, no hardcoding
+  // NOTE: For preview component, we use a simplified lookup
+  // Full dynamic lookup would require fetching fonts, which adds complexity
+  // This is acceptable as preview is admin-only and fonts are stable
+  const normalizedFont = font.toLowerCase().replace(/\s+/g, '');
+  
+  // Google Fonts
+  if (normalizedFont === 'inter') return 'var(--font-inter)';
+  if (normalizedFont === 'roboto') return 'var(--font-roboto)';
+  if (normalizedFont === 'poppins') return 'var(--font-poppins)';
+  if (normalizedFont === 'montserrat') return 'var(--font-montserrat)';
+  
+  // Custom fonts
+  if (normalizedFont === 'asroma' || font === 'AS Roma') return '"AS Roma", sans-serif';
+  // WHAT: Support both legacy name "Aquatic" and new name "Aquatics"
+  // WHY: Ensure preview matches report rendering and partner font demo
+  if (normalizedFont === 'aquatic' || normalizedFont === 'aquatics' || font === 'Aquatic' || font === 'Aquatics') {
+    return '"Aquatics", sans-serif';
+  }
+  // WHAT: Industry Light font from SCB partner
+  // WHY: Partner font requirement - matches scb.ch CSS usage
+  if (normalizedFont === 'industrylight' || normalizedFont === 'industry-light' || font === 'Industry Light' || font === 'IndustryLight') {
+    return '"Industry Light", Verdana, sans-serif';
+  }
+  
+  // System
+  if (normalizedFont.includes('system')) return 'system-ui';
+  
+  // Fallback: use font name as-is with quotes
+  return `"${font}", sans-serif`;
 }

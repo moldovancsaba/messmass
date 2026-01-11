@@ -11,7 +11,7 @@
   flex-direction: column;
   width: 100% !important; /* WHAT: Fill parent gridItem horizontally (CRITICAL FIX) */
   max-width: none !important; /* CRITICAL: Remove any max-width constraints */
-  height: 100% !important; /* CRITICAL: Fill parent row height (deterministic) */
+  height: var(--block-height, var(--row-height, var(--mm-block-height-default))); /* WHAT: Use centrally managed block-height from row, fallback to row-height, then design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
   flex: 1 1 auto; /* CRITICAL: Allow chart to grow and fill space */
   /* REMOVED: min-height - row height is deterministic from block calculator */
   
@@ -47,8 +47,8 @@
 
 /* Chart Title - Standardized across all types */
 .chartTitle {
-  /* Scale title to container width: min 0.9rem, grows with box, caps at 1.25rem */
-  font-size: clamp(0.9rem, 2.8cqw, 1.25rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin: 0;
@@ -94,7 +94,7 @@
   /* WHAT: Full height cell with internal 3-row grid (4fr:3fr:3fr = 40%:30%:30%) */
   /* WHY: Larger icon section for visual impact */
   /* HOW: Direct grid layout with vertical centering for all content */
-  height: 100%;
+  height: var(--block-height, var(--row-height, var(--mm-block-height-default))); /* WHAT: Use centrally managed block-height from row, fallback to design token (P1 1.4: explicit height cascade, no implicit fallbacks) */
   display: grid;
   grid-template-rows: 4fr 3fr 3fr; /* Icon (top 40%) : Value (middle 30%) : Title (bottom 30%) */
   gap: 0;
@@ -134,20 +134,22 @@
   /* WHAT: Grid row 2 (30%) for value */
   /* WHY: Middle row of 4fr-3fr-3fr grid */
   /* HOW: Flex centering for responsive value scaling, fully vertically centered */
+  /* P1 2.5.1: Increased scaling from min(18cqh, 20cqw) to min(30cqh, 25cqw), max from 5rem to 6rem */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: clamp(1.25rem, min(18cqh, 20cqw), 5rem);
+  font-size: clamp(1.25rem, min(30cqh, 25cqw), 6rem); /* INCREASED: 18cqh→30cqh, 20cqw→25cqw, 5rem→6rem */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   container-type: size;
 }
 
@@ -155,6 +157,7 @@
   /* WHAT: 3rd grid row (30%) - title at bottom of KPI */
   /* WHY: Grid row 3 = bottom 30% of cell */
   /* HOW: Flex with center alignment - fully vertically centered */
+  /* P1 2.5.1: Increased scaling from 8cqh to 15cqh, max from 1.125rem to 1.5rem */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,8 +165,8 @@
   width: 100%;
   height: 100%;
   padding: var(--mm-space-2);
-  /* Font scales based on container height (3fr row) */
-  font-size: clamp(0.75rem, 8cqh, 1.125rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
@@ -210,8 +213,8 @@
   text-align: center;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
-  /* Doubled title font vs. previous */
-  font-size: clamp(1rem, 9cqh, 1.5rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   line-height: 1.2;
 }
 
@@ -232,7 +235,8 @@
 }
 
 .pieTitle {
-  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
@@ -260,7 +264,8 @@
 }
 
 .pieLabel {
-  font-size: clamp(0.7rem, 2cqw, 0.9rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
 }
@@ -280,10 +285,10 @@
 .pieChartContainer {
   /* WHAT: 40% of pieGrid height for pie chart */
   /* WHY: Middle section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion with minimum size guarantee */
+  /* HOW: Flex basis for fixed height proportion (P1 1.4 Phase 3: removed min-height, added max-height for deterministic behavior) */
   flex: 0 0 40%; /* 3:4:3 → pie 40% */
   width: 100%;
-  min-height: 100px; /* CRITICAL: Reduced from 150px to prevent overflow in small containers (1 unit in 5-unit block) */
+  max-height: 40%; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
   position: relative;
   display: flex;
   align-items: center;
@@ -296,32 +301,32 @@
 .pieLegend {
   /* WHAT: 30% of body height for legend items */
   /* WHY: Bottom section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion, vertically centered, scrollable when content exceeds */
-  flex: 0 0 30%; /* 3:4:3 → legend 30% - don't grow or shrink */
+  /* HOW: Flex basis for preferred height, can grow if content exceeds - Layout Grammar: no scrolling */
+  flex: 1 1 30%; /* 3:4:3 → legend prefers 30%, but can grow if needed (no scrolling) */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* CRITICAL: Center content vertically in its space */
+  justify-content: flex-start; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
   align-items: center;
-  gap: var(--mm-space-1);
+  gap: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive gap - smaller in constrained spaces */
   width: 100%;
   container-type: size;
-  min-height: 60px; /* CRITICAL: Prevent collapse on mobile */
-  max-height: 30%; /* CRITICAL: Never exceed 30% of parent - this enables scrolling */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
-  overflow-x: hidden;
-  padding: var(--mm-space-1);
+  max-height: 50%; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
+  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
+  /* WHY: If legend items exceed preferred 30%, container grows to fit (no scrolling) */
+  overflow: visible; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+  padding: clamp(0.125rem, 1cqh, var(--mm-space-1)); /* WHAT: Responsive padding - smaller in constrained spaces */
   box-sizing: border-box;
 }
 
 .pieLegendItem {
   /* WHAT: Flex container for legend item with colored square */
-  /* WHY: Display indicator + label in horizontal layout */
-  /* HOW: Flex with center alignment for vertical centering */
+  /* WHY: Display indicator + label in horizontal layout, centered */
+  /* HOW: Flex with center alignment for both vertical and horizontal centering */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center; /* WHAT: Center legend items horizontally */
   gap: var(--mm-space-2);
-  width: 100%;
+  width: auto; /* WHAT: Auto width to allow centering as a group */
   /* Remove fixed height so items don't stretch; rely on content and legend container */
 }
 
@@ -342,17 +347,19 @@
 }
 
 .pieLegendText {
-  /* WHAT: Legend text scaled to fit available space */
-  /* WHY: Prevent overflow by using smaller, responsive font size */
-  /* HOW: Use container query height (cqh) scaled to legend container */
-  font-size: clamp(0.75rem, 6cqh, 1rem); /* Reduced: 9cqh → 6cqh to prevent overflow */
+  /* WHAT: Legend text scaled to fit available space with responsive sizing */
+  /* WHY: Make legend text readable in both large and small blocks, prevent overflow, fill available space */
+  /* HOW: Use container queries for both width and height, design tokens for bounds */
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
-  line-height: 1.2; /* Slightly increased for better readability */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
+  line-height: 1.2; /* WHAT: Reduced from 1.3 to 1.2 for tighter spacing in constrained blocks */
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex: 0 1 auto; /* WHAT: Don't grow, allow shrink, auto width for centering */
 }
 
 /* Bar Chart - Uses base .chart structure */
@@ -360,17 +367,20 @@
   /* WHAT: Remove restrictive width constraints - let chart fill parent */
   /* WHY: chartBody was limiting width to ~40px, breaking bar visibility */
   /* HOW: Use flex with no width limitations */
+  /* WHAT: P1 1.4 Phase 2 - explicit height instead of flex: 1 */
+  /* WHY: Deterministic height behavior, no implicit flex growth */
+  height: 100%; /* WHAT: Fill parent body zone height (explicit height from --chart-body-height) */
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
-  flex: 1;
   min-height: 0;
   width: 100% !important; /* CRITICAL: No width restrictions */
   max-width: none !important; /* CRITICAL: Remove max-width */
 }
 
 .barTitle {
-  font-size: clamp(0.9rem, 2.6cqw, 1.2rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   font-weight: var(--mm-font-weight-semibold);
   color: var(--chartTitleColor);
   margin-bottom: var(--mm-space-1);
@@ -408,13 +418,16 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: clamp(0.85rem, 9cqh, 1.1rem); /* DOUBLED: 4.5cqh → 9cqh */
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
   line-height: 1.1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   padding-right: var(--mm-space-1);
   display: flex;
   align-items: center;
@@ -456,20 +469,22 @@
   color: var(--chartValueColor);
   text-align: left;
   line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHY: Content must fit through wrapping/reflow, not truncation */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Text Chart - Simple block structure with explicit vertical stacking */
+/* Text Chart - Flexbox structure with title and content zones */
 .text {
-  /* CRITICAL: Override base .chart flex display */
-  display: block !important;
-  flex-direction: unset !important;
+  /* CRITICAL: Use flexbox column to stack title and content */
+  display: flex !important;
+  flex-direction: column !important;
   width: 100% !important;
   height: 100% !important; /* WHAT: Fill parent row height from layout grammar */
   /* CRITICAL: Ensure children stack vertically */
   position: relative !important;
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
 }
 
 .textTitleWrapper {
@@ -493,7 +508,8 @@
   text-align: center !important;
   font-weight: var(--mm-font-weight-semibold) !important;
   color: var(--chartTitleColor) !important;
-  font-size: clamp(0.95rem, 2.6cqw, 1.25rem) !important;
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size) !important;
   line-height: 1.25 !important;
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
@@ -505,14 +521,14 @@
 }
 
 .textContentWrapper {
-  /* WHAT: Content container - bottom of chart, fills remaining space */
-  /* WHY: Separate block-level div that cannot be inline */
+  /* WHAT: Content container - fills remaining space after title, centers content vertically and horizontally */
+  /* WHY: Separate block-level div that cannot be inline, must fill available space and center content */
+  /* P1 1.4 Phase 4: Explicit height instead of flex: 1 */
   display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
   align-items: center !important; /* CRITICAL: Center content vertically */
   justify-content: center !important; /* CRITICAL: Center content horizontally */
   width: 100% !important;
-  height: calc(100% - var(--mm-space-4)) !important; /* Fill remaining space minus title padding */
-  min-height: 0 !important;
+  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation, fallback to design token */
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
   /* CRITICAL: Force block display - cannot be inline */
@@ -525,47 +541,119 @@
 }
 
 .textContent {
-  /* WHAT: Container for markdown content - allows children to stack vertically */
-  /* WHY: Markdown elements (p, h1, etc.) must stack vertically, not inline */
-  /* HOW: Use block display with vertical stacking, centered content, scales to fit */
-  display: block !important; /* CRITICAL: Block display allows children to stack */
+  /* WHAT: Container for markdown content - fills available space and centers content */
+  /* WHY: Markdown elements (p, h1, etc.) must stack vertically, fill space, and be centered */
+  /* HOW: Use flexbox to fill space and center content, block display for children to stack */
+  /* P1 1.4 Phase 4: Explicit height instead of min-height: 0 */
+  display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
+  flex-direction: column !important; /* CRITICAL: Stack children vertically */
+  align-items: center !important; /* CRITICAL: Center content horizontally */
+  justify-content: center !important; /* CRITICAL: Center content vertically */
   width: 100% !important;
   max-width: 100% !important;
-  height: auto !important; /* CRITICAL: Auto height to fit content, parent flexbox centers it */
+  height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
-  /* CRITICAL: Use unified font-size if available, otherwise scale with container queries */
-  /* WHY: All text charts in a block should use the same font-size */
-  /* HOW: Check for CSS custom property first, fallback to container query scaling */
-  /* INCREASED: Max font-size from 1.5rem to 2.5rem for larger text */
-  font-size: var(--unified-text-font-size, clamp(0.75rem, min(12cqh, 10cqw), 2.5rem)) !important;
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
+  /* WHY: Align text chart typography with block typography for true unification */
+  font-size: var(--block-base-font-size) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
   line-height: 1.3;
   box-sizing: border-box;
   /* CRITICAL: Center the entire block of content */
   text-align: center !important;
-  /* CRITICAL: Allow vertical scrolling if content overflows */
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow) */
+  /* WHAT: Content must fit through structural change (wrapping, reflow), not clipping */
+  /* WHY: Layout Grammar: no clipping on content layers */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
   /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
 
 /* WHAT: Markdown element styles inside text content
- * WHY: Support limited markdown features: title, bold, italic, lists, links
+ * WHY: Support full markdown features with center alignment
  * HOW: Use relative font sizes (em) so they inherit container scaling
- * CRITICAL: All block elements must be display: block to stack vertically
+ * CRITICAL: All block elements must be display: block to stack vertically, center-aligned
  */
+
+/* WHAT: Heading levels with relative sizes (h1-h6) */
+/* WHY: Preserve heading hierarchy while maintaining center alignment */
+/* HOW: Use relative font sizes (em) that inherit from .textContent base size */
 .textMarkdown h1 {
-  display: block !important; /* CRITICAL: Force block display */
-  margin: 0.5em 0 !important; /* Space before and after heading */
+  display: block !important;
+  margin: 0.5em 0 !important;
   padding: 0 !important;
-  font-weight: 700 !important; /* Bold for emphasis */
+  font-weight: 700 !important;
   line-height: 1.2 !important;
-  font-size: 1em !important; /* CRITICAL: Same size as content (inherit from .textContent) */
+  font-size: 1.5em !important; /* WHAT: Largest heading - 1.5x base size */
   width: 100% !important;
   box-sizing: border-box !important;
-  /* CRITICAL: Ensure heading is visible and styled */
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h2 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1.3em !important; /* WHAT: Second level - 1.3x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h3 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  font-size: 1.1em !important; /* WHAT: Third level - 1.1x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h4 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 1.05em !important; /* WHAT: Fourth level - 1.05x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h5 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 1em !important; /* WHAT: Fifth level - same as base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  color: inherit !important;
+  text-align: center !important;
+}
+
+.textMarkdown h6 {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  font-size: 0.95em !important; /* WHAT: Smallest heading - 0.95x base size */
+  width: 100% !important;
+  box-sizing: border-box !important;
   color: inherit !important;
   text-align: center !important;
 }
@@ -622,9 +710,13 @@
 
 /* CRITICAL: Ensure all markdown content is block-level by default */
 .textMarkdown {
-  display: block !important; /* CRITICAL: Markdown container is block */
+  display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
+  flex-direction: column !important; /* CRITICAL: Stack children vertically */
+  align-items: center !important; /* CRITICAL: Center content horizontally */
+  justify-content: center !important; /* CRITICAL: Center content vertically */
   width: 100% !important;
-  height: 100% !important;
+  height: 100% !important; /* CRITICAL: Fill parent height */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking */
   box-sizing: border-box !important;
   /* CRITICAL: Allow children to stack vertically */
   text-align: center !important;
@@ -637,29 +729,99 @@
 .textMarkdown > * {
   display: block !important; /* CRITICAL: All direct children are blocks */
   width: 100% !important;
+  flex-shrink: 0 !important; /* CRITICAL: Don't shrink markdown elements */
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
 }
 
-/* CRITICAL: Ensure h1 headings are properly styled and visible */
-.textMarkdown h1 {
+/* WHAT: Remove duplicate h1 definition - already defined above with proper sizing */
+
+/* WHAT: Blockquote styling with center alignment */
+/* WHY: Support blockquotes with visual distinction */
+.textMarkdown blockquote {
   display: block !important;
   margin: 0.5em 0 !important;
-  padding: 0 !important;
-  font-weight: 700 !important;
-  line-height: 1.2 !important;
-  font-size: 1em !important;
+  padding: 0.5em 1em !important;
+  border-left: 3px solid var(--mm-gray-300) !important;
+  background: var(--mm-gray-50) !important;
+  border-radius: var(--mm-radius-sm) !important;
+  font-style: italic !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  color: inherit !important;
   text-align: center !important;
+  font-size: 1em !important;
+  color: inherit !important;
+}
+
+/* WHAT: Code block styling with center alignment */
+/* WHY: Support code blocks with monospace font */
+/* Layout Grammar: No scrolling - wrap long lines instead */
+.textMarkdown pre {
+  display: block !important;
+  margin: 0.5em 0 !important;
+  padding: 0.5em !important;
+  background: var(--mm-gray-100) !important;
+  border-radius: var(--mm-radius-sm) !important;
+  /* WHAT: Wrap long lines instead of scrolling - Layout Grammar compliance */
+  /* WHY: Content must fit without scrolling */
+  white-space: pre-wrap !important; /* Wrap long lines */
+  word-break: break-all !important; /* Break long words if needed */
+  overflow: hidden !important; /* No scrolling allowed */
+  width: 100% !important;
+  box-sizing: border-box !important;
+  text-align: left !important; /* WHAT: Code blocks left-aligned for readability */
+  font-size: 0.9em !important;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* WHAT: Inline code styling */
+/* WHY: Support inline code with monospace font */
+.textMarkdown code {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 0.9em !important;
+  background: var(--mm-gray-100) !important;
+  padding: 0.15em 0.3em !important;
+  border-radius: var(--mm-radius-xs) !important;
+  display: inline !important;
+}
+
+/* WHAT: Code block code (nested in pre) */
+/* WHY: Code blocks use pre>code structure */
+.textMarkdown pre code {
+  display: block !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 1em !important;
+}
+
+/* WHAT: Strikethrough styling */
+/* WHY: Support strikethrough text decoration */
+.textMarkdown del,
+.textMarkdown s {
+  text-decoration: line-through !important;
+  display: inline !important;
+  color: var(--mm-gray-500) !important;
+}
+
+/* WHAT: Horizontal rule styling */
+/* WHY: Support horizontal rules for visual separation */
+.textMarkdown hr {
+  display: block !important;
+  border: none !important;
+  border-top: 1px solid var(--mm-gray-300) !important;
+  margin: 1em 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Override for inline elements (they stay inline within their block parent) */
 .textMarkdown strong,
 .textMarkdown em,
-.textMarkdown a {
+.textMarkdown a,
+.textMarkdown code:not(pre code),
+.textMarkdown del,
+.textMarkdown s {
   display: inline !important;
   width: auto !important;
   text-align: inherit !important;
@@ -673,8 +835,9 @@
 
 .tableContent {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation (uses --chart-body-height from Phase 2), fallback to design token */
+  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
+  /* WHY: Layout Grammar: no clipping on content layers */
   padding: var(--mm-space-4);
   display: flex;
   flex-direction: column;
@@ -682,8 +845,9 @@
 
 .tableMarkdown {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: 100%; /* WHAT: Fill parent tableContent height (explicit height from Phase 4) */
+  /* WHAT: No clipping - Layout Grammar: content must fit through wrapping/reflow */
+  /* WHY: Layout Grammar: no clipping on content layers */
   display: flex;
   flex-direction: column;
 }
@@ -693,7 +857,8 @@
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
-  font-size: clamp(0.75rem, 1.5cqw, 0.875rem);
+  /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  font-size: var(--block-base-font-size);
   table-layout: auto;
 }
 
@@ -734,25 +899,58 @@
 .tableMarkdown a { color: var(--mm-blue-600); text-decoration: underline; }
 .tableMarkdown a:hover { color: var(--mm-blue-700); }
 
-/* Image Chart - SIMPLIFIED */
+/* Image Chart - Container */
+/* WHAT: Chart container for image charts */
 .image {
+  background: transparent !important; /* WHAT: No background on chart container, image container has background */
+  padding: 0; /* WHAT: No padding, image container handles spacing */
+}
+
+/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */
+/* WHY: Use real image dimensions instead of configured aspect ratio for accurate display */
+/* HOW: Container uses CSS custom property --image-aspect-ratio set dynamically from image naturalWidth/naturalHeight */
+.imageContainer {
   background: var(--chartBackground) !important;
   border-radius: var(--mm-radius-lg); /* Rounded corners for image container */
   box-shadow: var(--mm-shadow-sm);
   overflow: hidden !important; /* Clip image to rounded corners */
-  /* Inherits height: 100% from base .chart - fills row */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* WHAT: Container fills width, height constrained by actual image aspect ratio */
+  /* WHY: Body zone is flex container with center alignment, image should fill available width */
+  width: 100%; /* Fill available width in body zone */
+  max-width: 100%; /* Don't exceed body zone width */
+  max-height: 100%; /* Don't exceed body zone height */
+  height: auto; /* Height calculated from aspect ratio */
+  /* WHAT: Use CSS custom property for dynamic aspect ratio */
+  /* WHY: Aspect ratio is detected from actual image dimensions, not configured value */
+  aspect-ratio: var(--image-aspect-ratio, 16 / 9); /* Fallback to 16:9 if not set */
 }
 
-/* WHAT: <img> element fills container and crops to fit */
-/* WHY: object-fit: cover fills container completely while maintaining aspect ratio */
-/* HOW: Image covers entire container, cropped to fit with centered position */
+/* WHAT: <img> element fills container completely */
+/* WHY: Image should fill the aspect-ratio-constrained container */
+/* HOW: Use object-fit: contain to show full image without cropping, maintaining aspect ratio */
 .imageContent {
   display: block;
-  width: 100%;
-  height: 100%; /* Fill the .image container */
-  object-fit: cover; /* Fill container, crop as needed to maintain aspect ratio */
-  object-position: center; /* Center the cropped image */
+  width: 100%; /* Fill container width */
+  height: 100%; /* Fill container height */
+  object-fit: contain; /* Show full image without cropping, maintaining aspect ratio */
+  object-position: center; /* Center the image */
   border-radius: var(--mm-radius-lg); /* Match container rounded corners */
+}
+
+/* WHAT: Image container on mobile - same dynamic aspect ratio approach */
+/* WHY: Consistent behavior across breakpoints */
+@media (max-width: 768px) {
+  .imageContainer {
+    width: 100% !important;
+    height: auto !important; /* Let aspect-ratio determine height */
+    min-height: 0 !important; /* Remove min-height constraint */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: var(--image-aspect-ratio, 16 / 9) !important; /* Use actual image aspect ratio */
+  }
 }
 
 /* VALUE Composite Chart */
@@ -790,14 +988,14 @@
 }
 
 .CellWrapper_bodyZone__ps_rO .pieLegend {
-  /* WHAT: Fixed 30% height regardless of wrapper */
-  /* WHY: Maintain consistent legend size when inside CellWrapper (3:4:3 ratio) */
-  flex: 0 0 30% !important; /* Override any conflicting flex values */
-  max-height: 30% !important; /* CRITICAL: Never exceed 30% - enables scrolling */
+  /* WHAT: Preferred 30% height, can grow if needed - Layout Grammar: no scrolling */
+  /* WHY: Maintain preferred legend size when inside CellWrapper (3:4:3 ratio), but allow growth */
+  flex: 1 1 30% !important; /* Prefer 30%, but can grow if content exceeds (no scrolling) */
+  /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* CRITICAL: Center content vertically in its space */
-  overflow-y: auto; /* CRITICAL: Scroll when content exceeds max-height */
+  justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
+  overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
   box-sizing: border-box;
 }
 
@@ -841,13 +1039,12 @@
   
   /* WHAT: Pie chart container - same behavior as desktop on mobile
    * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with minimum height, let canvas fill container */
+   * HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
   .pieChartContainer {
     flex: 0 0 40% !important; /* Same as desktop - 40% of pieGrid (3:4:3 ratio) */
     width: 100% !important;
-    min-height: 100px !important; /* CRITICAL: Reduced from 150px to prevent overflow in small containers */
+    max-height: 40% !important; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
     max-width: 100% !important;
-    max-height: 100% !important;
     position: relative !important;
     overflow: hidden !important;
     display: flex !important;
@@ -867,19 +1064,19 @@
     object-fit: contain !important; /* Ensure it fits within constraints */
   }
   
-  /* WHAT: Pie legend - same behavior as desktop on mobile
-   * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with minimum height */
+  /* WHAT: Pie legend - same behavior as desktop on mobile - Layout Grammar: no scrolling */
+  /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
+  /* HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
   .pieLegend {
-    flex: 0 0 20% !important; /* Same as desktop - 20% of pieGrid */
+    flex: 1 1 20% !important; /* Prefer 20%, but can grow if content exceeds (no scrolling) */
     width: 100% !important;
-    min-height: 60px !important; /* CRITICAL: Prevent collapse */
+    max-height: 50% !important; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
     max-width: 100% !important;
-    max-height: 100% !important;
-    overflow-y: auto !important;
+    justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
+    overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
+    /* WHAT: Removed max-height and overflow-y - Layout Grammar: content must fit without scrolling */
     display: flex !important;
     flex-direction: column !important;
-    justify-content: center !important;
   }
   
   /* WHAT: Image charts respect aspect ratio on mobile
@@ -910,11 +1107,11 @@
   
   .imageContent {
     /* WHAT: Image fills container maintaining aspect ratio
-     * WHY: object-fit: cover ensures image fills space without distortion
+     * WHY: object-fit: contain shows full image without cropping
      * HOW: Same behavior as desktop - consistent across breakpoints */
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important; /* Fill container, crop to maintain ratio */
+    object-fit: contain !important; /* Show full image without cropping, maintaining aspect ratio */
     object-position: center !important;
     display: block !important;
   }

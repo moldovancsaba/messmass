@@ -7,6 +7,20 @@ import { getAspectRatioValue } from './aspectRatioResolver';
 import type { HeightResolutionInput, BlockHeightResolution, CellConfiguration } from './layoutGrammar';
 import { HeightResolutionPriority } from './layoutGrammar';
 
+// WHAT: Helper to read CSS custom properties (design tokens)
+// WHY: No hardcoded values - all sizes must come from design system
+function getCSSVariableValue(cssVar: string, fallback: number): number {
+  if (typeof window !== 'undefined') {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const value = cs.getPropertyValue(cssVar).trim();
+    if (value) {
+      return parseInt(value, 10);
+    }
+  }
+  return fallback; // WHAT: Server-side fallback (only used during SSR)
+}
+
 /**
  * WHAT: Solve block height (H) using deterministic formula from spec
  * WHY: All cells in block must share same height while respecting image aspect ratios
@@ -26,7 +40,9 @@ import { HeightResolutionPriority } from './layoutGrammar';
 export function solveBlockHeightWithImages(cells: BaseCellConfiguration[], blockWidthPx: number): number {
   if (cells.length === 0) {
     console.warn('[BlockHeightCalculator] No cells in block');
-    return 360;
+    // WHAT: Use design token for default height instead of hardcoded value
+    // WHY: No hardcoded sizes - all values must come from design system
+    return getCSSVariableValue('--mm-block-height-default', 360);
   }
   
   // WHAT: Calculate total "effective units" for proportional distribution
@@ -90,10 +106,11 @@ export function solveBlockHeightWithImages(cells: BaseCellConfiguration[], block
   //   Therefore: H = blockWidth / totalEffectiveUnits
   const H = blockWidthPx / totalEffectiveUnits;
   
-  // WHAT: Apply reasonable bounds
-  // WHY: Prevent extreme values from edge cases
-  const minHeight = 150;
-  const maxHeight = 800;
+  // WHAT: Apply reasonable bounds from design tokens
+  // WHY: Prevent extreme values from edge cases, no hardcoded sizes
+  // HOW: Read min/max from CSS custom properties (design tokens)
+  const minHeight = getCSSVariableValue('--mm-block-height-min', 150);
+  const maxHeight = getCSSVariableValue('--mm-block-height-max', 800);
   const clampedHeight = Math.max(minHeight, Math.min(maxHeight, H));
   
   console.log('[BlockHeightCalculator] Calculated height:', {

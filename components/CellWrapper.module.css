@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: var(--block-height, var(--row-height, 100%)); /* WHAT: Use centrally managed block-height from row, fallback to row-height */
   box-sizing: border-box;
 }
 
@@ -18,6 +18,8 @@
   text-align: center;
   overflow: hidden;
   flex-shrink: 0;
+  font-size: var(--block-base-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
+  height: var(--title-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
 .title {
@@ -30,7 +32,9 @@
   overflow: hidden;
   word-break: break-word;
   font-weight: 600;
-  color: var(--mm-gray-900);
+  /* WHAT: Use chartTitleColor from Style Editor, fallback to design token */
+  /* WHY: Chart titles should respect custom style colors */
+  color: var(--chartTitleColor, var(--mm-gray-900));
 }
 
 /* Subtitle Zone - fixed height, centered, max 2 lines */
@@ -42,6 +46,8 @@
   overflow: hidden;
   flex-shrink: 0;
   margin-top: 0.25rem;
+  font-size: var(--block-subtitle-font-size); /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of per-row */
+  height: var(--subtitle-height); /* WHAT: Use CSS custom property for dynamic height */
 }
 
 .subtitle {
@@ -58,7 +64,9 @@
 
 /* Body Zone - fills remaining space, centered content */
 .bodyZone {
-  flex: 1;
+  /* WHAT: P1 1.4 Phase 2 - explicit height instead of flex: 1 */
+  /* WHY: Deterministic height behavior, no implicit flex growth */
+  height: var(--chart-body-height, auto); /* WHAT: Use calculated body height, fallback to auto for backward compatibility */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,4 +74,14 @@
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
+  min-height: 0; /* CRITICAL: Allow flex item to shrink below content size */
+}
+
+/* WHAT: Image charts in body zone - body zone provides available space */
+/* WHY: Layout Grammar requires images to fit within available space while maintaining aspect ratio */
+/* HOW: Body zone is flex container, image container fits within it respecting aspect ratio */
+.bodyZone:has(.image) {
+  /* WHAT: Body zone provides available space, image container fits within it */
+  /* WHY: Image container uses max-width/max-height to fit, aspect-ratio to constrain */
+  /* HOW: No special styling needed - image container handles aspect ratio */
 }
