@@ -1017,28 +1017,27 @@
     gap: var(--mm-space-4);
   }
   
-  .barElements {
-    /* WHAT: Mobile - maintain grid model with strict row ownership */
-    /* WHY: Same architectural model as desktop - rows own their height */
-    /* HOW: Grid with max-content rows, no distribution logic */
-    display: grid;
-    grid-auto-rows: max-content;
-    row-gap: var(--mm-space-1);
-    align-content: start;
-  }
-  
-  .barRow {
-    /* WHAT: Mobile - responsive grid columns, maintain strict row ownership */
-    /* WHY: Same grid model as desktop, adjusted column sizes for mobile */
-    /* HOW: Grid with responsive column sizing, max-content for value */
-    grid-template-columns: minmax(5rem, 22cqw) 1fr max-content;
-    column-gap: var(--mm-space-2);
+  .barTable {
+    /* WHAT: Mobile - table remains responsive, rows expand naturally */
+    /* WHY: Tables are naturally responsive, no special mobile handling needed */
+    font-size: var(--block-base-font-size);
   }
   
   .barLabel {
-    /* WHAT: Mobile - use block-level typography for consistency (P1 1.5) */
-    /* WHY: Unified typography system applies to all viewports */
-    font-size: var(--block-base-font-size);
+    /* WHAT: Mobile - adjust label column width for smaller screens */
+    width: 30%; /* WHAT: Slightly wider label column on mobile */
+    padding-right: var(--mm-space-1);
+  }
+  
+  .barTrackCell {
+    /* WHAT: Mobile - track column fills remaining space */
+    padding: 0 var(--mm-space-1);
+  }
+  
+  .barValue {
+    /* WHAT: Mobile - value column auto-width */
+    padding-left: var(--mm-space-1);
+    font-size: var(--mm-font-size-xs);
   }
   
   /* WHAT: Charts must scale to fit their container on mobile
