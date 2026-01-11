@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 8.24.0  
+**Version:** 8.24.1  
 **Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production  
 **Breaking Change:** Migrated from code-based registry to database-first system

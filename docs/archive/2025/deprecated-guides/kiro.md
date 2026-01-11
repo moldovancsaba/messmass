@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.29.0  
+**Version:** 11.29.1  
 **Last Updated:** 2026-01-11T22:28:38.000Z  
 **Project Type:** Enterprise Event Analytics Platform
 

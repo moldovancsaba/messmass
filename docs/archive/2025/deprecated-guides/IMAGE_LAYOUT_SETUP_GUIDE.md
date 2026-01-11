@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 9.3.1  
+**Version:** 9.3.2  
 **Date:** 2025-11-02  
 **Purpose:** Step-by-step guide for configuring image aspect ratio layouts
 

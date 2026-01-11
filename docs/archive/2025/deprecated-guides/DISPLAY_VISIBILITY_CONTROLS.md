@@ -4,7 +4,7 @@ Last Updated: 2026-01-11T22:28:38.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 9.1.0  
+**Version:** 9.1.1  
 **Date:** 2025-11-01T23:19:30Z  
 **Feature:** Professional show/hide controls for chart title, emoji, and subtitle  
 **Status:** ✅ COMPLETE

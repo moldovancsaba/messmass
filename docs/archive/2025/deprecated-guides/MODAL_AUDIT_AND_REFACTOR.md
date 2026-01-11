@@ -5,7 +5,7 @@ Canonical: No
 Owner: Architecture
 
 **Date**: 2025-11-01T12:40:00.000Z (UTC)  
-**Version**: 8.16.2  
+**Version**: 8.16.3  
 **Status**: 🔴 NEEDS REFACTORING  
 **Priority**: HIGH - System-wide inconsistency
 

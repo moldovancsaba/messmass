@@ -611,7 +611,7 @@ const navSections: NavSection[] = [
 
 **Sign-off**: Agent Mode  
 **Date**: 2025-10-12T19:35:00.000Z  
-**Version**: 5.49.4
+**Version**: 5.49.5
 
 ---
 

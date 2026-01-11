@@ -5,7 +5,7 @@ Canonical: No
 Owner: Architecture
 
 **Date**: 2025-11-01T15:50:00.000Z (UTC)  
-**Version**: 9.1.1  
+**Version**: 9.1.2  
 **Status**: ✅ Complete
 
 ---
