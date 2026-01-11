@@ -1,7 +1,7 @@
 # MessMass Architecture Documentation
 
-Last Updated: 2025-12-26T14:40:00.000Z (UTC)
-Version: 11.55.0
+Last Updated: 2026-01-11T22:11:21.154Z (UTC)
+Version: 11.55.1
 
 ## 🔍 MANDATORY: Implementation Standards
 
@@ -1871,7 +1871,7 @@ return (
 The Admin Layout & Navigation System provides a comprehensive, responsive layout framework for all MessMass admin pages. It features a collapsible sidebar navigation, top header with user info and notifications, and adaptive behavior across desktop, tablet, and mobile devices.
 
 **Status**: Stable, Production-Ready  
-**Documentation**: See [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
+**Documentation**: See [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md) for complete documentation  
 **Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
 
 ### Key Components
@@ -1987,7 +1987,7 @@ See ROADMAP.md for planned improvements:
 4. Persist sidebar state with localStorage (Low priority)
 5. Implement focus trap in mobile overlay (Low priority)
 
-For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM.md](./ADMIN_LAYOUT_SYSTEM.md).
+For complete documentation, usage examples, troubleshooting, and technical details, see [ADMIN_LAYOUT_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_LAYOUT_SYSTEM.md).
 
 ---
 
@@ -2663,7 +2663,7 @@ See [SECURITY_MIGRATION_GUIDE.md](./docs/SECURITY_MIGRATION_GUIDE.md) for step-b
 - ✅ In-memory caching for performance (5-minute TTL)
 
 **Status**: Production-Ready  
-**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md](./VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md)
+**Documentation**: See [VARIABLES_DATABASE_SCHEMA.md (archived)](docs/archive/2025/deprecated-guides/VARIABLES_DATABASE_SCHEMA.md) and [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
 
 ### Core Principles
 
@@ -4059,7 +4059,7 @@ See ROADMAP.md for planned improvements:
 4. Export/import variable configurations
 5. Variable usage analytics (which variables are edited most)
 
-For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md](./ADMIN_VARIABLES_SYSTEM.md).
+For complete documentation, API reference, usage patterns, and technical decisions, see [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md).
 
 ---
 
