@@ -853,6 +853,15 @@ grep -r "style={{" app/ components/ --include="*.tsx" --include="*.ts"
   - **Commits:** `fd040559a` (investigation), `72859a15b` (remediation)
   - **Preview Verification:** Verdict: CLIPPING = YES (preventive fix applied). Code analysis revealed `overflow: hidden` violates Layout Grammar rule for content layers. Remediation applied before visual verification.
   - **Next Steps:** None. Workstream closed.
+- [ ] **P1 1.7** TABLE & LEGEND DENSITY STRESS AUDIT
+  - **Status:** ⏳ INVESTIGATION COMPLETE - Awaiting preview verification
+  - **Investigation:** `docs/audits/investigations/P1-1.7-table-legend-density-stress-audit.md` ✅ Complete
+  - **Scope:** Validate TABLE charts and charts with legends exceeding 5 items for Layout Grammar compliance under density stress (no scrolling, no truncation, no clipping, deterministic height, label wrapping)
+  - **Findings:**
+    - ✅ TABLE Charts: PASS (all checks - no scrolling, no truncation, no clipping, deterministic height, label wrapping)
+    - ⚠️ PIE Legends (>5 items): PARTIAL (deterministic height needs verification - legend growth may compress pie chart)
+  - **Commit:** `1ef0372cf` - "docs: P1 1.7 TABLE & LEGEND DENSITY STRESS AUDIT investigation"
+  - **Next Steps:** Preview verification to confirm height calculation assessment, then remediation if needed
 
 ### Phase 2: Variable Dictionary and Naming Standards
 
