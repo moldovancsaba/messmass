@@ -1033,12 +1033,13 @@
   .barTable {
     /* WHAT: Mobile - table remains responsive, rows expand naturally */
     /* WHY: Tables are naturally responsive, no special mobile handling needed */
-    font-size: var(--block-base-font-size);
+    width: 100%;
+    margin: 0 auto; /* WHAT: Center table on mobile too */
   }
   
   .barLabel {
     /* WHAT: Mobile - adjust label column width for smaller screens */
-    width: 30%; /* WHAT: Slightly wider label column on mobile */
+    width: 45%; /* WHAT: Even wider label column on mobile for better readability */
     padding-right: var(--mm-space-1);
   }
   
@@ -1048,9 +1049,9 @@
   }
   
   .barValue {
-    /* WHAT: Mobile - value column auto-width */
+    /* WHAT: Mobile - value column auto-width, same font size as label */
     padding-left: var(--mm-space-1);
-    font-size: var(--mm-font-size-xs);
+    font-size: var(--block-base-font-size); /* WHAT: Same font size as label */
   }
   
   /* WHAT: Charts must scale to fit their container on mobile
