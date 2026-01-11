@@ -6,6 +6,7 @@ import type { BlockLayoutInput, BlockLayoutResult, CellConfiguration as BaseCell
 import { getAspectRatioValue } from './aspectRatioResolver';
 import type { HeightResolutionInput, BlockHeightResolution, CellConfiguration } from './layoutGrammar';
 import { HeightResolutionPriority } from './layoutGrammar';
+import { validateElementFit } from './elementFitValidator';
 
 // WHAT: Helper to read CSS custom properties (design tokens)
 // WHY: No hardcoded values - all sizes must come from design system
@@ -247,23 +248,63 @@ export function resolveBlockHeightWithDetails(input: HeightResolutionInput): Blo
   }
   
   // Default: Readability enforcement (Priority 3)
+  // WHAT: Check if BAR charts need additional height based on row count
+  // WHY: Layout Grammar requires all BAR rows to fit without clipping
+  // HOW: Validate each BAR chart and increase height if needed
+  let adjustedHeightPx = heightPx;
+  const barChartAdjustments: string[] = [];
+  
+  for (const cell of cells) {
+    if (cell.bodyType === 'bar' && cell.contentMetadata?.barCount) {
+      // WHAT: Calculate body zone height (container minus title/subtitle)
+      // WHY: Validation needs body zone height, not full container height
+      // HOW: Estimate title/subtitle heights and subtract from container
+      const estimatedTitleHeight = 60; // Approximate title zone height
+      const estimatedSubtitleHeight = 0; // Assume no subtitle for now
+      const bodyZoneHeight = adjustedHeightPx - estimatedTitleHeight - estimatedSubtitleHeight;
+      
+      // WHAT: Validate BAR chart fit
+      const fitValidation = validateElementFit(cell, bodyZoneHeight, blockWidth);
+      
+      if (!fitValidation.fits && fitValidation.requiredHeight) {
+        // WHAT: Calculate required container height from body zone height
+        // WHY: Need to add back title/subtitle to get full container height
+        const requiredBodyHeight = fitValidation.requiredHeight;
+        const requiredContainerHeight = requiredBodyHeight + estimatedTitleHeight + estimatedSubtitleHeight;
+        
+        if (requiredContainerHeight > adjustedHeightPx) {
+          adjustedHeightPx = requiredContainerHeight;
+          barChartAdjustments.push(
+            `${cell.chartId}: ${heightPx}px → ${adjustedHeightPx}px (${cell.contentMetadata.barCount} bars need ${requiredBodyHeight}px body height)`
+          );
+        }
+      }
+    }
+  }
+  
   // Apply maxAllowedHeight constraint if provided
-  if (maxAllowedHeight !== undefined && heightPx > maxAllowedHeight) {
-    heightPx = maxAllowedHeight;
+  if (maxAllowedHeight !== undefined && adjustedHeightPx > maxAllowedHeight) {
+    adjustedHeightPx = maxAllowedHeight;
     return {
-      heightPx,
+      heightPx: adjustedHeightPx,
       priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
-      reason: 'Calculated height clamped by maxAllowedHeight constraint',
+      reason: barChartAdjustments.length > 0
+        ? `BAR chart height requirements clamped by maxAllowedHeight. Adjustments: ${barChartAdjustments.join('; ')}`
+        : 'Calculated height clamped by maxAllowedHeight constraint',
       canIncrease: false,
       requiresSplit: true
     };
   }
   
+  const reason = barChartAdjustments.length > 0
+    ? `Height calculated from cell distribution, adjusted for BAR chart requirements: ${barChartAdjustments.join('; ')}`
+    : 'Height calculated from cell distribution';
+  
   return {
-    heightPx,
+    heightPx: adjustedHeightPx,
     priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
-    reason: 'Height calculated from cell distribution',
-    canIncrease: maxAllowedHeight === undefined || heightPx < maxAllowedHeight,
+    reason,
+    canIncrease: maxAllowedHeight === undefined || adjustedHeightPx < maxAllowedHeight,
     requiresSplit: false
   };
 }
