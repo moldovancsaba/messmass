@@ -222,11 +222,17 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
             // WHY: Empty cells should not affect row height
             if (!hasValidChartData(result) || !result) return [];
             
-            // WHAT: Build contentMetadata for BAR charts (row count)
-            // WHY: Layout Grammar requires accurate height calculation based on actual row count
+            // WHAT: Build contentMetadata for BAR charts (row count) and PIE charts (legend item count)
+            // WHY: Layout Grammar requires accurate height calculation based on actual content requirements
             const contentMetadata: Record<string, unknown> = {};
             if (result.type === 'bar' && result.elements) {
               contentMetadata.barCount = result.elements.length;
+            }
+            if (result.type === 'pie' && result.elements) {
+              // WHAT: P1 1.7 - Include legend item count for PIE chart height calculation
+              // WHY: Legend growth (30% → 50%) may compress pie chart below minimum readable size
+              // HOW: Pass legend item count to height calculator to account for legend growth
+              contentMetadata.legendItemCount = result.elements.length;
             }
             
             return [{
