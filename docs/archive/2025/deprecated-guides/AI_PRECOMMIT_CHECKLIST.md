@@ -1,6 +1,10 @@
 # AI Pre-Commit Checklist (MANDATORY)
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 1.0.0  
+**Version:** 1.0.1  
 **Created:** 2025-11-01T23:26:55Z  
 **Enforcement:** STRICT - No exceptions
 

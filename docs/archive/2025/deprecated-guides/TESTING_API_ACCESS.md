@@ -1,6 +1,10 @@
 # Testing Guide: API Access Management System
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 10.6.0  
+**Version:** 10.6.1  
 **Created:** 2025-11-04T21:52:00.000Z  
 **Status:** Quick Reference Guide
 

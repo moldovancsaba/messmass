@@ -1,6 +1,10 @@
 # Modal System Documentation
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version**: 8.24.0+  
+**Version**: 8.24.2+  
 **Date**: 2025-11-01  
 **Status**: ✅ PRODUCTION
 
@@ -701,5 +705,5 @@ components/modals/
 
 ---
 
-**Last Updated**: 2025-11-01T12:45:00.000Z  
+**Last Updated**: 2026-01-11T22:28:38.000Z  
 **Maintained by**: MessMass Development Team

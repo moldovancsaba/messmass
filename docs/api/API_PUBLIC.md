@@ -1,7 +1,11 @@
 # MessMass Public API Documentation
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 10.6.0  
-**Last Updated:** 2025-11-04T21:48:00.000Z
+**Version:** 10.6.1  
+**Last Updated:** 2026-01-11T22:28:38.000Z
 **Status:** Production Ready  
 **Base URL:** `https://messmass.com` (or `http://localhost:3000` for development)
 

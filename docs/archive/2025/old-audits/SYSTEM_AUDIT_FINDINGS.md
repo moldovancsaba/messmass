@@ -1,4 +1,8 @@
 # MessMass System Audit - Complete Data Flow Analysis
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
 
 **Date:** 2025-11-01T22:51:00.000Z  
 **Purpose:** Identify why newly created charts don't appear on stats pages

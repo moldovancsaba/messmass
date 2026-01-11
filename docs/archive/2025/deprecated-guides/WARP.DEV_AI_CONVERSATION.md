@@ -1,4 +1,8 @@
 # WARP.DEV AI Conversation Log
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## [2025-12-19T11:28:38.000Z] v11.36.1 → v11.36.2 — Report Layout Spec v2.0 Phase 2 (CellWrapper)
 
@@ -103,7 +107,7 @@ User reported that 3.4 width still didn't produce equal heights. Investigation r
 
 ### Corrected Solution
 
-**Version**: 10.2.2 → 10.2.3 (PATCH increment - hotfix)
+**Version**: 10.2.4 → 10.2.3 (PATCH increment - hotfix)
 
 **Correct Formula**:
 - Portrait box (9:16): height = width × (16/9) = 3.2 × 1.778 = 5.69 units

@@ -1,7 +1,11 @@
 # 📡 API Reference
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 11.25.1  
-**Last Updated:** 2026-01-11T22:11:21.154Z (UTC)  
+**Version:** 11.25.2  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for MessMass v6.0.0. See detailed guides for complete schemas and examples.

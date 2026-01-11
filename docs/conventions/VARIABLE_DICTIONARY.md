@@ -1,6 +1,10 @@
 # Variable Dictionary
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 1.0.0  
+**Version:** 1.0.1  
 **Created:** 2026-01-09T10:21:28.300Z  
 **Status:** Canonical (Single Source of Truth)  
 **Maintained By:** Chappie (Architect)
@@ -560,7 +564,7 @@ const remoteImagesVar = variable.find(v => v.name === 'remoteImages');
 
 ## Maintenance
 
-**Last Updated:** 2026-01-09T10:21:28.300Z  
+**Last Updated:** 2026-01-11T22:28:38.000Z  
 **Next Review:** After P0 2.2 Variable Naming Consistency Audit  
 **Version History:** See git history for `docs/conventions/VARIABLE_DICTIONARY.md`
 

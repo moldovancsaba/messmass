@@ -1,6 +1,10 @@
 # Image Layout & Aspect Ratio Management Specification
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 1.0.0  
+**Version:** 1.0.1  
 **Date:** 2025-11-02  
 **Status:** PROPOSAL - Requires Implementation Review
 

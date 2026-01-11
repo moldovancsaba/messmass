@@ -1,4 +1,8 @@
 # Chart Block Height System
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## Overview
 
@@ -169,6 +173,6 @@ These charts maintain their aspect ratio and don't use the calculated height.
 
 ---
 
-**Version**: 11.35.1  
-**Last Updated**: 2025-12-18  
+**Version**: 11.35.3  
+**Last Updated**: 2026-01-11T22:28:38.000Z
 **Status**: Production Ready

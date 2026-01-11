@@ -1,4 +1,8 @@
 # Fix Summary: "marketing-value-kpi" Chart Not Visible
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Date:** 2025-11-01T23:10:09Z  
 **Issue:** When clicking "marketing-value-kpi" in visualization manager, it saves as "marketing-value" (wrong ID) and chart doesn't appear on stats page  

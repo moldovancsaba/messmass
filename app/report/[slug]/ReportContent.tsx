@@ -13,6 +13,7 @@ import { resolveBlockHeightWithDetails } from '@/lib/blockHeightCalculator';
 import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
+import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
 
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
@@ -456,15 +457,77 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
         enableKPISync: false // KPI values are exempt
       });
       
+      // WHAT: Calculate font size for BAR charts considering 2-line label wrapping
+      // WHY: Layout Grammar requires content to fit - font size must account for label wrapping
+      // HOW: Calculate max font size where 2-line labels fit in available row height
+      const barCharts = validCharts
+        .map(chart => {
+          const result = chartResults.get(chart.chartId);
+          if (!result || result.type !== 'bar' || !result.elements) return null;
+          return {
+            chartId: chart.chartId,
+            labels: result.elements.map(el => el.label)
+          };
+        })
+        .filter((chart): chart is { chartId: string; labels: string[] } => chart !== null);
+      
+      // WHAT: Get block height from first row (all rows in block share same height)
+      // WHY: Need block height to calculate available row height for BAR charts
+      // HOW: Find first row element and get its calculated height from CSS variable or actual height
+      // NOTE: Row height is calculated in ResponsiveRow, so we need to wait for it to be set
+      let blockHeight = 400; // Default fallback
+      const firstRow = blockRef.current?.querySelector('[class*="row"]') as HTMLElement;
+      if (firstRow) {
+        const computedStyle = getComputedStyle(firstRow);
+        const rowHeightValue = computedStyle.getPropertyValue('--row-height').trim();
+        if (rowHeightValue) {
+          blockHeight = parseInt(rowHeightValue, 10);
+        } else if (firstRow.offsetHeight > 0) {
+          // WHAT: Use actual rendered height if CSS variable not set yet
+          // WHY: Row might be rendered but CSS variable not yet applied
+          blockHeight = firstRow.offsetHeight;
+        }
+      }
+      
+      // WHAT: If no row found or height is 0, skip BAR chart font calculation
+      // WHY: Need valid block height to calculate font size
+      // HOW: Only calculate if we have a valid height
+      if (blockHeight <= 0 || !firstRow) {
+        console.warn(`[ReportBlock] Cannot calculate BAR chart font size: blockHeight=${blockHeight}, firstRow=${!!firstRow}`);
+      }
+      
+      // WHAT: Calculate BAR chart font size if BAR charts exist
+      // WHY: BAR chart labels can wrap to 2 lines - need to ensure they fit
+      // HOW: Use calculateBlockFontSizeForBarCharts with block dimensions
+      let barChartFontSize: number | null = null;
+      if (barCharts.length > 0) {
+        barChartFontSize = calculateBlockFontSizeForBarCharts(
+          barCharts,
+          blockHeight,
+          blockWidth
+        );
+      }
+      
+      // WHAT: Use minimum of title font size and BAR chart font size
+      // WHY: Block-level typography must work for all elements (titles and BAR labels)
+      // HOW: Take minimum to ensure all content fits
+      const finalFontSize = barChartFontSize !== null
+        ? Math.min(syncedFonts.titlePx, barChartFontSize)
+        : syncedFonts.titlePx;
+      
       console.log(`[ReportBlock] Block-level typography calculated:`, {
         blockTitle: block.title || 'Untitled',
         blockWidth,
+        blockHeight,
         titlePx: syncedFonts.titlePx,
+        barChartFontSize,
+        finalFontSize,
         subtitlePx: syncedFonts.subtitlePx,
-        cellsCount: allCells.length
+        cellsCount: allCells.length,
+        barChartsCount: barCharts.length
       });
       
-      setBlockBaseFontSize(syncedFonts.titlePx);
+      setBlockBaseFontSize(finalFontSize);
       setBlockSubtitleFontSize(syncedFonts.subtitlePx);
     };
     

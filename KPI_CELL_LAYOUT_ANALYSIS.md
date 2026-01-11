@@ -1,4 +1,8 @@
 # KPI Chart Cell Layout Analysis (v12.0.0)
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## Cell Dimensions: 435px width × 445px height
 

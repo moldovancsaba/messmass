@@ -1,4 +1,8 @@
 # Fanmass Integration Setup Guide
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## Overview
 
@@ -491,6 +495,6 @@ For issues or questions:
 
 ---
 
-**Last Updated:** November 26, 2024
-**Version:** 1.0.0
+**Last Updated: 2026-01-11T22:28:38.000Z
+**Version:** 1.0.1
 **Status:** Production Ready ✅

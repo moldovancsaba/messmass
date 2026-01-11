@@ -1,6 +1,10 @@
 # Report Typography 1.5x Constraint System
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 11.37.0  
+**Version:** 11.37.1  
 **Date:** 2025-12-20  
 **Status:** ✅ Implemented and Verified
 

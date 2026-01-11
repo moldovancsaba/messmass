@@ -1,7 +1,11 @@
 # MessMass Project Summary for Kiro
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 11.29.0  
-**Last Updated:** 2025-12-17T11:01:04.000Z  
+**Version:** 11.29.1  
+**Last Updated:** 2026-01-11T22:28:38.000Z  
 **Project Type:** Enterprise Event Analytics Platform
 
 ---

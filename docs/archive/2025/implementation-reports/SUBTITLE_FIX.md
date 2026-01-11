@@ -1,4 +1,8 @@
 # Chart Subtitle/Description Field Fix
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 **Date:** 2025-11-01T23:17:07Z  
 **Issue:** Chart Algorithm Manager missing subtitle/description field  

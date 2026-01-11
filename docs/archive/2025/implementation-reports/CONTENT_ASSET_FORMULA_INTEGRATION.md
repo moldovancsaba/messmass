@@ -1,6 +1,10 @@
 # Content Asset Formula Integration
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
-**Version:** 10.4.1  
+**Version:** 10.4.2  
 **Date:** 2025-11-03  
 **Status:** ✅ Complete
 
@@ -481,6 +485,6 @@ if (kpiValue === 'NA') {
 
 ---
 
-**Last Updated:** 2025-11-03T09:50:00.000Z (UTC)  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Author:** AI Development Agent  
 **Status:** Production-Ready ✅

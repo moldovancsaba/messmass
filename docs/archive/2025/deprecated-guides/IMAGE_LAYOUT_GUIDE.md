@@ -1,7 +1,11 @@
 # Image Layout Guide - Common Patterns
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version**: 10.3.0  
-**Last Updated**: 2025-11-03T00:15:00.000Z (UTC)
+**Version**: 10.3.2  
+**Last Updated**: 2026-01-11T22:28:38.000Z (UTC)
 
 ## Overview
 

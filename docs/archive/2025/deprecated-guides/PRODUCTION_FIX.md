@@ -1,4 +1,8 @@
 # Production Database Fix Required
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## Problem
 The visualization page at https://www.messmass.com/admin/visualization is crashing because the production database still has the OLD broken chart data:

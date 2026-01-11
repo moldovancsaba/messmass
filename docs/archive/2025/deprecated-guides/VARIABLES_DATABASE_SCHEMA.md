@@ -1,6 +1,10 @@
 # Variables Database Schema
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version**: 1.0.0  
+**Version**: 1.0.2  
 **Date**: 2025-10-28  
 **Purpose**: Move ALL variable definitions from code to database for full dynamic configuration
 

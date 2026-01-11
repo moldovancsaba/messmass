@@ -1,7 +1,11 @@
 # MessMass Unified Hashtag System Documentation
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Product
 
-**Version:** 11.25.0  
-**Last Updated:** 2025-11-01T15:00:00.000Z (UTC)  
+**Version:** 11.25.1  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production
 
 ## 🔒 MANDATORY: Use UnifiedHashtagInput - Do NOT Create Custom Hashtag Components

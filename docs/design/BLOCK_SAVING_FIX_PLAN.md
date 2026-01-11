@@ -1,4 +1,8 @@
 # Block Saving Fix Plan - Visualization Manager
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Date:** 2026-01-02  
 **Issue:** Block creation/updates don't save reliably, no visual feedback  

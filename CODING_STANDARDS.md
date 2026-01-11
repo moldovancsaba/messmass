@@ -1,7 +1,11 @@
 # MessMass Coding Standards
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version:** 11.40.0  
-**Last Updated:** 2025-12-21T09:02:35.000Z (UTC)
+**Version:** 11.40.1  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)
 
 ---
 
@@ -47,7 +51,7 @@ Module: components/modals/FormModal.tsx
 Affected: 12 admin pages (partners, variables, kyc, categories, etc.)
 Change Type: MINOR (added new prop `footerAlign`)
 Test Coverage: All 12 pages verified
-Version: 9.1.0 → 9.2.0
+Version: 9.1.1 → 9.2.0
 ```
 
 ### Module Usage Rules
