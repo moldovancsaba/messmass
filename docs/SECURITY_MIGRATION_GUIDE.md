@@ -1,6 +1,6 @@
 # Security Migration Guide
 Status: Active
-Last Updated: 2026-01-11T23:20:04.000Z
+Last Updated: 2026-01-11T23:27:27.000Z
 Canonical: Yes
 Owner: Security
 
@@ -38,3 +38,7 @@ Owner: Security
 - Revert to the prior release if CSRF or rate limiting blocks valid traffic.
 - Restore direct `fetch()` usage only if `apiClient` is the failure source.
 - Roll back middleware changes as a last resort for production recovery.
+
+## Related Documents
+- [ARCHITECTURE.md](../ARCHITECTURE.md)
+- [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md)
