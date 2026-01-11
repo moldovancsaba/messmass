@@ -1,4 +1,8 @@
 # Export Buttons Troubleshooting & Fix
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 **Date:** 2025-12-25T10:44:20Z  
 **Issue:** Export PDF and Export CSV buttons do not export and download files  

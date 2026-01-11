@@ -1,4 +1,8 @@
 # Pull Request
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## DoD Profile
 - [ ] **Report Rendering & Dashboards** (STRICT)

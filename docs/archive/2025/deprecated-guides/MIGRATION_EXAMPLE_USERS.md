@@ -1,4 +1,8 @@
 # 🎯 Migration Example: Users Page
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Date**: 2025-11-02  
 **Page**: `/admin/users`  

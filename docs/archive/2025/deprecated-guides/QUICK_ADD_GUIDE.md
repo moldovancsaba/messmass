@@ -1,7 +1,11 @@
 # ⚡ Quick Add Technical Guide
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Version:** 11.25.0  
-**Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production
 
 Complete technical documentation for the MessMass Quick Add system, covering both Sheet Import and Sports Match Builder features.

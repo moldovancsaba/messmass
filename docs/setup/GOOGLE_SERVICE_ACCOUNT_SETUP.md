@@ -1,4 +1,8 @@
 # Google Service Account Setup - Quick Guide
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 **Time Required**: 5 minutes  
 **Purpose**: Create service account for Google Sheets API access

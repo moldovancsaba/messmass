@@ -1,4 +1,8 @@
 # Typography Fine-Tuning: Multi-Tier Constraint System
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Version:** 11.37.1  
 **Date:** 2025-12-20  

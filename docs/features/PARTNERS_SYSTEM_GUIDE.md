@@ -1,7 +1,11 @@
 # 🤝 Partners System Technical Guide
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Product
 
-**Version:** 11.25.0  
-**Last Updated:** 2025-01-21T11:14:00.000Z (UTC)  
+**Version:** 11.25.1  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Status:** Production
 
 Complete technical documentation for the MessMass Partners Management System.

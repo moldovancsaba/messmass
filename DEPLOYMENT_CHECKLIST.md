@@ -1,4 +1,8 @@
 # Chart Alignment Fixes - Deployment Checklist
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 ## Status: ✅ READY FOR DEPLOYMENT
 

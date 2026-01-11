@@ -1,4 +1,8 @@
 # Partner SportsDB Bulk Enrichment Script
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## Overview
 
@@ -343,6 +347,6 @@ Potential improvements for future versions:
 
 ---
 
-**Version**: 6.10.2  
-**Last Updated**: 2025-01-16T16:30:00.000Z  
+**Version**: 6.10.4  
+**Last Updated**: 2026-01-11T22:28:38.000Z  
 **Status**: Production-Ready

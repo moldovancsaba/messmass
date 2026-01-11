@@ -1,7 +1,11 @@
 # ROADMAP.md
+Status: Draft
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Product
 
 Current Version: 11.45.0
-Last Updated: 2025-12-22T18:31:10.000Z (UTC)
+Last Updated: 2026-01-11T22:28:38.000Z (UTC)
 
 ---
 
@@ -479,4 +483,4 @@ Last Updated: 2025-12-22T18:31:10.000Z (UTC)
 ---
 
 *MessMass Roadmap — Strategic Planning Document*  
-*Version 8.24.0 | Last Updated: 2025-11-01T15:20:00.000Z (UTC)*
+*Version 8.24.1 | Last Updated: 2025-11-01T15:20:00.000Z (UTC)*

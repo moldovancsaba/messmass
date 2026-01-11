@@ -1,4 +1,8 @@
 # Google Sheets Integration - MongoDB Schema Updates (v12.0.0)
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 **WHAT**: Schema changes required for Google Sheets sync feature  
 **WHY**: Enable bidirectional sync between Google Sheets and MessMass projects  
@@ -252,6 +256,6 @@ db.partners.updateMany(
 
 ---
 
-**Version**: 12.0.0  
-**Last Updated**: 2025-12-26T17:30:00.000Z  
+**Version**: 12.0.2  
+**Last Updated**: 2026-01-11T22:28:38.000Z  
 **Status**: In Progress (Phase 1)

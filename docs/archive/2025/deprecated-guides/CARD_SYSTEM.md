@@ -1,7 +1,11 @@
 # Card System — ColoredCard Component
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
-**Version**: 8.24.0  
-**Last Updated**: 2025-11-01T15:00:00.000Z  
+**Version**: 8.24.1  
+**Last Updated**: 2026-01-11T22:28:38.000Z  
 **Component**: `components/ColoredCard.tsx`
 
 ---

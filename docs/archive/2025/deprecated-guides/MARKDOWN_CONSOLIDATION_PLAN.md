@@ -1,4 +1,8 @@
 # Markdown Files Consolidation Plan
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Date:** 2025-12-17T11:11:02.000Z  
 **Current Count:** 82 root-level .md files (+ 13 in subdirectories = 95 total)  

@@ -1,4 +1,8 @@
 # Chart Fixes - Changes Summary
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
 ## What Was Fixed
 

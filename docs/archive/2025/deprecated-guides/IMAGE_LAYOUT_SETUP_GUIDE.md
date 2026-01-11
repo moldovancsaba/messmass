@@ -1,4 +1,8 @@
 # MessMass Image Layout Setup Guide
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Version:** 9.3.1  
 **Date:** 2025-11-02  
@@ -320,6 +324,6 @@ The "Width" field in Visualization block is **ignored** for image charts. Width 
 
 ---
 
-**Last Updated:** 2025-11-02T18:10:00.000Z  
+**Last Updated:** 2026-01-11T22:28:38.000Z  
 **Version:** 9.3.1  
 **Author:** Warp AI Assistant

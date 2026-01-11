@@ -1,4 +1,8 @@
 # Database Indexes Report
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
 
 **Generated:** 2025-11-02T19:47:54.823Z  
 **Mode:** Live Execution

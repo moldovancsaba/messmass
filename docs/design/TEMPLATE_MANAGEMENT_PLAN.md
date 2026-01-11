@@ -1,4 +1,8 @@
 # Report Template Management - Implementation Plan
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Date:** 2026-01-02  
 **Feature:** Add Rename, Copy, Delete operations to Report Template management  

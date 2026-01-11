@@ -1,6 +1,11 @@
 # Chart System Architectural Audit
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
+
 **Date**: 2025-11-01T18:33:00.000Z  
-**Version**: 8.16.1  
+**Version**: 8.16.3  
 **Status**: CRITICAL ISSUES FOUND
 
 ## Executive Summary

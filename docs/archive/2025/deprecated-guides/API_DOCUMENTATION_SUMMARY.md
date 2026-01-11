@@ -1,4 +1,8 @@
 # API Documentation Summary
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 ## ✅ Completed
 
@@ -259,5 +263,5 @@ For questions about the API documentation:
 
 **Status:** ✅ Live and Accessible
 **URL:** https://messmass.com/api-docs
-**Last Updated:** November 26, 2024
+**Last Updated: 2026-01-11T22:28:38.000Z
 **Version:** 1.0.0

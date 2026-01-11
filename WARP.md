@@ -1,4 +1,8 @@
 # WARP.md
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
@@ -1389,4 +1393,4 @@ const value = stats[statsKey]; // Get current value
 
 ---
 
-*Version: 11.37.0 | Last Updated: 2025-12-19T17:24:00.000Z (UTC) | Status: Production-Ready*
+*Version: 11.37.1 | Last Updated: 2026-01-11T22:28:38.000Z (UTC) | Status: Production-Ready*

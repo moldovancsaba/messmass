@@ -1,4 +1,8 @@
 # Security Audit: dynamic-eval usage (2026-01-03)
+Status: Active
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Security
 
 Summary
 -------

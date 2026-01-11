@@ -1,6 +1,10 @@
 # Content Asset Migration Plan
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Operations
 
-**Version:** 10.4.1  
+**Version:** 10.4.2  
 **Date:** 2025-11-03  
 **Status:** Ready for Execution
 
@@ -413,6 +417,6 @@ If critical issues arise, immediately:
 
 ---
 
-**Last Updated:** 2025-11-03T10:01:00.000Z (UTC)  
+**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
 **Document Owner:** AI Development Agent  
 **Migration Status:** Phase 2 Ready to Start 🚀

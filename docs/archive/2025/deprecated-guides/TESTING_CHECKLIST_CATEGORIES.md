@@ -1,4 +1,8 @@
 # 🧪 Testing Checklist: Categories Migration
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Page**: `/admin/categories`  
 **Date**: 2025-11-02  

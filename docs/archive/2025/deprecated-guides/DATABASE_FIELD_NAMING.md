@@ -1,4 +1,8 @@
 # Database Field Naming - Definitive Answer
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Architecture
 
 **Question**: What is the variable name for "female" in the database?
 

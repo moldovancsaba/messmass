@@ -1,4 +1,8 @@
 # MessMass v8.17.0 Release Notes
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
 
 ## [v8.17.0] — 2025-10-31T10:17:00.000Z
 

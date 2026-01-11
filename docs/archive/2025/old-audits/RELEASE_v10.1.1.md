@@ -1,8 +1,12 @@
 # Release Notes v10.1.1
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
 
 **Release Date**: 2025-11-02T21:45:00.000Z (UTC)  
 **Type**: PATCH (Critical Bugfixes)  
-**Previous Version**: 10.1.0  
+**Previous Version**: 10.1.1  
 **Status**: Ready for Testing
 
 ---

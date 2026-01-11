@@ -1,4 +1,8 @@
 # Release Notes - v8.24.0
+Status: Archived
+Last Updated: 2026-01-11T22:28:38.000Z
+Canonical: No
+Owner: Audit
 
 **Release Date**: 2025-11-01T13:00:00.000Z (UTC)  
 **Type**: MINOR Release  
@@ -317,5 +321,5 @@ npm install focus-trap-react
 ---
 
 *Generated: 2025-11-01T13:00:00.000Z (UTC)*  
-*Version: 8.24.0*  
+*Version: 8.24.1*  
 *Build: Production*
