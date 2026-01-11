@@ -388,32 +388,29 @@
 }
 
 .barElements {
-  /* WHAT: BAR elements container - allows rows to grow naturally with multi-line labels */
-  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
-  /* HOW: Natural stacking with gap, no space-evenly distribution */
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-1); /* WHAT: Spacing between rows to prevent overlap */
-  flex: 1; /* WHAT: Fill remaining vertical space, but allow natural stacking */
-  justify-content: flex-start; /* WHAT: Stack rows naturally, don't force even distribution */
+  /* WHAT: BAR elements container - strict row ownership with grid model */
+  /* WHY: Multi-line labels must increase row height and push subsequent rows down (Layout Grammar: no clipping) */
+  /* HOW: CSS Grid with grid-auto-rows: max-content ensures each row owns its height, no distribution logic */
+  display: grid;
+  grid-auto-rows: max-content; /* WHAT: Each row owns its height based on content */
+  row-gap: var(--mm-space-1); /* WHAT: Spacing between rows */
+  align-content: start; /* WHAT: Stack rows from top */
   width: 100%; /* CRITICAL: Fill full chart width */
   max-width: none !important; /* CRITICAL: Remove max-width */
-  min-height: 0; /* CRITICAL: Allow flex shrinking */
-  align-items: stretch; /* WHAT: Stretch rows to full width */
+  /* WHAT: No flex: 1, no justify-content, no distribution logic - grid fills space naturally */
 }
 
 .barRow {
-  /* WHAT: BAR row with label, track, and value - allows multi-line labels to expand row height */
-  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
-  /* HOW: Grid layout with auto height, labels at start, bar/value aligned with first line */
+  /* WHAT: BAR row with label, track, and value - 3-column grid with strict row ownership */
+  /* WHY: Multi-line labels must increase row height and push subsequent rows down (Layout Grammar: no clipping) */
+  /* HOW: Grid layout with max-content value column, labels at start, bar/value aligned with first line */
   display: grid;
-  grid-template-columns: minmax(0, 25%) minmax(0, 1fr) auto; /* Label 25% | Track fills | Value auto */
-  column-gap: var(--mm-space-3);
+  grid-template-columns: minmax(0, 25%) minmax(0, 1fr) max-content; /* Label 25% | Track fills | Value max-content */
+  column-gap: var(--mm-space-2); /* WHAT: Spacing between columns */
   align-items: start; /* WHAT: Align labels at top to prevent overlap */
   padding-inline: var(--mm-space-1);
   container-type: size;
-  /* WHAT: Removed flex: 1 - allow rows to grow with multi-line content */
-  /* WHAT: Removed padding-block - gap is now handled by parent .barElements */
+  /* WHAT: Grid model ensures strict row ownership - row height determined by content */
 }
 
 .barLabel {
@@ -437,11 +434,12 @@
 }
 
 .barTrack {
-  /* WHAT: Full-width bar track (middle column) */
-  /* WHY: Track fills available space between label and value */
-  /* HOW: 100% width of grid column, aligned with first line of label */
+  /* WHAT: Full-width bar track (middle column) with minimum height to prevent collapse */
+  /* WHY: Track fills available space between label and value, must maintain readable thickness */
+  /* HOW: 100% width of grid column, minimum height constraint, aligned with first line of label */
   background: var(--chartNoDataBackground);
   height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
+  min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
   width: 100%; /* CRITICAL: Fills entire middle grid column */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   overflow: hidden;
