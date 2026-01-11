@@ -376,6 +376,8 @@
   min-height: 0;
   width: 100% !important; /* CRITICAL: No width restrictions */
   max-width: none !important; /* CRITICAL: Remove max-width */
+  overflow: visible; /* WHAT: Allow content to expand beyond container if needed */
+  align-items: stretch; /* WHAT: Stretch children to full width */
 }
 
 .barTitle {
@@ -387,36 +389,33 @@
   flex-shrink: 0; /* WHAT: Prevent title from shrinking */
 }
 
+.barTable {
+  /* WHAT: BAR chart table - semantic HTML table for natural row expansion */
+  /* WHY: Tables naturally expand rows to fit content, preventing overlap (Layout Grammar: no clipping) */
+  /* HOW: Standard HTML table with proper column widths, rows expand automatically */
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--mm-space-1); /* WHAT: Row gap using border-spacing */
+  table-layout: auto; /* WHAT: Allow table to size based on content */
+}
+
 .barElements {
-  /* WHAT: BAR elements container - strict row ownership with grid model */
-  /* WHY: Multi-line labels must increase row height and push subsequent rows down (Layout Grammar: no clipping) */
-  /* HOW: CSS Grid with grid-auto-rows: max-content ensures each row owns its height, no distribution logic */
-  display: grid;
-  grid-auto-rows: max-content; /* WHAT: Each row owns its height based on content */
-  row-gap: var(--mm-space-1); /* WHAT: Spacing between rows */
-  align-content: start; /* WHAT: Stack rows from top */
-  width: 100%; /* CRITICAL: Fill full chart width */
-  max-width: none !important; /* CRITICAL: Remove max-width */
-  /* WHAT: No flex: 1, no justify-content, no distribution logic - grid fills space naturally */
+  /* WHAT: Table body - contains all bar rows */
+  /* WHY: Standard table structure */
+  width: 100%;
 }
 
 .barRow {
-  /* WHAT: BAR row with label, track, and value - 3-column grid with strict row ownership */
-  /* WHY: Multi-line labels must increase row height and push subsequent rows down (Layout Grammar: no clipping) */
-  /* HOW: Grid layout with max-content value column, labels at start, bar/value aligned with first line */
-  display: grid;
-  grid-template-columns: minmax(0, 25%) minmax(0, 1fr) max-content; /* Label 25% | Track fills | Value max-content */
-  column-gap: var(--mm-space-2); /* WHAT: Spacing between columns */
-  align-items: start; /* WHAT: Align labels at top to prevent overlap */
-  padding-inline: var(--mm-space-1);
-  container-type: size;
-  /* WHAT: Grid model ensures strict row ownership - row height determined by content */
+  /* WHAT: Table row - naturally expands to fit content */
+  /* WHY: Table rows automatically expand to fit tallest cell content */
+  /* HOW: Standard table row, no special CSS needed for row expansion */
+  vertical-align: top; /* WHAT: Align content to top of row */
 }
 
 .barLabel {
-  /* WHAT: Bar label - wraps safely to multiple lines without overlap */
-  /* WHY: Multi-line labels must expand row height, never overlap (Layout Grammar: no clipping) */
-  /* HOW: Normal wrapping with proper line-height, no line clamp, right-aligned */
+  /* WHAT: Bar label table cell - wraps safely to multiple lines, row expands automatically */
+  /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
+  /* HOW: Standard table cell with text wrapping, right-aligned */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
@@ -426,24 +425,32 @@
   overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
   word-break: break-word; /* WHAT: Break long words if needed */
   line-height: 1.15; /* WHAT: Deterministic line-height for multi-line labels */
-  padding-right: var(--mm-space-1);
-  display: flex;
-  flex-direction: column; /* WHAT: Stack lines vertically */
-  align-items: flex-end; /* WHAT: Right-align text */
-  justify-content: flex-start; /* WHAT: Align to top */
+  padding-right: var(--mm-space-2);
+  padding-left: var(--mm-space-1);
+  width: 25%; /* WHAT: Label column width */
+  vertical-align: top; /* WHAT: Align to top of row */
+}
+
+.barTrackCell {
+  /* WHAT: Bar track table cell - contains the bar visualization */
+  /* WHY: Table cell provides natural column structure */
+  /* HOW: Standard table cell, contains barTrack div */
+  padding: 0 var(--mm-space-2);
+  width: auto; /* WHAT: Track column fills remaining space */
+  vertical-align: middle; /* WHAT: Center bar vertically in row */
 }
 
 .barTrack {
-  /* WHAT: Full-width bar track (middle column) with minimum height to prevent collapse */
+  /* WHAT: Bar track visualization - fills available space in table cell */
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
-  /* HOW: 100% width of grid column, minimum height constraint, aligned with first line of label */
+  /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
   height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
   min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
-  width: 100%; /* CRITICAL: Fills entire middle grid column */
+  width: 100%; /* CRITICAL: Fills entire table cell */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   overflow: hidden;
-  align-self: center; /* WHAT: Align bar with first line of label (or center within row) */
+  /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
 
 .barFill {
@@ -458,20 +465,19 @@
 }
 
 .barValue {
-  /* WHAT: Bar value - right column, displays formatted number */
-  /* WHY: Right alignment for easy reading, aligned with first line of label */
-  /* HOW: Flex container for alignment, aligned with bar track */
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: Match bar height */
+  /* WHAT: Bar value table cell - displays formatted number */
+  /* WHY: Table cell provides natural column structure */
+  /* HOW: Standard table cell, left-aligned text */
+  padding-left: var(--mm-space-2);
+  padding-right: var(--mm-space-1);
+  width: auto; /* WHAT: Value column auto-width based on content */
   font-size: clamp(1rem, 10cqh, 1.4rem); /* DOUBLED: 5cqh → 10cqh */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
   text-align: left;
   line-height: 1;
   white-space: nowrap; /* WHAT: Values should not wrap (single line) */
-  align-self: center; /* WHAT: Align value with first line of label (or center within row) */
+  vertical-align: middle; /* WHAT: Center value vertically in row */
 }
 
 /* Text Chart - Flexbox structure with title and content zones */
@@ -1011,28 +1017,27 @@
     gap: var(--mm-space-4);
   }
   
-  .barElements {
-    /* WHAT: Mobile - maintain grid model with strict row ownership */
-    /* WHY: Same architectural model as desktop - rows own their height */
-    /* HOW: Grid with max-content rows, no distribution logic */
-    display: grid;
-    grid-auto-rows: max-content;
-    row-gap: var(--mm-space-1);
-    align-content: start;
-  }
-  
-  .barRow {
-    /* WHAT: Mobile - responsive grid columns, maintain strict row ownership */
-    /* WHY: Same grid model as desktop, adjusted column sizes for mobile */
-    /* HOW: Grid with responsive column sizing, max-content for value */
-    grid-template-columns: minmax(5rem, 22cqw) 1fr max-content;
-    column-gap: var(--mm-space-2);
+  .barTable {
+    /* WHAT: Mobile - table remains responsive, rows expand naturally */
+    /* WHY: Tables are naturally responsive, no special mobile handling needed */
+    font-size: var(--block-base-font-size);
   }
   
   .barLabel {
-    /* WHAT: Mobile - use block-level typography for consistency (P1 1.5) */
-    /* WHY: Unified typography system applies to all viewports */
-    font-size: var(--block-base-font-size);
+    /* WHAT: Mobile - adjust label column width for smaller screens */
+    width: 30%; /* WHAT: Slightly wider label column on mobile */
+    padding-right: var(--mm-space-1);
+  }
+  
+  .barTrackCell {
+    /* WHAT: Mobile - track column fills remaining space */
+    padding: 0 var(--mm-space-1);
+  }
+  
+  .barValue {
+    /* WHAT: Mobile - value column auto-width */
+    padding-left: var(--mm-space-1);
+    font-size: var(--mm-font-size-xs);
   }
   
   /* WHAT: Charts must scale to fit their container on mobile
