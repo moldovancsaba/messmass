@@ -570,33 +570,37 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     >
       {/* WHAT: Chart body ref for height calculation (P1 1.4 Phase 2) */}
       <div ref={chartBodyRef} className={styles.chartBody}>
-        <div className={styles.barElements}>
-        {result.elements.map((element, idx) => {
-          const numValue = typeof element.value === 'number' ? element.value : 0;
-          const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
-          const protectedLabel = preventPhraseBreaks(element.label);
-          
-          return (
-            <div key={idx} className={styles.barRow}>
-              <div className={styles.barLabel}>{protectedLabel}</div>
-              <div 
-                className={styles.barTrack}
-                // WHAT: Dynamic bar fill width and color from chart calculation
-                // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
-                // HOW: Set CSS custom properties on parent, consumed by .barFill
-                // eslint-disable-next-line react/forbid-dom-props
-                  style={{ 
-                  '--bar-width': `${widthPercent}%`,
-                  '--bar-color': barColors[idx % barColors.length]
-                } as React.CSSProperties}
-              >
-                <div className={styles.barFill} />
-              </div>
-              <div className={styles.barValue}>{formatValue(element.value, result.formatting)}</div>
-            </div>
-          );
-        })}
-        </div>
+        <table className={styles.barTable}>
+          <tbody className={styles.barElements}>
+          {result.elements.map((element, idx) => {
+            const numValue = typeof element.value === 'number' ? element.value : 0;
+            const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
+            const protectedLabel = preventPhraseBreaks(element.label);
+            
+            return (
+              <tr key={idx} className={styles.barRow}>
+                <td className={styles.barLabel}>{protectedLabel}</td>
+                <td className={styles.barTrackCell}>
+                  <div 
+                    className={styles.barTrack}
+                    // WHAT: Dynamic bar fill width and color from chart calculation
+                    // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
+                    // HOW: Set CSS custom properties on parent, consumed by .barFill
+                    // eslint-disable-next-line react/forbid-dom-props
+                    style={{ 
+                      '--bar-width': `${widthPercent}%`,
+                      '--bar-color': barColors[idx % barColors.length]
+                    } as React.CSSProperties}
+                  >
+                    <div className={styles.barFill} />
+                  </div>
+                </td>
+                <td className={styles.barValue}>{formatValue(element.value, result.formatting)}</td>
+              </tr>
+            );
+          })}
+          </tbody>
+        </table>
       </div>
     </CellWrapper>
   );
