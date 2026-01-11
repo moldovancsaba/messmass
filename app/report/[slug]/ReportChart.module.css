@@ -372,11 +372,12 @@
   padding: var(--mm-space-2);
   display: flex;
   flex-direction: column;
+  align-items: center; /* WHAT: Center table horizontally in container */
+  justify-content: center; /* WHAT: Center table vertically in container */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
   overflow: hidden; /* WHAT: Prevent overflow - table must fit within available space */
-  align-items: stretch; /* WHAT: Stretch children to full width */
   box-sizing: border-box;
 }
 
@@ -393,13 +394,14 @@
   /* WHAT: BAR chart table - semantic HTML table for natural row expansion */
   /* WHY: Tables naturally expand rows to fit content, preventing overlap (Layout Grammar: no clipping) */
   /* HOW: Standard HTML table with proper column widths, rows expand automatically */
-  width: 100%; /* WHAT: Use full width of available space */
+  width: 100%; /* WHAT: Use full width of available space (accounts for parent padding via box-sizing) */
   max-width: 100%; /* WHAT: Never exceed container width */
   border-collapse: separate;
   border-spacing: 0 var(--mm-space-1); /* WHAT: Row gap using border-spacing */
   table-layout: fixed; /* WHAT: Fixed layout for consistent column widths, respects width: 100% */
-  height: 100%; /* WHAT: Respect available height */
+  height: auto; /* WHAT: Auto height to fit content, constrained by parent max-height */
   max-height: 100%; /* WHAT: Never exceed container height */
+  margin: 0 auto; /* WHAT: Center table horizontally in container */
   box-sizing: border-box;
 }
 
@@ -479,7 +481,8 @@
   /* HOW: Standard table cell, left-aligned text */
   padding-left: var(--mm-space-2);
   padding-right: var(--mm-space-1);
-  width: auto; /* WHAT: Value column auto-width based on content */
+  width: auto; /* WHAT: Value column auto-width based on content, remaining space goes to track */
+  min-width: fit-content; /* WHAT: Ensure value text is never clipped */
   font-size: clamp(1rem, 10cqh, 1.4rem); /* DOUBLED: 5cqh → 10cqh */
   font-weight: var(--mm-font-weight-bold);
   color: var(--chartValueColor);
@@ -487,6 +490,7 @@
   line-height: 1;
   white-space: nowrap; /* WHAT: Values should not wrap (single line) */
   vertical-align: middle; /* WHAT: Center value vertically in row */
+  box-sizing: border-box;
 }
 
 /* Text Chart - Flexbox structure with title and content zones */
