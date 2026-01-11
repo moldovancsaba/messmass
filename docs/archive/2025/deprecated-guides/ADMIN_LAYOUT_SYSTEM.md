@@ -1,12 +1,12 @@
 # Admin Layout & Navigation System (v5.53.0)
 Status: Archived
-Last Updated: 2026-01-11T22:45:21.000Z
+Last Updated: 2026-01-11T23:27:27.000Z
 Canonical: No
 Owner: Architecture
 
-**Last Updated**: 2026-01-11T22:45:21.000Z  
+**Last Updated**: 2026-01-11T23:27:27.000Z  
 **Status**: ✅ Stable, Production-Ready
-**Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
+**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](../../../../CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
 
 ---
 
@@ -215,7 +215,7 @@ Current sections:
    - Badge with unread count
    - Dropdown NotificationPanel
    - 30-second polling for updates
-   - See MULTI_USER_NOTIFICATIONS.md (TODO: unresolved target)
+   - See [MULTI_USER_NOTIFICATIONS.md](../../../../docs/features/MULTI_USER_NOTIFICATIONS.md)
 3. **User Info Display**:
    - Avatar with initial
    - Name and role
@@ -381,7 +381,7 @@ All interactive elements meet 44x44px minimum:
 
 ### Improvements Recommended
 
-See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target) for:
+See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](../../../../CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md) for:
 1. Add skip-to-content link (WCAG 2.4.1)
 2. Add `title` attributes for collapsed sidebar icons
 3. Implement focus trap in mobile overlay
@@ -546,7 +546,7 @@ const navSections: NavSection[] = [
    Files: `TopHeader.tsx`  
    Effort: 1 hour
 
-**Full technical debt analysis**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
+**Full technical debt analysis**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](../../../../CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
 
 ---
 
@@ -576,8 +576,8 @@ const navSections: NavSection[] = [
 
 ## 📚 Related Documentation
 
-- **MULTI_USER_NOTIFICATIONS.md (TODO: unresolved target)** - Notification system integrated in TopHeader
-- **CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)** - Detailed code review and technical debt
+- **[MULTI_USER_NOTIFICATIONS.md](../../../../docs/features/MULTI_USER_NOTIFICATIONS.md)** - Notification system integrated in TopHeader
+- **[CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](../../../../CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)** - Detailed code review and technical debt
 - **[ARCHITECTURE.md](../../../../ARCHITECTURE.md)** - System architecture overview
 - **[WARP.md](../../../../WARP.md)** - Development guidelines and component locations
 
@@ -611,7 +611,7 @@ const navSections: NavSection[] = [
 
 **Sign-off**: Agent Mode  
 **Date**: 2025-10-12T19:35:00.000Z  
-**Version**: 5.49.5
+**Version**: 5.49.6
 
 ---
 
