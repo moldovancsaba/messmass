@@ -8,8 +8,8 @@ import styles from './CellWrapper.module.css';
 export interface CellWrapperProps {
   title?: string;
   subtitle?: string;
-  titleFontSize?: number; // px, synced at block level
-  subtitleFontSize?: number; // px, synced at block level
+  // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
   titleHeight?: number; // px, fixed per block
   subtitleHeight?: number; // px, fixed per block
   blockHeight?: number; // px, calculated block height (Phase 3)
@@ -25,8 +25,8 @@ export interface CellWrapperProps {
 export default function CellWrapper({
   title,
   subtitle,
-  titleFontSize,
-  subtitleFontSize,
+  // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize parameters
+  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
   titleHeight,
   subtitleHeight,
   blockHeight,
@@ -39,11 +39,11 @@ export default function CellWrapper({
       // WHAT: Set CSS custom properties for dynamic values (blockHeight now centrally managed at row level)
       // WHY: CSS variables are meant to be set dynamically, eliminates direct property inline styles
       // HOW: CSS modules reference these custom properties - block-height inherited from parent row
+      // WHAT: P1 1.5 Phase 3 - Removed --title-font-size and --subtitle-font-size CSS custom properties
+      // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
       // eslint-disable-next-line react/forbid-dom-props
       style={{
-        '--title-font-size': titleFontSize ? `${titleFontSize}px` : undefined,
         '--title-height': titleHeight ? `${titleHeight}px` : undefined,
-        '--subtitle-font-size': subtitleFontSize ? `${subtitleFontSize}px` : undefined,
         '--subtitle-height': subtitleHeight ? `${subtitleHeight}px` : undefined
       } as React.CSSProperties}
     >

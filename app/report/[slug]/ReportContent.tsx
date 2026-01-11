@@ -176,14 +176,11 @@ interface ResponsiveRowProps {
   chartResults: Map<string, ChartResult>;
   rowIndex: number;
   unifiedTextFontSize?: number | null;
-  // WHAT: Block-level font sizes (P1 1.5 Phase 1)
-  // WHY: Typography calculation moved from row-level to block-level
-  // HOW: Pass block-level calculated values to rows
-  blockTitleFontSize?: number | null;
-  blockSubtitleFontSize?: number | null;
+  // WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props
+  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize, blockTitleFontSize, blockSubtitleFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -202,11 +199,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
   
   const [rowWidth, setRowWidth] = useState(() => getDefaultValue('--mm-row-width-default', 1200));
   const [rowHeight, setRowHeight] = useState(() => getDefaultValue('--mm-row-height-default', 400));
-  // WHAT: Use block-level font sizes if provided, otherwise fallback to defaults (P1 1.5 Phase 1)
-  // WHY: Typography calculation moved to block-level, rows receive values from block
-  // HOW: Use block-level values when available, fallback to design tokens
-  const [titleFontSize, setTitleFontSize] = useState(() => blockTitleFontSize || getDefaultValue('--mm-title-font-size-default', 18));
-  const [subtitleFontSize, setSubtitleFontSize] = useState(() => blockSubtitleFontSize || getDefaultValue('--mm-subtitle-font-size-default', 14));
+  // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize state
+  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
   
   // WHAT: Measure actual row width and recalculate height on resize
   // WHY: Height calculation needs actual width for all cell types
@@ -240,15 +234,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
         setRowHeight(height);
         
-        // WHAT: Use block-level font sizes if provided (P1 1.5 Phase 1)
-        // WHY: Typography calculation moved to block-level, rows receive values from block
-        // HOW: Update row state when block-level values change
-        if (blockTitleFontSize !== null && blockTitleFontSize !== undefined) {
-          setTitleFontSize(blockTitleFontSize);
-        }
-        if (blockSubtitleFontSize !== null && blockSubtitleFontSize !== undefined) {
-          setSubtitleFontSize(blockSubtitleFontSize);
-        }
+        // WHAT: P1 1.5 Phase 3 - Removed font size state update logic
+        // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
       }
     };
     
@@ -268,7 +255,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
       resizeObserver.disconnect();
       window.removeEventListener('resize', measureAndCalculate);
     };
-  }, [rowCharts, chartResults, rowIndex, blockTitleFontSize, blockSubtitleFontSize]); // Re-run if charts change or block font sizes change
+  }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1)
   // WHY: Warn if height CSS variables are not set, indicating implicit height behavior
@@ -341,8 +328,8 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize,
               width={chart.width}
               // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
               // WHY: Eliminates per-chart inline styles, better maintainability
-              titleFontSize={titleFontSize}
-              subtitleFontSize={subtitleFontSize}
+              // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+              // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
               unifiedTextFontSize={unifiedTextFontSize}
             />
           </div>
@@ -542,9 +529,8 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
       )}
       
       {/* Render each row with responsive height calculation */}
-      {/* WHAT: Pass block-level font sizes to rows (P1 1.5 Phase 1) */}
-      {/* WHY: Rows need font sizes for CellWrapper, but calculation is now block-level */}
-      {/* HOW: Pass block-level calculated values instead of row-level calculation */}
+      {/* WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props */}
+      {/* WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2) */}
       {rows.map((rowCharts, rowIndex) => (
         <ResponsiveRow
           key={`row-${rowIndex}`}
@@ -552,8 +538,6 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           chartResults={chartResults}
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
-          blockTitleFontSize={blockBaseFontSize}
-          blockSubtitleFontSize={blockSubtitleFontSize}
         />
       ))}
     </div>

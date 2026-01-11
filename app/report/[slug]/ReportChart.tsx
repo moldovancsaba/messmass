@@ -85,11 +85,8 @@ interface ReportChartProps {
   /** Block height from layout calculator (Report Layout Spec v2.0) */
   blockHeight?: number;
   
-  /** Synchronized title font size (Report Layout Spec v2.0 Phase 3) */
-  titleFontSize?: number;
-  
-  /** Synchronized subtitle font size (Report Layout Spec v2.0 Phase 3) */
-  subtitleFontSize?: number;
+  // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
   
   /** Unified font-size for text charts in block (rem) */
   unifiedTextFontSize?: number | null;
@@ -112,7 +109,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, blockHeight, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
@@ -156,29 +153,29 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
   // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <KPIChart result={result} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <PieChart result={result} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <BarChart result={result} className={className} />;
     
     case 'text':
-      return <TextChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+      return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <ImageChart result={result} className={className} />;
     
     case 'table':
-      return <TableChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />;
+      return <TableChart result={result} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} className={className} />
-          <BarChart result={result} titleFontSize={titleFontSize} subtitleFontSize={subtitleFontSize} />
+          <KPIChart result={result} className={className} />
+          <BarChart result={result} />
         </div>
       );
     
@@ -197,7 +194,7 @@ export default function ReportChart({ result, width, blockHeight, titleFontSize,
  * Icon (30%) → Value (40%) → Label (30%, CSS clamp + text wrap)
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function KPIChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function KPIChart({ result, className }: { result: ChartResult; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const protectedTitle = preventPhraseBreaks(result.title);
   
@@ -244,7 +241,7 @@ function KPIChart({ result, titleFontSize, subtitleFontSize, className }: { resu
  * Pie Chart - Circular visualization using Chart.js
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function PieChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function PieChart({ result, className }: { result: ChartResult; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -426,7 +423,7 @@ function PieChart({ result, titleFontSize, subtitleFontSize, className }: { resu
  * Bar Chart - Five-element horizontal bars
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  */
-function BarChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function BarChart({ result, className }: { result: ChartResult; className?: string }) {
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
@@ -564,8 +561,8 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
+      // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+      // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
       className={`${styles.chart} ${styles.bar} report-chart ${className || ''}`}
     >
       {/* WHAT: Chart body ref for height calculation (P1 1.4 Phase 2) */}
@@ -607,7 +604,7 @@ function BarChart({ result, titleFontSize, subtitleFontSize, className }: { resu
  * REBUILT: Simple table structure to guarantee title above content
  * P1 1.4 Phase 4: Explicit text content height calculation
  */
-function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; unifiedTextFontSize?: number | null; className?: string }) {
+function TextChart({ result, unifiedTextFontSize, className }: { result: ChartResult; unifiedTextFontSize?: number | null; className?: string }) {
   // WHAT: Render markdown content on report pages only
   // WHY: User requirement: text boxes render markdown only on report pages
   // HOW: Use parseMarkdown to convert supported markdown to HTML (title, bold, italic, lists, links)
@@ -744,7 +741,7 @@ function TextChart({ result, titleFontSize, subtitleFontSize, unifiedTextFontSiz
  * UPDATED: Uses CellWrapper for Report Layout Spec v2.0
  * P1 1.4 Phase 4: Explicit table content height calculation
  */
-function TableChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function TableChart({ result, className }: { result: ChartResult; className?: string }) {
   // WHAT: Render markdown table content on report pages
   // WHY: User requirement: table charts render markdown tables with styling
   // HOW: Use parseTableMarkdown to convert markdown table to HTML
@@ -857,8 +854,8 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
+      // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+      // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
       className={`${styles.chart} ${styles.table} report-chart ${className || ''}`}
     >
       {/* WHAT: Table content ref for height calculation (P1 1.4 Phase 4) */}
@@ -880,7 +877,7 @@ function TableChart({ result, titleFontSize, subtitleFontSize, className }: { re
  * Image Chart - Uses actual image aspect ratio
  * UPDATED: Detects real image dimensions and uses them for aspect ratio
  */
-function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { result: ChartResult; titleFontSize?: number; subtitleFontSize?: number; className?: string }) {
+function ImageChart({ result, className }: { result: ChartResult; className?: string }) {
   const formattedValue = formatValue(result.kpiValue, result.formatting);
   const [actualAspectRatio, setActualAspectRatio] = React.useState<string | null>(null);
   const imgRef = React.useRef<HTMLImageElement>(null);
@@ -940,8 +937,8 @@ function ImageChart({ result, titleFontSize, subtitleFontSize, className }: { re
   return (
     <CellWrapper
       title={showTitle ? result.title : undefined}
-      titleFontSize={titleFontSize}
-      subtitleFontSize={subtitleFontSize}
+      // WHAT: P1 1.5 Phase 3 - Removed titleFontSize and subtitleFontSize props
+      // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
       className={`${styles.chart} ${styles.image} report-chart ${className || ''}`}
     >
       {/* WHAT: Image container with dynamic aspect ratio from actual image dimensions */}
