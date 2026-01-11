@@ -441,16 +441,16 @@
 }
 
 .barTrack {
-  /* WHAT: Full-width bar track (middle column) with minimum height to prevent collapse */
+  /* WHAT: Bar track visualization - fills available space in table cell */
   /* WHY: Track fills available space between label and value, must maintain readable thickness */
-  /* HOW: 100% width of grid column, minimum height constraint, aligned with first line of label */
+  /* HOW: 100% width of table cell, minimum height constraint, centered vertically */
   background: var(--chartNoDataBackground);
   height: clamp(1.2rem, 22cqh, 1.44rem); /* DOUBLED: 11cqh → 22cqh */
   min-height: clamp(1.2rem, 22cqh, 1.44rem); /* WHAT: Prevent bar collapse under vertical constraint */
-  width: 100%; /* CRITICAL: Fills entire middle grid column */
+  width: 100%; /* CRITICAL: Fills entire table cell */
   border-radius: calc(clamp(1.2rem, 22cqh, 1.44rem) / 2);
   overflow: hidden;
-  align-self: center; /* WHAT: Align bar with first line of label (or center within row) */
+  /* WHAT: Table cell vertical-align handles centering, no align-self needed */
 }
 
 .barFill {
