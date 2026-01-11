@@ -376,6 +376,8 @@
   min-height: 0;
   width: 100% !important; /* CRITICAL: No width restrictions */
   max-width: none !important; /* CRITICAL: Remove max-width */
+  overflow: visible; /* WHAT: Allow content to expand beyond container if needed */
+  align-items: stretch; /* WHAT: Stretch children to full width */
 }
 
 .barTitle {
