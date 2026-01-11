@@ -248,11 +248,11 @@ export function resolveBlockHeightWithDetails(input: HeightResolutionInput): Blo
   }
   
   // Default: Readability enforcement (Priority 3)
-  // WHAT: Check if BAR charts need additional height based on row count
-  // WHY: Layout Grammar requires all BAR rows to fit without clipping
-  // HOW: Validate each BAR chart and increase height if needed
+  // WHAT: Check if BAR charts and PIE charts need additional height based on content requirements
+  // WHY: Layout Grammar requires all content to fit without clipping or compression
+  // HOW: Validate each chart type and increase height if needed
   let adjustedHeightPx = heightPx;
-  const barChartAdjustments: string[] = [];
+  const chartAdjustments: string[] = [];
   
   for (const cell of cells) {
     if (cell.bodyType === 'bar' && cell.contentMetadata?.barCount) {
@@ -274,8 +274,23 @@ export function resolveBlockHeightWithDetails(input: HeightResolutionInput): Blo
         
         if (requiredContainerHeight > adjustedHeightPx) {
           adjustedHeightPx = requiredContainerHeight;
-          barChartAdjustments.push(
-            `${cell.chartId}: ${heightPx}px → ${adjustedHeightPx}px (${cell.contentMetadata.barCount} bars need ${requiredBodyHeight}px body height)`
+          chartAdjustments.push(
+            `BAR ${cell.chartId}: ${heightPx}px → ${adjustedHeightPx}px (${cell.contentMetadata.barCount} bars need ${requiredBodyHeight}px body height)`
+          );
+        }
+      }
+    } else if (cell.bodyType === 'pie' && cell.contentMetadata?.legendItemCount) {
+      // WHAT: Validate PIE chart fit accounting for legend item count
+      // WHY: Layout Grammar requires pie chart to maintain minimum readable size (50px radius) even when legend grows
+      // HOW: Use validateElementFit to check if pie chart fits, increase height if needed
+      const fitValidation = validateElementFit(cell, adjustedHeightPx, blockWidth);
+      
+      if (!fitValidation.fits && fitValidation.requiredHeight) {
+        const requiredHeight = fitValidation.requiredHeight;
+        if (requiredHeight > adjustedHeightPx) {
+          adjustedHeightPx = requiredHeight;
+          chartAdjustments.push(
+            `PIE ${cell.chartId}: ${heightPx}px → ${adjustedHeightPx}px (${cell.contentMetadata.legendItemCount} legend items may grow to 50%, requiring ${requiredHeight}px)`
           );
         }
       }
@@ -288,16 +303,16 @@ export function resolveBlockHeightWithDetails(input: HeightResolutionInput): Blo
     return {
       heightPx: adjustedHeightPx,
       priority: HeightResolutionPriority.READABILITY_ENFORCEMENT,
-      reason: barChartAdjustments.length > 0
-        ? `BAR chart height requirements clamped by maxAllowedHeight. Adjustments: ${barChartAdjustments.join('; ')}`
+      reason: chartAdjustments.length > 0
+        ? `Chart height requirements clamped by maxAllowedHeight. Adjustments: ${chartAdjustments.join('; ')}`
         : 'Calculated height clamped by maxAllowedHeight constraint',
       canIncrease: false,
       requiresSplit: true
     };
   }
   
-  const reason = barChartAdjustments.length > 0
-    ? `Height calculated from cell distribution, adjusted for BAR chart requirements: ${barChartAdjustments.join('; ')}`
+  const reason = chartAdjustments.length > 0
+    ? `Height calculated from cell distribution, adjusted for chart requirements: ${chartAdjustments.join('; ')}`
     : 'Height calculated from cell distribution';
   
   return {

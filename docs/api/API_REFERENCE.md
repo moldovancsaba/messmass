@@ -1,11 +1,11 @@
 # 📡 API Reference
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.25.2  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 11.25.3  
+**Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
 **Status:** Production
 
 Quick API reference for MessMass v6.0.0. See detailed guides for complete schemas and examples.
@@ -51,7 +51,7 @@ Delete project.
 
 **Query**: `projectId`
 
-**See**: [USER_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/USER_GUIDE.md#project-management) for usage examples
+**See**: [USER_GUIDE.md (archived)](../archive/2025/deprecated-guides/USER_GUIDE.md#project-management) for usage examples
 
 ---
 
@@ -132,7 +132,7 @@ Fetch variable groups for Editor layout.
 ### POST /api/variables-groups
 Create/update groups.
 
-**See**: [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md#api-reference) for details
+**See**: [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md#api-reference) for details
 
 ---
 
@@ -237,12 +237,12 @@ Returns: `{ projects: [...], totalMatched: 150, nextOffset: 60 }`
 
 ## For Complete Documentation
 
-- **Projects**: [USER_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/USER_GUIDE.md)
+- **Projects**: [USER_GUIDE.md (archived)](../archive/2025/deprecated-guides/USER_GUIDE.md)
 - **Partners**: [PARTNERS_SYSTEM_GUIDE.md](../features/PARTNERS_SYSTEM_GUIDE.md)
 - **Bitly**: [BITLY_INTEGRATION_GUIDE.md](../features/BITLY_INTEGRATION_GUIDE.md)
-- **Quick Add**: [QUICK_ADD_GUIDE.md (archived)](docs/archive/2025/deprecated-guides/QUICK_ADD_GUIDE.md)
+- **Quick Add**: [QUICK_ADD_GUIDE.md (archived)](../archive/2025/deprecated-guides/QUICK_ADD_GUIDE.md)
 - **Hashtags**: [HASHTAG_SYSTEM.md](../features/HASHTAG_SYSTEM.md)
-- **Variables**: [ADMIN_VARIABLES_SYSTEM.md (archived)](docs/archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
+- **Variables**: [ADMIN_VARIABLES_SYSTEM.md (archived)](../archive/2025/deprecated-guides/ADMIN_VARIABLES_SYSTEM.md)
 - **Auth**: [AUTHENTICATION_AND_ACCESS.md](../features/AUTHENTICATION.md)
 
 ---

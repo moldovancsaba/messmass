@@ -101,23 +101,57 @@ function validatePieElementFit(
   const legendItemCount = (contentMetadata.legendItemCount as number) || 0;
   const minPieRadius = 50; // Minimum readable pie radius
   
-  // Check if pie itself fits
-  const minRequiredHeight = minPieRadius * 2;
-  if (containerHeight < minRequiredHeight) {
+  // WHAT: Calculate required height for PIE chart with legend
+  // WHY: Layout Grammar requires accurate height calculation to prevent compression
+  // HOW: Sum all components: title (30%) + pie (40%) + legend (30-50% based on item count)
+  
+  // Base components:
+  // - Title: 30% of container height
+  // - Pie chart: 40% of container height (minimum 100px for 50px radius)
+  // - Legend: 30% preferred, can grow to 50% if many items
+  
+  // WHAT: Calculate minimum pie chart height requirement
+  // WHY: Pie chart must be at least 50px radius (100px height) to be readable
+  // HOW: Pie gets 40% of container, so container must be at least 100px / 0.4 = 250px
+  const minPieHeight = minPieRadius * 2; // 100px
+  const minContainerHeightForPie = minPieHeight / 0.4; // 250px (pie is 40% of container)
+  
+  // WHAT: Calculate required height for legend based on item count
+  // WHY: Many legend items (>5) or long labels cause legend to grow to 50% max-height
+  // HOW: If legend grows to 50%, total would be 30% + 40% + 50% = 120%, requiring height increase
+  let legendHeightRatio = 0.3; // Preferred 30%
+  if (legendItemCount > 5) {
+    // WHAT: Many legend items (>5) cause legend to grow to max-height 50%
+    // WHY: Legend container uses flex: 1 1 30% with max-height: 50%
+    // HOW: Calculate required height to accommodate 50% legend
+    legendHeightRatio = 0.5; // Max 50%
+  }
+  
+  // WHAT: Calculate total required height
+  // WHY: Need to ensure all components fit: title (30%) + pie (40%) + legend (30-50%)
+  // HOW: If legend is 50%, total is 120%, so container must be larger
+  const totalRatio = 0.3 + 0.4 + legendHeightRatio; // title + pie + legend
+  const estimatedRequiredHeight = Math.max(
+    minContainerHeightForPie, // Minimum for pie chart readability
+    containerHeight * totalRatio // Height needed if legend grows
+  );
+  
+  if (containerHeight >= estimatedRequiredHeight) {
     return {
-      fits: false,
-      requiredHeight: minRequiredHeight,
-      violations: [`Pie chart requires minimum height of ${minRequiredHeight}px`],
-      requiredActions: ['increaseHeight']
+      fits: true,
+      violations: [],
+      requiredActions: []
     };
   }
-
-  // Legend fit is handled by reflow/aggregation in rendering
-  // For validation, assume legend can be reflowed if needed
+  
+  // PIE chart doesn't fit - requires height increase
   return {
-    fits: true,
-    violations: [],
-    requiredActions: []
+    fits: false,
+    requiredHeight: estimatedRequiredHeight,
+    violations: [
+      `Pie chart requires minimum height of ${estimatedRequiredHeight}px for ${legendItemCount} legend items (legend may grow to ${(legendHeightRatio * 100).toFixed(0)}% of container)`
+    ],
+    requiredActions: ['increaseHeight']
   };
 }
 

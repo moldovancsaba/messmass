@@ -294,7 +294,7 @@
   align-items: center;
   justify-content: center;
   container-type: size;
-  overflow: hidden;
+  overflow: visible; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
 }
 
 /* Custom Pie Legend - 30% of body height */
@@ -373,7 +373,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* WHAT: Center table horizontally in container */
-  justify-content: flex-start; /* WHAT: Align table to top */
+  justify-content: center; /* WHAT: Center table vertically in container */
   min-height: 0;
   width: 100% !important; /* CRITICAL: Use full width */
   max-width: 100% !important; /* CRITICAL: Never exceed container width */
@@ -1078,7 +1078,7 @@
     max-height: 40% !important; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
     max-width: 100% !important;
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;

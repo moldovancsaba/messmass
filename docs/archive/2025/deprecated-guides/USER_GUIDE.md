@@ -1,11 +1,11 @@
 # 📖 MessMass User Guide
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 11.25.1  
-**Last Updated:** 2026-01-11T22:28:38.000Z (UTC)  
+**Version:** 11.25.2  
+**Last Updated:** 2026-01-11T22:45:21.000Z (UTC)  
 **Status:** Production
 
 Complete guide for using the MessMass enterprise event statistics dashboard and management platform.
@@ -1651,8 +1651,8 @@ Feature requests are welcome! Submit via your organization's feedback channel.
 
 **Quick Links:**
 - 📚 [Public API Documentation](https://messmass.com/api-docs)
-- 🔧 [Technical Architecture](ARCHITECTURE.md)
-- 🔐 [Authentication Guide](AUTHENTICATION_AND_ACCESS.md)
-- 🏗️ [Development Guide](WARP.md)
+- 🔧 [Technical Architecture](../../../../ARCHITECTURE.md)
+- 🔐 [Authentication Guide](../../../../docs/features/AUTHENTICATION.md)
+- 🏗️ [Development Guide](../../../../WARP.md)
 
 **© 2025 MessMass Platform**

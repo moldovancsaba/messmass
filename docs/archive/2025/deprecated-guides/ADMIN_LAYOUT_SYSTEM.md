@@ -1,12 +1,12 @@
 # Admin Layout & Navigation System (v5.53.0)
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Last Updated**: 2026-01-11T22:28:38.000Z  
+**Last Updated**: 2026-01-11T22:45:21.000Z  
 **Status**: ✅ Stable, Production-Ready
-**Code Review**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
+**Code Review**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
 
 ---
 
@@ -215,7 +215,7 @@ Current sections:
    - Badge with unread count
    - Dropdown NotificationPanel
    - 30-second polling for updates
-   - See [MULTI_USER_NOTIFICATIONS.md](./MULTI_USER_NOTIFICATIONS.md)
+   - See MULTI_USER_NOTIFICATIONS.md (TODO: unresolved target)
 3. **User Info Display**:
    - Avatar with initial
    - Name and role
@@ -381,7 +381,7 @@ All interactive elements meet 44x44px minimum:
 
 ### Improvements Recommended
 
-See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md) for:
+See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target) for:
 1. Add skip-to-content link (WCAG 2.4.1)
 2. Add `title` attributes for collapsed sidebar icons
 3. Implement focus trap in mobile overlay
@@ -546,7 +546,7 @@ const navSections: NavSection[] = [
    Files: `TopHeader.tsx`  
    Effort: 1 hour
 
-**Full technical debt analysis**: See [CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)
+**Full technical debt analysis**: See CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)
 
 ---
 
@@ -576,10 +576,10 @@ const navSections: NavSection[] = [
 
 ## 📚 Related Documentation
 
-- **[MULTI_USER_NOTIFICATIONS.md](./MULTI_USER_NOTIFICATIONS.md)** - Notification system integrated in TopHeader
-- **[CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md](./CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md)** - Detailed code review and technical debt
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture overview
-- **[WARP.md](./WARP.md)** - Development guidelines and component locations
+- **MULTI_USER_NOTIFICATIONS.md (TODO: unresolved target)** - Notification system integrated in TopHeader
+- **CODE_REVIEW_FINDINGS_ADMIN_LAYOUT.md (TODO: unresolved target)** - Detailed code review and technical debt
+- **[ARCHITECTURE.md](../../../../ARCHITECTURE.md)** - System architecture overview
+- **[WARP.md](../../../../WARP.md)** - Development guidelines and component locations
 
 ---
 

@@ -1,10 +1,10 @@
 # SINGLE REFERENCE SYSTEM
 Status: Archived
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T22:45:21.000Z
 Canonical: No
 Owner: Architecture
 
-**Version:** 7.0.1  
+**Version:** 7.0.2  
 **Date:** 2025-01-28T07:10:00.000Z  
 **Status:** ✅ COMPLETE - Production Ready
 
@@ -346,10 +346,10 @@ If you renamed database field from `female` to `Woman`:
 
 ## Related Documentation
 
-- [variablesRegistry.ts](./lib/variablesRegistry.ts) - Variable definitions
-- [formulaEngine.ts](./lib/formulaEngine.ts) - Formula evaluation engine
-- [variableRefs.ts](./lib/variableRefs.ts) - Token generation
-- [WARP.md](./WARP.md) - Development guide
+- variablesRegistry.ts (TODO: unresolved target) - Variable definitions
+- [formulaEngine.ts](../../../../lib/formulaEngine.ts) - Formula evaluation engine
+- [variableRefs.ts](../../../../lib/variableRefs.ts) - Token generation
+- [WARP.md](../../../../WARP.md) - Development guide
 
 ---
 
