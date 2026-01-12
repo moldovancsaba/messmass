@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-01-12T09:56:01.000Z
+Last Updated: 2026-01-12T11:33:14.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -97,6 +97,7 @@ Owner: Architecture
 - [docs/audits/investigations/P1-1.5-unified-typography.md](docs/audits/investigations/P1-1.5-unified-typography.md)
 - [docs/audits/investigations/P1-2.2-variable-naming-audit.md](docs/audits/investigations/P1-2.2-variable-naming-audit.md)
 - [docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md](docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md)
+- [docs/audits/investigations/A-06-performance-optimization-pass.md](docs/audits/investigations/A-06-performance-optimization-pass.md)
 - [docs/audits/investigations/branch-cleanup-report.md](docs/audits/investigations/branch-cleanup-report.md)
 - [docs/audits/investigations/git-push-instructions.md](docs/audits/investigations/git-push-instructions.md)
 
