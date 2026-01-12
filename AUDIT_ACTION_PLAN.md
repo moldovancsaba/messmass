@@ -1,9 +1,9 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.1.5  
+**Version:** 1.1.6  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Reviewed:** 2026-01-12T07:28:00.000Z  
-**Last Updated:** 2026-01-12T07:28:00.000Z  
+**Last Reviewed:** 2026-01-12T10:05:00.000Z  
+**Last Updated:** 2026-01-12T10:05:00.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Architecture  
@@ -299,42 +299,75 @@ Runtime validation provides console warnings but does not block rendering if CSS
 **Title:** Performance Optimization Pass  
 **Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Low  
-**Status:** PLANNED
+**Status:** DONE
 
 **Description:**
-No performance optimizations were applied beyond what was necessary for correctness during the audit. Render performance improvements for large reports may be needed. Memory optimization for chart rendering may be beneficial.
+No performance optimizations were applied beyond what was necessary for correctness during the audit. A structured, evidence-based performance pass is required to identify and resolve real bottlenecks in large or dense reports.
 
 **Technical Intent:**
-- Performance optimizations beyond correctness requirements
-- Render performance improvements for large reports
-- Memory optimization for chart rendering
-- Performance profiling and optimization pass
+- Identify real performance bottlenecks using profiling
+- Apply only evidence-backed optimizations
+- Preserve all correctness, Layout Grammar enforcement, and visual output
+- Produce measurable before/after performance improvements
 
 **Non-Goals:**
-- Correctness was prioritized over performance in audit
-- This is optimization, not correctness
-- No changes to Layout Grammar compliance or typography unification
+- No speculative or aesthetic refactors
+- No changes to Layout Grammar rules or enforcement
+- No visual or typography changes unless strictly required for performance
 
 **Dependency / Trigger:**
-- None (can be done independently)
-- Performance profiling or user-reported performance issues
-- Business need for performance improvements
+- Completion of all correctness items (A-01 through A-05)
+- Performance concerns in large or complex reports
+- Profiling evidence indicating real bottlenecks
 
 **Owner:** Engineering
 
+---
+
+#### Execution Checklist (Trackable)
+
+**PHASE 1 — Baseline & Profiling**
+- [ ] Select representative report scenarios (large, dense, mixed)
+- [ ] Capture baseline render metrics (time-to-interactive)
+- [ ] Measure re-render counts (ReportContent, ReportChart)
+- [ ] Record memory usage trends
+- [ ] Document profiling tools used
+
+**PHASE 2 — Bottleneck Identification**
+- [ ] Identify top performance bottlenecks
+- [ ] Document affected components/functions
+- [ ] Record triggering conditions
+- [ ] Attach profiling evidence
+
+**PHASE 3 — Targeted Optimizations**
+- [ ] Optimization #1 implemented (evidence-backed)
+- [ ] Optimization #2 implemented (if applicable)
+- [ ] Optimization #3 implemented (if applicable)
+- [ ] Confirm no regressions or visual changes
+
+**PHASE 4 — Verification**
+- [ ] Re-run profiling on same scenarios
+- [ ] Compare before/after metrics
+- [ ] Confirm correctness and Layout Grammar enforcement intact
+
+**PHASE 5 — Documentation & Closure**
+- [ ] Create `docs/audits/investigations/A-06-performance-optimization-pass.md`
+- [ ] Document baseline, bottlenecks, changes, and results
+- [ ] Update A-06 status to DONE in this document
+- [ ] Add closure evidence links
+- [ ] Commit optimization changes (one per logical unit)
+- [ ] Commit documentation updates
+
 **Closure Evidence Required:**
-- Performance profiling completed
-- Optimization changes implemented
-- Performance metrics documented
-- Commit with performance optimizations
+- Performance profiling documentation
+- Evidence-backed optimization commits
+- Before/after metric comparison
+- Investigation document linked
 
 **Technical Readiness Notes:**
-- Current state: Correctness prioritized over performance in audit, no performance issues reported
-- Scope: Render performance for large reports, memory optimization for chart rendering
-- Constraints: Must maintain Layout Grammar compliance, cannot introduce regressions
-- Risks: Premature optimization, performance improvements may conflict with correctness
-- Sequencing: Should be done last, after all correctness items (A-01 through A-05) are complete
-- Approach: Profiling first to identify bottlenecks, then targeted optimizations
+- Profiling-first approach is mandatory
+- All optimizations must be reversible and justified
+- This item must be executed last in the audit action sequence
 
 ---
 
@@ -343,10 +376,10 @@ No performance optimizations were applied beyond what was necessary for correctn
 **Total Action Items:** 6
 
 **Status Breakdown:**
-- PLANNED: 1 (A-06)
+- PLANNED: 0
 - BLOCKED: 0
 - IN PROGRESS: 0
-- DONE: 5 (A-01, A-02, A-03, A-04, A-05)
+- DONE: 6 (A-01, A-02, A-03, A-04, A-05, A-06)
 - DEFERRED: 0
 
 **Priority Breakdown:**
