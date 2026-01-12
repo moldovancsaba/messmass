@@ -1,9 +1,9 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.1.6  
+**Version:** 1.1.7  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Reviewed:** 2026-01-12T10:05:00.000Z  
-**Last Updated:** 2026-01-12T10:05:00.000Z  
+**Last Updated:** 2026-01-12T13:18:36.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Architecture  
@@ -432,224 +432,264 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 ## A-UI-00: Admin Capability Map and Ownership Model
 
-**Goal:** Build a precise map of what exists in Admin, how it connects to Reports, and what is global vs partner-scoped.
+**Status:** DONE
+**Ownership scope:** Global
 
-### Deliverables
+### Outputs (A-UI-00)
 - `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
 - `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md`
 - `docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md`
 
-### Action Checklist
-- [ ] Inventory Admin navigation routes and pages (real paths, not labels).
-- [ ] For each area below, document:
-  - [ ] Purpose (what problem it solves)
-  - [ ] Primary entities (what it creates/edits)
-  - [ ] Inputs (manual, imports, third party)
-  - [ ] Outputs (which reports/insights it drives)
-  - [ ] Ownership scope (Global, Partner, Event, User)
-  - [ ] Permissions (who can use it)
-  - [ ] Known inconsistencies and duplicate flows
-- [ ] Produce a single “Ownership Model” table defining what MUST be global vs partner-scoped.
-- [ ] Flag candidates for removal or merge (duplications, unused areas, inconsistent patterns).
+---
+
+## Admin IA Proposal (Navigation Structure)
+
+**Input:** `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
+
+1 Dashboard
+- /admin -> [app/admin/page.tsx](app/admin/page.tsx)
+- /admin/dashboard (legacy) -> [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx)
+
+2 Operations
+- /admin/events -> [app/admin/events/page.tsx](app/admin/events/page.tsx)
+- /admin/partners -> [app/admin/partners/page.tsx](app/admin/partners/page.tsx)
+- /admin/project-partners -> [app/admin/project-partners/page.tsx](app/admin/project-partners/page.tsx)
+- /admin/quick-add -> [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx)
+
+3 Reporting
+- /admin/visualization -> [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx)
+- /admin/charts -> [app/admin/charts/page.tsx](app/admin/charts/page.tsx)
+- /admin/styles -> [app/admin/styles/page.tsx](app/admin/styles/page.tsx)
+- /admin/styles/[id] -> [app/admin/styles/[id]/page.tsx](app/admin/styles/[id]/page.tsx)
+
+4 Data and Taxonomy
+- /admin/kyc -> [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx)
+- /admin/clicker-manager -> [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx)
+- /admin/hashtags -> [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx)
+- /admin/categories -> [app/admin/categories/page.tsx](app/admin/categories/page.tsx)
+- /admin/content-library -> [app/admin/content-library/page.tsx](app/admin/content-library/page.tsx)
+
+5 Analytics
+- /admin/insights -> [app/admin/insights/page.tsx](app/admin/insights/page.tsx)
+- /admin/analytics/insights -> [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx)
+- /admin/analytics/executive -> [app/admin/analytics/executive/page.tsx](app/admin/analytics/executive/page.tsx)
+- /admin/partners/[id]/analytics -> [app/admin/partners/[id]/analytics/page.tsx](app/admin/partners/[id]/analytics/page.tsx)
+
+6 System
+- /admin/users -> [app/admin/users/page.tsx](app/admin/users/page.tsx)
+- /admin/design -> [app/admin/design/page.tsx](app/admin/design/page.tsx)
+- /admin/cache -> [app/admin/cache/page.tsx](app/admin/cache/page.tsx)
+- /admin/api-football-enrich -> [app/admin/api-football-enrich/page.tsx](app/admin/api-football-enrich/page.tsx)
+
+7 Help and Access
+- /admin/help -> [app/admin/help/page.tsx](app/admin/help/page.tsx)
+- /admin/login -> [app/admin/login/page.tsx](app/admin/login/page.tsx)
+- /admin/register -> [app/admin/register/page.tsx](app/admin/register/page.tsx)
+- /admin/unauthorized -> [app/admin/unauthorized/page.tsx](app/admin/unauthorized/page.tsx)
+- /admin/clear-session -> [app/admin/clear-session/page.tsx](app/admin/clear-session/page.tsx)
+- /admin/cookie-test -> [app/admin/cookie-test/page.tsx](app/admin/cookie-test/page.tsx)
+- /admin/projects (legacy redirect) -> [app/admin/projects/page.tsx](app/admin/projects/page.tsx)
 
 ---
 
 ## A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
 
-### What to document
-- [ ] What a Partner is (business meaning and data model fields).
-- [ ] How we create and manage Partners.
-- [ ] What a “Partner Report” is and how it differs from global reports.
-- [ ] Current scoping: partner-level KYC, partner-level Algorithms, partner-level Reporting, partner-level Styles.
+**Ownership scope:** Partner
 
-### Debt and noise to resolve
-- [ ] Identify where partner-specific configuration is duplicated across multiple screens.
-- [ ] Identify where global configuration leaks into partner screens (or the opposite).
-- [ ] Decide one clean ownership model:
-  - [ ] Which settings are Global only
-  - [ ] Which settings are Partner overrides
-  - [ ] Which settings are Event-scoped
-
-### Outputs
-- [ ] Proposed “Partner Admin” information architecture (IA) with minimal pages.
-- [ ] List of pages to merge/remove after ownership model is enforced.
+### Checkable tasks
+- [ ] Confirm partner data model fields in [lib/partner.types.ts](lib/partner.types.ts) and partner admin UI.
+- [ ] Map partner routes: /admin/partners, /admin/partners/[id], /admin/partners/[id]/analytics, /admin/partners/[id]/kyc-data.
+- [ ] Define partner override rules for report templates and styles (global -> partner -> event).
+- [ ] Identify partner-related duplication candidates (C-04, C-08, C-09, C-10).
+- [ ] Define target partner IA (list, detail, analytics, kyc) and which routes remain.
 
 ---
 
 ## A-UI-02: Events (Creation, Lifecycle, Connection to Reports)
 
-### What to document
-- [ ] Definition of Event (business and technical).
-- [ ] Event creation workflow and required fields.
-- [ ] Event lifecycle states and where they are set.
-- [ ] How Events connect to Partners.
-- [ ] How Events connect to KYC, Algorithms, Clicker Manager inputs, and final Reports.
+**Ownership scope:** Event
 
-### Outputs
-- [ ] Event data flow diagram (inputs to outputs).
-- [ ] Checklist of event-level admin tasks (what must be done per event).
+### Checkable tasks
+- [ ] Confirm event data model in [lib/types/api.ts](lib/types/api.ts) and events admin UI.
+- [ ] Map event routes: /admin/events, /admin/events/[id]/kyc-data, /admin/projects (redirect), /admin/quick-add.
+- [ ] Define event creation flows (manual vs bulk) and required fields.
+- [ ] Define partner linkage rules (partner1/partner2) and inheritance rules.
+- [ ] Define event-level overrides for templates and styles.
+- [ ] Identify event-related duplication candidates (C-04, C-05, C-10).
 
 ---
 
 ## A-UI-03: Filters (Purpose, Where Used, Which Reports Depend on Them)
 
-### What to document
-- [ ] What Filters represent (taxonomy, segmentation, analytics dimensions).
-- [ ] Where filters are created/edited.
-- [ ] Which reports use filters and how.
-- [ ] Whether filters are global or partner/event scoped.
+**Ownership scope:** Event (cross-event views)
 
-### Outputs
-- [ ] A “Filter usage matrix” mapping Filters to Reports and Insights.
+### Checkable tasks
+- [ ] Define filter entities and their dependency on hashtags and projects.
+- [ ] Map filter routes and flows: /admin/filter and /admin/dashboard filter tab.
+- [ ] Define filter outputs and ownership of style selection.
+- [ ] Identify filter duplication candidates (C-03).
+- [ ] Define canonical filter UI and redirect plan for duplicates.
 
 ---
 
 ## A-UI-04: Users (User Types, Permissions, Authentication)
 
-### What to document
-- [ ] User types and roles (exact list).
-- [ ] Which pages each role can access.
-- [ ] Authentication method(s) and how admin access is granted.
-- [ ] How partner association is handled for users.
+**Ownership scope:** User
 
-### Outputs
-- [ ] Role-permission table.
-- [ ] Authentication and onboarding flow description.
+### Checkable tasks
+- [ ] Enumerate roles and permissions in [lib/auth.ts](lib/auth.ts).
+- [ ] Map access-related routes: /admin/users, /admin/login, /admin/register, /admin/unauthorized, /admin/clear-session, /admin/cookie-test.
+- [ ] Define onboarding and access recovery flows.
+- [ ] Define role-to-page access matrix (documentation only).
 
 ---
 
 ## A-UI-05: Insights (What They Are, How They Are Generated)
 
-### What to document
-- [ ] What “Insights” are (entities, dashboards, outputs).
-- [ ] Which underlying data they depend on (KYC, Events, Clicker inputs).
-- [ ] Where and how Insights are configured.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Inventory insight entities and endpoints used by /admin/insights and /admin/analytics/insights.
+- [ ] Define the canonical insights dashboard and deprecation plan (C-02).
+- [ ] Map dependencies on events, KYC, and clicker inputs.
+- [ ] Define outputs consumed by reporting or operations.
 
 ---
 
 ## A-UI-06: KYC (Source of Algorithms and Reports)
 
 **Priority:** CRITICAL
+**Ownership scope:** Global
 
-### What to document
-- [ ] Exact meaning of KYC in this system (it is not generic banking KYC).
-- [ ] What data KYC collects and stores.
-- [ ] How KYC drives Algorithms.
-- [ ] How KYC drives Reports.
-- [ ] KYC ownership and scope: global vs partner vs event.
-
-### Noise and inconsistency to resolve
-- [ ] Identify where KYC exists in multiple places (duplicate editors, duplicate fields).
-- [ ] Identify mismatches between partner-level KYC and global KYC.
-- [ ] Decide single source of truth and override rules.
-
-### Outputs
-- [ ] KYC canonical model definition.
-- [ ] KYC to Algorithms mapping list.
-- [ ] KYC to Report templates mapping list.
+### Checkable tasks
+- [ ] Define the KYC variable model and source of truth in [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx).
+- [ ] Map KYC dependencies to algorithms, clicker groups, and reporting.
+- [ ] Define global-only ownership and override rules (no partner or event edits).
+- [ ] Align partner and event KYC views with the global model (C-10).
+- [ ] Define KYC to report template and algorithm mappings.
 
 ---
 
 ## A-UI-07: Algorithms (Chart Creator)
 
-### What to document
-- [ ] What an Algorithm is (entity definition).
-- [ ] How algorithms are created and edited.
-- [ ] How algorithms are associated to Partners and Events.
-- [ ] Which algorithm outputs feed Reports.
+**Ownership scope:** Global
 
-### Noise to resolve
-- [ ] Partner-level algorithms vs global algorithms ownership model.
-- [ ] Duplicate algorithm editors or inconsistent UI flows.
+### Checkable tasks
+- [ ] Define chart configuration model in [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx).
+- [ ] Document create/edit flow and validation rules.
+- [ ] Map dependencies on KYC variables and report templates.
+- [ ] Define permissions and access expectations.
 
 ---
 
 ## A-UI-08: Clicker Manager (Manual Data Input UI)
 
-### What to document
-- [ ] What data is manually entered.
-- [ ] Where it goes (storage, entity).
-- [ ] How it affects Reports and Insights.
-- [ ] Validation rules and permissions.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define variable group model and visibility rules in [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
+- [ ] Map dependency on KYC variable definitions.
+- [ ] Document how clicker groups affect editor behavior.
+- [ ] Define permissions and change control process.
 
 ---
 
 ## A-UI-09: Bitly Manager (Third-Party Info Collection)
 
-### What to document
-- [ ] Why Bitly exists in the system.
-- [ ] What is stored (links, clicks, metadata).
-- [ ] How it connects to events, hashtags, reports.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define Bitly link and association model in [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx).
+- [ ] Map partner and event association flows.
+- [ ] Identify duplicate association entry points (C-08).
+- [ ] Define canonical association flow and visibility elsewhere.
 
 ---
 
 ## A-UI-10: Hashtag Manager (Hashtags and Reports)
 
-### What to document
-- [ ] Hashtag entity definition.
-- [ ] Hashtag creation and assignment rules.
-- [ ] How hashtags are used in reporting.
-- [ ] Scope: global vs partner/event.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define hashtag model and color management in [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx).
+- [ ] Map hashtag usage in filters and event/partner tagging.
+- [ ] Identify overlap with categories and define consolidation plan (C-07).
 
 ---
 
 ## A-UI-11: Category Manager (Purpose and Scope)
 
-### What to document
-- [ ] What categories classify (partners, events, hashtags, or reports).
-- [ ] Where categories are used in UI and in reporting.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define category model and usage in [app/admin/categories/page.tsx](app/admin/categories/page.tsx).
+- [ ] Map categorizedHashtags usage and dependencies.
+- [ ] Decide consolidation with Hashtag Manager (C-07).
 
 ---
 
 ## A-UI-12: Reporting (Report Structures)
 
-### What to document
-- [ ] How to build individual report structures.
-- [ ] What is reusable vs per partner vs per event.
-- [ ] How report templates are selected and rendered.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define report template model and data blocks in [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx).
+- [ ] Define template selection rules (global -> partner -> event).
+- [ ] Map dependencies on algorithms and styles.
+- [ ] Identify assignment duplication (C-06).
 
 ---
 
 ## A-UI-13: Style Editor (Report Themes)
 
-### What to document
-- [ ] Theme model.
-- [ ] How themes are created and applied.
-- [ ] Scope: global vs partner vs event.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define report style model in [app/admin/styles/page.tsx](app/admin/styles/page.tsx).
+- [ ] Define style assignment rules (global -> partner -> event -> filter).
+- [ ] Identify duplication with template or admin design flows (C-06).
 
 ---
 
 ## A-UI-14: Cache Management (Seeing Updates)
 
-### What to document
-- [ ] Why cache management is needed.
-- [ ] Which caches exist (browser, CDN, app cache).
-- [ ] What steps support teams should take to see updates.
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Document cache types and actions in [app/admin/cache/page.tsx](app/admin/cache/page.tsx).
+- [ ] Define when support should use each cache action.
 
 ---
 
 ## A-UI-15: User Guide (messmass.com Operations)
 
-### What to document
-- [ ] How users work with messmass.com.
-- [ ] What admin workflows support user workflows.
-- [ ] Where the official user guidance lives.
+**Ownership scope:** User
+
+### Checkable tasks
+- [ ] Resolve the canonical user guide source referenced in [app/admin/help/page.tsx](app/admin/help/page.tsx).
+- [ ] Decide whether the guide is doc-driven or embedded and define update process.
+- [ ] Map user workflows to admin workflows and reference links.
 
 ---
 
-## Consolidation and Simplification Review (Mandatory)
+## Duplication and Noise Candidates (Pre-A-UI-01)
 
-**Goal:** Identify duplicates, remove noise, and enforce a clean scope model.
-
-### Action Checklist
-- [ ] Produce a “Duplication and Noise” list with concrete examples (page names, sections, duplicated forms).
-- [ ] Propose merges/removals, with justification (what disappears, what stays).
-- [ ] Produce a final proposed Admin IA (navigation structure) aligned to the ownership model.
-- [ ] List inconsistencies to fix (partner vs global settings, KYC placement, algorithm ownership, reporting ownership, style ownership).
+| Candidate ID | Candidate name | Pages involved (code) | What duplicates | Proposed direction | Confidence | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| C-01 | Admin dashboards overlap | [app/admin/page.tsx](app/admin/page.tsx), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx) | Two dashboards with overlapping navigation and metrics | Keep /admin as canonical, deprecate or redirect /admin/dashboard | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-02 | Insights dashboards overlap | [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx) | Two insights dashboards with different endpoints | Merge into one canonical insights dashboard | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-03 | Filter UX duplication | [app/admin/filter/page.tsx](app/admin/filter/page.tsx), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx) | Multi-hashtag filtering exists in two places | Keep /admin/filter as canonical; remove or link from dashboard | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-04 | Partner assignment overlap | [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/project-partners/page.tsx](app/admin/project-partners/page.tsx) | Partner selection and assignment appear in two flows | Merge into events flow or keep project-partners as admin-only batch tool | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-05 | Event creation overlap | [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx) | Event creation exists in manual and bulk UIs | Keep quick-add as bulk import path; align data model with events | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-06 | Template and style assignment overlap | [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [app/admin/styles/page.tsx](app/admin/styles/page.tsx), [app/admin/filter/page.tsx](app/admin/filter/page.tsx) | Assignment logic repeated across multiple screens | Centralize assignment rules; keep templates/styles as global editors | High | `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md` |
+| C-07 | Hashtag metadata split | [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx), [app/admin/categories/page.tsx](app/admin/categories/page.tsx) | Hashtag color and category management separated | Merge into unified hashtag management surface | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-08 | Bitly association overlap | [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/admin/partners/page.tsx](app/admin/partners/page.tsx) | Partner link association appears in two places | Keep /admin/bitly as canonical; make partner view read-only | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-09 | Google Sheets controls duplicated | [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [app/admin/partners/[id]/page.tsx](app/admin/partners/[id]/page.tsx) | Google Sheets connect and sync surfaced in list and detail views | Keep controls in partner detail; list should link | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-10 | KYC data views duplicated | [app/admin/partners/[id]/kyc-data/page.tsx](app/admin/partners/[id]/kyc-data/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx) | Two KYC views with similar filtering and tables | Keep both but align UX via shared documentation and ownership rules | Low | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
 
 ---
 
 ## Execution Notes
-- This is documentation-first. No code refactor begins until A-UI-00 through A-UI-06 documentation is complete and reviewed.
+- This is documentation-first. No code refactor begins until the A-UI-01 to A-UI-15 task checklists are approved.
 - All outputs must use repo-relative links.
 - No new pages are proposed until duplicates and ownership are clarified.
