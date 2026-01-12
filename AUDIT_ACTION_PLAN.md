@@ -86,7 +86,7 @@ Layout Grammar validation logic exists but is not integrated into the editor UI.
 **Title:** Layout Grammar Migration Tooling  
 **Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Medium  
-**Status:** IN PROGRESS
+**Status:** DONE
 
 **Description:**
 Automated migration of existing reports to Layout Grammar compliance is not implemented. Analysis tools exist, but migration is currently manual. No batch analysis and remediation capabilities for legacy reports.
@@ -116,6 +116,14 @@ Automated migration of existing reports to Layout Grammar compliance is not impl
 - Validation reports generated
 - Documentation of migration process
 - Commit with migration tooling
+
+**Closure Evidence:**
+- ✅ Migration scripts/tooling created: `scripts/migrate-layout-grammar.ts` - Full-featured migration tool with dry-run, apply, backup/restore
+- ✅ Batch analysis capability implemented: Validates all report templates and data blocks in database
+- ✅ Validation reports generated: JSON format with detailed violation information
+- ✅ Documentation of migration process: `docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md` - Complete usage guide
+- ✅ Commit: `0c7319b1e` - Migration tooling, documentation, and npm script added
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
 
 **Technical Readiness Notes:**
 - Analysis tools exist: `scripts/check-layout-grammar-guardrail.ts` (scans files for violations)
@@ -308,10 +316,10 @@ No performance optimizations were applied beyond what was necessary for correctn
 **Total Action Items:** 6
 
 **Status Breakdown:**
-- PLANNED: 5
+- PLANNED: 4
 - BLOCKED: 0
 - IN PROGRESS: 0
-- DONE: 1 (A-01)
+- DONE: 2 (A-01, A-02)
 - DEFERRED: 0
 
 **Priority Breakdown:**
@@ -336,4 +344,4 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 **Document Status:** Active executable action plan. Items trackable and actionable.
 
-**Last Verified:** 2026-01-12T01:30:00.000Z
+**Last Verified:** 2026-01-12T01:45:00.000Z
