@@ -235,7 +235,7 @@ Block-level typography uses `calculateSyncedFontSizes()` which may not account f
 **Title:** Layout Grammar Runtime Enforcement  
 **Origin:** P1 1.4 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Medium  
-**Status:** PLANNED
+**Status:** IN PROGRESS
 
 **Description:**
 Runtime validation provides console warnings but does not block rendering if CSS variables are missing. No fail-fast behavior for Layout Grammar violations. No production guardrails for height calculation failures.
