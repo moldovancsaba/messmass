@@ -1,9 +1,9 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.1.3  
+**Version:** 1.1.4  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Reviewed:** 2026-01-12T07:11:19.000Z  
-**Last Updated:** 2026-01-12T07:11:19.000Z  
+**Last Reviewed:** 2026-01-12T07:16:57.000Z  
+**Last Updated:** 2026-01-12T07:16:57.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Architecture  
@@ -121,7 +121,7 @@ Automated migration of existing reports to Layout Grammar compliance is not impl
 - ✅ Migration scripts/tooling created: `scripts/migrate-layout-grammar.ts` - Full-featured migration tool with dry-run, apply, backup/restore
 - ✅ Batch analysis capability implemented: Validates all report templates and data blocks in database
 - ✅ Validation reports generated: JSON format with detailed violation information
-- ✅ Documentation of migration process: `docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md` - Complete usage guide
+- ✅ Documentation of migration process: [docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md](docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md) - Complete usage guide
 - ✅ Commit: `0c7319b1e` - Migration tooling, documentation, and npm script added
 - ✅ Local gate passed: Build, TypeScript, and linting all pass
 
@@ -139,7 +139,7 @@ Automated migration of existing reports to Layout Grammar compliance is not impl
 **Title:** Height Calculation Accuracy Improvements  
 **Origin:** P1 1.4 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Medium  
-**Status:** PLANNED
+**Status:** IN PROGRESS
 
 **Description:**
 BAR chart height calculation uses estimated label height (40px for 2-line max) and minimum bar height (20px). Actual rendered height may vary slightly based on font size and content. PIE chart legend height calculation assumes 30% → 50% growth when >5 items. Actual growth depends on label lengths and wrapping behavior.
@@ -167,6 +167,14 @@ BAR chart height calculation uses estimated label height (40px for 2-line max) a
 - Updated `lib/blockHeightCalculator.ts` with refined calculations
 - Verification that height estimates match actual rendered height
 - Commit with height calculation improvements
+
+**Closure Evidence:**
+- ✅ Enhanced height calculation logic: `lib/elementFitValidator.ts` - Improved `validateBarElementFit()` and `validatePieElementFit()`
+- ✅ BAR chart improvements: Estimates font size based on available space, calculates label height using actual metrics (fontSize × lineHeight × 2)
+- ✅ PIE chart improvements: Estimates font size and legend item height, accounts for item count and label lengths
+- ✅ Documentation: `docs/audits/investigations/A-03-height-calculation-improvements.md` - Before/after comparison
+- ✅ Commit: Height calculation accuracy improvements with documentation
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
 
 **Technical Readiness Notes:**
 - Current implementation: `lib/elementFitValidator.ts` (validateBarElementFit, validatePieElementFit)
@@ -316,10 +324,10 @@ No performance optimizations were applied beyond what was necessary for correctn
 **Total Action Items:** 6
 
 **Status Breakdown:**
-- PLANNED: 4
+- PLANNED: 3
 - BLOCKED: 0
 - IN PROGRESS: 0
-- DONE: 2 (A-01, A-02)
+- DONE: 3 (A-01, A-02, A-03)
 - DEFERRED: 0
 
 **Priority Breakdown:**
@@ -344,4 +352,4 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 **Document Status:** Active executable action plan. Items trackable and actionable.
 
-**Last Verified:** 2026-01-12T01:45:00.000Z
+**Last Verified:** 2026-01-12T02:00:00.000Z

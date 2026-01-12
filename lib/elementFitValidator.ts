@@ -116,15 +116,50 @@ function validatePieElementFit(
   const minPieHeight = minPieRadius * 2; // 100px
   const minContainerHeightForPie = minPieHeight / 0.4; // 250px (pie is 40% of container)
   
-  // WHAT: Calculate required height for legend based on item count
-  // WHY: Many legend items (>5) or long labels cause legend to grow to 50% max-height
-  // HOW: If legend grows to 50%, total would be 30% + 40% + 50% = 120%, requiring height increase
+  // WHAT: Calculate required height for legend based on item count and label lengths (A-03: Height Calculation Accuracy)
+  // WHY: Legend height depends on item count, label lengths, and wrapping behavior
+  // HOW: Estimate legend item height based on font size, line-height, and account for wrapping
+  // 
+  // Legend item structure:
+  // - Font size: var(--block-base-font-size) - typically 10-24px range
+  // - Line height: 1.2 (from CSS: .pieLegendText { line-height: 1.2; })
+  // - Each item can wrap to multiple lines based on label length
+  // - Estimated item height: fontSize × lineHeight × estimatedLines
+  //
+  // WHAT: Estimate font size and calculate legend height more accurately
+  // WHY: Previous calculation assumed fixed 30% → 50% growth, but actual height depends on content
+  // HOW: Calculate based on item count, estimated font size, and line-height
+  //      Font size is typically 12-18px for PIE charts (smaller than BAR due to legend space constraints)
+  const estimatedFontSize = Math.max(10, Math.min(18, containerHeight / 25)); // Estimate: assume ~25px per legend item on average
+  const lineHeight = 1.2; // From CSS: .pieLegendText { line-height: 1.2; }
+  // WHAT: Estimate lines per item based on item count
+  // WHY: More items → shorter labels on average → fewer wraps, but also more items total
+  // HOW: Use 1.2 lines average (most are 1 line, some wrap to 2 lines)
+  const estimatedLinesPerItem = legendItemCount > 10 ? 1.1 : 1.3; // More items = shorter labels = fewer wraps
+  const estimatedItemHeight = estimatedFontSize * lineHeight * estimatedLinesPerItem;
+  const estimatedLegendHeight = legendItemCount * estimatedItemHeight;
+  const legendVerticalPadding = 16; // .pieLegend has clamp(0.125rem, 1cqh, var(--mm-space-1)) which is ~8px top/bottom = 16px
+  const totalEstimatedLegendHeight = estimatedLegendHeight + legendVerticalPadding;
+  
+  // WHAT: Calculate legend height ratio based on actual estimated height
+  // WHY: Legend container uses flex: 1 1 30% with max-height: 50%
+  // HOW: If estimated height exceeds 30% of container, legend will grow up to 50%
+  const preferredLegendHeight = containerHeight * 0.3; // 30% preferred
+  const maxLegendHeight = containerHeight * 0.5; // 50% maximum
   let legendHeightRatio = 0.3; // Preferred 30%
-  if (legendItemCount > 5) {
-    // WHAT: Many legend items (>5) cause legend to grow to max-height 50%
-    // WHY: Legend container uses flex: 1 1 30% with max-height: 50%
-    // HOW: Calculate required height to accommodate 50% legend
-    legendHeightRatio = 0.5; // Max 50%
+  
+  if (totalEstimatedLegendHeight > preferredLegendHeight) {
+    // WHAT: Legend needs more than 30% - will grow to max 50%
+    // WHY: Legend container can grow to max-height: 50%
+    // HOW: Use 50% if estimated height exceeds preferred, otherwise use estimated ratio
+    if (totalEstimatedLegendHeight > maxLegendHeight) {
+      legendHeightRatio = 0.5; // Max 50% - will still need height increase
+    } else {
+      // WHAT: Legend height is between 30% and 50%
+      // WHY: Use actual estimated ratio
+      // HOW: Calculate ratio from estimated height
+      legendHeightRatio = totalEstimatedLegendHeight / containerHeight;
+    }
   }
   
   // WHAT: Calculate total required height
@@ -186,19 +221,32 @@ function validateBarElementFit(
   // Base padding: chart body has var(--mm-space-2) top and bottom = 8px × 2 = 16px
   const chartBodyPadding = 16; // 2 × 8px (--mm-space-2)
   
+  // - Row spacing: border-spacing: 0 var(--mm-space-2) = 8px between rows
+  const rowSpacing = 8; // --mm-space-2
+  
   // Per-row components:
   // - Label: Can wrap to 2 lines max
-  //   Font size: var(--block-base-font-size) - typically 1rem (16px) at base
-  //   Line height: 1.2
-  //   Max label height: 16px × 1.2 × 2 lines = 38.4px ≈ 40px (rounded up for safety)
-  const maxLabelHeight = 40; // 2-line label with line-height 1.2
+  //   Font size: var(--block-base-font-size) - calculated dynamically, typically 10-24px range
+  //   Line height: 1.2 (from CSS: .barLabel { line-height: 1.2; })
+  //   Max label height: fontSize × lineHeight × 2 lines
+  //   
+  //   WHAT: Estimate font size more accurately (A-03: Height Calculation Accuracy)
+  //   WHY: Font size is calculated dynamically at render time, but validation needs estimate
+  //   HOW: Use conservative estimate based on available space per row
+  //        Available row height = (containerHeight - padding) / barCount - spacing
+  //        Font size is optimized to fit in available height, so estimate conservatively
+  const availableHeightPerRow = (containerHeight - chartBodyPadding) / barCount - rowSpacing;
+  // WHAT: Estimate font size - font size will be optimized to fit, but we need conservative estimate
+  // WHY: Font size calculation tries to maximize while fitting, so use middle-ground estimate
+  // HOW: Assume font size is roughly 40-50% of available row height (accounts for 2-line wrapping)
+  //      Clamp to realistic range (10-24px) for validation
+  const estimatedFontSize = Math.max(10, Math.min(24, availableHeightPerRow * 0.45));
+  const lineHeight = 1.2; // From CSS: .barLabel { line-height: 1.2; }
+  const maxLabelHeight = estimatedFontSize * lineHeight * 2; // 2-line max with line-height 1.2
   
   // - Bar track: Layout Grammar minimum 20px per bar
   //   Actual CSS: clamp(1.2rem, 22cqh, 1.44rem) ≈ 19.2-23px, use 20px minimum
   const minBarTrackHeight = 20; // Layout Grammar requirement
-  
-  // - Row spacing: border-spacing: 0 var(--mm-space-2) = 8px between rows
-  const rowSpacing = 8; // --mm-space-2
   
   // Per-row height: label + bar track (labels and bars are in same row)
   // Row height = max(labelHeight, barHeight) since they're in table cells that align
