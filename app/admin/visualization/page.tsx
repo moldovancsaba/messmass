@@ -13,6 +13,8 @@ import vizStyles from './Visualization.module.css';
 import { apiPost, apiPut, apiDelete } from '@/lib/apiClient';
 import MaterialIcon from '@/components/MaterialIcon';
 import SaveStatusIndicator, { SaveStatus } from '@/components/SaveStatusIndicator';
+import { validateBlockForEditor, checkPublishValidity, type EditorBlockInput } from '@/lib/editorValidationAPI';
+import type { BlockValidationResult } from '@/lib/editorValidationAPI';
 
 // WHAT: Data visualization block from data_blocks collection
 // WHY: Reusable blocks of charts that can be composed into report templates
@@ -449,6 +451,121 @@ export default function VisualizationPage() {
     }
   }, [selectedTemplateId]);
   
+  // WHAT: Convert DataVisualizationBlock to EditorBlockInput for Layout Grammar validation
+  // WHY: Validation API requires EditorBlockInput format with content metadata
+  // HOW: Map block charts to cells, extract chart types and metadata from chartConfigs and previewResults
+  const convertBlockToEditorInput = useCallback((block: DataVisualizationBlock): EditorBlockInput | null => {
+    if (!block._id) return null;
+    
+    // WHAT: Build chart map from chartConfigs for type lookup
+    // WHY: Need chart type (bar, pie, etc.) for validation
+    const chartMap = new Map<string, ChartConfiguration>();
+    chartConfigs.forEach(config => {
+      chartMap.set(config.chartId, config);
+    });
+    
+    // WHAT: Convert block charts to EditorBlockInput cells
+    // WHY: Validation API expects cells with elementType, width, and contentMetadata
+    const cells = block.charts.map(chartRef => {
+      const chartConfig = chartMap.get(chartRef.chartId);
+      const chartType = chartConfig?.type || 'kpi';
+      
+      // WHAT: Extract content metadata from preview results or chart config
+      // WHY: Validation needs barCount, legendItemCount, etc. for accurate height calculation
+      const contentMetadata: Record<string, unknown> = {};
+      
+      if (chartType === 'bar' && previewResults[chartRef.chartId]) {
+        const result = previewResults[chartRef.chartId];
+        if (result.elements && Array.isArray(result.elements)) {
+          contentMetadata.barCount = result.elements.length;
+        }
+      } else if (chartType === 'pie' && previewResults[chartRef.chartId]) {
+        const result = previewResults[chartRef.chartId];
+        if (result.elements && Array.isArray(result.elements)) {
+          contentMetadata.legendItemCount = result.elements.length;
+        }
+      }
+      
+      return {
+        chartId: chartRef.chartId,
+        elementType: chartType as 'text' | 'table' | 'pie' | 'bar' | 'kpi' | 'image',
+        width: chartRef.width,
+        contentMetadata: Object.keys(contentMetadata).length > 0 ? contentMetadata : undefined,
+        imageMode: chartConfig?.type === 'image' ? ('setIntrinsic' as 'cover' | 'setIntrinsic') : undefined
+      };
+    });
+    
+    return {
+      blockId: block._id,
+      cells,
+      // WHAT: No block-level aspect ratio or max height constraints in current editor
+      // WHY: These are template-level settings, not block-level
+      blockAspectRatio: undefined,
+      maxAllowedHeight: undefined
+    };
+  }, [chartConfigs, previewResults]);
+  
+  // WHAT: Validate block for Layout Grammar compliance before save
+  // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
+  // HOW: Use editor validation API to check block configuration
+  const validateBlockBeforeSave = useCallback((block: DataVisualizationBlock): {
+    isValid: boolean;
+    validationResult?: BlockValidationResult;
+    errorMessage?: string;
+  } => {
+    const editorInput = convertBlockToEditorInput(block);
+    if (!editorInput) {
+      return {
+        isValid: false,
+        errorMessage: 'Block ID is missing'
+      };
+    }
+    
+    // WHAT: Use standard desktop width for validation (1200px)
+    // WHY: Validation needs block width in pixels, desktop is the most common viewport
+    // HOW: This is an estimate; actual width depends on viewport and grid settings
+    const blockWidthPx = 1200; // Standard desktop width
+    
+    try {
+      const validationResult = validateBlockForEditor(editorInput, blockWidthPx);
+      
+      // WHAT: Check if block should be blocked from publishing
+      // WHY: Layout Grammar violations (scrolling, truncation, clipping) must be prevented
+      if (validationResult.publishBlocked) {
+        const reason = validationResult.publishBlockReason || 'Layout Grammar violation detected';
+        return {
+          isValid: false,
+          validationResult,
+          errorMessage: `Cannot save block "${block.name}": ${reason}`
+        };
+      }
+      
+      // WHAT: Check for required actions that indicate problems
+      // WHY: Some violations require user action before save
+      if (validationResult.requiredActions.length > 0) {
+        const actions = validationResult.requiredActions.join(', ');
+        return {
+          isValid: false,
+          validationResult,
+          errorMessage: `Block "${block.name}" requires: ${actions}`
+        };
+      }
+      
+      return {
+        isValid: true,
+        validationResult
+      };
+    } catch (error) {
+      console.error('Validation error:', error);
+      // WHAT: Non-blocking validation error - allow save but log warning
+      // WHY: Don't block user workflow if validation API fails
+      return {
+        isValid: true, // Allow save on validation error
+        errorMessage: 'Validation check failed, but save will proceed'
+      };
+    }
+  }, [convertBlockToEditorInput]);
+  
   // WHAT: Update block with save status tracking and auto-save support
   // WHY: Provide visual feedback, support onBlur auto-save pattern
   // HOW: Track save status, update block then save template, handle errors
@@ -462,6 +579,16 @@ export default function VisualizationPage() {
     
     if (!block._id) {
       showMessage('error', 'Block ID is missing');
+      return;
+    }
+    
+    // WHAT: Layout Grammar validation before save
+    // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
+    const validation = validateBlockBeforeSave(block);
+    if (!validation.isValid) {
+      setBlockSaveStatus('error');
+      showMessage('error', validation.errorMessage || 'Block validation failed');
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
       return;
     }
     
@@ -542,6 +669,26 @@ export default function VisualizationPage() {
     
     if (!selectedTemplateId) {
       showMessage('error', 'Please select a template first');
+      return;
+    }
+    
+    // WHAT: Layout Grammar validation before save
+    // WHY: Prevent invalid configurations (scrolling, truncation, clipping) from being saved
+    // HOW: Convert blockForm to DataVisualizationBlock format for validation
+    const blockForValidation: DataVisualizationBlock = {
+      _id: 'temp', // Temporary ID for validation
+      name: blockForm.name,
+      charts: blockForm.charts,
+      order: blockForm.order,
+      isActive: blockForm.isActive,
+      showTitle: blockForm.showTitle
+    };
+    
+    const validation = validateBlockBeforeSave(blockForValidation);
+    if (!validation.isValid) {
+      setBlockSaveStatus('error');
+      showMessage('error', validation.errorMessage || 'Block validation failed');
+      setTimeout(() => setBlockSaveStatus('idle'), 3000);
       return;
     }
     

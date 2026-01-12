@@ -34,7 +34,7 @@ It translates audit findings and residual risks into concrete, trackable actions
 **Title:** Layout Grammar Editor Integration  
 **Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** High  
-**Status:** PLANNED
+**Status:** DONE
 
 **Description:**
 Layout Grammar validation logic exists but is not integrated into the editor UI. Editor does not block invalid configurations before save (e.g., scrolling, truncation, clipping violations). No real-time feedback during report editing.
