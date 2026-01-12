@@ -168,6 +168,14 @@ BAR chart height calculation uses estimated label height (40px for 2-line max) a
 - Verification that height estimates match actual rendered height
 - Commit with height calculation improvements
 
+**Closure Evidence:**
+- ✅ Enhanced height calculation logic: `lib/elementFitValidator.ts` - Improved `validateBarElementFit()` and `validatePieElementFit()`
+- ✅ BAR chart improvements: Estimates font size based on available space, calculates label height using actual metrics (fontSize × lineHeight × 2)
+- ✅ PIE chart improvements: Estimates font size and legend item height, accounts for item count and label lengths
+- ✅ Documentation: `docs/audits/investigations/A-03-height-calculation-improvements.md` - Before/after comparison
+- ✅ Commit: Height calculation accuracy improvements with documentation
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
 **Technical Readiness Notes:**
 - Current implementation: `lib/elementFitValidator.ts` (validateBarElementFit, validatePieElementFit)
 - Height calculator: `lib/blockHeightCalculator.ts` (resolveBlockHeightWithDetails)
@@ -316,10 +324,10 @@ No performance optimizations were applied beyond what was necessary for correctn
 **Total Action Items:** 6
 
 **Status Breakdown:**
-- PLANNED: 4
+- PLANNED: 3
 - BLOCKED: 0
 - IN PROGRESS: 0
-- DONE: 2 (A-01, A-02)
+- DONE: 3 (A-01, A-02, A-03)
 - DEFERRED: 0
 
 **Priority Breakdown:**
@@ -344,4 +352,4 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 **Document Status:** Active executable action plan. Items trackable and actionable.
 
-**Last Verified:** 2026-01-12T01:45:00.000Z
+**Last Verified:** 2026-01-12T02:00:00.000Z
