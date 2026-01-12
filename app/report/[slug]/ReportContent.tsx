@@ -14,6 +14,7 @@ import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
+import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
@@ -258,6 +259,16 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
         });
         const height = heightResolution.heightPx;
         console.log(`[ResponsiveRow ${rowIndex}] Height recalculated:`, height, 'from width:', width);
+        
+        // WHAT: Validate height resolution with runtime enforcement (A-05)
+        // WHY: Fail-fast in production if height resolution fails
+        // HOW: Use validateHeightResolution which throws in production, warns in dev
+        validateHeightResolution(heightResolution, {
+          rowIndex,
+          blockWidth: width,
+          cellsCount: cells.length
+        });
+        
         setRowHeight(height);
         
         // WHAT: P1 1.5 Phase 3 - Removed font size state update logic
@@ -283,24 +294,24 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
     };
   }, [rowCharts, chartResults, rowIndex]); // Re-run if charts change
   
-  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1)
-  // WHY: Warn if height CSS variables are not set, indicating implicit height behavior
-  // HOW: Check computed styles after CSS variables are applied
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 1 + A-05: Runtime Enforcement)
+  // WHY: Warn if height CSS variables are not set, enforce in production
+  // HOW: Check computed styles after CSS variables are applied, enforce in production
   useEffect(() => {
     if (rowRef.current && typeof window !== 'undefined') {
-      const computedStyle = getComputedStyle(rowRef.current);
-      const rowHeightValue = computedStyle.getPropertyValue('--row-height').trim();
-      const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
-      
-      // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
-      // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
-      if (!rowHeightValue || !blockHeightValue) {
-        console.warn(`[P1 1.4] Row ${rowIndex}: CSS variables --row-height or --block-height not set. Height will fallback to design token.`, {
-          rowHeight: rowHeightValue || 'missing',
-          blockHeight: blockHeightValue || 'missing',
-          calculatedHeight: rowHeight
-        });
-      }
+      // WHAT: Validate critical CSS variables with runtime enforcement
+      // WHY: A-05 requires fail-fast behavior in production for critical violations
+      // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+      validateCriticalCSSVariable(
+        rowRef.current,
+        CRITICAL_CSS_VARIABLES.ROW_HEIGHT,
+        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+      );
+      validateCriticalCSSVariable(
+        rowRef.current,
+        CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+        { rowIndex, calculatedHeight: rowHeight, type: 'row' }
+      );
     }
   }, [rowHeight, rowIndex]);
   

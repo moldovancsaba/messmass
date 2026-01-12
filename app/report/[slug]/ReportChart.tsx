@@ -21,6 +21,7 @@ import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
+import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -487,9 +488,9 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     }
   }, [showTitle, result.title, result.elements]);
   
-  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
-  // WHY: Ensure all height values are explicit and traceable
-  // HOW: Check computed styles after CSS variables are applied
+  // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5 + A-05: Runtime Enforcement)
+  // WHY: Ensure all height values are explicit and traceable, enforce in production
+  // HOW: Check computed styles after CSS variables are applied, enforce in production
   useEffect(() => {
     if (!result.elements || result.elements.length === 0) return;
     if (chartBodyRef.current && typeof window !== 'undefined') {
@@ -497,25 +498,19 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        const computedStyle = getComputedStyle(chartContainer);
-        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
-        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
-        
-        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
-        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
-        if (!bodyHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
-            chartId: result.chartId,
-            blockHeight: blockHeightValue || 'missing',
-            containerHeight: chartContainer.offsetHeight
-          });
-        }
-        if (!blockHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] BAR Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
-            chartId: result.chartId,
-            bodyHeight: bodyHeightValue || 'missing'
-          });
-        }
+        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+        // WHY: Fail-fast in production for critical violations
+        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+        validateCriticalCSSVariable(
+          chartContainer,
+          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+          { chartId: result.chartId, chartType: 'bar', containerHeight: chartContainer.offsetHeight }
+        );
+        validateCriticalCSSVariable(
+          chartContainer,
+          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+          { chartId: result.chartId, chartType: 'bar' }
+        );
       };
       
       // WHAT: Validate after initial render and on resize
@@ -678,25 +673,19 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   useEffect(() => {
     if (textChartRef.current && typeof window !== 'undefined') {
       const validateHeight = () => {
-        const computedStyle = getComputedStyle(textChartRef.current!);
-        const textContentHeightValue = computedStyle.getPropertyValue('--text-content-height').trim();
-        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
-        
-        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
-        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
-        if (!textContentHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
-            chartId: result.chartId,
-            blockHeight: blockHeightValue || 'missing',
-            containerHeight: textChartRef.current?.offsetHeight || 0
-          });
-        }
-        if (!blockHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] TEXT Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
-            chartId: result.chartId,
-            textContentHeight: textContentHeightValue || 'missing'
-          });
-        }
+        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+        // WHY: Fail-fast in production for critical violations
+        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+        validateCriticalCSSVariable(
+          textChartRef.current,
+          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+          { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
+        );
+        validateCriticalCSSVariable(
+          textChartRef.current,
+          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+          { chartId: result.chartId, chartType: 'text' }
+        );
       };
       
       // WHAT: Validate after initial render and on resize
@@ -810,34 +799,24 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        const computedStyle = getComputedStyle(chartContainer);
-        const textContentHeightValue = getComputedStyle(tableContentRef.current!).getPropertyValue('--text-content-height').trim();
-        const bodyHeightValue = computedStyle.getPropertyValue('--chart-body-height').trim();
-        const blockHeightValue = computedStyle.getPropertyValue('--block-height').trim();
-        
-        // WHAT: Warn if CSS variables are missing (fallback to design token would be used)
-        // WHY: P1 1.4 requires explicit height cascade, no implicit fallbacks
-        if (!textContentHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --text-content-height not set. Height will fallback to design token.`, {
-            chartId: result.chartId,
-            bodyHeight: bodyHeightValue || 'missing',
-            blockHeight: blockHeightValue || 'missing'
-          });
-        }
-        if (!bodyHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --chart-body-height not set. Height will fallback to auto.`, {
-            chartId: result.chartId,
-            textContentHeight: textContentHeightValue || 'missing',
-            blockHeight: blockHeightValue || 'missing'
-          });
-        }
-        if (!blockHeightValue) {
-          console.warn(`[P1 1.4 Phase 5] TABLE Chart ${result.chartId}: CSS variable --block-height not set. Height will fallback to design token.`, {
-            chartId: result.chartId,
-            bodyHeight: bodyHeightValue || 'missing',
-            textContentHeight: textContentHeightValue || 'missing'
-          });
-        }
+        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+        // WHY: Fail-fast in production for critical violations
+        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+        validateCriticalCSSVariable(
+          tableContentRef.current,
+          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+          { chartId: result.chartId, chartType: 'table' }
+        );
+        validateCriticalCSSVariable(
+          chartContainer,
+          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+          { chartId: result.chartId, chartType: 'table' }
+        );
+        validateCriticalCSSVariable(
+          chartContainer,
+          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+          { chartId: result.chartId, chartType: 'table' }
+        );
       };
       
       // WHAT: Validate after initial render and on resize

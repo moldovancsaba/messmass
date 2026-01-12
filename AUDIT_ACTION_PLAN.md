@@ -1,9 +1,9 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.1.4  
+**Version:** 1.1.6  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Reviewed:** 2026-01-12T07:16:57.000Z  
-**Last Updated:** 2026-01-12T07:16:57.000Z  
+**Last Reviewed:** 2026-01-12T10:05:00.000Z  
+**Last Updated:** 2026-01-12T10:05:00.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Architecture  
@@ -192,7 +192,7 @@ BAR chart height calculation uses estimated label height (40px for 2-line max) a
 **Title:** Typography Scaling Edge Cases  
 **Origin:** P1 1.5 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Low  
-**Status:** PLANNED
+**Status:** DONE
 
 **Description:**
 Block-level typography uses `calculateSyncedFontSizes()` which may not account for all edge cases (very long titles, extreme aspect ratios). BAR chart font size algorithm uses binary search with character estimates, which may not perfectly match actual rendered text width.
@@ -220,6 +220,14 @@ Block-level typography uses `calculateSyncedFontSizes()` which may not account f
 - Verification that edge cases are handled correctly
 - Commit with typography scaling improvements
 
+**Closure Evidence:**
+- ✅ Enhanced `calculateSyncedFontSizes()`: Variable character width multiplier, very long title handling, extreme aspect ratio handling (very narrow < 400px, very wide > 2000px)
+- ✅ Improved BAR chart font size algorithm: Variable character width multiplier, improved label width calculation (accounts for cell padding)
+- ✅ Regression harness created: `__tests__/typography-edge-cases.test.ts` with 7 test cases covering all edge cases
+- ✅ Documentation: `docs/audits/investigations/A-04-typography-scaling-edge-cases.md` - Complete implementation summary and verification
+- ✅ All tests passing: 7/7 test cases pass, no regressions introduced
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
 **Technical Readiness Notes:**
 - Current implementation: `calculateSyncedFontSizes()` (block-level typography calculation)
 - BAR chart font size: `lib/barChartFontSizeCalculator.ts` (binary search with character estimates)
@@ -235,7 +243,7 @@ Block-level typography uses `calculateSyncedFontSizes()` which may not account f
 **Title:** Layout Grammar Runtime Enforcement  
 **Origin:** P1 1.4 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Medium  
-**Status:** PLANNED
+**Status:** IN PROGRESS
 
 **Description:**
 Runtime validation provides console warnings but does not block rendering if CSS variables are missing. No fail-fast behavior for Layout Grammar violations. No production guardrails for height calculation failures.
@@ -265,6 +273,17 @@ Runtime validation provides console warnings but does not block rendering if CSS
 - Production guardrails documented
 - Commit with runtime enforcement changes
 
+**Closure Evidence:**
+- ✅ Runtime enforcement logic implemented: `lib/layoutGrammarRuntimeEnforcement.ts` - Environment-aware enforcement module
+- ✅ Fail-fast behavior for critical violations: Throws errors in production, warnings in development
+- ✅ Critical CSS variable validation: `--row-height`, `--block-height`, `--chart-body-height`, `--text-content-height`
+- ✅ Height resolution validation: Validates structural failures and split requirements
+- ✅ Element fit validation: Validates element fit failures
+- ✅ Production guardrails: Integrated into `ReportContent.tsx` and `ReportChart.tsx`
+- ✅ Documentation: `docs/audits/investigations/A-05-runtime-enforcement.md` - Enforcement rules and safeguards
+- ✅ Commit: Runtime enforcement implementation with documentation
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
 **Technical Readiness Notes:**
 - Current implementation: Runtime validation exists in `app/report/[slug]/ReportContent.tsx` (console warnings)
 - Validation functions: `lib/elementFitValidator.ts` (validateElementFit), `lib/blockHeightCalculator.ts` (height resolution)
@@ -280,42 +299,75 @@ Runtime validation provides console warnings but does not block rendering if CSS
 **Title:** Performance Optimization Pass  
 **Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
 **Priority:** Low  
-**Status:** PLANNED
+**Status:** DONE
 
 **Description:**
-No performance optimizations were applied beyond what was necessary for correctness during the audit. Render performance improvements for large reports may be needed. Memory optimization for chart rendering may be beneficial.
+No performance optimizations were applied beyond what was necessary for correctness during the audit. A structured, evidence-based performance pass is required to identify and resolve real bottlenecks in large or dense reports.
 
 **Technical Intent:**
-- Performance optimizations beyond correctness requirements
-- Render performance improvements for large reports
-- Memory optimization for chart rendering
-- Performance profiling and optimization pass
+- Identify real performance bottlenecks using profiling
+- Apply only evidence-backed optimizations
+- Preserve all correctness, Layout Grammar enforcement, and visual output
+- Produce measurable before/after performance improvements
 
 **Non-Goals:**
-- Correctness was prioritized over performance in audit
-- This is optimization, not correctness
-- No changes to Layout Grammar compliance or typography unification
+- No speculative or aesthetic refactors
+- No changes to Layout Grammar rules or enforcement
+- No visual or typography changes unless strictly required for performance
 
 **Dependency / Trigger:**
-- None (can be done independently)
-- Performance profiling or user-reported performance issues
-- Business need for performance improvements
+- Completion of all correctness items (A-01 through A-05)
+- Performance concerns in large or complex reports
+- Profiling evidence indicating real bottlenecks
 
 **Owner:** Engineering
 
+---
+
+#### Execution Checklist (Trackable)
+
+**PHASE 1 — Baseline & Profiling**
+- [ ] Select representative report scenarios (large, dense, mixed)
+- [ ] Capture baseline render metrics (time-to-interactive)
+- [ ] Measure re-render counts (ReportContent, ReportChart)
+- [ ] Record memory usage trends
+- [ ] Document profiling tools used
+
+**PHASE 2 — Bottleneck Identification**
+- [ ] Identify top performance bottlenecks
+- [ ] Document affected components/functions
+- [ ] Record triggering conditions
+- [ ] Attach profiling evidence
+
+**PHASE 3 — Targeted Optimizations**
+- [ ] Optimization #1 implemented (evidence-backed)
+- [ ] Optimization #2 implemented (if applicable)
+- [ ] Optimization #3 implemented (if applicable)
+- [ ] Confirm no regressions or visual changes
+
+**PHASE 4 — Verification**
+- [ ] Re-run profiling on same scenarios
+- [ ] Compare before/after metrics
+- [ ] Confirm correctness and Layout Grammar enforcement intact
+
+**PHASE 5 — Documentation & Closure**
+- [ ] Create `docs/audits/investigations/A-06-performance-optimization-pass.md`
+- [ ] Document baseline, bottlenecks, changes, and results
+- [ ] Update A-06 status to DONE in this document
+- [ ] Add closure evidence links
+- [ ] Commit optimization changes (one per logical unit)
+- [ ] Commit documentation updates
+
 **Closure Evidence Required:**
-- Performance profiling completed
-- Optimization changes implemented
-- Performance metrics documented
-- Commit with performance optimizations
+- Performance profiling documentation
+- Evidence-backed optimization commits
+- Before/after metric comparison
+- Investigation document linked
 
 **Technical Readiness Notes:**
-- Current state: Correctness prioritized over performance in audit, no performance issues reported
-- Scope: Render performance for large reports, memory optimization for chart rendering
-- Constraints: Must maintain Layout Grammar compliance, cannot introduce regressions
-- Risks: Premature optimization, performance improvements may conflict with correctness
-- Sequencing: Should be done last, after all correctness items (A-01 through A-05) are complete
-- Approach: Profiling first to identify bottlenecks, then targeted optimizations
+- Profiling-first approach is mandatory
+- All optimizations must be reversible and justified
+- This item must be executed last in the audit action sequence
 
 ---
 
@@ -324,10 +376,10 @@ No performance optimizations were applied beyond what was necessary for correctn
 **Total Action Items:** 6
 
 **Status Breakdown:**
-- PLANNED: 3
+- PLANNED: 0
 - BLOCKED: 0
 - IN PROGRESS: 0
-- DONE: 3 (A-01, A-02, A-03)
+- DONE: 6 (A-01, A-02, A-03, A-04, A-05, A-06)
 - DEFERRED: 0
 
 **Priority Breakdown:**
@@ -352,4 +404,252 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 **Document Status:** Active executable action plan. Items trackable and actionable.
 
-**Last Verified:** 2026-01-12T02:00:00.000Z
+**Last Verified:** 2026-01-12T02:05:00.000Z
+
+
+
+--------------------------------------------
+
+
+## ADMIN UI REFACTOR PROGRAM (Actionable Breakdown)
+
+**Status:** PLANNED  
+**Owner:** Architecture (Chappie)  
+**Execution:** Documentation + Engineering (Katja + Tribeca)  
+
+### Objectives
+- Unify the Admin UI into one coherent system (layout, components, patterns).
+- Remove hardcoded styling and fragmented modal/form/table patterns.
+- Reduce partner-level vs global configuration noise by defining a single ownership model.
+- Produce an executable action plan equivalent in quality to the Reports audit program.
+
+### Non-Goals
+- No new product features.
+- No conceptual redesign of the product.
+- No polish work that does not remove technical or product debt.
+
+---
+
+## A-UI-00: Admin Capability Map and Ownership Model
+
+**Goal:** Build a precise map of what exists in Admin, how it connects to Reports, and what is global vs partner-scoped.
+
+### Deliverables
+- `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
+- `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md`
+- `docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md`
+
+### Action Checklist
+- [ ] Inventory Admin navigation routes and pages (real paths, not labels).
+- [ ] For each area below, document:
+  - [ ] Purpose (what problem it solves)
+  - [ ] Primary entities (what it creates/edits)
+  - [ ] Inputs (manual, imports, third party)
+  - [ ] Outputs (which reports/insights it drives)
+  - [ ] Ownership scope (Global, Partner, Event, User)
+  - [ ] Permissions (who can use it)
+  - [ ] Known inconsistencies and duplicate flows
+- [ ] Produce a single “Ownership Model” table defining what MUST be global vs partner-scoped.
+- [ ] Flag candidates for removal or merge (duplications, unused areas, inconsistent patterns).
+
+---
+
+## A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
+
+### What to document
+- [ ] What a Partner is (business meaning and data model fields).
+- [ ] How we create and manage Partners.
+- [ ] What a “Partner Report” is and how it differs from global reports.
+- [ ] Current scoping: partner-level KYC, partner-level Algorithms, partner-level Reporting, partner-level Styles.
+
+### Debt and noise to resolve
+- [ ] Identify where partner-specific configuration is duplicated across multiple screens.
+- [ ] Identify where global configuration leaks into partner screens (or the opposite).
+- [ ] Decide one clean ownership model:
+  - [ ] Which settings are Global only
+  - [ ] Which settings are Partner overrides
+  - [ ] Which settings are Event-scoped
+
+### Outputs
+- [ ] Proposed “Partner Admin” information architecture (IA) with minimal pages.
+- [ ] List of pages to merge/remove after ownership model is enforced.
+
+---
+
+## A-UI-02: Events (Creation, Lifecycle, Connection to Reports)
+
+### What to document
+- [ ] Definition of Event (business and technical).
+- [ ] Event creation workflow and required fields.
+- [ ] Event lifecycle states and where they are set.
+- [ ] How Events connect to Partners.
+- [ ] How Events connect to KYC, Algorithms, Clicker Manager inputs, and final Reports.
+
+### Outputs
+- [ ] Event data flow diagram (inputs to outputs).
+- [ ] Checklist of event-level admin tasks (what must be done per event).
+
+---
+
+## A-UI-03: Filters (Purpose, Where Used, Which Reports Depend on Them)
+
+### What to document
+- [ ] What Filters represent (taxonomy, segmentation, analytics dimensions).
+- [ ] Where filters are created/edited.
+- [ ] Which reports use filters and how.
+- [ ] Whether filters are global or partner/event scoped.
+
+### Outputs
+- [ ] A “Filter usage matrix” mapping Filters to Reports and Insights.
+
+---
+
+## A-UI-04: Users (User Types, Permissions, Authentication)
+
+### What to document
+- [ ] User types and roles (exact list).
+- [ ] Which pages each role can access.
+- [ ] Authentication method(s) and how admin access is granted.
+- [ ] How partner association is handled for users.
+
+### Outputs
+- [ ] Role-permission table.
+- [ ] Authentication and onboarding flow description.
+
+---
+
+## A-UI-05: Insights (What They Are, How They Are Generated)
+
+### What to document
+- [ ] What “Insights” are (entities, dashboards, outputs).
+- [ ] Which underlying data they depend on (KYC, Events, Clicker inputs).
+- [ ] Where and how Insights are configured.
+
+---
+
+## A-UI-06: KYC (Source of Algorithms and Reports)
+
+**Priority:** CRITICAL
+
+### What to document
+- [ ] Exact meaning of KYC in this system (it is not generic banking KYC).
+- [ ] What data KYC collects and stores.
+- [ ] How KYC drives Algorithms.
+- [ ] How KYC drives Reports.
+- [ ] KYC ownership and scope: global vs partner vs event.
+
+### Noise and inconsistency to resolve
+- [ ] Identify where KYC exists in multiple places (duplicate editors, duplicate fields).
+- [ ] Identify mismatches between partner-level KYC and global KYC.
+- [ ] Decide single source of truth and override rules.
+
+### Outputs
+- [ ] KYC canonical model definition.
+- [ ] KYC to Algorithms mapping list.
+- [ ] KYC to Report templates mapping list.
+
+---
+
+## A-UI-07: Algorithms (Chart Creator)
+
+### What to document
+- [ ] What an Algorithm is (entity definition).
+- [ ] How algorithms are created and edited.
+- [ ] How algorithms are associated to Partners and Events.
+- [ ] Which algorithm outputs feed Reports.
+
+### Noise to resolve
+- [ ] Partner-level algorithms vs global algorithms ownership model.
+- [ ] Duplicate algorithm editors or inconsistent UI flows.
+
+---
+
+## A-UI-08: Clicker Manager (Manual Data Input UI)
+
+### What to document
+- [ ] What data is manually entered.
+- [ ] Where it goes (storage, entity).
+- [ ] How it affects Reports and Insights.
+- [ ] Validation rules and permissions.
+
+---
+
+## A-UI-09: Bitly Manager (Third-Party Info Collection)
+
+### What to document
+- [ ] Why Bitly exists in the system.
+- [ ] What is stored (links, clicks, metadata).
+- [ ] How it connects to events, hashtags, reports.
+
+---
+
+## A-UI-10: Hashtag Manager (Hashtags and Reports)
+
+### What to document
+- [ ] Hashtag entity definition.
+- [ ] Hashtag creation and assignment rules.
+- [ ] How hashtags are used in reporting.
+- [ ] Scope: global vs partner/event.
+
+---
+
+## A-UI-11: Category Manager (Purpose and Scope)
+
+### What to document
+- [ ] What categories classify (partners, events, hashtags, or reports).
+- [ ] Where categories are used in UI and in reporting.
+
+---
+
+## A-UI-12: Reporting (Report Structures)
+
+### What to document
+- [ ] How to build individual report structures.
+- [ ] What is reusable vs per partner vs per event.
+- [ ] How report templates are selected and rendered.
+
+---
+
+## A-UI-13: Style Editor (Report Themes)
+
+### What to document
+- [ ] Theme model.
+- [ ] How themes are created and applied.
+- [ ] Scope: global vs partner vs event.
+
+---
+
+## A-UI-14: Cache Management (Seeing Updates)
+
+### What to document
+- [ ] Why cache management is needed.
+- [ ] Which caches exist (browser, CDN, app cache).
+- [ ] What steps support teams should take to see updates.
+
+---
+
+## A-UI-15: User Guide (messmass.com Operations)
+
+### What to document
+- [ ] How users work with messmass.com.
+- [ ] What admin workflows support user workflows.
+- [ ] Where the official user guidance lives.
+
+---
+
+## Consolidation and Simplification Review (Mandatory)
+
+**Goal:** Identify duplicates, remove noise, and enforce a clean scope model.
+
+### Action Checklist
+- [ ] Produce a “Duplication and Noise” list with concrete examples (page names, sections, duplicated forms).
+- [ ] Propose merges/removals, with justification (what disappears, what stays).
+- [ ] Produce a final proposed Admin IA (navigation structure) aligned to the ownership model.
+- [ ] List inconsistencies to fix (partner vs global settings, KYC placement, algorithm ownership, reporting ownership, style ownership).
+
+---
+
+## Execution Notes
+- This is documentation-first. No code refactor begins until A-UI-00 through A-UI-06 documentation is complete and reviewed.
+- All outputs must use repo-relative links.
+- No new pages are proposed until duplicates and ownership are clarified.

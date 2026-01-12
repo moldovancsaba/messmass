@@ -29,11 +29,29 @@ export function calculateMaxBarLabelFontSize(
     return minFontSize;
   }
   
-  // WHAT: Estimate characters per line at a given font size
-  // WHY: Need to know if text fits in 1 or 2 lines at a given font size
-  // HOW: Rough estimate: ~0.6em per character (accounts for spacing)
+  // WHAT: Improved character width estimation for BAR chart labels
+  // WHY: Reduce mismatch between estimated and rendered width
+  // HOW: Use variable character width based on font size, account for word boundaries and spacing
+  // Edge case: Very small fonts (<12px) need tighter estimate, very large fonts (>20px) need looser estimate
   const estimateLines = (fontSize: number): number => {
-    const charsPerLine = Math.max(1, Math.floor(labelWidthPx / (fontSize * 0.6)));
+    // WHAT: Variable character width multiplier based on font size
+    // WHY: Character width varies with font size and character type
+    // HOW: Smaller fonts have tighter spacing, larger fonts have looser spacing
+    const charWidthMultiplier = fontSize < 12 ? 0.55 : fontSize > 20 ? 0.65 : 0.6;
+    const charsPerLine = Math.max(1, Math.floor(labelWidthPx / (fontSize * charWidthMultiplier)));
+    
+    // WHAT: Account for very long words that cannot be broken
+    // WHY: Layout Grammar: words cannot be broken
+    // HOW: Check if longest word fits in one line
+    const words = labelText.split(/\s+/);
+    const longestWord = words.reduce((max, word) => word.length > max.length ? word : max, '');
+    if (longestWord.length > charsPerLine && labelText.length > charsPerLine) {
+      // Longest word doesn't fit in one line, will wrap
+      // Estimate: first line gets charsPerLine chars, remainder goes to second line
+      const remainder = labelText.length - charsPerLine;
+      return Math.ceil(remainder / charsPerLine) + 1; // At least 2 lines
+    }
+    
     return Math.ceil(labelText.length / charsPerLine);
   };
   
@@ -156,11 +174,14 @@ export function calculateBlockFontSizeForBarCharts(
     // HOW: (chartBodyHeight - padding) / barCount - spacing per gap
     const availableHeightPerRow = (chartBodyHeight - chartBodyPaddingPx) / barCount - rowSpacingPx;
     
-    // WHAT: Calculate label width (40% of table width)
-    // WHY: Labels use 40% of table width
-    // HOW: Table width ≈ block width (accounting for padding)
+    // WHAT: Calculate label width (40% of table width) with improved accuracy
+    // WHY: Labels use 40% of table width (from CSS: .barLabel { width: 40%; })
+    // HOW: Table width = block width minus padding, label width = 40% of table width
+    // Edge case: Account for table cell padding (left: 1 space unit, right: 2 space units)
+    // Assuming 1 space unit ≈ 8px, so label cell has ~24px total horizontal padding
     const tableWidth = blockWidthPx - (chartBodyPaddingPx * 2);
-    const labelWidth = tableWidth * 0.4; // 40% for labels
+    const labelCellPadding = 24; // Approximate: 8px (left) + 16px (right) = 24px
+    const labelWidth = (tableWidth * 0.4) - labelCellPadding; // 40% minus padding for actual text width
     
     // WHAT: Calculate max font size for each label in this chart
     // WHY: Need to ensure all labels fit

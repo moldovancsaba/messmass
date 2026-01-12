@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-01-12T07:16:57.000Z
+Last Updated: 2026-01-12T11:33:14.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -55,6 +55,9 @@ Owner: Architecture
 - [docs/audits/P0.1-PRODUCTION-FLAGS-SETUP.md](docs/audits/P0.1-PRODUCTION-FLAGS-SETUP.md)
 - [docs/audits/REPORT_DESIGN_SYSTEM.md](docs/audits/REPORT_DESIGN_SYSTEM.md)
 - [docs/audits/SYSTEM_AUDIT_2025.md](docs/audits/SYSTEM_AUDIT_2025.md)
+- [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md)
+- [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md)
+- [docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md](docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md)
 
 4 docs/audits/investigations
 - [docs/audits/investigations/P0-1.1-no-scrolling-verification.md](docs/audits/investigations/P0-1.1-no-scrolling-verification.md)
@@ -94,6 +97,7 @@ Owner: Architecture
 - [docs/audits/investigations/P1-1.5-unified-typography.md](docs/audits/investigations/P1-1.5-unified-typography.md)
 - [docs/audits/investigations/P1-2.2-variable-naming-audit.md](docs/audits/investigations/P1-2.2-variable-naming-audit.md)
 - [docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md](docs/audits/investigations/P1-2.5.1-chart-content-density-typography.md)
+- [docs/audits/investigations/A-06-performance-optimization-pass.md](docs/audits/investigations/A-06-performance-optimization-pass.md)
 - [docs/audits/investigations/branch-cleanup-report.md](docs/audits/investigations/branch-cleanup-report.md)
 - [docs/audits/investigations/git-push-instructions.md](docs/audits/investigations/git-push-instructions.md)
 
