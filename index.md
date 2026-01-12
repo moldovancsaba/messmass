@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-12T00:16:23.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -11,6 +11,7 @@ Owner: Architecture
 - [WARP.md](WARP.md)
 - [RELEASE_NOTES.md](RELEASE_NOTES.md)
 - [ROADMAP.md](ROADMAP.md)
+- [AUDIT_ACTION_PLAN.md](AUDIT_ACTION_PLAN.md)
 - [TASKLIST.md](TASKLIST.md)
 - [LEARNINGS.md](LEARNINGS.md)
 - [AGENT_NAMES.md](AGENT_NAMES.md)
