@@ -1,6 +1,6 @@
 # Multi-User Notifications
 Status: Active
-Last Updated: 2026-01-11T23:20:04.000Z
+Last Updated: 2026-01-11T23:51:17.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -36,3 +36,7 @@ Owner: Architecture
 - Panel not opening or closing: check click-outside handler in `NotificationPanel` and JS errors.
 - Read or archive fails: verify `/api/notifications/mark-read` and CSRF token handling.
 - Screen readers not announcing updates: no `aria-live` region is defined for the badge.
+
+## Related Documents
+- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
+- [IMPLEMENTATION_COMPLETE.md](../../IMPLEMENTATION_COMPLETE.md)

@@ -1,6 +1,6 @@
 # MessMass Development Learnings
 Status: Active
-Last Updated: 2026-01-11T22:28:38.000Z
+Last Updated: 2026-01-11T23:27:27.000Z
 Canonical: No
 Owner: Architecture
 
@@ -4493,7 +4493,7 @@ export function setCsrfTokenCookie(response: NextResponse, token: string): NextR
 }
 ```
 
-**2. Updated Security Documentation** (`docs/SECURITY_ENHANCEMENTS.md`):
+**2. Updated Security Documentation** ([docs/SECURITY_ENHANCEMENTS.md](docs/SECURITY_ENHANCEMENTS.md)):
 - Removed incorrect "HttpOnly cookies (XSS protection)" claim
 - Added "Regular (non-HttpOnly) cookies (required for double-submit pattern)"
 - Added security note explaining why CSRF tokens are NOT HttpOnly
@@ -4605,7 +4605,7 @@ export function setCsrfTokenCookie(response: NextResponse, token: string): NextR
 
 **Files Modified** (v6.32.0):
 - **FIXED**: `lib/csrf.ts` (line 149: `httpOnly: false`)
-- **UPDATED**: `docs/SECURITY_ENHANCEMENTS.md` (corrected HttpOnly claims)
+- **UPDATED**: [docs/SECURITY_ENHANCEMENTS.md](docs/SECURITY_ENHANCEMENTS.md) (corrected HttpOnly claims)
 - **CREATED**: `scripts/test-csrf-fix.sh` (CSRF validation test)
 - **UPDATED**: `LEARNINGS.md` (this entry)
 - **UPDATED**: `package.json` (version bump to 6.32.0)

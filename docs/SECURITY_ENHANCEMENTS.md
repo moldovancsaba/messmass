@@ -1,6 +1,6 @@
 # Security Enhancements
 Status: Active
-Last Updated: 2026-01-11T23:20:04.000Z
+Last Updated: 2026-01-11T23:51:17.000Z
 Canonical: Yes
 Owner: Security
 
@@ -57,3 +57,7 @@ Owner: Security
   - State-changing requests fail without CSRF token and succeed with `apiClient`.
   - Security events appear in logs with redaction applied.
 - This document does not include independent runtime testing results.
+
+## Related Documents
+- [AUDIT_EVIDENCE_INDEX.md](../audits/AUDIT_EVIDENCE_INDEX.md)
+- [SECURITY_MIGRATION_GUIDE.md](SECURITY_MIGRATION_GUIDE.md)
