@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-01-12T00:16:23.000Z
+Last Updated: 2026-01-12T07:16:57.000Z
 Canonical: Yes
 Owner: Architecture
 
@@ -135,6 +135,7 @@ Owner: Architecture
 
 11 docs/migrations
 - [docs/migrations/GOOGLE_SHEETS_SCHEMA_UPDATE.md](docs/migrations/GOOGLE_SHEETS_SCHEMA_UPDATE.md)
+- [docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md](docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md)
 
 12 docs/setup
 - [docs/setup/GOOGLE_SERVICE_ACCOUNT_SETUP.md](docs/setup/GOOGLE_SERVICE_ACCOUNT_SETUP.md)

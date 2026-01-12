@@ -1,6 +1,6 @@
 # ROADMAP.md
 **Status:** Active  
-**Last Updated:** 2026-01-12T00:16:23.000Z  
+**Last Updated:** 2026-01-12T07:16:57.000Z  
 **Canonical:** Yes  
 **Owner:** Product + Engineering  
 **Reference:** [AUDIT_ACTION_PLAN.md](AUDIT_ACTION_PLAN.md), [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md), [docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md](docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md)
@@ -146,7 +146,7 @@
 
 ### Layout Grammar Migration Tooling
 **Priority:** Medium  
-**Status:** Future  
+**Status:** DONE  
 **Dependencies:** Analysis tools (exist), Migration scripts  
 **Source:** `IMPLEMENTATION_COMPLETE.md` (Explicit Non-Goals)
 
