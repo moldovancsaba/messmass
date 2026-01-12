@@ -1,6 +1,6 @@
 # AUDIT_ACTION_PLAN.md
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Reviewed:** 2026-01-12T00:09:33.679Z  
 **Last Updated:** 2026-01-12T00:09:33.679Z  
@@ -62,6 +62,14 @@ Layout Grammar validation logic exists but is not integrated into the editor UI.
 - Documentation of editor validation rules
 - Commit with editor integration changes
 
+**Technical Readiness Notes:**
+- Layout Grammar validation logic exists: `lib/editorValidationAPI.ts` (validateBlockForEditor, validateBlocksForEditor, checkPublishValidity)
+- Editor component: `components/ReportContentManager.tsx` (report content editing UI)
+- Editor validation API provides `checkPublishValidity()` function that returns `{ canPublish: boolean; blockedBlocks: Array<{ blockId: string; reason: string }> }`
+- Integration point: ReportContentManager needs to call validation API and block save/commit if violations found
+- Constraints: Must preserve existing editor UX, validation should be non-blocking for warnings, blocking only for critical violations
+- Sequencing: Can be done independently, but benefits from A-05 (Runtime Enforcement) for consistency
+
 ---
 
 ### A-02: Layout Grammar Migration Tooling
@@ -100,6 +108,13 @@ Automated migration of existing reports to Layout Grammar compliance is not impl
 - Documentation of migration process
 - Commit with migration tooling
 
+**Technical Readiness Notes:**
+- Analysis tools exist: `scripts/check-layout-grammar-guardrail.ts` (scans files for violations)
+- Validation API exists: `lib/editorValidationAPI.ts` (can validate blocks)
+- Migration scripts need to be created: batch processing, report updates, validation reports
+- Constraints: Must preserve existing report data, migration must be reversible/testable
+- Sequencing: Can be done independently, benefits from A-01 (Editor Integration) for validation consistency
+
 ---
 
 ### A-03: Height Calculation Accuracy Improvements
@@ -136,6 +151,15 @@ BAR chart height calculation uses estimated label height (40px for 2-line max) a
 - Verification that height estimates match actual rendered height
 - Commit with height calculation improvements
 
+**Technical Readiness Notes:**
+- Current implementation: `lib/elementFitValidator.ts` (validateBarElementFit, validatePieElementFit)
+- Height calculator: `lib/blockHeightCalculator.ts` (resolveBlockHeightWithDetails)
+- BAR chart: Uses estimated 40px label height, 20px min bar height, 8px row spacing
+- PIE chart: Assumes 30% → 50% legend growth when >5 items
+- Constraints: Must maintain Layout Grammar compliance, cannot introduce regressions
+- Risks: Over-refinement may cause unnecessary height increases, under-refinement may cause clipping
+- Sequencing: Can be done independently, but should coordinate with A-04 (Typography Scaling) if font size changes affect height
+
 ---
 
 ### A-04: Typography Scaling Edge Cases
@@ -170,6 +194,14 @@ Block-level typography uses `calculateSyncedFontSizes()` which may not account f
 - Improved BAR chart font size algorithm in `lib/barChartFontSizeCalculator.ts`
 - Verification that edge cases are handled correctly
 - Commit with typography scaling improvements
+
+**Technical Readiness Notes:**
+- Current implementation: `calculateSyncedFontSizes()` (block-level typography calculation)
+- BAR chart font size: `lib/barChartFontSizeCalculator.ts` (binary search with character estimates)
+- Edge cases: Very long titles, extreme aspect ratios, character width estimation accuracy
+- Constraints: Must maintain unified typography (P1 1.5), KPI value exemption must remain intact
+- Risks: Over-optimization may introduce complexity, character width estimation may never be perfect
+- Sequencing: Can be done independently, but should coordinate with A-03 (Height Calculation) if font size changes affect height
 
 ---
 
@@ -208,6 +240,14 @@ Runtime validation provides console warnings but does not block rendering if CSS
 - Production guardrails documented
 - Commit with runtime enforcement changes
 
+**Technical Readiness Notes:**
+- Current implementation: Runtime validation exists in `app/report/[slug]/ReportContent.tsx` (console warnings)
+- Validation functions: `lib/elementFitValidator.ts` (validateElementFit), `lib/blockHeightCalculator.ts` (height resolution)
+- Constraints: Must distinguish between development (warnings OK) and production (blocking required)
+- Risks: Fail-fast behavior may break existing reports if validation is too strict, needs graceful degradation
+- Sequencing: Can be done independently, but should coordinate with A-01 (Editor Integration) for consistency
+- Environment detection: Must check `NODE_ENV` or similar to enable blocking only in production
+
 ---
 
 ### A-06: Performance Optimization Pass
@@ -243,6 +283,14 @@ No performance optimizations were applied beyond what was necessary for correctn
 - Optimization changes implemented
 - Performance metrics documented
 - Commit with performance optimizations
+
+**Technical Readiness Notes:**
+- Current state: Correctness prioritized over performance in audit, no performance issues reported
+- Scope: Render performance for large reports, memory optimization for chart rendering
+- Constraints: Must maintain Layout Grammar compliance, cannot introduce regressions
+- Risks: Premature optimization, performance improvements may conflict with correctness
+- Sequencing: Should be done last, after all correctness items (A-01 through A-05) are complete
+- Approach: Profiling first to identify bottlenecks, then targeted optimizations
 
 ---
 
