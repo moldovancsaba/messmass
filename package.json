@@ -45,6 +45,7 @@
     "migrate-slugs": "node migrate-slugs.js",
     "migrate-hashtags": "node scripts/migrate-hashtags.js",
     "migrate-stats-v2.13.0": "node scripts/migrate-stats-v2.13.0.js",
+    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local",
     "analytics:setup-indexes": "tsx scripts/setupAnalyticsIndexes.ts",
     "analytics:aggregate": "tsx scripts/aggregateAnalytics.ts",
     "analytics:backfill": "tsx scripts/backfillAnalytics.ts",
@@ -119,7 +120,7 @@
     "migrate:assign-default-partner": "tsx -r dotenv/config scripts/assignDefaultPartnerToOrphanedEvents.ts dotenv_config_path=.env.local",
     "sheets:create-partner-sheets": "tsx -r dotenv/config scripts/createPartnerSheets.ts dotenv_config_path=.env.local",
     "sheets:setup-szerencsejatok": "tsx -r dotenv/config scripts/setupSzerencsejatek.ts dotenv_config_path=.env.local",
-    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-reports-to-layout-grammar.ts dotenv_config_path=.env.local"
+    "migrate:layout-grammar": "tsx -r dotenv/config scripts/migrate-layout-grammar.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@types/nodemailer": "^7.0.4",
