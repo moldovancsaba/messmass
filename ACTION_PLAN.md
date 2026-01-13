@@ -1260,10 +1260,10 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 **Ownership scope:** Global
 
 ### Checkable tasks
-- [ ] Define Bitly link and association model in [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx).
-- [ ] Map partner and event association flows.
-- [ ] Identify duplicate association entry points (C-08).
-- [ ] Define canonical association flow and visibility elsewhere.
+- [x] Define Bitly link and association model in [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx). Evidence: [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/api/bitly/links/route.ts](app/api/bitly/links/route.ts), [lib/bitly-db.types.ts](lib/bitly-db.types.ts), [lib/bitly-junction.types.ts](lib/bitly-junction.types.ts), [docs/audits/admin-ui/ADMIN_UI_BITLY_MODEL.md](docs/audits/admin-ui/ADMIN_UI_BITLY_MODEL.md).
+- [x] Map partner and event association flows. Evidence: [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [app/admin/events/page.tsx](app/admin/events/page.tsx), [components/BitlyLinksEditor.tsx](components/BitlyLinksEditor.tsx), [components/BitlyLinksSelector.tsx](components/BitlyLinksSelector.tsx), [docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md](docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md).
+- [x] Identify duplicate association entry points (C-08). Evidence: [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [ACTION_PLAN.md](ACTION_PLAN.md), [docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md](docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md).
+- [x] Define canonical association flow and visibility elsewhere. Evidence: [ACTION_PLAN.md](ACTION_PLAN.md), [docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md](docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md).
 
 ---
 
@@ -1529,3 +1529,12 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 - **LAST COMMIT(S):** `e9f885862`
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
+
+**2026-01-13T15:41:10.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-09
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** pending (A-UI-09 completion commit)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** docs/audits/admin-ui/ADMIN_UI_BITLY_MODEL.md, docs/audits/admin-ui/ADMIN_UI_BITLY_FLOWS.md, ACTION_PLAN.md
