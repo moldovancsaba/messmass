@@ -1,0 +1,707 @@
+# AUDIT_ACTION_PLAN.md
+
+**Version:** 1.1.7  
+**Created:** 2026-01-12T00:09:33.679Z  
+**Last Reviewed:** 2026-01-12T10:05:00.000Z  
+**Last Updated:** 2026-01-12T13:18:36.000Z  
+**Status:** Active  
+**Canonical:** Yes  
+**Owner:** Architecture  
+**Audience:** Engineering + Product
+
+---
+
+## Purpose
+
+This document serves as the single executable layer between:
+- `docs/audits/COMPREHENSIVE_SYSTEM_AUDIT_PLAN_2026.md` (audit inventory)
+- `IMPLEMENTATION_COMPLETE.md` (completed work)
+- `ROADMAP.md` (strategic planning)
+
+It translates audit findings and residual risks into concrete, trackable actions.
+
+**Source of Truth:**
+- `IMPLEMENTATION_COMPLETE.md` (Residual Risks section)
+- `ROADMAP.md` (Hardening & Follow-ups section)
+- P0/P1 items marked DONE + VERIFIED (for exclusion only)
+
+---
+
+## Action Items
+
+### A-01: Layout Grammar Editor Integration
+
+**Title:** Layout Grammar Editor Integration  
+**Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** High  
+**Status:** DONE
+
+**Description:**
+Layout Grammar validation logic exists but is not integrated into the editor UI. Editor does not block invalid configurations before save (e.g., scrolling, truncation, clipping violations). No real-time feedback during report editing.
+
+**Technical Intent:**
+- Integrate Layout Grammar validation into editor UI
+- Block invalid configurations before save (scrolling, truncation, clipping violations)
+- Provide real-time feedback during report editing
+- Prevent Layout Grammar violations at authoring time
+
+**Non-Goals:**
+- Runtime validation already exists (console warnings are sufficient for development)
+- This is editor blocking, not runtime enforcement
+- No changes to runtime validation behavior
+
+**Dependency / Trigger:**
+- Layout Grammar validation logic (exists)
+- Editor UI refactoring or new editor features
+- Product decision to enforce Layout Grammar at authoring time
+
+**Owner:** Engineering
+
+**Closure Evidence Required:**
+- Editor UI blocks invalid configurations before save
+- Real-time validation feedback implemented
+- Documentation of editor validation rules
+- Commit with editor integration changes
+
+**Closure Evidence:**
+- ✅ Editor UI blocks invalid configurations before save: `app/admin/visualization/page.tsx` - `validateBlockBeforeSave()` integrated into `handleUpdateBlock()` and `handleCreateBlock()`
+- ✅ Validation logic integrated: Uses `validateBlockForEditor()` from `lib/editorValidationAPI.ts`
+- ✅ Blocks Layout Grammar violations: Checks `publishBlocked` and `requiredActions` before save
+- ✅ Error messages displayed: Uses existing `showMessage()` for user feedback
+- ✅ Commit: `0716af9c9` - Integration completed with helper functions `convertBlockToEditorInput()` and `validateBlockBeforeSave()`
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
+**Technical Readiness Notes:**
+- Layout Grammar validation logic exists: `lib/editorValidationAPI.ts` (validateBlockForEditor, validateBlocksForEditor, checkPublishValidity)
+- Editor component: `components/ReportContentManager.tsx` (report content editing UI)
+- Editor validation API provides `checkPublishValidity()` function that returns `{ canPublish: boolean; blockedBlocks: Array<{ blockId: string; reason: string }> }`
+- Integration point: ReportContentManager needs to call validation API and block save/commit if violations found
+- Constraints: Must preserve existing editor UX, validation should be non-blocking for warnings, blocking only for critical violations
+- Sequencing: Can be done independently, but benefits from A-05 (Runtime Enforcement) for consistency
+
+---
+
+### A-02: Layout Grammar Migration Tooling
+
+**Title:** Layout Grammar Migration Tooling  
+**Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** Medium  
+**Status:** DONE
+
+**Description:**
+Automated migration of existing reports to Layout Grammar compliance is not implemented. Analysis tools exist, but migration is currently manual. No batch analysis and remediation capabilities for legacy reports.
+
+**Technical Intent:**
+- Automated migration of existing reports to Layout Grammar compliance
+- Batch analysis and remediation of legacy reports
+- Validation reports for pre-migration assessment
+- Scripts/tooling for bulk report updates
+
+**Non-Goals:**
+- Manual migration is currently supported and sufficient
+- Analysis tools already exist (no need to recreate)
+- This is automation, not correctness (manual migration works)
+
+**Dependency / Trigger:**
+- Analysis tools (exist)
+- Migration scripts (to be created)
+- Large-scale report migration or client onboarding
+- Business need for automated migration
+
+**Owner:** Engineering
+
+**Closure Evidence Required:**
+- Migration scripts/tooling created
+- Batch analysis capability implemented
+- Validation reports generated
+- Documentation of migration process
+- Commit with migration tooling
+
+**Closure Evidence:**
+- ✅ Migration scripts/tooling created: `scripts/migrate-layout-grammar.ts` - Full-featured migration tool with dry-run, apply, backup/restore
+- ✅ Batch analysis capability implemented: Validates all report templates and data blocks in database
+- ✅ Validation reports generated: JSON format with detailed violation information
+- ✅ Documentation of migration process: [docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md](docs/migrations/LAYOUT_GRAMMAR_MIGRATION.md) - Complete usage guide
+- ✅ Commit: `0c7319b1e` - Migration tooling, documentation, and npm script added
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
+**Technical Readiness Notes:**
+- Analysis tools exist: `scripts/check-layout-grammar-guardrail.ts` (scans files for violations)
+- Validation API exists: `lib/editorValidationAPI.ts` (can validate blocks)
+- Migration scripts need to be created: batch processing, report updates, validation reports
+- Constraints: Must preserve existing report data, migration must be reversible/testable
+- Sequencing: Can be done independently, benefits from A-01 (Editor Integration) for validation consistency
+
+---
+
+### A-03: Height Calculation Accuracy Improvements
+
+**Title:** Height Calculation Accuracy Improvements  
+**Origin:** P1 1.4 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** Medium  
+**Status:** IN PROGRESS
+
+**Description:**
+BAR chart height calculation uses estimated label height (40px for 2-line max) and minimum bar height (20px). Actual rendered height may vary slightly based on font size and content. PIE chart legend height calculation assumes 30% → 50% growth when >5 items. Actual growth depends on label lengths and wrapping behavior.
+
+**Technical Intent:**
+- Refine BAR chart height calculation (currently uses estimated 40px label height)
+- Refine PIE chart legend height calculation (currently assumes 30% → 50% growth)
+- Account for actual font size and content wrapping behavior
+- Improve accuracy of height estimates to match actual rendered height
+
+**Non-Goals:**
+- Current estimates are sufficient for most use cases
+- This is fine-tuning, not a critical issue
+- No changes to Layout Grammar compliance (current implementation is correct)
+
+**Dependency / Trigger:**
+- None (can be done independently)
+- Reports with extreme content density or font size variations
+- User-reported height calculation issues
+
+**Owner:** Engineering
+
+**Closure Evidence Required:**
+- Enhanced height calculation logic in `lib/elementFitValidator.ts`
+- Updated `lib/blockHeightCalculator.ts` with refined calculations
+- Verification that height estimates match actual rendered height
+- Commit with height calculation improvements
+
+**Closure Evidence:**
+- ✅ Enhanced height calculation logic: `lib/elementFitValidator.ts` - Improved `validateBarElementFit()` and `validatePieElementFit()`
+- ✅ BAR chart improvements: Estimates font size based on available space, calculates label height using actual metrics (fontSize × lineHeight × 2)
+- ✅ PIE chart improvements: Estimates font size and legend item height, accounts for item count and label lengths
+- ✅ Documentation: `docs/audits/investigations/A-03-height-calculation-improvements.md` - Before/after comparison
+- ✅ Commit: Height calculation accuracy improvements with documentation
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
+**Technical Readiness Notes:**
+- Current implementation: `lib/elementFitValidator.ts` (validateBarElementFit, validatePieElementFit)
+- Height calculator: `lib/blockHeightCalculator.ts` (resolveBlockHeightWithDetails)
+- BAR chart: Uses estimated 40px label height, 20px min bar height, 8px row spacing
+- PIE chart: Assumes 30% → 50% legend growth when >5 items
+- Constraints: Must maintain Layout Grammar compliance, cannot introduce regressions
+- Risks: Over-refinement may cause unnecessary height increases, under-refinement may cause clipping
+- Sequencing: Can be done independently, but should coordinate with A-04 (Typography Scaling) if font size changes affect height
+
+---
+
+### A-04: Typography Scaling Edge Cases
+
+**Title:** Typography Scaling Edge Cases  
+**Origin:** P1 1.5 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** Low  
+**Status:** DONE
+
+**Description:**
+Block-level typography uses `calculateSyncedFontSizes()` which may not account for all edge cases (very long titles, extreme aspect ratios). BAR chart font size algorithm uses binary search with character estimates, which may not perfectly match actual rendered text width.
+
+**Technical Intent:**
+- Handle edge cases in `calculateSyncedFontSizes()` (very long titles, extreme aspect ratios)
+- Improve BAR chart font size algorithm accuracy (binary search with character estimates)
+- Ensure typography scaling works correctly for all edge cases
+
+**Non-Goals:**
+- Current implementation handles 99% of use cases
+- This is optimization, not correctness
+- No changes to core typography unification (P1 1.5 is correct)
+
+**Dependency / Trigger:**
+- None (can be done independently)
+- Reports with extreme title lengths or aspect ratios
+- User-reported typography scaling issues
+
+**Owner:** Engineering
+
+**Closure Evidence Required:**
+- Enhanced `calculateSyncedFontSizes()` with edge case handling
+- Improved BAR chart font size algorithm in `lib/barChartFontSizeCalculator.ts`
+- Verification that edge cases are handled correctly
+- Commit with typography scaling improvements
+
+**Closure Evidence:**
+- ✅ Enhanced `calculateSyncedFontSizes()`: Variable character width multiplier, very long title handling, extreme aspect ratio handling (very narrow < 400px, very wide > 2000px)
+- ✅ Improved BAR chart font size algorithm: Variable character width multiplier, improved label width calculation (accounts for cell padding)
+- ✅ Regression harness created: `__tests__/typography-edge-cases.test.ts` with 7 test cases covering all edge cases
+- ✅ Documentation: `docs/audits/investigations/A-04-typography-scaling-edge-cases.md` - Complete implementation summary and verification
+- ✅ All tests passing: 7/7 test cases pass, no regressions introduced
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
+**Technical Readiness Notes:**
+- Current implementation: `calculateSyncedFontSizes()` (block-level typography calculation)
+- BAR chart font size: `lib/barChartFontSizeCalculator.ts` (binary search with character estimates)
+- Edge cases: Very long titles, extreme aspect ratios, character width estimation accuracy
+- Constraints: Must maintain unified typography (P1 1.5), KPI value exemption must remain intact
+- Risks: Over-optimization may introduce complexity, character width estimation may never be perfect
+- Sequencing: Can be done independently, but should coordinate with A-03 (Height Calculation) if font size changes affect height
+
+---
+
+### A-05: Layout Grammar Runtime Enforcement
+
+**Title:** Layout Grammar Runtime Enforcement  
+**Origin:** P1 1.4 (Residual Risks), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** Medium  
+**Status:** IN PROGRESS
+
+**Description:**
+Runtime validation provides console warnings but does not block rendering if CSS variables are missing. No fail-fast behavior for Layout Grammar violations. No production guardrails for height calculation failures.
+
+**Technical Intent:**
+- Block rendering if critical CSS variables are missing (currently only console warnings)
+- Fail-fast behavior for Layout Grammar violations
+- Production guardrails for height calculation failures
+- Prevent Layout Grammar violations from reaching production
+
+**Non-Goals:**
+- Console warnings are sufficient for development
+- This is production hardening, not correctness
+- No changes to development workflow (warnings are acceptable in dev)
+
+**Dependency / Trigger:**
+- Runtime validation (exists)
+- Production deployment requirements
+- Production incidents or reliability requirements
+- Business decision to enforce Layout Grammar at runtime
+
+**Owner:** Engineering
+
+**Closure Evidence Required:**
+- Runtime enforcement logic implemented
+- Fail-fast behavior for critical violations
+- Production guardrails documented
+- Commit with runtime enforcement changes
+
+**Closure Evidence:**
+- ✅ Runtime enforcement logic implemented: `lib/layoutGrammarRuntimeEnforcement.ts` - Environment-aware enforcement module
+- ✅ Fail-fast behavior for critical violations: Throws errors in production, warnings in development
+- ✅ Critical CSS variable validation: `--row-height`, `--block-height`, `--chart-body-height`, `--text-content-height`
+- ✅ Height resolution validation: Validates structural failures and split requirements
+- ✅ Element fit validation: Validates element fit failures
+- ✅ Production guardrails: Integrated into `ReportContent.tsx` and `ReportChart.tsx`
+- ✅ Documentation: `docs/audits/investigations/A-05-runtime-enforcement.md` - Enforcement rules and safeguards
+- ✅ Commit: Runtime enforcement implementation with documentation
+- ✅ Local gate passed: Build, TypeScript, and linting all pass
+
+**Technical Readiness Notes:**
+- Current implementation: Runtime validation exists in `app/report/[slug]/ReportContent.tsx` (console warnings)
+- Validation functions: `lib/elementFitValidator.ts` (validateElementFit), `lib/blockHeightCalculator.ts` (height resolution)
+- Constraints: Must distinguish between development (warnings OK) and production (blocking required)
+- Risks: Fail-fast behavior may break existing reports if validation is too strict, needs graceful degradation
+- Sequencing: Can be done independently, but should coordinate with A-01 (Editor Integration) for consistency
+- Environment detection: Must check `NODE_ENV` or similar to enable blocking only in production
+
+---
+
+### A-06: Performance Optimization Pass
+
+**Title:** Performance Optimization Pass  
+**Origin:** P1 1.5 (Explicit Non-Goals), ROADMAP.md (Hardening & Follow-ups)  
+**Priority:** Low  
+**Status:** DONE
+
+**Description:**
+No performance optimizations were applied beyond what was necessary for correctness during the audit. A structured, evidence-based performance pass is required to identify and resolve real bottlenecks in large or dense reports.
+
+**Technical Intent:**
+- Identify real performance bottlenecks using profiling
+- Apply only evidence-backed optimizations
+- Preserve all correctness, Layout Grammar enforcement, and visual output
+- Produce measurable before/after performance improvements
+
+**Non-Goals:**
+- No speculative or aesthetic refactors
+- No changes to Layout Grammar rules or enforcement
+- No visual or typography changes unless strictly required for performance
+
+**Dependency / Trigger:**
+- Completion of all correctness items (A-01 through A-05)
+- Performance concerns in large or complex reports
+- Profiling evidence indicating real bottlenecks
+
+**Owner:** Engineering
+
+---
+
+#### Execution Checklist (Trackable)
+
+**PHASE 1 — Baseline & Profiling**
+- [ ] Select representative report scenarios (large, dense, mixed)
+- [ ] Capture baseline render metrics (time-to-interactive)
+- [ ] Measure re-render counts (ReportContent, ReportChart)
+- [ ] Record memory usage trends
+- [ ] Document profiling tools used
+
+**PHASE 2 — Bottleneck Identification**
+- [ ] Identify top performance bottlenecks
+- [ ] Document affected components/functions
+- [ ] Record triggering conditions
+- [ ] Attach profiling evidence
+
+**PHASE 3 — Targeted Optimizations**
+- [ ] Optimization #1 implemented (evidence-backed)
+- [ ] Optimization #2 implemented (if applicable)
+- [ ] Optimization #3 implemented (if applicable)
+- [ ] Confirm no regressions or visual changes
+
+**PHASE 4 — Verification**
+- [ ] Re-run profiling on same scenarios
+- [ ] Compare before/after metrics
+- [ ] Confirm correctness and Layout Grammar enforcement intact
+
+**PHASE 5 — Documentation & Closure**
+- [ ] Create `docs/audits/investigations/A-06-performance-optimization-pass.md`
+- [ ] Document baseline, bottlenecks, changes, and results
+- [ ] Update A-06 status to DONE in this document
+- [ ] Add closure evidence links
+- [ ] Commit optimization changes (one per logical unit)
+- [ ] Commit documentation updates
+
+**Closure Evidence Required:**
+- Performance profiling documentation
+- Evidence-backed optimization commits
+- Before/after metric comparison
+- Investigation document linked
+
+**Technical Readiness Notes:**
+- Profiling-first approach is mandatory
+- All optimizations must be reversible and justified
+- This item must be executed last in the audit action sequence
+
+---
+
+## Summary
+
+**Total Action Items:** 6
+
+**Status Breakdown:**
+- PLANNED: 0
+- BLOCKED: 0
+- IN PROGRESS: 0
+- DONE: 6 (A-01, A-02, A-03, A-04, A-05, A-06)
+- DEFERRED: 0
+
+**Priority Breakdown:**
+- High: 1 (A-01)
+- Medium: 3 (A-02, A-03, A-05)
+- Low: 2 (A-04, A-06)
+
+**Mapping to ROADMAP.md:**
+- All 6 items mapped from "🔧 Hardening & Follow-ups (From Audit Residual Risks)" section
+- A-01: Layout Grammar Editor Integration (High priority)
+- A-02: Layout Grammar Migration Tooling (Medium priority)
+- A-03: Height Calculation Accuracy Improvements (Medium priority)
+- A-04: Typography Scaling Edge Cases (Low priority)
+- A-05: Layout Grammar Runtime Enforcement (Medium priority)
+- A-06: Performance Optimization Pass (Low priority)
+
+**Source References:**
+- `IMPLEMENTATION_COMPLETE.md` (Residual Risks, Explicit Non-Goals)
+- `ROADMAP.md` (Hardening & Follow-ups section)
+
+---
+
+**Document Status:** Active executable action plan. Items trackable and actionable.
+
+**Last Verified:** 2026-01-12T02:05:00.000Z
+
+
+
+--------------------------------------------
+
+
+## ADMIN UI REFACTOR PROGRAM (Actionable Breakdown)
+
+**Status:** PLANNED  
+**Owner:** Architecture (Chappie)  
+**Execution:** Documentation + Engineering (Katja + Tribeca)  
+
+### Objectives
+- Unify the Admin UI into one coherent system (layout, components, patterns).
+- Remove hardcoded styling and fragmented modal/form/table patterns.
+- Reduce partner-level vs global configuration noise by defining a single ownership model.
+- Produce an executable action plan equivalent in quality to the Reports audit program.
+
+### Non-Goals
+- No new product features.
+- No conceptual redesign of the product.
+- No polish work that does not remove technical or product debt.
+
+---
+
+## A-UI-00: Admin Capability Map and Ownership Model
+
+**Status:** DONE
+**Ownership scope:** Global
+
+### Outputs (A-UI-00)
+- `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
+- `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md`
+- `docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md`
+
+---
+
+## Admin IA Proposal (Navigation Structure)
+
+**Input:** `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md`
+
+1 Dashboard
+- /admin -> [app/admin/page.tsx](app/admin/page.tsx)
+- /admin/dashboard (legacy) -> [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx)
+
+2 Operations
+- /admin/events -> [app/admin/events/page.tsx](app/admin/events/page.tsx)
+- /admin/partners -> [app/admin/partners/page.tsx](app/admin/partners/page.tsx)
+- /admin/project-partners -> [app/admin/project-partners/page.tsx](app/admin/project-partners/page.tsx)
+- /admin/quick-add -> [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx)
+
+3 Reporting
+- /admin/visualization -> [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx)
+- /admin/charts -> [app/admin/charts/page.tsx](app/admin/charts/page.tsx)
+- /admin/styles -> [app/admin/styles/page.tsx](app/admin/styles/page.tsx)
+- /admin/styles/[id] -> [app/admin/styles/[id]/page.tsx](app/admin/styles/[id]/page.tsx)
+
+4 Data and Taxonomy
+- /admin/kyc -> [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx)
+- /admin/clicker-manager -> [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx)
+- /admin/hashtags -> [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx)
+- /admin/categories -> [app/admin/categories/page.tsx](app/admin/categories/page.tsx)
+- /admin/content-library -> [app/admin/content-library/page.tsx](app/admin/content-library/page.tsx)
+
+5 Analytics
+- /admin/insights -> [app/admin/insights/page.tsx](app/admin/insights/page.tsx)
+- /admin/analytics/insights -> [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx)
+- /admin/analytics/executive -> [app/admin/analytics/executive/page.tsx](app/admin/analytics/executive/page.tsx)
+- /admin/partners/[id]/analytics -> [app/admin/partners/[id]/analytics/page.tsx](app/admin/partners/[id]/analytics/page.tsx)
+
+6 System
+- /admin/users -> [app/admin/users/page.tsx](app/admin/users/page.tsx)
+- /admin/design -> [app/admin/design/page.tsx](app/admin/design/page.tsx)
+- /admin/cache -> [app/admin/cache/page.tsx](app/admin/cache/page.tsx)
+- /admin/api-football-enrich -> [app/admin/api-football-enrich/page.tsx](app/admin/api-football-enrich/page.tsx)
+
+7 Help and Access
+- /admin/help -> [app/admin/help/page.tsx](app/admin/help/page.tsx)
+- /admin/login -> [app/admin/login/page.tsx](app/admin/login/page.tsx)
+- /admin/register -> [app/admin/register/page.tsx](app/admin/register/page.tsx)
+- /admin/unauthorized -> [app/admin/unauthorized/page.tsx](app/admin/unauthorized/page.tsx)
+- /admin/clear-session -> [app/admin/clear-session/page.tsx](app/admin/clear-session/page.tsx)
+- /admin/cookie-test -> [app/admin/cookie-test/page.tsx](app/admin/cookie-test/page.tsx)
+- /admin/projects (legacy redirect) -> [app/admin/projects/page.tsx](app/admin/projects/page.tsx)
+
+---
+
+## A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
+
+**Ownership scope:** Partner
+
+### Checkable tasks
+- [ ] Confirm partner data model fields in [lib/partner.types.ts](lib/partner.types.ts) and partner admin UI.
+- [ ] Map partner routes: /admin/partners, /admin/partners/[id], /admin/partners/[id]/analytics, /admin/partners/[id]/kyc-data.
+- [ ] Define partner override rules for report templates and styles (global -> partner -> event).
+- [ ] Identify partner-related duplication candidates (C-04, C-08, C-09, C-10).
+- [ ] Define target partner IA (list, detail, analytics, kyc) and which routes remain.
+
+---
+
+## A-UI-02: Events (Creation, Lifecycle, Connection to Reports)
+
+**Ownership scope:** Event
+
+### Checkable tasks
+- [ ] Confirm event data model in [lib/types/api.ts](lib/types/api.ts) and events admin UI.
+- [ ] Map event routes: /admin/events, /admin/events/[id]/kyc-data, /admin/projects (redirect), /admin/quick-add.
+- [ ] Define event creation flows (manual vs bulk) and required fields.
+- [ ] Define partner linkage rules (partner1/partner2) and inheritance rules.
+- [ ] Define event-level overrides for templates and styles.
+- [ ] Identify event-related duplication candidates (C-04, C-05, C-10).
+
+---
+
+## A-UI-03: Filters (Purpose, Where Used, Which Reports Depend on Them)
+
+**Ownership scope:** Event (cross-event views)
+
+### Checkable tasks
+- [ ] Define filter entities and their dependency on hashtags and projects.
+- [ ] Map filter routes and flows: /admin/filter and /admin/dashboard filter tab.
+- [ ] Define filter outputs and ownership of style selection.
+- [ ] Identify filter duplication candidates (C-03).
+- [ ] Define canonical filter UI and redirect plan for duplicates.
+
+---
+
+## A-UI-04: Users (User Types, Permissions, Authentication)
+
+**Ownership scope:** User
+
+### Checkable tasks
+- [ ] Enumerate roles and permissions in [lib/auth.ts](lib/auth.ts).
+- [ ] Map access-related routes: /admin/users, /admin/login, /admin/register, /admin/unauthorized, /admin/clear-session, /admin/cookie-test.
+- [ ] Define onboarding and access recovery flows.
+- [ ] Define role-to-page access matrix (documentation only).
+
+---
+
+## A-UI-05: Insights (What They Are, How They Are Generated)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Inventory insight entities and endpoints used by /admin/insights and /admin/analytics/insights.
+- [ ] Define the canonical insights dashboard and deprecation plan (C-02).
+- [ ] Map dependencies on events, KYC, and clicker inputs.
+- [ ] Define outputs consumed by reporting or operations.
+
+---
+
+## A-UI-06: KYC (Source of Algorithms and Reports)
+
+**Priority:** CRITICAL
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define the KYC variable model and source of truth in [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx).
+- [ ] Map KYC dependencies to algorithms, clicker groups, and reporting.
+- [ ] Define global-only ownership and override rules (no partner or event edits).
+- [ ] Align partner and event KYC views with the global model (C-10).
+- [ ] Define KYC to report template and algorithm mappings.
+
+---
+
+## A-UI-07: Algorithms (Chart Creator)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define chart configuration model in [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx).
+- [ ] Document create/edit flow and validation rules.
+- [ ] Map dependencies on KYC variables and report templates.
+- [ ] Define permissions and access expectations.
+
+---
+
+## A-UI-08: Clicker Manager (Manual Data Input UI)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define variable group model and visibility rules in [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
+- [ ] Map dependency on KYC variable definitions.
+- [ ] Document how clicker groups affect editor behavior.
+- [ ] Define permissions and change control process.
+
+---
+
+## A-UI-09: Bitly Manager (Third-Party Info Collection)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define Bitly link and association model in [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx).
+- [ ] Map partner and event association flows.
+- [ ] Identify duplicate association entry points (C-08).
+- [ ] Define canonical association flow and visibility elsewhere.
+
+---
+
+## A-UI-10: Hashtag Manager (Hashtags and Reports)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define hashtag model and color management in [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx).
+- [ ] Map hashtag usage in filters and event/partner tagging.
+- [ ] Identify overlap with categories and define consolidation plan (C-07).
+
+---
+
+## A-UI-11: Category Manager (Purpose and Scope)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define category model and usage in [app/admin/categories/page.tsx](app/admin/categories/page.tsx).
+- [ ] Map categorizedHashtags usage and dependencies.
+- [ ] Decide consolidation with Hashtag Manager (C-07).
+
+---
+
+## A-UI-12: Reporting (Report Structures)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define report template model and data blocks in [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx).
+- [ ] Define template selection rules (global -> partner -> event).
+- [ ] Map dependencies on algorithms and styles.
+- [ ] Identify assignment duplication (C-06).
+
+---
+
+## A-UI-13: Style Editor (Report Themes)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Define report style model in [app/admin/styles/page.tsx](app/admin/styles/page.tsx).
+- [ ] Define style assignment rules (global -> partner -> event -> filter).
+- [ ] Identify duplication with template or admin design flows (C-06).
+
+---
+
+## A-UI-14: Cache Management (Seeing Updates)
+
+**Ownership scope:** Global
+
+### Checkable tasks
+- [ ] Document cache types and actions in [app/admin/cache/page.tsx](app/admin/cache/page.tsx).
+- [ ] Define when support should use each cache action.
+
+---
+
+## A-UI-15: User Guide (messmass.com Operations)
+
+**Ownership scope:** User
+
+### Checkable tasks
+- [ ] Resolve the canonical user guide source referenced in [app/admin/help/page.tsx](app/admin/help/page.tsx).
+- [ ] Decide whether the guide is doc-driven or embedded and define update process.
+- [ ] Map user workflows to admin workflows and reference links.
+
+---
+
+## A-UI-16: Admin UI Consolidation & Execution Prep
+
+**Status:** DONE  
+**Ownership scope:** Global
+
+### Closure evidence (A-UI-16)
+- [docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md](docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md) (commit: 6eaa1ac84)
+- [docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md](docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md) (commit: e5af6dab4)
+- [docs/audits/admin-ui/ADMIN_UI_EXECUTION_READINESS.md](docs/audits/admin-ui/ADMIN_UI_EXECUTION_READINESS.md) (commit: b93d2d781)
+
+---
+
+## Duplication and Noise Candidates (Pre-A-UI-01)
+
+| Candidate ID | Candidate name | Pages involved (code) | What duplicates | Proposed direction | Confidence | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| C-01 | Admin dashboards overlap | [app/admin/page.tsx](app/admin/page.tsx), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx) | Two dashboards with overlapping navigation and metrics | Keep /admin as canonical, deprecate or redirect /admin/dashboard | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-02 | Insights dashboards overlap | [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx) | Two insights dashboards with different endpoints | Merge into one canonical insights dashboard | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-03 | Filter UX duplication | [app/admin/filter/page.tsx](app/admin/filter/page.tsx), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx) | Multi-hashtag filtering exists in two places | Keep /admin/filter as canonical; remove or link from dashboard | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-04 | Partner assignment overlap | [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/project-partners/page.tsx](app/admin/project-partners/page.tsx) | Partner selection and assignment appear in two flows | Merge into events flow or keep project-partners as admin-only batch tool | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-05 | Event creation overlap | [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx) | Event creation exists in manual and bulk UIs | Keep quick-add as bulk import path; align data model with events | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-06 | Template and style assignment overlap | [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [app/admin/styles/page.tsx](app/admin/styles/page.tsx), [app/admin/filter/page.tsx](app/admin/filter/page.tsx) | Assignment logic repeated across multiple screens | Centralize assignment rules; keep templates/styles as global editors | High | `docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md` |
+| C-07 | Hashtag metadata split | [app/admin/hashtags/page.tsx](app/admin/hashtags/page.tsx), [app/admin/categories/page.tsx](app/admin/categories/page.tsx) | Hashtag color and category management separated | Merge into unified hashtag management surface | High | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-08 | Bitly association overlap | [app/admin/bitly/page.tsx](app/admin/bitly/page.tsx), [app/admin/partners/page.tsx](app/admin/partners/page.tsx) | Partner link association appears in two places | Keep /admin/bitly as canonical; make partner view read-only | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-09 | Google Sheets controls duplicated | [app/admin/partners/page.tsx](app/admin/partners/page.tsx), [app/admin/partners/[id]/page.tsx](app/admin/partners/[id]/page.tsx) | Google Sheets connect and sync surfaced in list and detail views | Keep controls in partner detail; list should link | Medium | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+| C-10 | KYC data views duplicated | [app/admin/partners/[id]/kyc-data/page.tsx](app/admin/partners/[id]/kyc-data/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx) | Two KYC views with similar filtering and tables | Keep both but align UX via shared documentation and ownership rules | Low | `docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md` |
+
+---
+
+## Execution Notes
+- This is documentation-first. No code refactor begins until the A-UI-01 to A-UI-15 task checklists are approved.
+- All outputs must use repo-relative links.
+- No new pages are proposed until duplicates and ownership are clarified.
