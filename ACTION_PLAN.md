@@ -957,11 +957,11 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 **Ownership scope:** Event (cross-event views)
 
 ### Checkable tasks
-- [ ] Define filter entities and their dependency on hashtags and projects.
-- [ ] Map filter routes and flows: /admin/filter and /admin/dashboard filter tab.
-- [ ] Define filter outputs and ownership of style selection.
-- [ ] Identify filter duplication candidates (C-03).
-- [ ] Define canonical filter UI and redirect plan for duplicates.
+- [x] Define filter entities and their dependency on hashtags and projects. Evidence: [app/admin/filter/page.tsx](app/admin/filter/page.tsx), [components/HashtagMultiSelect.tsx](components/HashtagMultiSelect.tsx).
+- [x] Map filter routes and flows: /admin/filter and /admin/dashboard filter tab. Evidence: [app/admin/filter/page.tsx](app/admin/filter/page.tsx), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx).
+- [x] Define filter outputs and ownership of style selection. Output includes filtered stats and share slug; style selection uses explicit styleId from global styles. Evidence: [app/admin/filter/page.tsx](app/admin/filter/page.tsx), [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md).
+- [x] Identify filter duplication candidates (C-03). Evidence: [ACTION_PLAN.md](ACTION_PLAN.md), [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md).
+- [x] Define canonical filter UI and redirect plan for duplicates. Canonical filter UI is /admin/filter; /admin/dashboard filter tab to be deprecated or redirected to /admin/filter. Evidence: [docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md](docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md), [app/admin/dashboard/page.tsx](app/admin/dashboard/page.tsx).
 
 ---
 
@@ -1182,5 +1182,14 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 - **CURRENT TASK ID:** A-UI-02
 - **STATUS:** DONE
 - **LAST COMMIT(S):** pending (A-UI-02 completion commit)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
+
+**2026-01-13T13:33:36.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-03
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (A-UI-03 completion commit)
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
