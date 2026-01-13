@@ -933,12 +933,12 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 **Ownership scope:** Event
 
 ### Checkable tasks
-- [ ] Confirm event data model in [lib/types/api.ts](lib/types/api.ts) and events admin UI.
-- [ ] Map event routes: /admin/events, /admin/events/[id]/kyc-data, /admin/projects (redirect), /admin/quick-add.
-- [ ] Define event creation flows (manual vs bulk) and required fields.
-- [ ] Define partner linkage rules (partner1/partner2) and inheritance rules.
-- [ ] Define event-level overrides for templates and styles.
-- [ ] Identify event-related duplication candidates (C-04, C-05, C-10).
+- [x] Confirm event data model in [lib/types/api.ts](lib/types/api.ts) and events admin UI. Evidence: [lib/types/api.ts](lib/types/api.ts), [app/admin/events/page.tsx](app/admin/events/page.tsx).
+- [x] Map event routes: /admin/events, /admin/events/[id]/kyc-data, /admin/projects (redirect), /admin/quick-add. Evidence: [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx), [app/admin/projects/page.tsx](app/admin/projects/page.tsx), [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx).
+- [x] Define event creation flows (manual vs bulk) and required fields. Manual: eventName + eventDate required; optional hashtags/categorizedHashtags, styleId, reportTemplateId. Bulk: Quick Add from sheet or partner match inputs. Evidence: [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/quick-add/page.tsx](app/admin/quick-add/page.tsx).
+- [x] Define partner linkage rules (partner1/partner2) and inheritance rules. Partner links stored as partner1Id/partner2Id at event scope; event overrides partner defaults per ownership model. Evidence: [app/admin/events/page.tsx](app/admin/events/page.tsx), [app/admin/project-partners/page.tsx](app/admin/project-partners/page.tsx), [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md).
+- [x] Define event-level overrides for templates and styles. Event reportTemplateId/styleId override partner and global assignments per ownership model. Evidence: [app/admin/events/page.tsx](app/admin/events/page.tsx), [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md).
+- [x] Identify event-related duplication candidates (C-04, C-05, C-10). Evidence: [ACTION_PLAN.md](ACTION_PLAN.md), [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md).
 
 ---
 
@@ -1165,3 +1165,12 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 - **LAST COMMIT(S):** `64ca56cdc`
 - **CURRENT BLOCKERS:** Unrelated non-admin worktree changes present
 - **NEXT EXPECTED OUTPUT:** Awaiting instruction to proceed with Admin-only docs for A-UI-17
+
+**2026-01-13T11:37:04.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-02
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (A-UI-02 completion commit)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
