@@ -564,7 +564,7 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 - [x] Implement CSV chart filtering alignment
 - [x] Implement CSV chart ordering alignment
 - [x] Implement CSV VALUE type handling (or document skip reason)
-- [ ] Implement CSV formatting alignment (optional - deferred, raw values preferred for CSV analysis)
+- [x] Implement CSV formatting alignment (A-R-15: Applied formatting to chart values, preserved raw values in Clicker Data/Metadata/Report Content)
 - [x] Add regression tests for export parity
 - [x] Update documentation with parity guarantees
 
