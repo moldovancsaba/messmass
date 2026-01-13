@@ -979,10 +979,10 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 **Ownership scope:** User
 
 ### Checkable tasks
-- [ ] Enumerate roles and permissions in [lib/auth.ts](lib/auth.ts).
-- [ ] Map access-related routes: /admin/users, /admin/login, /admin/register, /admin/unauthorized, /admin/clear-session, /admin/cookie-test.
-- [ ] Define onboarding and access recovery flows.
-- [ ] Define role-to-page access matrix (documentation only).
+- [x] Enumerate roles and permissions in [lib/auth.ts](lib/auth.ts). Evidence: [lib/auth.ts](lib/auth.ts), [lib/users.ts](lib/users.ts), [docs/audits/admin-ui/ADMIN_UI_ROLES_PERMISSIONS.md](docs/audits/admin-ui/ADMIN_UI_ROLES_PERMISSIONS.md).
+- [x] Map access-related routes: /admin/users, /admin/login, /admin/register, /admin/unauthorized, /admin/clear-session, /admin/cookie-test. Evidence: [app/admin/users/page.tsx](app/admin/users/page.tsx), [app/admin/login/page.tsx](app/admin/login/page.tsx), [app/admin/register/page.tsx](app/admin/register/page.tsx), [app/admin/unauthorized/page.tsx](app/admin/unauthorized/page.tsx), [app/admin/clear-session/page.tsx](app/admin/clear-session/page.tsx), [app/admin/cookie-test/page.tsx](app/admin/cookie-test/page.tsx).
+- [x] Define onboarding and access recovery flows. Evidence: [app/admin/register/page.tsx](app/admin/register/page.tsx), [app/api/admin/register/route.ts](app/api/admin/register/route.ts), [app/admin/login/page.tsx](app/admin/login/page.tsx), [app/admin/clear-session/page.tsx](app/admin/clear-session/page.tsx), [app/admin/unauthorized/page.tsx](app/admin/unauthorized/page.tsx), [app/admin/cookie-test/page.tsx](app/admin/cookie-test/page.tsx).
+- [x] Define role-to-page access matrix (documentation only). Evidence: [docs/audits/admin-ui/ADMIN_UI_ROLES_PERMISSIONS.md](docs/audits/admin-ui/ADMIN_UI_ROLES_PERMISSIONS.md).
 
 ---
 
@@ -1200,5 +1200,14 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 - **CURRENT TASK ID:** A-UI-03
 - **STATUS:** DONE
 - **LAST COMMIT(S):** pending (A-UI-03 completion commit)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
+
+**2026-01-13T13:51:25.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-04
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (A-UI-04 completion commit)
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
