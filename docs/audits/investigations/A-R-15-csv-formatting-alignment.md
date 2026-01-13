@@ -355,8 +355,8 @@ export interface ChartResult {
 ### Closure Evidence
 
 **Commits:**
-- `[commit hash]` - A-R-15: CSV Export Formatting Alignment - COMPLETE
-- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-15 DONE
+- `def750c40` - A-R-15: CSV Export Formatting Alignment - COMPLETE
+- `93fe86973` - A-R-15: Update commit hashes in documentation
 
 **Files Modified:**
 - `lib/export/csv.ts` (added formatting function and applied to chart values)
