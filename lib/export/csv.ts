@@ -9,6 +9,55 @@ import type { ProjectStats } from '@/lib/report-calculator';
 import { hasValidChartData } from './chartValidation';
 
 /**
+ * WHAT: Format chart value for CSV export (A-R-15)
+ * WHY: Align CSV formatting with rendered report formatting
+ * HOW: Apply prefix, suffix, and decimal formatting from ChartResult.formatting
+ * 
+ * @param value - The value to format (number, string, or undefined)
+ * @param formatting - Formatting options from chart configuration
+ * @returns Formatted string matching rendered report
+ */
+function formatValueForCSV(
+  value: number | string | undefined,
+  formatting?: { rounded?: boolean; prefix?: string; suffix?: string; decimals?: number }
+): string {
+  // WHAT: Handle NA and undefined values
+  // WHY: Preserve NA values as-is, don't format missing data
+  if (value === undefined || value === 'NA') return 'NA';
+  
+  // WHAT: Preserve string values as-is
+  // WHY: Text/image URLs should not be formatted
+  if (typeof value === 'string') return value;
+  
+  // WHAT: Determine decimal places from formatting
+  // WHY: Support both new (rounded) and legacy (decimals) formatting
+  let decimals = 0;
+  if (formatting) {
+    if (formatting.rounded !== undefined) {
+      // WHAT: New format - rounded flag determines decimals
+      // WHY: rounded=true → whole numbers (0 decimals), rounded=false → 2 decimals
+      decimals = formatting.rounded ? 0 : 2;
+    } else if (formatting.decimals !== undefined) {
+      // WHAT: Legacy format - use decimals field directly
+      // WHY: Backward compatibility with old chart configurations
+      decimals = formatting.decimals;
+    }
+  }
+  
+  // WHAT: Apply prefix and suffix
+  // WHY: Match rendered report formatting (€, $, %, etc.)
+  const { prefix = '', suffix = '' } = formatting || {};
+  
+  // WHAT: Format number with specified decimals (no thousands separators for CSV compatibility)
+  // WHY: CSV should be easily parseable by analysis tools (Excel, Google Sheets)
+  // NOTE: Rendered report may use toLocaleString() for thousands separators, but CSV uses toFixed()
+  // for better compatibility with data analysis tools
+  const formattedNumber = value.toFixed(decimals);
+  
+  return `${prefix}${formattedNumber}${suffix}`;
+}
+
+/**
  * WHAT: Project metadata for CSV export
  * WHY: Type-safe interface for event information
  */
@@ -142,17 +191,22 @@ export async function exportReportToCSV(
         // WHAT: Handle different chart types appropriately
         switch (result.type) {
           case 'kpi':
-            // WHAT: Single value charts
-            rows.push(`${esc('Algorithm Results')},${esc(result.title)},${esc(result.kpiValue ?? 'N/A')}`);
+            // WHAT: Single value charts - apply formatting to match rendered report (A-R-15)
+            // WHY: CSV values should match what users see in the report
+            const formattedKPI = formatValueForCSV(result.kpiValue, result.formatting);
+            rows.push(`${esc('Algorithm Results')},${esc(result.title)},${esc(formattedKPI)}`);
             break;
 
           case 'bar':
           case 'pie':
-            // WHAT: Multi-element charts - export each element
+            // WHAT: Multi-element charts - export each element with formatting (A-R-15)
+            // WHY: CSV values should match what users see in the report
             if (result.elements && result.elements.length > 0) {
               for (const element of result.elements) {
                 const label = `${result.title} - ${element.label}`;
-                rows.push(`${esc('Algorithm Results')},${esc(label)},${esc(element.value)}`);
+                // WHAT: Apply formatting to element value to match rendered report
+                const formattedElementValue = formatValueForCSV(element.value, result.formatting);
+                rows.push(`${esc('Algorithm Results')},${esc(label)},${esc(formattedElementValue)}`);
               }
             }
             break;

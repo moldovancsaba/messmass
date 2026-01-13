@@ -825,7 +825,54 @@ Current validation may not catch all cases, leading to:
 **Dependencies:**
 - A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)
 
+---
+
+## A-R-15: CSV Export Formatting Alignment (Rendered vs Exported Values)
+
+**Status:** DONE  
+**Priority:** Low  
+**Category:** Reporting Correctness  
+**Type:** Execution  
+**Completed:** 2026-01-13T15:14:00.000Z
+
+**Problem Statement:**
+CSV exports output raw numeric values while the rendered report applies formatting (prefixes, suffixes, decimal places). This causes client confusion when CSV values don't match what they see in the report.
+
+**Why This Belongs to Reporting (Not Admin):**
+- CSV export formatting is runtime behavior (when export executes)
+- Formatting alignment affects report correctness
+- This is Reporting behavior, not admin configuration
+- Formatting alignment is part of Reporting correctness
+
+**Execution Scope:**
+- **Files modified:**
+  - `lib/export/csv.ts` - Apply formatting to chart values
+  - `__tests__/export-csv-formatting.test.ts` - Formatting test cases
+  - `docs/audits/investigations/A-R-15-csv-formatting-alignment.md` - Investigation doc
+- **New files:**
+  - `__tests__/export-csv-formatting.test.ts` - Formatting regression tests
+
+**Done Criteria:**
+- ✅ CSV output matches rendered formatting for KPI, BAR, and PIE charts
+- ✅ Clear documentation of intentional exceptions (raw values in Clicker Data, Metadata, Report Content)
+- ✅ Regression tests proving alignment (15 test cases)
+- ✅ ACTION_PLAN.md updated with closure evidence and STATE MEMORY
+
+**Closure Evidence:**
+- ✅ Investigation document: `docs/audits/investigations/A-R-15-csv-formatting-alignment.md`
+- ✅ CSV formatting function: `formatValueForCSV()` in `lib/export/csv.ts`
+- ✅ Formatting applied: KPI values and BAR/PIE element values formatted
+- ✅ Raw values preserved: Clicker Data, Metadata, Report Content sections unchanged
+- ✅ Test coverage: `__tests__/export-csv-formatting.test.ts` (15 test cases)
+- ✅ Commits: `[commit hash]` - A-R-15: CSV Export Formatting Alignment - COMPLETE
+
+**Dependencies:**
+- A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)
+
 **Explicit Non-Goals:**
+- No PDF export changes
+- No Admin UI work
+- No thousands separators in CSV (for compatibility)
 - No Admin UI changes
 - No changes to chart calculation logic (only validation)
 - No changes to chart rendering logic (only error handling)
