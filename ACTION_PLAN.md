@@ -968,7 +968,7 @@ After completing A-R-07 through A-R-16, Reporting system needs a clear release c
 - ✅ Rollback signals: Critical failures, warning signals, and non-blocking issues defined
 - ✅ Release checklist: Pre-release, release, and post-release steps
 - ✅ ACTION_PLAN.md updated: A-R-18 section added with closure evidence
-- ✅ Commits: `[commit hash]` - A-R-18: Reporting Release Candidate Definition & Handoff - COMPLETE
+- ✅ Commits: `3e2e967e4` - A-R-18: Reporting Release Candidate Definition & Handoff - COMPLETE
 
 **Dependencies:**
 - A-R-07 through A-R-16 (release candidate documents completed work)
