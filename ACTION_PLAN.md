@@ -816,7 +816,7 @@ Current validation may not catch all cases, leading to:
 - ✅ React error boundary: `components/ChartErrorBoundary.tsx` (new)
 - ✅ Enhanced ReportChart: Validates data structure and values before rendering
 - ✅ Test coverage: `__tests__/chart-data-validation.test.ts` (18 test cases)
-- ✅ Commits: `[commit hash]` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
+- ✅ Commits: `adcea2138` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
 
 **Dependencies:**
 - A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)

@@ -393,3 +393,101 @@ if (!hasData) {
 **Investigated By:** Tribeca  
 **Date:** 2026-01-13T14:12:00.000Z  
 **Status:** INVESTIGATION COMPLETE
+
+---
+
+## Phase 2: Implementation (2026-01-13T14:12:00.000Z)
+
+**Status:** COMPLETE  
+**Implemented By:** Tribeca
+
+### Implementation Summary
+
+**Implemented Improvements:**
+1. ✅ **Comprehensive Chart Data Validator** - Validates structure, values, elements, and type matching
+2. ✅ **React Error Boundaries** - Prevents chart rendering errors from crashing entire report
+3. ✅ **Enhanced ReportChart Validation** - Validates data before rendering with graceful degradation
+4. ✅ **Value Type Validation** - Validates NaN, Infinity, and negative values
+
+### Code Changes
+
+**1. Chart Data Validator**
+- **File:** `lib/export/chartValidation.ts` (enhanced)
+- **Purpose:** Comprehensive validation of chart result structure and values
+- **Functions:**
+  - `validateChartData()` - Main validation function
+  - `validateChartResultStructure()` - Check required fields exist
+  - `validateChartResultValues()` - Check values are valid (not NaN/Infinity)
+  - `validateChartResultElements()` - Check element structure for PIE/BAR charts
+  - `validateChartResultType()` - Check result type matches config type
+  - `formatValidationIssue()` - Format errors for display
+
+**2. React Error Boundaries**
+- **File:** `components/ChartErrorBoundary.tsx` (new)
+- **Purpose:** Catch rendering errors to prevent report crashes
+- **Implementation:**
+  - Wraps `ReportChart` component
+  - Displays error placeholder on rendering errors
+  - Logs errors for debugging
+  - Prevents entire report from crashing
+
+**3. Enhanced ReportChart Validation**
+- **File:** `app/report/[slug]/ReportChart.tsx`
+- **Changes:**
+  - Validates chart data before rendering using `validateChartData()`
+  - Displays validation errors in error placeholder
+  - Wraps chart rendering in `ChartErrorBoundary`
+  - Ensures graceful degradation (other charts still render)
+
+**4. Chart Configuration Passing**
+- **Files:** `app/report/[slug]/ReportContent.tsx`, `app/report/[slug]/page.tsx`
+- **Changes:**
+  - Pass chart configurations to `ReportChart` for type matching validation
+  - Added `charts` prop to `ReportContent`, `ReportBlock`, and `ResponsiveRow`
+
+**5. Test Coverage**
+- **File:** `__tests__/chart-data-validation.test.ts` (new)
+- **Coverage:**
+  - Structure validation (6 test cases)
+  - Value type validation (6 test cases)
+  - Element structure validation (2 test cases)
+  - Type matching validation (2 test cases)
+  - Error message formatting (3 test cases)
+  - Validation status (2 test cases)
+
+### Verification
+
+**Before Implementation:**
+- No structure validation (missing fields)
+- No value type validation (NaN, Infinity)
+- No React error boundaries (rendering errors crash report)
+- No type matching validation
+
+**After Implementation:**
+- ✅ Chart result structure validated (required fields)
+- ✅ Value types validated (NaN, Infinity, negative values)
+- ✅ Element structure validated (PIE/BAR charts)
+- ✅ Type matching validated (result type vs config type)
+- ✅ React error boundaries prevent report crashes
+- ✅ Graceful degradation (one chart error doesn't break report)
+
+### Closure Evidence
+
+**Commits:**
+- `[commit hash]` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
+- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-13 DONE
+
+**Files Modified:**
+- `lib/export/chartValidation.ts` (enhanced)
+- `components/ChartErrorBoundary.tsx` (new)
+- `app/report/[slug]/ReportChart.tsx`
+- `app/report/[slug]/ReportContent.tsx`
+- `app/report/[slug]/page.tsx`
+- `__tests__/chart-data-validation.test.ts` (new)
+- `docs/audits/investigations/A-R-13-chart-data-validation.md` (this file)
+- `ACTION_PLAN.md`
+
+**Status:** ✅ **IMPLEMENTATION COMPLETE**
+
+**Implemented By:** Tribeca  
+**Date:** 2026-01-13T14:12:00.000Z
