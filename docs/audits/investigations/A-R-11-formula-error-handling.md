@@ -567,8 +567,8 @@ if (result.error) {
 ### Closure Evidence
 
 **Commits:**
-- `[commit hash]` - A-R-11: Formula Calculation Error Handling & Recovery - COMPLETE
-- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-11 DONE
+- `a4c11e36c` - A-R-11: Formula Calculation Error Handling & Recovery - COMPLETE
+- `571a27c71` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-11 DONE
 
 **Files Modified:**
 - `lib/chartErrorTypes.ts` (new)
