@@ -479,9 +479,10 @@ Investigation of render determinism risks beyond Layout Grammar. Focus on render
 
 ## A-R-10: Export Format Consistency (CSV/PDF Parity vs Rendered Report)
 
-**Status:** ACTIVE (Phase 1: Investigation)  
+**Status:** DONE  
 **Priority:** Low  
-**Category:** Reporting Correctness
+**Category:** Reporting Correctness  
+**Completed:** 2026-01-13T10:12:00.000Z
 
 **Description:**
 CSV and PDF exports may not match the rendered report that users see. Investigation phase to define parity contract and identify mismatch classes.
@@ -571,22 +572,25 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 
 ## Summary (Reporting Roadmap Items)
 
-**Total Reporting Roadmap Items:** 3
+**Total Reporting Roadmap Items:** 6
 
 **Status Breakdown:**
-- DONE: 3 (A-R-07, A-R-08, A-R-10)
+- DONE: 6 (A-R-07, A-R-08, A-R-10, A-R-11, A-R-12, A-R-13)
 - ACTIVE: 0
 - PLANNED: 0
 
 **Priority Breakdown:**
-- Medium: 2 (A-R-07, A-R-08)
-- Low: 1 (A-R-10)
+- Medium: 3 (A-R-07, A-R-08, A-R-11)
+- Low: 3 (A-R-10, A-R-12, A-R-13)
 
 **Source References:**
 - `docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md`
 - `docs/audits/investigations/A-R-07-export-correctness.md`
 - `docs/audits/investigations/A-R-08-render-determinism.md`
 - `docs/audits/investigations/A-R-10-export-parity-investigation.md`
+- `docs/audits/investigations/A-R-11-formula-error-handling.md`
+- `docs/audits/investigations/A-R-12-template-compatibility.md`
+- `docs/audits/investigations/A-R-13-chart-data-validation.md`
 
 ---
 
@@ -838,9 +842,9 @@ Current validation may not catch all cases, leading to:
 **Total Proposed Items:** 3
 
 **Status Breakdown:**
-- PLANNED: 3 (A-R-11, A-R-12, A-R-13)
+- DONE: 3 (A-R-11, A-R-12, A-R-13)
 - ACTIVE: 0
-- DONE: 0
+- PLANNED: 0
 
 **Priority Breakdown:**
 - Medium: 1 (A-R-11)
@@ -850,12 +854,12 @@ Current validation may not catch all cases, leading to:
 - Investigation + Execution: 3 (all items)
 
 **Dependencies:**
-- A-R-11: None (independent)
-- A-R-12: None (independent)
-- A-R-13: A-R-10 (uses `chartValidation.ts`)
+- A-R-11: None (independent) - ✅ DONE
+- A-R-12: None (independent) - ✅ DONE
+- A-R-13: A-R-10 (uses `chartValidation.ts`) - ✅ DONE
 
-**Recommendation:**
-Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R-13 based on product priorities.
+**Completion Status:**
+All Post-A-R-10 Reporting Hardening items are complete. See individual item sections for closure evidence.
 
 ---
 

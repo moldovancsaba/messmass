@@ -238,6 +238,36 @@
 
 ---
 
+### Reporting System Hardening (A-R-07 through A-R-13)
+**Priority:** Medium to Low  
+**Status:** ✅ COMPLETE  
+**Completed:** 2026-01-13  
+**Source:** `ACTION_PLAN.md` (Reporting Roadmap Items)
+
+**Completed Work:**
+- ✅ **A-R-07:** Export Correctness & Validation - Pre-export readiness validation, deterministic error handling
+  - Evidence: `docs/audits/investigations/A-R-07-export-correctness.md`
+  - Commit: `03ae7a80a`
+- ✅ **A-R-08:** Render Determinism Guarantees - Investigation of render order stability and timing dependencies
+  - Evidence: `docs/audits/investigations/A-R-08-render-determinism.md`
+  - Commit: `4350215b5`
+- ✅ **A-R-10:** Export Format Consistency - CSV/PDF parity with rendered report (Phase 1: Investigation, Phase 2: Remediation)
+  - Evidence: `docs/audits/investigations/A-R-10-export-parity-investigation.md`
+  - Commits: Phase 1 and Phase 2 completion commits
+- ✅ **A-R-11:** Formula Calculation Error Handling & Recovery - Structured error reporting, user-visible errors, graceful degradation
+  - Evidence: `docs/audits/investigations/A-R-11-formula-error-handling.md`
+  - Commit: `a4c11e36c`
+- ✅ **A-R-12:** Report Template Compatibility Validation - Template compatibility validator, runtime validation, user-visible warnings
+  - Evidence: `docs/audits/investigations/A-R-12-template-compatibility.md`
+  - Commit: `8662f0bbf`
+- ✅ **A-R-13:** Chart Data Validation & Error Boundaries - Comprehensive data validation, React error boundaries, graceful degradation
+  - Evidence: `docs/audits/investigations/A-R-13-chart-data-validation.md`
+  - Commit: `adcea2138`
+
+**Impact:** Reporting system now has comprehensive error handling, validation, and graceful degradation. Export formats match rendered reports. Template compatibility is validated at runtime.
+
+---
+
 ## 🚀 Next Engineering Phase (New Work, Not Audit)
 
 ### Advanced Analytics & Insights Platform (Q1-Q2 2026)
