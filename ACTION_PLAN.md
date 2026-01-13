@@ -915,3 +915,12 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 - **LAST COMMIT(S):** `6eaa1ac84`, `e5af6dab4`, `b93d2d781`, `527ab6f94`
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** A-UI-01 checklist completion in `ACTION_PLAN.md` (doc-only)
+
+**2026-01-13T11:22:32.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-17
+- **STATUS:** BLOCKED
+- **LAST COMMIT(S):** `64ca56cdc`
+- **CURRENT BLOCKERS:** Unrelated non-admin worktree changes present
+- **NEXT EXPECTED OUTPUT:** Awaiting instruction to proceed with Admin-only docs for A-UI-17
