@@ -82,7 +82,7 @@ After completing A-R-11, A-R-12, and A-R-13, documentation drift occurred:
 - `docs/audits/investigations/A-R-14-docs-truth-sync.md` (this file)
 
 **Commits:**
-- `[commit hash]` - A-R-14: Reporting Docs Truth Sync - COMPLETE
+- `7e58521fe` - A-R-14: Reporting Docs Truth Sync - COMPLETE
 
 **Status:** ✅ **COMPLETE**
 
