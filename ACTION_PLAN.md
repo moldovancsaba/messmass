@@ -930,6 +930,56 @@ After completing A-R-07 through A-R-15, Reporting system needs a verification pa
 
 ---
 
+## A-R-18: Reporting Release Candidate Definition & Handoff
+
+**Status:** DONE  
+**Priority:** Low  
+**Category:** Documentation & Release  
+**Type:** Documentation  
+**Completed:** 2026-01-13T15:30:30.000Z
+
+**Problem Statement:**
+After completing A-R-07 through A-R-16, Reporting system needs a clear release candidate definition that allows Product or Ops to say "this Reporting build is releasable".
+
+**Why This Belongs to Reporting (Not Admin):**
+- Release candidate definition documents Reporting system readiness
+- Handoff document enables Product/Ops decision-making
+- This is Reporting release documentation, not admin configuration
+
+**Execution Scope:**
+- **Files created:**
+  - `docs/releases/REPORTING_RELEASE_CANDIDATE.md` - Release candidate document
+- **Files modified:**
+  - `ACTION_PLAN.md` - A-R-18 section and STATE MEMORY
+
+**Done Criteria:**
+- ✅ Release candidate document created with:
+  - Included features and fixes (explicit list)
+  - Preconditions (env, data assumptions)
+  - Known limitations (explicit non-goals)
+  - Rollback signals (what failure means "stop release")
+- ✅ ACTION_PLAN.md updated with A-R-18 section and STATE MEMORY
+
+**Closure Evidence:**
+- ✅ Release candidate document: `docs/releases/REPORTING_RELEASE_CANDIDATE.md`
+- ✅ Included features: A-R-07 through A-R-16 explicitly listed
+- ✅ Preconditions: Environment, data, and dependency requirements documented
+- ✅ Known limitations: Explicit non-goals and behavioral limitations documented
+- ✅ Rollback signals: Critical failures, warning signals, and non-blocking issues defined
+- ✅ Release checklist: Pre-release, release, and post-release steps
+- ✅ ACTION_PLAN.md updated: A-R-18 section added with closure evidence
+- ✅ Commits: `[commit hash]` - A-R-18: Reporting Release Candidate Definition & Handoff - COMPLETE
+
+**Dependencies:**
+- A-R-07 through A-R-16 (release candidate documents completed work)
+
+**Explicit Non-Goals:**
+- No Admin UI work
+- No code changes (documentation only)
+- No speculative refactors
+
+---
+
 ## Summary (Post-A-R-10 Reporting Hardening)
 
 **Total Proposed Items:** 3
