@@ -677,7 +677,7 @@ Current error handling may not be comprehensive, leading to:
 - ✅ User-visible error states: `app/report/[slug]/ReportChart.tsx` (error placeholder)
 - ✅ Error placeholder styles: `app/report/[slug]/ReportChart.module.css`
 - ✅ Test coverage: `__tests__/formula-error-handling.test.ts` (13 test cases)
-- ✅ Commits: `[commit hash]` - A-R-11: Formula Calculation Error Handling & Recovery - COMPLETE
+- ✅ Commits: `a4c11e36c` - A-R-11: Formula Calculation Error Handling & Recovery - COMPLETE
 
 **Dependencies:**
 - None (can execute independently)
