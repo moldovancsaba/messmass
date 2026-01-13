@@ -474,8 +474,8 @@ if (!hasData) {
 ### Closure Evidence
 
 **Commits:**
-- `[commit hash]` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
-- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-13 DONE
+- `adcea2138` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
+- `e67303b75` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-13 DONE
 
 **Files Modified:**
 - `lib/export/chartValidation.ts` (enhanced)
