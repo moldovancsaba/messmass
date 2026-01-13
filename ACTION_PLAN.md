@@ -1004,10 +1004,10 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 **Ownership scope:** Global
 
 ### Checkable tasks
-- [ ] Inventory insight entities and endpoints used by /admin/insights and /admin/analytics/insights.
-- [ ] Define the canonical insights dashboard and deprecation plan (C-02).
-- [ ] Map dependencies on events, KYC, and clicker inputs.
-- [ ] Define outputs consumed by reporting or operations.
+- [x] Inventory insight entities and endpoints used by /admin/insights and /admin/analytics/insights. Evidence: [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx), [app/api/analytics/insights/route.ts](app/api/analytics/insights/route.ts), [app/api/analytics/insights/[projectId]/route.ts](app/api/analytics/insights/[projectId]/route.ts), [app/api/analytics/insights/partners/[partnerId]/route.ts](app/api/analytics/insights/partners/[partnerId]/route.ts), [app/api/analytics/executive/insights/route.ts](app/api/analytics/executive/insights/route.ts), [docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md).
+- [x] Define the canonical insights dashboard and deprecation plan (C-02). Evidence: [docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md](docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md), [docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md).
+- [x] Map dependencies on events, KYC, and clicker inputs. Evidence: [lib/analytics-insights.ts](lib/analytics-insights.ts), [lib/insightsEngine.ts](lib/insightsEngine.ts), [docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md).
+- [x] Define outputs consumed by reporting or operations. Evidence: [app/admin/insights/page.tsx](app/admin/insights/page.tsx), [app/admin/analytics/insights/page.tsx](app/admin/analytics/insights/page.tsx), [app/admin/analytics/executive/page.tsx](app/admin/analytics/executive/page.tsx), [docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_INSIGHTS_MODEL.md).
 
 ---
 
