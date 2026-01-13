@@ -435,8 +435,7 @@ Export formats (CSV, PDF) may not match the rendered report that users see:
 ### Closure Evidence
 
 **Commits:**
-- `[commit hash]` - A-R-10 Phase 2: CSV export parity remediation
-- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-10 Phase 2 DONE
+- `1d70ce3e8` - A-R-10 Phase 2: CSV Export Parity Remediation - COMPLETE
 
 **Files Modified:**
 - `lib/export/chartValidation.ts` (new)

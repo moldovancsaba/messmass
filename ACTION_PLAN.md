@@ -885,7 +885,7 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 - **DOMAIN:** Reporting
 - **CURRENT TASK ID:** A-R-10 (Phase 2)
 - **STATUS:** DONE
-- **LAST COMMIT(S):** `[commit hash]` - A-R-10 Phase 2: CSV export parity remediation
+- **LAST COMMIT(S):** `1d70ce3e8` - A-R-10 Phase 2: CSV Export Parity Remediation - COMPLETE
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task
 
