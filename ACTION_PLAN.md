@@ -765,10 +765,11 @@ This can lead to:
 
 ## A-R-13: Chart Data Validation & Error Boundaries
 
-**Status:** PLANNED  
+**Status:** DONE  
 **Priority:** Low  
 **Category:** Reporting Correctness  
-**Type:** Investigation + Execution
+**Type:** Investigation + Execution  
+**Completed:** 2026-01-13T14:12:00.000Z
 
 **Problem Statement:**
 Chart rendering may fail or display incorrectly when:
@@ -808,6 +809,14 @@ Current validation may not catch all cases, leading to:
 - ✅ Validation that chart results match chart configuration
 - ✅ Test cases for all validation scenarios
 - ✅ Documentation of data validation guarantees and known limitations
+
+**Closure Evidence:**
+- ✅ Investigation document: `docs/audits/investigations/A-R-13-chart-data-validation.md`
+- ✅ Chart data validator: Enhanced `lib/export/chartValidation.ts` with comprehensive validation
+- ✅ React error boundary: `components/ChartErrorBoundary.tsx` (new)
+- ✅ Enhanced ReportChart: Validates data structure and values before rendering
+- ✅ Test coverage: `__tests__/chart-data-validation.test.ts` (18 test cases)
+- ✅ Commits: `[commit hash]` - A-R-13: Chart Data Validation & Error Boundaries - COMPLETE
 
 **Dependencies:**
 - A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)

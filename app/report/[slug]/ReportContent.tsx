@@ -6,7 +6,7 @@
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
-import type { ChartResult } from '@/lib/report-calculator';
+import type { ChartResult, Chart } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
 import { resolveBlockHeightWithDetails } from '@/lib/blockHeightCalculator';
@@ -62,6 +62,9 @@ interface ReportContentProps {
   /** Calculated chart results from ReportCalculator */
   chartResults: Map<string, ChartResult>;
   
+  /** Chart configurations map (chartId -> Chart) - optional for A-R-13 validation */
+  charts?: Map<string, Chart> | null;
+  
   /** Grid settings for responsive layout */
   gridSettings: GridSettings;
   
@@ -84,6 +87,7 @@ interface ReportContentProps {
 export default function ReportContent({ 
   blocks, 
   chartResults, 
+  charts, // A-R-13: Chart configs for validation
   gridSettings,
   className 
 }: ReportContentProps) {
@@ -121,6 +125,7 @@ export default function ReportContent({
           key={block.id}
           block={block}
           chartResults={chartResults}
+          charts={charts} // A-R-13: Pass chart configs for validation
           gridSettings={gridSettings}
         />
       ))}
@@ -134,6 +139,7 @@ export default function ReportContent({
 interface ReportBlockProps {
   block: ReportBlock;
   chartResults: Map<string, ChartResult>;
+  charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   gridSettings: GridSettings;
 }
 
@@ -175,15 +181,14 @@ function calculateGridColumns(charts: Array<{ width: number }>): string {
  * WHY: Each row must calculate its own height based on actual width
  */
 interface ResponsiveRowProps {
-  rowCharts: Array<{ chartId: string; width: number; order: number }>;
+  rowCharts: Array<{ chartId: string; width: number }>;
   chartResults: Map<string, ChartResult>;
+  charts?: Map<string, Chart> | null; // A-R-13: Chart configs for validation
   rowIndex: number;
-  unifiedTextFontSize?: number | null;
-  // WHAT: P1 1.5 Phase 3 - Removed blockTitleFontSize and blockSubtitleFontSize props
-  // WHY: CSS now uses --block-base-font-size and --block-subtitle-font-size directly (Phase 2)
+  unifiedTextFontSize: number | null;
 }
 
-function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
+function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextFontSize }: ResponsiveRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   // WHAT: Initialize state with design tokens instead of hardcoded values
   // WHY: No hardcoded sizes - all values must come from design system
@@ -363,6 +368,7 @@ function ResponsiveRow({ rowCharts, chartResults, rowIndex, unifiedTextFontSize 
           >
             <ReportChart 
               result={result} 
+              chart={charts?.get(chart.chartId) || null} // A-R-13: Pass chart config for validation
               width={chart.width}
               // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
               // WHY: Eliminates per-chart inline styles, better maintainability
@@ -636,6 +642,7 @@ function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
           key={`row-${rowIndex}`}
           rowCharts={rowCharts}
           chartResults={chartResults}
+          charts={charts} // A-R-13: Pass chart configs for validation
           rowIndex={rowIndex}
           unifiedTextFontSize={unifiedTextFontSize}
         />

@@ -17,12 +17,15 @@ import type { ChartResult } from '@/lib/report-calculator';
 import { preventPhraseBreaks } from '@/lib/chartLabelUtils';
 import MaterialIcon from '@/components/MaterialIcon';
 import CellWrapper from '@/components/CellWrapper';
+import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import styles from './ReportChart.module.css';
 import { parseMarkdown } from '@/lib/markdownUtils';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
 import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
+import { validateChartData, formatValidationIssue } from '@/lib/export/chartValidation';
+import type { Chart } from '@/lib/report-calculator';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -81,6 +84,9 @@ interface ReportChartProps {
   /** Chart result from ReportCalculator */
   result: ChartResult;
   
+  /** Optional chart configuration (for type matching validation) */
+  chart?: Chart | null;
+  
   /** Optional width override (grid units) */
   width?: number;
   
@@ -111,7 +117,7 @@ interface ReportChartProps {
  * - IMAGE: Aspect ratio-aware image display
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
-export default function ReportChart({ result, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+export default function ReportChart({ result, chart, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
   // WHAT: A-R-11 - Check for calculation errors first
   // WHY: Display error messages to users instead of hiding charts
   // HOW: Show error placeholder if chartError or error exists
@@ -131,6 +137,26 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
         </div>
       </CellWrapper>
     );
+  }
+
+  // A-R-13: Validate chart data structure and values
+  const dataValidation = validateChartData(result, chart || null);
+  if (!dataValidation.valid) {
+    const errorIssues = dataValidation.issues.filter(i => i.severity === 'error');
+    if (errorIssues.length > 0) {
+      // Display first error issue
+      return (
+        <CellWrapper width={width} className={className}>
+          <div className={`${styles.chart} ${styles.chartError}`}>
+            <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+            <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+            <div className={styles.chartErrorMessage}>
+              {formatValidationIssue(errorIssues[0])}
+            </div>
+          </div>
+        </CellWrapper>
+      );
+    }
   }
 
   // WHAT: Check if chart has valid displayable data
@@ -172,34 +198,36 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
     return null;
   }
 
+  // A-R-13: Wrap chart rendering in error boundary to catch rendering errors
+  const ChartContent = () => {
   // Render based on chart type
-  // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
-  // WHY: Eliminates per-chart inline styles, better maintainability
+    // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
+    // WHY: Eliminates per-chart inline styles, better maintainability
   switch (result.type) {
     case 'kpi':
-      return <KPIChart result={result} className={className} />;
+        return <KPIChart result={result} className={className} />;
     
     case 'pie':
-      return <PieChart result={result} className={className} />;
+        return <PieChart result={result} className={className} />;
     
     case 'bar':
-      return <BarChart result={result} className={className} />;
+        return <BarChart result={result} className={className} />;
     
     case 'text':
-      return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+        return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
     
     case 'image':
-      return <ImageChart result={result} className={className} />;
+        return <ImageChart result={result} className={className} />;
     
     case 'table':
-      return <TableChart result={result} className={className} />;
+        return <TableChart result={result} className={className} />;
     
     case 'value':
       // VALUE charts render KPI + BAR together
       return (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-          <KPIChart result={result} className={className} />
-          <BarChart result={result} />
+            <KPIChart result={result} className={className} />
+            <BarChart result={result} />
         </div>
       );
     
@@ -210,6 +238,28 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
         </div>
       );
   }
+  };
+
+  // Wrap in error boundary for graceful degradation
+  return (
+    <ChartErrorBoundary
+      chartId={result.chartId}
+      chartTitle={result.title}
+      fallback={
+        <CellWrapper width={width} className={className}>
+          <div className={`${styles.chart} ${styles.chartError}`}>
+            <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+            <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+            <div className={styles.chartErrorMessage}>
+              Chart rendering failed. Please refresh the page or contact support if the issue persists.
+            </div>
+          </div>
+        </CellWrapper>
+      }
+    >
+      <ChartContent />
+    </ChartErrorBoundary>
+  );
 }
 
 
@@ -590,12 +640,12 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       <div ref={chartBodyRef} className={styles.chartBody}>
         <table className={styles.barTable}>
           <tbody className={styles.barElements}>
-          {result.elements.map((element, idx) => {
-            const numValue = typeof element.value === 'number' ? element.value : 0;
-            const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
-            const protectedLabel = preventPhraseBreaks(element.label);
-            
-            return (
+        {result.elements.map((element, idx) => {
+          const numValue = typeof element.value === 'number' ? element.value : 0;
+          const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
+          const protectedLabel = preventPhraseBreaks(element.label);
+          
+          return (
               <tr key={idx} className={styles.barRow}>
                 <td className={styles.barLabel}>{protectedLabel}</td>
                 <td className={styles.barTrackCell}>
@@ -605,18 +655,18 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
                     // WHY: Width is computed percentage, color from chart theme - cannot use static CSS
                     // HOW: Set CSS custom properties on parent, consumed by .barFill
                     // eslint-disable-next-line react/forbid-dom-props
-                    style={{ 
+                  style={{ 
                       '--bar-width': `${widthPercent}%`,
                       '--bar-color': barColors[idx % barColors.length]
                     } as React.CSSProperties}
                   >
                     <div className={styles.barFill} />
-                  </div>
+              </div>
                 </td>
                 <td className={styles.barValue}>{formatValue(element.value, result.formatting)}</td>
               </tr>
-            );
-          })}
+          );
+        })}
           </tbody>
         </table>
       </div>

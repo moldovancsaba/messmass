@@ -411,6 +411,7 @@ export default function ReportPage() {
           <ReportContent 
             blocks={blocks}
             chartResults={chartResults}
+            charts={charts ? new Map(charts.map(c => [c.chartId, c])) : null} // A-R-13: Pass chart configs for validation
             gridSettings={gridSettings}
           />
         </div>
