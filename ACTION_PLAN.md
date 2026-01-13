@@ -590,6 +590,247 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 
 ---
 
+## Post-A-R-10 Reporting Hardening
+
+**Status:** PLANNED  
+**Owner:** Architecture (Chappie)  
+**Execution:** Engineering (Tribeca)  
+**Reference:** Completed items A-R-07, A-R-08, A-R-10
+
+### Context
+
+**Completed Hardening:**
+- ✅ A-R-07: Export Correctness & Validation (export readiness validation)
+- ✅ A-R-08: Render Determinism Guarantees (investigation complete, NO-GO for remediation)
+- ✅ A-R-10: Export Format Consistency (CSV/PDF parity with rendered report)
+
+**Remaining Gaps Identified:**
+1. **Formula Calculation Error Handling** - Chart calculation errors may not be handled gracefully
+2. **Report Template Compatibility** - Template reuse rules and validation (A-R-09 from roadmap, not executed)
+3. **Chart Data Validation** - Missing data validation and error boundaries for chart rendering
+4. **Export Edge Cases** - CSV formatting alignment deferred (raw values preferred, but may need investigation)
+
+### Objectives
+- Continue Reporting system hardening beyond A-R-07, A-R-08, A-R-10
+- Focus on error handling, data validation, and template compatibility
+- Maintain same execution standard as previous Reporting items
+
+### Non-Goals
+- No Admin UI work
+- No new product features
+- No speculative refactors
+
+---
+
+## A-R-11: Formula Calculation Error Handling & Recovery
+
+**Status:** PLANNED  
+**Priority:** Medium  
+**Category:** Reporting Correctness  
+**Type:** Investigation + Execution
+
+**Problem Statement:**
+Chart formula calculations may fail due to:
+- Missing variables in stats
+- Invalid formula syntax
+- Division by zero or other mathematical errors
+- Circular dependencies between formulas
+- Type mismatches (string vs number)
+
+Current error handling may not be comprehensive, leading to:
+- Silent failures (charts not rendered without clear error)
+- Inconsistent error messages
+- No recovery mechanism for partial failures
+- No user-visible error feedback
+
+**Why This Belongs to Reporting (Not Admin):**
+- Formula calculation is core Reporting runtime behavior
+- Error handling affects report correctness and user experience
+- This is runtime behavior, not admin configuration
+- Error recovery is part of Reporting correctness
+
+**Execution Scope:**
+- **Files to investigate:**
+  - `lib/report-calculator.ts` - Chart calculation logic and error handling
+  - `lib/formulaEngine.ts` - Formula evaluation and error handling
+  - `app/report/[slug]/ReportChart.tsx` - Chart rendering error display
+  - `app/report/[slug]/page.tsx` - Chart result error handling
+- **New files:**
+  - `docs/audits/investigations/A-R-11-formula-error-handling.md` - Investigation doc
+  - `lib/chartErrorHandler.ts` - Centralized error handling utilities (if needed)
+  - `__tests__/formula-error-handling.test.ts` - Error handling test cases
+
+**Done Criteria:**
+- ✅ Investigation document identifies all error scenarios and current handling
+- ✅ Error handling is consistent across all chart types
+- ✅ User-visible error messages for calculation failures
+- ✅ Graceful degradation (partial report rendering when some charts fail)
+- ✅ Error recovery mechanism (retry, fallback values, etc.)
+- ✅ Test cases for all error scenarios
+- ✅ Documentation of error handling guarantees and known limitations
+
+**Dependencies:**
+- None (can execute independently)
+
+**Explicit Non-Goals:**
+- No Admin UI changes
+- No formula syntax changes
+- No changes to formula evaluation logic (only error handling)
+
+**Risk Notes:**
+- Low risk: Error handling is additive, doesn't change calculation logic
+- Medium risk: Error handling changes may reveal existing calculation issues
+- Mitigation: Investigation-first approach, fixes as separate items if needed
+
+---
+
+## A-R-12: Report Template Compatibility Validation
+
+**Status:** PLANNED  
+**Priority:** Low  
+**Category:** Reporting Correctness  
+**Type:** Investigation + Execution
+
+**Problem Statement:**
+Report templates are reused across partners/events, but:
+- No validation that template is compatible with partner/event data
+- No explicit rules for when template reuse is safe
+- No validation that template configuration matches data availability
+- Template selection may not match data structure (missing charts, missing variables)
+
+This can lead to:
+- Reports with missing charts (template expects variables not in data)
+- Reports with empty charts (formulas reference non-existent variables)
+- Inconsistent report appearance across partners/events
+- Silent failures when template is incompatible
+
+**Why This Belongs to Reporting (Not Admin):**
+- Template compatibility validation is runtime behavior (when report renders)
+- Template validation affects report correctness
+- This is Reporting behavior, not admin UI (admin selects template, Reporting validates it)
+- Template validation is part of Reporting correctness
+
+**Execution Scope:**
+- **Files to investigate:**
+  - `app/api/reports/resolve/route.ts` - Template resolution logic
+  - `lib/reportTemplateTypes.ts` - Template data structures (if exists)
+  - `app/report/[slug]/page.tsx` - Template usage in rendering
+  - `hooks/useReportLayout.ts` - Layout fetching and template application
+- **New files:**
+  - `docs/audits/investigations/A-R-12-template-compatibility.md` - Investigation doc
+  - `lib/templateCompatibilityValidator.ts` - Template validation utilities
+  - `__tests__/template-compatibility.test.ts` - Compatibility test cases
+
+**Done Criteria:**
+- ✅ Investigation document defines template reuse rules and compatibility criteria
+- ✅ Template validation checks compatibility with data structure
+- ✅ Clear error messages when template is incompatible
+- ✅ Validation runs at report render time (runtime check)
+- ✅ Documentation of template reuse rules and validation criteria
+- ✅ Test cases for template compatibility scenarios
+
+**Dependencies:**
+- None (can execute independently)
+
+**Explicit Non-Goals:**
+- No Admin UI changes (template selection UI)
+- No template data structure changes
+- No changes to template resolution logic (only validation)
+
+**Risk Notes:**
+- Low risk: Validation is additive, doesn't change existing behavior
+- Medium risk: Template validation may reveal existing incompatibilities
+- Mitigation: Validation-only first, compatibility fixes as separate phase if needed
+
+---
+
+## A-R-13: Chart Data Validation & Error Boundaries
+
+**Status:** PLANNED  
+**Priority:** Low  
+**Category:** Reporting Correctness  
+**Type:** Investigation + Execution
+
+**Problem Statement:**
+Chart rendering may fail or display incorrectly when:
+- Chart result data is malformed (missing required fields)
+- Chart result type doesn't match chart configuration type
+- Chart result has invalid values (NaN, Infinity, negative values where not expected)
+- Chart result elements are missing or empty when required
+
+Current validation may not catch all cases, leading to:
+- Charts rendering with incorrect data
+- Charts failing silently without error indication
+- Inconsistent error handling across chart types
+- No validation that chart results match chart configuration
+
+**Why This Belongs to Reporting (Not Admin):**
+- Chart data validation is runtime behavior (when charts render)
+- Data validation affects report correctness
+- This is Reporting behavior, not admin configuration
+- Data validation is part of Reporting correctness
+
+**Execution Scope:**
+- **Files to investigate:**
+  - `app/report/[slug]/ReportChart.tsx` - Chart rendering and data validation
+  - `app/report/[slug]/ReportContent.tsx` - Chart result validation (`hasValidChartData`)
+  - `lib/report-calculator.ts` - Chart result structure and validation
+  - `lib/export/chartValidation.ts` - Existing validation logic (A-R-10)
+- **New files:**
+  - `docs/audits/investigations/A-R-13-chart-data-validation.md` - Investigation doc
+  - `lib/chartDataValidator.ts` - Comprehensive chart data validation utilities
+  - `__tests__/chart-data-validation.test.ts` - Data validation test cases
+
+**Done Criteria:**
+- ✅ Investigation document identifies all data validation scenarios
+- ✅ Comprehensive validation for all chart types (KPI, BAR, PIE, TEXT, IMAGE, TABLE)
+- ✅ Error boundaries prevent chart failures from breaking entire report
+- ✅ Consistent error handling across all chart types
+- ✅ Validation that chart results match chart configuration
+- ✅ Test cases for all validation scenarios
+- ✅ Documentation of data validation guarantees and known limitations
+
+**Dependencies:**
+- A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)
+
+**Explicit Non-Goals:**
+- No Admin UI changes
+- No changes to chart calculation logic (only validation)
+- No changes to chart rendering logic (only error handling)
+
+**Risk Notes:**
+- Low risk: Validation is additive, doesn't change existing behavior
+- Medium risk: Validation may reveal existing data quality issues
+- Mitigation: Validation-only first, data quality fixes as separate phase if needed
+
+---
+
+## Summary (Post-A-R-10 Reporting Hardening)
+
+**Total Proposed Items:** 3
+
+**Status Breakdown:**
+- PLANNED: 3 (A-R-11, A-R-12, A-R-13)
+- ACTIVE: 0
+- DONE: 0
+
+**Priority Breakdown:**
+- Medium: 1 (A-R-11)
+- Low: 2 (A-R-12, A-R-13)
+
+**Type Breakdown:**
+- Investigation + Execution: 3 (all items)
+
+**Dependencies:**
+- A-R-11: None (independent)
+- A-R-12: None (independent)
+- A-R-13: A-R-10 (uses `chartValidation.ts`)
+
+**Recommendation:**
+Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R-13 based on product priorities.
+
+---
+
 --------------------------------------------
 
 
