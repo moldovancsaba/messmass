@@ -884,6 +884,52 @@ CSV exports output raw numeric values while the rendered report applies formatti
 
 ---
 
+## A-R-16: Reporting Release Verification Pack (Docs + Evidence)
+
+**Status:** DONE  
+**Priority:** Low  
+**Category:** Documentation & Verification  
+**Type:** Documentation  
+**Completed:** 2026-01-13T15:21:00.000Z
+
+**Problem Statement:**
+After completing A-R-07 through A-R-15, Reporting system needs a verification pack that proves stability and provides evidence-driven documentation for Product, Support, and Engineering.
+
+**Why This Belongs to Reporting (Not Admin):**
+- Verification pack documents Reporting system behavior
+- Evidence-driven documentation for Reporting stability
+- This is Reporting documentation, not admin configuration
+
+**Execution Scope:**
+- **Files created:**
+  - `docs/audits/investigations/A-R-16-reporting-release-verification-pack.md` - Verification pack document
+- **Files modified:**
+  - `ACTION_PLAN.md` - A-R-16 section and STATE MEMORY
+
+**Done Criteria:**
+- ✅ Verification pack document created with what changed, what can break, verification steps
+- ✅ Manual smoke checklist for all Reporting areas (7 checklists)
+- ✅ Explicit expected outcomes and failure signals
+- ✅ Evidence links to investigation docs, test files, and code files
+- ✅ ACTION_PLAN.md updated with A-R-16 section and STATE MEMORY
+
+**Closure Evidence:**
+- ✅ Verification pack document: `docs/audits/investigations/A-R-16-reporting-release-verification-pack.md`
+- ✅ Manual smoke checklist: 7 checklists covering all Reporting areas
+- ✅ Evidence links: Investigation docs, test files, code files
+- ✅ ACTION_PLAN.md updated: A-R-16 section added with closure evidence
+- ✅ Commits: `8b0568a99` - A-R-16: Reporting Release Verification Pack - COMPLETE
+
+**Dependencies:**
+- A-R-07 through A-R-15 (verification pack documents completed work)
+
+**Explicit Non-Goals:**
+- No Admin UI work
+- No code changes (documentation only)
+- No speculative refactors
+
+---
+
 ## Summary (Post-A-R-10 Reporting Hardening)
 
 **Total Proposed Items:** 3
