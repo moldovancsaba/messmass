@@ -411,6 +411,188 @@ No performance optimizations were applied beyond what was necessary for correctn
 --------------------------------------------
 
 
+## REPORTING ROADMAP ITEMS (Post-A-06)
+
+**Status:** ACTIVE  
+**Owner:** Architecture (Chappie)  
+**Execution:** Engineering (Tribeca)  
+**Reference:** [docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md](docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md)
+
+### Objectives
+- Continue Reporting system hardening beyond A-01 → A-06
+- Focus on export correctness, render determinism, and format consistency
+- Maintain same execution standard as A-01 → A-06
+
+### Non-Goals
+- No Admin UI work
+- No new product features
+- No speculative refactors
+
+---
+
+## A-R-07: Export Correctness & Validation
+
+**Status:** DONE  
+**Priority:** Medium  
+**Category:** Reporting Correctness  
+**Completed:** 2026-01-12T11:45:00.000Z
+
+**Description:**
+Export functionality (CSV, PDF) had silent failures and missing validation. Pre-export readiness validation was needed to ensure exports only proceed when data is ready.
+
+**Closure Evidence:**
+- ✅ Export validation infrastructure: `lib/export/exportValidator.ts`
+- ✅ CSV/PDF readiness validation: `validateCSVExportReadiness()`, `validatePDFExportReadiness()`
+- ✅ Chart coverage validation: `validateChartResultCoverage()` (foundation for A-R-10)
+- ✅ Enhanced export hook: `hooks/useReportExport.ts` with validation layer
+- ✅ Regression tests: `__tests__/export-validation.test.ts`
+- ✅ Documentation: `docs/audits/investigations/A-R-07-export-correctness.md`
+- ✅ Commits: `03ae7a80a` (closure), `f2310afb4` (STATE MEMORY update)
+
+**Out of Scope (Future Work):**
+- Full CSV/PDF vs rendered-report parity verification (A-R-10)
+
+---
+
+## A-R-08: Render Determinism Guarantees
+
+**Status:** DONE  
+**Priority:** Medium  
+**Category:** Reporting Correctness  
+**Completed:** 2026-01-12T12:20:00.000Z
+
+**Description:**
+Investigation of render determinism risks beyond Layout Grammar. Focus on render order stability, data calculation timing dependencies, and non-deterministic effects.
+
+**Closure Evidence:**
+- ✅ Investigation document: `docs/audits/investigations/A-R-08-render-determinism.md`
+- ✅ Findings: No critical determinism risks identified
+- ✅ Recommendation: NO-GO for remediation (low priority, React guarantees final render determinism)
+- ✅ Commits: `4350215b5` (investigation), `718cde3ce` (STATE MEMORY update)
+
+**Key Findings:**
+- ✅ Render order: Deterministic (blocks/charts sorted by `order` field)
+- ✅ Chart calculation order: Deterministic (array iteration order)
+- ⚠️ Low-risk: Async data fetching, ResizeObserver timing (visual only, not calculation)
+
+---
+
+## A-R-10: Export Format Consistency (CSV/PDF Parity vs Rendered Report)
+
+**Status:** ACTIVE (Phase 1: Investigation)  
+**Priority:** Low  
+**Category:** Reporting Correctness
+
+**Description:**
+CSV and PDF exports may not match the rendered report that users see. Investigation phase to define parity contract and identify mismatch classes.
+
+**Technical Intent:**
+- Define exact parity contract between rendered report, CSV export, and PDF export
+- Identify mismatch classes (missing charts, ordering, formatting, hidden content, pagination)
+- Use A-R-07 foundation (`validateChartResultCoverage()`) as starting hook
+- Produce GO / NO-GO recommendation for remediation
+
+**Non-Goals:**
+- No export format changes in Phase 1 (investigation only)
+- No Admin UI work
+- No new features
+
+**Dependency / Trigger:**
+- A-R-07 completion (export validation infrastructure)
+- User reports of export inconsistencies
+- Product decision on export parity requirements
+
+**Owner:** Engineering (Tribeca)
+
+**Closure Evidence Required (Phase 1):**
+- Parity contract written and unambiguous
+- Evidence-backed mismatch inventory (where + why + impact)
+- GO / NO-GO recommendation for remediation scope
+- ACTION_PLAN.md updated (STATE MEMORY + A-R-10 checklist)
+
+**Closure Evidence:**
+- ✅ Investigation document: `docs/audits/investigations/A-R-10-export-parity-investigation.md`
+- ✅ Parity contract defined: Rendered report, CSV export, PDF export contracts documented
+- ✅ Mismatch classes identified: 6 mismatch classes with severity ratings
+- ✅ GO / NO-GO recommendation: ✅ GO for Remediation (Medium Priority)
+- ✅ ACTION_PLAN.md updated: A-R-10 section added with checklist
+
+**Technical Readiness Notes:**
+- Foundation exists: `lib/export/exportValidator.ts` - `validateChartResultCoverage()` function
+- CSV export: `lib/export/csv.ts` - Chart selection and ordering logic
+- PDF export: `lib/export/pdf.ts` - DOM-based capture logic
+- Rendered report: `app/report/[slug]/ReportContent.tsx` - Chart filtering and ordering logic
+
+**Mismatch Classes Identified:**
+1. **Missing Charts in Export vs Rendered** (Medium severity) - CSV includes invalid charts not visible
+2. **Ordering Mismatches** (Medium severity) - CSV uses alphabetical vs order field
+3. **Formatting/Value Rounding Mismatches** (Low severity) - CSV shows raw values vs formatted
+4. **Hidden/Conditional Content Mismatches** (Low severity) - CSV includes all stats vs visible only
+5. **Pagination Artifacts (PDF)** (Low severity) - Expected PDF format behavior
+6. **VALUE Type Chart Handling** (Low severity) - CSV skips VALUE charts
+
+**Remediation Recommendation:**
+✅ **GO for Remediation** - Focus on CSV export alignment (chart filtering, ordering). PDF export already matches rendered report.
+
+**Remediation Scope (Recommended):**
+- CSV Chart Filtering: Filter charts by `hasValidChartData()` before export
+- CSV Chart Ordering: Sort charts by `order` field instead of `chartId`
+- CSV VALUE Type Handling: Include VALUE type charts or document skip reason
+- CSV Formatting: Apply `formatValue()` formatting to exported values (optional)
+
+---
+
+### A-R-10 Checklist (Phase 1: Investigation)
+
+- [x] Define parity contract for rendered report
+- [x] Define parity contract for CSV export
+- [x] Define parity contract for PDF export
+- [x] Identify mismatch class: Missing charts
+- [x] Identify mismatch class: Ordering mismatches
+- [x] Identify mismatch class: Formatting/rounding mismatches
+- [x] Identify mismatch class: Hidden/conditional content
+- [x] Identify mismatch class: Pagination artifacts
+- [x] Identify mismatch class: VALUE type handling
+- [x] Assign severity ratings per mismatch class
+- [x] Produce GO / NO-GO recommendation
+- [x] Create investigation document
+- [x] Update ACTION_PLAN.md with A-R-10 section
+- [x] Update STATE MEMORY
+
+**Phase 2 (Remediation) - NOT STARTED:**
+- [ ] Implement CSV chart filtering alignment
+- [ ] Implement CSV chart ordering alignment
+- [ ] Implement CSV VALUE type handling (or document skip reason)
+- [ ] Implement CSV formatting alignment (optional)
+- [ ] Add regression tests for export parity
+- [ ] Update documentation with parity guarantees
+
+---
+
+## Summary (Reporting Roadmap Items)
+
+**Total Reporting Roadmap Items:** 3
+
+**Status Breakdown:**
+- DONE: 2 (A-R-07, A-R-08)
+- ACTIVE: 1 (A-R-10 - Phase 1: Investigation)
+- PLANNED: 0
+
+**Priority Breakdown:**
+- Medium: 2 (A-R-07, A-R-08)
+- Low: 1 (A-R-10)
+
+**Source References:**
+- `docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md`
+- `docs/audits/investigations/A-R-07-export-correctness.md`
+- `docs/audits/investigations/A-R-08-render-determinism.md`
+- `docs/audits/investigations/A-R-10-export-parity-investigation.md`
+
+---
+
+--------------------------------------------
+
+
 ## ADMIN UI REFACTOR PROGRAM (Actionable Breakdown)
 
 **Status:** PLANNED  
@@ -698,14 +880,14 @@ No performance optimizations were applied beyond what was necessary for correctn
 
 ## STATE MEMORY
 
-**2026-01-12T12:20:00.000Z**
+**2026-01-13T10:58:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
-- **CURRENT TASK ID:** A-R-08
-- **STATUS:** DONE
+- **CURRENT TASK ID:** A-R-10
+- **STATUS:** ACTIVE
 - **LAST COMMIT(S):** `4350215b5` - A-R-08: Render Determinism Investigation - COMPLETE
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task
+- **NEXT EXPECTED OUTPUT:** Investigation document: docs/audits/investigations/A-R-10-export-parity-investigation.md
 
 **2026-01-13T10:51:48.000Z**
 - **AGENT:** Katja
