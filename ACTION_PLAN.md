@@ -746,7 +746,7 @@ This can lead to:
 - ✅ Runtime validation: `app/report/[slug]/page.tsx` (validates template compatibility)
 - ✅ User-visible compatibility warnings: Displayed in report UI
 - ✅ Test coverage: `__tests__/template-compatibility.test.ts` (14 test cases)
-- ✅ Commits: `[commit hash]` - A-R-12: Report Template Compatibility Validation - COMPLETE
+- ✅ Commits: `8662f0bbf` - A-R-12: Report Template Compatibility Validation - COMPLETE
 
 **Dependencies:**
 - None (can execute independently)
