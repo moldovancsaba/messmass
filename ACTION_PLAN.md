@@ -559,13 +559,13 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 - [x] Update ACTION_PLAN.md with A-R-10 section
 - [x] Update STATE MEMORY
 
-**Phase 2 (Remediation) - NOT STARTED:**
-- [ ] Implement CSV chart filtering alignment
-- [ ] Implement CSV chart ordering alignment
-- [ ] Implement CSV VALUE type handling (or document skip reason)
-- [ ] Implement CSV formatting alignment (optional)
-- [ ] Add regression tests for export parity
-- [ ] Update documentation with parity guarantees
+**Phase 2 (Remediation) - COMPLETE:**
+- [x] Implement CSV chart filtering alignment
+- [x] Implement CSV chart ordering alignment
+- [x] Implement CSV VALUE type handling (or document skip reason)
+- [ ] Implement CSV formatting alignment (optional - deferred, raw values preferred for CSV analysis)
+- [x] Add regression tests for export parity
+- [x] Update documentation with parity guarantees
 
 ---
 
@@ -574,8 +574,8 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 **Total Reporting Roadmap Items:** 3
 
 **Status Breakdown:**
-- DONE: 2 (A-R-07, A-R-08)
-- ACTIVE: 1 (A-R-10 - Phase 1: Investigation)
+- DONE: 3 (A-R-07, A-R-08, A-R-10)
+- ACTIVE: 0
 - PLANNED: 0
 
 **Priority Breakdown:**
@@ -880,14 +880,14 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 
 ## STATE MEMORY
 
-**2026-01-13T10:58:00.000Z**
+**2026-01-13T10:12:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
-- **CURRENT TASK ID:** A-R-10 (Phase 1)
+- **CURRENT TASK ID:** A-R-10 (Phase 2)
 - **STATUS:** DONE
-- **LAST COMMIT(S):** `[commit hash]` - A-R-10: Export Format Consistency - Phase 1 Investigation COMPLETE
+- **LAST COMMIT(S):** `[commit hash]` - A-R-10 Phase 2: CSV export parity remediation
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for Phase 2 (Remediation) or next Reporting task
+- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task
 
 **2026-01-13T10:51:48.000Z**
 - **AGENT:** Katja

@@ -341,3 +341,114 @@ Export formats (CSV, PDF) may not match the rendered report that users see:
 **Investigated By:** Tribeca  
 **Date:** 2026-01-13T10:58:00.000Z  
 **Status:** INVESTIGATION COMPLETE
+
+---
+
+## Phase 2: Remediation (2026-01-13T10:12:00.000Z)
+
+**Status:** COMPLETE  
+**Remediated By:** Tribeca
+
+### Implementation Summary
+
+**Remediated Mismatches:**
+1. ✅ **CSV Chart Filtering Alignment** - Filter charts by `hasValidChartData()` before export
+2. ✅ **CSV Chart Ordering Alignment** - Sort charts by `order` field instead of `chartId`
+3. ✅ **VALUE Type Handling Documentation** - Documented skip rule in code comments
+
+**Out of Scope (Not Remediated):**
+- CSV Formatting Alignment (raw values preferred for CSV analysis)
+- PDF export changes (already matches rendered report)
+
+### Code Changes
+
+**1. Shared Chart Validation Utility**
+- **File:** `lib/export/chartValidation.ts` (new)
+- **Purpose:** Extract `hasValidChartData()` from `ReportContent.tsx` for reuse
+- **Impact:** Ensures CSV export uses same filtering logic as rendered report
+
+**2. CSV Export Filtering**
+- **File:** `lib/export/csv.ts`
+- **Changes:**
+  - Import `hasValidChartData` from `chartValidation.ts`
+  - Filter `chartResults` by `hasValidChartData()` before processing
+  - Only valid charts are included in CSV export (matches rendered report)
+
+**3. CSV Export Ordering**
+- **File:** `lib/export/csv.ts`
+- **Changes:**
+  - Add `chartOrderMap` parameter to `CSVExportOptions`
+  - Sort charts by `order` field when `chartOrderMap` is provided
+  - Fall back to alphabetical by `chartId` if order not available
+
+**4. Export Hook Updates**
+- **File:** `hooks/useReportExport.ts`
+- **Changes:**
+  - Add optional `charts` parameter to `UseReportExportOptions`
+  - Build `chartOrderMap` from charts array if available
+  - Pass `chartOrderMap` to `exportReportToCSV()`
+
+**5. Page Component Updates**
+- **Files:** `app/report/[slug]/page.tsx`, `app/partner-report/[slug]/page.tsx`
+- **Changes:**
+  - Pass `charts` array to `useReportExport()` hook
+  - Extract `chartId` and `order` fields for order mapping
+
+**6. VALUE Type Skip Documentation**
+- **File:** `lib/export/csv.ts`
+- **Changes:**
+  - Enhanced code comments explaining VALUE type skip logic
+  - Documents that VALUE charts are composite (KPI + BAR) and components are exported separately
+
+### Test Coverage
+
+**File:** `__tests__/export-parity.test.ts` (new)
+
+**Test Suites:**
+1. **hasValidChartData() filtering** - 11 test cases covering:
+   - Error charts filtering
+   - KPI charts with NA/undefined values
+   - BAR/PIE charts with empty/zero elements
+   - TEXT charts with empty/NA content
+   - Valid chart inclusion
+
+2. **CSV export ordering** - 3 test cases covering:
+   - Order field sorting when order map provided
+   - Fallback to alphabetical when order not available
+   - Handling charts with same order
+
+3. **VALUE type chart handling** - 1 test case confirming skip logic
+
+### Verification
+
+**Before Remediation:**
+- CSV export included ALL charts from `chartResults` (including invalid/empty)
+- CSV export sorted charts alphabetically by `chartId`
+- No filtering logic aligned with rendered report
+
+**After Remediation:**
+- ✅ CSV export filters charts by `hasValidChartData()` (matches rendered report)
+- ✅ CSV export sorts charts by `order` field (matches rendered report)
+- ✅ VALUE type skip rule documented in code
+- ✅ Regression tests added for filtering and ordering
+
+### Closure Evidence
+
+**Commits:**
+- `[commit hash]` - A-R-10 Phase 2: CSV export parity remediation
+- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-10 Phase 2 DONE
+
+**Files Modified:**
+- `lib/export/chartValidation.ts` (new)
+- `lib/export/csv.ts`
+- `hooks/useReportExport.ts`
+- `app/report/[slug]/page.tsx`
+- `app/partner-report/[slug]/page.tsx`
+- `__tests__/export-parity.test.ts` (new)
+- `docs/audits/investigations/A-R-10-export-parity-investigation.md` (this file)
+- `ACTION_PLAN.md`
+
+**Status:** ✅ **REMEDIATION COMPLETE**
+
+**Remediated By:** Tribeca  
+**Date:** 2026-01-13T10:12:00.000Z

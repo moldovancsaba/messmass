@@ -273,6 +273,7 @@ export default function ReportPage() {
     entity: project ? { ...project, createdAt: reportData?.project?.createdAt, updatedAt: reportData?.project?.updatedAt } : null,
     stats: stats || null,
     chartResults,
+    charts: charts?.map(chart => ({ chartId: chart.chartId, order: chart.order })), // A-R-10 Phase 2: Pass charts for ordering
     reportType: 'Event Report'
   });
 

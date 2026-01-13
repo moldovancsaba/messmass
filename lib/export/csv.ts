@@ -6,6 +6,7 @@
 
 import type { ChartResult } from '@/lib/report-calculator';
 import type { ProjectStats } from '@/lib/report-calculator';
+import { hasValidChartData } from './chartValidation';
 
 /**
  * WHAT: Project metadata for CSV export
@@ -29,6 +30,8 @@ export interface CSVExportOptions {
   includeStats?: boolean;
   includeChartResults?: boolean;
   includeReportContent?: boolean;
+  /** Optional map of chartId -> order for sorting charts to match rendered report */
+  chartOrderMap?: Map<string, number>;
 }
 
 /**
@@ -111,9 +114,29 @@ export async function exportReportToCSV(
     // WHAT: Section 3 - Chart Algorithm Results
     // WHY: Include all calculated chart values from formulas
     // HOW: Process each chart result based on type (KPI, BAR, PIE, etc.)
+    // NOTE (A-R-10): Filter by hasValidChartData() to match rendered report, sort by order field
     if (includeChartResults && chartResults.size > 0) {
-      const sortedCharts = Array.from(chartResults.values())
-        .sort((a, b) => a.chartId.localeCompare(b.chartId));
+      // WHAT: Filter charts to match rendered report (A-R-10 Phase 2)
+      // WHY: CSV export should only include charts that would be rendered
+      // HOW: Use hasValidChartData() to filter out empty/invalid charts
+      const validCharts = Array.from(chartResults.values())
+        .filter(result => hasValidChartData(result));
+
+      // WHAT: Sort charts by order field to match rendered report (A-R-10 Phase 2)
+      // WHY: CSV export order should match rendered report order
+      // HOW: Use chartOrderMap if available, fall back to chartId alphabetical
+      const { chartOrderMap } = options;
+      const sortedCharts = validCharts.sort((a, b) => {
+        if (chartOrderMap) {
+          const orderA = chartOrderMap.get(a.chartId) ?? Infinity;
+          const orderB = chartOrderMap.get(b.chartId) ?? Infinity;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+        }
+        // Fallback to alphabetical by chartId if order not available
+        return a.chartId.localeCompare(b.chartId);
+      });
 
       for (const result of sortedCharts) {
         // WHAT: Handle different chart types appropriately
@@ -146,7 +169,10 @@ export async function exportReportToCSV(
 
           case 'value':
             // WHAT: VALUE type is composite (KPI + BAR), skip to avoid duplication
-            // WHY: VALUE charts render their components separately
+            // WHY: VALUE charts render their components separately (KPI + BAR are exported separately)
+            // NOTE (A-R-10 Phase 2): This skip is intentional and documented. VALUE charts are composite
+            // and their components (KPI and BAR) are already exported separately, so including the VALUE
+            // chart itself would create duplicate entries in the CSV export.
             break;
 
           default:
