@@ -864,7 +864,7 @@ CSV exports output raw numeric values while the rendered report applies formatti
 - ✅ Formatting applied: KPI values and BAR/PIE element values formatted
 - ✅ Raw values preserved: Clicker Data, Metadata, Report Content sections unchanged
 - ✅ Test coverage: `__tests__/export-csv-formatting.test.ts` (15 test cases)
-- ✅ Commits: `[commit hash]` - A-R-15: CSV Export Formatting Alignment - COMPLETE
+- ✅ Commits: `def750c40` - A-R-15: CSV Export Formatting Alignment - COMPLETE
 
 **Dependencies:**
 - A-R-10 (uses `hasValidChartData` from `chartValidation.ts`)
