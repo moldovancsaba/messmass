@@ -1013,11 +1013,17 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 **Ownership scope:** Global
 
 ### Checkable tasks
-- [ ] Define the KYC variable model and source of truth in [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx).
-- [ ] Map KYC dependencies to algorithms, clicker groups, and reporting.
-- [ ] Define global-only ownership and override rules (no partner or event edits).
-- [ ] Align partner and event KYC views with the global model (C-10).
-- [ ] Define KYC to report template and algorithm mappings.
+- [x] Define the KYC variable model and source of truth in [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx). Evidence: [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx), [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Map KYC dependencies to algorithms, clicker groups, and reporting. Evidence: [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx), [lib/chartConfigTypes.ts](lib/chartConfigTypes.ts), [lib/formulaEngine.ts](lib/formulaEngine.ts), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Define global-only ownership and override rules (no partner or event edits). Evidence: [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Align partner and event KYC views with the global model (C-10). Evidence: [app/admin/partners/[id]/kyc-data/page.tsx](app/admin/partners/[id]/kyc-data/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Define KYC to report template and algorithm mappings. Evidence: [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [lib/chartConfigTypes.ts](lib/chartConfigTypes.ts), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+
+### Execution-ready checklist (A-UI-06)
+- [x] Declare `/api/variables-config` (variables_metadata) as the single source of truth; edit only via `/admin/kyc`. Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Enforce naming and system guardrails (camelCase, no `stats.` prefix, `isSystem` delete block). Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
+- [x] Require cache invalidation after variable edits so Clicker/Algorithms update within 5 minutes. Evidence: [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [app/admin/kyc/page.tsx](app/admin/kyc/page.tsx), [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
+- [x] Lock out partner/event overrides by documenting KYC data views as read-only. Evidence: [app/admin/partners/[id]/kyc-data/page.tsx](app/admin/partners/[id]/kyc-data/page.tsx), [app/admin/events/[id]/kyc-data/page.tsx](app/admin/events/[id]/kyc-data/page.tsx), [docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md](docs/audits/admin-ui/ADMIN_UI_KYC_MODEL.md).
 
 ---
 
@@ -1218,5 +1224,14 @@ Execute **A-R-11** first (highest priority, no dependencies). Then A-R-12 or A-R
 - **CURRENT TASK ID:** A-UI-04
 - **STATUS:** DONE
 - **LAST COMMIT(S):** pending (A-UI-04 completion commit)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
+
+**2026-01-13T14:36:31.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-06
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (A-UI-06 completion commit)
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
