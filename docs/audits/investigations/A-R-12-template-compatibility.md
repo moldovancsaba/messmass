@@ -418,8 +418,8 @@ interface DataBlockReference {
 ### Closure Evidence
 
 **Commits:**
-- `[commit hash]` - A-R-12: Report Template Compatibility Validation - COMPLETE
-- `[commit hash]` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-12 DONE
+- `8662f0bbf` - A-R-12: Report Template Compatibility Validation - COMPLETE
+- `79d4435c7` - ACTION_PLAN.md: Update STATE MEMORY - Tribeca A-R-12 DONE
 
 **Files Modified:**
 - `lib/templateCompatibilityValidator.ts` (new)
