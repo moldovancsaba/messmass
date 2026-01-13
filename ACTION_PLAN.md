@@ -1129,10 +1129,10 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 **Ownership scope:** Global
 
 ### Checkable tasks
-- [ ] Define chart configuration model in [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx).
-- [ ] Document create/edit flow and validation rules.
-- [ ] Map dependencies on KYC variables and report templates.
-- [ ] Define permissions and access expectations.
+- [x] Define chart configuration model in [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx). Evidence: [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [lib/chartConfigTypes.ts](lib/chartConfigTypes.ts), [app/api/chart-config/route.ts](app/api/chart-config/route.ts), [docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md).
+- [x] Document create/edit flow and validation rules. Evidence: [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [app/api/chart-config/route.ts](app/api/chart-config/route.ts), [lib/formulaEngine.ts](lib/formulaEngine.ts), [docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md).
+- [x] Map dependencies on KYC variables and report templates. Evidence: [components/ChartAlgorithmManager.tsx](components/ChartAlgorithmManager.tsx), [app/api/variables-config/route.ts](app/api/variables-config/route.ts), [app/admin/visualization/page.tsx](app/admin/visualization/page.tsx), [app/api/chart-configs/route.ts](app/api/chart-configs/route.ts), [app/api/chart-config/public/route.ts](app/api/chart-config/public/route.ts), [docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md).
+- [x] Define permissions and access expectations. Evidence: [app/admin/charts/page.tsx](app/admin/charts/page.tsx), [app/api/auth/check/route.ts](app/api/auth/check/route.ts), [lib/routeProtection.ts](lib/routeProtection.ts), [app/api/chart-config/route.ts](app/api/chart-config/route.ts), [docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md](docs/audits/admin-ui/ADMIN_UI_ALGORITHMS_MODEL.md).
 
 ---
 
