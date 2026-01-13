@@ -696,10 +696,11 @@ Current error handling may not be comprehensive, leading to:
 
 ## A-R-12: Report Template Compatibility Validation
 
-**Status:** PLANNED  
+**Status:** DONE  
 **Priority:** Low  
 **Category:** Reporting Correctness  
-**Type:** Investigation + Execution
+**Type:** Investigation + Execution  
+**Completed:** 2026-01-13T12:06:00.000Z
 
 **Problem Statement:**
 Report templates are reused across partners/events, but:
@@ -738,6 +739,14 @@ This can lead to:
 - ✅ Validation runs at report render time (runtime check)
 - ✅ Documentation of template reuse rules and validation criteria
 - ✅ Test cases for template compatibility scenarios
+
+**Closure Evidence:**
+- ✅ Investigation document: `docs/audits/investigations/A-R-12-template-compatibility.md`
+- ✅ Template compatibility validator: `lib/templateCompatibilityValidator.ts` (new)
+- ✅ Runtime validation: `app/report/[slug]/page.tsx` (validates template compatibility)
+- ✅ User-visible compatibility warnings: Displayed in report UI
+- ✅ Test coverage: `__tests__/template-compatibility.test.ts` (14 test cases)
+- ✅ Commits: `[commit hash]` - A-R-12: Report Template Compatibility Validation - COMPLETE
 
 **Dependencies:**
 - None (can execute independently)
