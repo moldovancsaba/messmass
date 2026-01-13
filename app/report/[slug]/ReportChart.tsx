@@ -125,7 +125,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
   
   if (hasError) {
     return (
-      <CellWrapper width={width} className={className}>
+      <CellWrapper className={className}>
         <div className={`${styles.chart} ${styles.chartError}`}>
           <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
           <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
@@ -146,7 +146,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
     if (errorIssues.length > 0) {
       // Display first error issue
       return (
-        <CellWrapper width={width} className={className}>
+        <CellWrapper className={className}>
           <div className={`${styles.chart} ${styles.chartError}`}>
             <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
             <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
@@ -246,7 +246,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
       chartId={result.chartId}
       chartTitle={result.title}
       fallback={
-        <CellWrapper width={width} className={className}>
+        <CellWrapper className={className}>
           <div className={`${styles.chart} ${styles.chartError}`}>
             <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
             <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>

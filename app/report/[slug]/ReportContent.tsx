@@ -383,7 +383,7 @@ function ResponsiveRow({ rowCharts, chartResults, charts, rowIndex, unifiedTextF
   );
 }
 
-function ReportBlock({ block, chartResults, gridSettings }: ReportBlockProps) {
+function ReportBlock({ block, chartResults, charts, gridSettings }: ReportBlockProps) {
   // WHAT: Calculate unified font-size for all text charts in this block
   // WHY: All text charts should use the same font-size, fitting the largest content
   // HOW: Use hook to measure containers and calculate optimal size
