@@ -1243,15 +1243,15 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 
 ---
 
-## A-UI-08: Clicker Manager (Manual Data Input UI)
+## A-UI-08: Admin -> Reporting Contract Definition
 
 **Ownership scope:** Global
 
 ### Checkable tasks
-- [ ] Define variable group model and visibility rules in [app/admin/clicker-manager/page.tsx](app/admin/clicker-manager/page.tsx).
-- [ ] Map dependency on KYC variable definitions.
-- [ ] Document how clicker groups affect editor behavior.
-- [ ] Define permissions and change control process.
+- [x] Inventory Admin-owned entities consumed by Reporting (events, variables, algorithms, insights, templates). Evidence: [docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md](docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md).
+- [x] Define required vs optional fields and the read/write APIs. Evidence: [docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md](docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md).
+- [x] Document compatibility expectations and breaking-change rules. Evidence: [docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md](docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md).
+- [x] Provide execution checklist for enforcement (pre/post change). Evidence: [docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md](docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md).
 
 ---
 
@@ -1359,6 +1359,15 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 
 ## STATE MEMORY
 
+**2026-01-13T15:36:10.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** A-R-19
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `13a54aff7` - A-R-19: Reporting Release Preflight Execution - COMPLETE
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task (new assignment)
+
 **2026-01-13T15:30:30.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
@@ -1366,7 +1375,7 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 - **STATUS:** DONE
 - **LAST COMMIT(S):** `3e2e967e4` - A-R-18: Reporting Release Candidate Definition & Handoff - COMPLETE
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task (new assignment)
+- **NEXT EXPECTED OUTPUT:** A-R-19: Reporting Release Preflight Execution
 
 **2026-01-13T15:21:00.000Z**
 - **AGENT:** Tribeca
