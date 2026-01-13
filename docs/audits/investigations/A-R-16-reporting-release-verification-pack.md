@@ -585,3 +585,7 @@ Reporting system is stable after A-R-07 through A-R-15. All changes are additive
 **Created By:** Tribeca  
 **Date:** 2026-01-13T15:21:00.000Z  
 **Status:** COMPLETE
+
+**Commits:**
+- `8b0568a99` - A-R-16: Reporting Release Verification Pack - COMPLETE
+- `053cd04a3` - A-R-16: Update commit hashes in documentation
