@@ -22,7 +22,8 @@ import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VAR
  * HOW: Type-specific validation matching ReportChart.hasData logic
  */
 function hasValidChartData(result: ChartResult | undefined): boolean {
-  if (!result || result.error) return false;
+  // A-R-11: Check both error (legacy) and chartError (new structured error)
+  if (!result || result.error || result.chartError) return false;
   
   switch (result.type) {
     case 'text':

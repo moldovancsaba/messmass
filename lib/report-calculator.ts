@@ -3,6 +3,8 @@
 // HOW: Class-based calculator with formula evaluation, type checking, and error handling
 
 import { evaluateFormula } from './formulaEngine';
+import type { ChartError } from './chartErrorTypes';
+import { createChartError, getUserFriendlyErrorMessage } from './chartErrorTypes';
 
 /**
  * WHAT: Chart configuration from database
@@ -61,7 +63,10 @@ export interface ChartResult {
   aspectRatio?: Chart['aspectRatio'];
   showTitle?: boolean; // Controls whether title/subtitle appear in rendered chart
   showPercentages?: boolean; // Controls whether pie charts show percentages in legend (v11.38.0)
+  /** @deprecated Use chartError instead for structured error information */
   error?: string;
+  /** A-R-11: Structured error information with type and context */
+  chartError?: ChartError;
 }
 
 /**
@@ -115,7 +120,16 @@ export class ReportCalculator {
     
     if (!chart) {
       console.warn(`[ReportCalculator] Chart not found: ${chartId}`);
-      return null;
+      return {
+        chartId,
+        type: 'kpi' as const, // Default type for error case
+        title: `Chart ${chartId}`,
+        chartError: createChartError(
+          'MISSING_CHART_CONFIG',
+          `Chart configuration not found: ${chartId}`,
+          { chartId }
+        )
+      };
     }
 
     if (!chart.isActive) {
@@ -140,17 +154,34 @@ export class ReportCalculator {
           return this.calculateValue(chart);
         default:
           console.warn(`[ReportCalculator] Unknown chart type: ${chart.type}`);
-          return null;
+          return {
+            chartId: chart.chartId,
+            type: chart.type,
+            title: chart.title,
+            icon: chart.icon,
+            iconVariant: chart.iconVariant,
+            chartError: createChartError(
+              'INVALID_CHART_TYPE',
+              `Unknown chart type: ${chart.type}`,
+              { chartId: chart.chartId, chartType: chart.type }
+            )
+          };
       }
     } catch (error) {
       console.error(`[ReportCalculator] Failed to calculate ${chartId}:`, error);
+      const errorMessage = error instanceof Error ? error.message : 'Calculation failed';
       return {
         chartId: chart.chartId,
         type: chart.type,
         title: chart.title,
         icon: chart.icon,
         iconVariant: chart.iconVariant,
-        error: error instanceof Error ? error.message : 'Calculation failed'
+        error: errorMessage, // Keep for backward compatibility
+        chartError: createChartError(
+          'CALCULATION_ERROR',
+          errorMessage,
+          { chartId: chart.chartId, chartType: chart.type }
+        )
       };
     }
   }
@@ -564,8 +595,8 @@ export class ReportCalculator {
    * @returns True if chart should be displayed
    */
   public static hasValidData(result: ChartResult): boolean {
-    // Charts with errors are not valid
-    if (result.error) {
+    // A-R-11: Charts with errors are not valid (but errors are now displayed, not hidden)
+    if (result.chartError || result.error) {
       return false;
     }
 

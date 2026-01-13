@@ -22,6 +22,7 @@ import { parseMarkdown } from '@/lib/markdownUtils';
 import { parseTableMarkdown } from '@/lib/tableMarkdownUtils';
 import { sanitizeHTML } from '@/lib/sanitize';
 import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { getUserFriendlyErrorMessage } from '@/lib/chartErrorTypes';
 
 // Register Chart.js components for pie charts
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -111,10 +112,31 @@ interface ReportChartProps {
  * - VALUE: Composite (KPI + BAR) - renders both components
  */
 export default function ReportChart({ result, width, blockHeight, unifiedTextFontSize, className }: ReportChartProps) {
+  // WHAT: A-R-11 - Check for calculation errors first
+  // WHY: Display error messages to users instead of hiding charts
+  // HOW: Show error placeholder if chartError or error exists
+  const hasError = !!(result.chartError || result.error);
+  
+  if (hasError) {
+    return (
+      <CellWrapper width={width} className={className}>
+        <div className={`${styles.chart} ${styles.chartError}`}>
+          <MaterialIcon name="error_outline" className={styles.chartErrorIcon} />
+          <div className={styles.chartErrorTitle}>{result.title || 'Chart Error'}</div>
+          <div className={styles.chartErrorMessage}>
+            {result.chartError
+              ? getUserFriendlyErrorMessage(result.chartError)
+              : result.error || 'Chart calculation failed'}
+          </div>
+        </div>
+      </CellWrapper>
+    );
+  }
+
   // WHAT: Check if chart has valid displayable data
   // WHY: Don't render placeholders for empty/NA values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
-  const hasData = !result.error && (() => {
+  const hasData = (() => {
     switch (result.type) {
       case 'text':
         return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
@@ -145,6 +167,7 @@ export default function ReportChart({ result, width, blockHeight, unifiedTextFon
   // WHAT: Hide cells with no data (v11.48.0)
   // WHY: Clean reports - only show charts with actual data
   // HOW: Return null instead of placeholder when no data
+  // NOTE: A-R-11 - Errors are shown above, empty data is still hidden
   if (!hasData) {
     return null;
   }

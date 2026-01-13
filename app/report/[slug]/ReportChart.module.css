@@ -1058,6 +1058,42 @@
   /* WHAT: Charts must scale to fit their container on mobile
    * WHY: Prevent overflow - charts must behave same as desktop (scale and fit)
    * HOW: Maintain flexbox fill behavior, ensure container queries work properly */
+/* A-R-11: Error Placeholder Styles */
+.chartError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mm-space-6);
+  text-align: center;
+  color: var(--mm-color-text-secondary, #666);
+  background: var(--chartBackground, #fff);
+  border: 2px dashed var(--mm-color-border, #ddd);
+  border-radius: var(--mm-radius-lg);
+  min-height: 120px;
+}
+
+.chartErrorIcon {
+  font-size: 2rem;
+  color: var(--mm-color-error, #dc3545);
+  margin-bottom: var(--mm-space-3);
+}
+
+.chartErrorTitle {
+  font-size: var(--mm-font-size-md, 1rem);
+  font-weight: var(--mm-font-weight-semibold, 600);
+  margin-bottom: var(--mm-space-2);
+  color: var(--mm-color-text, #333);
+}
+
+.chartErrorMessage {
+  font-size: var(--mm-font-size-sm, 0.875rem);
+  color: var(--mm-color-text-secondary, #666);
+  line-height: 1.5;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
   .chart:not(.image) {
     width: 100% !important;
     height: 100% !important; /* CRITICAL: Fill parent container */
