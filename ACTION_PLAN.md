@@ -178,7 +178,7 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 | ADM-RM-06 | Partner Analytics Dashboard enhancements | DEFERRED | `ROADMAP.md` |  |
 | ADM-RM-07 | Bitly Search Enhancements | PLANNED | `ROADMAP.md` |  |
 | ADM-RM-08 | Bitly Analytics Export & Reporting | PLANNED | `ROADMAP.md` |  |
-| ADM-RM-09 | Variable System Enhancement | PLANNED | `ROADMAP.md` |  |
+| ADM-RM-09 | Variable System Enhancement | IN PROGRESS | `ROADMAP.md` |  |
 | ADM-RM-10 | Admin UI Consistency | ACTIVE | `ROADMAP.md` |  |
 | ADM-RM-11 | Admin UI assignment dropdown (project edit modal) | BACKLOG | `ROADMAP.md` |  |
 | ADM-RM-12 | Admin Grid Settings UI (desktop/tablet/mobile units) | BACKLOG | `ROADMAP.md` |  |
@@ -197,14 +197,14 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
 
-**2026-01-14T11:06:00.000Z**
+**2026-01-14T12:30:00.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** A-UI-CLEAN-01
-- **STATUS:** DONE
-- **LAST COMMIT(S):** pending (Admin cleanup commit)
+- **CURRENT TASK ID:** ADM-RM-09
+- **STATUS:** IN PROGRESS
+- **LAST COMMIT(S):** pending (ADM-RM-09 delivery)
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
+- **NEXT EXPECTED OUTPUT:** Variable inventory + compatibility contract + runtime guarantees + enhancement scope + staged future plan
 
 **2026-01-14T18:05:00.000Z**
 - **AGENT:** Tribeca
@@ -606,11 +606,17 @@ The following items are completed and tracked in release notes, verification pac
   - **Definition:** Define style model and assignment rules (global -> partner -> event -> filter where applicable).
 
 - [ ] ADM-RM-09: Variable System Enhancement
-  - **Status:** OPEN
+  - **Status:** IN PROGRESS
   - **Priority:** High
   - **Dependencies:** A-UI-12, A-UI-13
   - **Owner:** Katja
-  - **Definition:** Document and implement missing/unclear variable behaviour needed by reporting layouts.
+  - **Definition:** Admin variable system enhancement deliverables.
+  - **Deliverables:**
+    - Variable inventory (name, type, default, scope, where defined, where consumed).
+    - Compatibility contract (no renames, no silent behavior changes).
+    - Runtime guarantees (Admin validation, Reporting behavior when missing/invalid).
+    - Enhancement scope (safe improvements only).
+    - Future improvements plan (staged with dependencies + risk notes).
 
 5.2 Partner and assignment flows
 
