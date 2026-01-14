@@ -307,10 +307,13 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         
         // WHAT: A-03.2 - Measure actual content height in value row
         // WHY: Value might wrap to multiple lines and exceed allocated height
-        // HOW: Measure scrollHeight to get full content height including wrapped lines
+        // HOW: Use offsetHeight (actual rendered height) to check if wrapped content fits
         if (kpiValueRowRef.current) {
           const valueElement = kpiValueRowRef.current;
-          const actualValueHeight = valueElement.scrollHeight;
+          // WHAT: Use offsetHeight instead of scrollHeight for values
+          // WHY: offsetHeight shows the actual rendered height after wrapping, scrollHeight includes all content
+          // HOW: If content wraps properly, offsetHeight should match available height
+          const actualValueHeight = valueElement.offsetHeight;
           
           // WHAT: Account for padding in value row (if any)
           // WHY: Padding reduces available space for content
@@ -319,12 +322,14 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
           const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
           const availableValueHeight = valueRowHeight - paddingTop - paddingBottom;
           
-          // WHAT: If actual content exceeds available space, log warning
+          // WHAT: If actual rendered height exceeds available space, log warning
           // WHY: Content should wrap to fit, but we need to verify it does
-          // HOW: Check if content fits, log warning if it doesn't
-          if (actualValueHeight > availableValueHeight && availableValueHeight > 0) {
+          // HOW: Check if wrapped content fits, log warning if it doesn't
+          // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering differences
+          const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
+          if (actualValueHeight > availableValueHeight + tolerance && availableValueHeight > 0) {
             console.warn(
-              `[KPIChart A-03.2] Value content height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
+              `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
               `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. ` +
               `Content should wrap to fit. Chart ID: ${result.chartId}`
             );
@@ -333,12 +338,15 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
         
         // WHAT: A-03.2 - Measure actual content height in title row
         // WHY: Title might wrap to multiple lines and exceed allocated height
-        // HOW: Measure scrollHeight to get full content height including wrapped lines
+        // HOW: Use offsetHeight (actual rendered height) since title is clamped to 2 lines with -webkit-line-clamp
         if (showTitle && kpiTitleRef.current) {
           const titleElement = kpiTitleRef.current;
           const titleSpan = titleElement.querySelector('span');
           if (titleSpan) {
-            const actualTitleHeight = titleSpan.scrollHeight;
+            // WHAT: Use offsetHeight instead of scrollHeight for titles
+            // WHY: Titles use -webkit-line-clamp: 2, so offsetHeight shows the actual clamped height
+            // HOW: scrollHeight includes all content, but offsetHeight shows what's actually rendered
+            const actualTitleHeight = titleSpan.offsetHeight;
             
             // WHAT: Account for padding in title row
             // WHY: Padding reduces available space for content
@@ -347,14 +355,14 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
             const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
             const availableTitleHeight = titleRowHeight - paddingTop - paddingBottom;
             
-            // WHAT: If actual content exceeds available space, log warning
-            // WHY: Title is allowed to clamp to 2 lines per Layout Grammar, but we verify it fits
-            // HOW: Check if content fits within 2-line limit, log warning if it doesn't
-            // NOTE: Title has -webkit-line-clamp: 2, so it should be limited to 2 lines
-            // But we still verify the allocated height is sufficient for 2 lines
-            if (actualTitleHeight > availableTitleHeight && availableTitleHeight > 0) {
+            // WHAT: If actual rendered height exceeds available space, log warning
+            // WHY: Title is clamped to 2 lines per Layout Grammar, but we verify it fits
+            // HOW: Check if clamped height fits within allocated space, log warning if it doesn't
+            // NOTE: Use small tolerance (1px) to account for rounding differences
+            const tolerance = 1; // 1px tolerance for rounding
+            if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
               console.warn(
-                `[KPIChart A-03.2] Title content height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
+                `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
                 `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. ` +
                 `Title should clamp to 2 lines. Chart ID: ${result.chartId}`
               );
