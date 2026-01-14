@@ -746,6 +746,14 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   useEffect(() => {
     if (textChartRef.current && typeof window !== 'undefined') {
       const validateHeight = () => {
+        // WHAT: Find parent row element that sets --block-height
+        // WHY: --block-height is set on the row, not the chart element
+        // HOW: Traverse up the DOM tree to find the row element
+        let rowElement: HTMLElement | null = textChartRef.current?.parentElement || null;
+        while (rowElement && !rowElement.classList.contains('report-content')) {
+          rowElement = rowElement.parentElement;
+        }
+        
         // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
         // WHY: Fail-fast in production for critical violations
         // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
@@ -754,10 +762,14 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
           CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
           { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
         );
+        // WHAT: Check --block-height on row element (where it's set) instead of chart element
+        // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
+        // HOW: Validate on row element if found, otherwise fall back to chart element
+        const blockHeightElement = rowElement || textChartRef.current;
         validateCriticalCSSVariable(
-          textChartRef.current,
+          blockHeightElement,
           CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'text' }
+          { chartId: result.chartId, chartType: 'text', checkedOnRow: !!rowElement }
         );
       };
       

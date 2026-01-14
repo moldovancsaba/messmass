@@ -373,7 +373,7 @@ export class ReportCalculator {
   /**
    * WHAT: Calculate text chart (string content)
    * WHY: Text charts display formatted text content
-   * HOW: For simple variable references, access directly; otherwise evaluate formula
+   * HOW: For simple variable references, access directly; for plain text, return as-is; otherwise evaluate formula
    */
   private calculateText(chart: Chart): ChartResult {
     // WHAT: Use chart.formula or elements[0].formula for text calculation
@@ -397,6 +397,13 @@ export class ReportCalculator {
     const bracketMatch = formulaToEvaluate.match(/^\[([a-zA-Z0-9_]+)\]$/);
     const simpleVarMatch = formulaToEvaluate.match(/^(?:stats\.)?([a-zA-Z0-9_]+)$/);
     
+    // WHAT: Detect if formula is plain text (no mathematical operators, no brackets, not a variable reference)
+    // WHY: Plain text should be returned as-is without formula evaluation to avoid CSP errors
+    // HOW: Check for absence of operators, brackets, and variable patterns
+    const hasOperators = /[+\-*/()]/.test(formulaToEvaluate);
+    const hasBrackets = /\[|\]/.test(formulaToEvaluate);
+    const isPlainText = !hasOperators && !hasBrackets && !bracketMatch && !simpleVarMatch;
+    
     let value: string | number | 'NA';
     
     if (bracketMatch) {
@@ -409,8 +416,13 @@ export class ReportCalculator {
       const fieldName = simpleVarMatch[1];
       const fieldValue = this.stats[fieldName];
       value = fieldValue !== undefined && fieldValue !== null ? String(fieldValue) : '';
+    } else if (isPlainText) {
+      // WHAT: Return plain text as-is without evaluation
+      // WHY: Avoids CSP errors from trying to evaluate plain text as a formula
+      // HOW: Directly return the formula string as the value
+      value = formulaToEvaluate;
     } else {
-      // Complex formula evaluation
+      // Complex formula evaluation (only for actual mathematical expressions)
       value = this.evaluateFormula(formulaToEvaluate);
     }
     
