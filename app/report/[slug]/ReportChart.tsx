@@ -510,6 +510,7 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
 function PieChart({ result, className }: { result: ChartResult; className?: string }) {
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pieLegendRef = useRef<HTMLDivElement>(null);
   
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No pie data</div>;
@@ -521,6 +522,111 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if percentages should be shown (default: true for backward compatibility)
   // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
   const showPercentages = result.showPercentages !== false;
+  
+  // WHAT: Measure and reduce font size for PIE legends if they exceed available space
+  // WHY: Legends must fit within allocated space per Layout Grammar
+  // HOW: Measure legend container height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (pieLegendRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          // WHAT: Get legend container height
+          // WHY: Need to check if legend items fit within allocated space
+          const legendContainer = pieLegendRef.current;
+          if (!legendContainer) return;
+          
+          const containerHeight = legendContainer.offsetHeight;
+          if (containerHeight <= 0) return;
+          
+          // WHAT: Get all legend text elements
+          // WHY: Need to measure each legend item's height
+          const legendTextElements = legendContainer.querySelectorAll(`.${styles.pieLegendText}`) as NodeListOf<HTMLElement>;
+          if (!legendTextElements || legendTextElements.length === 0) return;
+          
+          // WHAT: Calculate available height per legend item
+          // WHY: Each legend item should fit within available space
+          // HOW: Divide container height by number of items, account for gaps and padding
+          const legendItemCount = legendTextElements.length;
+          const computedStyle = window.getComputedStyle(legendContainer);
+          const gap = parseFloat(computedStyle.gap) || 8; // Default gap from CSS
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const totalGaps = gap * (legendItemCount - 1);
+          const availableHeightPerItem = (containerHeight - paddingTop - paddingBottom - totalGaps) / legendItemCount;
+          
+          legendTextElements.forEach((legendText, idx) => {
+            // WHAT: Measure actual legend text height
+            // WHY: Need to check if text exceeds available space
+            const actualHeight = legendText.offsetHeight;
+            
+            // WHAT: Get computed styles for padding
+            const textComputedStyle = window.getComputedStyle(legendText);
+            const textPaddingTop = parseFloat(textComputedStyle.paddingTop) || 0;
+            const textPaddingBottom = parseFloat(textComputedStyle.paddingBottom) || 0;
+            const availableTextHeight = availableHeightPerItem - textPaddingTop - textPaddingBottom;
+            
+            // WHAT: If text exceeds available space, reduce font size
+            // WHY: Layout Grammar: content must fit without clipping
+            const tolerance = 2; // 2px tolerance
+            if (actualHeight > availableTextHeight + tolerance && availableTextHeight > 0) {
+              // WHAT: Calculate required font size to fit text in available space
+              const currentFontSize = parseFloat(textComputedStyle.fontSize) || 16;
+              const lineHeight = parseFloat(textComputedStyle.lineHeight) || 1.2;
+              
+              // WHAT: Calculate scale factor
+              const safetyMargin = 0.95; // 5% safety margin
+              const scaleFactor = (availableTextHeight / actualHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if meaningful
+              if (scaleFactor < 0.95 && newFontSize > 8) {
+                legendText.style.setProperty('font-size', `${newFontSize}px`, 'important');
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[PieChart] Legend ${idx + 1} height (${actualHeight}px) exceeds available space (${availableTextHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                  `Container: ${containerHeight}px, Available per item: ${availableHeightPerItem}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              }
+            }
+          });
+        } catch (error) {
+          console.error('[PieChart] Unexpected error during legend font size reduction:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      measureAndReduceFontSize();
+      
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (pieLegendRef.current) {
+        resizeObserver.observe(pieLegendRef.current);
+      }
+      
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (pieLegendRef.current) {
+        mutationObserver.observe(pieLegendRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.elements, result.chartId, showPercentages]);
   
   const total = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
@@ -650,7 +756,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         </div>
         {/* WHAT: Legends at bottom center */}
         {/* WHY: User requirement - legends should be bottom section, centered */}
-        <div className={styles.pieLegend}>
+        <div ref={pieLegendRef} className={styles.pieLegend}>
           {result.elements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             // WHAT: Format percentage based on rounded setting
@@ -989,7 +1095,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
               
               if (containerHeight > 0 && chartBodyHeight) {
                 // WHAT: Container is ready and CSS variable is set, validate
-                validateHeight();
+      validateHeight();
               } else {
                 // WHAT: Not ready yet, try again
                 attemptValidation(attempt + 1);
@@ -1489,6 +1595,98 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       };
     }
   }, [showTitle, result.title]);
+  
+  // WHAT: Measure and reduce font size for TABLE content if it exceeds available space
+  // WHY: Table content must fit within allocated space per Layout Grammar
+  // HOW: Measure table content height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          // WHAT: Get table content element
+          const tableContent = tableContentRef.current;
+          if (!tableContent) return;
+          
+          // WHAT: Get available height from CSS variable
+          const computedStyle = window.getComputedStyle(tableContent);
+          const contentHeightValue = computedStyle.getPropertyValue('--text-content-height').trim();
+          if (!contentHeightValue) return;
+          
+          const availableHeight = parseFloat(contentHeightValue);
+          if (availableHeight <= 0) return;
+          
+          // WHAT: Find table element inside markdown content
+          const tableElement = tableContent.querySelector('table');
+          if (!tableElement) return;
+          
+          // WHAT: Measure actual table height
+          const actualTableHeight = tableElement.offsetHeight;
+          
+          // WHAT: Account for padding in table content
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTableHeight = availableHeight - paddingTop - paddingBottom;
+          
+          // WHAT: If table exceeds available space, reduce font size
+          // WHY: Layout Grammar: content must fit without clipping
+          const tolerance = 2; // 2px tolerance
+          if (actualTableHeight > availableTableHeight + tolerance && availableTableHeight > 0) {
+            // WHAT: Calculate required font size to fit table in available space
+            const tableComputedStyle = window.getComputedStyle(tableElement);
+            const currentFontSize = parseFloat(tableComputedStyle.fontSize) || 16;
+            
+            // WHAT: Calculate scale factor
+            const safetyMargin = 0.95; // 5% safety margin
+            const scaleFactor = (availableTableHeight / actualTableHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if meaningful
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              tableElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+              console.warn(
+                `[TableChart] Table height (${actualTableHeight}px) exceeds available space (${availableTableHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${availableHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
+          }
+        } catch (error) {
+          console.error('[TableChart] Unexpected error during font size reduction:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      measureAndReduceFontSize();
+      
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (tableContentRef.current) {
+        resizeObserver.observe(tableContentRef.current);
+      }
+      
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+      
+      if (tableContentRef.current) {
+        mutationObserver.observe(tableContentRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.kpiValue, result.chartId, showTitle, result.title]);
   
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
   // WHY: Ensure all height values are explicit and traceable
