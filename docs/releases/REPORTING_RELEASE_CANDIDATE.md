@@ -1,7 +1,8 @@
 # Reporting Release Candidate
 
 **Release Candidate ID:** RC-2026-01-13  
-**Based on:** A-R-07 through A-R-16  
+**Reporting Build Version:** v11.55.1  
+**Based On:** A-R-07 through A-R-16  
 **Status:** READY FOR RELEASE  
 **Created:** 2026-01-13T15:30:30.000Z  
 **Created By:** Tribeca
@@ -174,6 +175,11 @@
 3. **Error Recovery:** No automatic error recovery mechanism (errors require user/configurator intervention)
 4. **Template Auto-Fix:** Template compatibility validation only warns, does not auto-fix incompatible templates
 5. **Admin UI:** No Admin UI changes (Reporting system only)
+
+### Runtime Stability & Crash Fixes
+1. **TEXT Chart Plain Text Handling:** Plain text values are now treated as literal text, not formulas. This prevents the formula engine (`expr-eval`) from attempting to parse arbitrary strings and eliminates associated CSP/runtime errors in production.  
+2. **Layout Grammar CSS Variable Validation:** Critical CSS variable checks (for example `--block-height`) now read from the owning row element and are wrapped in `try/catch`. Validation failures are logged and surfaced for investigation but no longer crash report rendering.  
+3. **Scope of Hotfixes:** These runtime stability fixes are additive to A-R-07 through A-R-16 and do not change the validation or Layout Grammar contracts; they only harden failure modes so Reporting degrades gracefully instead of crashing.
 
 ### Behavioral Limitations
 1. **VALUE Chart Type:** VALUE charts are skipped in CSV export (documented skip rule)

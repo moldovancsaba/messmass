@@ -1,6 +1,6 @@
 # ACTION_PLAN.md
 
-**Version:** 1.1.7  
+**Version:** 1.1.8  
 **Created:** 2026-01-12T00:09:33.679Z  
 **Last Reviewed:** 2026-01-12T10:05:00.000Z  
 **Last Updated:** 2026-01-12T13:18:36.000Z  
@@ -594,29 +594,54 @@ CSV and PDF exports may not match the rendered report that users see. Investigat
 
 ---
 
-## Post-A-R-10 Reporting Hardening
+## Post-A-R-10 Reporting Hardening (Including A-R-09)
 
-**Status:** PLANNED  
+**Status:** COMPLETE (Planning Slice Executed, All Executed Items DONE)  
 **Owner:** Architecture (Chappie)  
 **Execution:** Engineering (Tribeca)  
-**Reference:** Completed items A-R-07, A-R-08, A-R-10
+**Reference:** Completed items A-R-07, A-R-08, A-R-10 and `docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md`
 
 ### Context
 
-**Completed Hardening:**
+**Completed Hardening (Executed Items):**
 - ✅ A-R-07: Export Correctness & Validation (export readiness validation)
 - ✅ A-R-08: Render Determinism Guarantees (investigation complete, NO-GO for remediation)
 - ✅ A-R-10: Export Format Consistency (CSV/PDF parity with rendered report)
+- ✅ A-R-11: Formula Calculation Error Handling & Recovery
+- ✅ A-R-12: Report Template Compatibility Validation
+- ✅ A-R-13: Chart Data Validation & Error Boundaries
+- ✅ A-R-15: CSV Export Formatting Alignment (executed as part of A-R-10 Phase 2)
 
-**Remaining Gaps Identified:**
-1. **Formula Calculation Error Handling** - Chart calculation errors may not be handled gracefully
-2. **Report Template Compatibility** - Template reuse rules and validation (A-R-09 from roadmap, not executed)
-3. **Chart Data Validation** - Missing data validation and error boundaries for chart rendering
-4. **Export Edge Cases** - CSV formatting alignment deferred (raw values preferred, but may need investigation)
+**Remaining Gap from Original Proposal (Not Executed as Separate Item):**
+- A-R-09: Report Template Reuse Rules & Validation — conceptually superseded and folded into A-R-12 execution.
 
-### Objectives
+### A-R-09: Report Template Reuse Rules & Validation (Roadmap Lineage)
+
+**Status:** DEPRECATED (Superseded by A-R-12)  
+**Priority:** Low  
+**Category:** Reporting Behavior  
+**Origin:** `docs/audits/reporting-roadmap/A-R-ROADMAP-PROPOSAL-2026-01-12.md`
+
+**Original Problem Statement (From Roadmap Proposal):**
+- Report templates were being reused across partners/events without explicit reuse rules:
+  - No validation that templates were compatible with partner/event data
+  - No explicit rules for when template reuse was safe
+  - No validation that template configuration matched data availability
+  - Template selection could yield missing charts or mismatched data
+
+**Resolution Path:**
+- Instead of executing A-R-09 as a standalone investigation, its intent was executed as A-R-12:
+  - A-R-12 defined explicit template compatibility criteria
+  - Implemented runtime validation for template reuse safety
+  - Added user-visible compatibility warnings for incompatible templates
+
+**Final Decision:**
+- A-R-09 remains in the roadmap for historical lineage but is **not** an independent execution item.
+- All practical scope is covered and closed by A-R-12; no further work is planned under the A-R-09 ID.
+
+### Objectives (Post-A-R-10 Slice)
 - Continue Reporting system hardening beyond A-R-07, A-R-08, A-R-10
-- Focus on error handling, data validation, and template compatibility
+- Focus on error handling, data validation, template compatibility, and export formatting
 - Maintain same execution standard as previous Reporting items
 
 ### Non-Goals
@@ -1357,7 +1382,67 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 
 ---
 
+## ADMIN ROADMAP CONSOLIDATION (Canonical)
+
+**Scope:** Admin-only roadmap items outside the A-UI documentation program (A-UI-00 to A-UI-15 above).  
+**Sources:** `ROADMAP.md` (Admin UI sections + Optional/Exploratory backlog).  
+**Rule:** ACTION_PLAN.md is the single canonical source of Admin roadmap status.
+
+| Item ID | Item | Status | Source | Notes |
+| --- | --- | --- | --- | --- |
+| ADM-RM-01 | Google Sheets Integration (Admin workflow: connect/disconnect, pull/push, status dashboard) | DONE | `ROADMAP.md` | Phase 2 implementation complete; admin acceptance criteria met. |
+| ADM-RM-02 | Google Sheets Integration (auto-provision sheets for new partners) | PLANNED | `ROADMAP.md` | Phase 2.5 planned. |
+| ADM-RM-03 | Search & Paging Unification (Admin: Hashtags, Categories, Charts) | DONE | `ROADMAP.md` | v11.6.0. |
+| ADM-RM-04 | Search & Paging Unification (Admin: Users) | DEFERRED | `ROADMAP.md` | Deferred to Q2 2026. |
+| ADM-RM-05 | Partner Analytics Dashboard (core) | DONE | `ROADMAP.md` | v11.39.0 core delivery. |
+| ADM-RM-06 | Partner Analytics Dashboard enhancements | DEFERRED | `ROADMAP.md` | Demographics tab, Trends tab, Partner comparison, Export, Bitly link performance. |
+| ADM-RM-07 | Bitly Search Enhancements | PLANNED | `ROADMAP.md` | Project name search, date range filters, shared loading hook. |
+| ADM-RM-08 | Bitly Analytics Export & Reporting | PLANNED | `ROADMAP.md` | PDF/CSV exports, custom date range, trend visualization. |
+| ADM-RM-09 | Variable System Enhancement | PLANNED | `ROADMAP.md` | Custom variables, groups, in-app docs, usage analytics. |
+| ADM-RM-10 | Admin UI Consistency | ACTIVE | `ROADMAP.md` | Standardize Admin Hero, content-surface, width alignment; doc sync + versioning complete in this task. |
+| ADM-RM-11 | Admin UI assignment dropdown (project edit modal) | BACKLOG | `ROADMAP.md` | Optional / Exploratory backlog. |
+| ADM-RM-12 | Admin Grid Settings UI (desktop/tablet/mobile units) | BACKLOG | `ROADMAP.md` | Optional / Exploratory backlog. |
+| ADM-RM-13 | Admin Productivity backlog | BACKLOG | `ROADMAP.md` | Bulk chart assignment tools, drag-and-drop block reordering, audit/simplify unused admin features. |
+
+---
+
 ## STATE MEMORY
+
+**2026-01-14T18:05:00.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** Reporting Docs & Versioning Consolidation
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (docs + version bump commit for Reporting crash fixes and documentation sync)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect task breakdown to decompose consolidated Reporting roadmap into new ACTION_PLAN items
+
+**2026-01-13T18:45:00.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** Admin System Documentation + Roadmap Consolidation
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (Admin docs sync + roadmap consolidation + version alignment)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect task breakdown
+
+**2026-01-13T18:07:30.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** Admin System Documentation + Roadmap Consolidation
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** pending (Admin docs sync + roadmap consolidation + version alignment)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Updated Admin docs, version alignment, roadmap consolidation, and STATE MEMORY entry
+
+**2026-01-13T18:05:00.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** Reporting Docs & Versioning Consolidation
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** pending (docs + version bump commit for Reporting crash fixes and documentation sync)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Updated Reporting docs, version alignment, roadmap consolidation, and STATE MEMORY entry
 
 **2026-01-13T16:55:10.000Z**
 - **AGENT:** Tribeca

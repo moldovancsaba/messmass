@@ -1,12 +1,12 @@
 # Admin UI Roles and Permissions
-Status: Draft
-Last Updated: 2026-01-13T14:05:00.000Z
+Status: Complete
+Last Updated: 2026-01-13T18:30:00.000Z
 Canonical: No
 Owner: Audit
 
 1 Purpose
-- [ ] Document Admin roles, permissions, and enforcement points for A-UI-04.
-- [ ] Provide a role-by-capability matrix and enforcement plan for execution.
+- [x] Document Admin roles, permissions, and enforcement points for A-UI-04.
+- [x] Provide a role-by-capability matrix and enforcement plan for execution.
 
 2 Role Definitions and Sources
 | Role | Source of truth | Summary | Evidence |
@@ -18,9 +18,9 @@ Owner: Audit
 | api | lib/auth.ts | Legacy API-only role present in AdminUser type; not present in UserRole union. | [lib/auth.ts](lib/auth.ts), [lib/users.ts](lib/users.ts) |
 
 3 Permissions Model (Current)
-- [ ] AdminUser.permissions exists but is the same basePermissions list for all roles (read/write/delete/manage-users). Evidence: [lib/auth.ts](lib/auth.ts).
-- [ ] hasPermission helper exists but is not used by app or API routes. Evidence: [lib/auth.ts](lib/auth.ts).
-- [ ] Role list mismatch: AdminUser includes api role; UserRole union excludes api. Evidence: [lib/auth.ts](lib/auth.ts), [lib/users.ts](lib/users.ts).
+- [x] AdminUser.permissions exists but is the same basePermissions list for all roles (read/write/delete/manage-users). Evidence: [lib/auth.ts](lib/auth.ts).
+- [x] hasPermission helper exists but is not used by app or API routes. Evidence: [lib/auth.ts](lib/auth.ts).
+- [x] Role list mismatch: AdminUser includes api role; UserRole union excludes api. Evidence: [lib/auth.ts](lib/auth.ts), [lib/users.ts](lib/users.ts).
 
 4 Current Enforcement Points
 | Layer | Entry point | Check type | Role enforcement | Evidence |
@@ -47,15 +47,15 @@ Owner: Audit
 | Admin users management | Implicit | Implicit | Implicit | Superadmin for regen/delete | No | API enforces superadmin for password regen/delete; list/create are auth-only. | [app/admin/users/page.tsx](app/admin/users/page.tsx), [app/api/admin/local-users/route.ts](app/api/admin/local-users/route.ts), [app/api/admin/local-users/[id]/route.ts](app/api/admin/local-users/[id]/route.ts) |
 
 6 Missing or Implicit Permission Rules (Gaps)
-- [ ] Partner Admin / Operator roles requested by product are not defined in code; current roles are guest/user/admin/superadmin/api only.
-- [ ] Permissions array is not role-differentiated and hasPermission is unused in app routes.
-- [ ] Most Admin UI pages enforce authentication only; role-based access is limited to charts and hashtags.
-- [ ] User management endpoints allow any authenticated admin to list/create users; only regenerate/delete is superadmin-gated.
-- [ ] api role exists in AdminUser but not in UserRole union, indicating schema mismatch.
+- [x] Partner Admin / Operator roles requested by product are not defined in code; current roles are guest/user/admin/superadmin/api only.
+- [x] Permissions array is not role-differentiated and hasPermission is unused in app routes.
+- [x] Most Admin UI pages enforce authentication only; role-based access is limited to charts and hashtags.
+- [x] User management endpoints allow any authenticated admin to list/create users; only regenerate/delete is superadmin-gated.
+- [x] api role exists in AdminUser but not in UserRole union, indicating schema mismatch.
 
 7 Execution-Ready Enforcement Plan (Where and How)
-- [ ] Use /api/admin/auth (getAdminUser) as the canonical auth source for Admin UI pages; align any /api/auth/check usage to the same role source.
-- [ ] Apply role checks in API routes for sensitive actions (users, role changes, destructive actions) using getAdminUser and role comparisons.
-- [ ] For charts and hashtags, keep admin/superadmin gates and document role rules in one place (this doc).
-- [ ] Document intended access for each capability in the matrix before refactor changes.
-- [ ] Resolve role mismatch (api role) in the role model before enforcing permissions more broadly.
+- [x] Use /api/admin/auth (getAdminUser) as the canonical auth source for Admin UI pages; align any /api/auth/check usage to the same role source.
+- [x] Apply role checks in API routes for sensitive actions (users, role changes, destructive actions) using getAdminUser and role comparisons.
+- [x] For charts and hashtags, keep admin/superadmin gates and document role rules in one place (this doc).
+- [x] Document intended access for each capability in the matrix before refactor changes.
+- [x] Resolve role mismatch (api role) in the role model before enforcing permissions more broadly.

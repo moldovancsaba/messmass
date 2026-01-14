@@ -361,6 +361,42 @@ Co-Authored-By: Warp <agent@warp.dev>
 
 ---
 
+## [v11.55.1] — 2026-01-13T18:05:00.000Z
+
+### Summary
+🛡️ **REPORTING RUNTIME STABILITY HOTFIX**: Fixed production crashes in Reporting caused by TEXT chart formula evaluation and strict Layout Grammar CSS variable validation.
+
+### Bug Fixes
+
+#### TEXT Chart Plain Text Handling ✅
+**Problem**: Plain text values (e.g., `"Sampletextcontent15"`) were being sent through the formula evaluation engine, which tried to parse them as formulas. In production, this triggered CSP violations and could crash Reporting when `expr-eval` attempted to interpret arbitrary strings as expressions.
+
+**Solution**:
+- Detect non-formula TEXT content and short‑circuit evaluation.
+- Treat plain strings as literal text and bypass `expr-eval` entirely.
+- Preserve existing behavior for real formulas (e.g., `"[stats.var1] / [stats.var2]"`).
+
+**Impact**:
+- TEXT charts with literal copy can no longer crash the report via formula parsing.
+- CSP errors from `expr-eval` on plain text are eliminated.
+
+#### Layout Grammar CSS Variable Validation Try/Catch ✅
+**Problem**: Layout Grammar runtime validation read required CSS variables (such as `--block-height`) directly from chart elements. In some production sequences (initial render, resize, or transient DOM states), these variables were temporarily missing or only present on ancestor nodes, causing validation to throw and crash chart rendering.
+
+**Solution**:
+- Adjusted `--block-height` validation to read from the parent row element, which is the authoritative owner of the variable.
+- Wrapped critical CSS variable validation calls in `try/catch` so that validation failures are logged but never crash the report.
+- Applied the hardened validation path to TEXT, BAR, and TABLE chart types.
+
+**Impact**:
+- Layout Grammar validation can no longer crash Reporting when CSS variables are temporarily missing.
+- Users see stable charts even during transient layout changes; issues are surfaced via console warnings instead of runtime errors.
+
+### Version
+`11.55.0` → `11.55.1` (PATCH - Reporting runtime crash fixes)
+
+---
+
 ## [v11.55.0] — 2025-12-26T14:40:00.000Z
 
 ### Summary

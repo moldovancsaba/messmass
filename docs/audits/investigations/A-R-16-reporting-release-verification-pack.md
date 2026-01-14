@@ -181,6 +181,32 @@ This verification pack provides evidence-driven documentation for Reporting syst
 
 ---
 
+### Post-A-R-19: Reporting Crash Fixes (Runtime Stability)
+
+Although A-R-07 through A-R-15 completed the planned hardening work, two additional production crash fixes were applied after A-R-19 to improve Reporting runtime stability.
+
+#### TEXT Chart Plain Text Handling (Commit `e3506c061`)
+**What Changed:**
+- Added detection for literal TEXT content so that non-formula strings are treated as plain text.
+- Bypassed `expr-eval` for these values to prevent the formula engine from attempting to parse arbitrary strings.
+
+**Impact:**
+- TEXT charts with simple copy (for example `"Sampletextcontent15"`) can no longer trigger CSP violations or runtime crashes via the formula engine.
+- Formula-based TEXT charts continue to use the existing evaluation path.
+
+#### Layout Grammar CSS Variable Validation Try/Catch (Commit `bd104e9c3`)
+**What Changed:**
+- Updated critical CSS variable validation (such as `--block-height`) to read from the parent row element where the variable is actually defined.
+- Wrapped CSS variable validation calls in `try/catch` for TEXT, BAR, and TABLE chart types, logging validation issues instead of throwing uncaught errors.
+
+**Impact:**
+- Transient missing CSS variables during initial render or resize events no longer crash Reporting.
+- Layout Grammar validation now behaves as a non-fatal guardrail: violations are observable via logs but do not break the entire report.
+
+**Relationship to A-R-Items:**
+- These fixes are additive hardening on top of A-R-03 (height calculation), A-R-05 (runtime enforcement), and A-R-13 (chart data validation & error boundaries).
+- They do not change the Layout Grammar contract or validation semantics; they only improve failure handling.
+
 ## What Can Break (Failure Modes)
 
 ### 1. Export Failures
@@ -493,6 +519,7 @@ npm test -- __tests__/export-csv-formatting.test.ts
 3. **Template Compatibility:** Tests ensure templates are validated
 4. **Chart Data Validation:** Tests ensure invalid data is detected
 5. **CSV Formatting:** Tests ensure formatting matches rendered report
+6. **Runtime Stability:** Production crash fixes for TEXT charts and Layout Grammar validation prevent validation and formula errors from crashing entire reports
 
 ### Breaking Changes Risk
 **Low Risk:** All changes are additive (validation, error handling, formatting)

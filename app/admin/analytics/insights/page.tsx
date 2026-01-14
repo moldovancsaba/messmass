@@ -16,7 +16,7 @@
  * - Action tracking (mark as actioned, dismiss)
  * - Export insights as CSV/PDF
  * 
- * Version: 6.28.0 (Phase 3 - Insights Dashboard)
+ * Version: 11.55.1 (Phase 3 - Insights Dashboard)
  * Created: 2025-10-19T13:45:00.000Z
  */
 

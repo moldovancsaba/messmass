@@ -1,6 +1,7 @@
 # Reporting Release Preflight Evidence
 
 **Release Candidate ID:** RC-2026-01-13  
+**Reporting Build Version:** v11.55.1  
 **Preflight Execution Date:** 2026-01-13T15:36:10.000Z  
 **Executed By:** Tribeca  
 **Status:** IN PROGRESS
@@ -15,6 +16,7 @@
 - **Git Branch:** `preview-2026-01-02-agentic-coordination`
 - **Git Commit:** `0356e1cc3` (latest commit at execution time)
 - **Build Date:** 2026-01-13T15:36:10.000Z
+ - **Post-RC Crash Fix Commits:** `e3506c061` (TEXT chart plain text handling & Layout Grammar validation), `bd104e9c3` (Layout Grammar CSS variable validation try/catch hardening)
 
 ### Test Fixtures
 **Note:** Manual verification requires access to a running system with real data. Test fixtures used:

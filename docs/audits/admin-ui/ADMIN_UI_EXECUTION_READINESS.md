@@ -1,6 +1,6 @@
 # Admin UI Execution Readiness
-Status: Draft
-Last Updated: 2026-01-13T00:20:00.000Z
+Status: Draft (Inputs updated through A-UI-09; A-UI-01 + A-UI-10-15 pending)
+Last Updated: 2026-01-13T18:30:00.000Z
 Canonical: No
 Owner: Audit
 
@@ -9,24 +9,24 @@ Owner: Audit
 - [ ] Provide clear can-start / cannot-start flags per Admin area.
 
 2 Inputs
-- [ ] Consolidation plan: [docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md](docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md)
-- [ ] Final IA: [docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md](docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md)
-- [ ] Capability map and duplication register: [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md)
-- [ ] Ownership rules: [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md)
-- [ ] Glossary alignment: [docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md](docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md)
+- [x] Consolidation plan: [docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md](docs/audits/admin-ui/ADMIN_UI_CONSOLIDATION_PLAN.md)
+- [x] Final IA: [docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md](docs/audits/admin-ui/ADMIN_UI_FINAL_IA.md)
+- [x] Capability map and duplication register: [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md)
+- [x] Ownership rules: [docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md](docs/audits/admin-ui/ADMIN_UI_OWNERSHIP_MODEL.md)
+- [x] Glossary alignment: [docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md](docs/audits/admin-ui/ADMIN_UI_GLOSSARY.md)
 
 2.1 Traceability to A-UI-01 → A-UI-15 Outputs
 | Task ID | Output reference | Notes |
 | --- | --- | --- |
 | [ ] A-UI-01 Partners | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Partner scope and assignments. |
-| [ ] A-UI-02 Events | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Event scope and overrides. |
-| [ ] A-UI-03 Filters | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Filter dependencies on styles. |
-| [ ] A-UI-04 Users | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] User/role scope. |
-| [ ] A-UI-05 Insights | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Insights consolidation target. |
-| [ ] A-UI-06 KYC | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] KYC dependency on algorithms and reports. |
-| [ ] A-UI-07 Algorithms | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Algorithms dependency on KYC. |
-| [ ] A-UI-08 Clicker Manager | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Clicker dependency on KYC variables. |
-| [ ] A-UI-09 Bitly Manager | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Bitly association consolidation. |
+| [x] A-UI-02 Events | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] Event scope and overrides. |
+| [x] A-UI-03 Filters | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] Filter dependencies on styles. |
+| [x] A-UI-04 Users | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] User/role scope. |
+| [x] A-UI-05 Insights | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] Insights consolidation target. |
+| [x] A-UI-06 KYC | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] KYC + clicker dependency on algorithms and reports. |
+| [x] A-UI-07 Algorithms | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] Algorithms dependency on KYC. |
+| [x] A-UI-08 Admin -> Reporting Contract | [x] [docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md](docs/audits/admin-ui/ADMIN_UI_REPORTING_CONTRACT.md) | [x] Contract boundary; non-UI dependency for refactor readiness. |
+| [x] A-UI-09 Bitly Manager | [x] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [x] Bitly association consolidation. |
 | [ ] A-UI-10 Hashtag Manager | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Hashtag metadata consolidation. |
 | [ ] A-UI-11 Category Manager | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Category merge into hashtags. |
 | [ ] A-UI-12 Reporting | [ ] [docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md](docs/audits/admin-ui/ADMIN_UI_CAPABILITY_MAP.md) | [ ] Report templates ownership. |
