@@ -716,7 +716,8 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
           // WHAT: Calculate available height per row
           // WHY: Each row needs space for label + bar track + spacing
           // HOW: (bodyHeight - padding) / barCount - spacing per gap
-          const barCount = result.elements.length;
+          const barCount = result.elements?.length || 0;
+          if (barCount === 0) return; // Early return if no bars
           const availableHeightPerRow = (bodyHeight - chartBodyPadding) / barCount - rowSpacing;
           
           // WHAT: A-03.3 - Measure actual label heights for each row
@@ -743,10 +744,11 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
             // WHY: Labels must fit to prevent clipping (Layout Grammar)
             // HOW: Check if actual height exceeds available space
             if (actualLabelHeight > availableLabelHeight && availableLabelHeight > 0) {
+              const labelText = result.elements?.[idx]?.label || 'unknown';
               console.warn(
                 `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
                 `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. ` +
-                `Label should wrap to fit. Chart ID: ${result.chartId}, Label: "${result.elements[idx]?.label || 'unknown'}"`
+                `Label should wrap to fit. Chart ID: ${result.chartId}, Label: "${labelText}"`
               );
             }
             

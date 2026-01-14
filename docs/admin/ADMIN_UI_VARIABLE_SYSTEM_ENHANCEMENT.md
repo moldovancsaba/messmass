@@ -17,7 +17,7 @@ Owner: Admin
 
 3 Variable Inventory (Admin + Reporting)
 - [x] Inventory file (generated from latest backup snapshot):
-  - `docs/audits/admin-ui/ADMIN_UI_VARIABLE_INVENTORY.csv`
+  - `docs/admin/ADMIN_UI_VARIABLE_INVENTORY.csv`
   - Source snapshot: `backups/messmass_backup_2025-12-18T11-34-21-329Z/collections/variables_metadata.json`
 - [x] Inventory columns: `name`, `type`, `default`, `scope`, `defined_in`, `consumed_by`.
 - [x] Default values reflect runtime behavior (see Section 5 for details).
