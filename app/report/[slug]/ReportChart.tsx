@@ -688,6 +688,131 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
     }
   }, [showTitle, result.title, result.elements]);
   
+  // WHAT: A-03.3 - Measure and validate BAR chart label heights to prevent clipping
+  // WHY: Replace fixed label height assumptions with measured layout logic based on real rendered content
+  // HOW: Measure actual label heights after rendering and validate they fit within allocated row height
+  useEffect(() => {
+    if (!result.elements || result.elements.length === 0) return;
+    if (chartBodyRef.current && typeof window !== 'undefined') {
+      const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndValidateLabels = () => {
+        try {
+          // WHAT: Get chart body height from CSS variable or actual height
+          // WHY: Need body height to calculate available row height
+          // HOW: Read --chart-body-height or use actual body height
+          const bodyHeight = chartBodyRef.current?.offsetHeight || 0;
+          if (bodyHeight <= 0) return;
+          
+          // WHAT: Get chart body padding (var(--mm-space-2) = 8px × 2 = 16px)
+          // WHY: Padding reduces available space for rows
+          const chartBodyPadding = 16; // 2 × var(--mm-space-2)
+          
+          // WHAT: Get row spacing (border-spacing: 0 var(--mm-space-2) = 8px)
+          // WHY: Spacing between rows reduces available space
+          const rowSpacing = 8; // var(--mm-space-2)
+          
+          // WHAT: Calculate available height per row
+          // WHY: Each row needs space for label + bar track + spacing
+          // HOW: (bodyHeight - padding) / barCount - spacing per gap
+          const barCount = result.elements.length;
+          const availableHeightPerRow = (bodyHeight - chartBodyPadding) / barCount - rowSpacing;
+          
+          // WHAT: A-03.3 - Measure actual label heights for each row
+          // WHY: Replace fixed assumptions with measured layout logic
+          // HOW: Measure scrollHeight of each label cell to get actual rendered height
+          const labelCells = chartBodyRef.current?.querySelectorAll('[class*="barLabel"]') as NodeListOf<HTMLElement>;
+          if (!labelCells || labelCells.length === 0) return;
+          
+          labelCells.forEach((labelCell, idx) => {
+            // WHAT: Measure actual label height (scrollHeight includes all wrapped lines)
+            // WHY: scrollHeight gives actual content height including wrapped lines
+            // HOW: Use scrollHeight to get full label height
+            const actualLabelHeight = labelCell.scrollHeight;
+            
+            // WHAT: Get computed styles to account for padding
+            // WHY: Padding reduces available space for content
+            // HOW: Read padding from computed styles
+            const computedStyle = window.getComputedStyle(labelCell);
+            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+            const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+            const availableLabelHeight = availableHeightPerRow - paddingTop - paddingBottom;
+            
+            // WHAT: Validate label fits within allocated row height
+            // WHY: Labels must fit to prevent clipping (Layout Grammar)
+            // HOW: Check if actual height exceeds available space
+            if (actualLabelHeight > availableLabelHeight && availableLabelHeight > 0) {
+              console.warn(
+                `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
+                `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. ` +
+                `Label should wrap to fit. Chart ID: ${result.chartId}, Label: "${result.elements[idx]?.label || 'unknown'}"`
+              );
+            }
+            
+            // WHAT: Validate row height (max of label height and bar track height)
+            // WHY: Row height is determined by tallest element (label or bar track)
+            // HOW: Bar track has minimum 20px height (Layout Grammar), row height = max(labelHeight, 20px)
+            const minBarTrackHeight = 20; // Layout Grammar minimum
+            const requiredRowHeight = Math.max(actualLabelHeight + paddingTop + paddingBottom, minBarTrackHeight);
+            
+            if (requiredRowHeight > availableHeightPerRow && availableHeightPerRow > 0) {
+              console.warn(
+                `[BarChart A-03.3] Row ${idx + 1} requires ${requiredRowHeight}px but only ${availableHeightPerRow}px available. ` +
+                `Label height: ${actualLabelHeight}px, Bar track min: ${minBarTrackHeight}px. ` +
+                `Chart ID: ${result.chartId}`
+              );
+            }
+          });
+        } catch (error) {
+          console.error('[BarChart A-03.3] Unexpected error during label height measurement:', error);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      // A-03.3: Also measure after content changes
+      measureAndValidateLabels();
+      
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Labels might not be fully rendered on initial mount
+      // HOW: Delay measurement slightly to allow labels to render
+      const timeoutId = setTimeout(measureAndValidateLabels, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndValidateLabels);
+      });
+      
+      if (chartBodyRef.current) {
+        resizeObserver.observe(chartBodyRef.current);
+      }
+      
+      // WHAT: Observe content changes to remeasure when labels update
+      // WHY: Label heights change when content or font size changes
+      // HOW: Use MutationObserver to detect content changes
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndValidateLabels);
+      });
+      
+      if (chartBodyRef.current) {
+        mutationObserver.observe(chartBodyRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+      
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [result.chartId, result.elements]);
+  
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5 + A-05: Runtime Enforcement)
   // WHY: Ensure all height values are explicit and traceable, enforce in production
   // HOW: Check computed styles after CSS variables are applied, enforce in production

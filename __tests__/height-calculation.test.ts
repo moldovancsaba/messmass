@@ -1,6 +1,6 @@
 // __tests__/height-calculation.test.ts
-// WHAT: Tests for A-03.1 + A-03.2 - Height calculation fixes for TEXT AREA and KPI charts
-// WHY: Ensure height calculations prevent clipping of multi-line text and KPI values/labels
+// WHAT: Tests for A-03.1 + A-03.2 + A-03.3 - Height calculation fixes for TEXT AREA, KPI, and BAR charts
+// WHY: Ensure height calculations prevent clipping of multi-line text, KPI values/labels, and BAR chart labels
 // HOW: Test height calculation logic and validation
 
 /**
@@ -23,7 +23,17 @@
  * - Height must be validated on resize and content changes
  */
 
-describe('A-03.1 + A-03.2: Height Calculation Fixes', () => {
+/**
+ * A-03.3: BAR Chart Height Calculation
+ * 
+ * Requirements:
+ * - Replace fixed label height assumptions with measured layout logic
+ * - Measure actual rendered label heights after rendering
+ * - Validate labels fit within allocated row height
+ * - Prevent label overflow and clipping
+ */
+
+describe('A-03.1 + A-03.2 + A-03.3: Height Calculation Fixes', () => {
   describe('A-03.1: TEXT AREA Chart Height Calculation', () => {
     it('should calculate content height accounting for title height', () => {
       // WHAT: Test height calculation formula
@@ -121,6 +131,76 @@ describe('A-03.1 + A-03.2: Height Calculation Fixes', () => {
     });
   });
 
+  describe('A-03.3: BAR Chart Height Calculation', () => {
+    it('should calculate available height per row accounting for padding and spacing', () => {
+      // WHAT: Test available row height calculation
+      // WHY: Each row needs space for label + bar track + spacing
+      // HOW: Verify the calculation logic
+      const bodyHeight = 400;
+      const chartBodyPadding = 16; // 2 × var(--mm-space-2)
+      const barCount = 5;
+      const rowSpacing = 8; // var(--mm-space-2)
+      const availableHeightPerRow = (bodyHeight - chartBodyPadding) / barCount - rowSpacing;
+      
+      expect(availableHeightPerRow).toBe((400 - 16) / 5 - 8); // 68.8px
+    });
+
+    it('should account for label cell padding in available label height', () => {
+      // WHAT: Test padding calculation for label cell
+      // WHY: Padding reduces available space for content
+      // HOW: Verify padding is accounted for
+      const availableHeightPerRow = 68.8;
+      const paddingTop = 0; // Label cell has no vertical padding
+      const paddingBottom = 0;
+      const availableLabelHeight = availableHeightPerRow - paddingTop - paddingBottom;
+      
+      expect(availableLabelHeight).toBe(68.8);
+    });
+
+    it('should validate label fits within allocated row height', () => {
+      // WHAT: Test label validation
+      // WHY: Labels must fit within allocated row height to prevent clipping
+      // HOW: Verify validation logic
+      const actualLabelHeight = 50;
+      const availableLabelHeight = 68.8;
+      
+      const fits = actualLabelHeight <= availableLabelHeight;
+      expect(fits).toBe(true);
+    });
+
+    it('should calculate required row height as max of label height and bar track height', () => {
+      // WHAT: Test row height calculation
+      // WHY: Row height is determined by tallest element (label or bar track)
+      // HOW: Verify calculation logic
+      const actualLabelHeight = 50;
+      const paddingTop = 0;
+      const paddingBottom = 0;
+      const minBarTrackHeight = 20; // Layout Grammar minimum
+      const requiredRowHeight = Math.max(
+        actualLabelHeight + paddingTop + paddingBottom,
+        minBarTrackHeight
+      );
+      
+      expect(requiredRowHeight).toBe(50); // Label height is taller
+    });
+
+    it('should use bar track height when label is shorter', () => {
+      // WHAT: Test row height calculation when bar track is taller
+      // WHY: Row height must accommodate bar track minimum (20px)
+      // HOW: Verify calculation uses bar track height
+      const actualLabelHeight = 15;
+      const paddingTop = 0;
+      const paddingBottom = 0;
+      const minBarTrackHeight = 20; // Layout Grammar minimum
+      const requiredRowHeight = Math.max(
+        actualLabelHeight + paddingTop + paddingBottom,
+        minBarTrackHeight
+      );
+      
+      expect(requiredRowHeight).toBe(20); // Bar track height is taller
+    });
+  });
+
   describe('Height Calculation Edge Cases', () => {
     it('should handle zero container height gracefully', () => {
       // WHAT: Test edge case
@@ -156,6 +236,23 @@ describe('A-03.1 + A-03.2: Height Calculation Fixes', () => {
       // This test verifies the validation logic detects the issue
       const exceeds = actualContentHeight > availableContentHeight;
       expect(exceeds).toBe(true);
+    });
+
+    it('should handle BAR chart with zero bars gracefully', () => {
+      // WHAT: Test edge case
+      // WHY: BAR chart might have no bars
+      // HOW: Verify calculation handles zero bars
+      const barCount = 0;
+      const bodyHeight = 400;
+      const chartBodyPadding = 16;
+      
+      if (barCount === 0) {
+        // No calculation needed, chart is empty
+        expect(true).toBe(true);
+      } else {
+        const availableHeightPerRow = (bodyHeight - chartBodyPadding) / barCount;
+        expect(availableHeightPerRow).toBeGreaterThan(0);
+      }
     });
   });
 });

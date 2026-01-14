@@ -436,7 +436,12 @@
   /* WHAT: Table row - naturally expands to fit content */
   /* WHY: Table rows automatically expand to fit tallest cell content */
   /* HOW: Standard table row, no special CSS needed for row expansion */
+  /* A-03.3: Enhanced to ensure rows accommodate measured label heights */
   vertical-align: top; /* WHAT: Align content to top of row */
+  /* WHAT: A-03.3 - Ensure row height accommodates measured label heights */
+  /* WHY: Row height must accommodate actual rendered label height (not fixed assumptions) */
+  /* HOW: Table rows naturally expand, but we ensure no clipping */
+  min-height: 0 !important; /* CRITICAL: Allow natural expansion */
 }
 
 .barLabel {
@@ -444,20 +449,27 @@
   /* WHY: Table cells naturally expand row height when content wraps (Layout Grammar: no clipping) */
   /* HOW: Standard table cell with natural text wrapping, right-aligned, no forced line limits */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of independent scaling */
+  /* A-03.3: Enhanced to prevent label clipping with measured layout logic */
   font-size: var(--block-base-font-size);
   color: var(--chartLabelColor);
   font-weight: var(--mm-font-weight-medium);
   text-align: right;
-  white-space: normal; /* WHAT: Allow natural wrapping */
-  overflow-wrap: anywhere; /* WHAT: Break words if needed to prevent overflow */
-  word-break: break-word; /* WHAT: Break long words if needed */
+  white-space: normal !important; /* WHAT: Allow natural wrapping */
+  overflow-wrap: anywhere !important; /* WHAT: Break words if needed to prevent overflow */
+  word-break: break-word !important; /* WHAT: Break long words if needed */
+  hyphens: auto !important; /* A-03.3: Allow hyphenation for better label fitting */
   line-height: 1.2; /* WHAT: Comfortable line-height for readability */
   padding-right: var(--mm-space-2);
   padding-left: var(--mm-space-1);
   width: 40%; /* WHAT: Generous label column width - 40% of table width for full label visibility */
   vertical-align: top; /* WHAT: Align to top of row */
   box-sizing: border-box;
-  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space */
+  /* WHAT: A-03.3 - Ensure labels fit without clipping */
+  /* WHY: Labels must wrap to fit within allocated row height (Layout Grammar) */
+  /* HOW: Use min-height: 0 to allow natural expansion, overflow: visible to prevent clipping */
+  min-height: 0 !important; /* CRITICAL: Allow natural expansion */
+  overflow: visible !important; /* A-03.3: Prevent clipping - labels must be visible */
+  /* WHAT: Removed line-clamp - let labels wrap naturally to fit available space (max 2 lines enforced by font size calculation) */
 }
 
 .barTrackCell {

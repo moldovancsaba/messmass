@@ -178,7 +178,7 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 | ADM-RM-06 | Partner Analytics Dashboard enhancements | DEFERRED | `ROADMAP.md` |  |
 | ADM-RM-07 | Bitly Search Enhancements | PLANNED | `ROADMAP.md` |  |
 | ADM-RM-08 | Bitly Analytics Export & Reporting | PLANNED | `ROADMAP.md` |  |
-| ADM-RM-09 | Variable System Enhancement | IN PROGRESS | `ROADMAP.md` |  |
+| ADM-RM-09 | Variable System Enhancement | PLANNED | `ROADMAP.md` |  |
 | ADM-RM-10 | Admin UI Consistency | ACTIVE | `ROADMAP.md` |  |
 | ADM-RM-11 | Admin UI assignment dropdown (project edit modal) | BACKLOG | `ROADMAP.md` |  |
 | ADM-RM-12 | Admin Grid Settings UI (desktop/tablet/mobile units) | BACKLOG | `ROADMAP.md` |  |
@@ -188,23 +188,32 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 
 ## STATE MEMORY
 
-**2026-01-14T12:00:00.000Z**
+**2026-01-14T12:45:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
-- **CURRENT TASK ID:** A-03.1 + A-03.2 (under A-03) Height Calculation Fix for TEXT AREA + KPI Charts
+- **CURRENT TASK ID:** A-03.3 – BAR Chart Height Calculation Accuracy
 - **STATUS:** DONE
-- **LAST COMMIT(S):** pending (A-03.1 + A-03.2: TEXT AREA and KPI chart height calculation fixes - code + tests complete)
+- **LAST COMMIT(S):** pending (A-03.3: BAR chart height calculation with measured layout logic)
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
 
 **2026-01-14T12:30:00.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** A-03.1 + A-03.2 (under A-03) Height Calculation Fix for TEXT AREA + KPI Charts
+- **STATUS:** DONE
+- **LAST COMMIT(S):** c1c167d03 (A-03.1 + A-03.2: Height calculation fixes for TEXT AREA and KPI charts)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
+
+**2026-01-14T11:06:00.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** ADM-RM-09
-- **STATUS:** IN PROGRESS
-- **LAST COMMIT(S):** pending (ADM-RM-09 delivery)
+- **CURRENT TASK ID:** A-UI-CLEAN-01
+- **STATUS:** DONE
+- **LAST COMMIT(S):** pending (Admin cleanup commit)
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Variable inventory + compatibility contract + runtime guarantees + enhancement scope + staged future plan
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
 **2026-01-14T18:05:00.000Z**
 - **AGENT:** Tribeca
@@ -549,39 +558,12 @@ The following items are completed and tracked in release notes, verification pac
 
 **Owner:** Tribeca (Reporting)
 
-4.1 In progress
-
-- [ ] A-03: Height Calculation Accuracy Improvements
-  - **Status:** IN PROGRESS
-  - **Priority:** Medium
-  - **Dependencies:** None
-  - **Owner:** Tribeca
-  - **Execution notes:** Fix content overflow and hidden text by implementing accurate height calculations that respect Layout Grammar constraints. Scope includes TEXT AREA charts (multi-line text blocks) and KPI charts. Height must be computed from real rendered typography (font size, line height, wrapping, padding) and the available container width, so content never overflows or gets clipped.
-
-- [ ] A-03.1: TEXT AREA chart height calculation (no overflow)
-  - **Status:** OPEN
-  - **Priority:** High
-  - **Dependencies:** None
-  - **Owner:** Tribeca
-  - **Definition:** Implement deterministic height calculation for TEXT AREA charts so multi-line content is fully visible. Must respect Layout Grammar rules and avoid overflow/hidden text across resize and initial render.
-
-- [ ] A-03.2: KPI chart height calculation (no overflow)
-  - **Status:** OPEN
-  - **Priority:** High
-  - **Dependencies:** A-03.1
-  - **Owner:** Tribeca
-  - **Definition:** Implement deterministic height calculation for KPI charts so values/labels never overflow or clip. Must respect Layout Grammar rules and behave correctly across resize and initial render.
-
 - [ ] A-05: Layout Grammar Runtime Enforcement
   - **Status:** IN PROGRESS
   - **Priority:** High
   - **Dependencies:** Admin template/style/variable definitions stabilised (see A-UI-12, A-UI-13, ADM-RM-09)
   - **Owner:** Tribeca
   - **Execution notes:** Define and implement correct runtime behaviour for missing critical CSS variables without causing production crashes.
-
-4.2 Ready (unassigned placeholders not allowed)
-
-- None
 
 ---
 
@@ -610,13 +592,13 @@ The following items are completed and tracked in release notes, verification pac
   - **Priority:** High
   - **Dependencies:** A-UI-12, A-UI-13
   - **Owner:** Katja
-  - **Definition:** Admin variable system enhancement deliverables.
-  - **Deliverables:**
-    - Variable inventory (name, type, default, scope, where defined, where consumed).
-    - Compatibility contract (no renames, no silent behavior changes).
-    - Runtime guarantees (Admin validation, Reporting behavior when missing/invalid).
-    - Enhancement scope (safe improvements only).
-    - Future improvements plan (staged with dependencies + risk notes).
+  - **Definition:** Stabilise and harden the existing Variable system so daily operation is reliable and existing variables remain respected. Deliver enhancements without breaking compatibility. In addition, provide a future-facing improvement plan.
+  - **Deliverables (required):**
+    - Variable inventory: list all current variables used by Admin and Reporting (name, type, default, scope, where defined, where consumed).
+    - Compatibility contract: rules that guarantee existing variables keep working (no renames, no silent behaviour changes).
+    - Runtime guarantees: what happens when variables are missing or invalid (Admin validation, Reporting behaviour expectations).
+    - Enhancement scope: clearly separated list of safe improvements that do not break current operation.
+    - Future improvements plan: staged plan for improvements with dependencies and risk notes.
 
 5.2 Partner and assignment flows
 
@@ -732,7 +714,7 @@ The following items are completed and tracked in release notes, verification pac
 
 ## 8. Completed Items (Reference Only)
 
-Reporting: A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R-12, A-R-13, A-R-15, A-R-16, A-R-18, A-R-19
+Reporting: A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R-12, A-R-13, A-R-15, A-R-16, A-R-18, A-R-19, A-03 (incl. A-03.1 TEXT AREA, A-03.2 KPI height calculations)
 
 Admin: A-UI-CLEAN-01
 
@@ -740,22 +722,22 @@ Admin: A-UI-CLEAN-01
 
 ## 9. STATE MEMORY (Current Only)
 
-**2026-01-14T12:20:00.000Z**
+**2026-01-14T12:35:00.000Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
 - **CURRENT TASK ID:** A-03
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `c1c167d03` - fix(A-03.1+A-03.2): Height calculation fixes for TEXT AREA and KPI charts
+- **CURRENT BLOCKERS:** Push to HTTPS remote requires authentication
+- **NEXT EXPECTED OUTPUT:** Resolve Git authentication for HTTPS remote and push commit `c1c167d03`
+
+**2026-01-14T12:30:00.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** ADM-RM-09
 - **STATUS:** IN PROGRESS
 - **LAST COMMIT(S):** pending
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Code + tests fixing TEXT AREA and KPI height calculations (A-03.1, A-03.2) so content never overflows or is hidden, while keeping Layout Grammar rules intact
-
-**2026-01-14T12:20:00.000Z**
-- **AGENT:** Katja
-- **DOMAIN:** Admin
-- **CURRENT TASK ID:** A-UI-12
-- **STATUS:** PLANNED
-- **LAST COMMIT(S):** pending
-- **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Documented report template model + selection rules (admin)
+- **NEXT EXPECTED OUTPUT:** Admin Variable system hardening package (inventory + compatibility contract + runtime guarantees) plus a staged future improvement plan, documented and ready for implementation
 
 ---
