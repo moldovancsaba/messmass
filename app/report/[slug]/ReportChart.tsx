@@ -900,6 +900,18 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
             return;
           }
           
+          // WHAT: Check if --chart-body-height is set before validating
+          // WHY: Height calculation useEffect must complete before validation
+          // HOW: Read CSS variable and skip if not set yet
+          const computedStyle = window.getComputedStyle(chartContainer);
+          const chartBodyHeight = computedStyle.getPropertyValue('--chart-body-height').trim();
+          if (!chartBodyHeight || chartBodyHeight === '') {
+            // WHAT: CSS variable not set yet, skip validation
+            // WHY: Height calculation hasn't completed
+            // HOW: Return early, validation will retry on next resize
+            return;
+          }
+          
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
           // WHY: Fail-fast in production for critical violations
           // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
@@ -932,9 +944,36 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       // WHY: Heights may change on resize or content changes
       // HOW: Delay validation to ensure height calculation has completed
       // NOTE: Use setTimeout to delay validation after height calculation useEffect
-      const timeoutId = setTimeout(() => {
-        requestAnimationFrame(validateHeight);
-      }, 100);
+      // Multiple attempts to handle timing variations
+      let timeoutIds: NodeJS.Timeout[] = [];
+      
+      const attemptValidation = (attempt = 0) => {
+        if (attempt < 5) { // Try up to 5 times with increasing delays
+          const delay = 50 + (attempt * 50); // 50ms, 100ms, 150ms, 200ms, 250ms
+          const timeoutId = setTimeout(() => {
+            requestAnimationFrame(() => {
+              const containerHeight = chartContainer.offsetHeight;
+              const computedStyle = window.getComputedStyle(chartContainer);
+              const chartBodyHeight = computedStyle.getPropertyValue('--chart-body-height').trim();
+              
+              if (containerHeight > 0 && chartBodyHeight) {
+                // WHAT: Container is ready and CSS variable is set, validate
+                validateHeight();
+              } else {
+                // WHAT: Not ready yet, try again
+                attemptValidation(attempt + 1);
+              }
+            });
+          }, delay);
+          
+          timeoutIds.push(timeoutId);
+        } else {
+          // WHAT: Final attempt - validate even if not perfect (for error reporting)
+          validateHeight();
+        }
+      };
+      
+      attemptValidation(0);
       
       const resizeObserver = new ResizeObserver(() => {
         // WHAT: Debounce resize validation to avoid excessive checks
@@ -945,7 +984,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       resizeObserver.observe(chartContainer);
       
       return () => {
-        clearTimeout(timeoutId);
+        timeoutIds.forEach(id => clearTimeout(id));
         resizeObserver.disconnect();
       };
     }
