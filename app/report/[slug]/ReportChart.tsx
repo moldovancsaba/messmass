@@ -355,17 +355,43 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
             const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
             const availableTitleHeight = titleRowHeight - paddingTop - paddingBottom;
             
-            // WHAT: If actual rendered height exceeds available space, log warning
-            // WHY: Title is clamped to 2 lines per Layout Grammar, but we verify it fits
-            // HOW: Check if clamped height fits within allocated space, log warning if it doesn't
-            // NOTE: Use small tolerance (1px) to account for rounding differences
-            const tolerance = 1; // 1px tolerance for rounding
+            // WHAT: If actual rendered height exceeds available space, reduce font size to fit
+            // WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated space
+            // HOW: If title exceeds space, dynamically reduce font size to ensure 2 lines fit
+            // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering
+            const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
             if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
-              console.warn(
-                `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
-                `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. ` +
-                `Title should clamp to 2 lines. Chart ID: ${result.chartId}`
-              );
+              // WHAT: Calculate required font size to fit 2 lines in available space
+              // WHY: Title must fit within allocated space, so we need to reduce font size
+              // HOW: availableHeight = 2 lines × fontSize × lineHeight, so fontSize = availableHeight / (2 × lineHeight)
+              const lineHeight = 1.1; // From CSS: .kpi .kpiTitle { line-height: 1.1; }
+              const padding = 16; // 2 × var(--mm-space-2)
+              const availableForText = availableTitleHeight - padding;
+              const maxFontSizeForTwoLines = availableForText / (2 * lineHeight);
+              
+              // WHAT: Get current font size and reduce if needed
+              // WHY: Need to ensure title fits within allocated space
+              // HOW: Apply reduced font size via inline style if current size is too large
+              const computedStyle = window.getComputedStyle(titleSpan);
+              const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+              
+              if (currentFontSize > maxFontSizeForTwoLines && maxFontSizeForTwoLines > 0) {
+                // WHAT: Apply reduced font size to ensure title fits
+                // WHY: Title must fit within allocated space
+                // HOW: Set inline style with reduced font size
+                titleSpan.style.fontSize = `${maxFontSizeForTwoLines}px`;
+                console.warn(
+                  `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${maxFontSizeForTwoLines}px to fit. ` +
+                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. Chart ID: ${result.chartId}`
+                );
+              } else {
+                console.warn(
+                  `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
+                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. ` +
+                  `Title should clamp to 2 lines. Chart ID: ${result.chartId}`
+                );
+              }
             }
           }
         }
@@ -1009,24 +1035,44 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
           const contentWrapperPadding = 16; // 2 × var(--mm-space-2)
           const availableContentHeight = contentHeight - contentWrapperPadding;
           
-          // WHAT: If actual content exceeds available space, ensure container height accommodates it
-          // WHY: Prevent clipping by ensuring content fits
-          // HOW: If content is taller, we need to increase the content height allocation
-          // NOTE: We can't change the container height (it's set by row), so we ensure content wraps properly
-          // The CSS already has word-wrap: break-word, so content should wrap, but we verify it fits
+          // WHAT: If actual content exceeds available space, reduce font size to fit
+          // WHY: Layout Grammar: content must fit without scrolling or clipping
+          // HOW: Calculate maximum font size that fits the content and apply it dynamically
           if (actualContentHeight > availableContentHeight && availableContentHeight > 0) {
-            // WHAT: Content exceeds available space - this indicates a potential clipping issue
-            // WHY: We need to ensure the content wrapper height is sufficient
-            // HOW: The content should wrap (word-wrap: break-word is set), but we log a warning if it doesn't
-            // NOTE: In practice, with proper wrapping, scrollHeight should match available height
-            // If it doesn't, the content might not be wrapping properly, which is a separate issue
-            // For now, we ensure the content height is at least the actual content height
-            // But we're constrained by the container height, so we rely on wrapping
-            console.warn(
-              `[TextChart A-03.1] Content height (${actualContentHeight}px) exceeds available space (${availableContentHeight}px). ` +
-              `Container: ${containerHeight}px, Title: ${titleHeight}px, Content wrapper: ${contentHeight}px. ` +
-              `Content should wrap to fit. Chart ID: ${result.chartId}`
-            );
+            // WHAT: Calculate required font size to fit content in available space
+            // WHY: Content must fit within allocated space per Layout Grammar
+            // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+            const computedStyle = window.getComputedStyle(contentElement);
+            const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 1.3;
+            
+            // WHAT: Calculate scale factor based on available vs actual height
+            // WHY: Need to reduce font size proportionally to fit content
+            // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+            const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+            const scaleFactor = (availableContentHeight / actualContentHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if it's significantly different
+            // WHY: Only apply if reduction is meaningful (more than 5% difference)
+            // HOW: Set inline style with reduced font size
+            if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+              contentElement.style.fontSize = `${newFontSize}px`;
+              console.warn(
+                `[TextChart A-03.1] Content height (${actualContentHeight}px) exceeds available space (${availableContentHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${containerHeight}px, Title: ${titleHeight}px, Content wrapper: ${contentHeight}px. Chart ID: ${result.chartId}`
+              );
+            } else if (scaleFactor < 0.95) {
+              // WHAT: Font size would be too small, log warning
+              // WHY: Content can't fit even with minimum readable font size
+              // HOW: Log warning for investigation
+              console.warn(
+                `[TextChart A-03.1] Content height (${actualContentHeight}px) exceeds available space (${availableContentHeight}px). ` +
+                `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                `Container: ${containerHeight}px, Title: ${titleHeight}px, Content wrapper: ${contentHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
           }
         }
         

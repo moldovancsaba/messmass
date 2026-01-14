@@ -610,12 +610,13 @@
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
   /* WHAT: A-03.1 - Ensure content fits without clipping */
-  /* WHY: Multi-line text must be fully visible, not clipped */
-  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit within container */
+  /* WHY: Multi-line text and tables must be fully visible, not clipped */
+  /* HOW: Use min-height: 0 to allow flex shrinking, dynamic font size reduction for tables */
   min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
-  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
   /* WHY: Align text chart typography with block typography for true unification */
+  /* A-03.1: Font size may be reduced dynamically via inline style if content exceeds space */
   font-size: var(--block-base-font-size) !important;
   font-weight: var(--mm-font-weight-semibold);
   color: var(--textColor);
@@ -623,10 +624,10 @@
   box-sizing: border-box;
   /* CRITICAL: Center the entire block of content */
   text-align: center !important;
-  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow) */
-  /* WHAT: Content must fit through structural change (wrapping, reflow), not clipping */
-  /* WHY: Layout Grammar: no clipping on content layers */
-  /* A-03.1: Enhanced wrapping to ensure multi-line text fits */
+  /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow/font reduction) */
+  /* WHAT: Content must fit through structural change (wrapping, reflow, font size reduction), not clipping */
+  /* WHY: Layout Grammar: no clipping on content layers, no scrolling */
+  /* A-03.1: Enhanced wrapping for text, dynamic font size reduction for tables */
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   hyphens: auto !important; /* A-03.1: Allow hyphenation for better text fitting */
@@ -787,6 +788,7 @@
   font-size: inherit !important;
   /* CRITICAL: Preserve line breaks but allow wrapping (not pre-wrap which breaks bold) */
   white-space: normal !important; /* Allow normal wrapping, markdown handles line breaks */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must fit through font size reduction (Layout Grammar) */
 }
 
 .textMarkdown > * {
@@ -796,6 +798,33 @@
   box-sizing: border-box !important;
   text-align: center !important; /* Center each block */
   font-size: 1em !important; /* CRITICAL: Same size for all elements */
+}
+
+/* A-03.1 FIX: Table styling in text markdown - tables need special handling */
+.textMarkdown table {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0.5em 0 !important;
+  display: table !important; /* CRITICAL: Tables must be display: table */
+  text-align: left !important; /* Tables read better left-aligned */
+  font-size: 0.9em !important; /* Slightly smaller font for tables to fit more rows */
+}
+
+.textMarkdown table thead {
+  background: var(--chartTitleColor, var(--mm-gray-100)) !important;
+  font-weight: var(--mm-font-weight-semibold) !important;
+}
+
+.textMarkdown table th,
+.textMarkdown table td {
+  padding: var(--mm-space-2) var(--mm-space-3) !important;
+  border: 1px solid var(--chartBorder, var(--mm-gray-200)) !important;
+  text-align: left !important;
+}
+
+.textMarkdown table th {
+  border-bottom: 2px solid var(--chartBorder, var(--mm-gray-300)) !important;
 }
 
 /* WHAT: Remove duplicate h1 definition - already defined above with proper sizing */

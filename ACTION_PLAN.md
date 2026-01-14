@@ -159,9 +159,9 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 **Dependencies:** A-UI-00 outputs (capability map, ownership model, glossary)
 
 ### Checkable tasks
-- [ ] Resolve the canonical user guide source referenced in [app/admin/help/page.tsx](app/admin/help/page.tsx).
-- [ ] Decide whether the guide is doc-driven or embedded and define update process.
-- [ ] Map user workflows to admin workflows and reference links.
+- [x] Resolve the canonical user guide source referenced in [app/admin/help/page.tsx](app/admin/help/page.tsx).
+- [x] Decide whether the guide is doc-driven or embedded and define update process.
+- [x] Map user workflows to admin workflows and reference links.
 
 ---
 
@@ -406,11 +406,6 @@ Major sections:
     - Owner: Katja  
     - Status: OPEN
 
-[ ] A-UI-15: Resolve canonical user guide source and workflow mapping  
-    - Dependency: Access to help admin page  
-    - Owner: Katja  
-    - Status: OPEN
-
 ---
 
 ## 5. Cross-System / Shared Risks
@@ -549,7 +544,7 @@ The following items are completed and tracked in release notes, verification pac
 3) REPORTING: A-05 (runtime enforcement expectations aligned with Admin model outputs)
 4) ADMIN: A-UI-01 (Partner IA + override rules, depends on A-UI-12/A-UI-13 clarity)
 5) ADMIN: A-UI-10, A-UI-11 (hashtag/category consolidation decisions)
-6) ADMIN: A-UI-14, A-UI-15 (operational support and documentation)
+6) ADMIN: A-UI-14 (operational support and documentation)
 7) ADMIN: Remaining ADM-RM items (post-foundation)
 
 ---
@@ -643,12 +638,6 @@ The following items are completed and tracked in release notes, verification pac
   - **Dependencies:** A-UI-12, A-UI-13
   - **Owner:** Katja
 
-- [ ] A-UI-15: User Guide (messmass.com Operations)
-  - **Status:** OPEN
-  - **Priority:** Low
-  - **Dependencies:** A-UI-12, A-UI-13
-  - **Owner:** Katja
-
 5.5 Backlog (kept as checkboxes, not a table)
 
 - [ ] ADM-RM-07: Bitly Search Enhancements
@@ -716,7 +705,7 @@ The following items are completed and tracked in release notes, verification pac
 
 Reporting: A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R-12, A-R-13, A-R-15, A-R-16, A-R-18, A-R-19, A-03 (incl. A-03.1 TEXT AREA, A-03.2 KPI height calculations)
 
-Admin: A-UI-CLEAN-01
+Admin: A-UI-CLEAN-01, A-UI-15
 
 ---
 
@@ -731,13 +720,13 @@ Admin: A-UI-CLEAN-01
 - **CURRENT BLOCKERS:** Push to HTTPS remote requires authentication
 - **NEXT EXPECTED OUTPUT:** Resolve Git authentication for HTTPS remote and push commit `c1c167d03`
 
-**2026-01-14T12:30:00.000Z**
+**2026-01-14T13:22:09.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** ADM-RM-09
-- **STATUS:** IN PROGRESS
+- **CURRENT TASK ID:** A-UI-15
+- **STATUS:** DONE
 - **LAST COMMIT(S):** pending
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** Admin Variable system hardening package (inventory + compatibility contract + runtime guarantees) plus a staged future improvement plan, documented and ready for implementation
+- **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
 ---
