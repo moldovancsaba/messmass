@@ -182,6 +182,28 @@ export default function ReportPage() {
     );
   }, [report, charts, stats, blocks]);
 
+  // A-R-12: Log template compatibility issues to console (not displayed in UI for client-facing reports)
+  useEffect(() => {
+    if (compatibilityResult && compatibilityResult.issues.length > 0) {
+      const errorIssues = compatibilityResult.issues.filter(issue => issue.severity === 'error');
+      const warningIssues = compatibilityResult.issues.filter(issue => issue.severity === 'warning');
+      
+      if (errorIssues.length > 0) {
+        console.warn('[ReportPage] Template Compatibility Issues:', {
+          totalErrors: errorIssues.length,
+          totalWarnings: warningIssues.length,
+          errors: errorIssues.map(issue => formatCompatibilityIssue(issue)),
+          summary: compatibilityResult.summary
+        });
+      } else if (warningIssues.length > 0) {
+        console.info('[ReportPage] Template Compatibility Warnings:', {
+          totalWarnings: warningIssues.length,
+          warnings: warningIssues.map(issue => formatCompatibilityIssue(issue))
+        });
+      }
+    }
+  }, [compatibilityResult]);
+
   // Calculate chart results using ReportCalculator
   const chartResults = useMemo(() => {
     if (!stats || !charts || charts.length === 0) {
@@ -356,42 +378,6 @@ export default function ReportPage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* A-R-12: Template Compatibility Warnings */}
-        {compatibilityResult && compatibilityResult.issues.length > 0 && (
-          <div style={{
-            padding: '12px 16px',
-            marginBottom: '16px',
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffc107',
-            borderRadius: '8px',
-            fontSize: '0.875rem'
-          }}>
-            <div style={{ fontWeight: 600, marginBottom: '8px', color: '#856404' }}>
-              ⚠️ Template Compatibility Issues
-            </div>
-            <ul style={{ margin: 0, paddingLeft: '20px', color: '#856404' }}>
-              {compatibilityResult.issues
-                .filter(issue => issue.severity === 'error')
-                .slice(0, 5) // Limit to 5 errors to avoid overwhelming UI
-                .map((issue, idx) => (
-                  <li key={idx} style={{ marginBottom: '4px' }}>
-                    {formatCompatibilityIssue(issue)}
-                  </li>
-                ))}
-              {compatibilityResult.issues.filter(issue => issue.severity === 'error').length > 5 && (
-                <li style={{ fontStyle: 'italic' }}>
-                  ... and {compatibilityResult.issues.filter(issue => issue.severity === 'error').length - 5} more issues
-                </li>
-              )}
-            </ul>
-            {compatibilityResult.summary.missingCharts > 0 && (
-              <div style={{ marginTop: '8px', fontSize: '0.8125rem' }}>
-                {compatibilityResult.summary.missingCharts} chart(s) may not display correctly.
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Hero Section */}
         <div id="report-hero">
           <ReportHero 
