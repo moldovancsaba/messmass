@@ -343,9 +343,12 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
             
             // WHAT: Apply reduced font size if it's significantly different
             // WHY: Only apply if reduction is meaningful (more than 5% difference)
-            // HOW: Set inline style with reduced font size
+            // HOW: Set inline style with reduced font size and !important to override CSS clamp()
             if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
-              valueElement.style.fontSize = `${newFontSize}px`;
+              // WHAT: Use setProperty with !important flag to override CSS clamp() rule
+              // WHY: CSS clamp() with container queries might override inline style
+              // HOW: Use setProperty with important flag
+              valueElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
               console.warn(
                 `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
                 `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
