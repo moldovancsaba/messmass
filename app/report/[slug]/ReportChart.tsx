@@ -1185,19 +1185,73 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
   // WHAT: Check if title should be shown (default: true for backward compatibility)
   const showTitle = result.showTitle !== false;
   
-  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 4)
-  // WHY: Table content is inside CellWrapper body zone, which has --chart-body-height from Phase 2
-  // HOW: Use --chart-body-height directly or calculate from it
+  // WHAT: Ref for table content to calculate height (P1 1.4 Phase 2 + Phase 4)
+  // WHY: Need to calculate body zone height and table content height explicitly
+  // HOW: Measure container and header heights, calculate body height, set CSS custom properties
   const tableContentRef = useRef<HTMLDivElement>(null);
+  
+  // WHAT: Calculate and set body zone height explicitly (P1 1.4 Phase 2)
+  // WHY: Replace flex: 1 with explicit height for deterministic behavior
+  // HOW: Measure container and header heights, calculate body height, set CSS custom property
+  useEffect(() => {
+    if (tableContentRef.current && typeof window !== 'undefined') {
+      // WHAT: Find parent CellWrapper container (chart container)
+      // WHY: CSS variable must be set on chart container per solution document
+      const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
+      if (!chartContainer) return;
+      
+      const measureAndSetHeight = () => {
+        // WHAT: Get container height from offsetHeight (actual rendered height)
+        // WHY: Container height is set via --block-height from row
+        const containerHeight = chartContainer.offsetHeight;
+        
+        // WHAT: Find title and subtitle zones within CellWrapper
+        // WHY: Subtract header heights from container to get body height
+        const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+        const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+        
+        let titleHeight = 0;
+        let subtitleHeight = 0;
+        
+        if (titleZone) {
+          titleHeight = titleZone.offsetHeight;
+        }
+        if (subtitleZone) {
+          subtitleHeight = subtitleZone.offsetHeight;
+        }
+        
+        // WHAT: Calculate body zone height: container - title - subtitle
+        // WHY: Explicit height calculation instead of flex growth
+        const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+        
+        // WHAT: Set CSS custom property for body zone height on chart container
+        // WHY: P1 1.4 Phase 2 - explicit height cascade
+        if (bodyHeight > 0) {
+          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        }
+      };
+      
+      // WHAT: Measure after initial render and on resize
+      // WHY: Heights may change on resize or content changes
+      measureAndSetHeight();
+      
+      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      resizeObserver.observe(chartContainer);
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title]);
   
   // WHAT: Calculate and set table content height explicitly (P1 1.4 Phase 4)
   // WHY: Replace implicit height behavior with explicit height for deterministic behavior
-  // HOW: Use --chart-body-height from CellWrapper body zone (already set in Phase 2)
+  // HOW: Use --chart-body-height from chart container (set in Phase 2 above)
   useEffect(() => {
     if (tableContentRef.current && typeof window !== 'undefined') {
       const measureAndSetHeight = () => {
         // WHAT: Find parent CellWrapper container (chart container)
-        // WHY: CSS variable --chart-body-height is set on CellWrapper from Phase 2
+        // WHY: CSS variable --chart-body-height is set on chart container from Phase 2
         const chartContainer = tableContentRef.current?.closest('[class*="cellWrapper"]') as HTMLElement;
         if (!chartContainer) return;
         
@@ -1210,6 +1264,28 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
         // WHY: Table content fills the body zone, so height should match body zone height
         if (bodyHeightValue && tableContentRef.current) {
           tableContentRef.current.style.setProperty('--text-content-height', bodyHeightValue);
+        } else if (tableContentRef.current) {
+          // WHAT: Fallback: calculate from actual container height if CSS variable not set yet
+          // WHY: CSS variable might not be set on initial render
+          // HOW: Use actual container height minus title/subtitle
+          const containerHeight = chartContainer.offsetHeight;
+          const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
+          const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
+          
+          let titleHeight = 0;
+          let subtitleHeight = 0;
+          
+          if (titleZone) {
+            titleHeight = titleZone.offsetHeight;
+          }
+          if (subtitleZone) {
+            subtitleHeight = subtitleZone.offsetHeight;
+          }
+          
+          const bodyHeight = containerHeight - titleHeight - subtitleHeight;
+          if (bodyHeight > 0) {
+            tableContentRef.current.style.setProperty('--text-content-height', `${bodyHeight}px`);
+          }
         }
       };
       
@@ -1217,12 +1293,24 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       // WHY: Heights may change on resize or content changes
       measureAndSetHeight();
       
-      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      // WHAT: Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      // WHY: Heights might not be fully calculated on initial mount
+      // HOW: Delay measurement slightly to allow heights to be set
+      const timeoutId = setTimeout(measureAndSetHeight, 0);
+      
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize measurements to avoid excessive calculations
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch measurements
+        requestAnimationFrame(measureAndSetHeight);
+      });
+      
       if (tableContentRef.current) {
         resizeObserver.observe(tableContentRef.current);
       }
       
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
       };
     }
