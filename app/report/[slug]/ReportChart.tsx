@@ -1334,10 +1334,26 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       
       const validateHeight = () => {
         try {
+          // WHAT: Find parent row element that sets --block-height
+          // WHY: --block-height is set on the row, not the chart element
+          // HOW: Traverse up the DOM tree to find the row element
+          let rowElement: HTMLElement | null = chartContainer.parentElement;
+          while (rowElement && !rowElement.classList.contains('report-content')) {
+            // Check if this element has --block-height or --row-height set
+            const computedStyle = getComputedStyle(rowElement);
+            const blockHeight = computedStyle.getPropertyValue('--block-height').trim();
+            const rowHeight = computedStyle.getPropertyValue('--row-height').trim();
+            if (blockHeight || rowHeight) {
+              break; // Found the row element
+            }
+            rowElement = rowElement.parentElement;
+          }
+          
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
           // WHY: Fail-fast in production for critical violations
           // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
           // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
+          // NOTE: Delay validation slightly to ensure height calculation has completed
           try {
             validateCriticalCSSVariable(
               tableContentRef.current,
@@ -1358,11 +1374,15 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
             console.error('[TableChart] CSS variable validation error:', error);
           }
           
+          // WHAT: Check --block-height on row element (where it's set) instead of chart element
+          // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
+          // HOW: Validate on row element if found, otherwise fall back to chart container
+          const blockHeightElement = rowElement || chartContainer;
           try {
             validateCriticalCSSVariable(
-              chartContainer,
+              blockHeightElement,
               CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-              { chartId: result.chartId, chartType: 'table' }
+              { chartId: result.chartId, chartType: 'table', checkedOnRow: !!rowElement }
             );
           } catch (error) {
             console.error('[TableChart] CSS variable validation error:', error);
@@ -1374,9 +1394,16 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       
       // WHAT: Validate after initial render and on resize
       // WHY: Heights may change on resize or content changes
-      validateHeight();
+      // NOTE: Delay validation to ensure height calculation has completed first
+      const timeoutId = setTimeout(validateHeight, 100); // Delay 100ms to allow height calculation to complete
       
-      const resizeObserver = new ResizeObserver(validateHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize validation to avoid excessive checks
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch validation
+        requestAnimationFrame(validateHeight);
+      });
+      
       if (tableContentRef.current) {
         resizeObserver.observe(tableContentRef.current);
       }
@@ -1385,6 +1412,7 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       }
       
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
       };
     }
