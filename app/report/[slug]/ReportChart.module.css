@@ -135,6 +135,7 @@
   /* WHY: Middle row of 4fr-3fr-3fr grid */
   /* HOW: Flex centering for responsive value scaling, fully vertically centered */
   /* P1 2.5.1: Increased scaling from min(18cqh, 20cqw) to min(30cqh, 25cqw), max from 5rem to 6rem */
+  /* A-03.2: Enhanced to prevent value clipping */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,10 +147,17 @@
   line-height: 0.85;
   text-align: center;
   letter-spacing: -0.04em;
-  /* WHAT: Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
+  /* WHAT: A-03.2 - Allow wrapping instead of truncation - Layout Grammar: no truncation on content */
   /* WHY: Content must fit through wrapping/reflow, not truncation */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  /* HOW: Enhanced wrapping properties to ensure multi-line values fit */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.2: Allow hyphenation for better value fitting */
+  /* WHAT: A-03.2 - Ensure value fits within row height */
+  /* WHY: Multi-line values must be fully visible, not clipped */
+  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.2: Prevent overflow - content must wrap to fit (Layout Grammar) */
   container-type: size;
 }
 
@@ -158,6 +166,7 @@
   /* WHY: Grid row 3 = bottom 30% of cell */
   /* HOW: Flex with center alignment - fully vertically centered */
   /* P1 2.5.1: Increased scaling from 8cqh to 15cqh, max from 1.125rem to 1.5rem */
+  /* A-03.2: Enhanced to prevent title clipping */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,9 +179,18 @@
   font-weight: var(--mm-font-weight-medium);
   color: var(--chartLabelColor);
   line-height: 1.1;
-  word-break: break-word;
-  hyphens: none;
-  overflow: hidden;
+  /* WHAT: A-03.2 - Enhanced wrapping to ensure title fits */
+  /* WHY: Title must fit within allocated row height (clamped to 2 lines per Layout Grammar) */
+  /* HOW: Enhanced wrapping properties */
+  word-break: break-word !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.2: Allow hyphenation for better title fitting */
+  /* WHAT: A-03.2 - Ensure title fits within row height */
+  /* WHY: Title is clamped to 2 lines per Layout Grammar, but must fit within allocated height */
+  /* HOW: Use min-height: 0 to allow flex shrinking, overflow: hidden to prevent overflow */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.2: Prevent overflow - title must clamp to 2 lines (Layout Grammar) */
 }
 
 .kpi .kpiTitle > * {
@@ -543,6 +561,7 @@
   /* WHAT: Content container - fills remaining space after title, centers content vertically and horizontally */
   /* WHY: Separate block-level div that cannot be inline, must fill available space and center content */
   /* P1 1.4 Phase 4: Explicit height instead of flex: 1 */
+  /* A-03.1: Enhanced to prevent content clipping */
   display: flex !important; /* CRITICAL: Use flexbox for vertical centering */
   align-items: center !important; /* CRITICAL: Center content vertically */
   justify-content: center !important; /* CRITICAL: Center content horizontally */
@@ -550,6 +569,11 @@
   height: var(--text-content-height, var(--mm-block-height-default)); /* WHAT: P1 1.4 Phase 4 - explicit height from calculation, fallback to design token */
   padding: var(--mm-space-2) !important;
   box-sizing: border-box !important;
+  /* WHAT: A-03.1 - Ensure content fits without clipping */
+  /* WHY: Multi-line text must be fully visible within the wrapper */
+  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
   /* CRITICAL: Force block display - cannot be inline */
   clear: both !important;
   float: none !important;
@@ -564,6 +588,7 @@
   /* WHY: Markdown elements (p, h1, etc.) must stack vertically, fill space, and be centered */
   /* HOW: Use flexbox to fill space and center content, block display for children to stack */
   /* P1 1.4 Phase 4: Explicit height instead of min-height: 0 */
+  /* A-03.1: Enhanced to prevent multi-line text clipping */
   display: flex !important; /* CRITICAL: Use flexbox to fill space and center content */
   flex-direction: column !important; /* CRITICAL: Stack children vertically */
   align-items: center !important; /* CRITICAL: Center content horizontally */
@@ -572,6 +597,11 @@
   max-width: 100% !important;
   height: 100% !important; /* CRITICAL: Fill parent height completely (parent has explicit height from Phase 4) */
   max-height: 100% !important; /* CRITICAL: Don't exceed parent height */
+  /* WHAT: A-03.1 - Ensure content fits without clipping */
+  /* WHY: Multi-line text must be fully visible, not clipped */
+  /* HOW: Use min-height: 0 to allow flex shrinking, ensure content wraps to fit within container */
+  min-height: 0 !important; /* CRITICAL: Allow flex shrinking to fit content */
+  overflow: hidden !important; /* A-03.1: Prevent overflow - content must wrap to fit (Layout Grammar) */
   /* WHAT: P1 1.5 Phase 2 - Use block-level typography instead of unified-text-font-size (Option B) */
   /* WHY: Align text chart typography with block typography for true unification */
   font-size: var(--block-base-font-size) !important;
@@ -584,8 +614,10 @@
   /* CRITICAL: No scrolling, no clipping - Layout Grammar compliance (content must fit through wrapping/reflow) */
   /* WHAT: Content must fit through structural change (wrapping, reflow), not clipping */
   /* WHY: Layout Grammar: no clipping on content layers */
+  /* A-03.1: Enhanced wrapping to ensure multi-line text fits */
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+  hyphens: auto !important; /* A-03.1: Allow hyphenation for better text fitting */
   /* CRITICAL: Enable container queries for responsive scaling (fallback) */
   container-type: size !important;
 }
