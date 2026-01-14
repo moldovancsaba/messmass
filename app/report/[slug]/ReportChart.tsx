@@ -571,19 +571,33 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
-          { chartId: result.chartId, chartType: 'bar', containerHeight: chartContainer.offsetHeight }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'bar' }
-        );
+        try {
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Fail-fast in production for critical violations
+          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
+          try {
+            validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+              { chartId: result.chartId, chartType: 'bar', containerHeight: chartContainer.offsetHeight }
+            );
+          } catch (error) {
+            console.error('[BarChart] CSS variable validation error:', error);
+          }
+          
+          try {
+            validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'bar' }
+            );
+          } catch (error) {
+            console.error('[BarChart] CSS variable validation error:', error);
+          }
+        } catch (error) {
+          console.error('[BarChart] Unexpected error during height validation:', error);
+        }
       };
       
       // WHAT: Validate after initial render and on resize
@@ -746,31 +760,51 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   useEffect(() => {
     if (textChartRef.current && typeof window !== 'undefined') {
       const validateHeight = () => {
-        // WHAT: Find parent row element that sets --block-height
-        // WHY: --block-height is set on the row, not the chart element
-        // HOW: Traverse up the DOM tree to find the row element
-        let rowElement: HTMLElement | null = textChartRef.current?.parentElement || null;
-        while (rowElement && !rowElement.classList.contains('report-content')) {
-          rowElement = rowElement.parentElement;
+        try {
+          // WHAT: Find parent row element that sets --block-height
+          // WHY: --block-height is set on the row, not the chart element
+          // HOW: Traverse up the DOM tree to find the row element
+          let rowElement: HTMLElement | null = textChartRef.current?.parentElement || null;
+          while (rowElement && !rowElement.classList.contains('report-content')) {
+            rowElement = rowElement.parentElement;
+          }
+          
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Fail-fast in production for critical violations
+          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
+          try {
+            validateCriticalCSSVariable(
+              textChartRef.current,
+              CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+              { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
+            );
+          } catch (error) {
+            // WHAT: Log validation error but don't crash component
+            // WHY: Validation failures should be logged but not break user experience
+            console.error('[TextChart] CSS variable validation error:', error);
+          }
+          
+          // WHAT: Check --block-height on row element (where it's set) instead of chart element
+          // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
+          // HOW: Validate on row element if found, otherwise fall back to chart element
+          const blockHeightElement = rowElement || textChartRef.current;
+          try {
+            validateCriticalCSSVariable(
+              blockHeightElement,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'text', checkedOnRow: !!rowElement }
+            );
+          } catch (error) {
+            // WHAT: Log validation error but don't crash component
+            // WHY: Validation failures should be logged but not break user experience
+            console.error('[TextChart] CSS variable validation error:', error);
+          }
+        } catch (error) {
+          // WHAT: Catch any unexpected errors during validation
+          // WHY: Prevent validation logic from crashing component rendering
+          console.error('[TextChart] Unexpected error during height validation:', error);
         }
-        
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          textChartRef.current,
-          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
-          { chartId: result.chartId, chartType: 'text', containerHeight: textChartRef.current?.offsetHeight || 0 }
-        );
-        // WHAT: Check --block-height on row element (where it's set) instead of chart element
-        // WHY: CSS variable is set on row, chart inherits it but getComputedStyle may not return inherited value
-        // HOW: Validate on row element if found, otherwise fall back to chart element
-        const blockHeightElement = rowElement || textChartRef.current;
-        validateCriticalCSSVariable(
-          blockHeightElement,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'text', checkedOnRow: !!rowElement }
-        );
       };
       
       // WHAT: Validate after initial render and on resize
@@ -884,24 +918,43 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       if (!chartContainer) return;
       
       const validateHeight = () => {
-        // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
-        // WHY: Fail-fast in production for critical violations
-        // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
-        validateCriticalCSSVariable(
-          tableContentRef.current,
-          CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
-        validateCriticalCSSVariable(
-          chartContainer,
-          CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
-          { chartId: result.chartId, chartType: 'table' }
-        );
+        try {
+          // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
+          // WHY: Fail-fast in production for critical violations
+          // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
+          // NOTE: Wrapped in try-catch to prevent validation errors from crashing component rendering
+          try {
+            validateCriticalCSSVariable(
+              tableContentRef.current,
+              CRITICAL_CSS_VARIABLES.TEXT_CONTENT_HEIGHT,
+              { chartId: result.chartId, chartType: 'table' }
+            );
+          } catch (error) {
+            console.error('[TableChart] CSS variable validation error:', error);
+          }
+          
+          try {
+            validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
+              { chartId: result.chartId, chartType: 'table' }
+            );
+          } catch (error) {
+            console.error('[TableChart] CSS variable validation error:', error);
+          }
+          
+          try {
+            validateCriticalCSSVariable(
+              chartContainer,
+              CRITICAL_CSS_VARIABLES.BLOCK_HEIGHT,
+              { chartId: result.chartId, chartType: 'table' }
+            );
+          } catch (error) {
+            console.error('[TableChart] CSS variable validation error:', error);
+          }
+        } catch (error) {
+          console.error('[TableChart] Unexpected error during height validation:', error);
+        }
       };
       
       // WHAT: Validate after initial render and on resize
