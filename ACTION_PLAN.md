@@ -1568,3 +1568,15 @@ All Post-A-R-10 Reporting Hardening items are complete. See individual item sect
 - **FIXES:**
   - Fixed TEXT chart formula evaluation: Plain text strings (e.g., "Sampletextcontent15") are now detected and returned directly without formula evaluation, preventing CSP errors from expr-eval trying to parse plain text as a formula.
   - Fixed Layout Grammar validation: `--block-height` CSS variable validation now checks the parent row element instead of the chart element, since the variable is set on the row and may not be accessible via getComputedStyle on the chart element.
+
+**2026-01-13T17:45:00.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** Chart Rendering Crash Fix
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `bd104e9c3` - Fix chart rendering crashes: Wrap CSS variable validation in try-catch
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Awaiting explicit Product instruction for next Reporting task
+- **FIXES:**
+  - Fixed "Chart rendering failed" error: Wrapped `validateCriticalCSSVariable` calls in try-catch blocks to prevent validation errors from crashing component rendering. Validation errors are now logged to console instead of throwing errors that break the UI.
+  - Applied to TEXT, BAR, and TABLE chart types. This prevents Layout Grammar validation from breaking user experience when CSS variables are temporarily missing during initial render or resize events.
