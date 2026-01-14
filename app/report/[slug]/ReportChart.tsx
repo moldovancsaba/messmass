@@ -322,17 +322,45 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
           const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
           const availableValueHeight = valueRowHeight - paddingTop - paddingBottom;
           
-          // WHAT: If actual rendered height exceeds available space, log warning
-          // WHY: Content should wrap to fit, but we need to verify it does
-          // HOW: Check if wrapped content fits, log warning if it doesn't
+          // WHAT: If actual rendered height exceeds available space, reduce font size to fit
+          // WHY: Value must fit within allocated space per Layout Grammar
+          // HOW: If value exceeds space, dynamically reduce font size proportionally
           // NOTE: Use small tolerance (2px) to account for rounding and sub-pixel rendering differences
           const tolerance = 2; // 2px tolerance for rounding and sub-pixel rendering
           if (actualValueHeight > availableValueHeight + tolerance && availableValueHeight > 0) {
-            console.warn(
-              `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
-              `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. ` +
-              `Content should wrap to fit. Chart ID: ${result.chartId}`
-            );
+            // WHAT: Calculate required font size to fit value in available space
+            // WHY: Value must fit within allocated space, so we need to reduce font size
+            // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+            const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(computedStyle.lineHeight) || 1.2;
+            
+            // WHAT: Calculate scale factor based on available vs actual height
+            // WHY: Need to reduce font size proportionally to fit content
+            // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+            const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+            const scaleFactor = (availableValueHeight / actualValueHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+            
+            // WHAT: Apply reduced font size if it's significantly different
+            // WHY: Only apply if reduction is meaningful (more than 5% difference)
+            // HOW: Set inline style with reduced font size
+            if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+              valueElement.style.fontSize = `${newFontSize}px`;
+              console.warn(
+                `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
+                `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. Chart ID: ${result.chartId}`
+              );
+            } else if (scaleFactor < 0.95) {
+              // WHAT: Font size would be too small, log warning
+              // WHY: Content can't fit even with minimum readable font size
+              // HOW: Log warning for investigation
+              console.warn(
+                `[KPIChart A-03.2] Value rendered height (${actualValueHeight}px) exceeds available space (${availableValueHeight}px). ` +
+                `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                `Container: ${containerHeight}px, Value row allocated: ${valueRowHeight}px. Chart ID: ${result.chartId}`
+              );
+            }
           }
         }
         
