@@ -774,16 +774,45 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
             const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
             const availableLabelHeight = availableHeightPerRow - paddingTop - paddingBottom;
             
-            // WHAT: Validate label fits within allocated row height
-            // WHY: Labels must fit to prevent clipping (Layout Grammar)
-            // HOW: Check if actual height exceeds available space
+            // WHAT: If label exceeds available space, reduce font size to fit
+            // WHY: Layout Grammar: content must fit without clipping
+            // HOW: Calculate maximum font size that fits and apply it dynamically
             if (actualLabelHeight > availableLabelHeight && availableLabelHeight > 0) {
-              const labelText = result.elements?.[idx]?.label || 'unknown';
-              console.warn(
-                `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
-                `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. ` +
-                `Label should wrap to fit. Chart ID: ${result.chartId}, Label: "${labelText}"`
-              );
+              // WHAT: Calculate required font size to fit label in available space
+              // WHY: Label must fit within allocated space per Layout Grammar
+              // HOW: Scale font size proportionally: newFontSize = currentFontSize × (availableHeight / actualHeight)
+              const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+              const lineHeight = parseFloat(computedStyle.lineHeight) || 1.2;
+              
+              // WHAT: Calculate scale factor based on available vs actual height
+              // WHY: Need to reduce font size proportionally to fit content
+              // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+              const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+              const scaleFactor = (availableLabelHeight / actualLabelHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if it's significantly different
+              // WHY: Only apply if reduction is meaningful (more than 5% difference)
+              // HOW: Set inline style with reduced font size
+              if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+                labelCell.style.fontSize = `${newFontSize}px`;
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
+                  `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              } else if (scaleFactor < 0.95) {
+                // WHAT: Font size would be too small, log warning
+                // WHY: Content can't fit even with minimum readable font size
+                // HOW: Log warning for investigation
+                const labelText = result.elements?.[idx]?.label || 'unknown';
+                console.warn(
+                  `[BarChart A-03.3] Label ${idx + 1} height (${actualLabelHeight}px) exceeds available space (${availableLabelHeight}px). ` +
+                  `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                  `Body: ${bodyHeight}px, Available per row: ${availableHeightPerRow}px. Chart ID: ${result.chartId}, Label: "${labelText}"`
+                );
+              }
             }
             
             // WHAT: Validate row height (max of label height and bar track height)

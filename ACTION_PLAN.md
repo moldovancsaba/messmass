@@ -178,7 +178,7 @@ A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R
 | ADM-RM-06 | Partner Analytics Dashboard enhancements | DEFERRED | `ROADMAP.md` |  |
 | ADM-RM-07 | Bitly Search Enhancements | PLANNED | `ROADMAP.md` |  |
 | ADM-RM-08 | Bitly Analytics Export & Reporting | PLANNED | `ROADMAP.md` |  |
-| ADM-RM-09 | Variable System Enhancement | PLANNED | `ROADMAP.md` |  |
+| ADM-RM-09 | Variable System Enhancement | DONE | `ROADMAP.md` |  |
 | ADM-RM-10 | Admin UI Consistency | ACTIVE | `ROADMAP.md` |  |
 | ADM-RM-11 | Admin UI assignment dropdown (project edit modal) | BACKLOG | `ROADMAP.md` |  |
 | ADM-RM-12 | Admin Grid Settings UI (desktop/tablet/mobile units) | BACKLOG | `ROADMAP.md` |  |
@@ -539,7 +539,7 @@ The following items are completed and tracked in release notes, verification pac
 3.1 Priority is determined by technological dependency and risk containment.
 
 3.2 Queue (highest priority first):
-1) ADMIN: A-UI-12, A-UI-13, ADM-RM-09 (template/style/variable system clarity)
+1) ADMIN: A-UI-12, A-UI-13 (template/style clarity)
 2) REPORTING: A-03 (incl. A-03.1 TEXT AREA and A-03.2 KPI height calculations, eliminate overflow while respecting Layout Grammar)
 3) REPORTING: A-05 (runtime enforcement expectations aligned with Admin model outputs)
 4) ADMIN: A-UI-01 (Partner IA + override rules, depends on A-UI-12/A-UI-13 clarity)
@@ -581,19 +581,6 @@ The following items are completed and tracked in release notes, verification pac
   - **Dependencies:** A-UI-12
   - **Owner:** Katja
   - **Definition:** Define style model and assignment rules (global -> partner -> event -> filter where applicable).
-
-- [ ] ADM-RM-09: Variable System Enhancement
-  - **Status:** IN PROGRESS
-  - **Priority:** High
-  - **Dependencies:** A-UI-12, A-UI-13
-  - **Owner:** Katja
-  - **Definition:** Stabilise and harden the existing Variable system so daily operation is reliable and existing variables remain respected. Deliver enhancements without breaking compatibility. In addition, provide a future-facing improvement plan.
-  - **Deliverables (required):**
-    - Variable inventory: list all current variables used by Admin and Reporting (name, type, default, scope, where defined, where consumed).
-    - Compatibility contract: rules that guarantee existing variables keep working (no renames, no silent behaviour changes).
-    - Runtime guarantees: what happens when variables are missing or invalid (Admin validation, Reporting behaviour expectations).
-    - Enhancement scope: clearly separated list of safe improvements that do not break current operation.
-    - Future improvements plan: staged plan for improvements with dependencies and risk notes.
 
 5.2 Partner and assignment flows
 
@@ -705,7 +692,7 @@ The following items are completed and tracked in release notes, verification pac
 
 Reporting: A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R-12, A-R-13, A-R-15, A-R-16, A-R-18, A-R-19, A-03 (incl. A-03.1 TEXT AREA, A-03.2 KPI height calculations)
 
-Admin: A-UI-CLEAN-01, A-UI-15
+Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 
 ---
 
@@ -720,13 +707,13 @@ Admin: A-UI-CLEAN-01, A-UI-15
 - **CURRENT BLOCKERS:** Push to HTTPS remote requires authentication
 - **NEXT EXPECTED OUTPUT:** Resolve Git authentication for HTTPS remote and push commit `c1c167d03`
 
-**2026-01-14T13:22:09.000Z**
+**2026-01-14T13:49:28.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** A-UI-15
+- **CURRENT TASK ID:** ADM-RM-09
 - **STATUS:** DONE
-- **LAST COMMIT(S):** pending
-- **CURRENT BLOCKERS:** None
+- **LAST COMMIT(S):** `29c865247` (ADM-RM-09 docs already present; no new commit created)
+- **CURRENT BLOCKERS:** Git authentication required to push (https://github.com/moldovancsaba/messmass.git)
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
 ---
