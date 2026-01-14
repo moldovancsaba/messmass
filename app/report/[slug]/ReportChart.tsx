@@ -889,6 +889,17 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       
       const validateHeight = () => {
         try {
+          // WHAT: Skip validation if container height is 0 (not yet rendered)
+          // WHY: Validation should only run after container is properly rendered
+          // HOW: Check containerHeight before validating
+          const containerHeight = chartContainer.offsetHeight;
+          if (containerHeight === 0) {
+            // WHAT: Container not yet rendered, skip validation
+            // WHY: CSS variables won't be set until container has height
+            // HOW: Return early, validation will retry on next resize
+            return;
+          }
+          
           // WHAT: Validate critical CSS variables with runtime enforcement (A-05)
           // WHY: Fail-fast in production for critical violations
           // HOW: Use validateCriticalCSSVariable which throws in production, warns in dev
@@ -897,7 +908,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
             validateCriticalCSSVariable(
               chartContainer,
               CRITICAL_CSS_VARIABLES.CHART_BODY_HEIGHT,
-              { chartId: result.chartId, chartType: 'bar', containerHeight: chartContainer.offsetHeight }
+              { chartId: result.chartId, chartType: 'bar', containerHeight }
             );
           } catch (error) {
             console.error('[BarChart] CSS variable validation error:', error);
@@ -919,12 +930,22 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       
       // WHAT: Validate after initial render and on resize
       // WHY: Heights may change on resize or content changes
-      validateHeight();
+      // HOW: Delay validation to ensure height calculation has completed
+      // NOTE: Use setTimeout to delay validation after height calculation useEffect
+      const timeoutId = setTimeout(() => {
+        requestAnimationFrame(validateHeight);
+      }, 100);
       
-      const resizeObserver = new ResizeObserver(validateHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        // WHAT: Debounce resize validation to avoid excessive checks
+        // WHY: Resize events can fire rapidly
+        // HOW: Use requestAnimationFrame to batch validation
+        requestAnimationFrame(validateHeight);
+      });
       resizeObserver.observe(chartContainer);
       
       return () => {
+        clearTimeout(timeoutId);
         resizeObserver.disconnect();
       };
     }
