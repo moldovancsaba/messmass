@@ -189,7 +189,7 @@ Admin:
 - DOMAIN: Reporting
 - CURRENT TASK ID: R-LAYOUT-01.3 – LayoutV2 End-to-End Rendering Alignment
 - STATUS: DONE
-- LAST COMMIT(S): 964468392, 6c6872a31, 5e8e4d9bf, Pending (R-LAYOUT-01.3: regression fixtures + tests)
+- LAST COMMIT(S): 964468392, 6c6872a31, 5e8e4d9bf, Pending (R-LAYOUT-01.3 commit)
 - CURRENT BLOCKERS: None
 - NEXT EXPECTED OUTPUT: Awaiting Architect assignment
 - DELIVERABLES:
