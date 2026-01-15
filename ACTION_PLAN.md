@@ -800,7 +800,7 @@ The following items are completed and tracked in release notes, verification pac
 
 Reporting: A-01, A-02, A-04, A-06, A-R-07, A-R-08, A-R-09 (deprecated), A-R-10, A-R-11, A-R-12, A-R-13, A-R-15, A-R-16, A-R-18, A-R-19, A-03 (incl. A-03.1 TEXT AREA, A-03.2 KPI height calculations)
 
-Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
+Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 
 ---
 
@@ -830,13 +830,13 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 - **CURRENT BLOCKERS:** Push to HTTPS remote requires authentication
 - **NEXT EXPECTED OUTPUT:** Resolve Git authentication for HTTPS remote and push commit `c1c167d03`
 
-**2026-01-14T13:49:28.000Z**
+**2026-01-15T12:26:53.000Z**
 - **AGENT:** Katja
 - **DOMAIN:** Admin
-- **CURRENT TASK ID:** ADM-RM-09
+- **CURRENT TASK ID:** A-UI-LAYOUT-01.1
 - **STATUS:** DONE
-- **LAST COMMIT(S):** `29c865247` (ADM-RM-09 docs already present; no new commit created)
-- **CURRENT BLOCKERS:** Git authentication required to push (https://github.com/moldovancsaba/messmass.git)
+- **LAST COMMIT(S):** pending (A-UI-LAYOUT-01.1 schema doc)
+- **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
 ---
