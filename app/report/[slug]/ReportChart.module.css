@@ -299,14 +299,14 @@
   color: var(--chartLabelColor);
 }
 
-/* Pie Chart Container for Chart.js - 40% of pieGrid height */
+/* Pie Chart Container for Chart.js - Uses measured body height */
 .pieChartContainer {
-  /* WHAT: 40% of pieGrid height for pie chart */
-  /* WHY: Middle section of 30:40:30 ratio (title:pie:legend = 3:4:3) */
-  /* HOW: Flex basis for fixed height proportion (P1 1.4 Phase 3: removed min-height, added max-height for deterministic behavior) */
-  flex: 0 0 40%; /* 3:4:3 → pie 40% */
+  /* WHAT: A-03.4 - Uses measured body height via --chart-body-height CSS variable */
+  /* WHY: Guaranteed height (not competing flex) - KPI-safe pattern */
+  /* HOW: JavaScript calculates bodyHeight = containerHeight - titleHeight - legendHeight, sets CSS variable */
+  height: var(--chart-body-height, 40%); /* WHAT: Use measured height, fallback to 40% for initial render */
   width: 100%;
-  max-height: 40%; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
+  min-height: 0; /* WHAT: Allow flex shrinking if needed */
   position: relative;
   display: flex;
   align-items: center;
@@ -1178,18 +1178,18 @@
     container-type: size; /* Ensure container queries work on mobile */
   }
   
-  /* WHAT: Pie chart container - same behavior as desktop on mobile
-   * WHY: Consistent sizing across all viewports, prevent collapse
-   * HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
+  /* WHAT: A-03.4 - PIE chart uses measured body height on mobile (same as desktop) */
+  /* WHY: KPI-safe pattern - guaranteed height, no competing flex containers */
+  /* HOW: JavaScript calculates bodyHeight and sets --chart-body-height CSS variable */
   .pieTitleRow {
     flex: 0 0 auto !important; /* Let title size to content */
   }
   .pieChartContainer {
-    flex: 1 1 auto !important; /* Allow chart to grow/shrink based on title/legend */
+    /* WHAT: Use measured body height (set by JavaScript) */
+    /* WHY: Guaranteed height prevents chart container from competing with title/legend */
+    height: var(--chart-body-height, 40%) !important; /* WHAT: Use measured height, fallback to 40% */
     width: 100% !important;
-    max-height: 100% !important; /* Allow full remaining height */
-    max-width: 100% !important;
-    min-height: 0 !important; /* Allow flex shrinking without overflow */
+    min-height: 0 !important; /* Allow flex shrinking if needed */
     position: relative !important;
     overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
     display: flex !important;

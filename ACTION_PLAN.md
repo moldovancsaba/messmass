@@ -1,12 +1,12 @@
 # ACTION_PLAN.md
 
-**Version:** 1.1.8  
+**Version:** 1.2.0  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Reviewed:** 2026-01-12T10:05:00.000Z  
-**Last Updated:** 2026-01-12T13:18:36.000Z  
+**Last Reviewed:** 2026-01-15T10:23:47.000Z  
+**Last Updated:** 2026-01-15T10:23:47.000Z  
 **Status:** Active  
 **Canonical:** Yes  
-**Owner:** Architecture  
+**Owner:** Chappie (The Architect) 
 **Audience:** Engineering + Product
 
 ---
@@ -30,6 +30,83 @@ It translates audit findings and residual risks into concrete, trackable actions
 ## Reporting System – Active Action Items
 
 **Owner:** Tribeca (Reporting)
+
+### A-03.4: Layout Grammar Text Safety Standardization (All Charts)
+
+**Priority:** High  
+**Status:** ACTIVE  
+**Dependency:** None
+
+**Description:**
+Standardize text fitting across all chart types using KPI-safe measurement and dynamic font scaling, eliminating overflow on mobile/desktop while preserving Layout Grammar.
+
+**Root Cause Analysis:**
+
+**Why KPI Charts Work (Stable):**
+- Uses CSS Grid with fixed row ratios: `grid-template-rows: 4fr 3fr 3fr` (40%:30%:30%)
+- Each row has guaranteed height based on container height (no competing flex containers)
+- JavaScript measures actual content height vs allocated row height
+- Dynamically reduces font size with `!important` to override CSS clamp() rules
+- Independent row heights - no space competition
+
+**Why PIE Charts Fail on Mobile (Unstable):**
+- Uses Flexbox column with fixed flex-basis percentages: `flex: 0 0 30%` (title), `flex: 0 0 40%` (chart), `flex: 1 1 30%` (legend)
+- On mobile, CSS changes to `flex: 0 0 auto` for title/legend and `flex: 1 1 auto` for chart
+- Chart container competes with title/legend for space (no guaranteed height)
+- Chart.js canvas forced to 100% width/height, but container may not have stable height
+- Title and legend can grow, pushing chart container to shrink
+- No measured height calculation like KPI - relies on flex percentages
+
+**Solution Pattern (KPI-Safe Standard):**
+1. Measure container height (via refs)
+2. Calculate allocated space for each section (based on fixed ratios)
+3. Measure actual content height (offsetHeight)
+4. If actual > available: reduce font size proportionally
+5. Apply with `!important` to override CSS clamp() rules
+6. Use ResizeObserver + MutationObserver for dynamic updates
+
+**Chart Type Status:**
+
+✅ **KPI Chart:** Stable (uses measured height + dynamic font scaling)
+✅ **BAR Chart:** Stable (uses measured height + dynamic font scaling for labels)
+✅ **TEXT Chart:** Stable (uses measured height + dynamic font scaling for content + title)
+✅ **TABLE Chart:** Stable (uses measured height + dynamic font scaling for content)
+✅ **CellWrapper:** Stable (uses measured height + dynamic font scaling for title + subtitle)
+⚠️ **PIE Chart:** Unstable on mobile (needs measured body height calculation)
+⚠️ **IMAGE Chart:** Uses CellWrapper (title/subtitle stable, body needs verification)
+
+**Action Items:**
+
+1. **Update Layout Grammar Documentation:**
+   - Document "measured height" approach as standard for all chart types
+   - Specify: Measure container → Calculate allocated space → Measure actual content → Reduce font size if needed
+   - Add mobile-specific guidance: Avoid competing flex containers, use measured heights
+
+2. **Fix PIE Chart Mobile Layout:**
+   - Replace flex percentage approach with measured body height calculation
+   - Calculate: `bodyHeight = containerHeight - titleHeight - legendHeight`
+   - Set `--chart-body-height` CSS variable on PIE container
+   - Ensure chart container has guaranteed height (not competing flex)
+   - Apply same pattern as KPI: measure → calculate → scale
+
+3. **Verify IMAGE Chart:**
+   - Confirm CellWrapper title/subtitle scaling works correctly
+   - Verify image body zone respects Layout Grammar (no clipping)
+
+4. **Update CSS:**
+   - Remove mobile-specific flex percentage overrides for PIE
+   - Use measured heights via CSS variables instead
+   - Ensure all chart containers have guaranteed heights (no competing flex)
+
+**Considerations (before execution):**
+- PIE chart must use same measured height pattern as KPI (no flex competition)
+- All text elements must use measured available space + `!important` overrides
+- Mobile layouts must use same measurement approach as desktop (no special cases)
+- Chart.js canvas must have guaranteed container height (not flex-dependent)
+
+**Owner:** Tribeca
+
+---
 
 ### A-03: Height Calculation Accuracy Improvements
 
@@ -478,7 +555,7 @@ The following items are completed and tracked in release notes, verification pac
 
 **Version:** 1.2.0  
 **Created:** 2026-01-12T00:09:33.679Z  
-**Last Updated:** 2026-01-14T12:20:00.000Z  
+**Last Updated:** 2026-01-15T10:23:47.000Z  
 **Status:** Active  
 **Canonical:** Yes  
 **Owner:** Chappie (Architecture)  
@@ -539,19 +616,27 @@ The following items are completed and tracked in release notes, verification pac
 3.1 Priority is determined by technological dependency and risk containment.
 
 3.2 Queue (highest priority first):
-1) ADMIN: A-UI-12, A-UI-13 (template/style clarity)
-2) REPORTING: A-03 (incl. A-03.1 TEXT AREA and A-03.2 KPI height calculations, eliminate overflow while respecting Layout Grammar)
-3) REPORTING: A-05 (runtime enforcement expectations aligned with Admin model outputs)
-4) ADMIN: A-UI-01 (Partner IA + override rules, depends on A-UI-12/A-UI-13 clarity)
-5) ADMIN: A-UI-10, A-UI-11 (hashtag/category consolidation decisions)
-6) ADMIN: A-UI-14 (operational support and documentation)
-7) ADMIN: Remaining ADM-RM items (post-foundation)
+1) REPORTING: A-03.4 (Layout Grammar text safety standardization)
+2) ADMIN: A-UI-12, A-UI-13 (template/style clarity)
+3) REPORTING: A-03 (incl. A-03.1 TEXT AREA and A-03.2 KPI height calculations, eliminate overflow while respecting Layout Grammar)
+4) REPORTING: A-05 (runtime enforcement expectations aligned with Admin model outputs)
+5) ADMIN: A-UI-01 (Partner IA + override rules, depends on A-UI-12/A-UI-13 clarity)
+6) ADMIN: A-UI-10, A-UI-11 (hashtag/category consolidation decisions)
+7) ADMIN: A-UI-14 (operational support and documentation)
+8) ADMIN: Remaining ADM-RM items (post-foundation)
 
 ---
 
 ## 4. Reporting System (Action Items)
 
 **Owner:** Tribeca (Reporting)
+
+- [ ] A-03.4: Layout Grammar Text Safety Standardization (All Charts)
+  - **Status:** ACTIVE
+  - **Priority:** High
+  - **Dependencies:** None
+  - **Owner:** Tribeca
+  - **Definition:** Unify text fitting logic across chart types to KPI-safe measurement and dynamic font scaling; fix PIE mobile layout conflicts without breaking Layout Grammar.
 
 - [ ] A-05: Layout Grammar Runtime Enforcement
   - **Status:** IN PROGRESS
@@ -697,6 +782,20 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 ---
 
 ## 9. STATE MEMORY (Current Only)
+
+**2026-01-15T10:23:47.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** A-03.4 – Layout Grammar Text Safety Standardization (All Charts)
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** `d939180f9` - fix(report): scale text and pie layout
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** ACTION_PLAN.md updated with analysis + Layout Grammar doc update + PIE chart fix (code + docs + paths)
+- **ANALYSIS COMPLETE:**
+  - Root cause identified: KPI uses measured height (stable), PIE uses competing flex (unstable on mobile)
+  - Solution pattern documented: Measure container → Calculate allocated space → Measure actual content → Reduce font size
+  - Chart status assessed: KPI/BAR/TEXT/TABLE/CellWrapper stable, PIE unstable on mobile
+  - Action items defined: Update Layout Grammar doc, fix PIE mobile layout, verify IMAGE chart
 
 **2026-01-14T12:35:00.000Z**
 - **AGENT:** Tribeca
