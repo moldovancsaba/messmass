@@ -21,9 +21,13 @@ This document defines the **contract** between Admin (template configuration) an
 ## Block Structure
 
 ### Block Aspect Ratio
-- **Fixed:** 4:1 (width:height)
-- **Formula:** `blockHeight = blockWidth / 4`
-- **Example:** If block width is 1200px, block height is 300px
+- **Default:** 4:1 (width:height) - `blockHeight = blockWidth / 4`
+- **Variable Override (R-LAYOUT-02.1):** Optional aspect ratio override for TEXT-AREA/TABLE blocks
+  - **Supported Range:** 4:1 to 4:10 (e.g., 4:6, 4:10)
+  - **Override Allowed Only For:** Blocks containing TEXT or TABLE chart types exclusively
+  - **Validation:** Rejects mixed types (e.g., TEXT + KPI) with fallback to default 4:1
+  - **Formula:** `blockHeight = blockWidth × (aspectHeight / aspectWidth)`
+- **Example:** If block width is 1200px, default height is 300px (4:1), or 1800px with 4:6 override
 
 ### Block Capacity
 - **Fixed:** 4 units maximum per block
