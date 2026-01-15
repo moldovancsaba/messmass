@@ -65,11 +65,11 @@
 3.1 Priority is determined by technological dependency and risk containment.
 
 3.2 Queue (highest priority first):
-1) REPORTING: R-LAYOUT-01.3 (LayoutV2 end-to-end rendering alignment and regression pass)
-2) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
-3) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
-4) ADMIN: A-UI-12 (Report template model and selection rules)
-5) ADMIN: A-UI-13 (Style model and assignment rules)
+1) ADMIN: A-UI-12 (Report template model and selection rules)
+2) ADMIN: A-UI-13 (Style model and assignment rules)
+3) ADMIN: A-UI-LAYOUT-02.1 (Variable blockAspectRatio authoring for TEXT-AREA/TABLE)
+4) REPORTING: A-05 (Layout Grammar runtime enforcement guardrails)
+5) CROSS: X-LAYOUT-01 (Contract conformance fixtures: Admin output -> Reporting input)
 
 ---
 
@@ -94,19 +94,19 @@ Owner: Tribeca (Reporting)
 
 Owner: Katja (Admin)
 
-### A-UI-LAYOUT-01.2: Implement Admin LayoutV2 Template Builder Output (Visualization Editor)
+### A-UI-LAYOUT-02.1: Admin Authoring for Variable Block Aspect Ratio (Text-Area/Table)
 
-- [x] Update the Admin report template editor to support LayoutV2 items with explicit unit size (1 or 2 units) and explicit aspect ratio per item type
-  - Status: DONE
+- [ ] Implement blockAspectRatio authoring at block level with validation
+  - Status: OPEN
   - Priority: High
-  - Dependencies: A-UI-LAYOUT-01.1 (DONE), docs/design/REPORT_LAYOUT_V2_CONTRACT.md, docs/design/ADMIN_LAYOUT_V2_SCHEMA.md
+  - Dependencies: A-UI-LAYOUT-01.2 (DONE), docs/design/REPORT_LAYOUT_V2_CONTRACT.md, docs/admin/ADMIN_LAYOUT_V2_SCHEMA.md
   - Owner: Katja
   - Deliverables:
-    - Admin template editor emits LayoutV2-compatible output
-    - Authoring-time validation (capacity <= 4 units per block)
-    - Prevent saving invalid layouts
-    - Migration note for existing templates
-    - Operator docs updated
+    - blockAspectRatio (4:1–4:10) authorable at block level
+    - Validation: range + width=4
+    - Validation: TEXT-AREA/TABLE only, no mixed blocks
+    - Persist to template output
+    - Operator docs update
 
 ### A-UI-12: Reporting (Report Structures)
 
@@ -152,6 +152,8 @@ Owner: Katja (Admin)
 Reporting:
 - R-LAYOUT-01.1 (Contract)
 - R-LAYOUT-01.2 (Renderer implementation)
+- R-LAYOUT-01.3 (Regression alignment)
+- R-LAYOUT-02.1 (Variable blockAspectRatio support)
 - A-03.1 (TEXT AREA height fix)
 - A-03.2 (KPI height fix)
 - A-03.3 (BAR height accuracy)
@@ -172,27 +174,20 @@ Admin:
 
 ## 8. STATE MEMORY (Current Only)
 
- 2026-01-15T14:18:00.000Z
+ 2026-01-15T15:00:00.000Z
 - AGENT: Tribeca
 - DOMAIN: Reporting
-- CURRENT TASK ID: R-LAYOUT-02.1 – Reporting Support for Variable Block Aspect Ratio (Text-Area/Table)
-- STATUS: DONE
-- LAST COMMIT(S): `aed66e36b`, `8a3a3447c`, `1fcd43796`, `269f49206` - R-LAYOUT-02.1: Variable Block Aspect Ratio, `506c233b4` - R-LAYOUT-02.1: Fix TypeScript error, `b33b4e525` - R-LAYOUT-02.1: Update ACTION_PLAN.md STATE MEMORY
+- CURRENT TASK ID: A-05
+- STATUS: ASSIGNED
+- LAST COMMIT(S): 95f4056ba
 - CURRENT BLOCKERS: None
-- NEXT EXPECTED OUTPUT: Awaiting Architect assignment
-- DELIVERABLES:
-  - Extended layoutV2BlockCalculator.ts to support variable blockAspectRatio (4:1 to 4:10)
-  - Added validation: override only allowed for TEXT-AREA/TABLE blocks, rejects mixed types
-  - Updated ReportContent.tsx and useReportLayout.ts to pass and use blockAspectRatio
-  - Created __tests__/layoutV2-variable-aspect-ratio.test.ts (28 tests, all passing)
-  - Default behavior unchanged (4:1 when not specified)
-  - Maintains deterministic layout guarantees
+- NEXT EXPECTED OUTPUT: Runtime guardrails + tests + STATE MEMORY update
 
-2026-01-15T14:49:06.000Z
+2026-01-15T15:00:00.000Z
 - AGENT: Katja
 - DOMAIN: Admin
-- CURRENT TASK ID: A-UI-LAYOUT-01.2
-- STATUS: DONE
-- LAST COMMIT(S): 71e92e9fb - A-UI-LAYOUT-01.2: LayoutV2 authoring output
+- CURRENT TASK ID: A-UI-12
+- STATUS: ASSIGNED
+- LAST COMMIT(S): 71e92e9fb
 - CURRENT BLOCKERS: None
-- NEXT EXPECTED OUTPUT: Awaiting Architect assignment
+- NEXT EXPECTED OUTPUT: A-UI-12 docs + model mapping + STATE MEMORY update
