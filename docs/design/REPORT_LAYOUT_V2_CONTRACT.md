@@ -1,9 +1,9 @@
 # Report Layout V2 Renderer Contract
 
 **Status:** Active  
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Created:** 2026-01-15T12:45:00.000Z  
-**Last Updated:** 2026-01-15T12:45:00.000Z  
+**Last Updated:** 2026-01-15T14:18:00.000Z  
 **Canonical:** Yes  
 **Owner:** Architecture (Chappie)  
 **Audience:** Engineering (Reporting + Admin)
