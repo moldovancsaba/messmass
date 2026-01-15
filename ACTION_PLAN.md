@@ -31,6 +31,28 @@ It translates audit findings and residual risks into concrete, trackable actions
 
 **Owner:** Tribeca (Reporting)
 
+### R-LAYOUT-01.1: LayoutV2 Renderer Contract (Block + Item + Unit Rules)
+
+**Priority:** High  
+**Status:** ACTIVE  
+**Dependency:** None
+
+**Description:**
+Define the LayoutV2 renderer contract specifying block aspect ratio (4:1), block capacity (4 units), item unit rules, deterministic packing rules, fit policies, and renderer input shape expectations.
+
+**Deliverables:**
+- Contract document at `docs/design/REPORT_LAYOUT_V2_CONTRACT.md`
+- Block aspect ratio: fixed 4:1
+- Block capacity: fixed 4 units
+- Item unit rules documented (Images: 16:9 = 2 units, 1:1 = 1 unit, 9:16 = 1 unit; Texts/charts: 1:1 = 1 unit, 2:1 = 2 units)
+- Deterministic packing rules (no ambiguity, same input => same layout)
+- Fit policies (text/charts never overflow inside their allocated unit slot)
+- Renderer input shape expectations (what Reporting will consume from Admin)
+
+**Owner:** Tribeca
+
+---
+
 ### A-03.4: Layout Grammar Text Safety Standardization (All Charts)
 
 **Priority:** High  
@@ -818,3 +840,195 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
 ---
+
+# ACTION_PLAN.md
+
+**Version:** 1.2.1  
+**Created:** 2026-01-12T00:09:33.679Z  
+**Last Updated:** 2026-01-15T10:23:47.000Z  
+**Status:** Active  
+**Canonical:** Yes  
+**Owner:** Chappie (The Architect)  
+**Audience:** Engineering + Product
+
+---
+
+## 0. Summary Index
+- 1. Operating Rules
+- 2. Global Dependency Map
+- 3. Execution Queue (Dependency-Ordered)
+- 4. Reporting System – Action Items
+- 5. Admin System – Action Items
+- 6. Cross-System Action Items
+- 7. Parked / Waiting Items
+- 8. STATE MEMORY (Current Only)
+
+---
+
+## 1. Operating Rules
+- This file is the single executable TODO + memory.
+- Only OPEN / WAITING tasks live here.
+- DONE tasks are removed immediately.
+- STATE MEMORY contains current state only.
+
+---
+
+## 2. Global Dependency Map
+- Reporting depends on Admin templates, styles, variables.
+- Admin foundation precedes Reporting extensions.
+
+---
+
+## 3. Execution Queue (Dependency-Ordered)
+1. A-03.4
+2. A-03
+3. A-05
+4. A-UI-12
+5. A-UI-13
+6. A-UI-01
+7. A-UI-10
+8. A-UI-11
+9. A-UI-14
+10. ADM-RM-02
+11. ADM-RM-10
+12. ADM-RM-07
+13. ADM-RM-08
+14. ADM-RM-04
+15. ADM-RM-06
+16. ADM-RM-11
+17. ADM-RM-12
+18. ADM-RM-13
+19. X-01
+
+---
+
+## 4. Reporting System – Action Items
+- [ ] A-03.4: Layout Grammar Text Safety Standardization (All Charts)
+  - Priority: High
+  - Dependencies: None
+  - Owner: Tribeca
+  - Status: OPEN
+- [ ] A-03: Height Calculation Accuracy Improvements
+  - Priority: Medium
+  - Dependencies: None
+  - Owner: Tribeca
+  - Status: IN PROGRESS
+- [ ] A-05: Layout Grammar Runtime Enforcement
+  - Priority: Medium
+  - Dependencies: Runtime validation (exists)
+  - Owner: Tribeca
+  - Status: IN PROGRESS
+
+---
+
+## 5. Admin System – Action Items
+- [ ] A-UI-12: Reporting (Report Structures)
+  - Priority: High
+  - Dependencies: None
+  - Owner: Katja
+  - Status: OPEN
+- [ ] A-UI-13: Style Editor (Report Themes)
+  - Priority: High
+  - Dependencies: A-UI-12
+  - Owner: Katja
+  - Status: OPEN
+- [ ] A-UI-01: Partners (Partner Model, Partner Report, Partner Scoping)
+  - Priority: Medium
+  - Dependencies: A-UI-12, A-UI-13
+  - Owner: Katja
+  - Status: OPEN
+- [ ] A-UI-10: Hashtag Manager (Hashtags and Reports)
+  - Priority: Medium
+  - Dependencies: A-UI-12
+  - Owner: Katja
+  - Status: OPEN
+- [ ] A-UI-11: Category Manager (Purpose and Scope)
+  - Priority: Medium
+  - Dependencies: A-UI-10
+  - Owner: Katja
+  - Status: OPEN
+- [ ] A-UI-14: Cache Management (Seeing Updates)
+  - Priority: Low
+  - Dependencies: A-UI-12, A-UI-13
+  - Owner: Katja
+  - Status: OPEN
+- [ ] ADM-RM-02: Google Sheets Integration (auto-provision sheets for new partners)
+  - Priority: Medium
+  - Dependencies: A-UI-01
+  - Owner: Katja
+  - Status: OPEN
+- [ ] ADM-RM-10: Admin UI Consistency
+  - Priority: Medium
+  - Dependencies: A-UI-12, A-UI-13
+  - Owner: Katja
+  - Status: OPEN
+- [ ] ADM-RM-07: Bitly Search Enhancements
+  - Priority: Low
+  - Dependencies: ADM-RM-10
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-08: Bitly Analytics Export & Reporting
+  - Priority: Low
+  - Dependencies: ADM-RM-07
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-04: Search & Paging Unification (Admin: Users)
+  - Priority: Low
+  - Dependencies: ADM-RM-10
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-06: Partner Analytics Dashboard enhancements
+  - Priority: Low
+  - Dependencies: A-UI-01
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-11: Admin UI assignment dropdown (project edit modal)
+  - Priority: Low
+  - Dependencies: A-UI-12, A-UI-13
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-12: Admin Grid Settings UI (desktop/tablet/mobile units)
+  - Priority: Low
+  - Dependencies: ADM-RM-10
+  - Owner: Katja
+  - Status: BACKLOG
+- [ ] ADM-RM-13: Admin Productivity backlog
+  - Priority: Low
+  - Dependencies: ADM-RM-10
+  - Owner: Katja
+  - Status: BACKLOG
+
+---
+
+## 6. Cross-System Action Items
+- [ ] X-01: Confirm Admin -> Reporting contract for template/style/variable assignment
+  - Priority: High
+  - Dependencies: A-UI-12, A-UI-13
+  - Owner: Chappie
+  - Status: OPEN
+
+---
+
+## 7. Parked / Waiting Items
+(none)
+
+---
+
+## 8. STATE MEMORY (Current Only)
+**2026-01-15T12:45:00.000Z**
+- **AGENT:** Tribeca
+- **DOMAIN:** Reporting
+- **CURRENT TASK ID:** R-LAYOUT-01.1 – LayoutV2 Renderer Contract (Block + Item + Unit Rules)
+- **STATUS:** ACTIVE
+- **LAST COMMIT(S):** Pending (R-LAYOUT-01.1: Contract document creation)
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** docs/design/REPORT_LAYOUT_V2_CONTRACT.md committed + ACTION_PLAN.md STATE MEMORY updated
+
+**2026-01-15T10:23:47.000Z**
+- **AGENT:** Katja
+- **DOMAIN:** Admin
+- **CURRENT TASK ID:** A-UI-12
+- **STATUS:** OPEN
+- **LAST COMMIT(S):** N/A
+- **CURRENT BLOCKERS:** None
+- **NEXT EXPECTED OUTPUT:** Report template model definition
