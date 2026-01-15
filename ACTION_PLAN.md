@@ -1019,10 +1019,18 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
 - **CURRENT TASK ID:** R-LAYOUT-01.1 – LayoutV2 Renderer Contract (Block + Item + Unit Rules)
-- **STATUS:** ACTIVE
-- **LAST COMMIT(S):** Pending (R-LAYOUT-01.1: Contract document creation)
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `c442e29c7` - R-LAYOUT-01.1: LayoutV2 Renderer Contract - Block + Item + Unit Rules
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** docs/design/REPORT_LAYOUT_V2_CONTRACT.md committed + ACTION_PLAN.md STATE MEMORY updated
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
+- **DELIVERABLES:**
+  - docs/design/REPORT_LAYOUT_V2_CONTRACT.md created with complete specifications
+  - Block aspect ratio: fixed 4:1 documented
+  - Block capacity: fixed 4 units documented
+  - Item unit rules: Images (16:9=2, 1:1=1, 9:16=1), Texts/charts (1:1=1, 2:1=2) documented
+  - Deterministic packing rules (same input => same layout) specified
+  - Fit policies (text/charts never overflow) specified
+  - Renderer input shape expectations (Admin -> Reporting contract) documented
 
 **2026-01-15T10:23:47.000Z**
 - **AGENT:** Katja
