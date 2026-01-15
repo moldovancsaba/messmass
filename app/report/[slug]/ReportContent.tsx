@@ -9,17 +9,15 @@ import type { ReportBlock, GridSettings } from '@/hooks/useReportLayout';
 import type { ChartResult, Chart } from '@/lib/report-calculator';
 import ReportChart from './ReportChart';
 import styles from './ReportContent.module.css';
-import { resolveBlockHeightWithDetails } from '@/lib/blockHeightCalculator';
 import { calculateSyncedFontSizes } from '@/lib/fontSyncCalculator';
 import type { CellConfiguration } from '@/lib/layoutGrammar';
 import { useUnifiedTextFontSize } from '@/hooks/useUnifiedTextFontSize';
 import { calculateBlockFontSizeForBarCharts } from '@/lib/barChartFontSizeCalculator';
-import { validateCriticalCSSVariable, validateHeightResolution, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
+import { validateCriticalCSSVariable, CRITICAL_CSS_VARIABLES } from '@/lib/layoutGrammarRuntimeEnforcement';
 import { 
   calculateLayoutV2BlockHeight, 
   validateLayoutV2BlockCapacity,
-  calculateLayoutV2GridColumns,
-  calculateLayoutV2BlockDimensions
+  calculateLayoutV2GridColumns
 } from '@/lib/layoutV2BlockCalculator';
 
 /**
