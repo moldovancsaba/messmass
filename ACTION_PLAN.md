@@ -835,7 +835,7 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09, A-UI-LAYOUT-01.1
 - **DOMAIN:** Admin
 - **CURRENT TASK ID:** A-UI-LAYOUT-01.1
 - **STATUS:** DONE
-- **LAST COMMIT(S):** pending (A-UI-LAYOUT-01.1 schema doc)
+- **LAST COMMIT(S):** `3043f7be4` - docs(A-UI-LAYOUT-01.1): Admin LayoutV2 schema
 - **CURRENT BLOCKERS:** None
 - **NEXT EXPECTED OUTPUT:** Awaiting next Admin assignment
 
