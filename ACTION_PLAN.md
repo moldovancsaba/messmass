@@ -184,22 +184,21 @@ Admin:
 
 ## 8. STATE MEMORY (Current Only)
 
- 2026-01-15T14:06:00.000Z
+ 2026-01-15T14:18:00.000Z
 - AGENT: Tribeca
 - DOMAIN: Reporting
-- CURRENT TASK ID: R-LAYOUT-01.3 – LayoutV2 End-to-End Rendering Alignment
+- CURRENT TASK ID: R-LAYOUT-02.1 – Reporting Support for Variable Block Aspect Ratio (Text-Area/Table)
 - STATUS: DONE
-- LAST COMMIT(S): 964468392, 6c6872a31, 5e8e4d9bf, `aed66e36b` - R-LAYOUT-01.3: LayoutV2 End-to-End Rendering Alignment, `8a3a3447c` - R-LAYOUT-01.3: Update ACTION_PLAN.md STATE MEMORY
+- LAST COMMIT(S): `aed66e36b`, `8a3a3447c`, `1fcd43796`, `269f49206` - R-LAYOUT-02.1: Variable Block Aspect Ratio, Pending (TypeScript fix + STATE MEMORY update)
 - CURRENT BLOCKERS: None
 - NEXT EXPECTED OUTPUT: Awaiting Architect assignment
 - DELIVERABLES:
-  - __tests__/layoutV2-regression.test.ts created (18 tests, all passing)
-  - Validated all chart types (TEXT, KPI, BAR, PIE, TABLE, IMAGE) with LayoutV2
-  - Multi-block and mixed chart-type layouts tested
-  - Responsive width scenarios verified (desktop, tablet, mobile)
-  - Edge cases and validation covered
-  - Layout Grammar compliance verified (4:1 aspect ratio, uniform height)
-  - No remaining legacy height assumptions found
+  - Extended layoutV2BlockCalculator.ts to support variable blockAspectRatio (4:1 to 4:10)
+  - Added validation: override only allowed for TEXT-AREA/TABLE blocks, rejects mixed types
+  - Updated ReportContent.tsx and useReportLayout.ts to pass and use blockAspectRatio
+  - Created __tests__/layoutV2-variable-aspect-ratio.test.ts (28 tests, all passing)
+  - Default behavior unchanged (4:1 when not specified)
+  - Maintains deterministic layout guarantees
 
 2026-01-15T13:55:00.000Z
 - AGENT: Katja
