@@ -119,11 +119,16 @@ export async function POST(request: NextRequest) {
       // WHAT: Also create data_block wrapper for visualization editor
       // WHY: Visualization editor uses data_blocks as container, which references chart_algorithms
       const dataBlockName = `${chartTitle} Block`;
+      const chartAspectRatio = type === 'image' ? detectAspectRatio(value) : '2:1';
+      const chartUnitSize = type === 'image' ? detectGridWidth(value) : 2;
       const dataBlock = {
         name: dataBlockName,
         charts: [{
           chartId,
-          width: type === 'image' ? detectGridWidth(value) : 2, // WHAT: Images use aspect ratio, texts use 2 units
+          width: chartUnitSize,
+          unitSize: chartUnitSize,
+          aspectRatio: chartAspectRatio,
+          order: 0,
           conditions: [] as any[] // WHAT: Always visible (no display conditions)
         }],
         order: 9000 + index, // WHAT: High order to appear at end of block list
@@ -177,18 +182,18 @@ function detectAspectRatio(imageUrl: string): '16:9' | '9:16' | '1:1' {
   return '16:9'; // Default: landscape
 }
 
-// WHAT: Helper to calculate grid width from aspect ratio or type
-// WHY: data_blocks need width value for proper grid layout
-// HOW: Match aspect ratio grid widths: portrait=1, square=2, landscape=3, text=2
+// WHAT: Helper to calculate LayoutV2 unit size from aspect ratio
+// WHY: data_blocks need unitSize/width values for proper grid layout
+// HOW: Match aspect ratio units: portrait=1, square=1, landscape=2
 function detectGridWidth(value: string): number {
   const aspectRatio = detectAspectRatio(value);
   
-  // WHAT: Map aspect ratios to grid units (from calculateImageWidth in lib/imageLayoutUtils.ts)
-  // WHY: Consistent with existing IMAGE chart width calculation
+  // WHAT: Map aspect ratios to LayoutV2 units (1 or 2)
+  // WHY: Align with Admin LayoutV2 output contract
   switch (aspectRatio) {
     case '9:16': return 1; // Portrait
-    case '1:1': return 2;  // Square
-    case '16:9': return 3; // Landscape
-    default: return 2;     // Fallback
+    case '1:1': return 1;  // Square
+    case '16:9': return 2; // Landscape
+    default: return 1;     // Fallback
   }
 }

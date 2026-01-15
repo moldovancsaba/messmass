@@ -2,7 +2,7 @@
 Status: Active
 Version: 1.0.0
 Created: 2026-01-15T12:24:23.000Z
-Last Updated: 2026-01-15T12:24:23.000Z
+Last Updated: 2026-01-15T14:46:42.000Z
 Canonical: Yes
 Owner: Admin (Katja)
 
@@ -50,8 +50,8 @@ interface LayoutBinding {
 ```
 
 2.2 Block Capacity
-- Each block must total exactly 4 units.
-- `sum(item.unitSize) === 4`
+- Each block must total at most 4 units.
+- `sum(item.unitSize) <= 4`
 
 3 Allowed Aspect Ratios per Item Type
 
@@ -91,7 +91,7 @@ Rules:
 6 Validation Rules (Admin-Side)
 
 6.1 Structural Validation (hard fail)
-- Block unit totals must equal 4.
+- Block unit totals must not exceed 4.
 - `unitSize` must be `1` or `2`.
 - `aspectRatio` must be allowed for the given item type.
 - `unitSize` must be allowed for the given item type.
