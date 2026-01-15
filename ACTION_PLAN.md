@@ -631,12 +631,13 @@ The following items are completed and tracked in release notes, verification pac
 
 **Owner:** Tribeca (Reporting)
 
-- [ ] A-03.4: Layout Grammar Text Safety Standardization (All Charts)
-  - **Status:** ACTIVE
+- [x] A-03.4: Layout Grammar Text Safety Standardization (All Charts)
+  - **Status:** DONE
   - **Priority:** High
   - **Dependencies:** None
   - **Owner:** Tribeca
   - **Definition:** Unify text fitting logic across chart types to KPI-safe measurement and dynamic font scaling; fix PIE mobile layout conflicts without breaking Layout Grammar.
+  - **Completed:** 2026-01-15 - All chart types now use measured height pattern. PIE chart mobile layout fixed.
 
 - [ ] A-05: Layout Grammar Runtime Enforcement
   - **Status:** IN PROGRESS
@@ -783,19 +784,20 @@ Admin: A-UI-CLEAN-01, A-UI-15, ADM-RM-09
 
 ## 9. STATE MEMORY (Current Only)
 
-**2026-01-15T10:23:47.000Z**
+**2026-01-15T[UTC_TIME]Z**
 - **AGENT:** Tribeca
 - **DOMAIN:** Reporting
 - **CURRENT TASK ID:** A-03.4 – Layout Grammar Text Safety Standardization (All Charts)
-- **STATUS:** ACTIVE
-- **LAST COMMIT(S):** `d939180f9` - fix(report): scale text and pie layout
+- **STATUS:** DONE
+- **LAST COMMIT(S):** `8db71ecd1` - A-03.4: Layout Grammar Text Safety Standardization - PIE chart measured height fix
 - **CURRENT BLOCKERS:** None
-- **NEXT EXPECTED OUTPUT:** ACTION_PLAN.md updated with analysis + Layout Grammar doc update + PIE chart fix (code + docs + paths)
-- **ANALYSIS COMPLETE:**
-  - Root cause identified: KPI uses measured height (stable), PIE uses competing flex (unstable on mobile)
-  - Solution pattern documented: Measure container → Calculate allocated space → Measure actual content → Reduce font size
-  - Chart status assessed: KPI/BAR/TEXT/TABLE/CellWrapper stable, PIE unstable on mobile
-  - Action items defined: Update Layout Grammar doc, fix PIE mobile layout, verify IMAGE chart
+- **NEXT EXPECTED OUTPUT:** Awaiting Architect assignment
+- **DELIVERABLES:**
+  - Layout Grammar documentation updated with measured height standard pattern
+  - PIE chart mobile layout fixed using measured body height calculation (KPI-safe pattern)
+  - CSS updated to use measured heights via CSS variables (removed mobile flex overrides)
+  - IMAGE chart verified (uses CellWrapper with title/subtitle scaling)
+  - All chart types now use consistent measured height pattern for Layout Grammar compliance
 
 **2026-01-14T12:35:00.000Z**
 - **AGENT:** Tribeca
