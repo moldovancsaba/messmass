@@ -182,7 +182,21 @@ Admin:
 
 ---
 
-## 8. STATE MEMORY (Current Only)
+## 8. Critical Documentation Files (Must Keep Updated)
+
+**Top 5 Most Important .md Files Requiring Regular Updates:**
+
+1. **ACTION_PLAN.md** (this file) - Single source of truth for task tracking, agent state, and execution queue; update on every task assignment/completion
+2. **RELEASE_NOTES.md** - Versioned changelog of all delivered features; update on every release with version number and changes
+3. **docs/design/LAYOUT_GRAMMAR.md** - Core Layout Grammar specification; update when Layout Grammar rules change or new chart types added
+4. **docs/design/REPORT_LAYOUT_V2_CONTRACT.md** - LayoutV2 renderer contract between Admin and Reporting; update when LayoutV2 contract changes (aspect ratios, unit rules, packing rules)
+5. **README.md** - Project overview and documentation index; update version number (match package.json), last updated date, and feature list when major changes occur
+
+**Note:** These files are canonical or high-visibility and must be kept synchronized with code changes to prevent documentation drift.
+
+---
+
+## 9. STATE MEMORY (Current Only)
 
  2026-01-15T14:18:00.000Z
 - AGENT: Tribeca
