@@ -402,25 +402,35 @@ function KPIChart({ result, className }: { result: ChartResult; className?: stri
               
               // WHAT: Get current font size and reduce if needed
               // WHY: Need to ensure title fits within allocated space
-              // HOW: Apply reduced font size via inline style if current size is too large
-              const computedStyle = window.getComputedStyle(titleSpan);
-              const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+              // HOW: Apply reduced font size via inline style with !important to override CSS variable
+              const spanComputedStyle = window.getComputedStyle(titleSpan);
+              const currentFontSize = parseFloat(spanComputedStyle.fontSize) || 16;
               
-              if (currentFontSize > maxFontSizeForTwoLines && maxFontSizeForTwoLines > 0) {
-                // WHAT: Apply reduced font size to ensure title fits
-                // WHY: Title must fit within allocated space
-                // HOW: Set inline style with reduced font size
-                titleSpan.style.fontSize = `${maxFontSizeForTwoLines}px`;
+              // WHAT: Calculate scale factor based on available vs actual height
+              // WHY: Need to reduce font size proportionally to fit content
+              // HOW: Scale factor = availableHeight / actualHeight (with safety margin)
+              const safetyMargin = 0.95; // 5% safety margin to ensure content fits
+              const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+              const newFontSize = currentFontSize * scaleFactor;
+              
+              // WHAT: Apply reduced font size if it's significantly different
+              // WHY: Only apply if reduction is meaningful (more than 5% difference)
+              // HOW: Use setProperty with !important flag to override CSS variable (--block-base-font-size)
+              if (scaleFactor < 0.95 && newFontSize > 8) { // Minimum font size of 8px for readability
+                titleSpan.style.setProperty('font-size', `${newFontSize}px`, 'important');
                 console.warn(
                   `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
-                  `Reduced font size from ${currentFontSize}px to ${maxFontSizeForTwoLines}px to fit. ` +
+                  `Reduced font size from ${currentFontSize}px to ${newFontSize.toFixed(2)}px to fit. ` +
                   `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. Chart ID: ${result.chartId}`
                 );
-              } else {
+              } else if (scaleFactor < 0.95) {
+                // WHAT: Font size would be too small, log warning
+                // WHY: Content can't fit even with minimum readable font size
+                // HOW: Log warning for investigation
                 console.warn(
                   `[KPIChart A-03.2] Title rendered height (${actualTitleHeight}px) exceeds available space (${availableTitleHeight}px). ` +
-                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. ` +
-                  `Title should clamp to 2 lines. Chart ID: ${result.chartId}`
+                  `Cannot reduce font size further (would be ${newFontSize.toFixed(2)}px, minimum is 8px). ` +
+                  `Container: ${containerHeight}px, Title row allocated: ${titleRowHeight}px. Chart ID: ${result.chartId}`
                 );
               }
             }
@@ -511,6 +521,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pieLegendRef = useRef<HTMLDivElement>(null);
+  const pieTitleRowRef = useRef<HTMLDivElement>(null);
   
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No pie data</div>;
@@ -522,6 +533,76 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
   // WHAT: Check if percentages should be shown (default: true for backward compatibility)
   // WHY: v11.38.0 - Allow hiding percentages in pie chart legends
   const showPercentages = result.showPercentages !== false;
+  
+  // WHAT: Measure and reduce font size for PIE chart titles if they exceed available space
+  // WHY: Titles must fit within allocated space per Layout Grammar
+  // HOW: Measure title height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (showTitle && pieTitleRowRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          const titleRow = pieTitleRowRef.current;
+          const titleElement = titleRow?.querySelector(`.${styles.pieTitleText}`) as HTMLElement;
+          if (!titleRow || !titleElement) return;
+
+          const rowHeight = titleRow.offsetHeight;
+          if (rowHeight <= 0) return;
+
+          const actualTitleHeight = titleElement.offsetHeight;
+          const computedStyle = window.getComputedStyle(titleRow);
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTitleHeight = rowHeight - paddingTop - paddingBottom;
+
+          const tolerance = 2;
+          if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
+            const titleComputedStyle = window.getComputedStyle(titleElement);
+            const currentFontSize = parseFloat(titleComputedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(titleComputedStyle.lineHeight) || 1.2;
+
+            const safetyMargin = 0.95;
+            const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              titleElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+            }
+          }
+        } catch (error) {
+          console.error('[PieChart] Unexpected error during title font size reduction:', error);
+        }
+      };
+
+      measureAndReduceFontSize();
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (pieTitleRowRef.current) {
+        resizeObserver.observe(pieTitleRowRef.current);
+      }
+
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (pieTitleRowRef.current) {
+        mutationObserver.observe(pieTitleRowRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title, result.chartId]);
   
   // WHAT: Measure and reduce font size for PIE legends if they exceed available space
   // WHY: Legends must fit within allocated space per Layout Grammar
@@ -745,7 +826,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         {/* WHAT: Title at top */}
         {/* WHY: User requirement - title should be first section */}
         {showTitle && (
-          <div className={styles.pieTitleRow}>
+          <div ref={pieTitleRowRef} className={styles.pieTitleRow}>
             <h3 className={styles.pieTitleText}>{result.title}</h3>
           </div>
         )}
@@ -1222,6 +1303,7 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   // HOW: Measure actual heights and set CSS custom property
   const textChartRef = useRef<HTMLDivElement>(null);
   const textContentWrapperRef = useRef<HTMLDivElement>(null);
+  const textTitleWrapperRef = useRef<HTMLDivElement>(null);
   
   // WHAT: Calculate and set text content height explicitly (P1 1.4 Phase 4)
   // WHY: Replace implicit height behavior with explicit height for deterministic behavior
@@ -1353,6 +1435,76 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
     }
   }, [showTitle, result.title, result.kpiValue, result.chartId]);
   
+  // WHAT: Measure and reduce font size for TEXT chart titles if they exceed available space
+  // WHY: Titles must fit within allocated space per Layout Grammar
+  // HOW: Measure title height and reduce font size if content exceeds space
+  useEffect(() => {
+    if (showTitle && textTitleWrapperRef.current && typeof window !== 'undefined') {
+      const measureAndReduceFontSize = () => {
+        try {
+          const titleWrapper = textTitleWrapperRef.current;
+          const titleElement = titleWrapper?.querySelector(`.${styles.textTitleText}`) as HTMLElement;
+          if (!titleWrapper || !titleElement) return;
+
+          const wrapperHeight = titleWrapper.offsetHeight;
+          if (wrapperHeight <= 0) return;
+
+          const actualTitleHeight = titleElement.offsetHeight;
+          const computedStyle = window.getComputedStyle(titleWrapper);
+          const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+          const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+          const availableTitleHeight = wrapperHeight - paddingTop - paddingBottom;
+
+          const tolerance = 2;
+          if (actualTitleHeight > availableTitleHeight + tolerance && availableTitleHeight > 0) {
+            const titleComputedStyle = window.getComputedStyle(titleElement);
+            const currentFontSize = parseFloat(titleComputedStyle.fontSize) || 16;
+            const lineHeight = parseFloat(titleComputedStyle.lineHeight) || 1.25;
+
+            const safetyMargin = 0.95;
+            const scaleFactor = (availableTitleHeight / actualTitleHeight) * safetyMargin;
+            const newFontSize = currentFontSize * scaleFactor;
+
+            if (scaleFactor < 0.95 && newFontSize > 8) {
+              titleElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+            }
+          }
+        } catch (error) {
+          console.error('[TextChart] Unexpected error during title font size reduction:', error);
+        }
+      };
+
+      measureAndReduceFontSize();
+      const timeoutId = setTimeout(measureAndReduceFontSize, 100);
+
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (textTitleWrapperRef.current) {
+        resizeObserver.observe(textTitleWrapperRef.current);
+      }
+
+      const mutationObserver = new MutationObserver(() => {
+        requestAnimationFrame(measureAndReduceFontSize);
+      });
+
+      if (textTitleWrapperRef.current) {
+        mutationObserver.observe(textTitleWrapperRef.current, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+      }
+
+      return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+      };
+    }
+  }, [showTitle, result.title, result.chartId]);
+  
   // WHAT: Runtime validation for CSS variables (P1 1.4 Phase 5)
   // WHY: Ensure all height values are explicit and traceable
   // HOW: Check computed styles after CSS variables are applied
@@ -1429,7 +1581,7 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
       // WHAT: blockHeight removed - now centrally managed via --block-height CSS custom property on row
     >
       {showTitle && (
-        <div className={styles.textTitleWrapper}>
+        <div ref={textTitleWrapperRef} className={styles.textTitleWrapper}>
           <h3 className={styles.textTitleText}>{result.title}</h3>
         </div>
       )}

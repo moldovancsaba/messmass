@@ -1181,11 +1181,15 @@
   /* WHAT: Pie chart container - same behavior as desktop on mobile
    * WHY: Consistent sizing across all viewports, prevent collapse
    * HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
+  .pieTitleRow {
+    flex: 0 0 auto !important; /* Let title size to content */
+  }
   .pieChartContainer {
-    flex: 0 0 40% !important; /* Same as desktop - 40% of pieGrid (3:4:3 ratio) */
+    flex: 1 1 auto !important; /* Allow chart to grow/shrink based on title/legend */
     width: 100% !important;
-    max-height: 40% !important; /* WHAT: P1 1.4 Phase 3 - prevent unbounded growth, bound to flex ratio */
+    max-height: 100% !important; /* Allow full remaining height */
     max-width: 100% !important;
+    min-height: 0 !important; /* Allow flex shrinking without overflow */
     position: relative !important;
     overflow: visible !important; /* WHAT: P1 1.6 - Layout Grammar: no clipping on content layers, Chart.js canvas must be fully visible */
     display: flex !important;
@@ -1197,8 +1201,8 @@
    * WHY: Canvas must fit within container on both desktop and mobile
    * HOW: Use percentage-based sizing with max constraints */
   .pieChartContainer canvas {
-    width: 90% !important; /* Fill 90% of container width */
-    height: 90% !important; /* Fill 90% of container height */
+    width: 100% !important; /* Fill container width */
+    height: 100% !important; /* Fill container height */
     max-width: 100% !important;
     max-height: 100% !important;
     aspect-ratio: 1 !important; /* Maintain circular shape */
@@ -1209,9 +1213,9 @@
   /* WHY: Consistent sizing across all viewports, prevent collapse, content must fit */
   /* HOW: Maintain flex basis with max-height constraint (P1 1.4 Phase 3: removed min-height for deterministic behavior) */
   .pieLegend {
-    flex: 1 1 20% !important; /* Prefer 20%, but can grow if content exceeds (no scrolling) */
+    flex: 0 0 auto !important; /* Let legend size to content */
     width: 100% !important;
-    max-height: 50% !important; /* WHAT: P1 1.4 Phase 3 - allow growth but bound it to prevent unbounded expansion */
+    max-height: 50% !important; /* Allow growth but bound it */
     max-width: 100% !important;
     justify-content: flex-start !important; /* WHAT: Changed from center to flex-start to prevent clipping in constrained blocks */
     overflow: visible !important; /* WHAT: Changed from hidden to visible - Layout Grammar: content must be visible, container grows to fit */
